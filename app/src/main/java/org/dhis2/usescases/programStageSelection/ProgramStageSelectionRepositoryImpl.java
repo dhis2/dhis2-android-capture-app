@@ -1,7 +1,6 @@
 package org.dhis2.usescases.programStageSelection;
 
 import android.database.Cursor;
-import androidx.annotation.NonNull;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
@@ -25,6 +24,7 @@ import org.hisp.dhis.rules.models.RuleEnrollment;
 import org.hisp.dhis.rules.models.RuleEvent;
 import org.hisp.dhis.rules.models.TriggerEnvironment;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -33,6 +33,7 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
+import androidx.annotation.NonNull;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -43,16 +44,16 @@ import io.reactivex.Observable;
 
 public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectionRepository {
 
-    private final String PROGRAM_STAGE_QUERY = String.format("SELECT * FROM %s WHERE %s.%s = ? ORDER BY %s.%s ASC",
+    private static final String PROGRAM_STAGE_QUERY = String.format("SELECT * FROM %s WHERE %s.%s = ? ORDER BY %s.%s ASC",
             ProgramStageModel.TABLE, ProgramStageModel.TABLE, ProgramStageModel.Columns.PROGRAM,
             ProgramStageModel.TABLE, ProgramStageModel.Columns.SORT_ORDER);
 
-    private final String ENROLLMENT_PROGRAM_STAGES = "SELECT ProgramStage.* FROM ProgramStage " +
+    private static final String ENROLLMENT_PROGRAM_STAGES = "SELECT ProgramStage.* FROM ProgramStage " +
             "JOIN Program ON Program.uid = ProgramStage.program " +
             "JOIN Enrollment ON Enrollment.program = Program.uid " +
             "WHERE Enrollment.uid = ?";
 
-    private final String CURRENT_PROGRAM_STAGES = "SELECT ProgramStage.* FROM ProgramStage WHERE ProgramStage.uid IN " +
+    private static final String CURRENT_PROGRAM_STAGES = "SELECT ProgramStage.* FROM ProgramStage WHERE ProgramStage.uid IN " +
             "(SELECT DISTINCT Event.programStage FROM Event WHERE Event.enrollment = ? AND Event.State != 'TO_DELETE' ) ORDER BY ProgramStage.sortOrder ASC";
 
     private static final String QUERY_ENROLLMENT = "SELECT\n" +
@@ -133,7 +134,6 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
     private Flowable<List<RuleEvent>> ruleEvents(String enrollmentUid) {
         return briteDatabase.createQuery(EventModel.TABLE, QUERY_EVENT, enrollmentUid == null ? "" : enrollmentUid)
                 .mapToList(cursor -> {
-                    List<RuleDataValue> dataValues = new ArrayList<>();
                     String eventUid = cursor.getString(0);
                     String programStageUid = cursor.getString(1);
                     Date eventDate = DateUtils.databaseDateFormat().parse(cursor.getString(3));
@@ -149,18 +149,6 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
 
                     RuleEvent.Status status = RuleEvent.Status.valueOf(eventStatus);
 
-                    Cursor dataValueCursor = briteDatabase.query(QUERY_VALUES, eventUid == null ? "" : eventUid);
-                    if (dataValueCursor != null && dataValueCursor.moveToFirst()) {
-                        for (int i = 0; i < dataValueCursor.getCount(); i++) {
-                            Date eventDateV = DateUtils.databaseDateFormat().parse(dataValueCursor.getString(0));
-                            String value = cursor.getString(3) != null ? dataValueCursor.getString(3) : "";
-                            dataValues.add(RuleDataValue.create(eventDateV, dataValueCursor.getString(1),
-                                    dataValueCursor.getString(2), value));
-                            dataValueCursor.moveToNext();
-                        }
-                        dataValueCursor.close();
-                    }
-
                     return RuleEvent.builder()
                             .event(eventUid)
                             .programStage(programStageUid)
@@ -170,10 +158,26 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
                             .dueDate(dueDate)
                             .organisationUnit(orgUnit)
                             .organisationUnitCode(orgUnitCode)
-                            .dataValues(dataValues)
+                            .dataValues(getDataValues(cursor, eventUid))
                             .build();
 
                 }).toFlowable(BackpressureStrategy.LATEST);
+    }
+
+    private List<RuleDataValue> getDataValues(Cursor cursor, String eventUid) throws ParseException {
+        List<RuleDataValue> dataValues = new ArrayList<>();
+        Cursor dataValueCursor = briteDatabase.query(QUERY_VALUES, eventUid == null ? "" : eventUid);
+        if (dataValueCursor != null && dataValueCursor.moveToFirst()) {
+            for (int i = 0; i < dataValueCursor.getCount(); i++) {
+                Date eventDateV = DateUtils.databaseDateFormat().parse(dataValueCursor.getString(0));
+                String value = cursor.getString(3) != null ? dataValueCursor.getString(3) : "";
+                dataValues.add(RuleDataValue.create(eventDateV, dataValueCursor.getString(1),
+                        dataValueCursor.getString(2), value));
+                dataValueCursor.moveToNext();
+            }
+            dataValueCursor.close();
+        }
+        return dataValues;
     }
 
     @NonNull

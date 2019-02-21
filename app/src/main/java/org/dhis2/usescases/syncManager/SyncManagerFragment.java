@@ -60,13 +60,13 @@ import static org.dhis2.utils.Constants.TIME_WEEKLY;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncManagerContracts.View {
+public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncManagerContracts.SyncManagerView {
 
     private int metaInitializationCheck = 0;
     private int dataInitializationCheck = 0;
 
     @Inject
-    SyncManagerContracts.Presenter presenter;
+    SyncManagerContracts.SyncManagerPresenter presenter;
 
     private FragmentSyncManagerBinding binding;
     private SharedPreferences prefs;
@@ -124,6 +124,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
+                // do nothing
             }
         });
         binding.metadataPeriods.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -135,7 +136,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
-
+                // do nothing
             }
         });
 

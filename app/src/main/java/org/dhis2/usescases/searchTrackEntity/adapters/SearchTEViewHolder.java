@@ -40,7 +40,7 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
     }
 
 
-    public void bind(SearchTEContractsModule.Presenter presenter, SearchTeiModel searchTeiModel) {
+    public void bind(SearchTEContractsModule.SearchTEPresenter presenter, SearchTeiModel searchTeiModel) {
         binding.setPresenter(presenter);
         binding.setOverdue(searchTeiModel.isHasOverdue());
         binding.setIsOnline(searchTeiModel.isOnline());

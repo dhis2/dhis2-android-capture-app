@@ -24,7 +24,6 @@ import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.legendset.LegendModel;
 import org.hisp.dhis.android.core.legendset.ProgramIndicatorLegendSetLinkModel;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramIndicatorModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
@@ -48,6 +47,26 @@ import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
 
+import static org.dhis2.data.database.SqlConstants.ALL;
+import static org.dhis2.data.database.SqlConstants.AND;
+import static org.dhis2.data.database.SqlConstants.DESC;
+import static org.dhis2.data.database.SqlConstants.EQUAL;
+import static org.dhis2.data.database.SqlConstants.FROM;
+import static org.dhis2.data.database.SqlConstants.IN;
+import static org.dhis2.data.database.SqlConstants.JOIN;
+import static org.dhis2.data.database.SqlConstants.LIMIT_1;
+import static org.dhis2.data.database.SqlConstants.ON;
+import static org.dhis2.data.database.SqlConstants.ORDER_BY;
+import static org.dhis2.data.database.SqlConstants.POINT;
+import static org.dhis2.data.database.SqlConstants.QUESTION_MARK;
+import static org.dhis2.data.database.SqlConstants.QUOTE;
+import static org.dhis2.data.database.SqlConstants.SELECT;
+import static org.dhis2.data.database.SqlConstants.SELECT_DISTINCT;
+import static org.dhis2.data.database.SqlConstants.TABLE_POINT_FIELD;
+import static org.dhis2.data.database.SqlConstants.TABLE_POINT_FIELD_EQUALS;
+import static org.dhis2.data.database.SqlConstants.TABLE_POINT_FIELD_NOT_EQUALS;
+import static org.dhis2.data.database.SqlConstants.VARIABLE;
+import static org.dhis2.data.database.SqlConstants.WHERE;
 import static org.hisp.dhis.android.core.utils.StoreUtils.sqLiteBind;
 
 /**
@@ -59,56 +78,50 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     private static final String INSERT_NOTE = "INSERT INTO Note ( " +
             "uid, enrollment, value, storedBy, storedDate" +
             ") VALUES (?, ?, ?, ?, ?);";
-    private static final String SELECT_NOTES = "SELECT " +
-            "Note.* FROM Note\n" +
-            "JOIN Enrollment ON Enrollment.uid = Note.enrollment\n" +
-            "WHERE Enrollment.trackedEntityInstance = ? AND Enrollment.program = ?\n" +
-            "ORDER BY Note.storedDate DESC";
+    private static final String SELECT_NOTES = SELECT + NoteModel.TABLE + POINT + ALL +
+            FROM + NoteModel.TABLE +
+            JOIN + EnrollmentModel.TABLE +
+            ON + EnrollmentModel.TABLE + POINT + EnrollmentModel.Columns.UID +
+            EQUAL + NoteModel.TABLE + POINT + NoteModel.Columns.ENROLLMENT +
+            WHERE + EnrollmentModel.TABLE + POINT + EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE +
+            EQUAL + QUESTION_MARK + AND +
+            EnrollmentModel.TABLE + POINT + EnrollmentModel.Columns.PROGRAM +
+            EQUAL + QUESTION_MARK +
+            ORDER_BY + NoteModel.TABLE + POINT + NoteModel.Columns.STORED_DATE + DESC;
 
-    private final String PROGRAM_QUERY = String.format("SELECT %s.* FROM %s WHERE %s.%s = ",
-            ProgramModel.TABLE, ProgramModel.TABLE, ProgramModel.TABLE, ProgramModel.Columns.UID);
-
-    private final String PROGRAM_INDICATORS_QUERY = String.format("SELECT %s.* FROM %s WHERE %s.%s = ",
+    private static final String PROGRAM_INDICATORS_QUERY = String.format(SELECT + VARIABLE + POINT + ALL + FROM + VARIABLE + WHERE + TABLE_POINT_FIELD_EQUALS,
             ProgramIndicatorModel.TABLE, ProgramIndicatorModel.TABLE, ProgramIndicatorModel.TABLE, ProgramIndicatorModel.Columns.PROGRAM);
 
-    private final String ATTRIBUTES_QUERY = String.format("SELECT %s.* FROM %s INNER JOIN %s ON %s.%s = %s.%s WHERE %s.%s = ",
-            TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.TABLE,
-            ProgramTrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.Columns.UID,
-            ProgramTrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.Columns.TRACKED_ENTITY_ATTRIBUTE,
-            ProgramTrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.Columns.PROGRAM);
-
-    private final String ORG_UNIT_QUERY = String.format("SELECT * FROM %s WHERE %s.%s = ",
-            OrganisationUnitModel.TABLE, OrganisationUnitModel.TABLE, OrganisationUnitModel.Columns.UID
-    );
-
-    private final String ENROLLMENT_QUERY = String.format("SELECT * FROM %s WHERE %s.%s = ? AND %s.%s = ? LIMIT 1",
+    private static final String ENROLLMENT_QUERY = String.format(SELECT + ALL + FROM + VARIABLE +
+                    WHERE + TABLE_POINT_FIELD_EQUALS + QUESTION_MARK + AND + TABLE_POINT_FIELD_EQUALS + QUESTION_MARK + LIMIT_1,
             EnrollmentModel.TABLE, EnrollmentModel.TABLE, EnrollmentModel.Columns.PROGRAM,
             EnrollmentModel.TABLE, EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE);
 
-    private final String PROGRAM_STAGE_QUERY = String.format("SELECT * FROM %s WHERE %s.%s = ",
+    private static final String PROGRAM_STAGE_QUERY = String.format(SELECT + ALL + FROM + VARIABLE +
+                    WHERE + TABLE_POINT_FIELD_EQUALS,
             ProgramStageModel.TABLE, ProgramStageModel.TABLE, ProgramStageModel.Columns.PROGRAM);
 
-    private final String PROGRAM_STAGE_FROM_EVENT = String.format(
-            "SELECT %s.* FROM %s JOIN %s " +
-                    "ON %s.%s = %s.%s " +
-                    "WHERE %s.%s = ? " +
-                    "LIMIT 1",
+    private static final String PROGRAM_STAGE_FROM_EVENT = String.format(
+            SELECT + VARIABLE + POINT + ALL + FROM + VARIABLE + JOIN + VARIABLE +
+                    ON + TABLE_POINT_FIELD_EQUALS + TABLE_POINT_FIELD +
+                    WHERE + TABLE_POINT_FIELD_EQUALS + QUESTION_MARK +
+                    LIMIT_1,
             ProgramStageModel.TABLE, ProgramStageModel.TABLE, EventModel.TABLE,
             ProgramStageModel.TABLE, ProgramStageModel.Columns.UID, EventModel.TABLE, EventModel.Columns.PROGRAM_STAGE,
             EventModel.TABLE, EventModel.Columns.UID);
 
-    private final String GET_EVENT_FROM_UID = String.format(
-            "SELECT * FROM %s WHERE %s.%s = ? LIMIT 1",
+    private static final String GET_EVENT_FROM_UID = String.format(
+            SELECT + ALL + FROM + VARIABLE + WHERE + TABLE_POINT_FIELD_EQUALS + QUESTION_MARK + LIMIT_1,
             EventModel.TABLE, EventModel.TABLE, EventModel.Columns.UID);
 
-    private final String EVENTS_QUERY = String.format(
-            "SELECT DISTINCT %s.* FROM %s " +
-                    "JOIN %s ON %s.%s = %s.%s " +
-                    "JOIN %s ON %s.%s = %s.%s " +
-                    "WHERE %s.%s = ? " + //ProgramUid
-                    "AND %s.%s = ? " + //TeiUid
-                    "AND %s.%s != '%s' " +
-                    "AND %s.%s IN (SELECT %s FROM %s WHERE %s = ?) " +
+    private static final String EVENTS_QUERY = String.format(
+            SELECT_DISTINCT + VARIABLE + POINT + ALL + FROM + VARIABLE +
+                    JOIN + VARIABLE + ON + TABLE_POINT_FIELD_EQUALS + TABLE_POINT_FIELD +
+                    JOIN + VARIABLE + ON + TABLE_POINT_FIELD_EQUALS + TABLE_POINT_FIELD +
+                    WHERE + TABLE_POINT_FIELD_EQUALS + QUESTION_MARK + //ProgramUid
+                    AND + TABLE_POINT_FIELD_EQUALS + QUESTION_MARK + //TeiUid
+                    AND + TABLE_POINT_FIELD_NOT_EQUALS + QUOTE + VARIABLE + QUOTE +
+                    AND + TABLE_POINT_FIELD + IN + "(SELECT %s FROM %s WHERE %s = ?) " +
                     "ORDER BY CASE WHEN ( Event.status IN ('SCHEDULE','SKIPPED','OVERDUE')) " +
                     "THEN %s.%s " +
                     "ELSE %s.%s END DESC, %s.%s ASC",
@@ -122,13 +135,13 @@ public class DashboardRepositoryImpl implements DashboardRepository {
             EventModel.TABLE, EventModel.Columns.DUE_DATE,
             EventModel.TABLE, EventModel.Columns.EVENT_DATE, ProgramStageModel.TABLE, ProgramStageModel.Columns.SORT_ORDER);
 
-    private final String EVENTS_DISPLAY_BOX = String.format(
-            "SELECT Event.* FROM %s " +
-                    "JOIN %s ON %s.%s = %s.%s " +
-                    "JOIN %s ON %s.%s = %s.%s " +
-                    "WHERE %s.%s = ? " +
-                    "AND %s.%s = ? " +
-                    "AND %s.%s = ?",
+    private static final String EVENTS_DISPLAY_BOX = String.format(
+            SELECT + EventModel.TABLE + POINT + ALL + FROM + VARIABLE +
+                    JOIN + VARIABLE + ON + TABLE_POINT_FIELD_EQUALS + TABLE_POINT_FIELD +
+                    JOIN + VARIABLE + ON + TABLE_POINT_FIELD_EQUALS + TABLE_POINT_FIELD +
+                    WHERE + TABLE_POINT_FIELD_EQUALS + QUESTION_MARK +
+                    AND + TABLE_POINT_FIELD_EQUALS + QUESTION_MARK +
+                    AND + TABLE_POINT_FIELD_EQUALS + QUESTION_MARK,
             EventModel.TABLE,
             EnrollmentModel.TABLE, EnrollmentModel.TABLE, EnrollmentModel.Columns.UID, EventModel.TABLE, EventModel.Columns.ENROLLMENT,
             ProgramStageModel.TABLE, ProgramStageModel.TABLE, ProgramStageModel.Columns.UID, EventModel.TABLE, EventModel.Columns.PROGRAM_STAGE,

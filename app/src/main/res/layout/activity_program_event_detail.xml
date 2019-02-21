@@ -12,7 +12,7 @@
 
         <variable
             name="presenter"
-            type="org.dhis2.usescases.programEventDetail.ProgramEventDetailContract.Presenter" />
+            type="org.dhis2.usescases.programEventDetail.ProgramEventDetailContract.ProgramEventDetailPresenter" />
     </data>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"

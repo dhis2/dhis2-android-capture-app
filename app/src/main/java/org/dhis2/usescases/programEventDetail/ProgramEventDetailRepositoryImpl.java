@@ -29,21 +29,6 @@ import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 
-import static org.dhis2.data.database.SqlConstants.ALL;
-import static org.dhis2.data.database.SqlConstants.AND;
-import static org.dhis2.data.database.SqlConstants.COMMA;
-import static org.dhis2.data.database.SqlConstants.DESC;
-import static org.dhis2.data.database.SqlConstants.EQUAL;
-import static org.dhis2.data.database.SqlConstants.FROM;
-import static org.dhis2.data.database.SqlConstants.NOT_EQUAL;
-import static org.dhis2.data.database.SqlConstants.ORDER_BY;
-import static org.dhis2.data.database.SqlConstants.ORDER_BY_CASE;
-import static org.dhis2.data.database.SqlConstants.POINT;
-import static org.dhis2.data.database.SqlConstants.QUOTE;
-import static org.dhis2.data.database.SqlConstants.SELECT;
-import static org.dhis2.data.database.SqlConstants.VARIABLE;
-import static org.dhis2.data.database.SqlConstants.WHERE;
-
 /**
  * QUADRAM. Created by ppajuelo on 02/11/2017.
  */
@@ -76,11 +61,10 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
             orgUnitQuery = "";
 
         if (dates != null) {
-            String selectEventWithProgramUidAndDates = SELECT + ALL + FROM + EventModel.TABLE +
-                    WHERE + EventModel.Columns.PROGRAM + EQUAL + QUOTE + VARIABLE + QUOTE + AND + "(%s)" +
-                    AND + EventModel.TABLE + POINT + EventModel.Columns.STATE + NOT_EQUAL + QUOTE + State.TO_DELETE + QUOTE +
-                    AND + EventModel.TABLE + POINT + EventModel.Columns.ORGANISATION_UNIT + " IN (" + orgUnitQuery + ")" +
-                    ORDER_BY_CASE + EventModel.TABLE + POINT + EventModel.Columns.EVENT_DATE + DESC + COMMA + "Event.lastUpdated" + DESC;
+            String SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES = "SELECT * FROM " + EventModel.TABLE + " WHERE " + EventModel.Columns.PROGRAM + "='%s' AND (%s) " +
+                    "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'" +
+                    " AND " + EventModel.TABLE + "." + EventModel.Columns.ORGANISATION_UNIT + " IN (" + orgUnitQuery + ")" +
+                    " ORDER BY " + EventModel.TABLE + "." + EventModel.Columns.EVENT_DATE + " DESC, Event.lastUpdated DESC";
 
             StringBuilder dateQuery = new StringBuilder();
             String queryFormat = "(%s BETWEEN '%s' AND '%s') ";
@@ -92,25 +76,21 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
             }
 
             if (orgUnitQuery != null && !orgUnitQuery.isEmpty())
-                selectEventWithProgramUidAndDates += AND + EventModel.TABLE + POINT + EventModel.Columns.ORGANISATION_UNIT + " IN (" + orgUnitQuery + ")";
+                SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES += " AND " + EventModel.TABLE + "." + EventModel.Columns.ORGANISATION_UNIT + " IN (" + orgUnitQuery + ")";
 
-            selectEventWithProgramUidAndDates += ORDER_BY + EventModel.TABLE + POINT + EventModel.Columns.EVENT_DATE + DESC;
+            SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES += " ORDER BY " + EventModel.TABLE + "." + EventModel.Columns.EVENT_DATE + " DESC";
 
-            String query = selectEventWithProgramUidAndDates + pageQuery;
-
-            query = String.format(query,
+            return briteDatabase.createQuery(EventModel.TABLE, String.format(SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES + pageQuery,
                     programUid == null ? "" : programUid,
-                    dateQuery);
-
-            return briteDatabase.createQuery(EventModel.TABLE, query)
+                    dateQuery == null ? "" : dateQuery))
                     .mapToList(EventModel::create).toFlowable(BackpressureStrategy.LATEST);
         } else {
-            String selectEventWithProgramUidAndDates = "SELECT * FROM " + EventModel.TABLE + " WHERE " + EventModel.Columns.PROGRAM + "='%s' " +
+            String SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES = "SELECT * FROM " + EventModel.TABLE + " WHERE " + EventModel.Columns.PROGRAM + "='%s' " +
                     "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'" +
                     " AND " + EventModel.TABLE + "." + EventModel.Columns.ORGANISATION_UNIT + " IN (" + orgUnitQuery + ")" +
                     " ORDER BY " + EventModel.TABLE + "." + EventModel.Columns.EVENT_DATE + " DESC, Event.lastUpdated DESC";
 
-            return briteDatabase.createQuery(EventModel.TABLE, String.format(selectEventWithProgramUidAndDates + pageQuery, programUid == null ? "" : programUid))
+            return briteDatabase.createQuery(EventModel.TABLE, String.format(SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES + pageQuery, programUid == null ? "" : programUid))
                     .mapToList(cursor -> {
                         EventModel eventModel = EventModel.create(cursor);
 

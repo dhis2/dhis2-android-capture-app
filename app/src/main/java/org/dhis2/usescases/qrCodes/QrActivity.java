@@ -50,7 +50,6 @@ public class QrActivity extends ActivityGlobalAbstract implements QrContracts.Vi
 
         qrAdapter = new QrAdapter(getSupportFragmentManager(), new ArrayList<>());
         binding.viewPager.setAdapter(qrAdapter);
-
         presenter.generateQrs(teiUid, this);
     }
 
@@ -58,7 +57,6 @@ public class QrActivity extends ActivityGlobalAbstract implements QrContracts.Vi
     public void showQR(@NonNull List<QrViewModel> bitmaps) {
 
         qrAdapter.addItems(bitmaps);
-
         binding.setTitle(getString(R.string.qr_id));
         binding.page.setText(String.format(Locale.getDefault(), "1/%d", qrAdapter.getCount()));
         binding.prev.setVisibility(View.GONE);

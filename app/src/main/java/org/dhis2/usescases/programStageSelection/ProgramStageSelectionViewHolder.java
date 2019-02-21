@@ -21,7 +21,7 @@ public class ProgramStageSelectionViewHolder extends RecyclerView.ViewHolder {
         this.binding = binding;
     }
 
-    public void bind(ProgramStageSelectionContract.Presenter presenter, ProgramStageModel programStage) {
+    public void bind(ProgramStageSelectionContract.ProgramStageSelectionPresenter presenter, ProgramStageModel programStage) {
         binding.setVariable(BR.presenter, presenter);
         binding.setVariable(BR.programStage, programStage);
         binding.executePendingBindings();

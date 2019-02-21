@@ -23,15 +23,15 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
-public class SplashPresenter implements SplashContracts.Presenter {
+public class SplashPresenterImpl implements SplashContracts.SplashPresenter {
 
     private final SplashRepository splashRespository;
-    private SplashContracts.View view;
+    private SplashContracts.SplashView view;
     private UserManager userManager;
     @NonNull
     private final CompositeDisposable compositeDisposable;
 
-    SplashPresenter(@Nullable UserManager userManager, MetadataRepository metadataRepository, SplashRepository splashRepository) {
+    SplashPresenterImpl(@Nullable UserManager userManager, MetadataRepository metadataRepository, SplashRepository splashRepository) {
         this.userManager = userManager;
         this.compositeDisposable = new CompositeDisposable();
         this.splashRespository = splashRepository;
@@ -44,7 +44,7 @@ public class SplashPresenter implements SplashContracts.Presenter {
     }
 
     @Override
-    public void init(SplashContracts.View view) {
+    public void init(SplashContracts.SplashView view) {
         this.view = view;
 
         compositeDisposable.add(splashRespository.getIconForFlag()

@@ -10,22 +10,22 @@ import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
-public class ReservedValuePresenter implements ReservedValueContracts.Presenter {
+public class ReservedValuePresenterImpl implements ReservedValueContracts.ReservedValuePresenter {
 
-    private ReservedValueContracts.View view;
+    private ReservedValueContracts.ReservedValueView view;
     private CompositeDisposable disposable;
     private ReservedValueRepository repository;
     private D2 d2;
     private FlowableProcessor<Boolean> updateProcessor;
 
-    public ReservedValuePresenter(ReservedValueRepository repository, D2 d2) {
+    public ReservedValuePresenterImpl(ReservedValueRepository repository, D2 d2) {
         this.repository = repository;
         this.d2 = d2;
         this.updateProcessor = PublishProcessor.create();
     }
 
     @Override
-    public void init(ReservedValueContracts.View view) {
+    public void init(ReservedValueContracts.ReservedValueView view) {
         this.view = view;
         disposable = new CompositeDisposable();
 

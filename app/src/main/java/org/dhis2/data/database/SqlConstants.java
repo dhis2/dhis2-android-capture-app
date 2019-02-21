@@ -17,6 +17,7 @@ public class SqlConstants {
     public static final String INNER_JOIN = " INNER JOIN ";
     public static final String QUOTE = "'";
     public static final String ON = " ON ";
+    public static final String IN = " IN ";
     public static final String POINT = ".";
     public static final String EQUAL = " = ";
     public static final String NOT_EQUAL = " != ";
@@ -28,6 +29,7 @@ public class SqlConstants {
     public static final String QUESTION_MARK = "?";
     public static final String COMMA = ", ";
     public static final String AND = " AND ";
+    public static final String OR = " OR ";
     public static final String TABLE_POINT_FIELD_EQUALS = "%s.%s = ";
     public static final String TABLE_POINT_FIELD_NOT_EQUALS = "%s.%s != ";
     public static final String ORDER_BY = " ORDER BY ";
@@ -37,4 +39,5 @@ public class SqlConstants {
     public static final String LEFT_OUTER_JOIN = " LEFT OUTER JOIN ";
     public static final String VARIABLE = "%s";
     public static final String TABLE_POINT_FIELD = "%s.%s";
+    public static final String JOIN_VARIABLE_ON_TABLE_POINT_FIELD_EQUALS = " JOIN %s ON %s.%s = %s.%s";
 }

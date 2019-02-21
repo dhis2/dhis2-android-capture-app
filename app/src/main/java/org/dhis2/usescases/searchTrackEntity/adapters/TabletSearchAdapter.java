@@ -38,9 +38,9 @@ public class TabletSearchAdapter extends AbstractTableAdapter<String, TrackedEnt
     private final MetadataRepository metadata;
     private List<TrackedEntityInstanceModel> teis;
     private List<ProgramModel> programs;
-    private SearchTEContractsModule.Presenter presenter;
+    private SearchTEContractsModule.SearchTEPresenter presenter;
 
-    public TabletSearchAdapter(Context p_jContext, SearchTEContractsModule.Presenter presenter, MetadataRepository metadataRepository) {
+    public TabletSearchAdapter(Context p_jContext, SearchTEContractsModule.SearchTEPresenter presenter, MetadataRepository metadataRepository) {
         super(p_jContext);
 
         this.metadata = metadataRepository;

@@ -3,26 +3,28 @@ package org.dhis2.usescases.qrScanner;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.SurfaceHolder;
 
-import org.dhis2.R;
-import org.dhis2.databinding.ActivityQrBinding;
-import org.dhis2.usescases.general.ActivityGlobalAbstract;
-import org.dhis2.utils.Constants;
 import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 
+import org.dhis2.R;
+import org.dhis2.databinding.ActivityQrBinding;
+import org.dhis2.usescases.general.ActivityGlobalAbstract;
+import org.dhis2.utils.Constants;
+
 import java.io.IOException;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.databinding.DataBindingUtil;
+import timber.log.Timber;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
@@ -51,7 +53,7 @@ public class QRActivity extends ActivityGlobalAbstract {
         barcodeDetector.setProcessor(new Detector.Processor<Barcode>() {
             @Override
             public void release() {
-
+                // do nothing
             }
 
             @Override
@@ -83,11 +85,12 @@ public class QRActivity extends ActivityGlobalAbstract {
 
         @Override
         public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-
+            // do nothing
         }
 
         @Override
         public void surfaceDestroyed(SurfaceHolder holder) {
+            // do nothing
         }
     };
 
@@ -98,20 +101,17 @@ public class QRActivity extends ActivityGlobalAbstract {
             else
                 ActivityCompat.requestPermissions(QRActivity.this, new String[]{Manifest.permission.CAMERA}, 101);
         } catch (IOException e) {
-            Log.d("CAMERA SOURCE", e.getMessage());
+            Timber.e(e);
         }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case 101: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    setUpSourceCamera();
-                } else {
-                    finish();
-                }
+        if (requestCode == 101) {// If request is cancelled, the result arrays are empty.
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                setUpSourceCamera();
+            } else {
+                finish();
             }
         }
     }

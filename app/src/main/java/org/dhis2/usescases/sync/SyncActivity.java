@@ -29,12 +29,12 @@ import org.dhis2.utils.SyncUtils;
 import javax.inject.Inject;
 
 
-public class SyncActivity extends ActivityGlobalAbstract implements SyncContracts.View {
+public class SyncActivity extends ActivityGlobalAbstract implements SyncContracts.SyncView {
 
     ActivitySynchronizationBinding binding;
 
     @Inject
-    SyncContracts.Presenter presenter;
+    SyncContracts.SyncPresenter presenter;
 
     enum SyncState {
         METADATA, EVENTS, TEI, RESERVED_VALUES, AGGREGATES

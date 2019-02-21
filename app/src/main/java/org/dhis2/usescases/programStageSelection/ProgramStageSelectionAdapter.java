@@ -20,10 +20,10 @@ import java.util.List;
 
 public class ProgramStageSelectionAdapter extends RecyclerView.Adapter<ProgramStageSelectionViewHolder> {
 
-    private ProgramStageSelectionContract.Presenter presenter;
+    private ProgramStageSelectionContract.ProgramStageSelectionPresenter presenter;
     private List<ProgramStageModel> programStageModels;
 
-    ProgramStageSelectionAdapter(@NonNull ProgramStageSelectionContract.Presenter presenter) {
+    ProgramStageSelectionAdapter(@NonNull ProgramStageSelectionContract.ProgramStageSelectionPresenter presenter) {
         this.presenter = presenter;
     }
 

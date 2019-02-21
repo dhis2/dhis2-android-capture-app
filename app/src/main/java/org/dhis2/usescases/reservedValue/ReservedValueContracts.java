@@ -6,7 +6,7 @@ import java.util.List;
 
 public class ReservedValueContracts {
 
-    interface View extends AbstractActivityContracts.View {
+    interface ReservedValueView extends AbstractActivityContracts.View {
         void setDataElements(List<ReservedValueModel> reservedValueModels);
 
         void onBackClick();
@@ -14,8 +14,8 @@ public class ReservedValueContracts {
         void refreshAdapter();
     }
 
-    public interface Presenter {
-        void init(ReservedValueContracts.View view);
+    public interface ReservedValuePresenter {
+        void init(ReservedValueView view);
 
         void onClickRefill(ReservedValueModel reservedValue);
 

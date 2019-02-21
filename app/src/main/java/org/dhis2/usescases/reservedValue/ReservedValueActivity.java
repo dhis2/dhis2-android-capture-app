@@ -14,12 +14,12 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-public class ReservedValueActivity extends ActivityGlobalAbstract implements ReservedValueContracts.View {
+public class ReservedValueActivity extends ActivityGlobalAbstract implements ReservedValueContracts.ReservedValueView {
 
     private ActivityReservedValueBinding reservedBinding;
     private ReservedValueAdapter adapter;
     @Inject
-    ReservedValueContracts.Presenter presenter;
+    ReservedValueContracts.ReservedValuePresenter presenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

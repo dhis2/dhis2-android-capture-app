@@ -15,12 +15,12 @@ import javax.inject.Inject;
 
 import io.reactivex.functions.Consumer;
 
-public class SplashActivity extends ActivityGlobalAbstract implements SplashContracts.View {
+public class SplashActivity extends ActivityGlobalAbstract implements SplashContracts.SplashView {
 
     ActivitySplashBinding binding;
 
     @Inject
-    SplashContracts.Presenter presenter;
+    SplashContracts.SplashPresenter presenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

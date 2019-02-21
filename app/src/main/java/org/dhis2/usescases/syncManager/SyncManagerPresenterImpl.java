@@ -31,23 +31,23 @@ import timber.log.Timber;
  * QUADRAM. Created by lmartin on 21/03/2018.
  */
 
-public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
+public class SyncManagerPresenterImpl implements SyncManagerContracts.SyncManagerPresenter {
 
     private final D2 d2;
 
     private MetadataRepository metadataRepository;
     private CompositeDisposable compositeDisposable;
-    private SyncManagerContracts.View view;
+    private SyncManagerContracts.SyncManagerView view;
     private FlowableProcessor<Boolean> checkData;
 
-    SyncManagerPresenter(MetadataRepository metadataRepository, D2 d2) {
+    SyncManagerPresenterImpl(MetadataRepository metadataRepository, D2 d2) {
         this.metadataRepository = metadataRepository;
         this.d2 = d2;
         checkData = PublishProcessor.create();
     }
 
     @Override
-    public void init(SyncManagerContracts.View view) {
+    public void init(SyncManagerContracts.SyncManagerView view) {
         this.view = view;
         this.compositeDisposable = new CompositeDisposable();
 

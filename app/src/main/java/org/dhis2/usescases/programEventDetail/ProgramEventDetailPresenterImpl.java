@@ -32,12 +32,13 @@ import static org.dhis2.utils.Constants.PROGRAM_UID;
  * QUADRAM. Created by Cristian on 13/02/2018.
  */
 
-public class ProgramEventDetailPresenter implements ProgramEventDetailContract.Presenter {
+public class ProgramEventDetailPresenterImpl implements ProgramEventDetailContract.ProgramEventDetailPresenter {
 
     private final ProgramEventDetailRepository eventRepository;
     private final MetadataRepository metaRepository;
-    private ProgramEventDetailContract.View view;
-    private String programId;
+    private ProgramEventDetailContract.ProgramEventDetailView view;
+    public ProgramModel program;
+    public String programId;
     private CompositeDisposable compositeDisposable;
     private CategoryOptionComboModel categoryOptionComboModel;
     private List<OrganisationUnitModel> orgUnits;
@@ -45,9 +46,10 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     //Search fields
     private CategoryComboModel mCatCombo;
     private List<Date> dates;
+    private Period period;
     private String orgUnitQuery;
 
-    ProgramEventDetailPresenter(
+    ProgramEventDetailPresenterImpl(
             @NonNull ProgramEventDetailRepository programEventDetailRepository,
             @NonNull MetadataRepository metadataRepository) {
         this.eventRepository = programEventDetailRepository;
@@ -55,7 +57,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     }
 
     @Override
-    public void init(ProgramEventDetailContract.View mview, String programId, Period period) {
+    public void init(ProgramEventDetailContract.ProgramEventDetailView mview, String programId, Period period) {
         view = mview;
         compositeDisposable = new CompositeDisposable();
         this.programId = programId;
@@ -126,7 +128,8 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
 
     @Override
     public void setProgram(ProgramModel program) {
-        // do nothing
+
+        this.program = program;
     }
 
     @Override
@@ -137,6 +140,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     @Override
     public void setFilters(List<Date> selectedDates, Period currentPeriod, String orgUnits) {
         this.dates = selectedDates;
+        this.period = currentPeriod;
         this.orgUnitQuery = orgUnits;
     }
 
@@ -158,6 +162,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
         bundle.putString(PROGRAM_UID, programId);
         bundle.putString(Constants.EVENT_UID, eventId);
         bundle.putString(ORG_UNIT, orgUnit);
+//        view.startActivity(EventInitialActivity.class, bundle, false, false, null);
 
         view.startActivity(EventCaptureActivity.class,
                 EventCaptureActivity.getActivityBundle(eventId, programId),

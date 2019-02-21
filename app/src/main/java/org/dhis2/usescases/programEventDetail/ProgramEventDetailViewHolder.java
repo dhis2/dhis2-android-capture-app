@@ -27,7 +27,7 @@ public class ProgramEventDetailViewHolder extends RecyclerView.ViewHolder {
         disposable = new CompositeDisposable();
     }
 
-    public void bind(ProgramEventDetailContract.Presenter presenter, EventModel event) {
+    public void bind(ProgramEventDetailContract.ProgramEventDetailPresenter presenter, EventModel event) {
         binding.setVariable(BR.presenter, presenter);
         binding.setVariable(BR.event, event);
         binding.executePendingBindings();

@@ -1,22 +1,21 @@
 package org.dhis2.usescases.splash;
 
-import androidx.annotation.UiThread;
-
 import org.dhis2.usescases.general.AbstractActivityContracts;
 
+import androidx.annotation.UiThread;
 import io.reactivex.functions.Consumer;
 
 public class SplashContracts {
 
-    interface View extends AbstractActivityContracts.View {
+    interface SplashView extends AbstractActivityContracts.View {
 
         Consumer<Integer> renderFlag();
     }
 
-    interface Presenter {
+    interface SplashPresenter {
         void destroy();
 
-        void init(View view);
+        void init(SplashView view);
 
         @UiThread
         void isUserLoggedIn();
@@ -27,13 +26,4 @@ public class SplashContracts {
         @UiThread
         void navigateToHomeView();
     }
-
-    interface Interactor {
-
-    }
-
-    interface Router {
-
-    }
-
 }

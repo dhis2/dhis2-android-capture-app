@@ -22,7 +22,7 @@ public class SearchRelationshipViewHolder extends RecyclerView.ViewHolder {
 
     private ItemSearchRelationshipTrackedEntityBinding binding;
     private CompositeDisposable compositeDisposable;
-    private SearchTEContractsModule.Presenter presenter;
+    private SearchTEContractsModule.SearchTEPresenter presenter;
     private SearchTeiModel trackedEntityInstanceModel;
 
     private RelationshipTypeModel relationshipType;
@@ -35,7 +35,7 @@ public class SearchRelationshipViewHolder extends RecyclerView.ViewHolder {
     }
 
 
-    public void bind(SearchTEContractsModule.Presenter presenter, SearchTeiModel teiModel, MetadataRepository metadataRepository) {
+    public void bind(SearchTEContractsModule.SearchTEPresenter presenter, SearchTeiModel teiModel, MetadataRepository metadataRepository) {
         this.presenter = presenter;
         this.trackedEntityInstanceModel = teiModel;
         binding.setPresenter(presenter);

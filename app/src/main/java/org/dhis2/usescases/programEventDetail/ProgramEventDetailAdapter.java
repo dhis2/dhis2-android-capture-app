@@ -20,10 +20,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class ProgramEventDetailAdapter extends RecyclerView.Adapter<ProgramEventDetailViewHolder> {
 
-    private ProgramEventDetailContract.Presenter presenter;
+    private ProgramEventDetailContract.ProgramEventDetailPresenter presenter;
     private List<EventModel> events;
 
-    ProgramEventDetailAdapter(ProgramEventDetailContract.Presenter presenter) {
+    ProgramEventDetailAdapter(ProgramEventDetailContract.ProgramEventDetailPresenter presenter) {
         this.presenter = presenter;
         this.events = new ArrayList<>();
     }

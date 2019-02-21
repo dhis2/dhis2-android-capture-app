@@ -25,7 +25,7 @@ import io.reactivex.functions.Consumer;
 
 public class SearchTEContractsModule {
 
-    public interface View extends AbstractActivityContracts.View {
+    public interface SearchTEView extends AbstractActivityContracts.View {
         void setForm(List<TrackedEntityAttributeModel> trackedEntityAttributeModels, @Nullable ProgramModel program, HashMap<String, String> queryData);
 
         Consumer<Pair<List<SearchTeiModel>, String>> swapTeiListData();
@@ -53,9 +53,9 @@ public class SearchTEContractsModule {
         void setListOptions(List<String> options);
     }
 
-    public interface Presenter {
+    public interface SearchTEPresenter {
 
-        void init(View view, String trackedEntityType, String initialProgram);
+        void init(SearchTEView view, String trackedEntityType, String initialProgram);
 
         void onDestroy();
 

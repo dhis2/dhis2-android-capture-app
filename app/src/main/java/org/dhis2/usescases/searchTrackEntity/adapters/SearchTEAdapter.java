@@ -24,11 +24,11 @@ import java.util.List;
 public class SearchTEAdapter extends RecyclerView.Adapter<SearchTEViewHolder> {
 
     private final MetadataRepository metadataRepository;
-    private SearchTEContractsModule.Presenter presenter;
+    private SearchTEContractsModule.SearchTEPresenter presenter;
     private List<TrackedEntityInstanceModel> trackedEntityInstances;
     private List<SearchTeiModel> teis;
 
-    public SearchTEAdapter(SearchTEContractsModule.Presenter presenter, MetadataRepository metadataRepository) {
+    public SearchTEAdapter(SearchTEContractsModule.SearchTEPresenter presenter, MetadataRepository metadataRepository) {
         this.presenter = presenter;
         this.metadataRepository = metadataRepository;
         this.trackedEntityInstances = new ArrayList<>();

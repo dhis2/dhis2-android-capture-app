@@ -4,14 +4,7 @@ package org.dhis2.usescases.qrReader;
 import android.Manifest;
 import android.app.Dialog;
 import android.content.Context;
-import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.Fragment;
-import androidx.core.content.ContextCompat;
-import androidx.appcompat.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,6 +34,13 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.Fragment;
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
 import timber.log.Timber;
 
@@ -319,19 +319,18 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
         promtForTEIMoreQr();
     }
 
-    @Override
-    public void promtForTEIMoreQr() {
-
-        // IDENTIFICATION
+    private String getIdentificationText() {
         String message = getString(R.string.qr_id) + ":\n";
         if (teiUid != null) {
             message = message + teiUid + "\n\n";
         } else {
             message = message + getString(R.string.qr_no_data) + "\n\n";
         }
+        return message;
+    }
 
-        // ATTRIBUTES
-        message = message + getString(R.string.qr_attributes) + ":\n";
+    private String getAttributesText() {
+        String message = getString(R.string.qr_attributes) + ":\n";
 
         if (attributes != null && !attributes.isEmpty()) {
             for (Trio<String, String, Boolean> attribute : attributes) {
@@ -343,9 +342,11 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
         } else {
             message = message + getString(R.string.qr_no_data) + "\n\n";
         }
+        return message;
+    }
 
-        // ENROLLMENT
-        message = message + getString(R.string.qr_enrollment) + ":\n";
+    private String getEnrollmentText() {
+        String message = getString(R.string.qr_enrollment) + ":\n";
 
         if (enrollments != null && !enrollments.isEmpty()) {
             for (Pair<String, Boolean> enrollment : enrollments) {
@@ -357,10 +358,11 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
         } else {
             message = message + getString(R.string.qr_no_data) + "\n\n";
         }
+        return message;
+    }
 
-
-        // EVENTS
-        message = message + getString(R.string.qr_events) + ":\n";
+    private String getEventText() {
+        String message = getString(R.string.qr_events) + ":\n";
 
         if (events != null && !events.isEmpty()) {
             int count = 0;
@@ -374,9 +376,11 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
             message = message + getString(R.string.qr_no_data) + "\n\n";
         }
 
+        return message;
+    }
 
-        // RELATIONSHIPS
-        message = message + getString(R.string.qr_relationships) + ":\n";
+    private String getRelationshipText() {
+        String message = getString(R.string.qr_relationships) + ":\n";
 
         if (relationships != null && !relationships.isEmpty()) {
             int count = 0;
@@ -390,8 +394,11 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
             message = message + getString(R.string.qr_no_data) + "\n\n";
         }
 
-        // ATTRIBUTES
-        message = message + getString(R.string.qr_data_values) + ":\n";
+        return message;
+    }
+
+    private String getDataValueText() {
+        String message = getString(R.string.qr_data_values) + ":\n";
 
         if (teiEventData != null && !teiEventData.isEmpty()) {
             for (Trio<TrackedEntityDataValueModel, String, Boolean> attribute : teiEventData) {
@@ -402,8 +409,19 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
             message = message + getString(R.string.qr_no_data) + "\n\n";
         }
 
-        // READ MORE
-        message = message + "\n\n" + getString(R.string.read_more_qr);
+        return message;
+    }
+
+    private String getReadMoreText() {
+        return "\n\n" + getString(R.string.read_more_qr);
+    }
+
+    @Override
+    public void promtForTEIMoreQr() {
+
+        // IDENTIFICATION
+        String message = getIdentificationText() + getAttributesText() + getEnrollmentText() + getEventText() +
+                getRelationshipText() + getDataValueText() + getReadMoreText();
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.CustomDialog)
                 .setTitle(getString(R.string.QR_SCANNER))
@@ -417,7 +435,9 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
                     dialog.dismiss();
                 });
         AlertDialog alertDialog = builder.create();
-        alertDialog.setOnShowListener(dialogInterface -> {
+        alertDialog.setOnShowListener(dialogInterface ->
+
+        {
             alertDialog.getButton(Dialog.BUTTON_POSITIVE).setTextColor(getResources().getColor(R.color.colorPrimary));
             alertDialog.getButton(Dialog.BUTTON_NEGATIVE).setTextColor(getResources().getColor(R.color.colorPrimary));
         });

@@ -36,12 +36,12 @@ import static org.dhis2.utils.Constants.TRACKED_ENTITY_INSTANCE;
  * QUADRAM. Created by ppajuelo on 31/10/2017.
  */
 
-public class ProgramStageSelectionActivity extends ActivityGlobalAbstract implements ProgramStageSelectionContract.View {
+public class ProgramStageSelectionActivity extends ActivityGlobalAbstract implements ProgramStageSelectionContract.ProgramStageSelectionView {
 
     ActivityProgramStageSelectionBinding binding;
 
     @Inject
-    ProgramStageSelectionContract.Presenter presenter;
+    ProgramStageSelectionContract.ProgramStageSelectionPresenter presenter;
 
     ProgramStageSelectionAdapter adapter;
     private String enrollmenId;

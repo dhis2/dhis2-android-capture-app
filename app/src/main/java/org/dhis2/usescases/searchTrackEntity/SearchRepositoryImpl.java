@@ -40,6 +40,27 @@ import io.reactivex.Flowable;
 import io.reactivex.Observable;
 
 import static android.text.TextUtils.isEmpty;
+import static org.dhis2.data.database.SqlConstants.ALL;
+import static org.dhis2.data.database.SqlConstants.AND;
+import static org.dhis2.data.database.SqlConstants.ASC;
+import static org.dhis2.data.database.SqlConstants.EQUAL;
+import static org.dhis2.data.database.SqlConstants.FROM;
+import static org.dhis2.data.database.SqlConstants.GROUP_BY;
+import static org.dhis2.data.database.SqlConstants.INNER_JOIN;
+import static org.dhis2.data.database.SqlConstants.JOIN;
+import static org.dhis2.data.database.SqlConstants.JOIN_VARIABLE_ON_TABLE_POINT_FIELD_EQUALS;
+import static org.dhis2.data.database.SqlConstants.ON;
+import static org.dhis2.data.database.SqlConstants.OR;
+import static org.dhis2.data.database.SqlConstants.ORDER_BY;
+import static org.dhis2.data.database.SqlConstants.POINT;
+import static org.dhis2.data.database.SqlConstants.QUESTION_MARK;
+import static org.dhis2.data.database.SqlConstants.QUOTE;
+import static org.dhis2.data.database.SqlConstants.SELECT;
+import static org.dhis2.data.database.SqlConstants.SELECT_DISTINCT;
+import static org.dhis2.data.database.SqlConstants.TABLE_POINT_FIELD;
+import static org.dhis2.data.database.SqlConstants.TABLE_POINT_FIELD_EQUALS;
+import static org.dhis2.data.database.SqlConstants.VARIABLE;
+import static org.dhis2.data.database.SqlConstants.WHERE;
 
 /**
  * QUADRAM. Created by ppajuelo on 02/11/2017.
@@ -47,30 +68,48 @@ import static android.text.TextUtils.isEmpty;
 
 public class SearchRepositoryImpl implements SearchRepository {
 
+    private static final String ATTR_QUERY = "ATTR_QUERY";
+    private static final String ATTR_ID = "ATTR_ID";
+    private static final String ATTR_VALUE = "ATTR_VALUE";
+    private static final String T1_TRACKED_ENTITY_INSTANCE = "t1.trackedEntityInstance";
+
     private final BriteDatabase briteDatabase;
 
-    private final String SELECT_PROGRAM_WITH_REGISTRATION = "SELECT * FROM " + ProgramModel.TABLE + " WHERE Program.programType='WITH_REGISTRATION' AND Program.trackedEntityType = ";
-    private final String SELECT_PROGRAM_ATTRIBUTES = "SELECT TrackedEntityAttribute.* FROM " + TrackedEntityAttributeModel.TABLE +
-            " INNER JOIN " + ProgramTrackedEntityAttributeModel.TABLE +
-            " ON " + TrackedEntityAttributeModel.TABLE + "." + TrackedEntityAttributeModel.Columns.UID + " = " + ProgramTrackedEntityAttributeModel.TABLE + "." + ProgramTrackedEntityAttributeModel.Columns.TRACKED_ENTITY_ATTRIBUTE +
-            " WHERE (" + ProgramTrackedEntityAttributeModel.TABLE + "." + ProgramTrackedEntityAttributeModel.Columns.SEARCHABLE + " = 1 OR TrackedEntityAttribute.uniqueProperty = '1')" +
-            " AND " + ProgramTrackedEntityAttributeModel.TABLE + "." + ProgramTrackedEntityAttributeModel.Columns.PROGRAM + " = ";
-    private final String SELECT_OPTION_SET = "SELECT * FROM " + OptionModel.TABLE + " WHERE Option.optionSet = ";
+    private static final String SELECT_PROGRAM_WITH_REGISTRATION = SELECT + ALL + FROM + ProgramModel.TABLE +
+            WHERE + ProgramModel.TABLE + POINT + ProgramModel.Columns.PROGRAM_TYPE +
+            EQUAL + QUOTE + "WITH_REGISTRATION" + QUOTE +
+            AND + ProgramModel.TABLE + POINT + ProgramModel.Columns.TRACKED_ENTITY_TYPE + EQUAL;
 
-    private final String SEARCH =
-            "SELECT TrackedEntityInstance.*" +
-                    " FROM ((" + TrackedEntityInstanceModel.TABLE + " JOIN " + EnrollmentModel.TABLE + " ON " + EnrollmentModel.TABLE + "." + EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE + " = " + TrackedEntityInstanceModel.TABLE + "." + TrackedEntityInstanceModel.Columns.UID + ")" +
+    private static final String SELECT_PROGRAM_ATTRIBUTES = SELECT + TrackedEntityAttributeModel.TABLE + POINT + ALL +
+            FROM + TrackedEntityAttributeModel.TABLE +
+            INNER_JOIN + ProgramTrackedEntityAttributeModel.TABLE +
+            ON + TrackedEntityAttributeModel.TABLE + POINT + TrackedEntityAttributeModel.Columns.UID +
+            EQUAL + ProgramTrackedEntityAttributeModel.TABLE + POINT + ProgramTrackedEntityAttributeModel.Columns.TRACKED_ENTITY_ATTRIBUTE +
+            WHERE + "(" + ProgramTrackedEntityAttributeModel.TABLE + POINT + ProgramTrackedEntityAttributeModel.Columns.SEARCHABLE +
+            EQUAL + "1 OR " + TrackedEntityAttributeModel.TABLE + POINT + TrackedEntityAttributeModel.Columns.UNIQUE + EQUAL + "'1')" +
+            AND + ProgramTrackedEntityAttributeModel.TABLE + POINT + ProgramTrackedEntityAttributeModel.Columns.PROGRAM + EQUAL;
+
+    private static final String SELECT_OPTION_SET = SELECT + ALL + FROM + OptionModel.TABLE + WHERE + OptionModel.TABLE +
+            POINT + OptionModel.Columns.OPTION_SET + EQUAL;
+
+    private static final String SEARCH =
+            SELECT + TrackedEntityInstanceModel.TABLE + POINT + ALL +
+                    FROM + "((" + TrackedEntityInstanceModel.TABLE + JOIN + EnrollmentModel.TABLE +
+                    ON + EnrollmentModel.TABLE + POINT + EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE +
+                    EQUAL + TrackedEntityInstanceModel.TABLE + POINT + TrackedEntityInstanceModel.Columns.UID + ")" +
                     "%s)" +
-                    " WHERE ";
-    private final String SEARCH_ATTR = " JOIN (ATTR_QUERY) tabla ON tabla.trackedEntityInstance = TrackedEntityInstance.uid";
+                    WHERE;
 
-    private final String PROGRAM_TRACKED_ENTITY_ATTRIBUTES_VALUES_PROGRAM_QUERY = String.format(
+    private static final String SEARCH_ATTR = JOIN + "(ATTR_QUERY) tabla ON tabla.trackedEntityInstance = TrackedEntityInstance.uid";
+
+    private static final String PROGRAM_TRACKED_ENTITY_ATTRIBUTES_VALUES_PROGRAM_QUERY = String.format(
             "SELECT %s.*, %s.%s, %s.%s FROM %s " +
-                    "JOIN %s ON %s.%s = %s.%s " +
-                    "JOIN %s ON %s.%s = %s.%s " +
-                    "WHERE %s.%s = ? AND %s.%s = ? AND " +
-                    "%s.%s = 1 " +
-                    "ORDER BY %s.%s ASC",
+                    JOIN_VARIABLE_ON_TABLE_POINT_FIELD_EQUALS +
+                    JOIN_VARIABLE_ON_TABLE_POINT_FIELD_EQUALS +
+                    WHERE + TABLE_POINT_FIELD_EQUALS + QUESTION_MARK +
+                    AND + TABLE_POINT_FIELD_EQUALS + QUESTION_MARK +
+                    AND + TABLE_POINT_FIELD_EQUALS + "1" +
+                    ORDER_BY + TABLE_POINT_FIELD + ASC,
             TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.Columns.VALUE_TYPE, TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.Columns.OPTION_SET, TrackedEntityAttributeValueModel.TABLE,
             ProgramTrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.Columns.TRACKED_ENTITY_ATTRIBUTE, TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_ATTRIBUTE,
             TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.Columns.UID, TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_ATTRIBUTE,
@@ -78,9 +117,9 @@ public class SearchRepositoryImpl implements SearchRepository {
             ProgramTrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.Columns.DISPLAY_IN_LIST,
             ProgramTrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.Columns.SORT_ORDER);
 
-    private final String PROGRAM_TRACKED_ENTITY_ATTRIBUTES_VALUES_QUERY = String.format(
+    private static final String PROGRAM_TRACKED_ENTITY_ATTRIBUTES_VALUES_QUERY = String.format(
             "SELECT DISTINCT %s.*, TrackedEntityAttribute.valueType, TrackedEntityAttribute.optionSet, ProgramTrackedEntityAttribute.displayInList FROM %s " +
-                    "JOIN %s ON %s.%s = %s.%s " +
+                    JOIN_VARIABLE_ON_TABLE_POINT_FIELD_EQUALS +
                     "LEFT JOIN ProgramTrackedEntityAttribute ON ProgramTrackedEntityAttribute.trackedEntityAttribute = TrackedEntityAttribute.uid " +
                     "WHERE %s.%s = ? AND %s.%s = 1 ORDER BY %s.%s ASC",
             TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.TABLE,
@@ -90,16 +129,16 @@ public class SearchRepositoryImpl implements SearchRepository {
             TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.Columns.SORT_ORDER_IN_LIST_NO_PROGRAM
     );
 
-    private final String PROGRAM_COLOR_QUERY = String.format(
-            "SELECT %s FROM %S " +
-                    "WHERE %s = 'Program' AND %s = ?",
+    private static final String PROGRAM_COLOR_QUERY = String.format(
+            SELECT + VARIABLE + FROM + VARIABLE + WHERE + VARIABLE + EQUAL + QUOTE + ProgramModel.TABLE + QUOTE +
+                    AND + VARIABLE + EQUAL + QUESTION_MARK,
             ObjectStyleModel.Columns.COLOR, ObjectStyleModel.TABLE,
             ObjectStyleModel.Columns.OBJECT_TABLE,
             ObjectStyleModel.Columns.UID
     );
 
-    private final String PROGRAM_INFO = String.format(
-            "SELECT %s.%s, %s.%s, %s.%s FROM %s " +
+    private static final String PROGRAM_INFO = String.format(
+            SELECT + "%s.%s, %s.%s, %s.%s" + FROM + "%s " +
                     "LEFT JOIN %s ON %s.%s = %s.%s " +
                     "WHERE %s.%s = ?",
             ProgramModel.TABLE, ProgramModel.Columns.DISPLAY_NAME,
@@ -135,12 +174,12 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     @Override
     public Observable<List<TrackedEntityAttributeModel>> programAttributes() {
-        String SELECT_ATTRIBUTES = "SELECT DISTINCT TrackedEntityAttribute.* FROM TrackedEntityAttribute " +
+        String selectAttributes = SELECT_DISTINCT + "TrackedEntityAttribute.* FROM TrackedEntityAttribute " +
                 "JOIN ProgramTrackedEntityAttribute " +
                 "ON ProgramTrackedEntityAttribute.trackedEntityAttribute = TrackedEntityAttribute " +
                 "JOIN Program ON Program.uid = ProgramTrackedEntityAttribute.program " +
                 "WHERE Program.trackedEntityType = ? AND ProgramTrackedEntityAttribute.searchable = 1";
-        return briteDatabase.createQuery(TrackedEntityAttributeModel.TABLE, SELECT_ATTRIBUTES, teiType)
+        return briteDatabase.createQuery(TrackedEntityAttributeModel.TABLE, selectAttributes, teiType)
                 .mapToList(TrackedEntityAttributeModel::create);
     }
 
@@ -175,9 +214,6 @@ public class SearchRepositoryImpl implements SearchRepository {
             incidentDateWHERE = " Enrollment.incidentDate LIKE '" + queryData.get(Constants.INCIDENT_DATE_UID) + "%'";
         }
 
-        String attrQuery = "(SELECT TrackedEntityAttributeValue.trackedEntityInstance FROM TrackedEntityAttributeValue WHERE " +
-                "TrackedEntityAttributeValue.trackedEntityAttribute = 'ATTR_ID' AND TrackedEntityAttributeValue.value LIKE 'ATTR_VALUE%') t";
-        StringBuilder attr = new StringBuilder("");
         int initialLoop = 0;
         if (enrollmentDateWHERE != null)
             initialLoop++;
@@ -188,30 +224,20 @@ public class SearchRepositoryImpl implements SearchRepository {
             queryData = new HashMap<>();
         }
 
-        for (int i = initialLoop; i < queryData.keySet().size(); i++) {
-            String dataId = queryData.keySet().toArray()[i].toString();
-            String dataValue = queryData.get(dataId);
-
-            if (i > initialLoop)
-                attr.append(" INNER JOIN  ");
-
-            attr.append(attrQuery.replace("ATTR_ID", dataId).replace("ATTR_VALUE", dataValue));
-            attr.append(i + 1);
-            if (i > initialLoop)
-                attr.append(" ON t" + (i) + ".trackedEntityInstance = t" + (i + 1) + ".trackedEntityInstance ");
-        }
+        StringBuilder attr = getAttr(initialLoop, queryData);
 
         String search = String.format(SEARCH, queryData.size() - initialLoop == 0 ? "" : SEARCH_ATTR);
-        search = search.replace("ATTR_QUERY", "SELECT t1.trackedEntityInstance FROM" + attr) + teiTypeWHERE + " AND " + teiRelationship;
+        search = search.replace(ATTR_QUERY, SELECT + T1_TRACKED_ENTITY_INSTANCE + FROM + attr + attr) + teiTypeWHERE + AND + teiRelationship;
         if (selectedProgram != null && !selectedProgram.uid().isEmpty()) {
-            String programWHERE = "Enrollment.program = '" + selectedProgram.uid() + "'";
-            search += " AND " + programWHERE;
+            String programWHERE = EnrollmentModel.TABLE + POINT + EnrollmentModel.Columns.PROGRAM +
+                    EQUAL + QUOTE + selectedProgram.uid() + QUOTE;
+            search += AND + programWHERE;
         }
         if (enrollmentDateWHERE != null)
-            search += " AND" + enrollmentDateWHERE;
+            search += AND + enrollmentDateWHERE;
         if (incidentDateWHERE != null)
-            search += " AND" + incidentDateWHERE;
-        search += " GROUP BY TrackedEntityInstance.uid";
+            search += AND + incidentDateWHERE;
+        search += GROUP_BY + TrackedEntityInstanceModel.TABLE + POINT + TrackedEntityInstanceModel.Columns.UID;
 
         if (selectedProgram != null && !selectedProgram.displayFrontPageList() && selectedProgram.maxTeiCountToReturn() != 0) {
             String maxResults = String.format(" LIMIT %s", selectedProgram.maxTeiCountToReturn());
@@ -224,11 +250,37 @@ public class SearchRepositoryImpl implements SearchRepository {
                 .mapToList(TrackedEntityInstanceModel::create);
     }
 
-    @Override
-    public Observable<List<TrackedEntityInstanceModel>> trackedEntityInstancesToUpdate(@NonNull String teType, @Nullable ProgramModel selectedProgram, @Nullable HashMap<String, String> queryData, int listSize) {
-        String teiTypeWHERE = "TrackedEntityInstance.trackedEntityType = '" + teType + "'";
-        String teiRelationship = "TrackedEntityInstance.state <> '" + State.RELATIONSHIP.name() + "'";
+    private StringBuilder getAttr(int initialLoop, HashMap<String, String> queryData) {
+        String attrQuery = "(" + SELECT + TrackedEntityAttributeValueModel.TABLE + POINT +
+                TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_INSTANCE +
+                FROM + TrackedEntityAttributeValueModel.TABLE +
+                WHERE + TrackedEntityAttributeValueModel.TABLE + POINT + TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_ATTRIBUTE +
+                EQUAL + QUOTE + ATTR_ID + QUOTE +
+                AND + TrackedEntityAttributeValueModel.TABLE + POINT + TrackedEntityAttributeValueModel.Columns.VALUE +
+                "LIKE 'ATTR_VALUE%') t";
+        StringBuilder attr = new StringBuilder("");
 
+        for (int i = initialLoop; i < queryData.keySet().size(); i++) {
+            String dataId = queryData.keySet().toArray()[i].toString();
+            String dataValue = queryData.get(dataId);
+
+            if (i > initialLoop)
+                attr.append(" INNER JOIN  ");
+
+            attr.append(attrQuery.replace(ATTR_ID, dataId).replace(ATTR_VALUE, dataValue));
+            attr.append(i + 1);
+            if (i > initialLoop)
+                attr.append(" ON t").append(i).append(".trackedEntityInstance = t").append(i + 1).append(".trackedEntityInstance ");
+        }
+
+        return attr;
+    }
+
+    @Override
+    public Observable<List<TrackedEntityInstanceModel>> trackedEntityInstancesToUpdate(@NonNull String teType,
+                                                                                       @Nullable ProgramModel selectedProgram,
+                                                                                       @Nullable HashMap<String, String> queryData,
+                                                                                       int listSize) {
         String enrollmentDateWHERE = null;
         String incidentDateWHERE = null;
         if (queryData != null && !isEmpty(queryData.get(Constants.ENROLLMENT_DATE_UID))) {
@@ -238,99 +290,82 @@ public class SearchRepositoryImpl implements SearchRepository {
             incidentDateWHERE = " Enrollment.incidentDate LIKE '" + queryData.get(Constants.INCIDENT_DATE_UID) + "%'";
         }
 
-        String attrQuery = "(SELECT TrackedEntityAttributeValue.trackedEntityInstance FROM TrackedEntityAttributeValue WHERE " +
-                "TrackedEntityAttributeValue.trackedEntityAttribute = 'ATTR_ID' AND TrackedEntityAttributeValue.value LIKE 'ATTR_VALUE%') t";
-        StringBuilder attr = new StringBuilder("");
         int initialLoop = 0;
         if (enrollmentDateWHERE != null)
             initialLoop++;
         if (incidentDateWHERE != null)
             initialLoop++;
-
         if (queryData == null) {
             queryData = new HashMap<>();
         }
 
-        for (int i = initialLoop; i < queryData.keySet().size(); i++) {
-            String dataId = queryData.keySet().toArray()[i].toString();
-            String dataValue = queryData.get(dataId);
+        StringBuilder attr = getAttr(initialLoop, queryData);
 
-            if (i > initialLoop)
-                attr.append(" INNER JOIN  ");
+        String search = getSearchString(teType, selectedProgram, queryData, listSize, initialLoop, attr, enrollmentDateWHERE, incidentDateWHERE);
 
-            attr.append(attrQuery.replace("ATTR_ID", dataId).replace("ATTR_VALUE", dataValue));
-            attr.append(i + 1);
-            if (i > initialLoop)
-                attr.append(" ON t").append(i).append(".trackedEntityInstance = t").append(i + 1).append(".trackedEntityInstance ");
-        }
+        return briteDatabase.createQuery(TEI_TABLE_SET, search)
+                .mapToList(TrackedEntityInstanceModel::create);
+    }
+
+    private String getSearchString(@NonNull String teType,
+                                   @Nullable ProgramModel selectedProgram,
+                                   @Nullable HashMap<String, String> queryData,
+                                   int listSize,
+                                   int initialLoop,
+                                   StringBuilder attr,
+                                   String enrollmentDateWHERE,
+                                   String incidentDateWHERE) {
+
+        String teiTypeWHERE = "TrackedEntityInstance.trackedEntityType = '" + teType + "'";
+        String teiRelationship = "TrackedEntityInstance.state <> '" + State.RELATIONSHIP.name() + "'";
 
         String search = String.format(SEARCH, queryData.size() - initialLoop == 0 ? "" : SEARCH_ATTR);
         if (listSize > 0)
-            search = search.replace("ATTR_QUERY", "SELECT t1.trackedEntityInstance FROM" + attr) + teiTypeWHERE + " AND " + teiRelationship + " AND (TrackedEntityInstance.state = 'TO_POST' OR TrackedEntityInstance.state = 'TO_UPDATE')";
+            search = search.replace(ATTR_QUERY, SELECT + T1_TRACKED_ENTITY_INSTANCE + FROM + attr) + teiTypeWHERE +
+                    AND + teiRelationship +
+                    AND + "(" + TrackedEntityInstanceModel.TABLE + POINT + TrackedEntityInstanceModel.Columns.STATE +
+                    EQUAL + QUOTE + State.TO_POST + QUOTE +
+                    OR + TrackedEntityInstanceModel.TABLE + POINT + TrackedEntityInstanceModel.Columns.STATE +
+                    EQUAL + QUOTE + State.TO_UPDATE + QUOTE + ")";
         else
-            search = search.replace("ATTR_QUERY", "SELECT t1.trackedEntityInstance FROM" + attr) + teiTypeWHERE + " AND " + teiRelationship;
+            search = search.replace(ATTR_QUERY, SELECT + T1_TRACKED_ENTITY_INSTANCE + FROM + attr + attr) + teiTypeWHERE + AND + teiRelationship;
+
         if (selectedProgram != null && !selectedProgram.uid().isEmpty()) {
             String programWHERE = "Enrollment.program = '" + selectedProgram.uid() + "'";
-            search += " AND " + programWHERE;
+            search += AND + programWHERE;
         }
         if (enrollmentDateWHERE != null)
-            search += " AND" + enrollmentDateWHERE;
+            search += AND + enrollmentDateWHERE;
         if (incidentDateWHERE != null)
-            search += " AND" + incidentDateWHERE;
-        search += " GROUP BY TrackedEntityInstance.uid";
+            search += AND + incidentDateWHERE;
+
+        search += GROUP_BY + TrackedEntityInstanceModel.TABLE + POINT + TrackedEntityInstanceModel.Columns.UID;
 
         if (selectedProgram != null && !selectedProgram.displayFrontPageList() && selectedProgram.maxTeiCountToReturn() != 0) {
             String maxResults = String.format(" LIMIT %s", selectedProgram.maxTeiCountToReturn());
             search += maxResults;
         }
 
-        return briteDatabase.createQuery(TEI_TABLE_SET, search)
-                .mapToList(TrackedEntityInstanceModel::create);
+        return search;
     }
 
 
     @NonNull
     @Override
-    public Observable<String> saveToEnroll(@NonNull String teiType, @NonNull String orgUnit, @NonNull String programUid, @Nullable String teiUid, HashMap<String, String> queryData, Date enrollmentDate) {
+    public Observable<String> saveToEnroll(@NonNull String teiType,
+                                           @NonNull String orgUnit,
+                                           @NonNull String programUid,
+                                           @Nullable String teiUid,
+                                           HashMap<String, String> queryData,
+                                           Date enrollmentDate) {
         Date currentDate = Calendar.getInstance().getTime();
         return Observable.defer(() -> {
             TrackedEntityInstanceModel trackedEntityInstanceModel = null;
             if (teiUid == null) {
-                String generatedUid = codeGenerator.generate();
-                trackedEntityInstanceModel =
-                        TrackedEntityInstanceModel.builder()
-                                .uid(generatedUid)
-                                .created(currentDate)
-                                .lastUpdated(currentDate)
-                                .organisationUnit(orgUnit)
-                                .trackedEntityType(teiType)
-                                .state(State.TO_POST)
-                                .build();
-
-                if (briteDatabase.insert(TrackedEntityInstanceModel.TABLE,
-                        trackedEntityInstanceModel.toContentValues()) < 0) {
-                    String message = String.format(Locale.US, "Failed to insert new tracked entity " +
-                                    "instance for organisationUnit=[%s] and trackedEntity=[%s]",
-                            orgUnit, teiType);
-                    return Observable.error(new SQLiteConstraintException(message));
-                }
-
-                for (String key : queryData.keySet()) {
-                    TrackedEntityAttributeValueModel attributeValueModel =
-                            TrackedEntityAttributeValueModel.builder()
-                                    .created(currentDate)
-                                    .lastUpdated(currentDate)
-                                    .value(queryData.get(key))
-                                    .trackedEntityAttribute(key)
-                                    .trackedEntityInstance(generatedUid)
-                                    .build();
-                    if (briteDatabase.insert(TrackedEntityAttributeValueModel.TABLE,
-                            attributeValueModel.toContentValues()) < 0) {
-                        String message = String.format(Locale.US, "Failed to insert new trackedEntityAttributeValue " +
-                                        "instance for organisationUnit=[%s] and trackedEntity=[%s]",
-                                orgUnit, teiType);
-                        return Observable.error(new SQLiteConstraintException(message));
-                    }
+                try {
+                    saveNewTEI(teiType, orgUnit, queryData, currentDate);
+                } catch (SQLiteConstraintException e) {
+                    return Observable.error(e);
                 }
 
             } else {
@@ -351,28 +386,75 @@ public class SearchRepositoryImpl implements SearchRepository {
                 }
             }
 
-            EnrollmentModel enrollmentModel = EnrollmentModel.builder()
-                    .uid(codeGenerator.generate())
-                    .created(currentDate)
-                    .lastUpdated(currentDate)
-                    .enrollmentDate(enrollmentDate)
-                    .program(programUid)
-                    .organisationUnit(orgUnit)
-                    .trackedEntityInstance(teiUid != null ? teiUid : trackedEntityInstanceModel.uid())
-                    .enrollmentStatus(EnrollmentStatus.ACTIVE)
-                    .followUp(false)
-                    .state(State.TO_POST)
-                    .build();
-
-            if (briteDatabase.insert(EnrollmentModel.TABLE, enrollmentModel.toContentValues()) < 0) {
-                String message = String.format(Locale.US, "Failed to insert new enrollment " +
-                        "instance for organisationUnit=[%s] and program=[%s]", orgUnit, programUid);
-                return Observable.error(new SQLiteConstraintException(message));
-            }
-
-
-            return Observable.just(enrollmentModel.uid());
+            return saveEnrollment(currentDate, enrollmentDate, programUid, orgUnit, teiUid, trackedEntityInstanceModel);
         });
+    }
+
+    private void saveNewTEI(@NonNull String teiType,
+                            @NonNull String orgUnit,
+                            HashMap<String, String> queryData,
+                            Date currentDate) {
+        String generatedUid = codeGenerator.generate();
+        TrackedEntityInstanceModel trackedEntityInstanceModel =
+                TrackedEntityInstanceModel.builder()
+                        .uid(generatedUid)
+                        .created(currentDate)
+                        .lastUpdated(currentDate)
+                        .organisationUnit(orgUnit)
+                        .trackedEntityType(teiType)
+                        .state(State.TO_POST)
+                        .build();
+
+        if (briteDatabase.insert(TrackedEntityInstanceModel.TABLE,
+                trackedEntityInstanceModel.toContentValues()) < 0) {
+            String message = String.format(Locale.US, "Failed to insert new tracked entity " +
+                            "instance for organisationUnit=[%s] and trackedEntity=[%s]",
+                    orgUnit, teiType);
+            throw new SQLiteConstraintException(message);
+        }
+
+        for (String key : queryData.keySet()) {
+            TrackedEntityAttributeValueModel attributeValueModel =
+                    TrackedEntityAttributeValueModel.builder()
+                            .created(currentDate)
+                            .lastUpdated(currentDate)
+                            .value(queryData.get(key))
+                            .trackedEntityAttribute(key)
+                            .trackedEntityInstance(generatedUid)
+                            .build();
+            if (briteDatabase.insert(TrackedEntityAttributeValueModel.TABLE,
+                    attributeValueModel.toContentValues()) < 0) {
+                String message = String.format(Locale.US, "Failed to insert new trackedEntityAttributeValue " +
+                                "instance for organisationUnit=[%s] and trackedEntity=[%s]",
+                        orgUnit, teiType);
+                throw new SQLiteConstraintException(message);
+            }
+        }
+    }
+
+    private Observable<String> saveEnrollment(Date currentDate, Date enrollmentDate, String programUid, String orgUnit, String teiUid,
+                                              TrackedEntityInstanceModel trackedEntityInstanceModel) {
+        EnrollmentModel enrollmentModel = EnrollmentModel.builder()
+                .uid(codeGenerator.generate())
+                .created(currentDate)
+                .lastUpdated(currentDate)
+                .enrollmentDate(enrollmentDate)
+                .program(programUid)
+                .organisationUnit(orgUnit)
+                .trackedEntityInstance(teiUid != null ? teiUid : trackedEntityInstanceModel.uid())
+                .enrollmentStatus(EnrollmentStatus.ACTIVE)
+                .followUp(false)
+                .state(State.TO_POST)
+                .build();
+
+        if (briteDatabase.insert(EnrollmentModel.TABLE, enrollmentModel.toContentValues()) < 0) {
+            String message = String.format(Locale.US, "Failed to insert new enrollment " +
+                    "instance for organisationUnit=[%s] and program=[%s]", orgUnit, programUid);
+            return Observable.error(new SQLiteConstraintException(message));
+        }
+
+
+        return Observable.just(enrollmentModel.uid());
     }
 
     @Override
@@ -461,6 +543,10 @@ public class SearchRepositoryImpl implements SearchRepository {
                     progId,
                     teiId);
         }
+        addAttributeValues(tei, attributes);
+    }
+
+    private void addAttributeValues(SearchTeiModel tei, Cursor attributes) {
         if (attributes != null) {
             attributes.moveToFirst();
             for (int i = 0; i < attributes.getCount(); i++) {
@@ -475,18 +561,19 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     private void setOverdueEvents(@NonNull SearchTeiModel tei, ProgramModel selectedProgram) {
 
-        String overdueQuery = "SELECT * FROM EVENT JOIN Enrollment ON Enrollment.uid = Event.enrollment " +
+        String overdueQuery = SELECT + ALL + FROM + "EVENT JOIN Enrollment ON Enrollment.uid = Event.enrollment " +
                 "JOIN TrackedEntityInstance ON TrackedEntityInstance.uid = Enrollment.trackedEntityInstance " +
                 "WHERE TrackedEntityInstance.uid = ? AND Event.status = ?";
 
-        String overdueProgram = " AND Enrollment.program = ?";
+        String overdueProgram = AND + EnrollmentModel.TABLE + POINT + EnrollmentModel.Columns.PROGRAM +
+                EQUAL + QUESTION_MARK;
         Cursor hasOverdueCursor;
         if (selectedProgram == null) {
-            String teiId = tei != null && tei.getTei() != null && tei.getTei().uid() != null ? tei.getTei().uid() : "";
+            String teiId = tei.getTei() != null && tei.getTei().uid() != null ? tei.getTei().uid() : "";
             hasOverdueCursor = briteDatabase.query(overdueQuery,
                     teiId, EventStatus.SKIPPED.name());
         } else {
-            String teiId = tei != null && tei.getTei() != null && tei.getTei().uid() != null ? tei.getTei().uid() : "";
+            String teiId = tei.getTei() != null && tei.getTei().uid() != null ? tei.getTei().uid() : "";
             String progId = selectedProgram.uid() != null ? selectedProgram.uid() : "";
             hasOverdueCursor = briteDatabase.query(overdueQuery + overdueProgram,
                     teiId,
@@ -494,8 +581,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                     progId);
         }
         if (hasOverdueCursor != null && hasOverdueCursor.moveToNext()) {
-            if (tei != null)
-                tei.setHasOverdue(true);
+            tei.setHasOverdue(true);
             hasOverdueCursor.close();
         }
     }

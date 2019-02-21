@@ -40,7 +40,7 @@ public class CellHolder extends AbstractViewHolder {
 
     }
 
-    public void bind(SearchTEContractsModule.Presenter presenter, TrackedEntityInstanceModel trackedEntityInstanceModel, MetadataRepository metadata, int p_nYPosition, int p_nXPosition) {
+    public void bind(SearchTEContractsModule.SearchTEPresenter presenter, TrackedEntityInstanceModel trackedEntityInstanceModel, MetadataRepository metadata, int p_nYPosition, int p_nXPosition) {
         attrBinding.setPosition(p_nYPosition);
         if (presenter.getProgramModel() == null)
             compositeDisposable.add(

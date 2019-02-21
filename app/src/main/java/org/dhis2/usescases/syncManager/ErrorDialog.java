@@ -139,7 +139,11 @@ public class ErrorDialog extends DialogFragment {
 
     @Override
     public void dismiss() {
-        instace = null;
+        dismissInstance();
         super.dismiss();
+    }
+
+    private static void dismissInstance() {
+        instace = null;
     }
 }

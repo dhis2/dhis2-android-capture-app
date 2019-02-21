@@ -8,7 +8,7 @@
 
         <variable
             name="presenter"
-            type="org.dhis2.usescases.programStageSelection.ProgramStageSelectionContract.Presenter" />
+            type="org.dhis2.usescases.programStageSelection.ProgramStageSelectionContract.ProgramStageSelectionPresenter" />
 
         <variable
             name="programStage"

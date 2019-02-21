@@ -21,11 +21,11 @@ import java.util.List;
 public class SearchRelationshipAdapter extends RecyclerView.Adapter<SearchRelationshipViewHolder> {
 
     private final MetadataRepository metadataRepository;
-    private SearchTEContractsModule.Presenter presenter;
+    private SearchTEContractsModule.SearchTEPresenter presenter;
     private List<SearchTeiModel> trackedEntityInstances;
     private final boolean isOnline;
 
-    public SearchRelationshipAdapter(SearchTEContractsModule.Presenter presenter, MetadataRepository metadataRepository, boolean online) {
+    public SearchRelationshipAdapter(SearchTEContractsModule.SearchTEPresenter presenter, MetadataRepository metadataRepository, boolean online) {
         this.presenter = presenter;
         this.metadataRepository = metadataRepository;
         this.trackedEntityInstances = new ArrayList<>();
