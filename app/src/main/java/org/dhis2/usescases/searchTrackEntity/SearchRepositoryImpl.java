@@ -316,6 +316,10 @@ public class SearchRepositoryImpl implements SearchRepository {
                                    String enrollmentDateWHERE,
                                    String incidentDateWHERE) {
 
+        if (queryData == null){
+            queryData = new HashMap<>();
+        }
+
         String teiTypeWHERE = "TrackedEntityInstance.trackedEntityType = '" + teType + "'";
         String teiRelationship = "TrackedEntityInstance.state <> '" + State.RELATIONSHIP.name() + "'";
 

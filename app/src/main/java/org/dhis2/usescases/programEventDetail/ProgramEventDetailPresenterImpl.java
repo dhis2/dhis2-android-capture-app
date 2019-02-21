@@ -37,8 +37,7 @@ public class ProgramEventDetailPresenterImpl implements ProgramEventDetailContra
     private final ProgramEventDetailRepository eventRepository;
     private final MetadataRepository metaRepository;
     private ProgramEventDetailContract.ProgramEventDetailView view;
-    public ProgramModel program;
-    public String programId;
+    private String programId;
     private CompositeDisposable compositeDisposable;
     private CategoryOptionComboModel categoryOptionComboModel;
     private List<OrganisationUnitModel> orgUnits;
@@ -46,7 +45,6 @@ public class ProgramEventDetailPresenterImpl implements ProgramEventDetailContra
     //Search fields
     private CategoryComboModel mCatCombo;
     private List<Date> dates;
-    private Period period;
     private String orgUnitQuery;
 
     ProgramEventDetailPresenterImpl(
@@ -75,8 +73,8 @@ public class ProgramEventDetailPresenterImpl implements ProgramEventDetailContra
         );
 
         compositeDisposable.add(eventRepository.orgUnits()
-                .map(orgUnits -> {
-                    this.orgUnits = orgUnits;
+                .map(orgUnitsResult -> {
+                    orgUnits = orgUnitsResult;
                     return OrgUnitUtils.renderTree(view.getContext(), orgUnits, true);
                 })
                 .subscribeOn(Schedulers.computation())
@@ -128,8 +126,7 @@ public class ProgramEventDetailPresenterImpl implements ProgramEventDetailContra
 
     @Override
     public void setProgram(ProgramModel program) {
-
-        this.program = program;
+        // do nothing
     }
 
     @Override
@@ -140,7 +137,6 @@ public class ProgramEventDetailPresenterImpl implements ProgramEventDetailContra
     @Override
     public void setFilters(List<Date> selectedDates, Period currentPeriod, String orgUnits) {
         this.dates = selectedDates;
-        this.period = currentPeriod;
         this.orgUnitQuery = orgUnits;
     }
 
@@ -162,8 +158,6 @@ public class ProgramEventDetailPresenterImpl implements ProgramEventDetailContra
         bundle.putString(PROGRAM_UID, programId);
         bundle.putString(Constants.EVENT_UID, eventId);
         bundle.putString(ORG_UNIT, orgUnit);
-//        view.startActivity(EventInitialActivity.class, bundle, false, false, null);
-
         view.startActivity(EventCaptureActivity.class,
                 EventCaptureActivity.getActivityBundle(eventId, programId),
                 false, false, null

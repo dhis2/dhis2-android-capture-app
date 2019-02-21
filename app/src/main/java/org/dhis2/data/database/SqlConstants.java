@@ -22,6 +22,7 @@ public class SqlConstants {
     public static final String EQUAL = " = ";
     public static final String NOT_EQUAL = " != ";
     public static final String IS_NOT_NULL = " IS NOT NULL ";
+    public static final String IS_NULL = " IS NULL ";
     public static final String LESS_OR_EQUAL = " <= ";
     public static final String LESS_THAN = " < ";
     public static final String GREAT_THAN = " > ";
