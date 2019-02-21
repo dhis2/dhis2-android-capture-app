@@ -1,8 +1,5 @@
 package org.dhis2.utils.custom_views;
 
-import androidx.databinding.DataBindingUtil;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -18,6 +15,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.databinding.DataBindingUtil;
+import androidx.recyclerview.widget.RecyclerView;
+
 /**
  * QUADRAM. Created by ppajuelo on 05/12/2017.
  */
@@ -27,16 +29,9 @@ public class DateAdapter extends RecyclerView.Adapter<DateViewHolder> {
     private List<String> datesNames = new ArrayList<>();
     private List<Date> dates = new ArrayList<>();
     private List<Date> selectedDates = new ArrayList<>();
-    private Period currentPeriod = Period.WEEKLY;
-    private SimpleDateFormat dayFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
-    private SimpleDateFormat weeklyFormat = new SimpleDateFormat("'Week' w", Locale.getDefault());
-    private String weeklyFormatWithDates = "%s, %s / %s";
-    private SimpleDateFormat monthFormat = new SimpleDateFormat("MMMM yyyy", Locale.getDefault());
-    private SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy", Locale.getDefault());
 
 
     public DateAdapter(Period period) {
-        currentPeriod = period;
         Calendar calendar = DateUtils.getInstance().getCalendar();
         calendar.add(Calendar.YEAR, 1); //let's the user select dates in the next year
         int year = calendar.get(Calendar.YEAR);
@@ -44,6 +39,11 @@ public class DateAdapter extends RecyclerView.Adapter<DateViewHolder> {
         do {
             String date = null;
 
+            SimpleDateFormat dayFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+            SimpleDateFormat weeklyFormat = new SimpleDateFormat("'Week' w", Locale.getDefault());
+            String weeklyFormatWithDates = "%s, %s / %s";
+            SimpleDateFormat monthFormat = new SimpleDateFormat("MMMM yyyy", Locale.getDefault());
+            SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy", Locale.getDefault());
             switch (period) {
                 case WEEKLY:
                     date = weeklyFormat.format(calendar.getTime()); //Get current week
@@ -74,20 +74,23 @@ public class DateAdapter extends RecyclerView.Adapter<DateViewHolder> {
                     dates.add(calendar.getTime());
                     calendar.add(Calendar.YEAR, -1);
                     break;
+                default:
+                    break;
             }
 
         } while (calendar.get(Calendar.YEAR) > year - 11); //show last 10 years
 
     }
 
+    @NonNull
     @Override
-    public DateViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public DateViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         ItemDateBinding binding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.item_date, parent, false);
         return new DateViewHolder(binding);
     }
 
     @Override
-    public void onBindViewHolder(DateViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull DateViewHolder holder, int position) {
         holder.bind(datesNames.get(position));
 
         if (selectedDates.contains(dates.get(position))) {

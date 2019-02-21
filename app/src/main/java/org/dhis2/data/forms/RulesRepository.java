@@ -256,7 +256,7 @@ public final class RulesRepository {
 
     private static final String QUERY_ATTRIBUTE_VALUES = SELECT +
             "  Field.id,\n" +
-            "  Value.value\n" +
+            "  Value.VALUE\n" +
             "FROM (Enrollment INNER JOIN Program ON Program.uid = Enrollment.program)\n" +
             "  INNER JOIN (\n" +
             "      SELECT\n" +
@@ -268,7 +268,7 @@ public final class RulesRepository {
             "  INNER JOIN TrackedEntityAttributeValue AS Value ON (\n" +
             "    Value.trackedEntityAttribute = Field.id\n" +
             "        AND Value.trackedEntityInstance = Enrollment.trackedEntityInstance)\n" +
-            "WHERE Enrollment.uid = ? AND Value.value IS NOT NULL;";
+            "WHERE Enrollment.uid = ? AND Value.VALUE IS NOT NULL;";
 
     @NonNull
     private final BriteDatabase briteDatabase;
@@ -358,7 +358,7 @@ public final class RulesRepository {
         String attributeType = cursor.getString(5);
         String elementType = cursor.getString(6);
 
-        // String representation of value type.
+        // String representation of VALUE type.
         RuleValueType mimeType = null;
         if (!isEmpty(attributeType)) {
             mimeType = convertType(attributeType);
@@ -403,7 +403,7 @@ public final class RulesRepository {
         String attributeType = cursor.getString(5);
         String elementType = cursor.getString(6);
 
-        // String representation of value type.
+        // String representation of VALUE type.
         RuleValueType mimeType = null;
         if (!isEmpty(attributeType)) {
             mimeType = convertType(attributeType);

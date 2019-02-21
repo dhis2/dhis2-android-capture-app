@@ -43,10 +43,10 @@ public final class EventsRuleEngineRepository implements RuleEngineRepository {
             "  eventDate," +
             "  programStage," +
             "  dataElement," +
-            "  value" +
+            "  VALUE" +
             " FROM TrackedEntityDataValue " +
             "  INNER JOIN Event ON TrackedEntityDataValue.event = Event.uid " +
-            " WHERE event = ? AND value IS NOT NULL AND " + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'";
+            " WHERE event = ? AND VALUE IS NOT NULL AND " + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'";
 
     @NonNull
     private final BriteDatabase briteDatabase;

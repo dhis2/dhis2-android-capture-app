@@ -39,7 +39,7 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
 
     private static final String QUERY_ATTRIBUTE_VALUES = "SELECT\n" +
             "  Field.id,\n" +
-            "  Value.value\n" +
+            "  Value.VALUE\n" +
             "FROM (Enrollment INNER JOIN Program ON Program.uid = Enrollment.program)\n" +
             "  INNER JOIN (\n" +
             "      SELECT\n" +
@@ -51,7 +51,7 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
             "  INNER JOIN TrackedEntityAttributeValue AS Value ON (\n" +
             "    Value.trackedEntityAttribute = Field.id\n" +
             "        AND Value.trackedEntityInstance = Enrollment.trackedEntityInstance)\n" +
-            "WHERE Enrollment.uid = ? AND Value.value IS NOT NULL;";
+            "WHERE Enrollment.uid = ? AND Value.VALUE IS NOT NULL;";
 
     @NonNull
     private final BriteDatabase briteDatabase;

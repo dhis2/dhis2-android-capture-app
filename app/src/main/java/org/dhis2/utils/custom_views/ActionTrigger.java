@@ -1,7 +1,6 @@
 package org.dhis2.utils.custom_views;
 
 import androidx.annotation.NonNull;
-
 import io.reactivex.Observable;
 import io.reactivex.functions.Predicate;
 import io.reactivex.subjects.BehaviorSubject;
@@ -25,7 +24,7 @@ public class ActionTrigger<T> {
     public Observable<T> observe() {
         return triggerConfirmationDialog.filter(ifNotAnEmptyValue())
                 .map(aObject -> ((T) aObject))
-                .doOnNext(aObject -> triggerConfirmationDialog.onNext(Empty.value));
+                .doOnNext(aObject -> triggerConfirmationDialog.onNext(Empty.VALUE));
     }
 
     @NonNull
@@ -38,6 +37,6 @@ public class ActionTrigger<T> {
     }
 
     private enum Empty {
-        value,
+        VALUE
     }
 }

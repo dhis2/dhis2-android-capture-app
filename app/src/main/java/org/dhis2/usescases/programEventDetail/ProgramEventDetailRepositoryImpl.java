@@ -59,7 +59,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
             " DataElement.valueType,\n" +
             " DataElement.optionSet, \n" +
             " ProgramStageDataElement.displayInReports, \n" +
-            " TrackedEntityDataValue.value \n" +
+            " TrackedEntityDataValue.VALUE \n" +
             " FROM TrackedEntityDataValue \n" +
             " JOIN ProgramStageDataElement ON ProgramStageDataElement.dataElement = TrackedEntityDataValue.dataElement \n" +
             " JOIN Event ON Event.programStage = ProgramStageDataElement.programStage \n" +
@@ -243,7 +243,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
         Cursor cursor = briteDatabase.query(EVENT_DATA_VALUES, id, id);
         if (cursor != null && cursor.moveToFirst()) {
             for (int i = 0; i < cursor.getCount(); i++) {
-                String value = cursor.getString(cursor.getColumnIndex("value"));
+                String value = cursor.getString(cursor.getColumnIndex("VALUE"));
                 if (cursor.getString(cursor.getColumnIndex("optionSet")) != null)
                     value = ValueUtils.optionSetCodeToDisplayName(briteDatabase, cursor.getString(cursor.getColumnIndex("optionSet")), value);
                 else if (cursor.getString(cursor.getColumnIndex("valueType")).equals(ValueType.ORGANISATION_UNIT.name()))

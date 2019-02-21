@@ -113,6 +113,8 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
                 case R.id.input_year:
                     handleSingleInputs();
                     break;
+                default:
+                    break;
             }
     }
 

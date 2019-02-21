@@ -203,14 +203,14 @@ dependencies {
     //endregion
 
     //region GOOGLE AUTO VALUE
-    // Google's auto-value. Annotations are used only during compilation time, as well as
+    // Google's auto-VALUE. Annotations are used only during compilation time, as well as
     // annotation processor which hoops up into compilation process
-    api "com.google.auto.value:auto-value:${libraries.autovalue}"
-    annotationProcessor "com.google.auto.value:auto-value:${libraries.autovalue}"
+    api "com.google.auto.VALUE:auto-VALUE:${libraries.autovalue}"
+    annotationProcessor "com.google.auto.VALUE:auto-VALUE:${libraries.autovalue}"
 
     // Extension which generates mappers for work with cursors
-    kapt "com.gabrielittner.auto.value:auto-value-cursor:${libraries.autovaluecursor}"
-    kapt "com.ryanharter.auto.value:auto-value-parcel:${libraries.autovalueparcel}"
+    kapt "com.gabrielittner.auto.VALUE:auto-VALUE-cursor:${libraries.autovaluecursor}"
+    kapt "com.ryanharter.auto.VALUE:auto-VALUE-parcel:${libraries.autovalueparcel}"
     //endregion
 
     //region BRITEDATABASE

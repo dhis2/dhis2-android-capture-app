@@ -158,10 +158,10 @@ public final class DataValueStore implements DataEntryStore {
     private String currentValue(@NonNull String uid, valueType valueType) {
         Cursor cursor;
         if (valueType == DATA_ELEMENT)
-            cursor = briteDatabase.query("SELECT TrackedEntityDataValue.value FROM TrackedEntityDataValue " +
+            cursor = briteDatabase.query("SELECT TrackedEntityDataValue.VALUE FROM TrackedEntityDataValue " +
                     "WHERE dataElement = ? AND event = ?", uid, eventUid);
         else
-            cursor = briteDatabase.query("SELECT TrackedEntityAttributeValue.value FROM TrackedEntityAttributeValue " +
+            cursor = briteDatabase.query("SELECT TrackedEntityAttributeValue.VALUE FROM TrackedEntityAttributeValue " +
                     "JOIN Enrollment ON Enrollment.trackedEntityInstance = TrackedEntityAttributeValue.trackedEntityInstance " +
                     "JOIN Event ON Event.enrollment = Enrollment.uid " +
                     "WHERE TrackedEntityAttributeValue.trackedEntityAttribute = ? " +

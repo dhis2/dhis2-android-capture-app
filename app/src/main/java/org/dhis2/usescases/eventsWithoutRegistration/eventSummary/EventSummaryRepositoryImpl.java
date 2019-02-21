@@ -103,7 +103,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
             "  Field.type,\n" +
             "  Field.mandatory,\n" +
             "  Field.optionSet,\n" +
-            "  Value.value,\n" +
+            "  Value.VALUE,\n" +
             "  Option.displayName,\n" +
             "  Field.section,\n" +
             "  Field.allowFutureDate,\n" +
@@ -135,7 +135,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
             "    Value.event = Event.uid AND Value.dataElement = Field.id\n" +
             "  )\n" +
             "  LEFT OUTER JOIN Option ON (\n" +
-            "    Field.optionSet = Option.optionSet AND Value.value = Option.code\n" +
+            "    Field.optionSet = Option.optionSet AND Value.VALUE = Option.code\n" +
             "  )\n" +
             " %s  " +
             "ORDER BY CASE" +
@@ -161,10 +161,10 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
             "  eventDate," +
             "  programStage," +
             "  dataElement," +
-            "  value" +
+            "  VALUE" +
             " FROM TrackedEntityDataValue " +
             "  INNER JOIN Event ON TrackedEntityDataValue.event = Event.uid " +
-            " WHERE event = ? AND value IS NOT NULL AND " + EventModel.TABLE + POINT +
+            " WHERE event = ? AND VALUE IS NOT NULL AND " + EventModel.TABLE + POINT +
             EventModel.Columns.STATE + NOT_EQUAL + QUOTE + State.TO_DELETE + QUOTE + ";";
 
     private static final String EVENT_QUERY = SELECT + ALL + FROM + EventModel.TABLE +

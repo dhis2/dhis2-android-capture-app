@@ -158,11 +158,11 @@ public final class AttributeValueStore implements DataEntryStore {
     private String currentValue(@NonNull String uid, valueType valueType) {
         Cursor cursor;
         if (valueType == ATTR)
-            cursor = briteDatabase.query("SELECT TrackedEntityAttributeValue.value FROM TrackedEntityAttributeValue " +
+            cursor = briteDatabase.query("SELECT TrackedEntityAttributeValue.VALUE FROM TrackedEntityAttributeValue " +
                     "JOIN Enrollment ON Enrollment.trackedEntityInstance = TrackedEntityAttributeValue.trackedEntityInstance " +
                     "WHERE TrackedEntityAttributeValue.trackedEntityAttribute = ? AND Enrollment.trackedEntityInstance = ?", uid, enrollment);
         else
-            cursor = briteDatabase.query("SELECT TrackedEntityDataValue.value FROM TrackedEntityDataValue " +
+            cursor = briteDatabase.query("SELECT TrackedEntityDataValue.VALUE FROM TrackedEntityDataValue " +
                     "JOIN Event ON Event.uid = TrackedEntityDataValue.event " +
                     "JOIN Enrollment ON Enrollment.uid = Event.enrollment " +
                     "WHERE TrackedEntityDataValue.dataElement = ? " +
@@ -243,11 +243,11 @@ public final class AttributeValueStore implements DataEntryStore {
 
     private boolean checkUnique(String attribute, String value) {
         if (attribute != null && value != null) {
-            Cursor uniqueCursor = briteDatabase.query("SELECT TrackedEntityAttributeValue.value FROM TrackedEntityAttributeValue" +
+            Cursor uniqueCursor = briteDatabase.query("SELECT TrackedEntityAttributeValue.VALUE FROM TrackedEntityAttributeValue" +
                     " JOIN TrackedEntityAttribute ON TrackedEntityAttribute.uid = TrackedEntityAttributeValue.trackedEntityAttribute" +
                     " WHERE TrackedEntityAttribute.uid = ? AND" +
                     " TrackedEntityAttribute.uniqueProperty = ? AND" +
-                    " TrackedEntityAttributeValue.value = ?", attribute, "1", value);
+                    " TrackedEntityAttributeValue.VALUE = ?", attribute, "1", value);
 
             if (uniqueCursor == null)
                 return true;

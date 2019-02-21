@@ -15,6 +15,6 @@ public interface DataEntryStore {
     @NonNull
     Flowable<Long> save(@NonNull String uid, @Nullable String value);
 
-//    boolean checkUnique(String id, String value);
+//    boolean checkUnique(String id, String VALUE);
 
 }

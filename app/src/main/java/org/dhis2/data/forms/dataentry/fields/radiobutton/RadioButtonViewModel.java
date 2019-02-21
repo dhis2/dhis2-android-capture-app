@@ -53,7 +53,7 @@ public abstract class RadioButtonViewModel extends FieldViewModel {
         } else if (value.toLowerCase(Locale.US).equals(Value.CHECKED_NO.toString())) {
             return new AutoValue_RadioButtonViewModel(id, label, Value.CHECKED_NO.toString(), section, null, editable, null, null, null, description, mandatory, type);
         } else {
-            throw new IllegalArgumentException("Unsupported value: " + value);
+            throw new IllegalArgumentException("Unsupported VALUE: " + value);
         }
     }
 

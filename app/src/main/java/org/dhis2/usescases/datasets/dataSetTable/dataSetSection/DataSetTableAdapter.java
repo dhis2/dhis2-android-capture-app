@@ -28,7 +28,7 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionComboModel,
      * RecyclerView of the TableView needs a new RecyclerView.ViewHolder of the given type to
      * represent an item.
      *
-     * @param viewType : This value comes from #getCellItemViewType method to support different type
+     * @param viewType : This VALUE comes from #getCellItemViewType method to support different type
      *                 of viewHolder as a Cell item.
      * @see #getCellItemViewType(int);
      */
@@ -68,7 +68,7 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionComboModel,
      * Column Header RecyclerView of the TableView needs a new RecyclerView.ViewHolder of the given
      * type to represent an item.
      *
-     * @param viewType : This value comes from "getColumnHeaderItemViewType" method to support
+     * @param viewType : This VALUE comes from "getColumnHeaderItemViewType" method to support
      *                 different type of viewHolder as a Column Header item.
      * @see #getColumnHeaderItemViewType(int);
      */
@@ -107,7 +107,7 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionComboModel,
      * Row Header RecyclerView of the TableView needs a new RecyclerView.ViewHolder of the given
      * type to represent an item.
      *
-     * @param viewType : This value comes from "getRowHeaderItemViewType" method to support
+     * @param viewType : This VALUE comes from "getRowHeaderItemViewType" method to support
      *                 different type of viewHolder as a row Header item.
      * @see #getRowHeaderItemViewType(int);
      */

@@ -39,7 +39,6 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
     private ViewDataBinding binding;
     private TextInputEditText latLong;
     private FusedLocationProviderClient mFusedLocationClient;
-    private LocationRequest locationRequest;
     private LocationCallback locationCallback;
     private OnMapPositionClick listener;
     private OnCurrentLocationClick listener2;
@@ -131,6 +130,8 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
                 else
                     ((OnMapPositionClick) getContext()).onMapPositionClick(this);
                 break;
+            default:
+                break;
         }
     }
 
@@ -194,7 +195,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
     }
 
     private void startRequestingLocation() {
-        locationRequest = new LocationRequest();
+        LocationRequest locationRequest = new LocationRequest();
         locationRequest.setInterval(5000);
         locationRequest.setFastestInterval(1000);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
@@ -203,8 +204,8 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
             @Override
             public void onLocationResult(LocationResult locationResult) {
                 if (locationResult != null) {
-                    Double latitude = locationResult.getLocations().get(0).getLatitude();
-                    Double longitude = locationResult.getLocations().get(0).getLongitude();
+                    double latitude = locationResult.getLocations().get(0).getLatitude();
+                    double longitude = locationResult.getLocations().get(0).getLongitude();
                     updateLocation(latitude, longitude);
                     mFusedLocationClient.removeLocationUpdates(locationCallback);
                 }

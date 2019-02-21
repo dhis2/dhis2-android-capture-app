@@ -70,7 +70,7 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
 
     private static final String QUERY_ATTRIBUTE_VALUES = "SELECT\n" +
             "  Field.id,\n" +
-            "  Value.value\n" +
+            "  Value.VALUE\n" +
             "FROM (Enrollment INNER JOIN Program ON Program.uid = Enrollment.program)\n" +
             "  INNER JOIN (\n" +
             "      SELECT\n" +
@@ -82,7 +82,7 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
             "  INNER JOIN TrackedEntityAttributeValue AS Value ON (\n" +
             "    Value.trackedEntityAttribute = Field.id\n" +
             "        AND Value.trackedEntityInstance = Enrollment.trackedEntityInstance)\n" +
-            "WHERE Enrollment.uid = ? AND Value.value IS NOT NULL;";
+            "WHERE Enrollment.uid = ? AND Value.VALUE IS NOT NULL;";
 
     private static final String QUERY_EVENT = "SELECT Event.uid,\n" +
             "  Event.programStage,\n" +
@@ -100,10 +100,10 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
             "  eventDate," +
             "  programStage," +
             "  dataElement," +
-            "  value" +
+            "  VALUE" +
             " FROM TrackedEntityDataValue " +
             "  INNER JOIN Event ON TrackedEntityDataValue.event = Event.uid " +
-            " WHERE event = ? AND value IS NOT NULL AND " + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'";
+            " WHERE event = ? AND VALUE IS NOT NULL AND " + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'";
 
     private final BriteDatabase briteDatabase;
     private final Flowable<RuleEngine> cachedRuleEngineFlowable;

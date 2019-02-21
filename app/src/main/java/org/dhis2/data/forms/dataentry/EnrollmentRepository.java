@@ -35,7 +35,7 @@ final class EnrollmentRepository implements DataEntryRepository {
             "  Field.type,\n" +
             "  Field.mandatory,\n" +
             "  Field.optionSet,\n" +
-            "  Value.value,\n" +
+            "  Value.VALUE,\n" +
             "  Option.displayName,\n" +
             "  Field.allowFutureDate,\n" +
             "  Field.generated,\n" +
@@ -63,7 +63,7 @@ final class EnrollmentRepository implements DataEntryRepository {
             "    Value.trackedEntityAttribute = Field.id\n" +
             "        AND Value.trackedEntityInstance = Enrollment.trackedEntityInstance)\n" +
             "  LEFT OUTER JOIN Option ON (\n" +
-            "    Field.optionSet = Option.optionSet AND Value.value = Option.code\n" +
+            "    Field.optionSet = Option.optionSet AND Value.VALUE = Option.code\n" +
             "  )\n" +
             "WHERE Enrollment.uid = ?";
 
