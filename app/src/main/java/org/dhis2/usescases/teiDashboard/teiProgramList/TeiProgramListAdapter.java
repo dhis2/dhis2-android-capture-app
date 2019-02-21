@@ -19,14 +19,14 @@ import java.util.List;
 
 public class TeiProgramListAdapter extends RecyclerView.Adapter<TeiProgramListEnrollmentViewHolder> {
 
-    private TeiProgramListContract.Presenter presenter;
+    private TeiProgramListContract.TeiProgramListPresenter presenter;
     private List<TeiProgramListItem> listItems;
     private List<EnrollmentViewModel> activeEnrollments;
     private List<EnrollmentViewModel> inactiveEnrollments;
     private List<ProgramViewModel> programs;
     private List<ProgramViewModel> possibleEnrollmentPrograms;
 
-    TeiProgramListAdapter(TeiProgramListContract.Presenter presenter) {
+    TeiProgramListAdapter(TeiProgramListContract.TeiProgramListPresenter presenter) {
         this.presenter = presenter;
         this.listItems = new ArrayList<>();
         this.activeEnrollments = new ArrayList<>();

@@ -88,45 +88,46 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
 
                 Chip chip = new Chip(parentContext);
                 chip.setText(enrollmentInfo.val0());
-
-                int color = ColorUtils.getColorFrom(enrollmentInfo.val1(), ColorUtils.getPrimaryColor(parentContext, ColorUtils.ColorType.PRIMARY_LIGHT));
-                int icon;
-                if (!isEmpty(enrollmentInfo.val2())) {
-                    Resources resources = parentContext.getResources();
-                    String iconName = enrollmentInfo.val2().startsWith("ic_") ? enrollmentInfo.val2() : "ic_" + enrollmentInfo.val2();
-                    icon = resources.getIdentifier(iconName, "drawable", parentContext.getPackageName());
-                } else {
-                    icon = R.drawable.ic_program_default;
-                }
-
-                Drawable iconImage;
-                try {
-                    iconImage = ContextCompat.getDrawable(parentContext, icon);
-                    iconImage.mutate();
-                } catch (Exception e) {
-                    Timber.log(1, e);
-                    iconImage = ContextCompat.getDrawable(parentContext, R.drawable.ic_program_default);
-                    iconImage.mutate();
-                }
-
-                Drawable bgDrawable = ContextCompat.getDrawable(parentContext, R.drawable.ic_chip_circle_24);
-
-                Drawable wrappedIcon = DrawableCompat.wrap(iconImage);
-                Drawable wrappedBg = DrawableCompat.wrap(bgDrawable);
-
-                LayerDrawable finalDrawable = new LayerDrawable(new Drawable[]{wrappedBg, wrappedIcon});
-
-                finalDrawable.mutate();
-
-                finalDrawable.getDrawable(1).setColorFilter(new PorterDuffColorFilter(ColorUtils.getContrastColor(color), PorterDuff.Mode.SRC_IN));
-                finalDrawable.getDrawable(0).setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN));
-
-                chip.setChipIcon(finalDrawable);
-
+                chip.setChipIcon(getChipDrawable(enrollmentInfo, parentContext));
                 binding.chipContainer.addView(chip);
                 binding.chipContainer.invalidate();
             }
         }
+    }
+
+    private Drawable getChipDrawable(Trio<String, String, String> enrollmentInfo, Context parentContext) {
+        int color = ColorUtils.getColorFrom(enrollmentInfo.val1(), ColorUtils.getPrimaryColor(parentContext, ColorUtils.ColorType.PRIMARY_LIGHT));
+        int icon;
+        if (!isEmpty(enrollmentInfo.val2())) {
+            Resources resources = parentContext.getResources();
+            String iconName = enrollmentInfo.val2().startsWith("ic_") ? enrollmentInfo.val2() : "ic_" + enrollmentInfo.val2();
+            icon = resources.getIdentifier(iconName, "drawable", parentContext.getPackageName());
+        } else {
+            icon = R.drawable.ic_program_default;
+        }
+
+        Drawable iconImage;
+        try {
+            iconImage = ContextCompat.getDrawable(parentContext, icon);
+            iconImage.mutate();
+        } catch (Exception e) {
+            Timber.log(1, e);
+            iconImage = ContextCompat.getDrawable(parentContext, R.drawable.ic_program_default);
+            iconImage.mutate();
+        }
+
+        Drawable bgDrawable = ContextCompat.getDrawable(parentContext, R.drawable.ic_chip_circle_24);
+
+        Drawable wrappedIcon = DrawableCompat.wrap(iconImage);
+        Drawable wrappedBg = DrawableCompat.wrap(bgDrawable);
+
+        LayerDrawable finalDrawable = new LayerDrawable(new Drawable[]{wrappedBg, wrappedIcon});
+
+        finalDrawable.mutate();
+
+        finalDrawable.getDrawable(1).setColorFilter(new PorterDuffColorFilter(ColorUtils.getContrastColor(color), PorterDuff.Mode.SRC_IN));
+        finalDrawable.getDrawable(0).setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN));
+        return finalDrawable;
     }
 
 }

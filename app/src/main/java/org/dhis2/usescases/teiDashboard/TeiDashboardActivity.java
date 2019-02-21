@@ -18,10 +18,10 @@ import androidx.fragment.app.FragmentStatePagerAdapter;
  * QUADRAM. Created by ppajuelo on 26/04/2018.
  */
 
-public class TeiDashboardActivity extends ActivityGlobalAbstract implements TeiDashboardContracts.View {
+public class TeiDashboardActivity extends ActivityGlobalAbstract implements TeiDashboardContracts.TeiDashboardView {
 
     @Inject
-    public TeiDashboardContracts.Presenter presenter;
+    public TeiDashboardContracts.TeiDashboardPresenter presenter;
 
     protected DashboardProgramModel programModel;
 

@@ -25,11 +25,11 @@ import timber.log.Timber;
 public class EventAdapter extends RecyclerView.Adapter<EventViewHolder> {
 
     private final List<ProgramStageModel> programStageList;
-    private final TeiDashboardContracts.Presenter presenter;
+    private final TeiDashboardContracts.TeiDashboardPresenter presenter;
     private final EnrollmentModel enrollment;
     private List<EventModel> events;
 
-    public EventAdapter(TeiDashboardContracts.Presenter presenter, List<ProgramStageModel> programStageList, List<EventModel> eventList, EnrollmentModel currentEnrollment) {
+    public EventAdapter(TeiDashboardContracts.TeiDashboardPresenter presenter, List<ProgramStageModel> programStageList, List<EventModel> eventList, EnrollmentModel currentEnrollment) {
         this.events = eventList;
         this.enrollment = currentEnrollment;
         this.programStageList = programStageList;

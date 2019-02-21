@@ -11,7 +11,7 @@
 
         <variable
             name="presenter"
-            type="org.dhis2.usescases.teiDashboard.eventDetail.EventDetailContracts.Presenter" />
+            type="org.dhis2.usescases.teiDashboard.eventDetail.EventDetailContracts.EventDetailPresenter" />
 
         <variable
             name="event"

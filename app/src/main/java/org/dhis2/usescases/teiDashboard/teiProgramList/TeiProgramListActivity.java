@@ -30,12 +30,12 @@ import androidx.databinding.DataBindingUtil;
  * QUADRAM. Created by Cristian on 13/02/2018.
  */
 
-public class TeiProgramListActivity extends ActivityGlobalAbstract implements TeiProgramListContract.View {
+public class TeiProgramListActivity extends ActivityGlobalAbstract implements TeiProgramListContract.TeiProgramListView {
 
     private ActivityTeiProgramListBinding binding;
 
     @Inject
-    TeiProgramListContract.Presenter presenter;
+    TeiProgramListContract.TeiProgramListPresenter presenter;
     @Inject
     TeiProgramListAdapter adapter;
 

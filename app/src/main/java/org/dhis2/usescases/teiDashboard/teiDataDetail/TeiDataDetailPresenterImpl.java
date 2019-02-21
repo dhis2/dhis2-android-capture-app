@@ -3,7 +3,6 @@ package org.dhis2.usescases.teiDashboard.teiDataDetail;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.util.Log;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -28,17 +27,16 @@ import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventIn
  * QUADRAM. Created by frodriguez on 12/13/2017.
  */
 
-public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter {
+public class TeiDataDetailPresenterImpl implements TeiDataDetailContracts.TeiDataDetailPresenter {
 
     private final DashboardRepository dashboardRepository;
     private final MetadataRepository metadataRepository;
     private final CompositeDisposable disposable;
     private final EnrollmentStatusStore enrollmentStore;
-    private TeiDataDetailContracts.View view;
+    private TeiDataDetailContracts.TeiDataDetailView view;
     private FusedLocationProviderClient mFusedLocationClient;
-    private String enrollmentUid;
 
-    TeiDataDetailPresenter(DashboardRepository dashboardRepository, MetadataRepository metadataRepository, EnrollmentStatusStore enrollmentStatusStore) {
+    TeiDataDetailPresenterImpl(DashboardRepository dashboardRepository, MetadataRepository metadataRepository, EnrollmentStatusStore enrollmentStatusStore) {
         this.dashboardRepository = dashboardRepository;
         this.metadataRepository = metadataRepository;
         this.enrollmentStore = enrollmentStatusStore;
@@ -46,9 +44,8 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
     }
 
     @Override
-    public void init(TeiDataDetailContracts.View view, String uid, String programUid, String enrollmentUid) {
+    public void init(TeiDataDetailContracts.TeiDataDetailView view, String uid, String programUid, String enrollmentUid) {
         this.view = view;
-        this.enrollmentUid = enrollmentUid;
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(view.getContext());
 
         if (programUid != null) {
@@ -66,7 +63,7 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
                             view::setData,
-                            throwable -> Log.d("ERROR", throwable.getMessage()))
+                            Timber::e)
             );
 
             disposable.add(
@@ -75,7 +72,7 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(
                                     view.handleStatus(),
-                                    throwable -> Log.d("ERROR", throwable.getMessage()))
+                                    Timber::e)
 
             );
 
@@ -101,7 +98,7 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(view::setData,
-                            throwable -> Log.d("ERROR", throwable.getMessage()))
+                            Timber::e)
             );
         }
     }
@@ -191,7 +188,7 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
         }
         mFusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
             if (location != null) {
-                saveLocation(location.getLatitude(),location.getLongitude());
+                saveLocation(location.getLatitude(), location.getLongitude());
             }
         });
     }

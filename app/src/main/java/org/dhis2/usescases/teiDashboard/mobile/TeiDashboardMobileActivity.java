@@ -46,7 +46,7 @@ import me.toptas.fancyshowcase.FocusShape;
  * QUADRAM. Created by ppajuelo on 29/11/2017.
  */
 
-public class TeiDashboardMobileActivity extends TeiDashboardActivity implements TeiDashboardContracts.View {
+public class TeiDashboardMobileActivity extends TeiDashboardActivity implements TeiDashboardContracts.TeiDashboardView {
 
     ActivityDashboardMobileBinding binding;
     private FragmentStatePagerAdapter adapter;
@@ -232,7 +232,7 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
         return binding.toolbarTitle.getText().toString();
     }
 
-    public TeiDashboardContracts.Presenter getPresenter() {
+    public TeiDashboardContracts.TeiDashboardPresenter getPresenter() {
         return presenter;
     }
 

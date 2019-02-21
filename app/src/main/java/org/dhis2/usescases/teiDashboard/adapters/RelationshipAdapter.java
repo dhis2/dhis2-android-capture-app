@@ -23,10 +23,10 @@ import java.util.List;
 
 public class RelationshipAdapter extends RecyclerView.Adapter<RelationshipViewHolder> {
 
-    private TeiDashboardContracts.Presenter presenter;
+    private TeiDashboardContracts.TeiDashboardPresenter presenter;
     private List<Pair<Relationship, RelationshipType>> relationships;
 
-    public RelationshipAdapter(TeiDashboardContracts.Presenter presenter) {
+    public RelationshipAdapter(TeiDashboardContracts.TeiDashboardPresenter presenter) {
         this.presenter = presenter;
         this.relationships = new ArrayList<>();
     }

@@ -30,7 +30,7 @@ public class RelationshipViewHolder extends RecyclerView.ViewHolder {
         this.compositeDisposable = new CompositeDisposable();
     }
 
-    public void bind(TeiDashboardContracts.Presenter presenter, Pair<Relationship, RelationshipType> relationships) {
+    public void bind(TeiDashboardContracts.TeiDashboardPresenter presenter, Pair<Relationship, RelationshipType> relationships) {
 
         Relationship relationship = relationships.val0();
         String relationshipTEIUid;

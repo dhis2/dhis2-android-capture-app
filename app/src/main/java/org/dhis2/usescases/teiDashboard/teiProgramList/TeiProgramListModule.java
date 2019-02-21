@@ -27,25 +27,25 @@ public class TeiProgramListModule {
 
     @Provides
     @PerActivity
-    TeiProgramListContract.View provideView(TeiProgramListActivity activity) {
+    TeiProgramListContract.TeiProgramListView provideView(TeiProgramListActivity activity) {
         return activity;
     }
 
     @Provides
     @PerActivity
-    TeiProgramListContract.Presenter providesPresenter(TeiProgramListContract.Interactor interactor) {
-        return new TeiProgramListPresenter(interactor, teiUid);
+    TeiProgramListContract.TeiProgramListPresenter providesPresenter(TeiProgramListContract.TeiProgramListInteractor interactor) {
+        return new TeiProgramListPresenterImpl(interactor, teiUid);
     }
 
     @Provides
     @PerActivity
-    TeiProgramListContract.Interactor provideInteractor(@NonNull TeiProgramListRepository teiProgramListRepository) {
-        return new TeiProgramListInteractor(teiProgramListRepository);
+    TeiProgramListContract.TeiProgramListInteractor provideInteractor(@NonNull TeiProgramListRepository teiProgramListRepository) {
+        return new TeiProgramListInteractorImpl(teiProgramListRepository);
     }
 
     @Provides
     @PerActivity
-    TeiProgramListAdapter provideProgramEventDetailAdapter(TeiProgramListContract.Presenter presenter) {
+    TeiProgramListAdapter provideProgramEventDetailAdapter(TeiProgramListContract.TeiProgramListPresenter presenter) {
         return new TeiProgramListAdapter(presenter);
     }
 

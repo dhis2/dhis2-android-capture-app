@@ -9,6 +9,7 @@ import org.hisp.dhis.android.core.program.ProgramModel;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -19,19 +20,19 @@ import timber.log.Timber;
  * QUADRAM. Created by Cristian on 06/03/2018.
  */
 
-public class TeiProgramListInteractor implements TeiProgramListContract.Interactor {
+public class TeiProgramListInteractorImpl implements TeiProgramListContract.TeiProgramListInteractor {
 
-    private TeiProgramListContract.View view;
+    private TeiProgramListContract.TeiProgramListView view;
     private String trackedEntityId;
     private CompositeDisposable compositeDisposable;
     private final TeiProgramListRepository teiProgramListRepository;
 
-    TeiProgramListInteractor(TeiProgramListRepository teiProgramListRepository) {
+    TeiProgramListInteractorImpl(TeiProgramListRepository teiProgramListRepository) {
         this.teiProgramListRepository = teiProgramListRepository;
     }
 
     @Override
-    public void init(TeiProgramListContract.View view, String trackedEntityId) {
+    public void init(TeiProgramListContract.TeiProgramListView view, String trackedEntityId) {
         this.view = view;
         this.trackedEntityId = trackedEntityId;
         compositeDisposable = new CompositeDisposable();
@@ -144,7 +145,7 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
     }
 
     @Override
-    public String getProgramColor(String uid) {
+    public String getProgramColor(@NonNull String uid) {
         return teiProgramListRepository.getProgramColor(uid);
     }
 

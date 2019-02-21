@@ -23,7 +23,7 @@ class DashboardProgramViewHolder extends RecyclerView.ViewHolder {
         this.binding = binding;
     }
 
-    public void bind(TeiDashboardContracts.Presenter presenter, DashboardProgramModel dashboardProgramModel, int position) {
+    public void bind(TeiDashboardContracts.TeiDashboardPresenter presenter, DashboardProgramModel dashboardProgramModel, int position) {
         ProgramModel programModel = dashboardProgramModel.getEnrollmentProgramModels().get(position);
         EnrollmentModel enrollment = dashboardProgramModel.getEnrollmentForProgram(programModel.uid());
         binding.setVariable(BR.presenter, presenter);

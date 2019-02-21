@@ -50,11 +50,14 @@ import timber.log.Timber;
  * QUADRAM. Created by Cristian E. on 18/12/2017.
  */
 
-public class EventDetailActivity extends ActivityGlobalAbstract implements EventDetailContracts.View {
+public class EventDetailActivity extends ActivityGlobalAbstract implements EventDetailContracts.EventDetailView {
+
+    private static final String EVENT_DATA_ENTRY = "EVENT_DATA_ENTRY";
+    private static final String EVENT_UID = "EVENT_UID";
 
     ActivityEventDetailBinding binding;
     @Inject
-    EventDetailContracts.Presenter presenter;
+    EventDetailContracts.EventDetailPresenter presenter;
 
     EventDetailModel eventDetailModel;
     private String eventUid;
@@ -63,11 +66,11 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         ((App) getApplicationContext()).userComponent().plus(
-                new EventDetailModule(getIntent().getStringExtra("EVENT_UID"),
+                new EventDetailModule(getIntent().getStringExtra(EVENT_UID),
                         getIntent().getStringExtra("TEI_UID"))).inject(this);
         supportPostponeEnterTransition();
         super.onCreate(savedInstanceState);
-        eventUid = getIntent().getStringExtra("EVENT_UID");
+        eventUid = getIntent().getStringExtra(EVENT_UID);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_event_detail);
         binding.teiName.setText(getIntent().getStringExtra("TOOLBAR_TITLE"));
         binding.setPresenter(presenter);
@@ -117,15 +120,15 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
 
             supportStartPostponedEnterTransition();
 
-            if (getSupportFragmentManager().findFragmentByTag("EVENT_DATA_ENTRY") != null)
+            if (getSupportFragmentManager().findFragmentByTag(EVENT_DATA_ENTRY) != null)
                 getSupportFragmentManager().beginTransaction()
-                        .remove(getSupportFragmentManager().findFragmentByTag("EVENT_DATA_ENTRY"))
+                        .remove(getSupportFragmentManager().findFragmentByTag(EVENT_DATA_ENTRY))
                         .commit();
 
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.dataFragment, FormFragment.newInstance(
                             FormViewArguments.createForEvent(eventUid), false,
-                            false, true), "EVENT_DATA_ENTRY")
+                            false, true), EVENT_DATA_ENTRY)
                     .commit();
 
             if (!HelpManager.getInstance().isTutorialReadyForScreen(getClass().getName()))
@@ -271,7 +274,7 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
             HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
 
             if (!prefs.getBoolean("TUTO_TEI_EVENT", false) && !BuildConfig.DEBUG) {
-                HelpManager.getInstance().showHelp();/* getAbstractActivity().fancyShowCaseQueue.show();*/
+                HelpManager.getInstance().showHelp();
                 prefs.edit().putBoolean("TUTO_TEI_EVENT", true).apply();
             }
 

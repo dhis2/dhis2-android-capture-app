@@ -1,15 +1,17 @@
 package org.dhis2.usescases.teiDashboard.adapters;
 
 import android.content.Context;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentStatePagerAdapter;
 
 import org.dhis2.R;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.IndicatorsFragment;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.NotesFragment;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.RelationshipFragment;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.TEIDataFragment;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentStatePagerAdapter;
 
 /**
  * QUADRAM. Created by ppajuelo on 29/11/2017.
@@ -28,18 +30,18 @@ public class DashboardPagerAdapter extends FragmentStatePagerAdapter {
         this.currentProgram = program;
     }
 
+    @NonNull
     @Override
     public Fragment getItem(int position) {
         switch (position) {
-            default:
-                return TEIDataFragment.createInstance();
             case 1:
                 return IndicatorsFragment.createInstance();
             case 2:
-                return  RelationshipFragment.createInstance();
+                return RelationshipFragment.createInstance();
             case 3:
                 return NotesFragment.createInstance();
-
+            default:
+                return TEIDataFragment.createInstance();
         }
     }
 
@@ -51,14 +53,14 @@ public class DashboardPagerAdapter extends FragmentStatePagerAdapter {
     @Override
     public CharSequence getPageTitle(int position) {
         switch (position) {
-            default:
-                return context.getString(R.string.dashboard_overview);
             case 1:
                 return context.getString(R.string.dashboard_indicators);
             case 2:
                 return context.getString(R.string.dashboard_relationships);
             case 3:
                 return context.getString(R.string.dashboard_notes);
+            default:
+                return context.getString(R.string.dashboard_overview);
         }
     }
 }

@@ -1,7 +1,6 @@
 package org.dhis2.usescases.teiDashboard;
 
 import android.os.Bundle;
-import androidx.fragment.app.FragmentStatePagerAdapter;
 import android.widget.TextView;
 
 import org.dhis2.data.tuples.Pair;
@@ -20,6 +19,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel
 import java.util.Calendar;
 import java.util.List;
 
+import androidx.fragment.app.FragmentStatePagerAdapter;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 
@@ -29,7 +29,7 @@ import io.reactivex.Observable;
 
 public class TeiDashboardContracts {
 
-    public interface View extends AbstractActivityContracts.View {
+    public interface TeiDashboardView extends AbstractActivityContracts.View {
 
         void init(String teUid, String programUid);
 
@@ -50,8 +50,8 @@ public class TeiDashboardContracts {
         void showCatComboDialog(String eventId, String programStage, List<CategoryOptionComboModel> catComboOptions);
     }
 
-    public interface Presenter {
-        void init(View view, String uid, String programUid);
+    public interface TeiDashboardPresenter {
+        void init(TeiDashboardView view, String uid, String programUid);
 
         void showDescription(String description);
 
@@ -129,5 +129,5 @@ public class TeiDashboardContracts {
 
         void changeCatOption(String eventUid, CategoryOptionComboModel selectedOption);
 
-        }
+    }
 }

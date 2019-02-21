@@ -1,11 +1,7 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments;
 
 import android.content.Context;
-import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,11 +13,14 @@ import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.usescases.teiDashboard.TeiDashboardContracts;
 import org.dhis2.usescases.teiDashboard.adapters.IndicatorsAdapter;
 import org.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
-
 import org.hisp.dhis.android.core.program.ProgramIndicatorModel;
 
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.Fragment;
 import io.reactivex.functions.Consumer;
 
 
@@ -31,21 +30,19 @@ import io.reactivex.functions.Consumer;
 
 public class IndicatorsFragment extends FragmentGlobalAbstract {
 
-    FragmentIndicatorsBinding binding;
-
-    static IndicatorsFragment instance;
+    private static IndicatorsFragment instance;
     private IndicatorsAdapter adapter;
 
-    TeiDashboardContracts.Presenter presenter;
+    private TeiDashboardContracts.TeiDashboardPresenter presenter;
 
-    static public IndicatorsFragment getInstance() {
+    public static IndicatorsFragment getInstance() {
         if (instance == null)
             instance = new IndicatorsFragment();
         return instance;
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         presenter = ((TeiDashboardMobileActivity) context).getPresenter();
     }
@@ -53,7 +50,7 @@ public class IndicatorsFragment extends FragmentGlobalAbstract {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_indicators, container, false);
+        FragmentIndicatorsBinding binding = DataBindingUtil.inflate(inflater, R.layout.fragment_indicators, container, false);
         adapter = new IndicatorsAdapter();
         binding.indicatorsRecycler.setAdapter(adapter);
         return binding.getRoot();
@@ -67,17 +64,20 @@ public class IndicatorsFragment extends FragmentGlobalAbstract {
 
     @Override
     public void onDestroy() {
-        instance = null;
+        destroyInstance();
         super.onDestroy();
     }
 
+    private static void destroyInstance() {
+        instance = null;
+    }
+
     public Consumer<List<Trio<ProgramIndicatorModel, String, String>>> swapIndicators() {
-        return indicators -> {
-            adapter.setIndicators(indicators);
-        };
+        return indicators -> adapter.setIndicators(indicators);
     }
 
     public static Fragment createInstance() {
-        return instance = new IndicatorsFragment();
+        instance = new IndicatorsFragment();
+        return instance;
     }
 }

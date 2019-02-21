@@ -13,7 +13,7 @@ import androidx.annotation.NonNull;
 
 public class TeiProgramListContract {
 
-    public interface View extends AbstractActivityContracts.View {
+    public interface TeiProgramListView extends AbstractActivityContracts.View {
         void setActiveEnrollments(List<EnrollmentViewModel> enrollments);
 
         void setOtherEnrollments(List<EnrollmentViewModel> enrollments);
@@ -25,8 +25,8 @@ public class TeiProgramListContract {
         void changeCurrentProgram(String program);
     }
 
-    public interface Presenter extends AbstractActivityContracts.Presenter {
-        void init(View view);
+    public interface TeiProgramListPresenter extends AbstractActivityContracts.Presenter {
+        void init(TeiProgramListView view);
 
         void onBackClick();
 
@@ -39,8 +39,8 @@ public class TeiProgramListContract {
         String getProgramColor(String uid);
     }
 
-    public interface Interactor extends AbstractActivityContracts.Interactor {
-        void init(TeiProgramListContract.View mview, String trackedEntityId);
+    public interface TeiProgramListInteractor extends AbstractActivityContracts.Interactor {
+        void init(TeiProgramListView mview, String trackedEntityId);
 
         void enroll(String programUid, String uid);
 

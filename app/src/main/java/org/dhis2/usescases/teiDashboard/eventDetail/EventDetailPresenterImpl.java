@@ -4,8 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.os.Handler;
-import androidx.fragment.app.Fragment;
-import androidx.appcompat.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 
@@ -13,10 +11,10 @@ import org.dhis2.R;
 import org.dhis2.data.forms.FormFragment;
 import org.dhis2.data.forms.dataentry.DataEntryFragment;
 import org.dhis2.data.metadata.MetadataRepository;
-import org.dhis2.utils.custom_views.OrgUnitDialog;
-import org.dhis2.utils.custom_views.PeriodDialog;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.OnDialogClickListener;
+import org.dhis2.utils.custom_views.OrgUnitDialog;
+import org.dhis2.utils.custom_views.PeriodDialog;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.event.EventModel;
@@ -28,6 +26,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.Fragment;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -41,18 +41,18 @@ import static android.text.TextUtils.isEmpty;
  * QUADRAM. Created by ppajuelo on 19/12/2017.
  */
 
-public class EventDetailPresenter implements EventDetailContracts.Presenter {
+public class EventDetailPresenterImpl implements EventDetailContracts.EventDetailPresenter {
 
     private final EventDetailRepository eventDetailRepository;
     private final MetadataRepository metadataRepository;
     private final DataEntryStore dataEntryStore;
-    private EventDetailContracts.View view;
+    private EventDetailContracts.EventDetailView view;
     private CompositeDisposable disposable;
     private EventDetailModel eventDetailModel;
 
     private boolean changedEventStatus = false;
 
-    EventDetailPresenter(EventDetailRepository eventDetailRepository, MetadataRepository metadataRepository, DataEntryStore dataEntryStore) {
+    EventDetailPresenterImpl(EventDetailRepository eventDetailRepository, MetadataRepository metadataRepository, DataEntryStore dataEntryStore) {
         this.metadataRepository = metadataRepository;
         this.eventDetailRepository = eventDetailRepository;
         this.dataEntryStore = dataEntryStore;
@@ -61,7 +61,7 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
     }
 
     @Override
-    public void init(EventDetailContracts.View view) {
+    public void init(EventDetailContracts.EventDetailView view) {
         this.view = view;
     }
 
@@ -129,7 +129,6 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
 
     @Override
     public void eventStatus(View buttonView, EventModel eventModel, ProgramStageModel stageModel) {
-
         if (stageModel.accessDataWrite()) {
             FormFragment formFragment = (FormFragment) view.getAbstractActivity().getSupportFragmentManager().getFragments().get(0);
             formFragment.getDatesLayout().getRootView().requestFocus();
@@ -139,39 +138,42 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
                 } else if (formFragment.hasError() != null) {
                     view.showInfoDialog(view.getContext().getString(R.string.error), formFragment.hasError().content());
                 } else {
-                    List<Fragment> sectionFragments = formFragment.getChildFragmentManager().getFragments();
-                    boolean mandatoryOk = true;
-                    boolean hasError = false;
-                    for (Fragment dataEntryFragment : sectionFragments) {
-                        mandatoryOk = mandatoryOk && ((DataEntryFragment) dataEntryFragment).checkMandatory();
-                        hasError = ((DataEntryFragment) dataEntryFragment).checkErrors();
-                    }
-                    if (mandatoryOk && !hasError) {
-
-                        if (!isEmpty(formFragment.getMessageOnComplete())) {
-                            final AlertDialog dialog = view.showInfoDialog(view.getContext().getString(R.string.warning_error_on_complete_title), formFragment.getMessageOnComplete(), new OnDialogClickListener() {
-                                @Override
-                                public void onPossitiveClick(AlertDialog alertDialog) {
-                                    updateEventStatus(eventModel);
-                                }
-
-                                @Override
-                                public void onNegativeClick(AlertDialog alertDialog) {
-
-                                }
-                            });
-                            dialog.show();
-                        } else {
-                            updateEventStatus(eventModel);
-                        }
-                    } else if (!mandatoryOk)
-                        view.showInfoDialog(view.getContext().getString(R.string.unable_to_complete), view.getAbstractActivity().getString(R.string.missing_mandatory_fields));
-                    else
-                        view.showInfoDialog(view.getContext().getString(R.string.unable_to_complete), view.getAbstracContext().getString(R.string.field_errors));
+                    showMandatoryErrors(formFragment, eventModel);
                 }
             }, 1500);
         } else
             view.displayMessage(null);
+    }
+
+    private void showMandatoryErrors(FormFragment formFragment, EventModel eventModel) {
+        List<Fragment> sectionFragments = formFragment.getChildFragmentManager().getFragments();
+        boolean mandatoryOk = true;
+        boolean hasError = false;
+        for (Fragment dataEntryFragment : sectionFragments) {
+            mandatoryOk = mandatoryOk && ((DataEntryFragment) dataEntryFragment).checkMandatory();
+            hasError = ((DataEntryFragment) dataEntryFragment).checkErrors();
+        }
+        if (mandatoryOk && !hasError) {
+            if (!isEmpty(formFragment.getMessageOnComplete())) {
+                final AlertDialog dialog = view.showInfoDialog(view.getContext().getString(R.string.warning_error_on_complete_title), formFragment.getMessageOnComplete(), new OnDialogClickListener() {
+                    @Override
+                    public void onPossitiveClick(AlertDialog alertDialog) {
+                        updateEventStatus(eventModel);
+                    }
+
+                    @Override
+                    public void onNegativeClick(AlertDialog alertDialog) {
+                        // do nothing
+                    }
+                });
+                dialog.show();
+            } else {
+                updateEventStatus(eventModel);
+            }
+        } else if (!mandatoryOk)
+            view.showInfoDialog(view.getContext().getString(R.string.unable_to_complete), view.getAbstractActivity().getString(R.string.missing_mandatory_fields));
+        else
+            view.showInfoDialog(view.getContext().getString(R.string.unable_to_complete), view.getAbstracContext().getString(R.string.field_errors));
     }
 
     private void updateEventStatus(EventModel eventModel) {
@@ -277,7 +279,7 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
             dateDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
         }
 
-        if (eventDetailModel.getProgram().expiryPeriodType() != null){// eventDetailModel.orgUnitOpeningDate() != null) {
+        if (eventDetailModel.getProgram().expiryPeriodType() != null) {// eventDetailModel.orgUnitOpeningDate() != null) {
             Date minDate = DateUtils.getInstance().expDate(null,
                     eventDetailModel.getProgram().expiryDays() != null ? eventDetailModel.getProgram().expiryDays() : 0,
                     eventDetailModel.getProgram().expiryPeriodType());

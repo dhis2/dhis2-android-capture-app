@@ -7,8 +7,6 @@ import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.hisp.dhis.android.core.D2;
 
-import javax.inject.Singleton;
-
 import dagger.Module;
 import dagger.Provides;
 
@@ -20,14 +18,14 @@ import dagger.Provides;
 public class TeiDashboardModule {
     @Provides
     @PerActivity
-    TeiDashboardContracts.View provideView(TeiDashboardActivity mobileActivity) {
+    TeiDashboardContracts.TeiDashboardView provideView(TeiDashboardActivity mobileActivity) {
         return mobileActivity;
     }
 
     @Provides
     @PerActivity
-    TeiDashboardContracts.Presenter providePresenter(D2 d2, DashboardRepository dashboardRepository, MetadataRepository metadataRepository) {
-        return new TeiDashboardPresenter(d2, dashboardRepository, metadataRepository);
+    TeiDashboardContracts.TeiDashboardPresenter providePresenter(D2 d2, DashboardRepository dashboardRepository, MetadataRepository metadataRepository) {
+        return new TeiDashboardPresenterImpl(d2, dashboardRepository, metadataRepository);
     }
 
     @Provides

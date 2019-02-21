@@ -23,7 +23,7 @@ class EventViewHolder extends RecyclerView.ViewHolder {
         this.binding = binding;
     }
 
-    public void bind(TeiDashboardContracts.Presenter presenter, EventModel eventModel, ProgramStageModel programStage, EnrollmentModel enrollment) {
+    public void bind(TeiDashboardContracts.TeiDashboardPresenter presenter, EventModel eventModel, ProgramStageModel programStage, EnrollmentModel enrollment) {
         binding.setVariable(BR.event, eventModel);
         binding.setVariable(BR.stage, programStage);
         binding.setVariable(BR.enrollment, enrollment);
