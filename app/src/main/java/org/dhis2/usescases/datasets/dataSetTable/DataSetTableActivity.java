@@ -87,7 +87,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
     @Override
     public void setDataElements(Map<String, List<DataElementModel>> dataElements, Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>> catOptions) {
-        viewPagerAdapter = new DataSetSectionAdapter(getSupportFragmentManager(), accessDataWrite);
+        viewPagerAdapter = new DataSetSectionAdapter(getSupportFragmentManager(), accessDataWrite, getIntent().getStringExtra(Constants.DATA_SET_UID));
         binding.viewPager.setAdapter(viewPagerAdapter);
         binding.tabLayout.setupWithViewPager(binding.viewPager);
 

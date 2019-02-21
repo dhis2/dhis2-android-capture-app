@@ -12,7 +12,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.dhis2.App;
+
 import com.evrencoskun.tableview.TableView;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.common.collect.Table;
 
 import org.dhis2.R;
@@ -35,13 +38,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import javax.inject.Inject;
+
 import io.reactivex.Flowable;
 
 /**
  * QUADRAM. Created by ppajuelo on 02/10/2018.
  */
 
-public class DataSetSectionFragment extends FragmentGlobalAbstract {
+public class DataSetSectionFragment extends FragmentGlobalAbstract implements DataValueContract.View {
 
     FragmentDatasetSectionBinding binding;
     private DataSetTableContract.Presenter presenter;
@@ -50,16 +55,18 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
     private String sectionUid;
     private boolean accessDataWrite;
     private boolean tableCreated = false;
-
+    private String dataSetUid;
+    @Inject
+    DataValueContract.Presenter presenterFragment;
 
     @NonNull
-    public static DataSetSectionFragment create(@NonNull String sectionUid, boolean accessDataWrite) {
+    public static DataSetSectionFragment create(@NonNull String sectionUid, boolean accessDataWrite, String dataSetUid) {
         Bundle bundle = new Bundle();
         bundle.putString(Constants.DATA_SET_SECTION, sectionUid);
         bundle.putBoolean(Constants.ACCESS_DATA, accessDataWrite);
         DataSetSectionFragment dataSetSectionFragment = new DataSetSectionFragment();
         dataSetSectionFragment.setArguments(bundle);
-
+        bundle.putString(Constants.DATA_SET_UID, dataSetUid);
         return dataSetSectionFragment;
     }
 
@@ -68,7 +75,8 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
         super.onAttach(context);
         activity = (DataSetTableActivity) context;
         presenter = ((DataSetTableActivity) context).getPresenter();
-
+        dataSetUid = getArguments().getString(Constants.DATA_SET_UID, dataSetUid);
+        ((App) context.getApplicationContext()).userComponent().plus(new DataValueModule(dataSetUid)).inject(this);
     }
 
     @Nullable
@@ -78,6 +86,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
         adapter = new DataSetTableAdapter(getAbstracContext(), accessDataWrite);
         binding.tableView.setAdapter(adapter);
         binding.tableView.setEnabled(false);
+        binding.setPresenter(presenterFragment);
         return binding.getRoot();
     }
 
@@ -86,31 +95,33 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
         super.onResume();
         sectionUid = getArguments().getString(Constants.DATA_SET_SECTION);
         accessDataWrite = getArguments().getBoolean(Constants.ACCESS_DATA);
-        presenter.getData(this, sectionUid);
-        presenter.initializeProcessor(this);
+        presenterFragment.init(this, presenter.getOrgUnitUid(), presenter.getPeriodTypeName(),
+                presenter.getPeriodInitialDate(), presenter.getCatCombo());
+        presenterFragment.getData(this, sectionUid);
+        presenterFragment.initializeProcessor(this);
     }
 
 
-    public void createTable(RowAction rowAction) {
+    public void createTable() {
 
-        List<List<CategoryOptionModel>> columnHeaderItems = presenter.getCatOptions().get(sectionUid);
+        List<List<CategoryOptionModel>> columnHeaderItems = presenterFragment.getCatOptions().get(sectionUid);
         ArrayList<List<String>> cells = new ArrayList<>();
         List<List<FieldViewModel>> listFields = new ArrayList<>();
-        List<List<String>> listCatOptions = presenter.getCatOptionCombos(presenter.getMapWithoutTransform().get(sectionUid), 0, new ArrayList<>(), null);
+        List<List<String>> listCatOptions = presenterFragment.getCatOptionCombos(presenterFragment.getMapWithoutTransform().get(sectionUid), 0, new ArrayList<>(), null);
         int countColumn = 0;
         boolean isNumber = true;
         int row = 0, column = 0;
 
         binding.tableView.setHeaderCount(columnHeaderItems.size());
 
-        for (SectionModel section : presenter.getSections()) {
+        for (SectionModel section : presenterFragment.getSections()) {
             if (section.name().equals(sectionUid)) {
                 adapter.setShowColumnTotal(section.showColumnTotals());
                 adapter.setShowRowTotal(section.showRowTotals());
             }
         }
 
-        for (DataElementModel de : presenter.getDataElements().get(sectionUid)) {
+        for (DataElementModel de : presenterFragment.getDataElements().get(sectionUid)) {
             ArrayList<String> values = new ArrayList<>();
             ArrayList<FieldViewModel> fields = new ArrayList<>();
             int totalRow = 0;
@@ -120,17 +131,17 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
                 boolean compulsory = false;
                 FieldViewModelFactoryImpl fieldFactory = createField();
 
-                boolean editable = !presenter.getDataElementDisabled().containsKey(sectionUid) || !presenter.getDataElementDisabled().get(sectionUid).containsKey(de.uid())
-                        || !presenter.getDataElementDisabled().get(sectionUid).get(de.uid()).containsAll(catOpts);
+                boolean editable = !presenterFragment.getDataElementDisabled().containsKey(sectionUid) || !presenterFragment.getDataElementDisabled().get(sectionUid).containsKey(de.uid())
+                        || !presenterFragment.getDataElementDisabled().get(sectionUid).get(de.uid()).containsAll(catOpts);
 
-                if (presenter.getCompulsoryDataElement().containsKey(de.uid()) && presenter.getCompulsoryDataElement().get(de.uid()).containsAll(catOpts))
+                if (presenterFragment.getCompulsoryDataElement().containsKey(de.uid()) && presenterFragment.getCompulsoryDataElement().get(de.uid()).containsAll(catOpts))
                     compulsory = true;
 
                 if (de.valueType() != ValueType.NUMBER && de.valueType() != ValueType.INTEGER) {
                     isNumber = false;
                 }
 
-                for (DataSetTableModel dataValue : presenter.getDataValues()) {
+                for (DataSetTableModel dataValue : presenterFragment.getDataValues()) {
 
                     if (dataValue.listCategoryOption().containsAll(catOpts)
                             && Objects.equals(dataValue.dataElement(), de.uid())) {
@@ -142,7 +153,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
 
                         fields.add(fieldFactory.create(dataValue.id().toString(), "", de.valueType(),
                                 compulsory, "", dataValue.value(), sectionUid, true,
-                                editable, null, null, de.uid(), catOpts, "", row, column));
+                                editable, null, null, de.uid(), catOpts, "", row, column, dataValue.categoryOptionCombo()));
                         values.add(dataValue.value());
                         exitsValue = true;
                     }
@@ -152,7 +163,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
                     //If value type is null, it is due to is dataElement for Total row/column
                     fields.add(fieldFactory.create("", "", de.valueType(),
                             compulsory, "", "", sectionUid, true,
-                            editable, null, null, de.uid()== null ? "": de.uid(), catOpts, "", row, column));
+                            editable, null, null, de.uid()== null ? "": de.uid(), catOpts, "", row, column,""/*SET CATEGORYOPTIONCOMBO*/ ));
 
                     values.add("");
                 }
@@ -171,7 +182,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
 
         if (isNumber) {
             if (adapter.getShowColumnTotal())
-                setTotalColumn(listFields, cells, presenter.getDataElements(), row, column);
+                setTotalColumn(listFields, cells, presenterFragment.getDataElements(), row, column);
             if (adapter.getShowRowTotal())
                 for (int i = 0; i< columnHeaderItems.size(); i++) {
                     if(i==columnHeaderItems.size()-1)
@@ -182,16 +193,16 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
 
         }
 
-            adapter.swap(listFields);
+        adapter.swap(listFields);
         if(!tableCreated)
             adapter.setAllItems(
-                    presenter.getCatOptions().get(sectionUid),
-                    presenter.getDataElements().get(sectionUid),
+                    presenterFragment.getCatOptions().get(sectionUid),
+                    presenterFragment.getDataElements().get(sectionUid),
                     cells, adapter.getShowRowTotal());
         else
             adapter.setCellItems(cells);
 
-            tableCreated = true;
+        tableCreated = true;
     }
 
     private void setTotalColumn(List<List<FieldViewModel>> listFields, ArrayList<List<String>> cells,
@@ -214,7 +225,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
         int[] totals = new int[cells.get(0).size()];
         for(List<String> dataValues : cells){
             for (int i=0; i< dataValues.size(); i++){
-                if(!dataValues.get(0).isEmpty())
+                if(!dataValues.get(i).isEmpty())
                     totals[i] += Integer.parseInt(dataValues.get(i));
             }
         }
@@ -222,7 +233,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
         for (int column : totals) {
             fields.add(fieldFactory.create("", "", ValueType.INTEGER,
                     false, "", String.valueOf(column), sectionUid, true,
-                    false, null, null, "",new ArrayList<>(),"", row, columnPos));
+                    false, null, null, "",new ArrayList<>(),"", row, columnPos, ""));
 
             values.add(String.valueOf(column));
         }
@@ -239,7 +250,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
         FieldViewModelFactoryImpl fieldFactory = createField();
         fields.add(fieldFactory.create("", "", ValueType.INTEGER,
                 false, "", String.valueOf(totalRow), sectionUid, true,
-                false, null, null, "",new ArrayList<>(),"", row, column));
+                false, null, null, "",new ArrayList<>(),"", row, column, ""));
         values.add(String.valueOf(totalRow));
 
     }
@@ -264,5 +275,11 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
 
     public void updateData(RowAction rowAction) {
         adapter.updateValue(rowAction);
+    }
+
+    @Override
+    public void showSnackBar() {
+        Snackbar mySnackbar = Snackbar.make(binding.getRoot(), R.string.datavalue_saved , Snackbar.LENGTH_SHORT);
+        mySnackbar.show();
     }
 }

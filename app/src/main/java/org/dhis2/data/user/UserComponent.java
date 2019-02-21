@@ -13,6 +13,8 @@ import org.dhis2.usescases.about.AboutComponent;
 import org.dhis2.usescases.about.AboutModule;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableComponent;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModule;
+import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataValueComponent;
+import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataValueModule;
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailComponent;
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailModule;
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialComponent;
@@ -127,6 +129,9 @@ public interface UserComponent {
 
     @NonNull
     DataSetTableComponent plus(DataSetTableModule dataSetTableModule);
+
+    @NonNull
+    DataValueComponent plus(DataValueModule dataValueModule);
 
     @NonNull
     ReservedValueComponent plus(ReservedValueModule reservedValueModule);
