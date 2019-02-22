@@ -1,7 +1,5 @@
 package org.dhis2.data.forms.dataentry.fields.coordinate;
 
-import androidx.databinding.DataBindingUtil;
-import androidx.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -10,6 +8,8 @@ import org.dhis2.data.forms.dataentry.fields.Row;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.CustomFormCoordinateBinding;
 
+import androidx.annotation.NonNull;
+import androidx.databinding.DataBindingUtil;
 import io.reactivex.processors.FlowableProcessor;
 
 /**
@@ -33,12 +33,14 @@ public class CoordinateRow implements Row<CoordinateHolder, CoordinateViewModel>
         this.renderType = null;
     }
 
-    public CoordinateRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor,
-                         @NonNull FlowableProcessor<Integer> currentPosition,boolean isBgTransparent, String renderType) {
+    public CoordinateRow(@NonNull LayoutInflater layoutInflater,
+                         @NonNull FlowableProcessor<RowAction> processor,
+                         boolean isBgTransparent,
+                         String renderType) {
         this.inflater = layoutInflater;
         this.processor = processor;
         this.isBgTransparent = isBgTransparent;
-        this.renderType= renderType;
+        this.renderType = renderType;
     }
 
     @NonNull

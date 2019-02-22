@@ -747,7 +747,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     @NonNull
     @Override
     public Consumer<List<FieldViewModel>> showFields(String sectionUid) {
-        return fields -> swap(fields, sectionUid);
+        return this::swap;
     }
 
     @Override
@@ -755,7 +755,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         presenter.getProgramStage(programStageUid);
     }
 
-    void swap(@NonNull List<FieldViewModel> updates, String sectionUid) {
+    void swap(@NonNull List<FieldViewModel> updates) {
 
         List<FieldViewModel> realUpdates = new ArrayList<>();
         if (sectionsToHide != null && !sectionsToHide.isEmpty()) {

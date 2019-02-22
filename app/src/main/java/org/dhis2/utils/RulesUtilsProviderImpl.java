@@ -175,6 +175,7 @@ public class RulesUtilsProviderImpl implements RulesUtilsProvider {
         }
     }
 
+    @SuppressWarnings("squid:S1172")
     private void createEvent(RuleActionCreateEvent createEvent, Map<String, FieldViewModel> fieldViewModels, RulesActionCallbacks rulesActionCallbacks) {
         //TODO: Create Event
     }

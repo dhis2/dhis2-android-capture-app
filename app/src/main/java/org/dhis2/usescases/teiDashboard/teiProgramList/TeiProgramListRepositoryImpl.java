@@ -224,6 +224,7 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
         return null;
     }
 
+    @SuppressWarnings("squid:S1172")
     private void updateProgramTable(Date lastUpdated, String programUid) {
         /*ContentValues program = new ContentValues();TODO: Crash if active
         program.put(EnrollmentModel.Columns.LAST_UPDATED, BaseIdentifiableObject.DATE_FORMAT.format(lastUpdated));

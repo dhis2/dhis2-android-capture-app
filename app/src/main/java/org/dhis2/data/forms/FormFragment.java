@@ -456,7 +456,9 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
         bundle.putString("PROGRAM_UID", programUid);
         bundle.putString("TEI_UID", teiUid);
         startActivity(TeiDashboardMobileActivity.class, bundle, false, false, null);
-        getActivity().finish();
+        if (getActivity() != null && isAdded()) {
+            getActivity().finish();
+        }
     }
 
     private void publishCoordinatesChanged(Double lat, Double lon) {
@@ -465,7 +467,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
         }
     }
 
-    public void hideSections(String uid) {
+    public void hideSections() {
         formPresenter.checkSections();
     }
 

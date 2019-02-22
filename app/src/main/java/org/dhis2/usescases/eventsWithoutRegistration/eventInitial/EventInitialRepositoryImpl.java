@@ -277,6 +277,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
         }
     }
 
+    @SuppressWarnings("squid:S1172")
     private void updateProgramTable(Date lastUpdated, String programUid) {
         //TODO: Update program causes crash
         /* ContentValues program = new ContentValues();

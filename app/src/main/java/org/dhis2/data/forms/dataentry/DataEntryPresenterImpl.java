@@ -209,7 +209,7 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
         dataEntryStore.save(hideField.field(), null);
     }
 
-    private void applyRuleActionHideSection(RuleAction ruleAction, Map<String, FieldViewModel> fieldViewModels) {
+    private void applyRuleActionHideSection(RuleAction ruleAction) {
         RuleActionHideSection hideSection = (RuleActionHideSection) ruleAction;
         dataEntryView.removeSection(hideSection.programStageSection());
     }
@@ -281,7 +281,7 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
                 applyRuleActionDisplayText(ruleAction, fieldViewModels, ruleEffect);
 
             } else if (ruleAction instanceof RuleActionHideSection) {
-                applyRuleActionHideSection(ruleAction, fieldViewModels);
+                applyRuleActionHideSection(ruleAction);
 
             } else if (ruleAction instanceof RuleActionAssign) {
                 applyRuleActionAssign(ruleAction, fieldViewModels, ruleEffect);

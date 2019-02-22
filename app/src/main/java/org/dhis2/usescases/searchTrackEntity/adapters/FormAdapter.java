@@ -88,7 +88,7 @@ public class FormAdapter extends RecyclerView.Adapter {
         rows = new ArrayList<>();
 
         rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, false));
-        rows.add(BUTTON, new FileRow(layoutInflater, processor, false));
+        rows.add(BUTTON, new FileRow(layoutInflater, false));
         rows.add(CHECKBOX, new RadioButtonRow(layoutInflater, processor, false));
         rows.add(SPINNER, new SpinnerRow(layoutInflater, processor, processorOptionSet, false));
         rows.add(COORDINATES, new CoordinateRow(layoutInflater, processor, false));
@@ -127,7 +127,7 @@ public class FormAdapter extends RecyclerView.Adapter {
         rows.get(holder.getItemViewType()).onBind(holder, viewModel);
     }
 
-    private FieldViewModel getFieldViewModel(@NonNull RecyclerView.ViewHolder holder){
+    private FieldViewModel getFieldViewModel(@NonNull RecyclerView.ViewHolder holder) {
         FieldViewModel viewModel;
         TrackedEntityAttributeModel attr = attributeList.get(holder.getAdapterPosition() - programData);
         String label = attr.displayName();

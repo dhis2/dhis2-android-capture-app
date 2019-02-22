@@ -129,7 +129,7 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
     @Override
     public void removeSection(String sectionUid) {
         if (formFragment instanceof FormFragment) {
-            ((FormFragment) formFragment).hideSections(sectionUid);
+            ((FormFragment) formFragment).hideSections();
         }
     }
 

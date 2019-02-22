@@ -67,7 +67,7 @@ public class OrgUnitButton extends RelativeLayout {
 
     }
 
-    public void setIsBgTransparent(boolean isBgTransparent) {
+    public void setIsBgTransparent() {
         setLayout();
     }
 

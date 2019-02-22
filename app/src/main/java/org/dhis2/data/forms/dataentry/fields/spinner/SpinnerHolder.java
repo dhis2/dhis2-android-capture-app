@@ -48,7 +48,10 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
     private int numberOfOptions = 0;
     private List<OptionModel> options;
 
-    SpinnerHolder(ViewDataBinding mBinding, FlowableProcessor<RowAction> processor, FlowableProcessor<Trio<String, String, Integer>> processorOptionSet, boolean isBackgroundTransparent, String renderType) {
+    SpinnerHolder(ViewDataBinding mBinding,
+                  FlowableProcessor<RowAction> processor,
+                  FlowableProcessor<Trio<String, String, Integer>> processorOptionSet,
+                  String renderType) {
         super(mBinding);
         this.editText = mBinding.getRoot().findViewById(R.id.input_editText);
         this.iconView = mBinding.getRoot().findViewById(R.id.renderImage);

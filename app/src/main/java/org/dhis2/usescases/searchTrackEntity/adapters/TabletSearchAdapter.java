@@ -3,10 +3,12 @@ package org.dhis2.usescases.searchTrackEntity.adapters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import androidx.databinding.DataBindingUtil;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.evrencoskun.tableview.adapter.AbstractTableAdapter;
+import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder;
 
 import org.dhis2.R;
 import org.dhis2.data.metadata.MetadataRepository;
@@ -15,9 +17,6 @@ import org.dhis2.usescases.searchTrackEntity.SearchTEContractsModule;
 import org.dhis2.usescases.searchTrackEntity.tableHolder.CellHolder;
 import org.dhis2.usescases.searchTrackEntity.tableHolder.HeaderHolder;
 import org.dhis2.usescases.searchTrackEntity.tableHolder.RowHolder;
-import com.evrencoskun.tableview.adapter.AbstractTableAdapter;
-import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder;
-
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
@@ -25,6 +24,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.databinding.DataBindingUtil;
 import io.reactivex.Observable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
@@ -37,23 +37,20 @@ public class TabletSearchAdapter extends AbstractTableAdapter<String, TrackedEnt
 
     private final MetadataRepository metadata;
     private List<TrackedEntityInstanceModel> teis;
-    private List<ProgramModel> programs;
     private SearchTEContractsModule.SearchTEPresenter presenter;
 
-    public TabletSearchAdapter(Context p_jContext, SearchTEContractsModule.SearchTEPresenter presenter, MetadataRepository metadataRepository) {
-        super(p_jContext);
+    public TabletSearchAdapter(Context pJContext, SearchTEContractsModule.SearchTEPresenter presenter, MetadataRepository metadataRepository) {
+        super(pJContext);
 
         this.metadata = metadataRepository;
         this.presenter = presenter;
     }
 
 
-    @SuppressLint("CheckResult")
+    @SuppressLint({"CheckResult", "RxLeakedSubscription"})
     public void setItems(List<TrackedEntityInstanceModel> teis, List<ProgramModel> programs, List<TrackedEntityAttributeModel> formData) {
 
         this.teis = teis;
-        this.programs = programs;
-
         List<String> headers = new ArrayList<>();
         for (TrackedEntityAttributeModel trackedEntityAttributeModel : formData) {
             headers.add(trackedEntityAttributeModel.displayName());
@@ -110,18 +107,18 @@ public class TabletSearchAdapter extends AbstractTableAdapter<String, TrackedEnt
     }
 
     @Override
-    public void onBindCellViewHolder(AbstractViewHolder holder, Object p_jValue, int p_nXPosition, int p_nYPosition) {
-        ((CellHolder) holder).bind(presenter, teis.get(p_nYPosition), metadata, p_nYPosition, p_nXPosition);
+    public void onBindCellViewHolder(AbstractViewHolder holder, Object pJValue, int pNXPosition, int pNYPosition) {
+        ((CellHolder) holder).bind(presenter, teis.get(pNYPosition), metadata, pNYPosition, pNXPosition);
     }
 
     @Override
-    public void onBindColumnHeaderViewHolder(AbstractViewHolder holder, Object p_jValue, int p_nXPosition) {
-        ((HeaderHolder) holder).bind((String) p_jValue);
+    public void onBindColumnHeaderViewHolder(AbstractViewHolder holder, Object pJValue, int pNXPosition) {
+        ((HeaderHolder) holder).bind((String) pJValue);
     }
 
     @Override
-    public void onBindRowHeaderViewHolder(AbstractViewHolder holder, Object p_jValue, int p_nYPosition) {
-        ((RowHolder) holder).bind(teis.get(p_nYPosition), p_nYPosition);
+    public void onBindRowHeaderViewHolder(AbstractViewHolder holder, Object pJValue, int pNYPosition) {
+        ((RowHolder) holder).bind(pNYPosition);
     }
 
     @Override
@@ -132,5 +129,4 @@ public class TabletSearchAdapter extends AbstractTableAdapter<String, TrackedEnt
     public TrackedEntityInstanceModel getTEI(int position) {
         return teis.get(position);
     }
-
 }

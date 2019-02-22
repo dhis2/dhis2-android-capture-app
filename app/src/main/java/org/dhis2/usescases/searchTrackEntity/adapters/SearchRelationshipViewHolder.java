@@ -35,6 +35,7 @@ public class SearchRelationshipViewHolder extends RecyclerView.ViewHolder {
     }
 
 
+    @SuppressWarnings("squid:S1172")
     public void bind(SearchTEContractsModule.SearchTEPresenter presenter, SearchTeiModel teiModel, MetadataRepository metadataRepository) {
         this.presenter = presenter;
         this.trackedEntityInstanceModel = teiModel;

@@ -21,9 +21,8 @@ public class DataSetDetailModule {
 
     @Provides
     @PerActivity
-    DataSetDetailContract.DataSetDetailPresenter providesPresenter(DataSetDetailRepository dataSetDetailRepository,
-                                                                   MetadataRepository metadataRepository) {
-        return new DataSetDetailPresenterImpl(dataSetDetailRepository, metadataRepository);
+    DataSetDetailContract.DataSetDetailPresenter providesPresenter(DataSetDetailRepository dataSetDetailRepository) {
+        return new DataSetDetailPresenterImpl(dataSetDetailRepository);
     }
 
     @Provides

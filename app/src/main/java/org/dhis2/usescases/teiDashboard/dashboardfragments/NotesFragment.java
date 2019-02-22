@@ -57,8 +57,8 @@ public class NotesFragment extends FragmentGlobalAbstract {
         presenter.setNoteProcessor(noteAdapter.asFlowable());
         presenter.subscribeToNotes(this);
         binding.notesRecycler.setAdapter(noteAdapter);
-        binding.buttonAdd.setOnClickListener(this::addNote);
-        binding.buttonDelete.setOnClickListener(this::clearNote);
+        binding.buttonAdd.setOnClickListener(view -> addNote());
+        binding.buttonDelete.setOnClickListener(view -> clearNote());
         binding.editNote.setOnTouchListener((v, event) -> {
             if (v.getId() == R.id.edit_note) {
                 v.getParent().requestDisallowInterceptTouchEvent(true);
@@ -75,25 +75,24 @@ public class NotesFragment extends FragmentGlobalAbstract {
         return binding.getRoot();
     }
 
-    private void addNote(View view) {
+    private void addNote() {
         if (presenter.hasProgramWritePermission()) {
             noteAdapter.addNote(binding.editNote.getText().toString());
-            clearNote(view);
+            clearNote();
         } else
             activity.displayMessage(getString(R.string.search_access_error));
     }
 
-    private void clearNote(View view) {
+    private void clearNote() {
         binding.editNote.getText().clear();
     }
 
     public Consumer<List<NoteModel>> swapNotes() {
-        return noteModels -> {
-            noteAdapter.setItems(noteModels);
-        };
+        return noteModels -> noteAdapter.setItems(noteModels);
     }
 
     public static Fragment createInstance() {
-        return instance = new NotesFragment();
+        instance = new NotesFragment();
+        return instance;
     }
 }

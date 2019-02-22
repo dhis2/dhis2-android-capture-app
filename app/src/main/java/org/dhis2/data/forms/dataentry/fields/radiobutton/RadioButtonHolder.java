@@ -1,7 +1,6 @@
 package org.dhis2.data.forms.dataentry.fields.radiobutton;
 
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.RadioGroup;
 
 import org.dhis2.R;
@@ -24,9 +23,7 @@ public class RadioButtonHolder extends FormViewHolder {
     private final FormYesNoBinding formYesNoBinding;
     private final View clearButton;
 
-    private RadioButtonViewModel viewModel;
-
-    RadioButtonHolder(ViewGroup parent, FormYesNoBinding binding, FlowableProcessor<RowAction> processor) {
+    RadioButtonHolder(FormYesNoBinding binding, FlowableProcessor<RowAction> processor) {
         super(binding);
         radioGroup = binding.customYesNo.getRadioGroup();
         clearButton = binding.customYesNo.getClearButton();
@@ -36,12 +33,8 @@ public class RadioButtonHolder extends FormViewHolder {
 
 
     public void update(RadioButtonViewModel checkBoxViewModel) {
-
-
-        this.viewModel = checkBoxViewModel;
-
         radioGroup.setOnCheckedChangeListener(null);
-        descriptionText = viewModel.description();
+        descriptionText = checkBoxViewModel.description();
         formYesNoBinding.setDescription(descriptionText);
         label = new StringBuilder(checkBoxViewModel.label());
         formYesNoBinding.customYesNo.setValueType(checkBoxViewModel.valueType());

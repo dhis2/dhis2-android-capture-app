@@ -195,7 +195,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.EventCapt
                             } else {
                                 DataEntryArguments arguments =
                                         DataEntryArguments.forEvent(formSectionViewModel.uid());
-                                EventCaptureFormFragment.getInstance().setSingleSection(arguments, formSectionViewModel);
+                                EventCaptureFormFragment.getInstance().setSingleSection(arguments);
                             }
 
                             EventCaptureFormFragment.getInstance().setSectionProgress(

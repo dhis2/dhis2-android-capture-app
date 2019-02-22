@@ -255,6 +255,7 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
                 .map(enrollment -> enrollment.enrollmentStatus() == EnrollmentStatus.ACTIVE);
     }
 
+    @SuppressWarnings("squid:S1172")
     private void updateProgramTable(Date lastUpdated, String programUid) {
        /* ContentValues program = new ContentValues();  TODO: Crash if active
         program.put(EnrollmentModel.Columns.LAST_UPDATED, BaseIdentifiableObject.DATE_FORMAT.format(lastUpdated));
@@ -262,7 +263,6 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
     }
 
     private void updateTEi() {
-
         ContentValues tei = new ContentValues();
         tei.put(TrackedEntityInstanceModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
         tei.put(TrackedEntityInstanceModel.Columns.STATE, State.TO_UPDATE.name());// TODO: Check if state is TO_POST

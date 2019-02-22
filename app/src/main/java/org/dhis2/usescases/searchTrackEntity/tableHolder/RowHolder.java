@@ -11,14 +11,14 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
 public class RowHolder extends AbstractViewHolder {
 
-    ItemTableRowBinding binding;
+    private ItemTableRowBinding binding;
 
     public RowHolder(ItemTableRowBinding binding) {
         super(binding.getRoot());
         this.binding = binding;
     }
 
-    public void bind(TrackedEntityInstanceModel trackedEntityInstanceModel, int p_nYPosition) {
-        binding.setPosition(p_nYPosition);
+    public void bind(int pNYPosition) {
+        binding.setPosition(pNYPosition);
     }
 }

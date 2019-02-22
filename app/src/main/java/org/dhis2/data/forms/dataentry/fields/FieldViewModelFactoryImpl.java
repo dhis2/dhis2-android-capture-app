@@ -1,8 +1,5 @@
 package org.dhis2.data.forms.dataentry.fields;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.dhis2.data.forms.dataentry.fields.age.AgeViewModel;
 import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel;
 import org.dhis2.data.forms.dataentry.fields.datetime.DateTimeViewModel;
@@ -15,6 +12,9 @@ import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import static android.text.TextUtils.isEmpty;
 import static org.dhis2.utils.Preconditions.isNull;
@@ -115,7 +115,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
             case IMAGE:
             case TRACKER_ASSOCIATE:
             case USERNAME:
-                return UnsupportedViewModel.create(id, label, mandatory, value, section, editable, description);
+                return UnsupportedViewModel.create(id, label, value, section, editable, description);
             default:
                 return EditTextViewModel.create(id, label, mandatory, value, hintEnterText, 1, type, section, editable, description, fieldRendering);
         }
