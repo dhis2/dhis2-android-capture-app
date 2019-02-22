@@ -16,7 +16,7 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
 
     private String orgUnitUid;
     private String periodTypeName;
-    private String periodInitialDate;
+    private String periodFinalDate;
     private String catCombo;
 
     public DataSetTablePresenter(DataSetTableRepository dataSetTableRepository) {
@@ -29,12 +29,13 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
     }
 
     @Override
-    public void init(DataSetTableContract.View view, String orgUnitUid, String periodTypeName, String periodInitialDate, String catCombo) {
+    public void init(DataSetTableContract.View view, String orgUnitUid, String periodTypeName, String catCombo,
+                     String periodFinalDate) {
         this.view = view;
         compositeDisposable = new CompositeDisposable();
         this.orgUnitUid = orgUnitUid;
         this.periodTypeName = periodTypeName;
-        this.periodInitialDate = periodInitialDate;
+        this.periodFinalDate = periodFinalDate;
         this.catCombo = catCombo;
 
 
@@ -74,8 +75,8 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
         return periodTypeName;
     }
 
-    public String getPeriodInitialDate() {
-        return periodInitialDate;
+    public String getPeriodFinalDate() {
+        return periodFinalDate;
     }
 
     public String getCatCombo() {

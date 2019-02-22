@@ -9,6 +9,7 @@ import org.hisp.dhis.android.core.dataelement.DataElementModel;
 import org.hisp.dhis.android.core.dataset.DataSetModel;
 import org.hisp.dhis.android.core.dataset.SectionModel;
 import org.hisp.dhis.android.core.datavalue.DataValueModel;
+import org.hisp.dhis.android.core.period.PeriodModel;
 
 import java.util.List;
 import java.util.Map;
@@ -37,4 +38,6 @@ public interface DataValueRepository {
     Flowable<String> getNewIDDataValue();
 
     Flowable<Map<String, List<String>>> getCategoryOptionComboCatOption();
+
+    Flowable<PeriodModel> getPeriod(String periodId);
 }

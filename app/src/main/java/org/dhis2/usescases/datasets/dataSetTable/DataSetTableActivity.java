@@ -76,7 +76,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     @Override
     protected void onResume() {
         super.onResume();
-        presenter.init(this, orgUnitUid, periodTypeName, periodInitialDate, catCombo);
+        presenter.init(this, orgUnitUid, periodTypeName, catCombo, periodInitialDate);
     }
 
     @Override

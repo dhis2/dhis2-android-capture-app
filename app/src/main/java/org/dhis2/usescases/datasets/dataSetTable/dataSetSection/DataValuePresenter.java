@@ -8,11 +8,13 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Quintet;
 import org.dhis2.data.tuples.Sextet;
+import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel;
 import org.hisp.dhis.android.core.category.CategoryModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
+import org.hisp.dhis.android.core.dataset.DataSetModel;
 import org.hisp.dhis.android.core.dataset.SectionModel;
 import org.hisp.dhis.android.core.datavalue.DataValueModel;
 
@@ -36,7 +38,7 @@ public class DataValuePresenter implements DataValueContract.Presenter{
 
     private String orgUnitUid;
     private String periodTypeName;
-    private String periodInitialDate;
+    private String periodFinalDate;
     private String catCombo;
 
     private Pair<Map<String, List<DataElementModel>>, Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>>> tableData;
@@ -46,6 +48,7 @@ public class DataValuePresenter implements DataValueContract.Presenter{
     private CompositeDisposable compositeDisposable;
     private Map<String, List<DataElementModel>> dataElements;
     Map<String, List<List<CategoryOptionModel>>> catOptions;
+    DataSetModel dataSet;
     List<DataSetTableModel> dataValues;
     Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>> mapWithoutTransform;
     Map<String, Map<String, List<String>>> dataElementDisabled;
@@ -59,13 +62,13 @@ public class DataValuePresenter implements DataValueContract.Presenter{
     }
 
     @Override
-    public void init(DataValueContract.View view, String orgUnitUid, String periodTypeName, String periodInitialDate, String catCombo) {
+    public void init(DataValueContract.View view, String orgUnitUid, String periodTypeName, String periodFinalDate, String catCombo) {
         compositeDisposable = new CompositeDisposable();
         this.view = view;
         dataValuesChanged = new ArrayList<>();
         this.orgUnitUid = orgUnitUid;
         this.periodTypeName = periodTypeName;
-        this.periodInitialDate = periodInitialDate;
+        this.periodFinalDate = periodFinalDate;
         this.catCombo = catCombo;
 
         compositeDisposable.add(
@@ -81,6 +84,15 @@ public class DataValuePresenter implements DataValueContract.Presenter{
                                 Timber::e
                         )
         );
+
+        if(periodFinalDate == null)
+            compositeDisposable.add(
+                    repository.getPeriod(periodTypeName)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(view::setPeriod,
+                                    Timber::e)
+            );
     }
 
     @Override
@@ -137,34 +149,36 @@ public class DataValuePresenter implements DataValueContract.Presenter{
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(rowAction -> {
                             boolean exists = false;
-                            DataSetTableModel dataSetTableModel = null;
-                            for(DataSetTableModel dataValue: dataValues){
-                                if(dataValue.dataElement().equals(rowAction.dataElement()) &&
-                                        dataValue.listCategoryOption().containsAll(rowAction.listCategoryOption())){
-                                    dataSetTableModel = DataSetTableModel.create(dataValue.id(), dataValue.dataElement(),
-                                            dataValue.period(), dataValue.organisationUnit(),
-                                            dataValue.categoryOptionCombo(), dataValue.attributeOptionCombo(),
-                                            rowAction.value(), dataValue.storedBy(),
-                                            dataValue.catOption(), dataValue.listCategoryOption() );
-                                    dataValues.remove(dataValue);
+                            if(rowAction.value() != null && !rowAction.value().isEmpty()) {
+                                DataSetTableModel dataSetTableModel = null;
+                                for (DataSetTableModel dataValue : dataValues) {
+                                    if (dataValue.dataElement().equals(rowAction.dataElement()) &&
+                                            dataValue.listCategoryOption().containsAll(rowAction.listCategoryOption())) {
+                                        dataSetTableModel = DataSetTableModel.create(dataValue.id(), dataValue.dataElement(),
+                                                dataValue.period(), dataValue.organisationUnit(),
+                                                dataValue.categoryOptionCombo(), dataValue.attributeOptionCombo(),
+                                                rowAction.value(), dataValue.storedBy(),
+                                                dataValue.catOption(), dataValue.listCategoryOption());
+                                        dataValues.remove(dataValue);
+                                        dataValues.add(dataSetTableModel);
+                                        exists = true;
+                                        break;
+                                    }
+                                }
+                                if (!exists && rowAction.value() != null) {
+                                    String catOptionCombo = "";
+                                    for (Map.Entry<String, List<String>> entry : catOptionComboCatOptions.entrySet()) {
+                                        if (entry.getValue().containsAll(rowAction.listCategoryOption()))
+                                            catOptionCombo = entry.getKey();
+                                    }
+                                    dataSetTableModel = DataSetTableModel.create(Long.parseLong("0"), rowAction.dataElement(), periodTypeName, orgUnitUid,
+                                            catOptionCombo, catCombo, rowAction.value() != null ? rowAction.value() : "", "",
+                                            "", rowAction.listCategoryOption());
                                     dataValues.add(dataSetTableModel);
-                                    exists = true;
-                                    break;
                                 }
+                                dataValuesChanged.add(dataSetTableModel);
+                                dataSetSectionFragment.updateData(rowAction);
                             }
-                            if(!exists && rowAction.value() != null) {
-                                String catOptionCombo = "";
-                                for(Map.Entry<String, List<String>> entry : catOptionComboCatOptions.entrySet()){
-                                    if(entry.getValue().containsAll(rowAction.listCategoryOption()))
-                                        catOptionCombo = entry.getKey();
-                                }
-                                dataSetTableModel = DataSetTableModel.create(Long.parseLong("0"), rowAction.dataElement(), periodTypeName, orgUnitUid,
-                                        catOptionCombo, catCombo, rowAction.value()!= null ? rowAction.value(): "", "",
-                                        "", rowAction.listCategoryOption());
-                                dataValues.add(dataSetTableModel);
-                            }
-                            dataValuesChanged.add(dataSetTableModel);
-                            dataSetSectionFragment.updateData(rowAction);
                         },
                         Timber::e));
     }
@@ -176,7 +190,7 @@ public class DataValuePresenter implements DataValueContract.Presenter{
                 repository.getCatOptionCombo()
                         .flatMap(data ->
                                 Flowable.zip(
-                                        repository.getDataValues(orgUnitUid, periodTypeName, periodInitialDate, catCombo),
+                                        repository.getDataValues(orgUnitUid, periodTypeName, periodFinalDate, catCombo),
                                         repository.getDataSet(),
                                         repository.getGreyedFields(getUidCatOptionsCombo(data)),
                                         repository.getMandatoryDataElement(getUidCatOptionsCombo(data)),
@@ -191,6 +205,7 @@ public class DataValuePresenter implements DataValueContract.Presenter{
                                     dataElements = tableData.val0();
                                     catOptions =  transformCategories(tableData.val1());
                                     dataValues = sextet.val0();
+                                    dataSet = sextet.val1();
                                     mapWithoutTransform = tableData.val1();
                                     dataElementDisabled = sextet.val2();
                                     compulsoryDataElement = sextet.val3();
@@ -309,4 +324,7 @@ public class DataValuePresenter implements DataValueContract.Presenter{
     public List<SectionModel> getSections() {
         return sections;
     }
+
+    @Override
+    public DataSetModel getDataSetModel(){ return dataSet;}
 }

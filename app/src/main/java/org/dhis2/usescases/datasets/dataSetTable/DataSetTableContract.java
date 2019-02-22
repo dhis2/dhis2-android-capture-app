@@ -32,11 +32,11 @@ public class DataSetTableContract {
     public interface Presenter extends AbstractActivityContracts.Presenter {
         void onBackClick();
 
-        void init(View view, String orgUnitUid, String periodTypeName, String periodInitialDate, String catCombo);
+        void init(View view, String orgUnitUid, String periodTypeName, String catCombo, String periodFinalDate);
 
         String getOrgUnitUid();
         String getPeriodTypeName();
-        String getPeriodInitialDate();
+        String getPeriodFinalDate();
         String getCatCombo();
     }
 

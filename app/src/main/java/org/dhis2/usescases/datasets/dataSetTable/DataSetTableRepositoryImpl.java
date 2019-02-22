@@ -219,7 +219,7 @@ public class DataSetTableRepositoryImpl implements DataSetTableRepository {
     }
 
     @Override
-    public Flowable<List<DataSetTableModel>> getDataValues(String orgUnitUid, String periodType, String initPeriodType, String catOptionComb) {
+    public Flowable<List<DataSetTableModel>> getDataValues(String orgUnitUid, String periodType, String periodFinalDate, String catOptionComb) {
         List<DataSetTableModel> listData = new ArrayList<>();
         return briteDatabase.createQuery(DataValueModel.TABLE, DATA_VALUES, orgUnitUid, catOptionComb,dataSetUid, periodType)
                 .mapToList(cursor -> {

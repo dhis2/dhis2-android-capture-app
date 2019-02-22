@@ -7,8 +7,10 @@ import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.hisp.dhis.android.core.category.CategoryModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
+import org.hisp.dhis.android.core.dataset.DataSetModel;
 import org.hisp.dhis.android.core.dataset.SectionModel;
 import org.hisp.dhis.android.core.datavalue.DataValueModel;
+import org.hisp.dhis.android.core.period.PeriodModel;
 
 import java.util.List;
 import java.util.Map;
@@ -21,6 +23,8 @@ public class DataValueContract {
 
     public interface View {
         void showSnackBar();
+
+        void setPeriod(PeriodModel periodModel);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter{
@@ -45,6 +49,8 @@ public class DataValueContract {
         Map<String, Map<String, List<String>>> getDataElementDisabled();
         Map<String, List<String>> getCompulsoryDataElement();
         List<SectionModel> getSections();
+
+        DataSetModel getDataSetModel();
 
     }
 }

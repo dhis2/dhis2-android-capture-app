@@ -978,4 +978,8 @@ public class DateUtils {
         return completedDay != null &&
                 completedDay.getTime() + TimeUnit.DAYS.toMillis(compExpDays) < date.getTime();
     }
+
+    public Boolean isDataSetExpired(int expiredDays, Date periodInitialDate){
+        return Calendar.getInstance().getTime().getTime() > periodInitialDate.getTime() + TimeUnit.DAYS.toMillis(expiredDays);
+    }
 }

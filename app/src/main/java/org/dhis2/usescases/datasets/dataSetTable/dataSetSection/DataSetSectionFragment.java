@@ -28,11 +28,17 @@ import org.dhis2.usescases.datasets.dataSetTable.DataSetTableContract;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
+import org.hisp.dhis.android.core.dataset.DataSetModel;
 import org.hisp.dhis.android.core.dataset.SectionModel;
+import org.hisp.dhis.android.core.period.PeriodModel;
 
+import java.sql.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +47,7 @@ import java.util.Objects;
 import javax.inject.Inject;
 
 import io.reactivex.Flowable;
+import timber.log.Timber;
 
 /**
  * QUADRAM. Created by ppajuelo on 02/10/2018.
@@ -56,6 +63,8 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
     private boolean accessDataWrite;
     private boolean tableCreated = false;
     private String dataSetUid;
+
+    private PeriodModel periodModel;
     @Inject
     DataValueContract.Presenter presenterFragment;
 
@@ -83,7 +92,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_dataset_section, container, false);
-        adapter = new DataSetTableAdapter(getAbstracContext(), accessDataWrite);
+        adapter = new DataSetTableAdapter(getAbstracContext());
         binding.tableView.setAdapter(adapter);
         binding.tableView.setEnabled(false);
         binding.setPresenter(presenterFragment);
@@ -96,13 +105,21 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
         sectionUid = getArguments().getString(Constants.DATA_SET_SECTION);
         accessDataWrite = getArguments().getBoolean(Constants.ACCESS_DATA);
         presenterFragment.init(this, presenter.getOrgUnitUid(), presenter.getPeriodTypeName(),
-                presenter.getPeriodInitialDate(), presenter.getCatCombo());
+                presenter.getPeriodFinalDate(), presenter.getCatCombo());
         presenterFragment.getData(this, sectionUid);
         presenterFragment.initializeProcessor(this);
     }
 
 
     public void createTable() {
+        DataSetModel dataSet = presenterFragment.getDataSetModel();
+        boolean isEditable = false;
+        if(dataSet.accessDataWrite() &&
+                !isExpired()){
+            isEditable = true;
+        }
+
+        adapter.initializeRows(isEditable);
 
         List<List<CategoryOptionModel>> columnHeaderItems = presenterFragment.getCatOptions().get(sectionUid);
         ArrayList<List<String>> cells = new ArrayList<>();
@@ -281,5 +298,26 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
     public void showSnackBar() {
         Snackbar mySnackbar = Snackbar.make(binding.getRoot(), R.string.datavalue_saved , Snackbar.LENGTH_SHORT);
         mySnackbar.show();
+    }
+
+    @Override
+    public void setPeriod(PeriodModel periodModel) {
+        this.periodModel = periodModel;
+    }
+
+    private Boolean isExpired() {
+        DataSetModel dataSet = presenterFragment.getDataSetModel();
+        if(0 == dataSet.expiryDays()){
+            return false;
+        }
+        if(presenter.getPeriodFinalDate() != null) {
+            try {
+                return DateUtils.getInstance().isDataSetExpired(dataSet.expiryDays(), DateUtils.databaseDateFormat().parse(presenter.getPeriodFinalDate()));
+            } catch (ParseException e) {
+                Timber.e(e);
+            }
+        }
+
+        return DateUtils.getInstance().isDataSetExpired(dataSet.expiryDays(), periodModel.endDate());
     }
 }
