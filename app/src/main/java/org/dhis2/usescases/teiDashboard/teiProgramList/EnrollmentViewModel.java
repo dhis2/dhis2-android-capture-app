@@ -22,6 +22,10 @@ public abstract class EnrollmentViewModel extends BaseObservable implements Seri
         static final String ORG_UNIT = "OrgUnitName";
         static final String FOLLOW_UP = "followup";
         static final String PROGRAM_UID = "programUid";
+
+        private Columns(){
+            // hide public constructor
+        }
     }
 
     @NonNull
@@ -56,6 +60,7 @@ public abstract class EnrollmentViewModel extends BaseObservable implements Seri
     @ColumnName(Columns.PROGRAM_UID)
     public abstract String programUid();
 
+    @SuppressWarnings("squid:S00107")
     @NonNull
     public static EnrollmentViewModel create(@NonNull String uid, @NonNull String enrollmentDate, @Nullable String color,
                                              @Nullable String icon, @NonNull String progranName, @NonNull String orgUnitName, @NonNull Boolean followup, @NonNull String programUid) {

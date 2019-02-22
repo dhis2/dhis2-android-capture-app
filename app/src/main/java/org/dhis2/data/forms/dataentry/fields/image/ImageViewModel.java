@@ -10,6 +10,8 @@ import javax.annotation.Nonnull;
 /**
  * QUADRAM. Created by ppajuelo on 31/05/2018.
  */
+
+@SuppressWarnings("squid:S00107")
 @AutoValue
 public abstract class ImageViewModel extends FieldViewModel {
 

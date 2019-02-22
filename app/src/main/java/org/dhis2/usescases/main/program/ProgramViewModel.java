@@ -25,6 +25,10 @@ public abstract class ProgramViewModel extends BaseObservable implements Seriali
         static final String PROGRAM_TYPE = "programType";
         static final String ONLY_ENROLL_ONCE = "onlyEnrollOnce";
         static final String ACCESS_DATA_WRITE = "accessDataWrite";
+
+        private Columns(){
+            // hide public constructor
+        }
     }
 
     @NonNull
@@ -71,7 +75,7 @@ public abstract class ProgramViewModel extends BaseObservable implements Seriali
     @ColumnName(Columns.ACCESS_DATA_WRITE)
     public abstract Boolean accessDataWrite();
 
-
+    @SuppressWarnings("squid:S00107")
     @NonNull
     public static ProgramViewModel create(@NonNull String uid, @NonNull String displayName, @Nullable String color,
                                           @Nullable String icon, @NonNull Integer count, @Nullable String type,

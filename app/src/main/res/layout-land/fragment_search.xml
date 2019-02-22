@@ -18,12 +18,6 @@
             app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
             app:spanCount="@{3}" />
 
-        <!--<com.evrencoskun.tableview.TableView
-            android:id="@+id/tableView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:row_header_width="90dp" />-->
-
         <RelativeLayout
             android:id="@+id/messageContainer"
             android:layout_width="match_parent"

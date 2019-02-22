@@ -30,9 +30,9 @@ import androidx.fragment.app.DialogFragment;
 
 public class OrgUnitDialog extends DialogFragment {
     DialogOrgunitBinding binding;
-    AndroidTreeView treeView;
-    boolean isMultiSelection = false;
-    static OrgUnitDialog instace;
+    private AndroidTreeView treeView;
+    private boolean isMultiSelection;
+    private static OrgUnitDialog instace;
     private View.OnClickListener possitiveListener;
     private View.OnClickListener negativeListener;
     private String title;
@@ -47,14 +47,11 @@ public class OrgUnitDialog extends DialogFragment {
     }
 
     public OrgUnitDialog() {
-        instace = null;
         isMultiSelection = false;
         possitiveListener = null;
         negativeListener = null;
         title = null;
         myOrgs = null;
-
-
     }
 
     public OrgUnitDialog setPossitiveListener(View.OnClickListener listener) {
@@ -110,10 +107,6 @@ public class OrgUnitDialog extends DialogFragment {
         renderTree(myOrgs);
 
         return binding.getRoot();
-    }
-
-    public boolean isMultiSelection() {
-        return isMultiSelection;
     }
 
     private void renderTree(@NonNull List<OrganisationUnitModel> myOrgs) {

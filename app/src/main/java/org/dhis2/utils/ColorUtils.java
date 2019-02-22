@@ -99,6 +99,7 @@ public class ColorUtils {
         return (L > 0.179d) ? Color.BLACK : Color.WHITE;
     }
 
+    @SuppressWarnings("squid:S1479")
     public static int getThemeFromColor(String color) {
 
         if (color == null)

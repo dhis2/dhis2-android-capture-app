@@ -19,7 +19,7 @@ public class DataSetDetailViewHolder extends RecyclerView.ViewHolder {
         binding.setVariable(BR.presenter, presenter);
         binding.setVariable(BR.dataset, dataset);
         binding.executePendingBindings();
-        //FIXME revisar para que sirve esto
+        //TODO revisar para que sirve esto
         /*disposable.add(presenter.getDataSetDataValueNew(dataset)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

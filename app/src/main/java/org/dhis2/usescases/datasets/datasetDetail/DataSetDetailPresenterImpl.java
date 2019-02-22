@@ -164,7 +164,7 @@ public class DataSetDetailPresenterImpl implements DataSetDetailContract.DataSet
         this.dates = dates;
         this.period = period;
         lastSearchType = LastSearchType.DATE_RANGES;
-        //FIXME cuando haya datos para dataset hay que cambiarlo
+        //TODO cuando haya datos para dataset hay que cambiarlo
         //ahora falla por que se va a hacer la select y no puede
        /* compositeDisposable.add(dataSetDetailRepository.filteredDataSet(programId,"","", categoryOptionComboModel)
                 .subscribeOn(Schedulers.io())

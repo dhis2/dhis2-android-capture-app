@@ -19,6 +19,7 @@ import androidx.annotation.Nullable;
 import static android.text.TextUtils.isEmpty;
 import static org.dhis2.utils.Preconditions.isNull;
 
+@SuppressWarnings("squid:S00107")
 public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
 
     @NonNull
@@ -72,7 +73,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
     })
     public FieldViewModel create(@NonNull String id, @NonNull String label, @NonNull ValueType type,
                                  @NonNull Boolean mandatory, @Nullable String optionSet, @Nullable String value,
-                                 @Nullable String section, @Nullable Boolean allowFutureDates, @NonNull Boolean editable, @Nullable ProgramStageSectionRenderingType renderingType,
+                                 @Nullable String section, @Nullable Boolean allowFutureDate, @NonNull Boolean editable, @Nullable ProgramStageSectionRenderingType renderingType,
                                  @Nullable String description, @Nullable ValueTypeDeviceRenderingModel fieldRendering) {
         isNull(type, "type must be supplied");
 
@@ -103,7 +104,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
             case TIME:
             case DATE:
             case DATETIME:
-                return DateTimeViewModel.create(id, label, mandatory, type, value, section, allowFutureDates, editable, description);
+                return DateTimeViewModel.create(id, label, mandatory, type, value, section, allowFutureDate, editable, description);
             case COORDINATE:
                 return CoordinateViewModel.create(id, label, mandatory, value, section, editable, description);
             case BOOLEAN:

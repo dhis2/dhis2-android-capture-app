@@ -110,11 +110,20 @@ public class FormAdapter extends RecyclerView.Adapter {
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         FieldViewModel viewModel;
         if (position < programData) {
+
+            String enrollmentDate = !isEmpty(programModel.enrollmentDateLabel()) ?
+                    programModel.enrollmentDateLabel() :
+                    context.getString(R.string.enrollmment_date);
+
+            String incidentDate = !isEmpty(programModel.incidentDateLabel()) ?
+                    programModel.incidentDateLabel() :
+                    context.getString(R.string.incident_date);
+
+            String label = holder.getAdapterPosition() == 0 ? enrollmentDate : incidentDate;
+
             viewModel = DateTimeViewModel.create(
                     position == 0 ? Constants.ENROLLMENT_DATE_UID : Constants.INCIDENT_DATE_UID,
-                    holder.getAdapterPosition() == 0 ?
-                            !isEmpty(programModel.enrollmentDateLabel()) ? programModel.enrollmentDateLabel() : context.getString(R.string.enrollmment_date) :
-                            !isEmpty(programModel.incidentDateLabel()) ? programModel.incidentDateLabel() : context.getString(R.string.incident_date),
+                    label,
                     false,
                     ValueType.DATE,
                     null,

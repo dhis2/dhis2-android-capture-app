@@ -14,6 +14,10 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel
 
 public class ValueUtils {
 
+    private ValueUtils(){
+        // hide public constructor
+    }
+
     private static TrackedEntityAttributeValueModel valueOrgUnit(BriteDatabase briteDatabase,
                                                                  Cursor cursor,
                                                                  TrackedEntityAttributeValueModel teAttrValue) {

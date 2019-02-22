@@ -27,6 +27,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -185,8 +186,8 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
             visible = false;
         if (selectedPeriod == null)
             visible = false;
-        for (String key : selectedCatOptions.keySet()) {
-            if (selectedCatOptions.get(key) == null)
+        for (Map.Entry<String, CategoryOptionModel> entry : selectedCatOptions.entrySet()) {
+            if (entry.getValue() == null)
                 visible = false;
         }
 

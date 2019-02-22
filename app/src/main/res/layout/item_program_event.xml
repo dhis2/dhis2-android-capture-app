@@ -46,6 +46,7 @@
             android:textSize="18sp"
             android:textStyle="bold"
             app:layout_constraintTop_toBottomOf="@id/entity_attribute_1"
+            app:layout_constraintStart_toStartOf="parent"
             app:organisationUnitName='@{event.organisationUnit}'
             tools:text="Org Unit" />
 
@@ -71,36 +72,6 @@
             app:categoryOptionComboName='@{event.attributeOptionCombo}'
             app:layout_constraintTop_toBottomOf="@id/dataValue"
             tools:text="Cat combo" />
-
-        <!--<LinearLayout
-            android:id="@+id/entity_attribute_3"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/entity_attribute_2"
-            android:orientation="horizontal"
-            app:layout_constraintTop_toBottomOf="@id/entity_attribute_2">
-
-            <TextView
-                android:id="@+id/dataValue"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textColor="@color/black_de0"
-                android:textSize="16sp"
-                tools:text="Age 25" />
-
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="end"
-                android:textColor="@color/black_de0"
-                android:textSize="16sp"
-                app:categoryOptionComboName='@{event.attributeOptionCombo}'
-                tools:text="Cat combo" />
-
-        </LinearLayout>-->
 
         <ImageView
             android:id="@+id/sync_icon"

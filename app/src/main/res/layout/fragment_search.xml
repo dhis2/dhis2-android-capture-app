@@ -16,12 +16,6 @@
             android:layout_height="match_parent"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
-        <!--<com.evrencoskun.tableview.TableView
-            android:id="@+id/tableView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:row_header_width="90dp" />-->
-
         <RelativeLayout
             android:id="@+id/messageContainer"
             android:layout_width="match_parent"

@@ -157,7 +157,7 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
                 message = getString(R.string.login_error_error_response);
                 break;
             default:
-                message = String.format("%s\n%s", getString(R.string.login_error_default), defaultMessage);
+                message = String.format("%s%n%s", getString(R.string.login_error_default), defaultMessage);
                 break;
         }
 

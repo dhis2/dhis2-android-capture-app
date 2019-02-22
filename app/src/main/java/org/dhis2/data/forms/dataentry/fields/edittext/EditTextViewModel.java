@@ -16,6 +16,7 @@ import javax.annotation.Nonnull;
  * QUADRAM. Created by frodriguez on 1/24/2018.
  */
 
+@SuppressWarnings("squid:S00107")
 @AutoValue
 public abstract class EditTextViewModel extends EditTextModel<String> {
 

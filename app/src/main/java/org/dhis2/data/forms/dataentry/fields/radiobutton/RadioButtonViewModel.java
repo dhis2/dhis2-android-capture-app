@@ -8,8 +8,6 @@ import com.google.auto.value.AutoValue;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.hisp.dhis.android.core.common.ValueType;
 
-import java.util.Locale;
-
 import javax.annotation.Nonnull;
 
 /**
@@ -22,15 +20,16 @@ public abstract class RadioButtonViewModel extends FieldViewModel {
         CHECKED("true"), CHECKED_NO("false"), UNCHECKED("");
 
         @NonNull
-        private final String value;
+        private final String mValue;
 
         Value(@NonNull String value) {
-            this.value = value;
+            this.mValue = value;
         }
 
+        @NonNull
         @Override
         public String toString() {
-            return value;
+            return mValue;
         }
     }
 
@@ -42,15 +41,17 @@ public abstract class RadioButtonViewModel extends FieldViewModel {
     public abstract ValueType valueType();
 
     @NonNull
+    @SuppressWarnings("squid:S00107")
     public static RadioButtonViewModel fromRawValue(@NonNull String id, @NonNull String label, @NonNull ValueType type,
-                                                    @NonNull Boolean mandatory, @Nullable String value, @Nullable String section, Boolean editable, @Nullable String description) {
+                                                    @NonNull Boolean mandatory, @Nullable String value, @Nullable String section,
+                                                    Boolean editable, @Nullable String description) {
         if (value == null) {
             return new AutoValue_RadioButtonViewModel(id, label, null, section, null, editable, null, null, null, description, mandatory, type);
-        } else if (value.toLowerCase(Locale.US).equals(Value.CHECKED.toString())) {
+        } else if (value.equalsIgnoreCase(Value.CHECKED.toString())) {
             return new AutoValue_RadioButtonViewModel(id, label, Value.CHECKED.toString(), section, null, editable, null, null, null, description, mandatory, type);
-        } else if (value.toLowerCase(Locale.US).equals(Value.UNCHECKED.toString())) {
+        } else if (value.equalsIgnoreCase(Value.UNCHECKED.toString())) {
             return new AutoValue_RadioButtonViewModel(id, label, Value.UNCHECKED.toString(), section, null, editable, null, null, null, description, mandatory, type);
-        } else if (value.toLowerCase(Locale.US).equals(Value.CHECKED_NO.toString())) {
+        } else if (value.equalsIgnoreCase(Value.CHECKED_NO.toString())) {
             return new AutoValue_RadioButtonViewModel(id, label, Value.CHECKED_NO.toString(), section, null, editable, null, null, null, description, mandatory, type);
         } else {
             throw new IllegalArgumentException("Unsupported VALUE: " + value);

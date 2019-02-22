@@ -3,11 +3,9 @@ package org.dhis2.usescases.login;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.view.View;
 
 import com.github.pwittchen.rxbiometric.library.RxBiometric;
-import com.github.pwittchen.rxbiometric.library.validation.RxPreconditions;
 
 import org.dhis2.App;
 import org.dhis2.data.server.ConfigurationRepository;
@@ -23,7 +21,6 @@ import java.io.IOException;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.databinding.ObservableField;
-import de.adorsys.android.securestoragelibrary.SecurePreferences;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -106,11 +103,10 @@ public class LoginPresenterImpl implements LoginContracts.LoginPresenter {
 
     @Override
     public void onServerChanged(CharSequence s, int start, int before, int count) {
-        boolean testingSet = false;
         isServerUrlSet.set(!view.getBinding().serverUrl.getEditText().getText().toString().isEmpty());
         view.resetCredentials(false, true, true);
 
-        if (isServerUrlSet.get() && !testingSet &&
+        if (isServerUrlSet.get() &&
                 (view.getBinding().serverUrl.getEditText().getText().toString().equals(Constants.URL_TEST_229) ||
                         view.getBinding().serverUrl.getEditText().getText().toString().equals(Constants.URL_TEST_230))) {
             view.setTestingCredentials();

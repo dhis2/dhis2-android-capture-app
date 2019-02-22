@@ -7,6 +7,10 @@ import de.adorsys.android.securestoragelibrary.SecurePreferences;
  */
 public class BiometricStorage {
 
+    private BiometricStorage(){
+        // hide pueblic constructor
+    }
+
     public static void saveUserCredentials(String serverUrl, String userName, String pass) {
         SecurePreferences.setValue(Constants.SECURE_CREDENTIALS, true);
         SecurePreferences.setValue(Constants.SECURE_SERVER_URL, serverUrl);

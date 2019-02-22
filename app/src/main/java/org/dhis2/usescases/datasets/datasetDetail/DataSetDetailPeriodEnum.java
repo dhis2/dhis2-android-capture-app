@@ -1,9 +1,6 @@
 package org.dhis2.usescases.datasets.datasetDetail;
 
-import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
-import org.joda.time.LocalDate;
-import org.joda.time.format.DateTimeFormat;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +9,7 @@ public enum DataSetDetailPeriodEnum {
 
     DAILY("Daily") {
         @SuppressWarnings({"squid:S1172", "squid:CommentedOutCodeLine"})
-        public List<DataSetDetailModel> getListDataSetWithPeriods(int year, DataSetDetailModel dataset){
+        public List<DataSetDetailModel> getListDataSetWithPeriods(int year, DataSetDetailModel dataset) {
             List<DataSetDetailModel> listDataSet = new ArrayList<>();
             /*if(year <= maxDate().year().get()){
 
@@ -36,38 +33,38 @@ public enum DataSetDetailPeriodEnum {
     },
 
     WEEKLY("Weekly") {
-        public List<DataSetDetailModel> getListDataSetWithPeriods(int year, DataSetDetailModel dataset){
+        public List<DataSetDetailModel> getListDataSetWithPeriods(int year, DataSetDetailModel dataset) {
             return getListDataSetWithPeriodsWeeks(year, dataset, DateTimeConstants.MONDAY);
         }
     },
 
     WEEKLYWEDNESDAY("WeeklyWednesday") {
-        public List<DataSetDetailModel> getListDataSetWithPeriods(int year, DataSetDetailModel dataset){
+        public List<DataSetDetailModel> getListDataSetWithPeriods(int year, DataSetDetailModel dataset) {
             return getListDataSetWithPeriodsWeeks(year, dataset, DateTimeConstants.WEDNESDAY);
         }
     },
 
     WEEKLYTHURSDAY("WeeklyThursday") {
-        public List<DataSetDetailModel> getListDataSetWithPeriods(int year, DataSetDetailModel dataset){
+        public List<DataSetDetailModel> getListDataSetWithPeriods(int year, DataSetDetailModel dataset) {
             return getListDataSetWithPeriodsWeeks(year, dataset, DateTimeConstants.THURSDAY);
         }
     },
 
     WEEKLYSATURDAY("WeeklySaturday") {
-        public List<DataSetDetailModel> getListDataSetWithPeriods(int year, DataSetDetailModel dataset){
+        public List<DataSetDetailModel> getListDataSetWithPeriods(int year, DataSetDetailModel dataset) {
             return getListDataSetWithPeriodsWeeks(year, dataset, DateTimeConstants.SATURDAY);
         }
     },
 
     WEEKLYSUNDAY("WeeklySunday") {
-        public List<DataSetDetailModel> getListDataSetWithPeriods(int year, DataSetDetailModel dataset){
+        public List<DataSetDetailModel> getListDataSetWithPeriods(int year, DataSetDetailModel dataset) {
             return getListDataSetWithPeriodsWeeks(year, dataset, DateTimeConstants.SUNDAY);
         }
     },
 
-    BIWEEKLY("BiWeekly"){
+    BIWEEKLY("BiWeekly") {
         @SuppressWarnings({"squid:S1172", "squid:CommentedOutCodeLine"})
-        public List<DataSetDetailModel> getListDataSetWithPeriods(int year, DataSetDetailModel dataset){
+        public List<DataSetDetailModel> getListDataSetWithPeriods(int year, DataSetDetailModel dataset) {
             List<DataSetDetailModel> listDataSet = new ArrayList<>();
             /*if(year <= maxDate().year().get()){
                 int biweek = 1;
@@ -90,34 +87,34 @@ public enum DataSetDetailPeriodEnum {
     },
 
     MONTHLY("Monthly") {
-        public List<DataSetDetailModel> getListDataSetWithPeriods(int year, DataSetDetailModel dataset){
+        public List<DataSetDetailModel> getListDataSetWithPeriods(int year, DataSetDetailModel dataset) {
             return getListDataSetWithPeriodsMonth(year, dataset, DateTimeConstants.JANUARY, 0);
         }
     },
 
     BIMONTHLY("BiMonthly") {
-        public List<DataSetDetailModel> getListDataSetWithPeriods(int year, DataSetDetailModel dataset){
+        public List<DataSetDetailModel> getListDataSetWithPeriods(int year, DataSetDetailModel dataset) {
             return getListDataSetWithPeriodsMonth(year, dataset, DateTimeConstants.JANUARY, 1);
         }
     },
     QUATERLY("Quarterly") {
-        public List<DataSetDetailModel> getListDataSetWithPeriods(int year, DataSetDetailModel dataset){
+        public List<DataSetDetailModel> getListDataSetWithPeriods(int year, DataSetDetailModel dataset) {
             return getListDataSetWithPeriodsMonth(year, dataset, DateTimeConstants.JANUARY, 2);
         }
     },
     SIXMONTHLY("SixMonthly") {
-        public List<DataSetDetailModel> getListDataSetWithPeriods(int year, DataSetDetailModel dataset){
+        public List<DataSetDetailModel> getListDataSetWithPeriods(int year, DataSetDetailModel dataset) {
             return getListDataSetWithPeriodsMonth(year, dataset, DateTimeConstants.JANUARY, 5);
         }
     },
     SIXMONTHLYAPRIL("SixMonthlyApril") {
-        public List<DataSetDetailModel> getListDataSetWithPeriods(int year, DataSetDetailModel dataset){
+        public List<DataSetDetailModel> getListDataSetWithPeriods(int year, DataSetDetailModel dataset) {
             return getListDataSetWithPeriodsMonth(year, dataset, DateTimeConstants.APRIL, 5);
         }
     },
-    YEARLY("Yearly"){
+    YEARLY("Yearly") {
         @SuppressWarnings({"squid:S1172", "squid:CommentedOutCodeLine"})
-        public List<DataSetDetailModel> getListDataSetWithPeriods(int currentYear, DataSetDetailModel dataset){
+        public List<DataSetDetailModel> getListDataSetWithPeriods(int currentYear, DataSetDetailModel dataset) {
             List<DataSetDetailModel> listDataSet = new ArrayList<>();
            /* if(currentYear <= maxDate().year().get()){
 
@@ -132,15 +129,13 @@ public enum DataSetDetailPeriodEnum {
             }*/
             return listDataSet;
         }
-    }
-    ;
-
+    };
 
 
     public abstract List<DataSetDetailModel> getListDataSetWithPeriods(int year, DataSetDetailModel dataset);
 
     @SuppressWarnings({"squid:S1172", "squid:CommentedOutCodeLine"})
-    public static List<DataSetDetailModel> getListDataSetWithPeriodsWeeks(int year, DataSetDetailModel dataset, int day){
+    public static List<DataSetDetailModel> getListDataSetWithPeriodsWeeks(int year, DataSetDetailModel dataset, int day) {
         List<DataSetDetailModel> listDataSet = new ArrayList<>();
         /*if(year <= maxDate().year().get()){
 
@@ -160,7 +155,7 @@ public enum DataSetDetailPeriodEnum {
     }
 
     @SuppressWarnings({"squid:S1172", "squid:CommentedOutCodeLine"})
-    public static List<DataSetDetailModel> getListDataSetWithPeriodsMonth(int year, DataSetDetailModel dataset, int startMonth, int period){
+    public static List<DataSetDetailModel> getListDataSetWithPeriodsMonth(int year, DataSetDetailModel dataset, int startMonth, int period) {
         List<DataSetDetailModel> listDataSet = new ArrayList<>();
         /*if(year <= maxDate().year().get()){
 
@@ -193,20 +188,14 @@ public enum DataSetDetailPeriodEnum {
         return periodTypeName;
     }
 
-    public static DataSetDetailPeriodEnum getDataSetPeriod(String namePeriod){
+    public static DataSetDetailPeriodEnum getDataSetPeriod(String namePeriod) {
 
-        for(DataSetDetailPeriodEnum dataSetDetailPeriodEnum: DataSetDetailPeriodEnum.values()){
-            if(dataSetDetailPeriodEnum.getPeriodTypeName().equals(namePeriod)){
+        for (DataSetDetailPeriodEnum dataSetDetailPeriodEnum : DataSetDetailPeriodEnum.values()) {
+            if (dataSetDetailPeriodEnum.getPeriodTypeName().equals(namePeriod)) {
                 return dataSetDetailPeriodEnum;
             }
         }
 
         return null;
     }
-
-    private static DateTime maxDate(){
-        return new LocalDate().toDateTimeAtCurrentTime();
-    }
-
-
 }

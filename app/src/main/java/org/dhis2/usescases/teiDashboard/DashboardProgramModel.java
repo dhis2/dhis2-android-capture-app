@@ -1,7 +1,5 @@
 package org.dhis2.usescases.teiDashboard;
 
-import androidx.databinding.BaseObservable;
-
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
@@ -12,6 +10,8 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
 import java.util.List;
+
+import androidx.databinding.BaseObservable;
 
 /**
  * QUADRAM. Created by ppajuelo on 04/12/2017.
@@ -28,6 +28,7 @@ public class DashboardProgramModel extends BaseObservable {
     private OrganisationUnitModel orgnUnit;
     private List<EnrollmentModel> teiEnrollments;
 
+    @SuppressWarnings("squid:S00107")
     public DashboardProgramModel(
             TrackedEntityInstanceModel tei,
             EnrollmentModel currentEnrollment,
@@ -84,8 +85,7 @@ public class DashboardProgramModel extends BaseObservable {
         sortOrder--;
         if (sortOrder < trackedEntityAttributesModel.size())
             for (TrackedEntityAttributeValueModel attribute : trackedEntityAttributeValues)
-                if (trackedEntityAttributesModel != null &&
-                        attribute.trackedEntityAttribute().equals(trackedEntityAttributesModel.get(sortOrder).trackedEntityAttribute()))
+                if (attribute.trackedEntityAttribute().equals(trackedEntityAttributesModel.get(sortOrder).trackedEntityAttribute()))
                     attributeValue = attribute;
 
 
@@ -121,8 +121,8 @@ public class DashboardProgramModel extends BaseObservable {
     }
 
     public String getTrackedEntityAttributeValueBySortOrder(int sortOrder) {
-        if(sortOrder <= trackedEntityAttributeValues.size()){
-            return trackedEntityAttributeValues.get(sortOrder -  1).value();
+        if (sortOrder <= trackedEntityAttributeValues.size()) {
+            return trackedEntityAttributeValues.get(sortOrder - 1).value();
         }
         return "";
     }

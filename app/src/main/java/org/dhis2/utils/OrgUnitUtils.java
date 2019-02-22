@@ -24,6 +24,10 @@ import timber.log.Timber;
 
 public class OrgUnitUtils {
 
+    private OrgUnitUtils(){
+        // hide public constructor
+    }
+
     @SuppressWarnings("squid:S3776")
     public static TreeNode renderTree(Context context, @NonNull List<OrganisationUnitModel> myOrgs, Boolean isMultiSelection) {
 

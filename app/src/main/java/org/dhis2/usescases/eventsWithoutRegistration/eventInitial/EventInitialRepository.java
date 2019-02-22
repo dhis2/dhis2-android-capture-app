@@ -1,8 +1,6 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventInitial;
 
 import android.content.Context;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
@@ -13,6 +11,8 @@ import org.hisp.dhis.android.core.program.ProgramStageModel;
 import java.util.Date;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import io.reactivex.Observable;
 
 /**
@@ -36,12 +36,14 @@ public interface EventInitialRepository {
     @NonNull
     Observable<List<OrganisationUnitModel>> filteredOrgUnits(String date, String programId);
 
+    @SuppressWarnings("squid:S00107")
     Observable<String> createEvent(String enrollmentUid, @Nullable String trackedEntityInstanceUid,
                                    @NonNull Context context, @NonNull String program,
                                    @NonNull String programStage, @NonNull Date date,
                                    @NonNull String orgUnitUid, @NonNull String catComboUid,
                                    @NonNull String catOptionUid, @NonNull String latitude, @NonNull String longitude);
 
+    @SuppressWarnings("squid:S00107")
     Observable<String> scheduleEvent(String enrollmentUid, @Nullable String trackedEntityInstanceUid,
                                      @NonNull Context context, @NonNull String program,
                                      @NonNull String programStage, @NonNull Date dueDate,
@@ -59,6 +61,7 @@ public interface EventInitialRepository {
     @NonNull
     Observable<ProgramStageModel> programStageWithId(String programStageUid);
 
+    @SuppressWarnings("squid:S00107")
     @NonNull
     Observable<EventModel> editEvent(String trackedEntityInstance, String eventUid, String date, String orgUnitUid, String catComboUid, String catOptionCombo, String latitude, String longitude);
 

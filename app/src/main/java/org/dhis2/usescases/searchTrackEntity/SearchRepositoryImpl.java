@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import androidx.annotation.NonNull;
@@ -307,6 +308,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                 .mapToList(TrackedEntityInstanceModel::create);
     }
 
+    @SuppressWarnings("squid:S00107")
     private String getSearchString(@NonNull String teType,
                                    @Nullable ProgramModel selectedProgram,
                                    @Nullable HashMap<String, String> queryData,
@@ -316,7 +318,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                                    String enrollmentDateWHERE,
                                    String incidentDateWHERE) {
 
-        if (queryData == null){
+        if (queryData == null) {
             queryData = new HashMap<>();
         }
 
@@ -417,13 +419,13 @@ public class SearchRepositoryImpl implements SearchRepository {
             throw new SQLiteConstraintException(message);
         }
 
-        for (String key : queryData.keySet()) {
+        for (Map.Entry<String, String> entry : queryData.entrySet()) {
             TrackedEntityAttributeValueModel attributeValueModel =
                     TrackedEntityAttributeValueModel.builder()
                             .created(currentDate)
                             .lastUpdated(currentDate)
-                            .value(queryData.get(key))
-                            .trackedEntityAttribute(key)
+                            .value(entry.getValue())
+                            .trackedEntityAttribute(entry.getKey())
                             .trackedEntityInstance(generatedUid)
                             .build();
             if (briteDatabase.insert(TrackedEntityAttributeValueModel.TABLE,

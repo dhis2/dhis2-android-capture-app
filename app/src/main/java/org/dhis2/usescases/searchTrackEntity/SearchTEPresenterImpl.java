@@ -39,6 +39,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nullable;
@@ -248,11 +249,11 @@ public class SearchTEPresenterImpl implements SearchTEContractsModule.SearchTEPr
                             List<String> filterList = new ArrayList<>();
                             Date enrollementDate = null;
                             if (queryData != null) {
-                                for (String key : queryData.keySet()) {
-                                    if (key.equals(Constants.ENROLLMENT_DATE_UID))
-                                        enrollementDate = DateUtils.uiDateFormat().parse(queryData.get(key));
-                                    else if (!key.equals(Constants.INCIDENT_DATE_UID)) //TODO: HOW TO INCLUDE INCIDENT DATE IN ONLINE SEARCH
-                                        filterList.add(key + ":LIKE:" + queryData.get(key));
+                                for (Map.Entry<String, String> entry : queryData.entrySet()) {
+                                    if (entry.getKey().equals(Constants.ENROLLMENT_DATE_UID))
+                                        enrollementDate = DateUtils.uiDateFormat().parse(entry.getValue());
+                                    else if (!entry.getKey().equals(Constants.INCIDENT_DATE_UID)) //TODO: HOW TO INCLUDE INCIDENT DATE IN ONLINE SEARCH
+                                        filterList.add(entry.getKey() + ":LIKE:" + queryData.get(entry.getKey()));
                                 }
                             }
                             List<String> orgUnitsUids = new ArrayList<>();

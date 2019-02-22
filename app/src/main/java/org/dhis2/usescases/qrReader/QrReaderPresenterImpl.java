@@ -777,38 +777,13 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
 
             for (int i = 0; i < dataJson.size(); i++) {
                 JSONObject attrV = dataJson.get(i);
-                saveTEIAttrDataValue(attrV);
+                insertTEIData(attrV);
             }
 
             view.goToEvent(eventUid, programUid, orgUnit);
 
         } catch (JSONException | ParseException e) {
             Timber.e(e);
-        }
-    }
-
-    private void saveTEIAttrDataValue(JSONObject attrV) throws JSONException, ParseException {
-        TrackedEntityDataValueModel.Builder attrValueModelBuilder;
-        attrValueModelBuilder = TrackedEntityDataValueModel.builder();
-
-        if (attrV.has(TrackedEntityDataValueModel.Columns.EVENT))
-            attrValueModelBuilder.event(attrV.getString(TrackedEntityDataValueModel.Columns.EVENT));
-        if (attrV.has(TrackedEntityDataValueModel.Columns.LAST_UPDATED))
-            attrValueModelBuilder.lastUpdated(DateUtils.databaseDateFormat().parse(attrV.getString(TrackedEntityDataValueModel.Columns.LAST_UPDATED)));
-        if (attrV.has(TrackedEntityDataValueModel.Columns.DATA_ELEMENT))
-            attrValueModelBuilder.dataElement(attrV.getString(TrackedEntityDataValueModel.Columns.DATA_ELEMENT));
-        if (attrV.has(TrackedEntityDataValueModel.Columns.STORED_BY))
-            attrValueModelBuilder.storedBy(attrV.getString(TrackedEntityDataValueModel.Columns.STORED_BY));
-        if (attrV.has(TrackedEntityDataValueModel.Columns.VALUE))
-            attrValueModelBuilder.value(attrV.getString(TrackedEntityDataValueModel.Columns.VALUE));
-        if (attrV.has(TrackedEntityDataValueModel.Columns.PROVIDED_ELSEWHERE))
-            attrValueModelBuilder.providedElsewhere(Boolean.parseBoolean(attrV.getString(TrackedEntityDataValueModel.Columns.PROVIDED_ELSEWHERE)));
-
-        TrackedEntityDataValueModel attrValueModel = attrValueModelBuilder.build();
-
-        if (attrValueModel != null) {
-            long result = briteDatabase.insert(TrackedEntityDataValueModel.TABLE, attrValueModel.toContentValues());
-            Timber.d(TIMBER_MESSAGE, result);
         }
     }
 }

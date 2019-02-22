@@ -267,7 +267,8 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
     private StringBuilder getAllMissing(List<String> missingMandatoryFields) {
         StringBuilder missingString = new StringBuilder(missingMandatoryFields.isEmpty() ? "" : "These fields are mandatory. Please check their values to be able to complete the event.");
         for (String missingField : missingMandatoryFields) {
-            missingString.append(String.format("\n- %s", missingField));
+            String placeholder = String.format("%n- %s", missingField);
+            missingString.append(placeholder);
         }
         return missingString;
     }
@@ -275,7 +276,8 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
     private StringBuilder getAllErrors(List<String> errorFields) {
         StringBuilder errorString = new StringBuilder(errorFields.isEmpty() ? "" : "These fields contain errors. Please check their values to be able to complete the event.");
         for (String errorField : errorFields) {
-            errorString.append(String.format("\n- %s", errorField));
+            String placeholder = String.format("%n- %s", errorField);
+            errorString.append(placeholder);
         }
         return errorString;
     }
@@ -283,14 +285,15 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
     void swap(@NonNull List<FieldViewModel> updates, String sectionUid) {
 
         View sectionView = sections.get(sectionUid);
-        if (sectionsToHide != null && sectionsToHide.contains(sectionUid)) {
-            sectionView.setVisibility(View.GONE);
-            sectionView.setVisibility(View.GONE);
-        } else
-            sectionView.setVisibility(View.VISIBLE);
+        if (sectionView != null) {
+            if (sectionsToHide != null && sectionsToHide.contains(sectionUid)) {
+                sectionView.setVisibility(View.GONE);
+            } else
+                sectionView.setVisibility(View.VISIBLE);
 
-        if (sectionView.getVisibility() == View.VISIBLE) {
-            setUpVisibleSection(updates, sectionView);
+            if (sectionView.getVisibility() == View.VISIBLE) {
+                setUpVisibleSection(updates, sectionView);
+            }
         }
 
         binding.summaryHeader.setText(String.format(getString(R.string.event_summary_header), String.valueOf(totalCompletedFields), String.valueOf(totalFields)));

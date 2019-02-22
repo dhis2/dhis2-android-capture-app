@@ -247,20 +247,18 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
 
     public Consumer<Single<Boolean>> areEventsCompleted() {
         return eventsCompleted -> {
-            if (eventsCompleted.blockingGet()) {
-                if (isAdded() && getContext() != null) {
-                    dialog = new CustomDialog(
-                            getContext(),
-                            getString(R.string.event_completed_title),
-                            getString(R.string.event_completed_message),
-                            getString(R.string.button_ok),
-                            getString(R.string.cancel),
-                            RC_EVENTS_COMPLETED,
-                            this);
-                    dialog.show();
-                }
+            if (eventsCompleted.blockingGet() &&
+                    isAdded() && getContext() != null) {
+                dialog = new CustomDialog(
+                        getContext(),
+                        getString(R.string.event_completed_title),
+                        getString(R.string.event_completed_message),
+                        getString(R.string.button_ok),
+                        getString(R.string.cancel),
+                        RC_EVENTS_COMPLETED,
+                        this);
+                dialog.show();
             }
-
         };
     }
 

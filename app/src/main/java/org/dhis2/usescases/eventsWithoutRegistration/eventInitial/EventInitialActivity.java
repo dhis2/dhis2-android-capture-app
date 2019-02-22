@@ -377,8 +377,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     private boolean isSelectedDateBetweenOpeningAndClosedDates() {
         if (selectedDate == null)
             return false;
-        boolean isAfterOpening = selectedOrgUnitOpeningDate == null || (selectedOrgUnitOpeningDate != null && selectedDate.after(selectedOrgUnitOpeningDate));
-        boolean isBeforeClosed = selectedOrgUnitClosedDate == null || (selectedOrgUnitClosedDate != null && selectedDate.before(selectedOrgUnitClosedDate));
+        boolean isAfterOpening = selectedOrgUnitOpeningDate == null || selectedDate.after(selectedOrgUnitOpeningDate);
+        boolean isBeforeClosed = selectedOrgUnitClosedDate == null || selectedDate.before(selectedOrgUnitClosedDate);
         return isAfterOpening && isBeforeClosed;
 
     }
@@ -849,7 +849,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             if (orgUnit.closedDate() != null && selectedDate.after(orgUnit.closedDate()))
                 iterator.remove();
         }
-        if (orgUnits != null && !orgUnits.isEmpty()) {
+        if (!orgUnits.isEmpty()) {
             orgUnitDialog = new OrgUnitDialog()
                     .setTitle(getString(R.string.org_unit))
                     .setMultiSelection(false)

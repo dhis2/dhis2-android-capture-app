@@ -20,8 +20,12 @@ public abstract class SpinnerViewModel extends FieldViewModel {
     @NonNull
     public abstract String optionSet();
 
-    public static SpinnerViewModel create(String id, String label, String hintFilterOptions, Boolean mandatory, String optionSet, String value, String section, Boolean editable,String description) {
-        return new AutoValue_SpinnerViewModel(id, label, mandatory, value, section, null, editable,null,null, description,hintFilterOptions, optionSet);
+    @SuppressWarnings("squid:S00107")
+    public static SpinnerViewModel create(String id, String label, String hintFilterOptions, Boolean mandatory,
+                                          String optionSet, String value, String section, Boolean editable,
+                                          String description) {
+        return new AutoValue_SpinnerViewModel(id, label, mandatory, value, section, null,
+                editable,null,null, description,hintFilterOptions, optionSet);
     }
 
     @Override

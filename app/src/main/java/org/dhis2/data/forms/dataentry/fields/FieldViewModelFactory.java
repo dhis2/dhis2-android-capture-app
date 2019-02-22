@@ -1,12 +1,13 @@
 package org.dhis2.data.forms.dataentry.fields;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+@SuppressWarnings("squid:S00107")
 public interface FieldViewModelFactory {
 
     @NonNull
@@ -17,7 +18,7 @@ public interface FieldViewModelFactory {
                           @Nullable String optionSet,
                           @Nullable String value,
                           @Nullable String programStageSection,
-                          @Nullable Boolean AllowFutureDate,
+                          @Nullable Boolean allowFutureDate,
                           @NonNull Boolean editable,
                           @Nullable ProgramStageSectionRenderingType renderingType,
                           @Nullable String description,

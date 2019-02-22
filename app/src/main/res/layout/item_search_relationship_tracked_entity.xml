@@ -52,8 +52,8 @@
                 android:id="@+id/follow_up"
                 android:layout_width="34dp"
                 android:layout_height="34dp"
-                android:layout_alignBottom="@id/tracked_entity_image"
                 android:layout_alignEnd="@id/tracked_entity_image"
+                android:layout_alignBottom="@id/tracked_entity_image"
                 android:layout_gravity="center_vertical"
                 android:padding="8dp"
                 android:visibility='@{followUp ? View.VISIBLE : View.GONE}'
@@ -91,19 +91,6 @@
                     android:visibility='@{attribute.size() > 1 ? View.VISIBLE : View.GONE}' />
 
             </LinearLayout>
-<!--
-            <android.support.v7.widget.AppCompatSpinner
-                android:id="@+id/relationship_spinner"
-                android:layout_width="150dp"
-                android:layout_height="36dp"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:layout_marginEnd="9dp"
-                android:layout_marginTop="9dp"
-                android:background="?attr/button_selector"
-                android:prompt="@string/add_relation_button"
-                android:spinnerMode="dropdown"
-                tools:text="Add as..."/>-->
 
         </RelativeLayout>
 

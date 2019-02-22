@@ -61,6 +61,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
         init(context);
     }
 
+    @Override
     public void init(Context context) {
         super.init(context);
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getContext());

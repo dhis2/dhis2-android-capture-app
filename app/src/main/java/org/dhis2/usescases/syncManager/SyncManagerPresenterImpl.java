@@ -195,7 +195,7 @@ public class SyncManagerPresenterImpl implements SyncManagerContracts.SyncManage
         checkData.onNext(true);
     }
 
-
+    @SuppressWarnings("squid:S4042")
     private static boolean deleteDir(File dir) {
         if (dir != null && dir.isDirectory()) {
             String[] children = dir.list();
