@@ -1,9 +1,8 @@
 package org.dhis2.data.service;
 
 import android.content.Context;
-import androidx.annotation.NonNull;
-import androidx.annotation.UiThread;
 
+@SuppressWarnings("squid:S00112")
 interface SyncPresenter {
     void syncAndDownloadEvents(Context context) throws Exception;
 

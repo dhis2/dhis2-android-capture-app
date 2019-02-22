@@ -413,9 +413,8 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
             treeView.expandAll();
 
         treeView.setDefaultNodeClickListener((node, value) -> {
-            if (treeView.getSelected().size() == 1 && !node.isSelected()) {
-                binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
-            } else if (treeView.getSelected().size() > 1) {
+            if ((treeView.getSelected().size() == 1 && !node.isSelected()) ||
+                    (treeView.getSelected().size() > 1)) {
                 binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
             }
         });
@@ -477,7 +476,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
                 @Override
                 public void onNothingSelected(AdapterView<?> parent) {
-                   // do nothing
+                    // do nothing
                 }
             });
         }
@@ -530,11 +529,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                 orgUnitFilter.append(", ");
         }
 
-        if (treeView.getSelected().size() == 1) {
-            binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
-        } else if (treeView.getSelected().size() > 1) {
-            binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
-        }
+        binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
 
         switch (currentPeriod) {
             case NONE:

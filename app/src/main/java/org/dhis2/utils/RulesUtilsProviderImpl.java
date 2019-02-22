@@ -128,13 +128,19 @@ public class RulesUtilsProviderImpl implements RulesUtilsProvider {
         EditTextViewModel textViewModel = EditTextViewModel.create(uid,
                 displayText.content(), false, ruleEffect.data(), "Information", 1, ValueType.TEXT, null, false, null, null);
 
-        if (this.currentFieldViewModels == null ||
-                !this.currentFieldViewModels.containsKey(uid)) {
-            fieldViewModels.put(uid, textViewModel);
-        } else if (this.currentFieldViewModels.containsKey(uid) &&
-                !Objects.equals(currentFieldViewModels.get(uid).value(), textViewModel.value())) {
+        if (condition1(uid) || condition2(uid, textViewModel)) {
             fieldViewModels.put(uid, textViewModel);
         }
+    }
+
+    private boolean condition1(String uid) {
+        return this.currentFieldViewModels == null ||
+                !this.currentFieldViewModels.containsKey(uid);
+    }
+
+    private boolean condition2(String uid, EditTextViewModel textViewModel) {
+        return this.currentFieldViewModels.containsKey(uid) &&
+                !currentFieldViewModels.get(uid).value().equals(textViewModel.value());
     }
 
     private void displayKeyValuePair(RuleActionDisplayKeyValuePair displayKeyValuePair,

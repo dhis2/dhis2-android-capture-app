@@ -1,5 +1,6 @@
 package org.dhis2.utils;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -22,52 +23,22 @@ public abstract class EndlessRecyclerViewScrollListener extends RecyclerView.OnS
     // Sets the starting page index
     private int startingPageIndex = 0;
 
-    RecyclerView.LayoutManager mLayoutManager;
-
-    public EndlessRecyclerViewScrollListener(LinearLayoutManager layoutManager) {
-        this.mLayoutManager = layoutManager;
-    }
-
-    public EndlessRecyclerViewScrollListener(GridLayoutManager layoutManager) {
-        this.mLayoutManager = layoutManager;
-        visibleThreshold = visibleThreshold * layoutManager.getSpanCount();
-    }
-
-    public EndlessRecyclerViewScrollListener(StaggeredGridLayoutManager layoutManager) {
-        this.mLayoutManager = layoutManager;
-        visibleThreshold = visibleThreshold * layoutManager.getSpanCount();
-    }
+    private RecyclerView.LayoutManager mLayoutManager;
 
     public EndlessRecyclerViewScrollListener(RecyclerView.LayoutManager layoutManager, int visibleThreshold, int initialPage) {
         this.mLayoutManager = layoutManager;
         this.visibleThreshold = visibleThreshold;
         this.currentPage = initialPage;
         if (layoutManager instanceof GridLayoutManager)
-            visibleThreshold = visibleThreshold * ((GridLayoutManager) layoutManager).getSpanCount();
+            this.visibleThreshold = visibleThreshold * ((GridLayoutManager) layoutManager).getSpanCount();
         if (layoutManager instanceof StaggeredGridLayoutManager)
-            visibleThreshold = visibleThreshold * ((StaggeredGridLayoutManager) layoutManager).getSpanCount();
-
+            this.visibleThreshold = visibleThreshold * ((StaggeredGridLayoutManager) layoutManager).getSpanCount();
     }
 
-    public EndlessRecyclerViewScrollListener(RecyclerView.LayoutManager layoutManager, int visibleThreshold) {
-        this.mLayoutManager = layoutManager;
-        this.visibleThreshold = visibleThreshold;
-        if (layoutManager instanceof GridLayoutManager)
-            visibleThreshold = visibleThreshold * ((GridLayoutManager) layoutManager).getSpanCount();
-        if (layoutManager instanceof StaggeredGridLayoutManager)
-            visibleThreshold = visibleThreshold * ((StaggeredGridLayoutManager) layoutManager).getSpanCount();
-
-    }
-
-
-    public int getLastVisibleItem(int[] lastVisibleItemPositions) {
+    private int getLastVisibleItem(int[] lastVisibleItemPositions) {
         int maxSize = 0;
-        for (int i = 0; i < lastVisibleItemPositions.length; i++) {
-            if (i == 0) {
-                maxSize = lastVisibleItemPositions[i];
-            } else if (lastVisibleItemPositions[i] > maxSize) {
-                maxSize = lastVisibleItemPositions[i];
-            }
+        for (int lastVisibleItemPosition : lastVisibleItemPositions) {
+            maxSize = lastVisibleItemPosition;
         }
         return maxSize;
     }
@@ -76,7 +47,7 @@ public abstract class EndlessRecyclerViewScrollListener extends RecyclerView.OnS
     // We are given a few useful parameters to help us work out if we need to load some more data,
     // but first we check if we are waiting for the previous load to finish.
     @Override
-    public void onScrolled(RecyclerView view, int dx, int dy) {
+    public void onScrolled(@NonNull RecyclerView view, int dx, int dy) {
         int lastVisibleItemPosition = 0;
         int totalItemCount = mLayoutManager.getItemCount();
 

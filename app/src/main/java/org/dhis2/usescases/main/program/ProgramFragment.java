@@ -7,7 +7,6 @@ import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -411,9 +410,8 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
             treeView.expandAll();
 
         treeView.setDefaultNodeClickListener((node, value) -> {
-            if (treeView.getSelected().size() == 1 && !node.isSelected()) {
-                binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
-            } else if (treeView.getSelected().size() > 1) {
+            if ((treeView.getSelected().size() == 1 && !node.isSelected()) ||
+                    (treeView.getSelected().size() > 1)) {
                 binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
             }
         });
@@ -428,7 +426,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
 
     @Override
     public void openDrawer() {
-        binding.drawerLayout.openDrawer(Gravity.END);
+        binding.drawerLayout.openDrawer(GravityCompat.END);
         binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN);
     }
 
@@ -467,11 +465,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                 orgUnitFilter.append(", ");
         }
 
-        if (treeView.getSelected().size() == 1) {
-            binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
-        } else if (treeView.getSelected().size() > 1) {
-            binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
-        }
+        binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
 
         switch (currentPeriod) {
             case NONE:

@@ -1,7 +1,6 @@
 package org.dhis2.data.forms.dataentry;
 
 import android.database.Cursor;
-import androidx.annotation.NonNull;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
@@ -21,6 +20,7 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
+import androidx.annotation.NonNull;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 
@@ -113,12 +113,9 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
     }
 
     @NonNull
-    private static Date parseDate(@NonNull String date) {
-        try {
-            return BaseIdentifiableObject.DATE_FORMAT.parse(date);
-        } catch (ParseException parseException) {
-            throw new RuntimeException(parseException);
-        }
+    private static Date parseDate(@NonNull String date) throws ParseException {
+        return BaseIdentifiableObject.DATE_FORMAT.parse(date);
+
     }
 
     @Nonnull
