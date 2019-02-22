@@ -29,11 +29,9 @@ public class EventCaptureModule {
 
 
     private final String eventUid;
-    private final String programUid;
 
-    public EventCaptureModule(String eventUid, String programUid) {
+    public EventCaptureModule(String eventUid) {
         this.eventUid = eventUid;
-        this.programUid = programUid;
     }
 
     @Provides

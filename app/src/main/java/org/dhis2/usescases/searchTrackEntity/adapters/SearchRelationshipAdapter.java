@@ -1,8 +1,5 @@
 package org.dhis2.usescases.searchTrackEntity.adapters;
 
-import androidx.databinding.DataBindingUtil;
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -14,6 +11,10 @@ import org.dhis2.usescases.searchTrackEntity.SearchTEContractsModule;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.databinding.DataBindingUtil;
+import androidx.recyclerview.widget.RecyclerView;
+
 /**
  * QUADRAM. Created by frodriguez on 4/16/2018.
  */
@@ -23,13 +24,11 @@ public class SearchRelationshipAdapter extends RecyclerView.Adapter<SearchRelati
     private final MetadataRepository metadataRepository;
     private SearchTEContractsModule.SearchTEPresenter presenter;
     private List<SearchTeiModel> trackedEntityInstances;
-    private final boolean isOnline;
 
-    public SearchRelationshipAdapter(SearchTEContractsModule.SearchTEPresenter presenter, MetadataRepository metadataRepository, boolean online) {
+    public SearchRelationshipAdapter(SearchTEContractsModule.SearchTEPresenter presenter, MetadataRepository metadataRepository) {
         this.presenter = presenter;
         this.metadataRepository = metadataRepository;
         this.trackedEntityInstances = new ArrayList<>();
-        this.isOnline = online;
     }
 
     @NonNull

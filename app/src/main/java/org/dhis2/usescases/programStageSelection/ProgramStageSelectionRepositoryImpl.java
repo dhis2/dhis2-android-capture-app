@@ -48,11 +48,6 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
             ProgramStageModel.TABLE, ProgramStageModel.TABLE, ProgramStageModel.Columns.PROGRAM,
             ProgramStageModel.TABLE, ProgramStageModel.Columns.SORT_ORDER);
 
-    private static final String ENROLLMENT_PROGRAM_STAGES = "SELECT ProgramStage.* FROM ProgramStage " +
-            "JOIN Program ON Program.uid = ProgramStage.program " +
-            "JOIN Enrollment ON Enrollment.program = Program.uid " +
-            "WHERE Enrollment.uid = ?";
-
     private static final String CURRENT_PROGRAM_STAGES = "SELECT ProgramStage.* FROM ProgramStage WHERE ProgramStage.uid IN " +
             "(SELECT DISTINCT Event.programStage FROM Event WHERE Event.enrollment = ? AND Event.State != 'TO_DELETE' ) ORDER BY ProgramStage.sortOrder ASC";
 

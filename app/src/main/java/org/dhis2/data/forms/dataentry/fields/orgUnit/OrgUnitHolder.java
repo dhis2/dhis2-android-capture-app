@@ -1,9 +1,8 @@
 package org.dhis2.data.forms.dataentry.fields.orgUnit;
 
-import androidx.databinding.ViewDataBinding;
-import com.google.android.material.textfield.TextInputLayout;
-import androidx.fragment.app.FragmentManager;
 import android.view.View;
+
+import com.google.android.material.textfield.TextInputLayout;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
@@ -14,6 +13,8 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 
 import java.util.List;
 
+import androidx.databinding.ViewDataBinding;
+import androidx.fragment.app.FragmentManager;
 import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.processors.FlowableProcessor;
@@ -32,7 +33,6 @@ public class OrgUnitHolder extends FormViewHolder {
     private OrgUnitCascadeDialog orgUnitDialog;
     private CompositeDisposable compositeDisposable;
     private OrgUnitViewModel model;
-    private String selectedOrgUnit;
 
     OrgUnitHolder(FragmentManager fm, ViewDataBinding binding, FlowableProcessor<RowAction> processor, Observable<List<OrganisationUnitModel>> orgUnits) {
         super(binding);
@@ -51,7 +51,6 @@ public class OrgUnitHolder extends FormViewHolder {
                     .setCallbacks(new OrgUnitCascadeDialog.CascadeOrgUnitCallbacks() {
                         @Override
                         public void textChangedConsumer(String selectedOrgUnitUid, String selectedOrgUnitName) {
-                            selectedOrgUnit = selectedOrgUnitUid;
                             processor.onNext(RowAction.create(model.uid(), selectedOrgUnitUid));
                             editText.setText(selectedOrgUnitName);
                             orgUnitDialog.dismiss();

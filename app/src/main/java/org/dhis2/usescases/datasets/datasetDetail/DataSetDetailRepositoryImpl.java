@@ -55,8 +55,6 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
 
     private static final String DATA_SETS_ORG_UNIT_FILTER = AND + DataValueModel.TABLE + POINT + DataValueModel.Columns.ORGANISATION_UNIT +
             "IN (%s) ";
-    private static final String DATA_SETS_PERIOD_FILTER = AND + DataValueModel.TABLE + POINT + DataValueModel.Columns.PERIOD +
-            EQUAL + QUESTION_MARK;
 
     private final BriteDatabase briteDatabase;
 

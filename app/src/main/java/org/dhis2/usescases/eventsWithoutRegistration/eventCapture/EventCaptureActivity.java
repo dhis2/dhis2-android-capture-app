@@ -69,8 +69,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         ((App) getApplicationContext()).userComponent().plus(
                 new EventCaptureModule(
-                        getIntent().getStringExtra(Constants.EVENT_UID),
-                        getIntent().getStringExtra(Constants.PROGRAM_UID)))
+                        getIntent().getStringExtra(Constants.EVENT_UID)))
                 .inject(this);
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_event_capture);

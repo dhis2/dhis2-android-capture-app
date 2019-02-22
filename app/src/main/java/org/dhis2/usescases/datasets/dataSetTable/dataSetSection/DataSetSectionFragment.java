@@ -1,10 +1,7 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection;
 
 import android.content.Context;
-import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +10,6 @@ import org.dhis2.R;
 import org.dhis2.databinding.FragmentDatasetSectionBinding;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableContract;
-import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.utils.Constants;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
@@ -22,16 +18,18 @@ import org.hisp.dhis.android.core.dataelement.DataElementModel;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
+
 /**
  * QUADRAM. Created by ppajuelo on 02/10/2018.
  */
 
 public class DataSetSectionFragment extends FragmentGlobalAbstract {
 
-    FragmentDatasetSectionBinding binding;
+    private FragmentDatasetSectionBinding binding;
     private DataSetTableContract.DataSetTablePresenter presenter;
-    private ActivityGlobalAbstract activity;
-    private DataSetTableAdapter adapter;
 
     @NonNull
     public static DataSetSectionFragment create(@NonNull String sectionUid) {
@@ -45,9 +43,8 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        activity = (ActivityGlobalAbstract) context;
         presenter = ((DataSetTableActivity) context).getPresenter();
     }
 
@@ -62,7 +59,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
     public void onResume() {
         super.onResume();
 
-        adapter = new DataSetTableAdapter(getAbstracContext());
+        DataSetTableAdapter adapter = new DataSetTableAdapter(getAbstracContext());
         binding.tableView.setAdapter(adapter);
 
         String dataSetSection = getArguments().getString(Constants.DATA_SET_SECTION);

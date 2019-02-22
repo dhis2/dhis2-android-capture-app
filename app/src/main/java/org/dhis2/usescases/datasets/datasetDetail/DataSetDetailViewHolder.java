@@ -1,21 +1,17 @@
 package org.dhis2.usescases.datasets.datasetDetail;
 
-import androidx.recyclerview.widget.RecyclerView;
-
 import org.dhis2.BR;
 import org.dhis2.databinding.ItemDatasetBinding;
 
-import io.reactivex.disposables.CompositeDisposable;
+import androidx.recyclerview.widget.RecyclerView;
 
-public class DataSetDetailViewHolder extends RecyclerView.ViewHolder{
+public class DataSetDetailViewHolder extends RecyclerView.ViewHolder {
 
     private ItemDatasetBinding binding;
-    private CompositeDisposable disposable;
 
     public DataSetDetailViewHolder(ItemDatasetBinding binding) {
         super(binding.getRoot());
         this.binding = binding;
-        disposable = new CompositeDisposable();
     }
 
     @SuppressWarnings("squid:CommentedOutCodeLine")

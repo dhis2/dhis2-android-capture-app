@@ -32,14 +32,8 @@ import timber.log.Timber;
 
 public class RulesUtilsProviderImpl implements RulesUtilsProvider {
 
-    private final CodeGenerator codeGenerator;
-
     private HashMap<String, FieldViewModel> currentFieldViewModels;
 
-
-    public RulesUtilsProviderImpl(CodeGenerator codeGenerator) {
-        this.codeGenerator = codeGenerator;
-    }
 
     @SuppressWarnings("squid:S3776")
     @Override

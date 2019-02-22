@@ -16,7 +16,7 @@ import io.reactivex.disposables.CompositeDisposable;
  * QUADRAM. Created by frodriguez on 11/7/2017.
  */
 
-@SuppressWarnings({"squid:S1172", "squid:CommentedOutCodeLine"})
+@SuppressWarnings({"squid:S1172", "squid:S1068", "squid:CommentedOutCodeLine"})
 public class SearchRelationshipViewHolder extends RecyclerView.ViewHolder {
 
     private ItemSearchRelationshipTrackedEntityBinding binding;

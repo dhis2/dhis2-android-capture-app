@@ -7,7 +7,6 @@ import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialActivity;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.OrgUnitUtils;
 import org.dhis2.utils.Period;
-import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.period.PeriodType;
@@ -35,7 +34,6 @@ public class DataSetDetailPresenterImpl implements DataSetDetailContract.DataSet
     private List<Date> dates;
     private CompositeDisposable compositeDisposable;
     private List<OrganisationUnitModel> orgUnits;
-    private CategoryComboModel mCatCombo;
     private List<String> selectedOrgUnits;
     private PeriodType selectedPeriodType;
 

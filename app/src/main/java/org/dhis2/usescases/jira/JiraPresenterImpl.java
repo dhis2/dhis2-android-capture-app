@@ -27,6 +27,7 @@ import static android.text.TextUtils.isEmpty;
  * QUADRAM. Created by ppajuelo on 24/05/2018.
  */
 
+@SuppressWarnings("squid:S1068")
 public class JiraPresenterImpl implements JiraPresenter {
 
     private final JiraIssueService issueService;

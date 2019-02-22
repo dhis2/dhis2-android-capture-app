@@ -1,11 +1,11 @@
 package org.dhis2.usescases.searchTrackEntity.tableHolder;
 
+import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder;
+
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.databinding.ItemTableCellAttrBinding;
 import org.dhis2.databinding.ItemTableCellProgramBinding;
 import org.dhis2.usescases.searchTrackEntity.SearchTEContractsModule;
-import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder;
-
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
@@ -23,7 +23,6 @@ import timber.log.Timber;
 public class CellHolder extends AbstractViewHolder {
 
     private ItemTableCellAttrBinding attrBinding;
-    private ItemTableCellProgramBinding programbinding;
     private CompositeDisposable compositeDisposable;
 
     public CellHolder(ItemTableCellAttrBinding binding) {
@@ -35,7 +34,6 @@ public class CellHolder extends AbstractViewHolder {
 
     public CellHolder(ItemTableCellProgramBinding binding) {
         super(binding.getRoot());
-        this.programbinding = binding;
         compositeDisposable = new CompositeDisposable();
 
     }

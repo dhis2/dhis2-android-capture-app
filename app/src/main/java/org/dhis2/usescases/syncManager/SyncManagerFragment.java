@@ -97,11 +97,11 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     };
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         this.context = context;
         ((Components) context.getApplicationContext()).userComponent()
-                .plus(new SyncManagerModule(this.getContext())).inject(this);
+                .plus(new SyncManagerModule()).inject(this);
     }
 
     @Override
@@ -203,7 +203,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         };
     }
 
-    public void setLastSyncDate() {
+    private void setLastSyncDate() {
         boolean dataStatus = prefs.getBoolean(Constants.LAST_DATA_SYNC_STATUS, true);
         boolean metaStatus = prefs.getBoolean(Constants.LAST_META_SYNC_STATUS, true);
 

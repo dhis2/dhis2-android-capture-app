@@ -6,7 +6,6 @@ import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
-import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.settings.SystemSettingModel;
 
 import java.util.Calendar;
@@ -15,21 +14,19 @@ import java.util.Locale;
 
 import io.reactivex.Observable;
 
+import static org.dhis2.data.database.SqlConstants.EQUAL;
+import static org.dhis2.data.database.SqlConstants.QUESTION_MARK;
+
 /**
  * QUADRAM. Created by ppajuelo on 16/05/2018.
  */
 
 public class SplashRepositoryImpl implements SplashRepository {
 
-    private final String FLAG_QUERY = "SELECT " +
+    private static final String FLAG_QUERY = "SELECT " +
             "SystemSetting.VALUE FROM SystemSetting WHERE SystemSetting.key = 'flag' LIMIT 1";
 
-    private final String EXPIRED_EVENTS = "SELECT * FROM Event WHERE Event.dueDate IS NOT NULL";
-
-    private final String EXPIRED_PERIOD_EVENTS = String.format("SELECT %s.%s, %s.%s, %s.%s, %s.%s FROM Event " +
-                    "JOIN Program ON Event.program = Program.uid WHERE Event.status = 'COMPLETED'",
-            EventModel.TABLE, EventModel.Columns.COMPLETE_DATE, ProgramModel.TABLE, ProgramModel.Columns.EXPIRY_DAYS,
-            ProgramModel.TABLE, ProgramModel.Columns.COMPLETE_EVENTS_EXPIRY_DAYS, ProgramModel.TABLE, ProgramModel.Columns.EXPIRY_PERIOD_TYPE);
+    private static final String EXPIRED_EVENTS = "SELECT * FROM Event WHERE Event.dueDate IS NOT NULL";
 
     private final BriteDatabase briteDatabase;
 
@@ -50,7 +47,7 @@ public class SplashRepositoryImpl implements SplashRepository {
                 .mapToList(EventModel::create)
                 .map(eventModels -> Observable.fromIterable(eventModels)
                         .filter(eventModel -> eventModel.dueDate().before(today))
-                        .map(eventModel -> switchToExpired(eventModel))
+                        .map(this::switchToExpired)
                         .toList()
                 )
                 /*.flatMap(eventModels -> briteDatabase.createQuery(EventModel.TABLE, EXPIRED_PERIOD_EVENTS)
@@ -78,7 +75,7 @@ public class SplashRepositoryImpl implements SplashRepository {
         contentValues.put(EventModel.Columns.STATUS, EventStatus.SKIPPED.name());
 
         if (briteDatabase.update(EventModel.TABLE, contentValues,
-                EventModel.Columns.UID + " = ?", eventModel != null && eventModel.uid() != null ? eventModel.uid() : "") <= 0) {
+                EventModel.Columns.UID + EQUAL + QUESTION_MARK, eventModel.uid()) <= 0) {
 
             throw new IllegalStateException(String.format(Locale.US, "Event=[%s] " +
                     "has not been successfully updated", eventModel.uid()));

@@ -26,11 +26,6 @@ public class ProgramRepositoryImpl implements ProgramRepository {
             "JOIN Event ON Event.enrollment = Enrollment.uid \n"+
             "WHERE Enrollment.program = ? GROUP BY TrackedEntityInstance.uid ORDER BY Event.eventDate";
 
-    private final String SELECT_PROGRAM_ATTRIBUTES = "SELECT * FROM " + ProgramTrackedEntityAttributeModel.TABLE +
-            " WHERE " + ProgramTrackedEntityAttributeModel.TABLE + "." + ProgramTrackedEntityAttributeModel.Columns.PROGRAM + "='%s'";
-
-    private final String SELECT_PROGRAM_STAGE = "SELECT * FROM " + ProgramStageModel.TABLE + " WHERE " + ProgramStageModel.TABLE + "." + ProgramStageModel.Columns.UID + " = '%s'";
-
     private static final String SELECT_PROGRAM_ATTRIBUTES_FOR_TEI = "SELECT * FROM TrackedEntityAttributeValue " +
             "WHERE trackedEntityAttribute IN " +
             "(SELECT ProgramTrackedEntityAttribute.trackedEntityAttribute FROM ProgramTrackedEntityAttribute " +

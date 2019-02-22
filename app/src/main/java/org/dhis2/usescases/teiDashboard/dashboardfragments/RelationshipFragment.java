@@ -2,11 +2,7 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments;
 
 import android.content.Context;
 import android.content.Intent;
-import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +17,6 @@ import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.FragmentRelationshipsBinding;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
-import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import org.dhis2.usescases.teiDashboard.TeiDashboardContracts;
 import org.dhis2.usescases.teiDashboard.adapters.RelationshipAdapter;
 import org.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
@@ -34,6 +29,10 @@ import org.hisp.dhis.android.core.relationship.RelationshipTypeModel;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.databinding.DataBindingUtil;
 import io.reactivex.functions.Consumer;
 
 import static android.app.Activity.RESULT_OK;
@@ -44,16 +43,15 @@ import static android.app.Activity.RESULT_OK;
 
 public class RelationshipFragment extends FragmentGlobalAbstract {
 
-    FragmentRelationshipsBinding binding;
-    TeiDashboardContracts.TeiDashboardPresenter presenter;
+    private FragmentRelationshipsBinding binding;
+    private TeiDashboardContracts.TeiDashboardPresenter presenter;
 
-    private DashboardProgramModel dashboardProgramModel;
-    static RelationshipFragment instance;
+    private static RelationshipFragment instance;
     private RelationshipAdapter relationshipAdapter;
     private RapidFloatingActionHelper rfaHelper;
     private RelationshipTypeModel relationshipType;
 
-    static public RelationshipFragment getInstance() {
+    public static RelationshipFragment getInstance() {
         if (instance == null) {
             instance = new RelationshipFragment();
         }
@@ -61,12 +59,13 @@ public class RelationshipFragment extends FragmentGlobalAbstract {
     }
 
     public static RelationshipFragment createInstance() {
-        return instance = new RelationshipFragment();
+        instance = new RelationshipFragment();
+        return instance;
     }
 
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         presenter = ((TeiDashboardMobileActivity) context).getPresenter();
     }
@@ -84,14 +83,11 @@ public class RelationshipFragment extends FragmentGlobalAbstract {
     @Override
     public void onResume() {
         super.onResume();
-        setData(presenter.getDashBoardData());
+        setData();
     }
 
-    public void setData(DashboardProgramModel dashboardProgramModel) {
-        this.dashboardProgramModel = dashboardProgramModel;
-
+    public void setData() {
         binding.executePendingBindings();
-
         presenter.subscribeToRelationships(this);
         presenter.subscribeToRelationshipTypes(this);
 
@@ -108,14 +104,15 @@ public class RelationshipFragment extends FragmentGlobalAbstract {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == Constants.REQ_ADD_RELATIONSHIP) {
-            if (resultCode == RESULT_OK) {
-                if (data != null) {
-                    String tei_a = data.getStringExtra("TEI_A_UID");
-                    presenter.addRelationship(tei_a, relationshipType.uid());
-                }
-            }
+        if (requestCode == Constants.REQ_ADD_RELATIONSHIP && resultCode == RESULT_OK && data != null) {
+            String teiAUid = data.getStringExtra("TEI_A_UID");
+            presenter.addRelationship(teiAUid, relationshipType.uid());
         }
+    }
+
+    private void onRFACItemClick(RFACLabelItem item) {
+        Pair<RelationshipTypeModel, String> pair = (Pair<RelationshipTypeModel, String>) item.getWrapper();
+        goToRelationShip(pair.val0(), pair.val1());
     }
 
     private void initFab(List<Trio<RelationshipTypeModel, String, Integer>> relationshipTypes) {
@@ -124,14 +121,12 @@ public class RelationshipFragment extends FragmentGlobalAbstract {
         rfaContent.setOnRapidFloatingActionContentLabelListListener(new RapidFloatingActionContentLabelList.OnRapidFloatingActionContentLabelListListener() {
             @Override
             public void onRFACItemLabelClick(int position, RFACLabelItem item) {
-                Pair<RelationshipTypeModel, String> pair = (Pair<RelationshipTypeModel, String>) item.getWrapper();
-                goToRelationShip(pair.val0(),pair.val1());
+                onRFACItemClick(item);
             }
 
             @Override
             public void onRFACItemIconClick(int position, RFACLabelItem item) {
-                Pair<RelationshipTypeModel, String> pair = (Pair<RelationshipTypeModel, String>) item.getWrapper();
-                goToRelationShip(pair.val0(),pair.val1());
+                onRFACItemClick(item);
             }
         });
         List<RFACLabelItem> items = new ArrayList<>();
