@@ -279,12 +279,11 @@ public class EventDetailPresenterImpl implements EventDetailContracts.EventDetai
             dateDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
         }
 
-        if (eventDetailModel.getProgram().expiryPeriodType() != null) {// eventDetailModel.orgUnitOpeningDate() != null) {
+        if (eventDetailModel.getProgram().expiryPeriodType() != null) {
             Date minDate = DateUtils.getInstance().expDate(null,
                     eventDetailModel.getProgram().expiryDays() != null ? eventDetailModel.getProgram().expiryDays() : 0,
                     eventDetailModel.getProgram().expiryPeriodType());
             dateDialog.getDatePicker().setMinDate(minDate.getTime());
-            //dateDialog.getDatePicker().setMinDate(eventDetailModel.orgUnitOpeningDate().getTime());
         }
 
         if (eventDetailModel.orgUnitClosingDate() != null)

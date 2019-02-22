@@ -642,7 +642,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                 });
     }
 
-    @SuppressWarnings("squid:S1172")
+    @SuppressWarnings({"squid:S1172", "squid:CommentedOutCodeLine"})
     private void updateProgramTable(Date lastUpdated, String programUid) {
         /*ContentValues program = new ContentValues();TODO: Crash if active
         program.put(EnrollmentModel.Columns.LAST_UPDATED, BaseIdentifiableObject.DATE_FORMAT.format(lastUpdated));

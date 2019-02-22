@@ -129,15 +129,6 @@ public class DataSetDetailPresenterImpl implements DataSetDetailContract.DataSet
         this.fromDate = fromDate;
         this.toDate = toDate;
         lastSearchType = LastSearchType.DATES;
-        /*Observable.just(dataSetDetailRepository.filteredDataSet(programId,
-                DateUtils.getInstance().formatDate(fromDate),
-                DateUtils.getInstance().formatDate(toDate),
-                categoryOptionComboModel)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        list ->view.setData(getPeriodFromType(list)),
-                        Timber::e));*/
     }
 
     @Override
@@ -170,6 +161,7 @@ public class DataSetDetailPresenterImpl implements DataSetDetailContract.DataSet
     }
 
     @Override
+    @SuppressWarnings({"squid:S1172", "squid:CommentedOutCodeLine"})
     public void getDataSetWithDates(List<Date> dates, Period period, String orgUnitQuery) {
         this.dates = dates;
         this.period = period;

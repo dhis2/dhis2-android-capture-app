@@ -606,6 +606,7 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
         }
     }
 
+    @SuppressWarnings("squid:CommentedOutCodeLine")
     private void saveRelationships() {
 
 //TODO: CHANGE RELATIONSHIPS

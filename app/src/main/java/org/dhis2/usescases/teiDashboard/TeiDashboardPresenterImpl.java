@@ -287,15 +287,6 @@ public class TeiDashboardPresenterImpl implements TeiDashboardContracts.TeiDashb
     public void onEventSelected(String uid, View sharedView) {
         Fragment teiFragment = TEIDataFragment.getInstance();
         if (teiFragment != null && teiFragment.getContext() != null && teiFragment.isAdded()) {
-           /* Intent intent = new Intent(teiFragment.getContext(), EventDetailActivity.class);
-            Bundle extras = new Bundle();
-            extras.putString("EVENT_UID", uid);
-            extras.putString("TOOLBAR_TITLE", view.getToolbarTitle());
-            extras.putString(TEI_UID, teUid);
-            intent.putExtras(extras);
-            ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(view.getAbstractActivity(), sharedView, "shared_view");
-            teiFragment.startActivityForResult(intent, TEIDataFragment.getEventRequestCode(), options.toBundle());*/
-
             Intent intent2 = new Intent(teiFragment.getContext(), EventCaptureActivity.class);
             intent2.putExtras(EventCaptureActivity.getActivityBundle(uid, programUid));
             intent2.putExtra(Constants.TRACKED_ENTITY_INSTANCE, teUid);
@@ -315,25 +306,17 @@ public class TeiDashboardPresenterImpl implements TeiDashboardContracts.TeiDashb
             intent.putExtras(extras);
             ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(view.getAbstractActivity(), sharedView, "shared_view");
             teiFragment.startActivityForResult(intent, TEIDataFragment.getEventRequestCode(), options.toBundle());
-/*
-            Intent intent2 = new Intent(teiFragment.getContext(), EventCaptureActivity.class);
-            intent2.putExtras(EventCaptureActivity.getActivityBundle(uid, programUid));
-            teiFragment.startActivityForResult(intent2, TEIDataFragment.getEventRequestCode(), null);*/
         }
     }
 
     @Override
     public void onFollowUp(DashboardProgramModel dashboardProgramModel) {
         boolean followup = dashboardRepository.setFollowUp(dashboardProgramModel.getCurrentEnrollment().uid());
-
-
         view.showToast(followup ?
                 view.getContext().getString(R.string.follow_up_enabled) :
                 view.getContext().getString(R.string.follow_up_disabled));
 
         TEIDataFragment.getInstance().switchFollowUp(followup);
-
-
     }
 
     @Override
@@ -365,11 +348,10 @@ public class TeiDashboardPresenterImpl implements TeiDashboardContracts.TeiDashb
     }
 
     @Override
-    public void addRelationship(String trackEntityInstance_A, String relationshipType) {
+    public void addRelationship(String trackEntityInstanceA, String relationshipType) {
         try {
-            Relationship relationship = RelationshipHelper.teiToTeiRelationship(teUid, trackEntityInstance_A, relationshipType);
+            Relationship relationship = RelationshipHelper.teiToTeiRelationship(teUid, trackEntityInstanceA, relationshipType);
             d2.relationshipModule().relationships.add(relationship);
-//            dashboardRepository.updateTeiState(); SDK now updating TEI state
         } catch (D2Error e) {
             view.displayMessage(e.errorDescription());
         }
@@ -507,6 +489,7 @@ public class TeiDashboardPresenterImpl implements TeiDashboardContracts.TeiDashb
     }
 
     @Override
+    @SuppressWarnings({"squid:S1172", "squid:CommentedOutCodeLine"})
     public void subscribeToRelationshipLabel(RelationshipModel relationship, TextView textView) {
 
        /*

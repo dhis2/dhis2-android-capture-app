@@ -477,8 +477,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
                 @Override
                 public void onNothingSelected(AdapterView<?> parent) {
-                   /* isFilteredByCatCombo = false;
-                    presenter.clearCatComboFilters();*/
+                   // do nothing
                 }
             });
         }

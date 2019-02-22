@@ -10,7 +10,6 @@ import android.widget.ProgressBar;
 
 public class ProgressBarAnimation extends Animation {
     private ProgressBar progressBar;
-    private float from;
     private float to;
     private float initialFrom;
     private boolean rotate;
@@ -20,7 +19,6 @@ public class ProgressBarAnimation extends Animation {
         super();
         this.progressBar = progressBar;
         this.initialFrom = from;
-        this.from = 0;
         this.to = to - from;
         this.rotate = rotate;
         this.listener = listener;
@@ -30,7 +28,6 @@ public class ProgressBarAnimation extends Animation {
         super();
         this.progressBar = progressBar;
         this.initialFrom = initial;
-        this.from = 0;
         this.to = to - from;
         this.rotate = rotate;
         this.listener = listener;
@@ -39,8 +36,7 @@ public class ProgressBarAnimation extends Animation {
     @Override
     protected void applyTransformation(float interpolatedTime, Transformation t) {
         super.applyTransformation(interpolatedTime, t);
-//        float VALUE = initialFrom + from + (to - from) * interpolatedTime;
-        float value = initialFrom + (to - initialFrom)*interpolatedTime;
+        float value = initialFrom + (to - initialFrom) * interpolatedTime;
         progressBar.setProgress((int) value);
 
         if (rotate) {
@@ -49,9 +45,7 @@ public class ProgressBarAnimation extends Animation {
         }
 
         if ((int) initialFrom == 0)
-            listener.onUpdate(false, value);
-        else
-            listener.onUpdate(true, value);
+            listener.onUpdate((int) initialFrom != 0, value);
     }
 
     public interface OnUpdate {

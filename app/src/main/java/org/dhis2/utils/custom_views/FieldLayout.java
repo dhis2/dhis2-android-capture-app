@@ -9,6 +9,7 @@ import android.widget.RelativeLayout;
 /**
  * QUADRAM. Created by ppajuelo on 29/01/2019.
  */
+@SuppressWarnings({"squid:S1172", "squid:CommentedOutCodeLine"})
 public abstract class FieldLayout extends RelativeLayout {
 
     protected boolean isBgTransparent;

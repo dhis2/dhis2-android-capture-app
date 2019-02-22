@@ -1,13 +1,10 @@
 package org.dhis2.data.forms.dataentry;
 
-import android.util.Log;
-
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.schedulers.SchedulerProvider;
-import org.dhis2.utils.CodeGenerator;
 import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
@@ -44,9 +41,6 @@ import timber.log.Timber;
 final class DataEntryPresenterImpl implements DataEntryPresenter {
 
     @NonNull
-    private final CodeGenerator codeGenerator;
-
-    @NonNull
     private final DataEntryStore dataEntryStore;
 
     @NonNull
@@ -65,13 +59,11 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
     private DataEntryView dataEntryView;
     private HashMap<String, FieldViewModel> currentFieldViewModels;
 
-    DataEntryPresenterImpl(@NonNull CodeGenerator codeGenerator,
-                           @NonNull DataEntryStore dataEntryStore,
+    DataEntryPresenterImpl(@NonNull DataEntryStore dataEntryStore,
                            @NonNull DataEntryRepository dataEntryRepository,
                            @NonNull RuleEngineRepository ruleEngineRepository,
                            @NonNull SchedulerProvider schedulerProvider,
                            @NonNull MetadataRepository metadataRepository) {
-        this.codeGenerator = codeGenerator;
         this.dataEntryStore = dataEntryStore;
         this.dataEntryRepository = dataEntryRepository;
         this.ruleEngineRepository = ruleEngineRepository;
@@ -138,7 +130,7 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
                             .subscribeOn(Schedulers.computation())
                             .observeOn(Schedulers.io())
                             .subscribe(
-                                    data -> Log.d("SAVED_DATA", "DONE"),
+                                    data -> Timber.d("SAVED_DATA - DONE"),
                                     Timber::e,
                                     saveDisposable::clear
                             ));
@@ -191,7 +183,7 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
             fieldViewModels.put(showWarning.field(),
                     model.withWarning(showWarning.content()));
         else
-            Timber.d(String.format("Field with uid %s is missing", showWarning.field()));
+            Timber.d("Field with uid %s is missing", showWarning.field());
     }
 
     private void applyRuleActionShowError(RuleAction ruleAction, Map<String, FieldViewModel> fieldViewModels) {
@@ -264,6 +256,7 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
         dataEntryView.messageOnComplete(errorOnCompletion.content(), false);
     }
 
+    @SuppressWarnings("squid:CommentedOutCodeLine")
     private void applyRuleEffects(Map<String, FieldViewModel> fieldViewModels, Result<RuleEffect> calcResult) {
 
         for (RuleEffect ruleEffect : calcResult.items()) {

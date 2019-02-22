@@ -55,6 +55,7 @@ public class LoginPresenterImpl implements LoginContracts.LoginPresenter {
     }
 
     @Override
+    @SuppressWarnings("squid:CommentedOutCodeLine")
     public void init(LoginContracts.LoginView view) {
         this.view = view;
         this.disposable = new CompositeDisposable();

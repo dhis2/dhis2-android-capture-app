@@ -322,13 +322,11 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
             HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
 
             if (!prefs.getBoolean("TUTO_DASHBOARD_SHOWN", false) && !BuildConfig.DEBUG) {
-                HelpManager.getInstance().showHelp();/* getAbstractActivity().fancyShowCaseQueue.show();*/
+                HelpManager.getInstance().showHelp();
                 prefs.edit().putBoolean("TUTO_DASHBOARD_SHOWN", true).apply();
             }
 
         }, 500);
-
-
     }
 
     @Override
@@ -337,6 +335,5 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
             super.showTutorial(shaked);
         else
             showToast(getString(R.string.no_intructions));
-
     }
 }

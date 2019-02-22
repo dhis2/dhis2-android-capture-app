@@ -18,6 +18,7 @@ public class DataSetDetailViewHolder extends RecyclerView.ViewHolder{
         disposable = new CompositeDisposable();
     }
 
+    @SuppressWarnings("squid:CommentedOutCodeLine")
     public void bind(DataSetDetailContract.DataSetDetailPresenter presenter, DataSetDetailModel dataset) {
         binding.setVariable(BR.presenter, presenter);
         binding.setVariable(BR.dataset, dataset);

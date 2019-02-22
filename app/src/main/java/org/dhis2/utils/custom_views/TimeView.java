@@ -138,7 +138,6 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
                 editText.setText(calendarTime);
             }
             listener.onDateSelected(selectedDate);
-//            nextFocus(view);
         }, hour, minute, is24HourFormat);
         dialog.setTitle(label);
         dialog.show();

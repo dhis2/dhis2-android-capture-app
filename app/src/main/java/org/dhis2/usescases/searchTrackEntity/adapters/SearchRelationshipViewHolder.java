@@ -1,23 +1,22 @@
 package org.dhis2.usescases.searchTrackEntity.adapters;
 
-import androidx.recyclerview.widget.RecyclerView;
-
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.databinding.ItemSearchRelationshipTrackedEntityBinding;
 import org.dhis2.usescases.searchTrackEntity.SearchTEContractsModule;
-
 import org.hisp.dhis.android.core.relationship.RelationshipTypeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.recyclerview.widget.RecyclerView;
 import io.reactivex.disposables.CompositeDisposable;
 
 /**
  * QUADRAM. Created by frodriguez on 11/7/2017.
  */
 
+@SuppressWarnings({"squid:S1172", "squid:CommentedOutCodeLine"})
 public class SearchRelationshipViewHolder extends RecyclerView.ViewHolder {
 
     private ItemSearchRelationshipTrackedEntityBinding binding;
@@ -34,8 +33,6 @@ public class SearchRelationshipViewHolder extends RecyclerView.ViewHolder {
         compositeDisposable = new CompositeDisposable();
     }
 
-
-    @SuppressWarnings("squid:S1172")
     public void bind(SearchTEContractsModule.SearchTEPresenter presenter, SearchTeiModel teiModel, MetadataRepository metadataRepository) {
         this.presenter = presenter;
         this.trackedEntityInstanceModel = teiModel;
@@ -56,7 +53,7 @@ public class SearchRelationshipViewHolder extends RecyclerView.ViewHolder {
 
         binding.executePendingBindings();
 
-        itemView.setOnClickListener(view->presenter.addRelationship(trackedEntityInstanceModel.getTei().uid(),trackedEntityInstanceModel.isOnline()));
+        itemView.setOnClickListener(view -> presenter.addRelationship(trackedEntityInstanceModel.getTei().uid(), trackedEntityInstanceModel.isOnline()));
 
 
     }

@@ -157,7 +157,6 @@ public class DateView extends FieldLayout implements View.OnClickListener {
                     String result = DateUtils.uiDateFormat().format(selectedDate);
                     editText.setText(result);
                     listener.onDateSelected(selectedDate);
-//                    nextFocus(view);
                 }),
                 year,
                 month,
