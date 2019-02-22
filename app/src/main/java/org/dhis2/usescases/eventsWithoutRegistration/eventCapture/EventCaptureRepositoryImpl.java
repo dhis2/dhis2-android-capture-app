@@ -18,6 +18,7 @@ import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
+import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
@@ -280,15 +281,25 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                                     " JOIN ProgramStageDataElement ON ProgramStageDataElement.uid = ValueTypeDeviceRendering.uid" +
                                     " WHERE ProgramStageDataElement.uid = ?", uid);
                             if (rendering != null && rendering.moveToFirst()) {
-                                fieldRendering = ValueTypeDeviceRenderingModel.create(cursor);
+                                fieldRendering = ValueTypeDeviceRenderingModel.create(rendering);
                                 rendering.close();
+                            }
+
+                            ObjectStyleModel objectStyle = ObjectStyleModel.builder().build();
+                            Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", uid);
+                            try {
+                                if (objStyleCursor.moveToFirst())
+                                    objectStyle = ObjectStyleModel.create(objStyleCursor);
+                            } finally {
+                                if (objStyleCursor != null)
+                                    objStyleCursor.close();
                             }
 
                             renderList.add(fieldFactory.create(
                                     fieldViewModel.uid() + "." + uid, //fist
                                     displayName + "-" + optionCode, ValueType.TEXT, false,
                                     fieldViewModel.optionSet(), fieldViewModel.value(), fieldViewModel.programStageSection(),
-                                    fieldViewModel.allowFutureDate(), fieldViewModel.editable() == null ? false : fieldViewModel.editable(), renderingType, fieldViewModel.description(), fieldRendering, optionCount));
+                                    fieldViewModel.allowFutureDate(), fieldViewModel.editable() == null ? false : fieldViewModel.editable(), renderingType, fieldViewModel.description(), fieldRendering, optionCount,objectStyle));
 
                             cursor.moveToNext();
                         }
@@ -388,12 +399,20 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         } catch (Exception e) {
             Timber.e(e);
         }
-
+        ObjectStyleModel objectStyle = ObjectStyleModel.builder().build();
+        Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", uid);
+        try {
+            if (objStyleCursor.moveToFirst())
+                objectStyle = ObjectStyleModel.create(objStyleCursor);
+        } finally {
+            if (objStyleCursor != null)
+                objStyleCursor.close();
+        }
 
         return fieldFactory.create(uid, formName == null ? cursor.getString(1) : formName,
                 ValueType.valueOf(cursor.getString(2)), cursor.getInt(3) == 1,
                 cursor.getString(4), dataValue, cursor.getString(7), cursor.getInt(8) == 1,
-                isEnrollmentOpen() && eventStatus == EventStatus.ACTIVE && accessDataWrite, null, description, fieldRendering, optionCount);
+                isEnrollmentOpen() && eventStatus == EventStatus.ACTIVE && accessDataWrite, null, description, fieldRendering, optionCount,objectStyle);
     }
 
     @NonNull

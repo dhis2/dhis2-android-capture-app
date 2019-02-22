@@ -186,7 +186,7 @@ final class EditTextCustomHolder extends FormViewHolder {
     public void update(@NonNull FieldViewModel model) {
         this.editTextModel = (EditTextViewModel) model;
 
-        Bindings.setObjectStyle(icon, itemView, editTextModel.uid());
+        Bindings.setObjectStyle(icon, itemView, editTextModel.objectStyle());
         if(this.isEditable) {
             editText.setFocusable(true);
             editText.setFocusableInTouchMode(true);

@@ -1,7 +1,7 @@
 package org.dhis2.usescases.teiDashboard;
 
-import androidx.databinding.BaseObservable;
-
+import org.hisp.dhis.android.core.common.ObjectStyle;
+import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
@@ -12,6 +12,9 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
 import java.util.List;
+import java.util.Map;
+
+import androidx.databinding.BaseObservable;
 
 /**
  * QUADRAM. Created by ppajuelo on 04/12/2017.
@@ -27,6 +30,7 @@ public class DashboardProgramModel extends BaseObservable {
     private List<ProgramModel> enrollmentProgramModels;
     private OrganisationUnitModel orgnUnit;
     private List<EnrollmentModel> teiEnrollments;
+    private Map<String, ObjectStyleModel> programObjectStyles;
 
     public DashboardProgramModel(
             TrackedEntityInstanceModel tei,
@@ -121,9 +125,19 @@ public class DashboardProgramModel extends BaseObservable {
     }
 
     public String getTrackedEntityAttributeValueBySortOrder(int sortOrder) {
-        if(sortOrder <= trackedEntityAttributeValues.size()){
-            return trackedEntityAttributeValues.get(sortOrder -  1).value();
+        if (sortOrder <= trackedEntityAttributeValues.size()) {
+            return trackedEntityAttributeValues.get(sortOrder - 1).value();
         }
         return "";
+    }
+
+    public void setProgramsObjectStyles(Map<String, ObjectStyleModel> stringObjectStyleMap) {
+        this.programObjectStyles = stringObjectStyleMap;
+    }
+
+    public ObjectStyleModel getObjectStyleForProgram(String programUid) {
+        if (programObjectStyles.containsKey(programUid))
+            return programObjectStyles.get(programUid);
+        else return null;
     }
 }

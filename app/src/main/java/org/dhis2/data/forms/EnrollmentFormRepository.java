@@ -15,6 +15,7 @@ import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
+import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
@@ -567,7 +568,7 @@ class EnrollmentFormRepository implements FormRepository {
         ValueTypeDeviceRenderingModel fieldRendering = null;
         Cursor rendering = briteDatabase.query("SELECT * FROM ValueTypeDeviceRendering WHERE uid = ?", uid);
         if (rendering != null && rendering.moveToFirst()) {
-            fieldRendering = ValueTypeDeviceRenderingModel.create(cursor);
+            fieldRendering = ValueTypeDeviceRenderingModel.create(rendering);
             rendering.close();
         }
 
@@ -582,8 +583,18 @@ class EnrollmentFormRepository implements FormRepository {
                 "",
                 "");
 
+        ObjectStyleModel objectStyle = ObjectStyleModel.builder().build();
+        Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", uid);
+        try {
+            if (objStyleCursor.moveToFirst())
+                objectStyle = ObjectStyleModel.create(objStyleCursor);
+        } finally {
+            if (objStyleCursor != null)
+                objStyleCursor.close();
+        }
+
         return fieldFactory.create(uid, label, valueType, mandatory, optionSetUid, dataValue, section,
-                allowFutureDates, status == EnrollmentStatus.ACTIVE, null, description, fieldRendering,optionCount);
+                allowFutureDates, status == EnrollmentStatus.ACTIVE, null, description, fieldRendering,optionCount,objectStyle);
     }
 
     @NonNull

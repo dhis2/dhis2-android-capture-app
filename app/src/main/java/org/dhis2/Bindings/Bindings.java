@@ -1,7 +1,5 @@
 package org.dhis2.Bindings;
 
-import android.annotation.SuppressLint;
-import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Color;
@@ -18,11 +16,11 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import org.dhis2.R;
-import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.usescases.programEventDetail.ProgramEventViewModel;
 import org.dhis2.utils.CatComboAdapter;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
+import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
@@ -38,12 +36,9 @@ import java.util.Date;
 import java.util.List;
 
 import androidx.core.content.ContextCompat;
-import androidx.core.view.ViewCompat;
 import androidx.databinding.BindingAdapter;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 /**
@@ -51,8 +46,6 @@ import timber.log.Timber;
  */
 
 public class Bindings {
-
-    private static MetadataRepository metadataRepository;
 
     @BindingAdapter("date")
     public static void setDate(TextView textView, String date) {
@@ -222,12 +215,11 @@ public class Bindings {
         if (enrollmentStatus == EnrollmentStatus.ACTIVE) {
             switch (status) {
                 case ACTIVE:
-                    if (metadataRepository != null)
-                        if (DateUtils.getInstance().hasExpired(event, program.expiryDays(), program.completeEventsExpiryDays(), eventProgramStage.periodType() != null ? eventProgramStage.periodType() : program.expiryPeriodType())) {
-                            view.setText(view.getContext().getString(R.string.event_expired));
-                        } else {
-                            view.setText(view.getContext().getString(R.string.event_open));
-                        }
+                    if (DateUtils.getInstance().hasExpired(event, program.expiryDays(), program.completeEventsExpiryDays(), eventProgramStage.periodType() != null ? eventProgramStage.periodType() : program.expiryPeriodType())) {
+                        view.setText(view.getContext().getString(R.string.event_expired));
+                    } else {
+                        view.setText(view.getContext().getString(R.string.event_open));
+                    }
                     break;
                 case COMPLETED:
                     if (DateUtils.getInstance().isEventExpired(null, event.completedDate(), program.completeEventsExpiryDays())) {
@@ -400,10 +392,6 @@ public class Bindings {
         }
     }
 
-    public static void setMetadataRepository(MetadataRepository metadata) {
-        metadataRepository = metadata;
-    }
-
     @BindingAdapter("spinnerOptions")
     public static void setSpinnerOptions(Spinner spinner, List<CategoryOptionComboModel> options) {
         CatComboAdapter adapter = new CatComboAdapter(spinner.getContext(),
@@ -460,34 +448,21 @@ public class Bindings {
         }
     }
 
-    @SuppressLint("RxLeakedSubscription")
-    @BindingAdapter({"objectStyle", "itemView"})
-    public static void setObjectStyle(View view, View itemView, String uid) {
-        if (metadataRepository != null)
-            metadataRepository.getObjectStyle(uid)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                            data -> {
-                                if (data.icon() != null) {
-                                    Resources resources = view.getContext().getResources();
-                                    String iconName = data.icon().startsWith("ic_") ? data.icon() : "ic_" + data.icon();
-                                    int icon = resources.getIdentifier(iconName, "drawable", view.getContext().getPackageName());
-                                    if (view instanceof ImageView)
-                                        ((ImageView) view).setImageResource(icon);
-                                }
+    public static void setObjectStyle(View view, View itemView, ObjectStyleModel objectStyle) {
+        if (objectStyle.icon() != null) {
+            Resources resources = view.getContext().getResources();
+            String iconName = objectStyle.icon().startsWith("ic_") ? objectStyle.icon() : "ic_" + objectStyle.icon();
+            int icon = resources.getIdentifier(iconName, "drawable", view.getContext().getPackageName());
+            if (view instanceof ImageView)
+                ((ImageView) view).setImageResource(icon);
+        }
 
-                                if (data.color() != null) {
-                                    String color = data.color().startsWith("#") ? data.color() : "#" + data.color();
-                                    int colorRes = Color.parseColor(color);
-                                    itemView.setBackgroundColor(colorRes);
-                                    setFromResBgColor(view, colorRes);
-                                }
-                            },
-                            Timber::d
-                    );
-
-
+        if (objectStyle.color() != null) {
+            String color = objectStyle.color().startsWith("#") ? objectStyle.color() : "#" + objectStyle.color();
+            int colorRes = Color.parseColor(color);
+            itemView.setBackgroundColor(colorRes);
+            setFromResBgColor(view, colorRes);
+        }
     }
 
     @BindingAdapter("imageBackground")

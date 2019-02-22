@@ -76,7 +76,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private Date selectedEnrollmentDate;
 
     public SearchTEPresenter(SearchRepository searchRepository, MetadataRepository metadataRepository, D2 d2) {
-        Bindings.setMetadataRepository(metadataRepository);
         this.metadataRepository = metadataRepository;
         this.searchRepository = searchRepository;
         this.d2 = d2;

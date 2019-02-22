@@ -10,6 +10,7 @@ import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.utils.CodeGenerator;
 import org.dhis2.utils.Result;
+import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.rules.models.RuleAction;
@@ -214,7 +215,7 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
                 String uid = displayText.content();
 
                 EditTextViewModel textViewModel = EditTextViewModel.create(uid,
-                        displayText.content(), false, ruleEffect.data(), "Information", 1, ValueType.TEXT, null, false, null, null);
+                        displayText.content(), false, ruleEffect.data(), "Information", 1, ValueType.TEXT, null, false, null, null,ObjectStyleModel.builder().build());
 
                 if (this.currentFieldViewModels == null ||
                         !this.currentFieldViewModels.containsKey(uid)) {

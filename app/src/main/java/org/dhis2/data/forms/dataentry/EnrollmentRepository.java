@@ -3,7 +3,6 @@ package org.dhis2.data.forms.dataentry;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
-import androidx.annotation.NonNull;
 import android.util.Log;
 
 import com.squareup.sqlbrite2.BriteDatabase;
@@ -12,6 +11,7 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
+import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
@@ -22,6 +22,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel
 import java.util.Calendar;
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import io.reactivex.Observable;
 import timber.log.Timber;
 
@@ -66,7 +67,7 @@ final class EnrollmentRepository implements DataEntryRepository {
             "  LEFT OUTER JOIN Option ON (\n" +
             "    Field.optionSet = Option.optionSet AND Value.value = Option.code\n" +
             "  )\n" +
-            " LEFT JOIN (SELECT Option.uid AS optionCount, Option.optionSet AS optionSet FROM Option) AS Count ON Count.optionSet = Field.optionSet\n"+ //TODO: CHECK OPTION COUNT
+            " LEFT JOIN (SELECT Option.uid AS optionCount, Option.optionSet AS optionSet FROM Option) AS Count ON Count.optionSet = Field.optionSet\n" + //TODO: CHECK OPTION COUNT
             "WHERE Enrollment.uid = ?";
 
 
@@ -143,7 +144,7 @@ final class EnrollmentRepository implements DataEntryRepository {
                     //Checks if ValueType is Numeric and that it start with a 0, then removes the 0
                     if (valueType == ValueType.NUMBER)
                         while (dataValue.startsWith("0")) {
-                            dataValue = d2.trackedEntityModule().reservedValueManager.getValue(uid,  pattern == null || pattern.contains("OU") ? null : orgUnitUid);
+                            dataValue = d2.trackedEntityModule().reservedValueManager.getValue(uid, pattern == null || pattern.contains("OU") ? null : orgUnitUid);
                         }
 
                     String INSERT = "INSERT INTO TrackedEntityAttributeValue\n" +
@@ -169,13 +170,23 @@ final class EnrollmentRepository implements DataEntryRepository {
         ValueTypeDeviceRenderingModel fieldRendering = null;
         Cursor rendering = briteDatabase.query("SELECT * FROM ValueTypeDeviceRendering WHERE uid = ?", uid);
         if (rendering != null && rendering.moveToFirst()) {
-            fieldRendering = ValueTypeDeviceRenderingModel.create(cursor);
+            fieldRendering = ValueTypeDeviceRenderingModel.create(rendering);
             rendering.close();
+        }
+
+        ObjectStyleModel objectStyle = ObjectStyleModel.builder().build();
+        Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", uid);
+        try {
+            if (objStyleCursor.moveToFirst())
+                objectStyle = ObjectStyleModel.create(objStyleCursor);
+        } finally {
+            if (objStyleCursor != null)
+                objStyleCursor.close();
         }
 
         return fieldFactory.create(uid,
                 label, valueType, mandatory, optionSet, dataValue, null, allowFutureDates,
-                !generated && enrollmentStatus == EnrollmentStatus.ACTIVE, null, description, fieldRendering,optionCount);
+                !generated && enrollmentStatus == EnrollmentStatus.ACTIVE, null, description, fieldRendering, optionCount, objectStyle);
 
     }
 
