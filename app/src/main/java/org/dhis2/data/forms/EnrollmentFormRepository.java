@@ -163,8 +163,7 @@ class EnrollmentFormRepository implements FormRepository {
             "  Field.generated,\n" +
             "  Enrollment.organisationUnit,\n" +
             "  Enrollment.status,\n" +
-            "  Field.displayDescription,\n" +
-            "  COUNT(Count.optionCount)\n"+
+            "  Field.displayDescription\n" +
             "FROM (Enrollment INNER JOIN Program ON Program.uid = Enrollment.program)\n" +
             "  LEFT OUTER JOIN (\n" +
             "      SELECT\n" +
@@ -186,7 +185,6 @@ class EnrollmentFormRepository implements FormRepository {
             "  LEFT OUTER JOIN Option ON (\n" +
             "    Field.optionSet = Option.optionSet AND Value.value = Option.code\n" +
             "  )\n" +
-            " LEFT JOIN (SELECT Option.uid AS optionCount, Option.optionSet AS optionSet FROM Option) AS Count ON Count.optionSet = Field.optionSet\n"+ //TODO: CHECK OPTION COUNT
             "WHERE Enrollment.uid = ?";
     private static final String CHECK_STAGE_IS_NOT_CREATED = "SELECT * FROM Event JOIN Enrollment ON Event.enrollment = Enrollment.uid WHERE Enrollment.uid = ? AND Event.programStage = ?";
     @NonNull
@@ -563,8 +561,17 @@ class EnrollmentFormRepository implements FormRepository {
             dataValue = optionCodeName;
         }
 
-        int optionCount = cursor.getInt(12);
-
+        int optionCount = 0;
+        try{
+            Cursor countCursor = briteDatabase.query("SELECT COUNT (uid) FROM Option WHERE optionSet = ?", optionSetUid);
+            if(countCursor!=null){
+                if(countCursor.moveToFirst())
+                    optionCount = countCursor.getInt(0);
+                countCursor.close();
+            }
+        }catch (Exception e){
+            Timber.e(e);
+        }
         ValueTypeDeviceRenderingModel fieldRendering = null;
         Cursor rendering = briteDatabase.query("SELECT * FROM ValueTypeDeviceRendering WHERE uid = ?", uid);
         if (rendering != null && rendering.moveToFirst()) {
