@@ -111,10 +111,10 @@ public class TeiDashboardPresenterImpl implements TeiDashboardContracts.TeiDashb
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
-                            (dashboardProgramModel) -> {
-                                this.dashboardProgramModel = dashboardProgramModel;
-                                this.programWritePermission = dashboardProgramModel.getCurrentProgram().accessDataWrite();
-                                this.teType = dashboardProgramModel.getTei().trackedEntityType();
+                            dashboardProgramModelResult -> {
+                                dashboardProgramModel = dashboardProgramModelResult;
+                                programWritePermission = dashboardProgramModel.getCurrentProgram().accessDataWrite();
+                                teType = dashboardProgramModel.getTei().trackedEntityType();
                                 view.setData(dashboardProgramModel);
                             },
                             Timber::e
@@ -133,9 +133,9 @@ public class TeiDashboardPresenterImpl implements TeiDashboardContracts.TeiDashb
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
-                            dashboardProgramModel -> {
-                                this.dashboardProgramModel = dashboardProgramModel;
-                                this.teType = dashboardProgramModel.getTei().trackedEntityType();
+                            dashboardProgramModelResult -> {
+                                dashboardProgramModel = dashboardProgramModelResult;
+                                teType = dashboardProgramModel.getTei().trackedEntityType();
                                 view.setData(dashboardProgramModel);
                             },
                             Timber::e)

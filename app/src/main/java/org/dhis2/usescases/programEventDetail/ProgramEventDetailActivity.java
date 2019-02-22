@@ -65,7 +65,7 @@ import static org.dhis2.utils.Period.YEARLY;
 /**
  * QUADRAM. Created by Cristian on 13/02/2018.
  */
-
+@SuppressWarnings("squid:MaximumInheritanceDepth")
 public class ProgramEventDetailActivity extends ActivityGlobalAbstract implements ProgramEventDetailContract.ProgramEventDetailView {
 
     private ActivityProgramEventDetailBinding binding;
@@ -449,7 +449,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
             binding.catCombo.setVisibility(View.GONE);
         } else {
             binding.catCombo.setVisibility(View.VISIBLE);
-            CatComboAdapter adapter = new CatComboAdapter(this,
+            CatComboAdapter catComboAdapter = new CatComboAdapter(this,
                     R.layout.spinner_layout,
                     R.id.spinner_text,
                     catComboListFinal,
@@ -457,7 +457,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                     R.color.white_faf);
 
             binding.catCombo.setVisibility(View.VISIBLE);
-            binding.catCombo.setAdapter(adapter);
+            binding.catCombo.setAdapter(catComboAdapter);
 
             binding.catCombo.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
@@ -469,7 +469,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                         pageProcessor.onNext(0);
                     } else {
                         isFilteredByCatCombo = true;
-                        presenter.onCatComboSelected(adapter.getItem(position - 1));
+                        presenter.onCatComboSelected(catComboAdapter.getItem(position - 1));
                         endlessScrollListener.resetState();
                         pageProcessor.onNext(0);
                     }

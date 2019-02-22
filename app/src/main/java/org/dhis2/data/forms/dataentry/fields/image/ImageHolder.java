@@ -59,7 +59,6 @@ public class ImageHolder extends FormViewHolder {
         descriptionText = viewModel.description();
         String[] labelAndCode = viewModel.label().split("-");
         String labelName = labelAndCode[0];
-        String code = labelAndCode[1];
         label = new StringBuilder(labelName);
         if (viewModel.mandatory())
             label.append("*");

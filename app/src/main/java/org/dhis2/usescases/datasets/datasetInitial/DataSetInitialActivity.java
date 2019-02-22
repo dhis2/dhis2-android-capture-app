@@ -33,6 +33,7 @@ import javax.inject.Inject;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 
+@SuppressWarnings("squid:MaximumInheritanceDepth")
 public class DataSetInitialActivity extends ActivityGlobalAbstract implements DataSetInitialContract.DataSetInitialView {
 
     private ActivityDatasetInitialBinding binding;

@@ -14,6 +14,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+@SuppressWarnings("squid:MaximumInheritanceDepth")
 public class ReservedValueActivity extends ActivityGlobalAbstract implements ReservedValueContracts.ReservedValueView {
 
     private ActivityReservedValueBinding reservedBinding;

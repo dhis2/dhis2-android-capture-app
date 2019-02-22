@@ -90,7 +90,6 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
 
     @Override
     public void handleDataWORegistrationInfo(JSONArray jsonArray) {
-        ArrayList<Trio<TrackedEntityDataValueModel, String, Boolean>> attributes = new ArrayList<>();
         if (eventUid != null) {
             try {
                 // LOOK FOR TRACKED ENTITY ATTRIBUTES ON LOCAL DATABASE

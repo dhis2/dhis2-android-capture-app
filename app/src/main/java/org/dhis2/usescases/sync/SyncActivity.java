@@ -28,7 +28,7 @@ import org.dhis2.utils.SyncUtils;
 
 import javax.inject.Inject;
 
-
+@SuppressWarnings("squid:MaximumInheritanceDepth")
 public class SyncActivity extends ActivityGlobalAbstract implements SyncContracts.SyncView {
 
     ActivitySynchronizationBinding binding;

@@ -599,7 +599,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
 
     @Override
     public void setWarningOnCompletion(RuleActionWarningOnCompletion warningOnCompletion) {
-        RuleActionWarningOnCompletion warningOnCompletion1 = warningOnCompletion;
+        // do nothing
     }
 
     @Override

@@ -26,7 +26,7 @@ import static org.dhis2.data.qr.QRjson.EVENT_JSON;
 /**
  * QUADRAM. Created by ppajuelo on 21/06/2018.
  */
-
+@SuppressWarnings("squid:MaximumInheritanceDepth")
 public class QrEventsWORegistrationActivity extends ActivityGlobalAbstract implements QrEventsWORegistrationContracts.View {
 
     @Inject

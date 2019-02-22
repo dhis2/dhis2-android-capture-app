@@ -67,14 +67,14 @@ final class DataValueStore implements DataEntryStore {
     @Override
     public Flowable<Long> save(@NonNull String uid, @Nullable String value) {
         return userCredentials
-                .switchMap((userCredentials) -> {
+                .switchMap(userCredentialsResult -> {
                     long updated = update(uid, value);
                     if (updated > 0) {
                         updateTEi();
                         return Flowable.just(updated);
                     }
 
-                    return Flowable.just(insert(uid, value, userCredentials.username()));
+                    return Flowable.just(insert(uid, value, userCredentialsResult.username()));
                 })
                 .switchMap(this::updateEvent);
     }
@@ -84,14 +84,11 @@ final class DataValueStore implements DataEntryStore {
         ContentValues contentValues = new ContentValues();
         Date currentDate = Calendar.getInstance().getTime();
         contentValues.put(EventModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(currentDate));
-        String eventStatus = null;
+        String eventStatus;
         switch (eventModel.status()) {
+            case SCHEDULE:
             case COMPLETED:
                 eventStatus = EventStatus.ACTIVE.name(); //TODO: should check if visited/skiped/overdue
-                contentValues.putNull(EventModel.Columns.COMPLETE_DATE);
-                break;
-            case SCHEDULE:
-                eventStatus = EventStatus.ACTIVE.name();
                 contentValues.putNull(EventModel.Columns.COMPLETE_DATE);
                 break;
             default:
@@ -104,10 +101,8 @@ final class DataValueStore implements DataEntryStore {
         contentValues.put(EventModel.Columns.STATE, eventModel.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
         updateProgramTable(currentDate, eventModel.program());
 
-        if (eventModel != null) {
-            briteDatabase.update(EventModel.TABLE, contentValues, EventModel.Columns.UID + "= ?", eventModel.uid());
-            updateTEi();
-        }
+        briteDatabase.update(EventModel.TABLE, contentValues, EventModel.Columns.UID + "= ?", eventModel.uid());
+        updateTEi();
     }
 
     @Override
@@ -175,7 +170,7 @@ final class DataValueStore implements DataEntryStore {
                         values.put(EventModel.Columns.STATE, State.TO_UPDATE.toString());
 
                         if (briteDatabase.update(EventModel.TABLE, values,
-                                EventModel.Columns.UID + " = ?", eventUid == null ? "" : eventUid) <= 0) {
+                                EventModel.Columns.UID + EQUAL + QUESTION_MARK, eventUid) <= 0) {
 
                             throw new IllegalStateException(String.format(Locale.US, "Event=[%s] " +
                                     "has not been successfully updated", eventUid));

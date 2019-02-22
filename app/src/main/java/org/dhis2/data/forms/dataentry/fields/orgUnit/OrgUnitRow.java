@@ -1,9 +1,5 @@
 package org.dhis2.data.forms.dataentry.fields.orgUnit;
 
-import androidx.databinding.DataBindingUtil;
-import androidx.databinding.ViewDataBinding;
-import androidx.annotation.NonNull;
-import androidx.fragment.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -12,11 +8,13 @@ import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.Row;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.FormButtonBinding;
-
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.FragmentManager;
 import io.reactivex.Observable;
 import io.reactivex.processors.FlowableProcessor;
 
@@ -32,7 +30,6 @@ public class OrgUnitRow implements Row<OrgUnitHolder, OrgUnitViewModel> {
     private final FragmentManager fm;
     private final Observable<List<OrganisationUnitModel>> orgUnits;
     private final String renderType;
-    private FormButtonBinding binding;
 
     public OrgUnitRow(FragmentManager fm, LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor,
                       boolean isBgTransparent, Observable<List<OrganisationUnitModel>> orgUnits) {
@@ -45,7 +42,6 @@ public class OrgUnitRow implements Row<OrgUnitHolder, OrgUnitViewModel> {
     }
 
     public OrgUnitRow(FragmentManager fm, LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor,
-                      @NonNull FlowableProcessor<Integer> currentPosition,
                       boolean isBgTransparent, Observable<List<OrganisationUnitModel>> orgUnits, String renderType) {
         this.inflater = layoutInflater;
         this.processor = processor;
@@ -58,7 +54,7 @@ public class OrgUnitRow implements Row<OrgUnitHolder, OrgUnitViewModel> {
     @NonNull
     @Override
     public OrgUnitHolder onCreate(@NonNull ViewGroup parent) {
-        ViewDataBinding binding = DataBindingUtil.inflate(
+        FormButtonBinding binding = DataBindingUtil.inflate(
                 inflater,
                 isBgTransparent ? R.layout.custom_text_view : R.layout.custom_text_view_accent,
                 parent,

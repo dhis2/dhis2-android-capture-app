@@ -150,11 +150,11 @@ public class LoginPresenterImpl implements LoginContracts.LoginPresenter {
         disposable.add(
                 configurationRepository.configure(baseUrl)
                         .map(config -> ((App) view.getAbstractActivity().getApplicationContext()).createServerComponent(config).userManager())
-                        .switchMap(userManager -> {
+                        .switchMap(userManagerResult -> {
                             SharedPreferences prefs = view.getAbstractActivity().getSharedPreferences(
                                     Constants.SHARE_PREFS, Context.MODE_PRIVATE);
                             prefs.edit().putString(Constants.SERVER, serverUrl).apply();
-                            this.userManager = userManager;
+                            userManager = userManagerResult;
                             return userManager.logIn(userName.trim(), pass).map(user -> {
                                 if (user == null)
                                     return Response.error(404, ResponseBody.create(MediaType.parse("text"), "NOT FOUND"));

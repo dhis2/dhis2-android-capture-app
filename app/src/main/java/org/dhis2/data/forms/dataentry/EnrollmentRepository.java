@@ -167,8 +167,7 @@ final class EnrollmentRepository implements DataEntryRepository {
                 sqLiteBind(updateStatement, 3, uid);
                 sqLiteBind(updateStatement, 4, teiUid);
 
-                long insert = briteDatabase.executeInsert(
-                        TrackedEntityAttributeValueModel.TABLE, updateStatement);
+                briteDatabase.executeInsert(TrackedEntityAttributeValueModel.TABLE, updateStatement);
                 updateStatement.clearBindings();
             }
         } catch (D2Error e) {

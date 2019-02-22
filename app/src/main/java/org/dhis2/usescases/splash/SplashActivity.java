@@ -15,6 +15,7 @@ import javax.inject.Inject;
 
 import io.reactivex.functions.Consumer;
 
+@SuppressWarnings("squid:MaximumInheritanceDepth")
 public class SplashActivity extends ActivityGlobalAbstract implements SplashContracts.SplashView {
 
     ActivitySplashBinding binding;

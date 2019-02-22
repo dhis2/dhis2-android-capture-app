@@ -48,6 +48,7 @@ import static org.dhis2.utils.Period.NONE;
 import static org.dhis2.utils.Period.WEEKLY;
 import static org.dhis2.utils.Period.YEARLY;
 
+@SuppressWarnings("squid:MaximumInheritanceDepth")
 public class DataSetDetailActivity extends ActivityGlobalAbstract implements DataSetDetailContract.DataSetDetailView {
 
     private ActivityDatasetDetailBinding binding;
@@ -347,7 +348,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
             binding.catCombo.setVisibility(View.GONE);
         } else {
             binding.catCombo.setVisibility(View.VISIBLE);
-            CatComboAdapter adapter = new CatComboAdapter(this,
+            CatComboAdapter catComboAdapter = new CatComboAdapter(this,
                     R.layout.spinner_layout,
                     R.id.spinner_text,
                     catComboList,
@@ -355,7 +356,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
                     R.color.white_faf);
 
             binding.catCombo.setVisibility(View.VISIBLE);
-            binding.catCombo.setAdapter(adapter);
+            binding.catCombo.setAdapter(catComboAdapter);
 
             binding.catCombo.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
@@ -365,7 +366,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
                         presenter.clearCatComboFilters(orgUnitFilter.toString());
                     } else {
                         isFilteredByCatCombo = true;
-                        presenter.onCatComboSelected(adapter.getItem(position - 1), orgUnitFilter.toString());
+                        presenter.onCatComboSelected(catComboAdapter.getItem(position - 1), orgUnitFilter.toString());
                     }
                 }
 

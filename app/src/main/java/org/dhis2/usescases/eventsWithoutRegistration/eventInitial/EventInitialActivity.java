@@ -82,7 +82,7 @@ import static org.dhis2.utils.Constants.TRACKED_ENTITY_INSTANCE;
 /**
  * QUADRAM. Created by Cristian on 01/03/2018.
  */
-
+@SuppressWarnings("squid:MaximumInheritanceDepth")
 public class EventInitialActivity extends ActivityGlobalAbstract implements EventInitialContract.EventInitialView,
         DatePickerDialog.OnDateSetListener, ProgressBarAnimation.OnUpdate {
 
@@ -403,8 +403,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         else
             new PeriodDialog()
                     .setPeriod(periodType)
-                    .setPossitiveListener(selectedDate -> {
-                        this.selectedDate = selectedDate;
+                    .setPossitiveListener(selectedDateResult -> {
+                        selectedDate = selectedDateResult;
                         binding.date.setText(DateUtils.getInstance().getPeriodUIString(periodType, selectedDate, Locale.getDefault()));
                         binding.date.clearFocus();
                         if (!fixedOrgUnit)

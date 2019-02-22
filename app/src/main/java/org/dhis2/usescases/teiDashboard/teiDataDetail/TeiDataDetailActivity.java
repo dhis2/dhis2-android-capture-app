@@ -23,6 +23,7 @@ import javax.inject.Inject;
 import androidx.databinding.DataBindingUtil;
 import io.reactivex.functions.Consumer;
 
+@SuppressWarnings("squid:MaximumInheritanceDepth")
 public class TeiDataDetailActivity extends ActivityGlobalAbstract implements TeiDataDetailContracts.TeiDataDetailView {
     ActivityTeidataDetailBinding binding;
 

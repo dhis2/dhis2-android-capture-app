@@ -42,6 +42,7 @@ import static org.dhis2.utils.Constants.PROGRAM_UID;
 /**
  * QUADRAM. Created by ppajuelo on 19/11/2018.
  */
+@SuppressWarnings("squid:MaximumInheritanceDepth")
 public class EventCaptureActivity extends ActivityGlobalAbstract implements EventCaptureContract.EventCaptureView, View.OnTouchListener, GestureDetector.OnGestureListener {
 
     private static final int SWIPE_THRESHOLD = 100;

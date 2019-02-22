@@ -41,4 +41,8 @@ public class SqlConstants {
     public static final String VARIABLE = "%s";
     public static final String TABLE_POINT_FIELD = "%s.%s";
     public static final String JOIN_VARIABLE_ON_TABLE_POINT_FIELD_EQUALS = " JOIN %s ON %s.%s = %s.%s";
+
+    private SqlConstants() {
+        // hide public constructor
+    }
 }

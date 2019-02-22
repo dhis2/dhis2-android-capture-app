@@ -287,8 +287,8 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
                 applyRuleActionAssign(ruleAction, fieldViewModels, ruleEffect);
 
             } else if (ruleAction instanceof RuleActionCreateEvent) {
-                RuleActionCreateEvent createEvent = (RuleActionCreateEvent) ruleAction;
                 //TODO: CREATE event with data from createEvent
+//                RuleActionCreateEvent createEvent = (RuleActionCreateEvent) ruleAction;
             } else if (ruleAction instanceof RuleActionSetMandatoryField) {
                 applyRuleActionMandatoryField(ruleAction, fieldViewModels);
 

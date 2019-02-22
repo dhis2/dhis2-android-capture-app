@@ -36,7 +36,7 @@ import androidx.databinding.ObservableInt;
 import androidx.fragment.app.Fragment;
 import io.reactivex.functions.Consumer;
 
-
+@SuppressWarnings("squid:MaximumInheritanceDepth")
 public class MainActivity extends ActivityGlobalAbstract implements MainContracts.MainView {
 
     private ActivityMainBinding binding;

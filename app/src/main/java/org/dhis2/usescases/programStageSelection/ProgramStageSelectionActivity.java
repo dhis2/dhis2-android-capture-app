@@ -35,7 +35,7 @@ import static org.dhis2.utils.Constants.TRACKED_ENTITY_INSTANCE;
 /**
  * QUADRAM. Created by ppajuelo on 31/10/2017.
  */
-
+@SuppressWarnings("squid:MaximumInheritanceDepth")
 public class ProgramStageSelectionActivity extends ActivityGlobalAbstract implements ProgramStageSelectionContract.ProgramStageSelectionView {
 
     ActivityProgramStageSelectionBinding binding;
@@ -46,7 +46,6 @@ public class ProgramStageSelectionActivity extends ActivityGlobalAbstract implem
     ProgramStageSelectionAdapter adapter;
     private String enrollmenId;
     private String programId;
-    private int orientation;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -64,7 +63,7 @@ public class ProgramStageSelectionActivity extends ActivityGlobalAbstract implem
     @Override
     protected void onResume() {
         super.onResume();
-        orientation = Resources.getSystem().getConfiguration().orientation;
+        int orientation = Resources.getSystem().getConfiguration().orientation;
         presenter.getProgramStages(programId, enrollmenId, this); //TODO: enrollment / event path
         int columnCount = (orientation == Configuration.ORIENTATION_LANDSCAPE) ? 3 : 2;
         binding.recyclerView.setLayoutManager(new GridLayoutManager(this, columnCount));

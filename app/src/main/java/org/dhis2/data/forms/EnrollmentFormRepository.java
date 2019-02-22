@@ -628,15 +628,15 @@ class EnrollmentFormRepository implements FormRepository {
     }
 
     private Trio<String, String, String> openDashboard() {
-        Cursor tetCursor = briteDatabase.query(SELECT_TE_TYPE, enrollmentUid == null ? "" : enrollmentUid);
-        String programUid = "";
+        Cursor tetCursor = briteDatabase.query(SELECT_TE_TYPE, enrollmentUid);
+        String mProgramUid = "";
         String teiUid = "";
         if (tetCursor != null && tetCursor.moveToFirst()) {
-            programUid = tetCursor.getString(0);
+            mProgramUid = tetCursor.getString(0);
             teiUid = tetCursor.getString(1);
             tetCursor.close();
         }
-        return Trio.create(teiUid, programUid, "");
+        return Trio.create(teiUid, mProgramUid, "");
     }
 
 

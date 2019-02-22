@@ -136,15 +136,15 @@ public class RelationshipFragment extends FragmentGlobalAbstract {
         });
         List<RFACLabelItem> items = new ArrayList<>();
         for (Trio<RelationshipTypeModel, String, Integer> trio : relationshipTypes) {
-            RelationshipTypeModel relationshipType = trio.val0();
+            RelationshipTypeModel relationshipTypeI = trio.val0();
             int resource = trio.val2();
             items.add(new RFACLabelItem<Pair<RelationshipTypeModel, String>>()
-                    .setLabel(relationshipType.displayName())
+                    .setLabel(relationshipTypeI.displayName())
                     .setResId(resource)
                     .setLabelTextBold(true)
                     .setLabelBackgroundDrawable(ContextCompat.getDrawable(getAbstracContext(), R.drawable.bg_chip))
                     .setIconNormalColor(ColorUtils.getPrimaryColor(getAbstracContext(), ColorUtils.ColorType.PRIMARY_DARK))
-                    .setWrapper(Pair.create(relationshipType, trio.val1()))
+                    .setWrapper(Pair.create(relationshipTypeI, trio.val1()))
             );
         }
 

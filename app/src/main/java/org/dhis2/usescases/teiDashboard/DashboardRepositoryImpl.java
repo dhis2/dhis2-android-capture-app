@@ -529,14 +529,14 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
             Cursor cursor1 = briteDatabase.query(SELECT_ENROLLMENT, programUid == null ? "" : programUid, EnrollmentStatus.ACTIVE.name(), teiUid == null ? "" : teiUid);
             cursor1.moveToFirst();
-            String enrollmentUid = cursor1.getString(0);
+            String mEnrollmentUid = cursor1.getString(0);
 
             SQLiteStatement insetNoteStatement = briteDatabase.getWritableDatabase()
                     .compileStatement(INSERT_NOTE);
 
 
             sqLiteBind(insetNoteStatement, 1, codeGenerator.generate()); //enrollment
-            sqLiteBind(insetNoteStatement, 2, enrollmentUid == null ? "" : enrollmentUid); //enrollment
+            sqLiteBind(insetNoteStatement, 2, mEnrollmentUid == null ? "" : mEnrollmentUid); //enrollment
             sqLiteBind(insetNoteStatement, 3, stringBooleanPair.val0()); //VALUE
             sqLiteBind(insetNoteStatement, 4, userName == null ? "" : userName); //storeBy
             sqLiteBind(insetNoteStatement, 5, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime())); //storeDate
@@ -559,14 +559,14 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
             Cursor cursor1 = briteDatabase.query(SELECT_ENROLLMENT, programUid == null ? "" : programUid, EnrollmentStatus.ACTIVE.name(), teiUid == null ? "" : teiUid);
             cursor1.moveToFirst();
-            String enrollmentUid = cursor1.getString(0);
+            String mEnrollmentUid = cursor1.getString(0);
 
             SQLiteStatement insetNoteStatement = briteDatabase.getWritableDatabase()
                     .compileStatement(INSERT_NOTE);
 
 
             sqLiteBind(insetNoteStatement, 1, codeGenerator.generate()); //enrollment
-            sqLiteBind(insetNoteStatement, 2, enrollmentUid == null ? "" : enrollmentUid); //enrollment
+            sqLiteBind(insetNoteStatement, 2, mEnrollmentUid == null ? "" : mEnrollmentUid); //enrollment
             sqLiteBind(insetNoteStatement, 3, stringBooleanPair.val0()); //VALUE
             sqLiteBind(insetNoteStatement, 4, userName == null ? "" : userName); //storeBy
             sqLiteBind(insetNoteStatement, 5, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime())); //storeDate

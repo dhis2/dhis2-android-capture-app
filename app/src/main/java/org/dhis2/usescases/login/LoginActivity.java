@@ -34,7 +34,7 @@ import de.adorsys.android.securestoragelibrary.SecurePreferences;
 
 import static org.dhis2.utils.Constants.RQ_QR_SCANNER;
 
-
+@SuppressWarnings("squid:MaximumInheritanceDepth")
 public class LoginActivity extends ActivityGlobalAbstract implements LoginContracts.LoginView {
 
     ActivityLoginBinding binding;

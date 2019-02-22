@@ -28,7 +28,7 @@ import androidx.core.app.ActivityCompat;
 /**
  * Created by Cristian on 15/03/2018.
  */
-
+@SuppressWarnings("squid:MaximumInheritanceDepth")
 public class MapSelectorActivity extends ActivityGlobalAbstract implements OnMapReadyCallback {
 
     private GoogleMap mMap;

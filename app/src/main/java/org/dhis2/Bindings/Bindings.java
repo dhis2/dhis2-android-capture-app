@@ -373,7 +373,7 @@ public class Bindings {
                     );
     }
 
-    private static void setActiveEventWithCompletedStatusText(TextView view, EventModel event, ProgramStageModel eventProgramStage) {
+    private static void setActiveEventWithCompletedStatusText(TextView view, EventModel event) {
         if (metadataRepository != null)
             metadataRepository.getExpiryDateFromEvent(event.uid())
                     .subscribeOn(Schedulers.io())
@@ -413,7 +413,7 @@ public class Bindings {
                 setActiveEventWithActiveStatusText(view, event, eventProgramStage);
                 break;
             case COMPLETED:
-                setActiveEventWithCompletedStatusText(view, event, eventProgramStage);
+                setActiveEventWithCompletedStatusText(view, event);
                 break;
             case SCHEDULE:
                 setActiveEventWithScheduleStatusText(view, event, eventProgramStage);
@@ -859,14 +859,10 @@ public class Bindings {
 
         TypedValue typedValue = new TypedValue();
         TypedArray a = imageView.getContext().obtainStyledAttributes(typedValue.data, new int[]{R.attr.colorPrimaryDark});
-        TypedArray b = imageView.getContext().obtainStyledAttributes(typedValue.data, new int[]{R.attr.colorPrimaryLight});
         int colorPrimaryDark = a.getColor(0, 0);
-        int colorPrimaryLight = b.getColor(0, 0);
 
         int px = (int) (1 * Resources.getSystem().getDisplayMetrics().density);
         ((GradientDrawable) drawable.mutate()).setStroke(px, colorPrimaryDark);
-        //((GradientDrawable) drawable.mutate()).setColor(colorPrimaryLight);
-
         imageView.setBackground(drawable);
 
     }

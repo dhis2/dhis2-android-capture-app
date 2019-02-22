@@ -377,7 +377,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
     private Flowable<RuleEvent> queryEvent(@NonNull List<RuleDataValue> dataValues) {
         return briteDatabase.createQuery(EventModel.TABLE, QUERY_EVENT, eventUid == null ? "" : eventUid)
                 .mapToOne(cursor -> {
-                    String eventUid = cursor.getString(0);
+                    String mEventUid = cursor.getString(0);
                     String programStageUid = cursor.getString(1);
                     Date eventDate = parseDate(cursor.getString(3));
                     Date dueDate = cursor.isNull(4) ? eventDate : parseDate(cursor.getString(4));
@@ -387,7 +387,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
                     RuleEvent.Status status = RuleEvent.Status.valueOf(cursor.getString(2));
 
                     return RuleEvent.builder()
-                            .event(eventUid)
+                            .event(mEventUid)
                             .programStage(programStageUid)
                             .programStageName(programStageName)
                             .status(status)

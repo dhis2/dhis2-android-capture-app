@@ -43,7 +43,7 @@ import static android.text.TextUtils.isEmpty;
 /**
  * QUADRAM. Created by Cristian on 01/03/2018.
  */
-
+@SuppressWarnings("squid:MaximumInheritanceDepth")
 public class EventSummaryActivity extends ActivityGlobalAbstract implements EventSummaryContract.EventSummaryView, ProgressBarAnimation.OnUpdate {
 
     private static final int PROGRESS_TIME = 2000;
@@ -198,11 +198,7 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
                     binding.actionButton.setVisibility(canWrite ? View.VISIBLE : View.GONE);
                     break;
                 case SKIPPED:
-                    binding.actionButton.setVisibility(View.GONE);
-                    break;
                 case VISITED:
-                    binding.actionButton.setVisibility(View.GONE); //TODO: Can this happen?
-                    break;
                 case SCHEDULE:
                     binding.actionButton.setVisibility(View.GONE); //TODO: Can this happen?
                     break;
@@ -258,19 +254,17 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
 
         if (!missingMandatoryFields.isEmpty() || !errorFields.isEmpty()) {
             sectionView.findViewById(R.id.section_info).setVisibility(View.VISIBLE);
-
-            String finalMessage = getAllMissing(missingMandatoryFields)
-                    .append("\n")
-                    .append(getAllErrors(errorFields).toString())
-                    .toString();
-
             sectionView.findViewById(R.id.section_info).setOnClickListener(view ->
-                    showInfoDialog("Error", finalMessage)
+                    showInfoDialog("Error",
+                            getAllMissing(missingMandatoryFields)
+                                    .append("\n")
+                                    .append(getAllErrors(errorFields).toString())
+                                    .toString())
             );
         }
     }
 
-    private StringBuilder getAllMissing(List<String> missingMandatoryFields){
+    private StringBuilder getAllMissing(List<String> missingMandatoryFields) {
         StringBuilder missingString = new StringBuilder(missingMandatoryFields.isEmpty() ? "" : "These fields are mandatory. Please check their values to be able to complete the event.");
         for (String missingField : missingMandatoryFields) {
             missingString.append(String.format("\n- %s", missingField));
@@ -278,7 +272,7 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
         return missingString;
     }
 
-    private StringBuilder getAllErrors(List<String> errorFields){
+    private StringBuilder getAllErrors(List<String> errorFields) {
         StringBuilder errorString = new StringBuilder(errorFields.isEmpty() ? "" : "These fields contain errors. Please check their values to be able to complete the event.");
         for (String errorField : errorFields) {
             errorString.append(String.format("\n- %s", errorField));

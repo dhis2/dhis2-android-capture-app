@@ -1,9 +1,6 @@
 package org.dhis2.usescases.datasets.dataSetTable;
 
-import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.dhis2.App;
 import org.dhis2.R;
@@ -19,6 +16,11 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
+
+@SuppressWarnings("squid:MaximumInheritanceDepth")
 public class DataSetTableActivity extends ActivityGlobalAbstract implements DataSetTableContract.DataSetTableView {
 
     String orgUnitUid;
@@ -29,7 +31,6 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     @Inject
     DataSetTableContract.DataSetTablePresenter presenter;
     private ActivityDatasetTableBinding binding;
-    private DataSetSectionAdapter viewPagerAdapter;
 
     public static Bundle getBundle(@NonNull String dataSetUid,
                                    @NonNull String orgUnitUid,
@@ -74,7 +75,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
     @Override
     public void setDataElements(Map<String, List<DataElementModel>> dataElements, Map<String, List<CategoryOptionComboModel>> catOptions) {
-        viewPagerAdapter = new DataSetSectionAdapter(getSupportFragmentManager());
+        DataSetSectionAdapter viewPagerAdapter = new DataSetSectionAdapter(getSupportFragmentManager());
         binding.viewPager.setAdapter(viewPagerAdapter);
         binding.tabLayout.setupWithViewPager(binding.viewPager);
         viewPagerAdapter.swapData(dataElements);

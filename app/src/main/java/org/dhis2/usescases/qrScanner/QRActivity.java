@@ -31,7 +31,7 @@ import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 /**
  * QUADRAM. Created by ppajuelo on 15/01/2018.
  */
-
+@SuppressWarnings("squid:MaximumInheritanceDepth")
 public class QRActivity extends ActivityGlobalAbstract {
 
     ActivityQrBinding binding;

@@ -115,7 +115,6 @@ public class OrgUnitHolder extends TreeNode.BaseNodeViewHolder<OrganisationUnitM
         else
             textView.setText(String.format(Locale.getDefault(), "%s (%d)", value.displayName(), numberOfSelections));
 
-        boolean shouldUpdateParent = numberOfSelections > 0 || node.isSelected();
         if (node.getLevel() > 1 && node.getParent().getViewHolder() instanceof OrgUnitHolder) {
             ((OrgUnitHolder) node.getParent().getViewHolder()).setSelectedSizeText();
         }

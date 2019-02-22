@@ -49,7 +49,7 @@ import timber.log.Timber;
 /**
  * QUADRAM. Created by Cristian E. on 18/12/2017.
  */
-
+@SuppressWarnings("squid:MaximumInheritanceDepth")
 public class EventDetailActivity extends ActivityGlobalAbstract implements EventDetailContracts.EventDetailView {
 
     private static final String EVENT_DATA_ENTRY = "EVENT_DATA_ENTRY";

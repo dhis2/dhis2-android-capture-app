@@ -173,8 +173,8 @@ public class EventInitialPresenterImpl implements EventInitialContract.EventInit
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        orgUnits -> {
-                            this.orgUnits = orgUnits;
+                        orgUnitsResult -> {
+                            orgUnits = orgUnitsResult;
                             view.addTree(OrgUnitUtils.renderTree(view.getContext(), orgUnits, false));
                         },
                         throwable -> view.renderError(throwable.getMessage())
@@ -268,7 +268,8 @@ public class EventInitialPresenterImpl implements EventInitialContract.EventInit
                         catComboUid, catOptionUid,
                         latitude, longitude)
                         .switchMap(
-                                eventId -> eventInitialRepository.updateTrackedEntityInstance(eventId, trackedEntityInstanceUid, orgUnitUid)
+                                eventIdResult ->
+                                        eventInitialRepository.updateTrackedEntityInstance(eventIdResult, trackedEntityInstanceUid, orgUnitUid)
                         )
                         .distinctUntilChanged()
                         .subscribeOn(Schedulers.io())
@@ -375,8 +376,8 @@ public class EventInitialPresenterImpl implements EventInitialContract.EventInit
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        orgUnits -> {
-                            this.orgUnits = orgUnits;
+                        orgUnitsResult -> {
+                            orgUnits = orgUnitsResult;
                             view.addTree(OrgUnitUtils.renderTree(view.getContext(), orgUnits, true));
                         },
                         throwable -> view.showNoOrgUnits()

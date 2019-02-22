@@ -135,7 +135,7 @@ public class SearchTEPresenterImpl implements SearchTEContractsModule.SearchTEPr
                         .subscribeOn(Schedulers.io())
                         .observeOn(Schedulers.io())
                         .subscribe(
-                                orgUnits -> this.orgUnits = orgUnits,
+                                orgUnitsResult -> orgUnits = orgUnitsResult,
                                 Timber::d
                         )
         );
@@ -519,7 +519,7 @@ public class SearchTEPresenterImpl implements SearchTEContractsModule.SearchTEPr
     }
 
     private void selectOrgUnits(List<OrganisationUnitModel> allOrgUnits, OrgUnitDialog orgUnitDialog, String programUid, String uid) {
-        ArrayList<OrganisationUnitModel> orgUnits = new ArrayList<>();
+        ArrayList<OrganisationUnitModel> mOrgUnits = new ArrayList<>();
         for (OrganisationUnitModel orgUnit : allOrgUnits) {
             boolean afterOpening = false;
             boolean beforeClosing = false;
@@ -528,14 +528,14 @@ public class SearchTEPresenterImpl implements SearchTEContractsModule.SearchTEPr
             if (orgUnit.closedDate() == null || !selectedEnrollmentDate.after(orgUnit.closedDate()))
                 beforeClosing = true;
             if (afterOpening && beforeClosing)
-                orgUnits.add(orgUnit);
+                mOrgUnits.add(orgUnit);
         }
-        if (orgUnits.size() > 1) {
-            orgUnitDialog.setOrgUnits(orgUnits);
+        if (mOrgUnits.size() > 1) {
+            orgUnitDialog.setOrgUnits(mOrgUnits);
             if (!orgUnitDialog.isAdded())
                 orgUnitDialog.show(view.getAbstracContext().getSupportFragmentManager(), "OrgUnitEnrollment");
         } else
-            enrollInOrgUnit(orgUnits.get(0).uid(), programUid, uid, selectedEnrollmentDate);
+            enrollInOrgUnit(mOrgUnits.get(0).uid(), programUid, uid, selectedEnrollmentDate);
     }
 
     @Override
