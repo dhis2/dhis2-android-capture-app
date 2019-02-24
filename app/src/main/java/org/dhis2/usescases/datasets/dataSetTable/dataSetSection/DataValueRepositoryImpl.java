@@ -10,6 +10,7 @@ import org.hisp.dhis.android.core.category.CategoryOptionComboCategoryOptionLink
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
+import org.hisp.dhis.android.core.dataset.DataInputPeriodModel;
 import org.hisp.dhis.android.core.dataset.DataSetModel;
 import org.hisp.dhis.android.core.dataset.SectionGreyedFieldsLinkModel;
 import org.hisp.dhis.android.core.dataset.SectionModel;
@@ -122,6 +123,8 @@ public class DataValueRepositoryImpl implements DataValueRepository {
 
     private static final String SELECT_PERIOD = "SELECT * FROM Period WHERE periodId = ?";
 
+    private static final String SELECT_DATA_INPUT_PERIOD = "SELECT * FROM DataInputPeriod WHERE dataset = ? AND period = ?";
+
     public DataValueRepositoryImpl(BriteDatabase briteDatabase, String dataSetUid){
         this.briteDatabase = briteDatabase;
         this.dataSetUid = dataSetUid;
@@ -138,6 +141,13 @@ public class DataValueRepositoryImpl implements DataValueRepository {
     public Flowable<PeriodModel> getPeriod(String periodId) {
         return briteDatabase.createQuery(PeriodModel.TABLE, SELECT_PERIOD, periodId)
                 .mapToOne(PeriodModel::create)
+                .toFlowable(BackpressureStrategy.LATEST);
+    }
+
+    @Override
+    public Flowable<DataInputPeriodModel> getDataInputPeriod(String periodId){
+        return briteDatabase.createQuery(DataInputPeriodModel.TABLE, SELECT_DATA_INPUT_PERIOD, dataSetUid, periodId)
+                .mapToOne(DataInputPeriodModel::create)
                 .toFlowable(BackpressureStrategy.LATEST);
     }
 

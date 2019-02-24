@@ -32,6 +32,7 @@ import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
+import org.hisp.dhis.android.core.dataset.DataInputPeriodModel;
 import org.hisp.dhis.android.core.dataset.DataSetModel;
 import org.hisp.dhis.android.core.dataset.SectionModel;
 import org.hisp.dhis.android.core.period.PeriodModel;
@@ -65,6 +66,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
     private String dataSetUid;
 
     private PeriodModel periodModel;
+    private DataInputPeriodModel dataInputPeriodModel;
     @Inject
     DataValueContract.Presenter presenterFragment;
 
@@ -115,7 +117,8 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
         DataSetModel dataSet = presenterFragment.getDataSetModel();
         boolean isEditable = false;
         if(dataSet.accessDataWrite() &&
-                !isExpired()){
+                !isExpired() &&
+                (dataInputPeriodModel == null || DateUtils.getInstance().isInsideInputPeriod(dataInputPeriodModel)) ){
             isEditable = true;
         }
 
@@ -319,5 +322,10 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
         }
 
         return DateUtils.getInstance().isDataSetExpired(dataSet.expiryDays(), periodModel.endDate());
+    }
+
+    @Override
+    public void setDataInputPeriod(DataInputPeriodModel dataInputPeriod) {
+        this.dataInputPeriodModel = dataInputPeriod;
     }
 }

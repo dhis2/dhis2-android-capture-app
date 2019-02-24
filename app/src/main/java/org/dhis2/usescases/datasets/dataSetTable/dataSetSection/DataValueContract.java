@@ -7,6 +7,7 @@ import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.hisp.dhis.android.core.category.CategoryModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
+import org.hisp.dhis.android.core.dataset.DataInputPeriodModel;
 import org.hisp.dhis.android.core.dataset.DataSetModel;
 import org.hisp.dhis.android.core.dataset.SectionModel;
 import org.hisp.dhis.android.core.datavalue.DataValueModel;
@@ -25,6 +26,8 @@ public class DataValueContract {
         void showSnackBar();
 
         void setPeriod(PeriodModel periodModel);
+
+        void setDataInputPeriod(DataInputPeriodModel dataInputPeriod);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter{

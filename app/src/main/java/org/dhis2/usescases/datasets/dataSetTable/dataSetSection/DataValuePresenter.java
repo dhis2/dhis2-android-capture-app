@@ -87,10 +87,20 @@ public class DataValuePresenter implements DataValueContract.Presenter{
 
         if(periodFinalDate == null)
             compositeDisposable.add(
-                    repository.getPeriod(periodTypeName)
+                    Flowable.zip(
+                            repository.getPeriod(periodTypeName),
+                            repository.getDataInputPeriod(periodTypeName),
+                            Pair::create
+                    )
+
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(view::setPeriod,
+                            .subscribe(
+                                    data ->{
+                                        view.setPeriod(data.val0());
+                                        view.setDataInputPeriod(data.val1());
+                                    }
+                                    ,
                                     Timber::e)
             );
     }
@@ -216,6 +226,10 @@ public class DataValuePresenter implements DataValueContract.Presenter{
                                 Timber::e
                         )
         );
+    }
+
+    private void showTable(DataSetSectionFragment dataSetSectionFragment){
+
     }
 
 

@@ -6,6 +6,7 @@ import org.hisp.dhis.android.core.category.CategoryModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
+import org.hisp.dhis.android.core.dataset.DataInputPeriodModel;
 import org.hisp.dhis.android.core.dataset.DataSetModel;
 import org.hisp.dhis.android.core.dataset.SectionModel;
 import org.hisp.dhis.android.core.datavalue.DataValueModel;
@@ -40,4 +41,6 @@ public interface DataValueRepository {
     Flowable<Map<String, List<String>>> getCategoryOptionComboCatOption();
 
     Flowable<PeriodModel> getPeriod(String periodId);
+
+    Flowable<DataInputPeriodModel> getDataInputPeriod(String periodId);
 }
