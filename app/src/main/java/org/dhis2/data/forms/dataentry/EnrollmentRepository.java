@@ -43,8 +43,7 @@ final class EnrollmentRepository implements DataEntryRepository {
             "  Enrollment.organisationUnit,\n" +
             "  Enrollment.status,\n" +
             "  Field.displayDescription,\n" +
-            "  Field.pattern,\n" +
-            "  COUNT(Count.optionCount)\n" +
+            "  Field.pattern\n" +
             "FROM (Enrollment INNER JOIN Program ON Program.uid = Enrollment.program)\n" +
             "  LEFT OUTER JOIN (\n" +
             "      SELECT\n" +
@@ -67,7 +66,6 @@ final class EnrollmentRepository implements DataEntryRepository {
             "  LEFT OUTER JOIN Option ON (\n" +
             "    Field.optionSet = Option.optionSet AND Value.value = Option.code\n" +
             "  )\n" +
-            " LEFT JOIN (SELECT Option.uid AS optionCount, Option.optionSet AS optionSet FROM Option) AS Count ON Count.optionSet = Field.optionSet\n" + //TODO: CHECK OPTION COUNT
             "WHERE Enrollment.uid = ?";
 
 
@@ -125,7 +123,17 @@ final class EnrollmentRepository implements DataEntryRepository {
             dataValue = optionCodeName;
         }
 
-        int optionCount = cursor.getInt(13);
+        int optionCount = 0;
+        try{
+            Cursor countCursor = briteDatabase.query("SELECT COUNT (uid) FROM Option WHERE optionSet = ?", optionSet);
+            if(countCursor!=null){
+                if(countCursor.moveToFirst())
+                    optionCount = countCursor.getInt(0);
+                countCursor.close();
+            }
+        }catch (Exception e){
+            Timber.e(e);
+        }
 
         if (generated && dataValue == null) {
             try {

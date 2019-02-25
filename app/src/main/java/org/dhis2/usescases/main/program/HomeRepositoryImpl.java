@@ -55,7 +55,7 @@ class HomeRepositoryImpl implements HomeRepository {
             "Program.trackedEntityType," +
             "Program.description " +
             "FROM Program LEFT JOIN ObjectStyle ON ObjectStyle.uid = Program.uid " +
-            "JOIN OrganisationUnitProgramLink ON OrganisationUnitProgramLink.program = Program.uid %s GROUP BY Program.uid " /*+
+            "JOIN OrganisationUnitProgramLink ON OrganisationUnitProgramLink.program = Program.uid %s GROUP BY Program.uid ORDER BY Program.displayName" /*+
             "UNION " +
             "SELECT DataSet.uid, " +
             "DataSet.displayName, " +

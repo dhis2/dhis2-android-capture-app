@@ -28,6 +28,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.reactivex.Observable;
+import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -49,8 +50,7 @@ final class ProgramStageRepository implements DataEntryRepository {
             "  Field.formLabel,\n" +
             "  Field.displayDescription,\n" +
             "  Field.formOrder,\n" +
-            "  Field.sectionOrder,\n" +
-            "  COUNT(Count.optionCount)\n" +
+            "  Field.sectionOrder\n" +
             "FROM Event\n" +
             "  LEFT OUTER JOIN (\n" +
             "      SELECT\n" +
@@ -76,7 +76,6 @@ final class ProgramStageRepository implements DataEntryRepository {
             "  LEFT OUTER JOIN Option ON (\n" +
             "    Field.optionSet = Option.optionSet AND Value.value = Option.code\n" +
             "  )\n" +
-            " LEFT JOIN (SELECT Option.uid AS optionCount, Option.optionSet AS optionSet FROM Option) AS Count ON Count.optionSet = Field.optionSet\n"+ //TODO: CHECK OPTION COUNT
             " %s  " +
             "ORDER BY CASE" +
             " WHEN Field.sectionOrder IS NULL THEN Field.formOrder" +
@@ -230,8 +229,17 @@ final class ProgramStageRepository implements DataEntryRepository {
             dataValue = optionCodeName;
         }
 
-        int optionCount = cursor.getInt(14);
-
+        int optionCount = 0;
+        try{
+            Cursor countCursor = briteDatabase.query("SELECT COUNT (uid) FROM Option WHERE optionSet = ?", optionSetUid);
+            if(countCursor!=null){
+                if(countCursor.moveToFirst())
+                    optionCount = countCursor.getInt(0);
+                countCursor.close();
+            }
+        }catch (Exception e){
+            Timber.e(e);
+        }
         ValueTypeDeviceRenderingModel fieldRendering = null;
         Cursor rendering = briteDatabase.query("SELECT ValueTypeDeviceRendering.* FROM ValueTypeDeviceRendering" +
                 " JOIN ProgramStageDataElement ON ProgramStageDataElement.uid = ValueTypeDeviceRendering.uid" +
