@@ -43,7 +43,7 @@ import static android.app.Activity.RESULT_OK;
 import static org.dhis2.utils.Constants.ENROLLMENT_UID;
 import static org.dhis2.utils.Constants.EVENT_CREATION_TYPE;
 import static org.dhis2.utils.Constants.EVENT_SCHEDULE_INTERVAL;
-import static org.dhis2.utils.Constants.ORG_UNIT;
+import static org.dhis2.utils.Constants.EXTRA_ORG_UNIT;
 import static org.dhis2.utils.Constants.PROGRAM_UID;
 import static org.dhis2.utils.Constants.TRACKED_ENTITY_INSTANCE;
 
@@ -287,7 +287,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
         Bundle bundle = new Bundle();
         bundle.putString(PROGRAM_UID, presenter.getDashBoardData().getCurrentEnrollment().program());
         bundle.putString(TRACKED_ENTITY_INSTANCE, presenter.getTeUid());
-        bundle.putString(ORG_UNIT, presenter.getDashBoardData().getTei().organisationUnit()); //We take the OU of the TEI for the events
+        bundle.putString(EXTRA_ORG_UNIT, presenter.getDashBoardData().getTei().organisationUnit()); //We take the OU of the TEI for the events
         bundle.putString(ENROLLMENT_UID, presenter.getDashBoardData().getCurrentEnrollment().uid());
         bundle.putString(EVENT_CREATION_TYPE, eventCreationType.name());
         bundle.putInt(EVENT_SCHEDULE_INTERVAL, scheduleIntervalDays);

@@ -26,6 +26,7 @@ import org.dhis2.R;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.utils.CatComboAdapter;
+import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
@@ -41,7 +42,6 @@ import org.hisp.dhis.android.core.resource.ResourceModel;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -748,45 +748,14 @@ public class Bindings {
 
     @BindingAdapter("fromResBgColor")
     public static void setFromResBgColor(View view, int color) {
-        String tintedColor;
-
-        ArrayList<Double> rgb = new ArrayList<>();
-        rgb.add(Color.red(color) / 255.0d);
-        rgb.add(Color.green(color) / 255.0d);
-        rgb.add(Color.blue(color) / 255.0d);
-
-        Double r = null;
-        Double g = null;
-        Double b = null;
-        for (Double c : rgb) {
-            if (c <= 0.03928d)
-                c = c / 12.92d;
-            else
-                c = Math.pow(((c + 0.055d) / 1.055d), 2.4d);
-
-            if (r == null)
-                r = c;
-            else if (g == null)
-                g = c;
-            else
-                b = c;
-        }
-
-        double l = 0.2126d * r + 0.7152d * g + 0.0722d * b;
-
-
-        if (l > 0.179d)
-            tintedColor = "#000000"; // bright colors - black font
-        else
-            tintedColor = "#FFFFFF"; // dark colors - white font
-
+        int tintedColor = ColorUtils.getContrastColor(color);
         if (view instanceof TextView) {
-            ((TextView) view).setTextColor(Color.parseColor(tintedColor));
+            ((TextView) view).setTextColor(tintedColor);
         }
         if (view instanceof ImageView) {
             Drawable drawable = ((ImageView) view).getDrawable();
             if (drawable != null)
-                drawable.setColorFilter(Color.parseColor(tintedColor), PorterDuff.Mode.SRC_IN);
+                drawable.setColorFilter(tintedColor, PorterDuff.Mode.SRC_IN);
             ((ImageView) view).setImageDrawable(drawable);
         }
     }

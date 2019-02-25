@@ -39,7 +39,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
                                    @NonNull String catCombo) {
         Bundle bundle = new Bundle();
         bundle.putString(Constants.DATA_SET_UID, dataSetUid);
-        bundle.putString(Constants.ORG_UNIT, orgUnitUid);
+        bundle.putString(Constants.EXTRA_ORG_UNIT, orgUnitUid);
         bundle.putString(Constants.PERIOD_TYPE, periodTypeName);
         bundle.putString(Constants.PERIOD_TYPE_DATE, periodInitialDate);
         bundle.putString(Constants.CAT_COMB, catCombo);
@@ -50,7 +50,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        orgUnitUid = getIntent().getStringExtra(Constants.ORG_UNIT);
+        orgUnitUid = getIntent().getStringExtra(Constants.EXTRA_ORG_UNIT);
         periodTypeName = getIntent().getStringExtra(Constants.PERIOD_TYPE);
         periodInitialDate = getIntent().getStringExtra(Constants.PERIOD_TYPE_DATE);
         catCombo = getIntent().getStringExtra(Constants.CAT_COMB);

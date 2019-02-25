@@ -4,6 +4,7 @@ import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.period.PeriodType;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -981,5 +982,17 @@ public class DateUtils {
 
         return completedDay != null &&
                 completedDay.getTime() + TimeUnit.DAYS.toMillis(compExpDays) < date.getTime();
+    }
+
+    public static Calendar parseDateToCalendar(String reportDate) throws ParseException {
+        Calendar cal = Calendar.getInstance();
+        Date date = DateUtils.databaseDateFormat().parse(reportDate);
+        cal.setTime(date);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+
+        return cal;
     }
 }

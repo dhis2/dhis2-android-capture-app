@@ -14,7 +14,6 @@ import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.State;
-import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
@@ -274,14 +273,7 @@ public class EventRepository implements FormRepository {
     @Override
     public Consumer<String> storeReportDate() {
         return reportDate -> {
-            Calendar cal = Calendar.getInstance();
-            Date date = DateUtils.databaseDateFormat().parse(reportDate);
-            cal.setTime(date);
-            cal.set(Calendar.HOUR_OF_DAY, 0);
-            cal.set(Calendar.MINUTE, 0);
-            cal.set(Calendar.SECOND, 0);
-            cal.set(Calendar.MILLISECOND, 0);
-
+            Calendar cal = DateUtils.parseDateToCalendar(reportDate);
             ContentValues event = new ContentValues();
             event.put(EventModel.Columns.EVENT_DATE, DateUtils.databaseDateFormat().format(cal.getTime()));
             event.put(EventModel.Columns.STATE, State.TO_UPDATE.name()); // TODO: Check if state is TO_POST
@@ -420,24 +412,10 @@ public class EventRepository implements FormRepository {
 
     @NonNull
     private FieldViewModel transform(@NonNull Cursor cursor) {
-        String uid = cursor.getString(0);
-        String label = cursor.getString(1);
-        ValueType valueType = ValueType.valueOf(cursor.getString(2));
-        boolean mandatory = cursor.getInt(3) == 1;
-        String optionSetUid = cursor.getString(4);
-        String dataValue = cursor.getString(5);
-        String optionCodeName = cursor.getString(6);
-        String section = cursor.getString(7);
-        Boolean allowFutureDates = cursor.getInt(8) == 1;
-        EventStatus status = EventStatus.valueOf(cursor.getString(9));
-        String formLabel = cursor.getString(10);
-        String description = cursor.getString(11);
-        if (!isEmpty(optionCodeName)) {
-            dataValue = optionCodeName;
-        }
+        FieldViewModelUtils fieldViewModelUtils = new FieldViewModelUtils(cursor);
 
         ValueTypeDeviceRenderingModel fieldRendering = null;
-        Cursor rendering = briteDatabase.query("SELECT * FROM ValueTypeDeviceRendering WHERE uid = ?", uid);
+        Cursor rendering = briteDatabase.query("SELECT * FROM ValueTypeDeviceRendering WHERE uid = ?", fieldViewModelUtils.uid);
         if (rendering != null && rendering.moveToFirst()) {
             fieldRendering = ValueTypeDeviceRenderingModel.create(cursor);
             rendering.close();
@@ -454,9 +432,11 @@ public class EventRepository implements FormRepository {
                 "",
                 "");
 
-        return fieldFactory.create(uid, isEmpty(formLabel) ? label : formLabel, valueType,
-                mandatory, optionSetUid, dataValue, section, allowFutureDates,
-                status == EventStatus.ACTIVE, null, description, fieldRendering);
+        return fieldFactory.create(fieldViewModelUtils.uid, isEmpty(fieldViewModelUtils.formLabel) ?
+                        fieldViewModelUtils.label : fieldViewModelUtils.formLabel, fieldViewModelUtils.valueType,
+                fieldViewModelUtils.mandatory, fieldViewModelUtils.optionSetUid, fieldViewModelUtils.dataValue,
+                fieldViewModelUtils.section, fieldViewModelUtils.allowFutureDates,
+                fieldViewModelUtils.eventStatus == EventStatus.ACTIVE, null, fieldViewModelUtils.description, fieldRendering);
     }
 
     @NonNull

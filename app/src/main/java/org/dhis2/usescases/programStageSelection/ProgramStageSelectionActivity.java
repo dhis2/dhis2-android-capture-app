@@ -27,7 +27,7 @@ import static org.dhis2.utils.Constants.EVENT_CREATION_TYPE;
 import static org.dhis2.utils.Constants.EVENT_PERIOD_TYPE;
 import static org.dhis2.utils.Constants.EVENT_REPEATABLE;
 import static org.dhis2.utils.Constants.EVENT_SCHEDULE_INTERVAL;
-import static org.dhis2.utils.Constants.ORG_UNIT;
+import static org.dhis2.utils.Constants.EXTRA_ORG_UNIT;
 import static org.dhis2.utils.Constants.PROGRAM_UID;
 import static org.dhis2.utils.Constants.TRACKED_ENTITY_INSTANCE;
 
@@ -93,7 +93,7 @@ public class ProgramStageSelectionActivity extends ActivityGlobalAbstract implem
         Bundle bundle = new Bundle();
         bundle.putString(PROGRAM_UID, getIntent().getStringExtra(PROGRAM_UID));
         bundle.putString(TRACKED_ENTITY_INSTANCE, getIntent().getStringExtra(TRACKED_ENTITY_INSTANCE));
-        bundle.putString(ORG_UNIT, getIntent().getStringExtra(ORG_UNIT));
+        bundle.putString(EXTRA_ORG_UNIT, getIntent().getStringExtra(EXTRA_ORG_UNIT));
         bundle.putString(ENROLLMENT_UID, getIntent().getStringExtra(ENROLLMENT_UID));
         bundle.putString(EVENT_CREATION_TYPE, getIntent().getStringExtra(EVENT_CREATION_TYPE));
         bundle.putBoolean(EVENT_REPEATABLE, repeatable);

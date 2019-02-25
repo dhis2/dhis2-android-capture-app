@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
@@ -89,10 +88,7 @@ public class OrgUnitDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Dialog dialog = super.onCreateDialog(savedInstanceState);
-        if (dialog.getWindow() != null) {
-            dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-        }
+        CustomViewUtils.setBgTransparent(dialog);
         return dialog;
     }
 

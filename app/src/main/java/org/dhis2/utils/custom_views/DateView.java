@@ -4,13 +4,8 @@ import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.util.AttributeSet;
-import android.view.View;
 
-import com.google.android.material.textfield.TextInputEditText;
-
-import org.dhis2.BR;
 import org.dhis2.R;
-import org.dhis2.data.forms.dataentry.fields.datetime.OnDateSelected;
 import org.dhis2.utils.DateUtils;
 
 import java.text.ParseException;
@@ -18,26 +13,17 @@ import java.util.Calendar;
 import java.util.Date;
 
 import androidx.databinding.DataBindingUtil;
-import androidx.databinding.ViewDataBinding;
 import timber.log.Timber;
 
 /**
  * QUADRAM. Created by frodriguez on 1/15/2018.
  */
 
-public class DateView extends FieldLayout implements View.OnClickListener {
-
-    private TextInputEditText editText;
-    private ViewDataBinding binding;
+public class DateView extends GlobalDateView {
 
     private Calendar selectedCalendar;
     DatePickerDialog dateDialog;
-
-    private OnDateSelected listener;
-
-    private String label;
     private boolean allowFutureDates;
-    private Date date;
 
     public DateView(Context context) {
         super(context);
@@ -54,39 +40,14 @@ public class DateView extends FieldLayout implements View.OnClickListener {
         init(context);
     }
 
-    @Override
-    public void performOnFocusAction() {
-        editText.performClick();
-    }
-
-    private void setLayout() {
+    public void setLayout() {
         if (isBgTransparent)
             binding = DataBindingUtil.inflate(inflater, R.layout.date_time_view, this, true);
         else
             binding = DataBindingUtil.inflate(inflater, R.layout.date_time_view_accent, this, true);
 
-        editText = findViewById(R.id.inputEditText);
         selectedCalendar = Calendar.getInstance();
-        editText.setFocusable(false); //Makes editText not editable
-        editText.setClickable(true);//  but clickable
-        editText.setOnFocusChangeListener(this::onFocusChanged);
-        editText.setOnClickListener(this);
-    }
-
-    public void setIsBgTransparent(boolean isBgTransparent) {
-        this.isBgTransparent = isBgTransparent;
-        setLayout();
-    }
-
-    public void setLabel(String label) {
-        this.label = label;
-        binding.setVariable(BR.label, label);
-        binding.executePendingBindings();
-    }
-
-    public void setDescription(String description) {
-        binding.setVariable(BR.description, description);
-        binding.executePendingBindings();
+        setUpEditText();
     }
 
     public void setAllowFutureDates(boolean allowFutureDates) {
@@ -118,29 +79,11 @@ public class DateView extends FieldLayout implements View.OnClickListener {
         editText.setText(data);
     }
 
-    public void setWarningOrError(String msg) {
-        editText.setError(msg);
-    }
-
-    public void setDateListener(OnDateSelected listener) {
-        this.listener = listener;
-    }
-
-    private void onFocusChanged(View view, boolean b) {
-        if (b)
-            onClick(view);
-    }
-
-    @Override
-    public void onClick(View view) {
+    public void onClick() {
         Calendar c = Calendar.getInstance();
         if (date != null)
             c.setTime(date);
-        int year = c.get(Calendar.YEAR);
-        int month = c.get(Calendar.MONTH);
-        int day = c.get(Calendar.DAY_OF_MONTH);
-
-        dateDialog = new DatePickerDialog(getContext(), (
+        dateDialog = setUpDatePickerDialog(date, selectedCalendar, allowFutureDates,
                 (datePicker, year1, month1, day1) -> {
                     selectedCalendar.set(Calendar.YEAR, year1);
                     selectedCalendar.set(Calendar.MONTH, month1);
@@ -151,23 +94,13 @@ public class DateView extends FieldLayout implements View.OnClickListener {
                     String result = DateUtils.uiDateFormat().format(selectedDate);
                     editText.setText(result);
                     listener.onDateSelected(selectedDate);
-                }),
-                year,
-                month,
-                day);
+                });
         dateDialog.setTitle(label);
-        if (!allowFutureDates) {
-            dateDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
-        }
         dateDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getContext().getString(R.string.date_dialog_clear), (dialog, which) -> {
             editText.setText(null);
             listener.onDateSelected(null);
         });
 
         dateDialog.show();
-    }
-
-    public void setEditable(Boolean editable) {
-        editText.setEnabled(editable);
     }
 }

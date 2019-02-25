@@ -127,27 +127,14 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
 
     @Override
     public void onClick(View view) {
-        Calendar c = Calendar.getInstance();
-        if (date != null)
-            c.setTime(date);
-        int year = c.get(Calendar.YEAR);
-        int month = c.get(Calendar.MONTH);
-        int day = c.get(Calendar.DAY_OF_MONTH);
-
-        dateDialog = new DatePickerDialog(getContext(), (
+        dateDialog = setUpDatePickerDialog(date, selectedCalendar, allowFutureDates,
                 (datePicker, year1, month1, day1) -> {
                     selectedCalendar.set(Calendar.YEAR, year1);
                     selectedCalendar.set(Calendar.MONTH, month1);
                     selectedCalendar.set(Calendar.DAY_OF_MONTH, day1);
                     showTimePicker();
-                }),
-                year,
-                month,
-                day);
+                });
         dateDialog.setTitle(binding.getLabel());
-        if (!allowFutureDates) {
-            dateDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
-        }
         dateDialog.show();
     }
 

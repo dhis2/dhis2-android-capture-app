@@ -2,10 +2,10 @@ package org.dhis2.data.forms.dataentry;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.util.Log;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import org.dhis2.data.forms.FieldViewModelUtils;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import org.dhis2.utils.DateUtils;
@@ -27,6 +27,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.reactivex.Observable;
+import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -197,32 +198,18 @@ final class ProgramStageRepository implements DataEntryRepository {
             contentValues.put(TrackedEntityDataValueModel.Columns.VALUE, content);
             int row = briteDatabase.update(TrackedEntityDataValueModel.TABLE, contentValues, "dataElement = ?", field == null ? "" : field);
             if (row == -1)
-                Log.d(this.getClass().getSimpleName(), String.format("Error updating field %s", field == null ? "" : field));
+                Timber.d("Error updating field %s", field == null ? "" : field);
         }
     }
 
     @NonNull
     private FieldViewModel transform(@NonNull Cursor cursor) {
-        String uid = cursor.getString(0);
-        String label = cursor.getString(1);
-        ValueType valueType = ValueType.valueOf(cursor.getString(2));
-        boolean mandatory = cursor.getInt(3) == 1;
-        String optionSetUid = cursor.getString(4);
-        String dataValue = cursor.getString(5);
-        String optionCodeName = cursor.getString(6);
-        String section = cursor.getString(7);
-        Boolean allowFutureDates = cursor.getInt(8) == 1;
-        EventStatus eventStatus = EventStatus.valueOf(cursor.getString(9));
-        String formLabel = cursor.getString(10);
-        String description = cursor.getString(11);
-        if (!isEmpty(optionCodeName)) {
-            dataValue = optionCodeName;
-        }
+        FieldViewModelUtils fieldViewModelUtils = new FieldViewModelUtils(cursor);
 
         ValueTypeDeviceRenderingModel fieldRendering = null;
         Cursor rendering = briteDatabase.query("SELECT ValueTypeDeviceRendering.* FROM ValueTypeDeviceRendering" +
                 " JOIN ProgramStageDataElement ON ProgramStageDataElement.uid = ValueTypeDeviceRendering.uid" +
-                " WHERE ProgramStageDataElement.uid = ?", uid);
+                " WHERE ProgramStageDataElement.uid = ?", fieldViewModelUtils.uid);
         if (rendering != null && rendering.moveToFirst()) {
             fieldRendering = ValueTypeDeviceRenderingModel.create(cursor);
             rendering.close();
@@ -244,8 +231,12 @@ final class ProgramStageRepository implements DataEntryRepository {
         boolean hasExpired = DateUtils.getInstance().hasExpired(eventModel, programModel.expiryDays(), programModel.completeEventsExpiryDays(), programStageModel.periodType() != null ? programStageModel.periodType() : programModel.expiryPeriodType());
 
 
-        return fieldFactory.create(uid, isEmpty(formLabel) ? label : formLabel, valueType, mandatory, optionSetUid, dataValue, section,
-                allowFutureDates, accessDataWrite && eventStatus == EventStatus.ACTIVE && !hasExpired, renderingType, description, fieldRendering);
+        return fieldFactory.create(fieldViewModelUtils.uid, isEmpty(fieldViewModelUtils.formLabel) ?
+                        fieldViewModelUtils.label : fieldViewModelUtils.formLabel, fieldViewModelUtils.valueType,
+                fieldViewModelUtils.mandatory, fieldViewModelUtils.optionSetUid, fieldViewModelUtils.dataValue, fieldViewModelUtils.section,
+                fieldViewModelUtils.allowFutureDates,
+                accessDataWrite && fieldViewModelUtils.eventStatus == EventStatus.ACTIVE && !hasExpired, renderingType,
+                fieldViewModelUtils.description, fieldRendering);
     }
 
     @NonNull
@@ -253,10 +244,10 @@ final class ProgramStageRepository implements DataEntryRepository {
     private String prepareStatement() {
         String where;
         if (isEmpty(sectionUid)) {
-            where = String.format(Locale.US, "WHERE Event.uid = '%s'", eventUid == null ? "" : eventUid);
+            where = String.format(Locale.US, "WHERE Event.uid = '%s'", eventUid);
         } else {
             where = String.format(Locale.US, "WHERE Event.uid = '%s' AND " +
-                    "Field.section = '%s'", eventUid == null ? "" : eventUid, sectionUid == null ? "" : sectionUid);
+                    "Field.section = '%s'", eventUid, sectionUid);
         }
 
         return String.format(Locale.US, QUERY, where);

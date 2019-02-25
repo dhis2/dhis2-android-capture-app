@@ -2,20 +2,16 @@ package com.tbuonomo.viewpagerdotsindicator;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.database.DataSetObserver;
-import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import androidx.core.content.ContextCompat;
 import androidx.dynamicanimation.animation.SpringAnimation;
@@ -25,32 +21,19 @@ import androidx.viewpager.widget.ViewPager;
 import static android.widget.LinearLayout.HORIZONTAL;
 import static com.tbuonomo.viewpagerdotsindicator.UiUtils.getThemePrimaryColor;
 
-public class SpringDotsIndicator extends FrameLayout {
+public class SpringDotsIndicator extends FrameLayoutIndicator {
     public static final float DEFAULT_DAMPING_RATIO = 0.5f;
     public static final int DEFAULT_STIFFNESS = 300;
-
-    private List<ImageView> strokeDots;
-    private View dotIndicatorView;
-    private ViewPager viewPager;
 
     // Attributes
     private int dotsStrokeSize;
     private int dotsSpacing;
-    private int dotsStrokeWidth;
-    private int dotsCornerRadius;
-    private int dotsStrokeColor;
-    private int dotIndicatorColor;
     private float stiffness;
     private float dampingRatio;
-
     private int dotIndicatorSize;
     private int dotIndicatorAdditionalSize;
     private int horizontalMargin;
     private SpringAnimation dotIndicatorSpring;
-    private LinearLayout strokeDotsLinearLayout;
-
-    private boolean dotsClickable;
-    private ViewPager.OnPageChangeListener pageChangedListener;
 
     public SpringDotsIndicator(Context context) {
         this(context, null);
@@ -115,7 +98,7 @@ public class SpringDotsIndicator extends FrameLayout {
         refreshDots();
     }
 
-    private void refreshDots() {
+    public void refreshDots() {
         if (dotIndicatorView == null) {
             setUpDotIndicator();
         }
@@ -143,25 +126,7 @@ public class SpringDotsIndicator extends FrameLayout {
         dotIndicatorSpring.setSpring(springForce);
     }
 
-    private void addStrokeDots(int count) {
-        for (int i = 0; i < count; i++) {
-            ViewGroup dot = buildDot(true);
-            final int finalI = i;
-            dot.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (dotsClickable && viewPager != null && viewPager.getAdapter() != null && finalI < viewPager.getAdapter().getCount()) {
-                        viewPager.setCurrentItem(finalI, true);
-                    }
-                }
-            });
-
-            strokeDots.add((ImageView) dot.findViewById(R.id.spring_dot));
-            strokeDotsLinearLayout.addView(dot);
-        }
-    }
-
-    private ViewGroup buildDot(boolean stroke) {
+    public ViewGroup buildDot(boolean stroke) {
         ViewGroup dot = (ViewGroup) LayoutInflater.from(getContext()).inflate(R.layout.spring_dot_layout, this, false);
         ImageView dotView = dot.findViewById(R.id.spring_dot);
         dotView.setBackground(
@@ -176,34 +141,7 @@ public class SpringDotsIndicator extends FrameLayout {
         return dot;
     }
 
-    private void setUpDotBackground(boolean stroke, View dotView) {
-        GradientDrawable dotBackground = (GradientDrawable) dotView.getBackground();
-        if (stroke) {
-            dotBackground.setStroke(dotsStrokeWidth, dotsStrokeColor);
-        } else {
-            dotBackground.setColor(dotIndicatorColor);
-        }
-        dotBackground.setCornerRadius(dotsCornerRadius);
-    }
-
-    private void removeDots(int count) {
-        for (int i = 0; i < count; i++) {
-            strokeDotsLinearLayout.removeViewAt(strokeDotsLinearLayout.getChildCount() - 1);
-            strokeDots.remove(strokeDots.size() - 1);
-        }
-    }
-
-    private void setUpDotsAnimators() {
-        if (viewPager != null && viewPager.getAdapter() != null && viewPager.getAdapter().getCount() > 0) {
-            if (pageChangedListener != null) {
-                viewPager.removeOnPageChangeListener(pageChangedListener);
-            }
-            setUpOnPageChangedListener();
-            viewPager.addOnPageChangeListener(pageChangedListener);
-        }
-    }
-
-    private void setUpOnPageChangedListener() {
+    public void setUpOnPageChangedListener() {
         pageChangedListener = new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -226,66 +164,5 @@ public class SpringDotsIndicator extends FrameLayout {
                 // do nothing
             }
         };
-    }
-
-    private void setUpViewPager() {
-        if (viewPager.getAdapter() != null) {
-            viewPager.getAdapter().registerDataSetObserver(new DataSetObserver() {
-                @Override
-                public void onChanged() {
-                    super.onChanged();
-                    refreshDots();
-                }
-            });
-        }
-    }
-
-    private int dpToPx(int dp) {
-        return (int) (getContext().getResources().getDisplayMetrics().density * dp);
-    }
-
-    //*********************************************************
-    // Users Methods
-    //*********************************************************
-
-    /**
-     * Set the indicator dot color.
-     *
-     * @param color the color fo the indicator dot.
-     */
-    public void setDotIndicatorColor(int color) {
-        if (dotIndicatorView != null) {
-            dotIndicatorColor = color;
-            setUpDotBackground(false, dotIndicatorView);
-        }
-    }
-
-    /**
-     * Set the stroke indicator dots color.
-     *
-     * @param color the color fo the stroke indicator dots.
-     */
-    public void setStrokeDotsIndicatorColor(int color) {
-        if (strokeDots != null && !strokeDots.isEmpty()) {
-            dotsStrokeColor = color;
-            for (ImageView v : strokeDots) {
-                setUpDotBackground(true, v);
-            }
-        }
-    }
-
-    /**
-     * Determine if the stroke dots are clickable to go the a page directly.
-     *
-     * @param dotsClickable true if dots are clickables.
-     */
-    public void setDotsClickable(boolean dotsClickable) {
-        this.dotsClickable = dotsClickable;
-    }
-
-    public void setViewPager(ViewPager viewPager) {
-        this.viewPager = viewPager;
-        setUpViewPager();
-        refreshDots();
     }
 }

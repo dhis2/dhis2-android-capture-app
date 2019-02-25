@@ -297,7 +297,7 @@ class EnrollmentFormRepository implements FormRepository {
     @Override
     public Flowable<List<FormSectionViewModel>> sections() {
         return briteDatabase
-                .createQuery(EnrollmentModel.TABLE, SELECT_ENROLLMENT_UID, enrollmentUid == null ? "" : enrollmentUid)
+                .createQuery(EnrollmentModel.TABLE, SELECT_ENROLLMENT_UID, enrollmentUid)
                 .mapToList(cursor -> FormSectionViewModel
                         .createForEnrollment(cursor.getString(0))).toFlowable(BackpressureStrategy.LATEST);
     }
@@ -306,21 +306,14 @@ class EnrollmentFormRepository implements FormRepository {
     @Override
     public Consumer<String> storeReportDate() {
         return reportDate -> {
-            Calendar cal = Calendar.getInstance();
-            Date date = DateUtils.databaseDateFormat().parse(reportDate);
-            cal.setTime(date);
-            cal.set(Calendar.HOUR_OF_DAY, 0);
-            cal.set(Calendar.MINUTE, 0);
-            cal.set(Calendar.SECOND, 0);
-            cal.set(Calendar.MILLISECOND, 0);
-
+            Calendar cal = DateUtils.parseDateToCalendar(reportDate);
             ContentValues enrollment = new ContentValues();
             enrollment.put(EnrollmentModel.Columns.ENROLLMENT_DATE, DateUtils.databaseDateFormat().format(cal.getTime()));
             enrollment.put(EnrollmentModel.Columns.STATE, State.TO_UPDATE.name()); // TODO: Check if state is TO_POST
             // TODO: and if so, keep the TO_POST state
 
             briteDatabase.update(EnrollmentModel.TABLE, enrollment,
-                    EnrollmentModel.Columns.UID + " = ?", enrollmentUid == null ? "" : enrollmentUid);
+                    EnrollmentModel.Columns.UID + " = ?", enrollmentUid);
         };
     }
 
@@ -334,7 +327,7 @@ class EnrollmentFormRepository implements FormRepository {
             // TODO: and if so, keep the TO_POST state
 
             briteDatabase.update(EnrollmentModel.TABLE, enrollment,
-                    EnrollmentModel.Columns.UID + " = ?", enrollmentUid == null ? "" : enrollmentUid);
+                    EnrollmentModel.Columns.UID + " = ?", enrollmentUid);
         };
     }
 
@@ -356,7 +349,7 @@ class EnrollmentFormRepository implements FormRepository {
             // TODO: and if so, keep the TO_POST state
 
             briteDatabase.update(EnrollmentModel.TABLE, enrollment,
-                    EnrollmentModel.Columns.UID + " = ?", enrollmentUid == null ? "" : enrollmentUid);
+                    EnrollmentModel.Columns.UID + " = ?", enrollmentUid);
         };
     }
 
@@ -371,7 +364,7 @@ class EnrollmentFormRepository implements FormRepository {
             // TODO: and if so, keep the TO_POST state
 
             briteDatabase.update(EnrollmentModel.TABLE, enrollment,
-                    EnrollmentModel.Columns.UID + " = ?", enrollmentUid == null ? "" : enrollmentUid);
+                    EnrollmentModel.Columns.UID + " = ?", enrollmentUid);
         };
     }
 
@@ -529,7 +522,7 @@ class EnrollmentFormRepository implements FormRepository {
                 FROM + EnrollmentModel.TABLE +
                 WHERE + EnrollmentModel.Columns.UID + EQUAL + QUESTION_MARK + LIMIT_1;
 
-        return briteDatabase.createQuery(EnrollmentModel.TABLE, selectTe, enrollmentUid == null ? "" : enrollmentUid).mapToOne(cursor -> cursor.getString(0));
+        return briteDatabase.createQuery(EnrollmentModel.TABLE, selectTe, enrollmentUid).mapToOne(cursor -> cursor.getString(0));
     }
 
     @Override

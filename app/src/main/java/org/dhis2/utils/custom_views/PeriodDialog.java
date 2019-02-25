@@ -60,10 +60,7 @@ public class PeriodDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Dialog dialog = super.onCreateDialog(savedInstanceState);
-        if (dialog.getWindow() != null) {
-            dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-        }
+        CustomViewUtils.setBgTransparent(dialog);
         return dialog;
     }
 

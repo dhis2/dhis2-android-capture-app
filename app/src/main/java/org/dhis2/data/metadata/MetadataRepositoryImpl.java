@@ -787,6 +787,4 @@ public class MetadataRepositoryImpl implements MetadataRepository {
                 .mapToList(cursor -> cursor.getString(0));
 
     }
-
-
 }

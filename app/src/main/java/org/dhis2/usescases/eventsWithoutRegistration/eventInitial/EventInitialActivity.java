@@ -73,7 +73,7 @@ import static org.dhis2.utils.Constants.ENROLLMENT_UID;
 import static org.dhis2.utils.Constants.EVENT_CREATION_TYPE;
 import static org.dhis2.utils.Constants.EVENT_PERIOD_TYPE;
 import static org.dhis2.utils.Constants.ONE_TIME;
-import static org.dhis2.utils.Constants.ORG_UNIT;
+import static org.dhis2.utils.Constants.EXTRA_ORG_UNIT;
 import static org.dhis2.utils.Constants.PERMANENT;
 import static org.dhis2.utils.Constants.PROGRAM_UID;
 import static org.dhis2.utils.Constants.TRACKED_ENTITY_INSTANCE;
@@ -135,7 +135,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                 EventCreationType.DEFAULT;
         getTrackedEntityInstance = getIntent().getStringExtra(TRACKED_ENTITY_INSTANCE);
         enrollmentUid = getIntent().getStringExtra(ENROLLMENT_UID);
-        selectedOrgUnit = getIntent().getStringExtra(ORG_UNIT);
+        selectedOrgUnit = getIntent().getStringExtra(EXTRA_ORG_UNIT);
         periodType = (PeriodType) getIntent().getSerializableExtra(EVENT_PERIOD_TYPE);
         programStageUid = getIntent().getStringExtra(Constants.PROGRAM_STAGE_UID);
 

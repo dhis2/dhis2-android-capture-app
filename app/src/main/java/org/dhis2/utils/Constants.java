@@ -88,7 +88,7 @@ public class Constants {
     public static final String ADDNEW = "ADDNEW";
     public static final String SCHEDULENEW = "SCHEDULENEW";
     public static final String PROGRAM_UID = "PROGRAM_UID";
-    public static final String ORG_UNIT = "ORG_UNIT";
+    public static final String EXTRA_ORG_UNIT = "ORG_UNIT";
     public static final String ONE_TIME = "ONE_TIME";
     public static final String PERMANENT = "PERMANENT";
     public static final String ENROLLMENT_UID = "ENROLLMENT_UID";
@@ -103,6 +103,21 @@ public class Constants {
     public static final String DATA = "DATA";
     public static final String TIME_META = "timeMeta";
     public static final String TIME_DATA = "timeData";
+
+    // Adapter item types
+    public static final int EDITTEXT = 0;
+    public static final int BUTTON = 1;
+    public static final int CHECKBOX = 2;
+    public static final int SPINNER = 3;
+    public static final int COORDINATES = 4;
+    public static final int TIME = 5;
+    public static final int DATE = 6;
+    public static final int DATETIME = 7;
+    public static final int AGEVIEW = 8;
+    public static final int YES_NO = 9;
+    public static final int ORG_UNIT = 10;
+    public static final int IMAGE = 11;
+    public static final int UNSUPPORTED = 12;
 
     private Constants() {
         // hide public constructor

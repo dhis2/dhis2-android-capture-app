@@ -36,8 +36,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import javax.annotation.Nonnull;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -401,7 +399,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
                 }).toFlowable(BackpressureStrategy.LATEST);
     }
 
-    @Nonnull
+    @NonNull
     private String getOrgUnitCode(String orgUnitUid) {
         String ouCode = "";
         Cursor cursor = briteDatabase.query("SELECT code FROM OrganisationUnit WHERE uid = ? LIMIT 1", orgUnitUid);

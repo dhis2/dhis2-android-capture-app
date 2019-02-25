@@ -23,6 +23,7 @@ import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.Preconditions;
+import org.dhis2.utils.custom_views.CustomViewUtils;
 import org.dhis2.utils.custom_views.TextInputAutoCompleteTextView;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
@@ -52,8 +53,8 @@ final class EditTextCustomHolder extends FormViewHolder {
     private final TextInputLayout inputLayout;
     private TextInputAutoCompleteTextView editText;
     private ImageView icon;
-    List<String> autoCompleteValues;
-    EditTextViewModel editTextModel;
+    private List<String> autoCompleteValues;
+    private EditTextViewModel editTextModel;
 
     @SuppressLint("RxLeakedSubscription")
     EditTextCustomHolder(ViewGroup parent, ViewDataBinding binding, FlowableProcessor<RowAction> processor,
@@ -80,7 +81,6 @@ final class EditTextCustomHolder extends FormViewHolder {
 
             }
         });
-
     }
 
     private void checkAutocompleteRendering() {
@@ -100,57 +100,7 @@ final class EditTextCustomHolder extends FormViewHolder {
         editText.setFilters(new InputFilter[]{});
 
         if (editTextModel.editable())
-            switch (valueType) {
-                case PHONE_NUMBER:
-                    editText.setInputType(InputType.TYPE_CLASS_PHONE);
-                    break;
-                case EMAIL:
-                    editText.setInputType(InputType.TYPE_CLASS_TEXT |
-                            InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
-                    break;
-                case TEXT:
-                    editText.setInputType(InputType.TYPE_CLASS_TEXT);
-                    editText.setLines(1);
-                    editText.setEllipsize(TextUtils.TruncateAt.END);
-                    break;
-                case LETTER:
-                    editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
-                    editText.setFilters(new InputFilter[]{
-                            new InputFilter.LengthFilter(1),
-                            (source, start, end, dest, dstart, dend) -> {
-                                if (source.equals(""))
-                                    return source;
-                                if (source.toString().matches("[a-zA-Z]"))
-                                    return source;
-                                return "";
-                            }});
-                    break;
-                case NUMBER:
-                    editText.setInputType(InputType.TYPE_CLASS_NUMBER |
-                            InputType.TYPE_NUMBER_FLAG_DECIMAL |
-                            InputType.TYPE_NUMBER_FLAG_SIGNED);
-                    break;
-                case INTEGER_NEGATIVE:
-                case INTEGER:
-                    editText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_SIGNED);
-                    break;
-                case INTEGER_ZERO_OR_POSITIVE:
-                case INTEGER_POSITIVE:
-                    editText.setInputType(InputType.TYPE_CLASS_NUMBER);
-                    editText.setKeyListener(DigitsKeyListener.getInstance(false, false));
-                    break;
-                case UNIT_INTERVAL:
-                    editText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
-                    break;
-                case PERCENTAGE:
-                    editText.setInputType(InputType.TYPE_CLASS_NUMBER);
-                    break;
-                case URL:
-                    editText.setInputType(InputType.TYPE_TEXT_VARIATION_WEB_EDIT_TEXT);
-                    break;
-                default:
-                    break;
-            }
+            CustomViewUtils.setInputType(valueType, editText);
         else {
             editText.setInputType(0);
         }

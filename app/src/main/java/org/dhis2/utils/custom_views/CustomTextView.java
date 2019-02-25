@@ -2,11 +2,7 @@ package org.dhis2.utils.custom_views;
 
 import android.content.Context;
 import android.text.Editable;
-import android.text.InputFilter;
-import android.text.InputType;
-import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.text.method.DigitsKeyListener;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.EditText;
@@ -72,46 +68,11 @@ public class CustomTextView extends RelativeLayout implements TextWatcher {
     }
 
     private void configureViews() {
-        if (valueType != null)
-            switch (valueType) {
-                case PHONE_NUMBER:
-                    editText.setInputType(InputType.TYPE_CLASS_PHONE);
-                    break;
-                case EMAIL:
-                    editText.setInputType(InputType.TYPE_CLASS_TEXT |
-                            InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
-                    break;
-                case TEXT:
-                    editText.setInputType(InputType.TYPE_CLASS_TEXT);
-                    editText.setLines(1);
-                    editText.setEllipsize(TextUtils.TruncateAt.END);
-                    break;
-                case LETTER:
-                    editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
-                    editText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(1)});
-                    return;
-                case NUMBER:
-                    editText.setInputType(InputType.TYPE_CLASS_NUMBER |
-                            InputType.TYPE_NUMBER_FLAG_DECIMAL |
-                            InputType.TYPE_NUMBER_FLAG_SIGNED);
-                    break;
-                case INTEGER_NEGATIVE:
-                case INTEGER:
-                    editText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_SIGNED);
-                    break;
-                case INTEGER_ZERO_OR_POSITIVE:
-                case INTEGER_POSITIVE:
-                    editText.setInputType(InputType.TYPE_CLASS_NUMBER);
-                    editText.setKeyListener(DigitsKeyListener.getInstance(false, false));
-                    break;
-                case UNIT_INTERVAL:
-                    editText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
-                    break;
-                default:
-                    break;
-            }
-        binding.setVariable(BR.label, label);
+        if (valueType != null) {
+            CustomViewUtils.setInputType(valueType, editText);
+        }
 
+        binding.setVariable(BR.label, label);
         binding.executePendingBindings();
     }
 

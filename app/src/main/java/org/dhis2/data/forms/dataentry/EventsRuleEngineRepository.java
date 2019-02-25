@@ -105,7 +105,7 @@ public final class EventsRuleEngineRepository implements RuleEngineRepository {
                 }).toFlowable(BackpressureStrategy.LATEST);
     }
 
-    @Nonnull
+    @NonNull
     private String getOrgUnitCode(String orgUnitUid) {
         String ouCode = "";
         Cursor cursor = briteDatabase.query("SELECT code FROM OrganisationUnit WHERE uid = ? LIMIT 1", orgUnitUid);
@@ -119,7 +119,7 @@ public final class EventsRuleEngineRepository implements RuleEngineRepository {
     @NonNull
     private Flowable<List<RuleDataValue>> queryDataValues() {
         return briteDatabase.createQuery(Arrays.asList(EventModel.TABLE,
-                TrackedEntityDataValueModel.TABLE), QUERY_VALUES, eventUid == null ? "" : eventUid)
+                TrackedEntityDataValueModel.TABLE), QUERY_VALUES, eventUid)
                 .mapToList(cursor -> {
                     Date eventDate = parseDate(cursor.getString(0));
                     String value = cursor.getString(3) != null ? cursor.getString(3) : "";

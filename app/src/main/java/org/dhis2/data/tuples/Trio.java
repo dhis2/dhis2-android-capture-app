@@ -8,10 +8,10 @@ import com.google.auto.value.AutoValue;
 @AutoValue
 public abstract class Trio<A, B, C> {
 
-    @Nullable
+    @NonNull
     public abstract A val0();
 
-    @Nullable
+    @NonNull
     public abstract B val1();
 
     @Nullable

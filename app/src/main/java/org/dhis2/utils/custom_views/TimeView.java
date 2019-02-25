@@ -4,13 +4,8 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.text.format.DateFormat;
 import android.util.AttributeSet;
-import android.view.View;
 
-import com.google.android.material.textfield.TextInputEditText;
-
-import org.dhis2.BR;
 import org.dhis2.R;
-import org.dhis2.data.forms.dataentry.fields.datetime.OnDateSelected;
 import org.dhis2.utils.DateUtils;
 
 import java.text.ParseException;
@@ -20,22 +15,13 @@ import java.util.Date;
 import java.util.Locale;
 
 import androidx.databinding.DataBindingUtil;
-import androidx.databinding.ViewDataBinding;
 import timber.log.Timber;
 
 /**
  * QUADRAM. Created by frodriguez on 1/15/2018.
  */
 
-public class TimeView extends FieldLayout implements View.OnClickListener {
-
-    private TextInputEditText editText;
-    private ViewDataBinding binding;
-
-    private OnDateSelected listener;
-
-    private String label;
-    private Date date;
+public class TimeView extends GlobalDateView {
 
     public TimeView(Context context) {
         super(context);
@@ -52,34 +38,9 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
         init(context);
     }
 
-    @Override
-    public void performOnFocusAction() {
-        editText.performClick();
-    }
-
-    private void setLayout() {
+    public void setLayout() {
         binding = DataBindingUtil.inflate(inflater, R.layout.time_view, this, true);
-        editText = findViewById(R.id.inputEditText);
-        editText.setFocusable(false); //Makes editText not editable
-        editText.setClickable(true);//  but clickable
-        editText.setOnFocusChangeListener(this::onFocusChanged);
-        editText.setOnClickListener(this);
-    }
-
-    public void setIsBgTransparent(boolean isBgTransparent) {
-        this.isBgTransparent = isBgTransparent;
-        setLayout();
-    }
-
-    public void setLabel(String label) {
-        this.label = label;
-        binding.setVariable(BR.label, label);
-        binding.executePendingBindings();
-    }
-
-    public void setDescription(String description) {
-        binding.setVariable(BR.description, description);
-        binding.executePendingBindings();
+        setUpEditText();
     }
 
     public void initData(String data) {
@@ -97,21 +58,7 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
         editText.setText(data);
     }
 
-    public void setWarningOrError(String msg) {
-        editText.setError(msg);
-    }
-
-    public void setDateListener(OnDateSelected listener) {
-        this.listener = listener;
-    }
-
-    private void onFocusChanged(View view, boolean b) {
-        if (b)
-            onClick(view);
-    }
-
-    @Override
-    public void onClick(View view) {
+    public void onClick() {
         final Calendar c = Calendar.getInstance();
         if (date != null)
             c.setTime(date);
@@ -139,9 +86,5 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
         }, hour, minute, is24HourFormat);
         dialog.setTitle(label);
         dialog.show();
-    }
-
-    public void setEditable(Boolean editable) {
-        editText.setEnabled(editable);
     }
 }

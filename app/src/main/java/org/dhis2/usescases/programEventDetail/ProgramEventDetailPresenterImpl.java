@@ -24,7 +24,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
-import static org.dhis2.utils.Constants.ORG_UNIT;
+import static org.dhis2.utils.Constants.EXTRA_ORG_UNIT;
 import static org.dhis2.utils.Constants.PROGRAM_UID;
 
 
@@ -157,7 +157,7 @@ public class ProgramEventDetailPresenterImpl implements ProgramEventDetailContra
         Bundle bundle = new Bundle();
         bundle.putString(PROGRAM_UID, programId);
         bundle.putString(Constants.EVENT_UID, eventId);
-        bundle.putString(ORG_UNIT, orgUnit);
+        bundle.putString(EXTRA_ORG_UNIT, orgUnit);
         view.startActivity(EventCaptureActivity.class,
                 EventCaptureActivity.getActivityBundle(eventId, programId),
                 false, false, null

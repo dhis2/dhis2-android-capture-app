@@ -14,6 +14,7 @@ import com.google.gson.Gson;
 import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ErrorDialogBinding;
+import org.dhis2.utils.custom_views.CustomViewUtils;
 import org.hisp.dhis.android.core.maintenance.D2Error;
 
 import java.util.List;
@@ -86,10 +87,7 @@ public class ErrorDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Dialog dialog = super.onCreateDialog(savedInstanceState);
-        if (dialog.getWindow() != null) {
-            dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-        }
+        CustomViewUtils.setBgTransparent(dialog);
         return dialog;
     }
 
