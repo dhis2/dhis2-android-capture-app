@@ -5,6 +5,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
+import android.content.res.Resources;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
@@ -41,6 +45,7 @@ import org.dhis2.utils.custom_views.PeriodDialog;
 import org.dhis2.utils.custom_views.ProgressBarAnimation;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
+import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
@@ -63,6 +68,7 @@ import javax.inject.Inject;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.GravityCompat;
+import androidx.core.view.ViewCompat;
 import androidx.databinding.DataBindingUtil;
 import io.reactivex.functions.Consumer;
 import me.toptas.fancyshowcase.FancyShowCaseView;
@@ -76,7 +82,6 @@ import static org.dhis2.utils.Constants.ONE_TIME;
 import static org.dhis2.utils.Constants.ORG_UNIT;
 import static org.dhis2.utils.Constants.PERMANENT;
 import static org.dhis2.utils.Constants.PROGRAM_UID;
-import static org.dhis2.utils.Constants.RQ_PROGRAM_STAGE;
 import static org.dhis2.utils.Constants.TRACKED_ENTITY_INSTANCE;
 
 
@@ -269,8 +274,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                 }
             });
         }
-        Bindings.setObjectStyleAndTint(binding.programStageIcon, binding.programStageIcon, programStageUid);
-
     }
 
     private void setUpScrenByCreatinType(EventCreationType eventCreationType) {
@@ -382,7 +385,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         }
         binding.setName(activityTitle);
 
-        if(eventModel==null) {
+        if (eventModel == null) {
             Calendar now = DateUtils.getInstance().getCalendar();
             if (periodType == null) {
 
@@ -594,6 +597,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             binding.dateLayout.setHint(programStage.executionDateLabel());
         else
             binding.dateLayout.setHint(getString(R.string.event_date));
+
+        presenter.getStageObjectStyle(programStageModel.uid());
     }
 
     @Override
@@ -657,7 +662,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     public void showDateDialog(DatePickerDialog.OnDateSetListener listener) {
         Calendar calendar = Calendar.getInstance();
 
-        if(eventCreationType == EventCreationType.SCHEDULE)
+        if (eventCreationType == EventCreationType.SCHEDULE)
             calendar.add(Calendar.DAY_OF_YEAR, getIntent().getIntExtra(Constants.EVENT_SCHEDULE_INTERVAL, 0));
 
         DatePickerDialog datePickerDialog = new DatePickerDialog(this, listener, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
@@ -753,11 +758,17 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         float completionPerone = (float) totalCompletedFields / (float) totalFields;
         int completionPercent = (int) (completionPerone * 100);
 
-        runOnUiThread(() -> {
-            ProgressBarAnimation gainAnim = new ProgressBarAnimation(binding.progressGains, 0, completionPercent, false, EventInitialActivity.this);
-            gainAnim.setDuration(PROGRESS_TIME);
-            binding.progressGains.startAnimation(gainAnim);
-        });
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP)
+            runOnUiThread(() -> {
+                ProgressBarAnimation gainAnim = new ProgressBarAnimation(binding.progressGains, 0, completionPercent, false, EventInitialActivity.this);
+                gainAnim.setDuration(PROGRESS_TIME);
+                binding.progressGains.startAnimation(gainAnim);
+            });
+        else {
+            binding.progressGains.setProgress(completionPercent);
+            String text = String.valueOf(completionPercent) + "%";
+            binding.progress.setText(text);
+        }
 
     }
 
@@ -768,6 +779,24 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
         if (sectionUid != null && !sectionsToHide.contains(sectionUid))
             sectionsToHide.add(sectionUid);
+    }
+
+    @Override
+    public void renderObjectStyle(ObjectStyleModel data) {
+        if (data.icon() != null) {
+            Resources resources = getResources();
+            String iconName = data.icon().startsWith("ic_") ? data.icon() : "ic_" + data.icon();
+            int icon = resources.getIdentifier(iconName, "drawable", getPackageName());
+            binding.programStageIcon.setImageResource(icon);
+        }
+
+        if (data.color() != null) {
+            String color = data.color().startsWith("#") ? data.color() : "#" + data.color();
+            int colorRes = Color.parseColor(color);
+            ColorStateList colorStateList = ColorStateList.valueOf(colorRes);
+            ViewCompat.setBackgroundTintList(binding.programStageIcon, colorStateList);
+            Bindings.setFromResBgColor(binding.programStageIcon, colorRes);
+        }
     }
 
     private int calculateCompletedFields(@NonNull List<FieldViewModel> updates) {

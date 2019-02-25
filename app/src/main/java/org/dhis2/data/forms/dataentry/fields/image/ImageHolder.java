@@ -68,8 +68,8 @@ public class ImageHolder extends FormViewHolder {
         binding.setCurrentSelection(currentSelector);
 
         String[] uids = viewModel.uid().split("\\.");
-        Bindings.setObjectStyle(binding.icon, itemView, uids[1]);
-        Bindings.setObjectStyle(binding.label, itemView, uids[1]);
+        Bindings.setObjectStyle(binding.icon, itemView, viewModel.objectStyle());
+        Bindings.setObjectStyle(binding.label, itemView, viewModel.objectStyle());
 
         if (viewModel.value() != null && !viewModel.value().equals(currentSelector.get()))
             currentSelector.set(viewModel.value());

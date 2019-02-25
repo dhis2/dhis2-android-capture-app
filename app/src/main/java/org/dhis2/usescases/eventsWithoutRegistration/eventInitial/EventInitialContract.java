@@ -11,6 +11,7 @@ import com.unnamed.b.atv.model.TreeNode;
 
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
+import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.period.PeriodType;
@@ -75,6 +76,8 @@ public class EventInitialContract {
         void showEventWasDeleted();
 
         void setHideSection(String sectionUid);
+
+        void renderObjectStyle(ObjectStyleModel objectStyleModel);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
@@ -130,6 +133,8 @@ public class EventInitialContract {
         void deleteEvent(String trackedEntityInstance);
 
         boolean isEnrollmentOpen();
+
+        void getStageObjectStyle(String uid);
     }
 
 }

@@ -4,19 +4,10 @@ import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
-import androidx.databinding.DataBindingUtil;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.core.content.res.ResourcesCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.appcompat.app.AlertDialog;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.RecyclerView;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
 
@@ -26,19 +17,19 @@ import com.unnamed.b.atv.view.AndroidTreeView;
 import org.dhis2.App;
 import org.dhis2.BuildConfig;
 import org.dhis2.R;
+import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ActivityProgramEventDetailBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.main.program.OrgUnitHolder;
 import org.dhis2.utils.CatComboAdapter;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.custom_views.RxDateDialog;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.EndlessRecyclerViewScrollListener;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.Period;
+import org.dhis2.utils.custom_views.RxDateDialog;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
-import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 
@@ -51,7 +42,17 @@ import java.util.Locale;
 
 import javax.inject.Inject;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
+import androidx.core.view.GravityCompat;
+import androidx.databinding.DataBindingUtil;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.RecyclerView;
 import io.reactivex.Flowable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.processors.PublishProcessor;
 import me.toptas.fancyshowcase.FancyShowCaseView;
 import timber.log.Timber;
@@ -132,7 +133,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     }
 
     @Override
-    public void setData(List<EventModel> events) {
+    public void setData(List<ProgramEventViewModel> events) {
         if (binding.recycler.getAdapter() == null) {
             binding.recycler.setAdapter(adapter);
             binding.recycler.addOnScrollListener(endlessScrollListener);
@@ -152,11 +153,11 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void openDrawer() {
-        if (!binding.drawerLayout.isDrawerOpen(Gravity.END)) {
-            binding.drawerLayout.openDrawer(Gravity.END);
+        if (!binding.drawerLayout.isDrawerOpen(GravityCompat.END)) {
+            binding.drawerLayout.openDrawer(GravityCompat.END);
             binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN);
         } else {
-            binding.drawerLayout.closeDrawer(Gravity.END);
+            binding.drawerLayout.closeDrawer(GravityCompat.END);
             binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         }
     }
@@ -347,7 +348,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         binding.treeViewContainer.removeAllViews();
         binding.orgUnitApply.setOnClickListener(view -> apply());
         binding.orgUnitCancel.setOnClickListener(view -> {
-            binding.drawerLayout.closeDrawer(Gravity.END);
+            binding.drawerLayout.closeDrawer(GravityCompat.END);
             binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
         });
@@ -382,11 +383,24 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                 binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
             } else if (treeView.getSelected().size() > 1) {
                 binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
+
+                if (node.getChildren().isEmpty())
+                    presenter.onExpandOrgUnitNode(node, ((OrganisationUnitModel) node.getValue()).uid());
+                else
+                    node.setExpanded(node.isExpanded());
             }
         });
 
         binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
-        apply();
+    }
+
+    @Override
+    public Consumer<Pair<TreeNode, List<TreeNode>>> addNodeToTree() {
+        return node -> {
+            for (TreeNode childNode : node.val1())
+                treeView.addNode(node.val0(), childNode);
+            treeView.expandAll();
+        };
     }
 
     @Override
@@ -504,11 +518,9 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
         switch (currentPeriod) {
             case NONE:
-
                 presenter.setFilters(null, currentPeriod, orgUnitFilter.toString());
                 endlessScrollListener.resetState(0);
                 pageProcessor.onNext(0);
-//                presenter.getProgramEventsWithDates(null, currentPeriod, orgUnitFilter.toString());
                 break;
             case DAILY:
                 ArrayList<Date> datesD = new ArrayList<>();
@@ -516,25 +528,21 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                 presenter.setFilters(datesD, currentPeriod, orgUnitFilter.toString());
                 endlessScrollListener.resetState(0);
                 pageProcessor.onNext(0);
-//                presenter.getProgramEventsWithDates(datesD, currentPeriod, orgUnitFilter.toString());
                 break;
             case WEEKLY:
                 presenter.setFilters(chosenDateWeek, currentPeriod, orgUnitFilter.toString());
                 endlessScrollListener.resetState(0);
                 pageProcessor.onNext(0);
-//                presenter.getProgramEventsWithDates(chosenDateWeek, currentPeriod, orgUnitFilter.toString());
                 break;
             case MONTHLY:
                 presenter.setFilters(chosenDateMonth, currentPeriod, orgUnitFilter.toString());
                 endlessScrollListener.resetState(0);
                 pageProcessor.onNext(0);
-//                presenter.getProgramEventsWithDates(chosenDateMonth, currentPeriod, orgUnitFilter.toString());
                 break;
             case YEARLY:
                 presenter.setFilters(chosenDateYear, currentPeriod, orgUnitFilter.toString());
                 endlessScrollListener.resetState(0);
                 pageProcessor.onNext(0);
-//                presenter.getProgramEventsWithDates(chosenDateYear, currentPeriod, orgUnitFilter.toString());
                 break;
         }
     }
@@ -582,5 +590,10 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     @Override
     public Flowable<Integer> currentPage() {
         return pageProcessor;
+    }
+
+    @Override
+    public void orgUnitProgress(boolean showProgress) {
+        binding.orgUnitProgress.setVisibility(showProgress ? View.VISIBLE : View.GONE);
     }
 }

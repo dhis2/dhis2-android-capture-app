@@ -24,13 +24,14 @@ public class RadioButtonRow implements Row<RadioButtonHolder, RadioButtonViewMod
     @NonNull
     private final FlowableProcessor<RowAction> processor;
     private final String renderType;
+    private boolean isSearchMode = false;
 
     public RadioButtonRow(LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor, boolean isBgTransparent) {
         this.inflater = layoutInflater;
         this.processor = processor;
         this.isBgTransparent = isBgTransparent;
         this.renderType = null;
-
+        this.isSearchMode = true;
     }
 
     public RadioButtonRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor,

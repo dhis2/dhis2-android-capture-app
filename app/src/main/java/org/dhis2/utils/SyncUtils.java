@@ -8,21 +8,23 @@ import androidx.work.WorkStatus;
 
 public class SyncUtils {
 
-    public static boolean isSyncRunning(String syncTag){
+    public static boolean isSyncRunning(String syncTag) {
         List<WorkStatus> statuses = null;
         boolean running = false;
         try {
             statuses = WorkManager.getInstance().getStatusesByTag(syncTag).get();
+            for (WorkStatus workStatus : statuses) {
+                if (workStatus.getState() == State.RUNNING)
+                    running = true;
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        for (WorkStatus workStatus : statuses) {
-            if(workStatus.getState() == State.RUNNING)
-                running=true;
-        }
+
         return running;
     }
-    public static boolean isSyncRunning(){
+
+    public static boolean isSyncRunning() {
         return isSyncRunning(Constants.META) || isSyncRunning(Constants.DATA);
     }
 

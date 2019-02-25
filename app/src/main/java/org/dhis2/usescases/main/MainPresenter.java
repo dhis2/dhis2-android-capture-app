@@ -2,20 +2,19 @@ package org.dhis2.usescases.main;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import androidx.annotation.NonNull;
 import android.view.Gravity;
 
 import org.dhis2.data.metadata.MetadataRepository;
-import org.dhis2.data.user.UserRepository;
 import org.dhis2.usescases.login.LoginActivity;
 import org.dhis2.utils.Constants;
 import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.android.core.user.UserModel;
+import org.hisp.dhis.android.core.user.User;
 
+import androidx.annotation.NonNull;
 import androidx.work.WorkManager;
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
@@ -23,7 +22,6 @@ import static android.text.TextUtils.isEmpty;
 
 final class MainPresenter implements MainContracts.Presenter {
 
-    private final UserRepository userRepository;
     private final MetadataRepository metadataRepository;
     private MainContracts.View view;
     private CompositeDisposable compositeDisposable;
@@ -31,9 +29,8 @@ final class MainPresenter implements MainContracts.Presenter {
 
     private final D2 d2;
 
-    MainPresenter(@NonNull D2 d2, UserRepository userRepository, MetadataRepository metadataRepository) {
+    MainPresenter(@NonNull D2 d2, MetadataRepository metadataRepository) {
         this.d2 = d2;
-        this.userRepository = userRepository;
         this.metadataRepository = metadataRepository;
     }
 
@@ -42,17 +39,16 @@ final class MainPresenter implements MainContracts.Presenter {
         this.view = view;
         this.compositeDisposable = new CompositeDisposable();
 
-        ConnectableFlowable<UserModel> userObservable = userRepository.me()
+        compositeDisposable.add(Observable.defer(() -> Observable.just(d2.userModule().user.get()))
+                .map(this::username)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .publish();
-
-
-        compositeDisposable.add(userObservable
-                .map(this::username)
                 .subscribe(
                         view.renderUsername(),
-                        Timber::e));
+                        Timber::e
+                )
+        );
+
 
         compositeDisposable.add(
                 metadataRepository.getDefaultCategoryOptionId()
@@ -67,14 +63,13 @@ final class MainPresenter implements MainContracts.Presenter {
                         )
         );
 
-        compositeDisposable.addAll(userObservable.connect());
     }
 
     @Override
     public void logOut() {
         try {
             WorkManager.getInstance().cancelAllWork();
-            d2.logout().call();
+            d2.userModule().logOut().call();
             view.startActivity(LoginActivity.class, null, true, true, null);
         } catch (Exception e) {
             Timber.e(e);
@@ -126,22 +121,11 @@ final class MainPresenter implements MainContracts.Presenter {
         view.openDrawer(Gravity.START);
     }
 
-    @SuppressWarnings("PMD.UseStringBufferForStringAppends")
-    private String username(@NonNull UserModel user) {
-        String username = "";
-        if (!isEmpty(user.firstName())) {
-            username += user.firstName();
-        }
-
-        if (!isEmpty(user.surname())) {
-            if (!username.isEmpty()) {
-                username += " ";
-            }
-
-            username += user.surname();
-        }
-
-        return username;
+    //    @SuppressWarnings("PMD.UseStringBufferForStringAppends")
+    private String username(@NonNull User user) {
+        return String.format("%s %s",
+                isEmpty(user.firstName()) ? "" : user.firstName(),
+                isEmpty(user.surname()) ? "" : user.surname());
     }
 
 }

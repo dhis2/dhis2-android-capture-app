@@ -2,8 +2,6 @@ package org.dhis2.data.forms;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.squareup.sqlbrite2.BriteDatabase;
@@ -15,6 +13,7 @@ import org.dhis2.data.tuples.Trio;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
+import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
@@ -37,10 +36,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
+import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -416,10 +418,21 @@ public class EventRepository implements FormRepository {
             dataValue = optionCodeName;
         }
 
+        int optionCount = 0;
+        try{
+            Cursor countCursor = briteDatabase.query("SELECT COUNT (uid) FROM Option WHERE optionSet = ?", optionSetUid);
+            if(countCursor!=null){
+                if(countCursor.moveToFirst())
+                    optionCount = countCursor.getInt(0);
+                countCursor.close();
+            }
+        }catch (Exception e){
+            Timber.e(e);
+        }
         ValueTypeDeviceRenderingModel fieldRendering = null;
         Cursor rendering = briteDatabase.query("SELECT * FROM ValueTypeDeviceRendering WHERE uid = ?", uid);
-        if(rendering!=null && rendering.moveToFirst()){
-            fieldRendering = ValueTypeDeviceRenderingModel.create(cursor);
+        if (rendering != null && rendering.moveToFirst()) {
+            fieldRendering = ValueTypeDeviceRenderingModel.create(rendering);
             rendering.close();
         }
 
@@ -433,10 +446,18 @@ public class EventRepository implements FormRepository {
                 "",
                 "",
                 "");
-
+        ObjectStyleModel objectStyle = ObjectStyleModel.builder().build();
+        Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", uid);
+        try {
+            if (objStyleCursor.moveToFirst())
+                objectStyle = ObjectStyleModel.create(objStyleCursor);
+        } finally {
+            if (objStyleCursor != null)
+                objStyleCursor.close();
+        }
         return fieldFactory.create(uid, isEmpty(formLabel) ? label : formLabel, valueType,
                 mandatory, optionSetUid, dataValue, section, allowFutureDates,
-                status == EventStatus.ACTIVE, null, description, fieldRendering);
+                status == EventStatus.ACTIVE, null, description, fieldRendering, optionCount,objectStyle);
     }
 
     @NonNull

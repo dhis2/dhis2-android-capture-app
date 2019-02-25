@@ -26,6 +26,7 @@ import javax.annotation.Nonnull;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 
+import static android.text.TextUtils.isEmpty;
 import static org.dhis2.data.forms.dataentry.DataEntryStore.valueType.ATTR;
 import static org.hisp.dhis.android.core.utils.StoreUtils.sqLiteBind;
 
@@ -197,16 +198,19 @@ public final class AttributeValueStore implements DataEntryStore {
         } else {
             Date created = Calendar.getInstance().getTime();
             String eventUid = eventUid(attribute);
-            TrackedEntityDataValueModel dataValueModel =
-                    TrackedEntityDataValueModel.builder()
-                            .created(created)
-                            .lastUpdated(created)
-                            .dataElement(attribute)
-                            .event(eventUid)
-                            .value(value)
-                            .build();
-            return briteDatabase.insert(TrackedEntityDataValueModel.TABLE,
-                    dataValueModel.toContentValues());
+            if(!isEmpty(eventUid)) {
+                TrackedEntityDataValueModel dataValueModel =
+                        TrackedEntityDataValueModel.builder()
+                                .created(created)
+                                .lastUpdated(created)
+                                .dataElement(attribute)
+                                .event(eventUid)
+                                .value(value)
+                                .build();
+                return briteDatabase.insert(TrackedEntityDataValueModel.TABLE,
+                        dataValueModel.toContentValues());
+            }else
+                return -1;
         }
     }
 

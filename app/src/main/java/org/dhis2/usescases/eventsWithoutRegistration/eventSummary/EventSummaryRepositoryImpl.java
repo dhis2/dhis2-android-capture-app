@@ -17,6 +17,7 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
+import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
@@ -44,6 +45,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -244,21 +246,44 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
         EventStatus eventStatus = EventStatus.valueOf(cursor.getString(9));
         String formName = cursor.getString(10);
         String description = cursor.getString(11);
+        String optionSet = cursor.getString(4);
         if (!isEmpty(optionCodeName)) {
             dataValue = optionCodeName;
+        }
+
+        int optionCount = 0;
+        try{
+            Cursor countCursor = briteDatabase.query("SELECT COUNT (uid) FROM Option WHERE optionSet = ?", optionSet);
+            if(countCursor!=null){
+                if(countCursor.moveToFirst())
+                    optionCount = countCursor.getInt(0);
+                countCursor.close();
+            }
+        }catch (Exception e){
+            Timber.e(e);
         }
 
         ValueTypeDeviceRenderingModel fieldRendering = null;
         Cursor rendering = briteDatabase.query("SELECT * FROM ValueTypeDeviceRendering WHERE uid = ?", uid);
         if(rendering!=null && rendering.moveToFirst()){
-            fieldRendering = ValueTypeDeviceRenderingModel.create(cursor);
+            fieldRendering = ValueTypeDeviceRenderingModel.create(rendering);
             rendering.close();
+        }
+
+        ObjectStyleModel objectStyle = ObjectStyleModel.builder().build();
+        Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", uid);
+        try {
+            if (objStyleCursor.moveToFirst())
+                objectStyle = ObjectStyleModel.create(objStyleCursor);
+        } finally {
+            if (objStyleCursor != null)
+                objStyleCursor.close();
         }
 
         return fieldFactory.create(uid, formName == null ? cursor.getString(1) : formName,
                 ValueType.valueOf(cursor.getString(2)), cursor.getInt(3) == 1,
-                cursor.getString(4), dataValue, cursor.getString(7), cursor.getInt(8) == 1,
-                eventStatus == EventStatus.ACTIVE, null, description, fieldRendering);
+                optionSet, dataValue, cursor.getString(7), cursor.getInt(8) == 1,
+                eventStatus == EventStatus.ACTIVE, null, description, fieldRendering,optionCount,objectStyle);
     }
 
     @NonNull
