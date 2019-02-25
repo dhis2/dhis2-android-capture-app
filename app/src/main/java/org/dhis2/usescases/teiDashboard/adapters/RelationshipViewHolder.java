@@ -49,9 +49,7 @@ public class RelationshipViewHolder extends RecyclerView.ViewHolder {
                         )
         );
 
-        binding.teiRelationshipLink.setOnClickListener(view -> {
-            presenter.openDashboard(relationshipTEIUid);
-        });
+        binding.teiRelationshipLink.setOnClickListener(view -> presenter.openDashboard(relationshipTEIUid));
 
         binding.setPresenter(presenter);
         binding.setRelationship(relationship);

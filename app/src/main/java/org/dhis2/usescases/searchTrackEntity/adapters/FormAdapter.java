@@ -36,6 +36,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentManager;
@@ -243,8 +244,8 @@ public class FormAdapter extends RecyclerView.Adapter {
 
     }
 
-    public void setList(List<TrackedEntityAttributeModel> modelList, ProgramModel programModel, HashMap<String, String> queryData) {
-        this.queryData = queryData;
+    public void setList(List<TrackedEntityAttributeModel> modelList, ProgramModel programModel, Map<String, String> queryData) {
+        this.queryData = (HashMap<String, String>) queryData;
         if (programModel != null) {
             this.programModel = programModel;
             programData = 1;

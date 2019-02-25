@@ -6,7 +6,7 @@ import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 
 /**
@@ -14,9 +14,9 @@ import java.util.Map;
  */
 public class AnalyticHelper {
 
-    private static String PROPERTY_ID;
+    private static String propertyId;
 
-    private static HashMap<TrackerName, Tracker> mTrackers = new HashMap<>();
+    private static Map<TrackerName, Tracker> mTrackers = new EnumMap<>(TrackerName.class);
 
 
     public enum TrackerName {
@@ -27,7 +27,7 @@ public class AnalyticHelper {
 
     public static AnalyticHelper init(String propertyID) { //store in Application
         AnalyticHelper helper = new AnalyticHelper();
-        PROPERTY_ID = propertyID;
+        propertyId = propertyID;
         return helper;
     }
 
@@ -35,14 +35,14 @@ public class AnalyticHelper {
         if (!mTrackers.containsKey(trackerId)) {
 
             GoogleAnalytics analytics = GoogleAnalytics.getInstance(applicationContext);
-            Tracker t = analytics.newTracker(PROPERTY_ID);
+            Tracker t = analytics.newTracker(propertyId);
             mTrackers.put(trackerId, t);
 
         }
         return mTrackers.get(trackerId);
     }
 
-    public Map<String, String> sendScreen(){
+    public Map<String, String> sendScreen() {
         return new HitBuilders.ScreenViewBuilder()
                 .build();
     }

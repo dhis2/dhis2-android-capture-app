@@ -2,7 +2,6 @@ package org.dhis2.usescases.teiDashboard.teiProgramList;
 
 import org.dhis2.usescases.main.program.ProgramViewModel;
 import org.dhis2.utils.custom_views.OrgUnitDialog;
-
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 
@@ -75,9 +74,7 @@ public class TeiProgramListInteractorImpl implements TeiProgramListContract.TeiP
                 teiProgramListRepository.saveToEnroll(orgUnitUid, programUid, teiUid)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(enrollmentUid -> {
-                                    view.goToEnrollmentScreen(enrollmentUid, programUid);
-                                },
+                        .subscribe(enrollmentUid -> view.goToEnrollmentScreen(enrollmentUid, programUid),
                                 Timber::d)
         );
     }

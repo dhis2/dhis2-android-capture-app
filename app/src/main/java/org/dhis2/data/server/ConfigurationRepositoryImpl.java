@@ -39,6 +39,6 @@ public class ConfigurationRepositoryImpl implements ConfigurationRepository {
     @NonNull
     @Override
     public Observable<Integer> remove() {
-        return Observable.defer(() -> Observable.fromCallable(() -> configurationManager.remove()));
+        return Observable.defer(() -> Observable.fromCallable(configurationManager::remove));
     }
 }

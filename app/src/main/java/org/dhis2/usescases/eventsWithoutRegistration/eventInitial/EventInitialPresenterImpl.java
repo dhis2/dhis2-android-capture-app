@@ -304,7 +304,7 @@ public class EventInitialPresenterImpl implements EventInitialContract.EventInit
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        (eventModel) -> view.onEventUpdated(eventModel.uid()),
+                        eventModel -> view.onEventUpdated(eventModel.uid()),
                         error -> displayMessage(error.getLocalizedMessage())
 
                 ));
@@ -441,7 +441,7 @@ public class EventInitialPresenterImpl implements EventInitialContract.EventInit
                 RuleActionShowWarning showWarning = (RuleActionShowWarning) ruleAction;
                 FieldViewModel model = fieldViewModels.get(showWarning.field());
 
-                if (model != null && model instanceof EditTextViewModel) {
+                if (model instanceof EditTextViewModel) {
                     fieldViewModels.put(showWarning.field(),
                             ((EditTextViewModel) model).withWarning(showWarning.content()));
                 }
@@ -449,7 +449,7 @@ public class EventInitialPresenterImpl implements EventInitialContract.EventInit
                 RuleActionShowError showError = (RuleActionShowError) ruleAction;
                 FieldViewModel model = fieldViewModels.get(showError.field());
 
-                if (model != null && model instanceof EditTextViewModel) {
+                if (model instanceof EditTextViewModel) {
                     fieldViewModels.put(showError.field(),
                             ((EditTextViewModel) model).withError(showError.content()));
                 }

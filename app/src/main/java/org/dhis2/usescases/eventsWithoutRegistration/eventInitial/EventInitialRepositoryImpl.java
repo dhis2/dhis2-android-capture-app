@@ -382,10 +382,9 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
         }
         if (trackedEntityInstance != null)
             updateTei(trackedEntityInstance);
-        return event(id).map(eventModel1 -> {
+        return event(id).map(eventModel1 ->
 //            updateProgramTable(currentDate, eventModel1.program()); //TODO: This is crashing the app
-            return eventModel1;
-        });
+                eventModel1);
     }
 
     @NonNull

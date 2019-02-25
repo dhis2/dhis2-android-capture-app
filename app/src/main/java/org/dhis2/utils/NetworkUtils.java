@@ -32,7 +32,7 @@ public class NetworkUtils {
             if (cm != null) {
                 NetworkInfo netInfo = cm.getActiveNetworkInfo();
                 //should check null because in airplane mode it will be null
-                isOnline = (netInfo != null && netInfo.isConnectedOrConnecting());
+                isOnline = (netInfo != null && netInfo.isConnected());
             }
         } catch (Exception ex) {
             Timber.e(ex);

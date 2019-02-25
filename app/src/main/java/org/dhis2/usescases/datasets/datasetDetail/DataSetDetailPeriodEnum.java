@@ -8,7 +8,7 @@ import java.util.List;
 public enum DataSetDetailPeriodEnum {
 
     DAILY("Daily") {
-        @SuppressWarnings({"squid:S1172", "squid:CommentedOutCodeLine"})
+        @SuppressWarnings({"squid:S1172", "squid:CommentedOutCodeLine", "squid:S1488"})
         public List<DataSetDetailModel> getListDataSetWithPeriods(int year, DataSetDetailModel dataset) {
             List<DataSetDetailModel> listDataSet = new ArrayList<>();
             /*if(year <= maxDate().year().get()){
@@ -63,7 +63,7 @@ public enum DataSetDetailPeriodEnum {
     },
 
     BIWEEKLY("BiWeekly") {
-        @SuppressWarnings({"squid:S1172", "squid:CommentedOutCodeLine"})
+        @SuppressWarnings({"squid:S1172", "squid:CommentedOutCodeLine", "squid:S1488"})
         public List<DataSetDetailModel> getListDataSetWithPeriods(int year, DataSetDetailModel dataset) {
             List<DataSetDetailModel> listDataSet = new ArrayList<>();
             /*if(year <= maxDate().year().get()){
@@ -113,7 +113,7 @@ public enum DataSetDetailPeriodEnum {
         }
     },
     YEARLY("Yearly") {
-        @SuppressWarnings({"squid:S1172", "squid:CommentedOutCodeLine"})
+        @SuppressWarnings({"squid:S1172", "squid:CommentedOutCodeLine", "squid:S1488"})
         public List<DataSetDetailModel> getListDataSetWithPeriods(int currentYear, DataSetDetailModel dataset) {
             List<DataSetDetailModel> listDataSet = new ArrayList<>();
            /* if(currentYear <= maxDate().year().get()){
@@ -134,7 +134,7 @@ public enum DataSetDetailPeriodEnum {
 
     public abstract List<DataSetDetailModel> getListDataSetWithPeriods(int year, DataSetDetailModel dataset);
 
-    @SuppressWarnings({"squid:S1172", "squid:CommentedOutCodeLine"})
+    @SuppressWarnings({"squid:S1172", "squid:CommentedOutCodeLine", "squid:S1488"})
     public static List<DataSetDetailModel> getListDataSetWithPeriodsWeeks(int year, DataSetDetailModel dataset, int day) {
         List<DataSetDetailModel> listDataSet = new ArrayList<>();
         /*if(year <= maxDate().year().get()){
@@ -154,7 +154,7 @@ public enum DataSetDetailPeriodEnum {
         return listDataSet;
     }
 
-    @SuppressWarnings({"squid:S1172", "squid:CommentedOutCodeLine"})
+    @SuppressWarnings({"squid:S1172", "squid:CommentedOutCodeLine", "squid:S1488"})
     public static List<DataSetDetailModel> getListDataSetWithPeriodsMonth(int year, DataSetDetailModel dataset, int startMonth, int period) {
         List<DataSetDetailModel> listDataSet = new ArrayList<>();
         /*if(year <= maxDate().year().get()){

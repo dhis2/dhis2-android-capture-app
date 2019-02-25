@@ -1,9 +1,8 @@
 package org.dhis2.usescases.searchTrackEntity.tableHolder;
 
-import org.dhis2.databinding.ItemTableRowBinding;
 import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder;
 
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
+import org.dhis2.databinding.ItemTableRowBinding;
 
 /**
  * QUADRAM. Created by ppajuelo on 07/03/2018.

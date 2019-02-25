@@ -81,6 +81,7 @@ class FormPresenterImpl implements FormPresenter {
         this.processor = PublishProcessor.create();
     }
 
+    @SuppressWarnings("squid:S1612")
     @Override
     public void onAttach(@NonNull FormView view) {
         isNull(view, "FormView must not be null");

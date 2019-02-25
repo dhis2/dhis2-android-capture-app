@@ -310,9 +310,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         new AlertDialog.Builder(context, R.style.CustomDialog)
                 .setTitle(getString(R.string.wipe_data))
                 .setMessage(getString(R.string.wipe_data_meesage))
-                .setPositiveButton(getString(R.string.wipe_data_ok), (dialog, which) -> {
-                    showDeleteProgress();
-                })
+                .setPositiveButton(getString(R.string.wipe_data_ok), (dialog, which) -> showDeleteProgress())
                 .setNegativeButton(getString(R.string.wipe_data_no), (dialog, which) -> dialog.dismiss())
                 .show();
     }

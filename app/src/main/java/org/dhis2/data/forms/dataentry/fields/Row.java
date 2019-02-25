@@ -1,15 +1,16 @@
 package org.dhis2.data.forms.dataentry.fields;
 
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 import android.view.ViewGroup;
 
-public interface Row<VH extends ViewHolder, VM extends FieldViewModel> {
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView.ViewHolder;
+
+public interface Row<H extends ViewHolder, M extends FieldViewModel> {
 
     @NonNull
-    VH onCreate(@NonNull ViewGroup parent);
+    H onCreate(@NonNull ViewGroup parent);
 
-    void onBind(@NonNull VH viewHolder, @NonNull VM viewModel);
+    void onBind(@NonNull H viewHolder, @NonNull M viewModel);
 
-    void deAttach(@NonNull VH viewHolder);
+    void deAttach(@NonNull H viewHolder);
 }

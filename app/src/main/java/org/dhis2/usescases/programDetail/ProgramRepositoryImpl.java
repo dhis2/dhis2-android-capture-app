@@ -1,17 +1,15 @@
 package org.dhis2.usescases.programDetail;
 
-import androidx.annotation.NonNull;
-
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
-import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import io.reactivex.Observable;
 
 /**
@@ -23,7 +21,7 @@ public class ProgramRepositoryImpl implements ProgramRepository {
     private final BriteDatabase briteDatabase;
     private static final String SELECT_TEI = "SELECT TrackedEntityInstance.* FROM TrackedEntityInstance " +
             "JOIN Enrollment ON Enrollment.trackedEntityInstance = TrackedEntityInstance.uid \n" +
-            "JOIN Event ON Event.enrollment = Enrollment.uid \n"+
+            "JOIN Event ON Event.enrollment = Enrollment.uid \n" +
             "WHERE Enrollment.program = ? GROUP BY TrackedEntityInstance.uid ORDER BY Event.eventDate";
 
     private static final String SELECT_PROGRAM_ATTRIBUTES_FOR_TEI = "SELECT * FROM TrackedEntityAttributeValue " +
@@ -34,7 +32,7 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 
     private static final String SELECT_PROGRAM_STAGE_FOR_TEI = "SELECT ProgramStage.* FROM ProgramStage " +
             "JOIN Event ON Event.programStage = ProgramStage.uid " +
-            "JOIN Enrollment ON Enrollment.uid = Event.enrollment "+
+            "JOIN Enrollment ON Enrollment.uid = Event.enrollment " +
             "WHERE ProgramStage.program = ? AND Enrollment.trackedEntityInstance = ? GROUP BY ProgramStage.uid ORDER BY Event.eventDate DESC";
 
     private static final String SELECT_ENROLLMENT_FOR_TEI = "SELECT * FROM Enrollment " +

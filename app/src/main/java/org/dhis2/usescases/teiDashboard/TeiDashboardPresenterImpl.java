@@ -3,7 +3,6 @@ package org.dhis2.usescases.teiDashboard;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.TextView;
@@ -28,6 +27,7 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.maintenance.D2Error;
+import org.hisp.dhis.android.core.program.ProgramIndicatorModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.relationship.Relationship;
@@ -423,7 +423,7 @@ public class TeiDashboardPresenterImpl implements TeiDashboardContracts.TeiDashb
         compositeDisposable.add(dashboardRepository.getIndicators(programUid)
                 .map(indicators ->
                         Observable.fromIterable(indicators)
-                                .filter(indicator -> indicator.displayInForm())
+                                .filter(ProgramIndicatorModel::displayInForm)
                                 .map(indicator -> {
                                     String indcatorValue = d2.evaluateProgramIndicator(
                                             dashboardProgramModel.getCurrentEnrollment().uid(),
@@ -439,7 +439,7 @@ public class TeiDashboardPresenterImpl implements TeiDashboardContracts.TeiDashb
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .map(data -> {
-                    Log.d("INDICATOR SIZE", "IS" + data.size());
+                    Timber.d("INDICATOR SIZE %d", data.size());
                     return data;
                 })
                 .subscribe(

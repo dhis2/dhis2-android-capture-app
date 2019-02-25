@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 
 import org.dhis2.Bindings.Bindings;
@@ -552,9 +551,7 @@ public class SearchTEPresenterImpl implements SearchTEContractsModule.SearchTEPr
         if (selectedProgram != null && selectedProgram.enrollmentDateLabel() != null) {
             dateDialog.setTitle(selectedProgram.enrollmentDateLabel());
         }
-        dateDialog.setButton(DialogInterface.BUTTON_NEGATIVE, view.getContext().getString(R.string.date_dialog_clear), (dialog, which) -> {
-            dialog.dismiss();
-        });
+        dateDialog.setButton(DialogInterface.BUTTON_NEGATIVE, view.getContext().getString(R.string.date_dialog_clear), (dialog, which) -> dialog.dismiss());
         dateDialog.show();
     }
 
@@ -574,16 +571,16 @@ public class SearchTEPresenterImpl implements SearchTEContractsModule.SearchTEPr
     }
 
     @Override
-    public void onTEIClick(String TEIuid, boolean isOnline) {
+    public void onTEIClick(String teiUid, boolean isOnline) {
         if (!isOnline) {
-            openDashboard(TEIuid);
+            openDashboard(teiUid);
         } else
-            downloadTei(TEIuid);
+            downloadTei(teiUid);
 
     }
 
     @Override
-    public void addRelationship(String TEIuid, String relationshipTypeUid, boolean online) {
+    public void addRelationship(String teiUid, String relationshipTypeUid, boolean online) {
         if (!online) {
             String relationshipType;
             if (relationshipTypeUid == null)
@@ -592,24 +589,24 @@ public class SearchTEPresenterImpl implements SearchTEContractsModule.SearchTEPr
                 relationshipType = relationshipTypeUid;
 
             Intent intent = new Intent();
-            intent.putExtra("TEI_A_UID", TEIuid);
+            intent.putExtra("TEI_A_UID", teiUid);
             intent.putExtra("RELATIONSHIP_TYPE_UID", relationshipType);
             view.getAbstractActivity().setResult(RESULT_OK, intent);
             view.getAbstractActivity().finish();
         } else {
-            downloadTeiForRelationship(TEIuid, relationshipTypeUid);
+            downloadTeiForRelationship(teiUid, relationshipTypeUid);
         }
     }
 
     @Override
-    public void addRelationship(String TEIuid, boolean online) {
+    public void addRelationship(String teiUid, boolean online) {
         if (!online) {
             Intent intent = new Intent();
-            intent.putExtra("TEI_A_UID", TEIuid);
+            intent.putExtra("TEI_A_UID", teiUid);
             view.getAbstractActivity().setResult(RESULT_OK, intent);
             view.getAbstractActivity().finish();
         } else {
-            downloadTeiForRelationship(TEIuid, null);
+            downloadTeiForRelationship(teiUid, null);
         }
     }
 
@@ -623,15 +620,15 @@ public class SearchTEPresenterImpl implements SearchTEContractsModule.SearchTEPr
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 data -> openDashboard(data.get(0).uid()),
-                                t -> Log.d("ONLINE_SEARCH", t.getMessage()))
+                                Timber::d)
         );
 
     }
 
     @Override
-    public void downloadTeiForRelationship(String TEIuid, @Nullable String relationshipTypeUid) {
+    public void downloadTeiForRelationship(String teiUid, @Nullable String relationshipTypeUid) {
         List<String> teiUids = new ArrayList<>();
-        teiUids.add(TEIuid);
+        teiUids.add(teiUid);
         compositeDisposable.add(
                 Flowable.fromCallable(d2.downloadTrackedEntityInstancesByUid(teiUids))
                         .subscribeOn(Schedulers.io())
@@ -639,11 +636,11 @@ public class SearchTEPresenterImpl implements SearchTEContractsModule.SearchTEPr
                         .subscribe(
                                 data -> {
                                     if (relationshipTypeUid == null)
-                                        addRelationship(TEIuid, false);
+                                        addRelationship(teiUid, false);
                                     else
-                                        addRelationship(TEIuid, relationshipTypeUid, false);
+                                        addRelationship(teiUid, relationshipTypeUid, false);
                                 },
-                                t -> Log.d("ONLINE_SEARCH", t.getMessage()))
+                                Timber::d)
         );
     }
 
@@ -652,9 +649,9 @@ public class SearchTEPresenterImpl implements SearchTEContractsModule.SearchTEPr
         return searchRepository.getOrgUnits(selectedProgram != null ? selectedProgram.uid() : null);
     }
 
-    private void openDashboard(String TEIuid) {
+    private void openDashboard(String teiUid) {
         Bundle bundle = new Bundle();
-        bundle.putString("TEI_UID", TEIuid);
+        bundle.putString("TEI_UID", teiUid);
         bundle.putString("PROGRAM_UID", selectedProgram != null ? selectedProgram.uid() : null);
         view.startActivity(TeiDashboardMobileActivity.class, bundle, false, false, null);
     }

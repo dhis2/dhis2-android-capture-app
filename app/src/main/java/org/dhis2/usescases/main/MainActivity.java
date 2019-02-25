@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
@@ -152,7 +151,7 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
         int color = getPrimaryColor();
         if (programFragment.getBinding().filterLayout.getVisibility() == View.VISIBLE) {
             binding.filter.setBackgroundColor(color);
-            binding.filter.setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
+            binding.filter.setColorFilter(ResourcesCompat.getColor(getResources(), R.color.white, getTheme()), PorterDuff.Mode.SRC_IN);
             binding.filter.setBackgroundResource(0);
         }
         // when filter layout is hidden
@@ -160,7 +159,7 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
             // not applied period filter
             if (programFragment.getCurrentPeriod() == Period.NONE && programFragment.areAllOrgUnitsSelected()) {
                 binding.filter.setBackgroundColor(color);
-                binding.filter.setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
+                binding.filter.setColorFilter(ResourcesCompat.getColor(getResources(), R.color.white, getTheme()), PorterDuff.Mode.SRC_IN);
                 binding.filter.setBackgroundResource(0);
             }
             // applied period filter
@@ -252,11 +251,6 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
 
     public void setTitle(String title) {
         binding.title.setText(title);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        return super.onOptionsItemSelected(item);
     }
 
     @Override

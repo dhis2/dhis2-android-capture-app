@@ -117,21 +117,12 @@ public class PeriodDialog extends DialogFragment {
     }
 
     private void checkConstraintDates() {
-
-        if (minDate != null && minDate.equals(currentDate))
-            binding.periodBefore.setEnabled(false);
-        else
-            binding.periodBefore.setEnabled(true);
-
-        if (maxDate != null && maxDate.equals(currentDate))
-            binding.periodNext.setEnabled(false);
-        else
-            binding.periodNext.setEnabled(true);
+        binding.periodBefore.setEnabled(!(minDate != null && minDate.equals(currentDate)));
+        binding.periodNext.setEnabled(!(maxDate != null && maxDate.equals(currentDate)));
     }
 
-    public PeriodDialog setMinDate(Date minDate) {
+    public void setMinDate(Date minDate) {
         this.minDate = minDate;
-        return this;
     }
 
     public PeriodDialog setMaxDate(Date maxDate) {

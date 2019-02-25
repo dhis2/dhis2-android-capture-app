@@ -447,7 +447,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
     private void checkFilterEnabled() {
         if (binding.filterLayout.getVisibility() == View.VISIBLE) {
             binding.filter.setBackgroundColor(getPrimaryColor());
-            binding.filter.setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
+            binding.filter.setColorFilter(ResourcesCompat.getColor(getResources(), R.color.white, getTheme()), PorterDuff.Mode.SRC_IN);
             binding.filter.setBackgroundResource(0);
         }
         // when filter layout is hidden
@@ -455,7 +455,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
             // not applied period filter
             if (currentPeriod == Period.NONE && areAllOrgUnitsSelected() && !isFilteredByCatCombo) {
                 binding.filter.setBackgroundColor(getPrimaryColor());
-                binding.filter.setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
+                binding.filter.setColorFilter(ResourcesCompat.getColor(getResources(), R.color.white, getTheme()), PorterDuff.Mode.SRC_IN);
                 binding.filter.setBackgroundResource(0);
             }
             // applied period filter

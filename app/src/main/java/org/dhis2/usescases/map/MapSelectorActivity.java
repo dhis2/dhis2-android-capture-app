@@ -52,15 +52,17 @@ public class MapSelectorActivity extends ActivityGlobalAbstract implements OnMap
         mapFragment.getMapAsync(this);
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         findViewById(R.id.back).setOnClickListener(v -> finish());
-        findViewById(R.id.fab).setOnClickListener(v -> {
-            Intent data = new Intent();
-            data.putExtra(LATITUDE, String.valueOf(mMap.getCameraPosition().target.latitude));
-            data.putExtra(LONGITUDE, String.valueOf(mMap.getCameraPosition().target.longitude));
-            setResult(RESULT_OK, data);
-            finish();
-        });
+        findViewById(R.id.fab).setOnClickListener(v -> setResult());
 
         latLon = findViewById(R.id.latlon);
+    }
+
+    private void setResult() {
+        Intent data = new Intent();
+        data.putExtra(LATITUDE, String.valueOf(mMap.getCameraPosition().target.latitude));
+        data.putExtra(LONGITUDE, String.valueOf(mMap.getCameraPosition().target.longitude));
+        setResult(RESULT_OK, data);
+        finish();
     }
 
     @Override

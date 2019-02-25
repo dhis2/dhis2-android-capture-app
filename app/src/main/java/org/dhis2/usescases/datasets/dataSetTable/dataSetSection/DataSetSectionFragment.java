@@ -68,13 +68,11 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
         List<CategoryOptionComboModel> catOptions = presenter.getCatOptionCombos(dataSetSection);
 
         ArrayList<List<String>> cells = new ArrayList<>();
-        for (DataElementModel de : dataElements) {
-            ArrayList<String> values = new ArrayList<>();
-            for (CategoryOptionComboModel catOpt : catOptions) {
-                values.add(catOpt.uid());
-            }
-            cells.add(values);
+        ArrayList<String> values = new ArrayList<>();
+        for (CategoryOptionComboModel catOpt : catOptions) {
+            values.add(catOpt.uid());
         }
+        cells.add(values);
 
         adapter.setAllItems(
                 catOptions,

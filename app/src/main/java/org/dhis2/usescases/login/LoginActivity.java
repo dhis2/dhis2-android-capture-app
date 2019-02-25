@@ -2,7 +2,6 @@ package org.dhis2.usescases.login;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.text.InputType;
 import android.view.View;
 import android.view.WindowManager;
@@ -16,18 +15,15 @@ import org.dhis2.databinding.ActivityLoginBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.main.MainActivity;
 import org.dhis2.usescases.sync.SyncActivity;
-import org.dhis2.utils.BiometricStorage;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.NetworkUtils;
-import org.dhis2.utils.OnDialogClickListener;
 import org.hisp.dhis.android.core.maintenance.D2ErrorCode;
 
 import java.util.List;
 
 import javax.inject.Inject;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 import de.adorsys.android.securestoragelibrary.SecurePreferences;
@@ -285,7 +281,7 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
 
         //TODO: Uncomment when green light
 //        lo
-            goToNextScreen();
+        goToNextScreen();
 
     }
 
@@ -302,21 +298,9 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
-        super.onSaveInstanceState(outState, outPersistentState);
-    }
-
-    @Override
-    public void onRestoreInstanceState(Bundle savedInstanceState, PersistableBundle persistentState) {
-        super.onRestoreInstanceState(savedInstanceState, persistentState);
-    }
-
-    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == RQ_QR_SCANNER && resultCode == RESULT_OK) {
             binding.serverUrlEdit.setText(data.getStringExtra(Constants.EXTRA_DATA));
         }
     }
-
-
 }

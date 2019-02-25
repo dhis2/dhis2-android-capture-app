@@ -5,7 +5,6 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 
 import androidx.annotation.NonNull;
 import io.reactivex.Flowable;
-import io.reactivex.Observable;
 
 public interface EnrollmentStatusEntryStore {
 

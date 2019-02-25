@@ -1,9 +1,8 @@
 package org.dhis2.usescases.datasets.datasetDetail;
 
-import org.dhis2.data.dagger.PerActivity;
-import org.dhis2.data.metadata.MetadataRepository;
-
 import com.squareup.sqlbrite2.BriteDatabase;
+
+import org.dhis2.data.dagger.PerActivity;
 
 import dagger.Module;
 import dagger.Provides;

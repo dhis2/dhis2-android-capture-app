@@ -493,13 +493,12 @@ public class Bindings {
         int drawable;
         if (status == null)
             status = EventStatus.ACTIVE;
-        switch (status) {
-            case SCHEDULE:
-                drawable = R.drawable.schedule_circle_green;
-                break;
-            default:
-                drawable = R.drawable.schedule_circle_red;
-                break;
+        if (status == EventStatus.SCHEDULE) {
+            drawable = R.drawable.schedule_circle_green;
+
+        } else {
+            drawable = R.drawable.schedule_circle_red;
+
         }
 
         view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), drawable));
@@ -773,10 +772,10 @@ public class Bindings {
                 b = c;
         }
 
-        double L = 0.2126d * r + 0.7152d * g + 0.0722d * b;
+        double l = 0.2126d * r + 0.7152d * g + 0.0722d * b;
 
 
-        if (L > 0.179d)
+        if (l > 0.179d)
             tintedColor = "#000000"; // bright colors - black font
         else
             tintedColor = "#FFFFFF"; // dark colors - white font

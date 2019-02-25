@@ -39,6 +39,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
@@ -56,7 +57,7 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
 
     private ZXingScannerView mScannerView;
     private Context context;
-    FragmentQrBinding binding;
+    private FragmentQrBinding binding;
     private boolean isPermissionRequested = false;
 
     @Inject
@@ -320,45 +321,46 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
     }
 
     private String getIdentificationText() {
-        String message = getString(R.string.qr_id) + ":\n";
+        StringBuilder message = new StringBuilder(getString(R.string.qr_id)).append(":\n");
         if (teiUid != null) {
-            message = message + teiUid + "\n\n";
+            message.append(teiUid).append("\n\n");
         } else {
-            message = message + getString(R.string.qr_no_data) + "\n\n";
+            message.append(getString(R.string.qr_no_data)).append("\n\n");
         }
-        return message;
+        return message.toString();
     }
 
     private String getAttributesText() {
-        String message = getString(R.string.qr_attributes) + ":\n";
+        StringBuilder message = new StringBuilder(getString(R.string.qr_attributes)).append(":\n");
 
         if (attributes != null && !attributes.isEmpty()) {
             for (Trio<String, String, Boolean> attribute : attributes) {
                 if (attribute.val2()) {
-                    message = message + attribute.val1() + "\n";
+                    message.append(attribute.val1()).append("\n");
                 }
             }
-            message = message + "\n";
+            message.append("\n");
         } else {
-            message = message + getString(R.string.qr_no_data) + "\n\n";
+            message.append(getString(R.string.qr_no_data)).append("\n\n");
         }
-        return message;
+        return message.toString();
     }
 
     private String getEnrollmentText() {
-        String message = getString(R.string.qr_enrollment) + ":\n";
+        StringBuilder message = new StringBuilder(getString(R.string.qr_enrollment)).append(":\n");
 
         if (enrollments != null && !enrollments.isEmpty()) {
             for (Pair<String, Boolean> enrollment : enrollments) {
                 if (enrollment.val1()) {
-                    message = message + enrollment.val0() + "\n";
+                    message.append(enrollment.val0()).append("\n");
                 }
             }
-            message = message + "\n";
+            message.append("\n");
         } else {
-            message = message + getString(R.string.qr_no_data) + "\n\n";
+            message.append(getString(R.string.qr_no_data)).append("\n\n");
         }
-        return message;
+
+        return message.toString();
     }
 
     private String getEventText() {
@@ -398,18 +400,18 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
     }
 
     private String getDataValueText() {
-        String message = getString(R.string.qr_data_values) + ":\n";
+        StringBuilder message = new StringBuilder(getString(R.string.qr_data_values)).append(":\n");
 
         if (teiEventData != null && !teiEventData.isEmpty()) {
             for (Trio<TrackedEntityDataValueModel, String, Boolean> attribute : teiEventData) {
-                message = message + attribute.val1() + ":\n" + attribute.val0().value() + "\n\n";
+                message.append(attribute.val1()).append(":\n").append(attribute.val0().value()).append("\n\n");
             }
-            message = message + "\n";
+            message.append("\n");
         } else {
-            message = message + getString(R.string.qr_no_data) + "\n\n";
+            message.append(getString(R.string.qr_no_data)).append("\n\n");
         }
 
-        return message;
+        return message.toString();
     }
 
     private String getReadMoreText() {
@@ -435,11 +437,13 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
                     dialog.dismiss();
                 });
         AlertDialog alertDialog = builder.create();
-        alertDialog.setOnShowListener(dialogInterface ->
-
-        {
-            alertDialog.getButton(Dialog.BUTTON_POSITIVE).setTextColor(getResources().getColor(R.color.colorPrimary));
-            alertDialog.getButton(Dialog.BUTTON_NEGATIVE).setTextColor(getResources().getColor(R.color.colorPrimary));
+        alertDialog.setOnShowListener(dialogInterface -> {
+            if (getContext() != null && isAdded()) {
+                alertDialog.getButton(Dialog.BUTTON_POSITIVE).setTextColor(
+                        ResourcesCompat.getColor(getResources(), R.color.colorPrimary, getContext().getTheme()));
+                alertDialog.getButton(Dialog.BUTTON_NEGATIVE).setTextColor(
+                        ResourcesCompat.getColor(getResources(), R.color.colorPrimary, getContext().getTheme()));
+            }
         });
         alertDialog.show();
     }
@@ -448,28 +452,28 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
     public void promtForEventWORegistrationMoreQr() {
 
         // IDENTIFICATION
-        String message = getString(R.string.qr_id) + ":\n";
+        StringBuilder message = new StringBuilder(getString(R.string.qr_id)).append(":\n");
         if (eventUid != null) {
-            message = message + eventUid + "\n\n";
+            message.append(eventUid).append("\n\n");
         } else {
-            message = message + getString(R.string.qr_no_data) + "\n\n";
+            message.append(getString(R.string.qr_no_data)).append("\n\n");
         }
 
         // ATTRIBUTES
-        message = message + getString(R.string.qr_data_values) + ":\n";
+        message.append(getString(R.string.qr_data_values)).append(":\n");
 
         if (eventData != null && !eventData.isEmpty()) {
             for (Trio<TrackedEntityDataValueModel, String, Boolean> attribute : eventData) {
-                message = message + attribute.val1() + ":\n" + attribute.val0().value() + "\n\n";
+                message.append(attribute.val1()).append(":\n").append(attribute.val0().value()).append("\n\n");
             }
-            message = message + "\n";
+            message.append("\n");
         } else {
-            message = message + getString(R.string.qr_no_data) + "\n\n";
+            message.append(getString(R.string.qr_no_data)).append("\n\n");
         }
 
 
         // READ MORE
-        message = message + "\n\n" + getString(R.string.read_more_qr);
+        message.append("\n\n").append(getString(R.string.read_more_qr));
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.CustomDialog)
                 .setTitle(getString(R.string.QR_SCANNER))
@@ -484,8 +488,12 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
                 });
         AlertDialog alertDialog = builder.create();
         alertDialog.setOnShowListener(dialogInterface -> {
-            alertDialog.getButton(Dialog.BUTTON_POSITIVE).setTextColor(getResources().getColor(R.color.colorPrimary));
-            alertDialog.getButton(Dialog.BUTTON_NEGATIVE).setTextColor(getResources().getColor(R.color.colorPrimary));
+            if (getContext() != null && isAdded()) {
+                alertDialog.getButton(Dialog.BUTTON_POSITIVE).setTextColor(
+                        ResourcesCompat.getColor(getResources(), R.color.colorPrimary, getContext().getTheme()));
+                alertDialog.getButton(Dialog.BUTTON_NEGATIVE).setTextColor(
+                        ResourcesCompat.getColor(getResources(), R.color.colorPrimary, getContext().getTheme()));
+            }
         });
         alertDialog.show();
     }
