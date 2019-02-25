@@ -370,14 +370,10 @@ public class MetadataRepositoryImpl implements MetadataRepository {
 
     @Override
     public int optionSetSize(String optionSetUid) {
-        Cursor cursor = briteDatabase.query(SELECT_OPTION_SET, optionSetUid == null ? "" : optionSetUid);
         int numberOfOptions = 0;
-        try {
+        try (Cursor cursor = briteDatabase.query(SELECT_OPTION_SET, optionSetUid == null ? "" : optionSetUid)) {
             if (cursor.moveToFirst())
                 numberOfOptions = cursor.getInt(0);
-        } finally {
-            if (cursor != null)
-                cursor.close();
         }
 
         return numberOfOptions;
