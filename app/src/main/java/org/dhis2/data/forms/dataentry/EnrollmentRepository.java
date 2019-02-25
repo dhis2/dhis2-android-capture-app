@@ -124,16 +124,17 @@ final class EnrollmentRepository implements DataEntryRepository {
         }
 
         int optionCount = 0;
-        try{
-            Cursor countCursor = briteDatabase.query("SELECT COUNT (uid) FROM Option WHERE optionSet = ?", optionSet);
-            if(countCursor!=null){
-                if(countCursor.moveToFirst())
-                    optionCount = countCursor.getInt(0);
-                countCursor.close();
+        if (!isEmpty(optionSet))
+            try {
+                Cursor countCursor = briteDatabase.query("SELECT COUNT (uid) FROM Option WHERE optionSet = ?", optionSet);
+                if (countCursor != null) {
+                    if (countCursor.moveToFirst())
+                        optionCount = countCursor.getInt(0);
+                    countCursor.close();
+                }
+            } catch (Exception e) {
+                Timber.e(e);
             }
-        }catch (Exception e){
-            Timber.e(e);
-        }
 
         if (generated && dataValue == null) {
             try {
@@ -176,9 +177,11 @@ final class EnrollmentRepository implements DataEntryRepository {
         }
 
         ValueTypeDeviceRenderingModel fieldRendering = null;
-        Cursor rendering = briteDatabase.query("SELECT * FROM ValueTypeDeviceRendering WHERE uid = ?", uid);
-        if (rendering != null && rendering.moveToFirst()) {
-            fieldRendering = ValueTypeDeviceRenderingModel.create(rendering);
+        Cursor rendering = briteDatabase.query("SELECT ValueTypeDeviceRendering.* FROM ValueTypeDeviceRendering " +
+                "JOIN ProgramTrackedEntityAttribute ON ProgramTrackedEntityAttribute.uid = ValueTypeDeviceRendering.uid WHERE ProgramTrackedEntityAttribute.trackedEntityAttribute = ?", uid);
+        if (rendering != null) {
+            if (rendering.moveToFirst())
+                fieldRendering = ValueTypeDeviceRenderingModel.create(rendering);
             rendering.close();
         }
 

@@ -129,7 +129,7 @@
         <item name="android:paddingRight">4dp</item>
     </style>
 
-    <style name="CustomDialog" parent="Base.AlertDialog.AppCompat.Light">
+    <style name="CustomDialog" parent="Base.AlertDialog.AppCompat">
         <item name="android:textColor">?colorPrimary</item>
         <item name="colorAccent">?colorPrimary</item>
     </style>

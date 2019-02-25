@@ -113,7 +113,5 @@ public interface MetadataRepository {
 
     Observable<List<OptionModel>> searchOptions(String text, String idOptionSet, int page);
 
-    int optionSetSize(String optionSet);
-
     Observable<Map<String,ObjectStyleModel>> getObjectStylesForPrograms(List<ProgramModel> enrollmentProgramModels);
 }
