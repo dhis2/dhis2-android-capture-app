@@ -46,16 +46,9 @@ public class DataValuePresenter implements DataValueContract.Presenter{
     private DataValueRepository repository;
     private DataValueContract.View view;
     private CompositeDisposable compositeDisposable;
-    private Map<String, List<DataElementModel>> dataElements;
-    Map<String, List<List<CategoryOptionModel>>> catOptions;
-    DataSetModel dataSet;
-    List<DataSetTableModel> dataValues;
-    Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>> mapWithoutTransform;
-    Map<String, Map<String, List<String>>> dataElementDisabled;
-    Map<String, List<String>> compulsoryDataElement;
-    List<SectionModel> sections;
-    List<DataSetTableModel> dataValuesChanged;
-    Map<String, List<String>> catOptionComboCatOptions;
+
+    private List<DataSetTableModel> dataValuesChanged;
+    private DataTableModel dataTableModel;
 
     public DataValuePresenter(DataValueRepository repository){
         this.repository = repository;
@@ -103,12 +96,6 @@ public class DataValuePresenter implements DataValueContract.Presenter{
                                     ,
                                     Timber::e)
             );
-    }
-
-    @Override
-    public void insertDataValues(List<DataValueModel> dataValues) {
-
-        repository.insertDataValue(dataValues);
     }
 
     @Override
@@ -161,7 +148,7 @@ public class DataValuePresenter implements DataValueContract.Presenter{
                             boolean exists = false;
                             if(rowAction.value() != null && !rowAction.value().isEmpty()) {
                                 DataSetTableModel dataSetTableModel = null;
-                                for (DataSetTableModel dataValue : dataValues) {
+                                for (DataSetTableModel dataValue : dataTableModel.dataValues()) {
                                     if (dataValue.dataElement().equals(rowAction.dataElement()) &&
                                             dataValue.listCategoryOption().containsAll(rowAction.listCategoryOption())) {
                                         dataSetTableModel = DataSetTableModel.create(dataValue.id(), dataValue.dataElement(),
@@ -169,22 +156,22 @@ public class DataValuePresenter implements DataValueContract.Presenter{
                                                 dataValue.categoryOptionCombo(), dataValue.attributeOptionCombo(),
                                                 rowAction.value(), dataValue.storedBy(),
                                                 dataValue.catOption(), dataValue.listCategoryOption());
-                                        dataValues.remove(dataValue);
-                                        dataValues.add(dataSetTableModel);
+                                        dataTableModel.dataValues().remove(dataValue);
+                                        dataTableModel.dataValues().add(dataSetTableModel);
                                         exists = true;
                                         break;
                                     }
                                 }
                                 if (!exists && rowAction.value() != null) {
                                     String catOptionCombo = "";
-                                    for (Map.Entry<String, List<String>> entry : catOptionComboCatOptions.entrySet()) {
+                                    for (Map.Entry<String, List<String>> entry : dataTableModel.catOptionComboCatOption().entrySet()) {
                                         if (entry.getValue().containsAll(rowAction.listCategoryOption()))
                                             catOptionCombo = entry.getKey();
                                     }
                                     dataSetTableModel = DataSetTableModel.create(Long.parseLong("0"), rowAction.dataElement(), periodTypeName, orgUnitUid,
                                             catOptionCombo, catCombo, rowAction.value() != null ? rowAction.value() : "", "",
                                             "", rowAction.listCategoryOption());
-                                    dataValues.add(dataSetTableModel);
+                                    dataTableModel.dataValues().add(dataSetTableModel);
                                 }
                                 dataValuesChanged.add(dataSetTableModel);
                                 dataSetSectionFragment.updateData(rowAction);
@@ -194,7 +181,7 @@ public class DataValuePresenter implements DataValueContract.Presenter{
     }
 
     @Override
-    public void getData(@NonNull DataSetSectionFragment dataSetSectionFragment, @Nullable String sectionUid) {
+    public void getData(@NonNull DataSetSectionFragment dataSetSectionFragment, @Nullable String section) {
 
         compositeDisposable.add(
                 repository.getCatOptionCombo()
@@ -212,26 +199,16 @@ public class DataValuePresenter implements DataValueContract.Presenter{
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 sextet -> {
-                                    dataElements = tableData.val0();
-                                    catOptions =  transformCategories(tableData.val1());
-                                    dataValues = sextet.val0();
-                                    dataSet = sextet.val1();
-                                    mapWithoutTransform = tableData.val1();
-                                    dataElementDisabled = sextet.val2();
-                                    compulsoryDataElement = sextet.val3();
-                                    sections = sextet.val4();
-                                    catOptionComboCatOptions = sextet.val5();
-                                    dataSetSectionFragment.createTable();
+                                    dataTableModel = DataTableModel
+                                            .create(sextet.val4(), transformCategories(tableData.val1()),
+                                                    tableData.val0(), sextet.val0(), sextet.val2(), sextet.val3(), sextet.val5(), tableData.val1(), sextet.val1());
+
+                                    dataSetSectionFragment.createTable(dataTableModel);
                                 },
                                 Timber::e
                         )
         );
     }
-
-    private void showTable(DataSetSectionFragment dataSetSectionFragment){
-
-    }
-
 
     @Override
     public Map<String, List<List<CategoryOptionModel>>> transformCategories(@NonNull Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>> map) {
@@ -310,35 +287,4 @@ public class DataValuePresenter implements DataValueContract.Presenter{
         return catOptionsCombo;
     }
 
-
-    public Map<String, List<DataElementModel>> getDataElements() {
-        return dataElements;
-    }
-
-    public Map<String, List<List<CategoryOptionModel>>> getCatOptions() {
-        return catOptions;
-    }
-
-    public List<DataSetTableModel> getDataValues() {
-        return dataValues;
-    }
-
-    public Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>> getMapWithoutTransform() {
-        return mapWithoutTransform;
-    }
-
-    public Map<String, Map<String, List<String>>> getDataElementDisabled() {
-        return dataElementDisabled;
-    }
-
-    public Map<String, List<String>> getCompulsoryDataElement() {
-        return compulsoryDataElement;
-    }
-
-    public List<SectionModel> getSections() {
-        return sections;
-    }
-
-    @Override
-    public DataSetModel getDataSetModel(){ return dataSet;}
 }

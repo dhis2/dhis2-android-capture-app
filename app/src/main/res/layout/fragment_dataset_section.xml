@@ -9,9 +9,10 @@
             type="org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataValueContract.Presenter" />
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
         <com.evrencoskun.tableview.TableView
             android:id="@+id/tableView"
@@ -21,14 +22,17 @@
             app:unselected_color="@color/table_bg"
             app:selected_color="?colorPrimaryLight"
             app:shadow_color="@color/rfab__color_shadow"
+            android:layout_weight="1"
             app:row_header_width="120dp" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/save_layout"
             android:layout_width="match_parent"
             android:layout_height="@dimen/sectionSelectorHeight"
             android:background="@color/sectionSelectorBgColor"
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
+
             app:layout_constraintBottom_toBottomOf="parent">
 
             <TextView
@@ -43,5 +47,5 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 </layout>

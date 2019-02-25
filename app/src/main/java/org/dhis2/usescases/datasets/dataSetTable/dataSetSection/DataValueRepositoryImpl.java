@@ -50,6 +50,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
             "JOIN DataSetDataElementLink ON DataSetDataElementLink.dataElement = DataElement.uid " +
             "WHERE DataSetDataElementLink.dataSet = ? " +
             "ORDER BY DataSetSection.sectionOrder,DataSetSection.sortOrder";
+
     private final String DATA_VALUES = "SELECT DataValue.*, CategoryOptionComboCategoryOptionLink.categoryOption as catOption FROM DataValue " +
             "JOIN CategoryOptionComboCategoryOptionLink ON CategoryOptionComboCategoryOptionLink.categoryOptionCombo = DataValue.categoryOptionCombo " +
             "JOIN DataSetDataElementLink ON DataSetDataElementLink.dataElement = DataValue.dataElement " +
@@ -71,6 +72,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
             "JOIN SectionDataElementLINK ON SectionDataElementLink.section = Section.uid) as section on section.dataelement = DataElement.uid " +
             "WHERE DataSetDataElementLink.dataSet = ? " +
             "GROUP BY CategoryOption.uid, section.uid ORDER BY section.uid, CategoryCategoryComboLink.sortOrder, CategoryCategoryOptionLink.sortOrder";
+
     private final String CATEGORY_OPTION_COMBO = "SELECT CategoryOptionCombo.*,section.displayName as SectionName FROM CategoryOptionCombo " +
             "JOIN DataElement ON DataElement.categoryCombo = CategoryOptionCombo.categoryCombo " +
             "JOIN DataSetDataElementLink ON DataSetDataElementLink.dataElement = DataElement.uid " +
