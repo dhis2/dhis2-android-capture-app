@@ -136,7 +136,7 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
 
         rows.get(holder.getItemViewType()).onBind(holder, viewModels.get(rowPosition).get(columnPosition), value);
         holder.itemView.setEnabled(false);
-        holder.itemView.getLayoutParams().width = LinearLayout.LayoutParams.WRAP_CONTENT;
+        holder.itemView.getLayoutParams().width = headerWidth;
         holder.itemView.getLayoutParams().height = LinearLayout.LayoutParams.WRAP_CONTENT;
 
     }

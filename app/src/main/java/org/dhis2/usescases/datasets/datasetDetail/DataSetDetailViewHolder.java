@@ -44,6 +44,7 @@ public class DataSetDetailViewHolder extends RecyclerView.ViewHolder{
                 dataset.orgUnitUid(),
                 dataset.nameOrgUnit(),
                 dataset.periodId(),
+                dataset.periodType(),
                 dataset.namePeriod(),
                 dataset.catOptionComboUid()));
     }

@@ -82,8 +82,6 @@ public class TableView extends FrameLayout implements ITableView {
     private ColumnHeaderRecyclerViewItemClickListener mColumnHeaderRecyclerViewItemClickListener;
     private RowHeaderRecyclerViewItemClickListener mRowHeaderRecyclerViewItemClickListener;
 
-    private ColumnHeaderLayoutManager mColumnHeaderLayoutManager;
-    private ColumnHeaderLayoutManager mColumnHeaderLayoutManager2;
     private List<ColumnHeaderLayoutManager> mColumnHeaderLayoutManagers = new ArrayList<>();
     private LinearLayoutManager mRowHeaderLayoutManager;
     private CellLayoutManager mCellLayoutManager;
@@ -244,7 +242,9 @@ public class TableView extends FrameLayout implements ITableView {
         // For some case, it is pretty necessary.
         TableViewLayoutChangeListener layoutChangeListener = new TableViewLayoutChangeListener
                 (this);
-        mColumnHeaderRecyclerViews.get(mHeaderCount-1).addOnLayoutChangeListener(layoutChangeListener);
+        for(int i=0; i<mHeaderCount; i++){
+            mColumnHeaderRecyclerViews.get(i).addOnLayoutChangeListener(layoutChangeListener);
+        }
         mCellRecyclerView.addOnLayoutChangeListener(layoutChangeListener);
 
     }
@@ -472,7 +472,7 @@ public class TableView extends FrameLayout implements ITableView {
     @Override
     public void remeasureColumnWidth(int column) {
         // Remove calculated width value to be ready for recalculation.
-        mColumnHeaderLayoutManager.removeCachedWidth(column);
+        mColumnHeaderLayoutManagers.get(0).removeCachedWidth(column);
         // Recalculate of the width values of the columns
         getCellLayoutManager().fitWidthSize(column, false);
     }

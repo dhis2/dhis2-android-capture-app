@@ -3,6 +3,8 @@ package org.dhis2.usescases.datasets.dataSetTable;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.dagger.PerActivity;
+import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialRepository;
+import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialRepositoryImpl;
 
 import dagger.Module;
 import dagger.Provides;
@@ -25,14 +27,21 @@ public class DataSetTableModule {
 
     @Provides
     @PerActivity
-    DataSetTableContract.Presenter providesPresenter(DataSetTableRepository DataSetTableRepository) {
-        return new DataSetTablePresenter(DataSetTableRepository);
+    DataSetTableContract.Presenter providesPresenter(DataSetTableRepository DataSetTableRepository,
+                                                     DataSetInitialRepository dataSetInitialRepository) {
+        return new DataSetTablePresenter(DataSetTableRepository, dataSetInitialRepository);
     }
 
     @Provides
     @PerActivity
     DataSetTableRepository DataSetTableRepository(BriteDatabase briteDatabase) {
         return new DataSetTableRepositoryImpl(briteDatabase, dataSetUid);
+    }
+
+    @Provides
+    @PerActivity
+    DataSetInitialRepository DataSetInitialRepository(BriteDatabase briteDatabase) {
+        return new DataSetInitialRepositoryImpl(briteDatabase, dataSetUid);
     }
 
 }
