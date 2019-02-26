@@ -27,5 +27,6 @@ public interface FieldViewModelFactory {
                           @Nullable String storeBy,
                           @Nullable int row,
                           @Nullable int column,
-                          @Nullable String categoryOptionCombo);
+                          @Nullable String categoryOptionCombo,
+                          @Nullable String catCombo);
 }

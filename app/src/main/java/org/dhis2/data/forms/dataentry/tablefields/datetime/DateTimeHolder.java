@@ -143,7 +143,7 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
                 dateFormatted = DateUtils.databaseDateFormatNoMillis().format(date);
             }
         processor.onNext(
-                RowAction.create(dateTimeViewModel.uid(), date != null ? dateFormatted : null, dateTimeViewModel.dataElement(), dateTimeViewModel.listCategoryOption(), dateTimeViewModel.row(), dateTimeViewModel.column())
+                RowAction.create(dateTimeViewModel.uid(), date != null ? dateFormatted : null, dateTimeViewModel.dataElement(), dateTimeViewModel.listCategoryOption(), dateTimeViewModel.catCombo(), dateTimeViewModel.row(), dateTimeViewModel.column())
         );
     }
 

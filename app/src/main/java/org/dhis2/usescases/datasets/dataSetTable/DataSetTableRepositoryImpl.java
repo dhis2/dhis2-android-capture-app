@@ -218,39 +218,6 @@ public class DataSetTableRepositoryImpl implements DataSetTableRepository {
                 }).flatMap(categoryOptionComboModels -> Observable.just(map)).toFlowable(BackpressureStrategy.LATEST);
     }
 
-    @Override
-    public Flowable<List<DataSetTableModel>> getDataValues(String orgUnitUid, String periodType, String periodFinalDate, String catOptionComb) {
-        List<DataSetTableModel> listData = new ArrayList<>();
-        return briteDatabase.createQuery(DataValueModel.TABLE, DATA_VALUES, orgUnitUid, catOptionComb,dataSetUid, periodType)
-                .mapToList(cursor -> {
-
-                    for (DataSetTableModel dataValue : listData) {
-                        if (dataValue.dataElement().equals(cursor.getString(cursor.getColumnIndex(DataValueModel.Columns.DATA_ELEMENT)))
-                                && dataValue.categoryOptionCombo().equals(cursor.getString(cursor.getColumnIndex(DataValueModel.Columns.CATEGORY_OPTION_COMBO)))) {
-                            dataValue.listCategoryOption().add(cursor.getString(cursor.getColumnIndex(DataSetTableModel.Columns.CATEGORY_OPTION)));
-
-                            return dataValue;
-                        }
-                    }
-
-                    List<String> listCatOptions = new ArrayList<>();
-                    listCatOptions.add(cursor.getString(cursor.getColumnIndex(DataSetTableModel.Columns.CATEGORY_OPTION)));
-                    DataSetTableModel dataValue = DataSetTableModel.create(
-                            cursor.getLong(cursor.getColumnIndex(DataValueModel.Columns.ID)),
-                            cursor.getString(cursor.getColumnIndex(DataValueModel.Columns.DATA_ELEMENT)),
-                            cursor.getString(cursor.getColumnIndex(DataValueModel.Columns.PERIOD)),
-                            cursor.getString(cursor.getColumnIndex(DataValueModel.Columns.ORGANISATION_UNIT)),
-                            cursor.getString(cursor.getColumnIndex(DataValueModel.Columns.CATEGORY_OPTION_COMBO)),
-                            cursor.getString(cursor.getColumnIndex(DataValueModel.Columns.ATTRIBUTE_OPTION_COMBO)),
-                            cursor.getString(cursor.getColumnIndex(DataValueModel.Columns.VALUE)),
-                            cursor.getString(cursor.getColumnIndex(DataValueModel.Columns.STORED_BY)),
-                            cursor.getString(cursor.getColumnIndex(DataSetTableModel.Columns.CATEGORY_OPTION)),
-                            listCatOptions);
-                    listData.add(dataValue);
-                    return dataValue;
-
-                }).map(data->listData).toFlowable(BackpressureStrategy.LATEST);
-    }
 
     @Override
     public Flowable<Map<String, Map<String, List<String>>>> getGreyedFields(List<String> categoryOptionCombo) {

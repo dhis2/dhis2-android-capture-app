@@ -22,19 +22,19 @@ public interface DataValueRepository {
 
     Flowable<DataSetModel> getDataSet();
 
-    Flowable<Map<String, List<DataElementModel>>> getDataElements();
+    Flowable<List<DataElementModel>> getDataElements(String section);
 
-    Flowable<Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>>> getCatOptions();
+    Flowable<Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>>> getCatOptions(String section);
 
     Flowable<Map<String, List<CategoryOptionComboModel>>> getCatOptionCombo();
 
-    Flowable<List<DataSetTableModel>> getDataValues(String orgUnitUid, String periodType, String initPeriodType, String catOptionComb);
+    Flowable<List<DataSetTableModel>> getDataValues(String orgUnitUid, String periodType, String initPeriodType, String catOptionComb, String section);
 
-    Flowable<Map<String, Map<String, List<String>>>> getGreyedFields(List<String> categoryOptionCombo);
+    Flowable<Map<String, List<String>>> getGreyedFields(List<String> categoryOptionCombo, String section);
 
     Flowable<Map<String, List<String>>> getMandatoryDataElement(List<String> categoryOptionCombo);
 
-    Flowable<List<SectionModel>> getSectionByDataSet();
+    Flowable<SectionModel> getSectionByDataSet(String section);
 
     Flowable<String> getNewIDDataValue();
 

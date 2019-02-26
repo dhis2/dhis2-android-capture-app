@@ -39,9 +39,9 @@ public class DataValuePresenter implements DataValueContract.Presenter{
     private String orgUnitUid;
     private String periodTypeName;
     private String periodFinalDate;
-    private String catCombo;
+    private String attributeOptionCombo;
 
-    private Pair<Map<String, List<DataElementModel>>, Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>>> tableData;
+    private Pair<List<DataElementModel>, Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>>> tableData;
 
     private DataValueRepository repository;
     private DataValueContract.View view;
@@ -55,19 +55,19 @@ public class DataValuePresenter implements DataValueContract.Presenter{
     }
 
     @Override
-    public void init(DataValueContract.View view, String orgUnitUid, String periodTypeName, String periodFinalDate, String catCombo) {
+    public void init(DataValueContract.View view, String orgUnitUid, String periodTypeName, String periodFinalDate, String attributeOptionCombo, String section) {
         compositeDisposable = new CompositeDisposable();
         this.view = view;
         dataValuesChanged = new ArrayList<>();
         this.orgUnitUid = orgUnitUid;
         this.periodTypeName = periodTypeName;
         this.periodFinalDate = periodFinalDate;
-        this.catCombo = catCombo;
+        this.attributeOptionCombo = attributeOptionCombo;
 
         compositeDisposable.add(
                 Flowable.zip(
-                        repository.getDataElements(),
-                        repository.getCatOptions(),
+                        repository.getDataElements(section),
+                        repository.getCatOptions(section),
                         Pair::create
                 )
                         .subscribeOn(Schedulers.io())
@@ -155,7 +155,7 @@ public class DataValuePresenter implements DataValueContract.Presenter{
                                                 dataValue.period(), dataValue.organisationUnit(),
                                                 dataValue.categoryOptionCombo(), dataValue.attributeOptionCombo(),
                                                 rowAction.value(), dataValue.storedBy(),
-                                                dataValue.catOption(), dataValue.listCategoryOption());
+                                                dataValue.catOption(), dataValue.listCategoryOption(),rowAction.catCombo());
                                         dataTableModel.dataValues().remove(dataValue);
                                         dataTableModel.dataValues().add(dataSetTableModel);
                                         exists = true;
@@ -169,8 +169,8 @@ public class DataValuePresenter implements DataValueContract.Presenter{
                                             catOptionCombo = entry.getKey();
                                     }
                                     dataSetTableModel = DataSetTableModel.create(Long.parseLong("0"), rowAction.dataElement(), periodTypeName, orgUnitUid,
-                                            catOptionCombo, catCombo, rowAction.value() != null ? rowAction.value() : "", "",
-                                            "", rowAction.listCategoryOption());
+                                            catOptionCombo, attributeOptionCombo, rowAction.value() != null ? rowAction.value() : "", "",
+                                            "", rowAction.listCategoryOption(), rowAction.catCombo());
                                     dataTableModel.dataValues().add(dataSetTableModel);
                                 }
                                 dataValuesChanged.add(dataSetTableModel);
@@ -187,11 +187,11 @@ public class DataValuePresenter implements DataValueContract.Presenter{
                 repository.getCatOptionCombo()
                         .flatMap(data ->
                                 Flowable.zip(
-                                        repository.getDataValues(orgUnitUid, periodTypeName, periodFinalDate, catCombo),
+                                        repository.getDataValues(orgUnitUid, periodTypeName, periodFinalDate, attributeOptionCombo, section),
                                         repository.getDataSet(),
-                                        repository.getGreyedFields(getUidCatOptionsCombo(data)),
+                                        repository.getGreyedFields(getUidCatOptionsCombo(data), section),
                                         repository.getMandatoryDataElement(getUidCatOptionsCombo(data)),
-                                        repository.getSectionByDataSet(),
+                                        repository.getSectionByDataSet(section),
                                         repository.getCategoryOptionComboCatOption(),
                                         Sextet::create
                                 ))

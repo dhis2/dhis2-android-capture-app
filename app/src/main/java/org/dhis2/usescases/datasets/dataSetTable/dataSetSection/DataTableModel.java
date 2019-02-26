@@ -24,7 +24,7 @@ import androidx.annotation.Nullable;
 public abstract class DataTableModel {
 
     public static class Columns {
-        public static final String SECTIONS = "sections";
+        public static final String SECTION = "section";
         public static final String HEADERS = "headers";
         public static final String ROWS = "rows";
         public static final String CELLS = "cells";
@@ -41,15 +41,16 @@ public abstract class DataTableModel {
         return AutoValue_DataTableModel.createFromCursor(cursor);
     }
 
-    public static DataTableModel create(List<SectionModel> sections, Map<String, List<List<CategoryOptionModel>>> headers, Map<String, List<DataElementModel>> rows,
-                                        List<DataSetTableModel> dataValues, Map<String, Map<String, List<String>>> dataElementDisabled,
+    public static DataTableModel create(SectionModel section, Map<String, List<List<CategoryOptionModel>>> headers, List<DataElementModel> rows,
+                                        List<DataSetTableModel> dataValues,Map<String, List<String>> dataElementDisabled,
                                         Map<String, List<String>> compulsoryCells, Map<String, List<String>> catOptionComboCatOption,
                                         Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>> listCatOptionsCatComboOptions, DataSetModel dataSet) {
-        return new AutoValue_DataTableModel(sections, headers, rows, dataValues, dataElementDisabled, compulsoryCells, catOptionComboCatOption, listCatOptionsCatComboOptions, dataSet);
+        return new AutoValue_DataTableModel(section, headers, rows, dataValues, dataElementDisabled, compulsoryCells, catOptionComboCatOption, listCatOptionsCatComboOptions, dataSet);
     }
+
     @Nullable
-    @ColumnName(DataTableModel.Columns.SECTIONS)
-    public abstract List<SectionModel> sections();
+    @ColumnName(DataTableModel.Columns.SECTION)
+    public abstract SectionModel section();
 
     @Nullable
     @ColumnName(DataTableModel.Columns.HEADERS)
@@ -57,7 +58,7 @@ public abstract class DataTableModel {
 
     @Nullable
     @ColumnName(DataTableModel.Columns.ROWS)
-    public abstract Map<String, List<DataElementModel>> rows();
+    public abstract List<DataElementModel> rows();
 
     @Nullable
     @ColumnName(DataTableModel.Columns.DATA_VALUES)
@@ -65,7 +66,7 @@ public abstract class DataTableModel {
 
     @Nullable
     @ColumnName(DataTableModel.Columns.DATA_ELEMENTS_DISABLED)
-    public abstract Map<String, Map<String, List<String>>> dataElementDisabled();
+    public abstract Map<String, List<String>> dataElementDisabled();
 
     @Nullable
     @ColumnName(DataTableModel.Columns.COMPULSORY_CELLS)

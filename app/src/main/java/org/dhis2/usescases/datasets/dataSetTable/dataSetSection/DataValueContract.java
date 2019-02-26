@@ -28,7 +28,7 @@ public class DataValueContract {
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter{
-        void init(View view, String orgUnitUid, String periodTypeName, String periodInitialDate, String catCombo);
+        void init(View view, String orgUnitUid, String periodTypeName, String periodInitialDate, String catCombo, String section);
 
         void save();
 

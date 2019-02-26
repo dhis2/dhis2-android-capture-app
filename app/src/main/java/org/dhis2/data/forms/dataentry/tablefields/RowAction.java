@@ -23,6 +23,8 @@ public abstract class RowAction {
     @Nullable
     public abstract List<String> listCategoryOption();
 
+    @Nullable
+    public abstract String catCombo();
 
     public abstract int rowPos();
 
@@ -30,8 +32,8 @@ public abstract class RowAction {
     public abstract int columnPos();
 
     @NonNull
-    public static RowAction create(@NonNull String id, @Nullable String value, @Nullable String dataElement, @Nullable List<String> listCategoryOption,
+    public static RowAction create(@NonNull String id, @Nullable String value, @Nullable String dataElement, @Nullable List<String> listCategoryOption, @Nullable String catCombo,
                                     int rowPos,  int columnPos) {
-        return new AutoValue_RowAction(id, value, dataElement, listCategoryOption, rowPos, columnPos);
+        return new AutoValue_RowAction(id, value, dataElement, listCategoryOption, catCombo, rowPos, columnPos);
     }
 }
