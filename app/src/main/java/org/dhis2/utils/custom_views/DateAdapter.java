@@ -1,5 +1,6 @@
 package org.dhis2.utils.custom_views;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -20,6 +21,8 @@ import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
+import static org.dhis2.utils.DateUtils.DATE_FORMAT_YEAR;
+
 /**
  * QUADRAM. Created by ppajuelo on 05/12/2017.
  */
@@ -31,7 +34,7 @@ public class DateAdapter extends RecyclerView.Adapter<DateViewHolder> {
     private List<Date> selectedDates = new ArrayList<>();
 
 
-    public DateAdapter(Period period) {
+    public DateAdapter(Period period, Context context) {
         Calendar calendar = DateUtils.getInstance().getCalendar();
         calendar.add(Calendar.YEAR, 1); //let's the user select dates in the next year
         int year = calendar.get(Calendar.YEAR);
@@ -40,10 +43,11 @@ public class DateAdapter extends RecyclerView.Adapter<DateViewHolder> {
             String date = null;
 
             SimpleDateFormat dayFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
-            SimpleDateFormat weeklyFormat = new SimpleDateFormat("'Week' w", Locale.getDefault());
+            String week = context.getString(R.string.week);
+            SimpleDateFormat weeklyFormat = new SimpleDateFormat("'" + week + "' w", Locale.getDefault());
             String weeklyFormatWithDates = "%s, %s / %s";
             SimpleDateFormat monthFormat = new SimpleDateFormat("MMMM yyyy", Locale.getDefault());
-            SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy", Locale.getDefault());
+            SimpleDateFormat yearFormat = new SimpleDateFormat(DATE_FORMAT_YEAR, Locale.getDefault());
             switch (period) {
                 case WEEKLY:
                     date = weeklyFormat.format(calendar.getTime()); //Get current week

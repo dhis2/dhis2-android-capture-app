@@ -1,9 +1,7 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventInitial;
 
-import android.Manifest;
 import android.app.DatePickerDialog;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -19,6 +17,7 @@ import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.tuples.Quartet;
 import org.dhis2.data.tuples.Trio;
+import org.dhis2.usescases.eventsWithoutRegistration.EventUtils;
 import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryActivity;
 import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryRepository;
 import org.dhis2.usescases.map.MapSelectorActivity;
@@ -39,13 +38,11 @@ import org.hisp.dhis.rules.models.RuleEffect;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -322,24 +319,12 @@ public class EventInitialPresenterImpl implements EventInitialContract.EventInit
 
     @Override
     public void onLocationClick() {
-        if (ActivityCompat.checkSelfPermission(view.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(view.getAbstractActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)) {
-                // TODO CRIS:  Show an expanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
-
-            } else {
-                ActivityCompat.requestPermissions(view.getAbstractActivity(),
-                        new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
-                        ACCESS_COARSE_LOCATION_PERMISSION_REQUEST);
-            }
-            return;
+        if (view.checkLocationPermission()) {
+            mFusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
+                if (location != null)
+                    view.setLocation(location.getLatitude(), location.getLongitude());
+            });
         }
-        mFusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
-            if (location != null)
-                view.setLocation(location.getLatitude(), location.getLongitude());
-        });
     }
 
     @Override
@@ -398,7 +383,7 @@ public class EventInitialPresenterImpl implements EventInitialContract.EventInit
                 .onErrorReturn(throwable -> Result.failure(new Exception(throwable)));
 
         // Combining results of two repositories into a single stream.
-        Flowable<List<FieldViewModel>> viewModelsFlowable = Flowable.zip(fieldsFlowable, ruleEffectFlowable, this::applyEffects);
+        Flowable<List<FieldViewModel>> viewModelsFlowable = Flowable.zip(fieldsFlowable, ruleEffectFlowable, this::applyEventInitialEffects);
 
         compositeDisposable.add(viewModelsFlowable
                 .subscribeOn(AndroidSchedulers.mainThread())
@@ -409,7 +394,7 @@ public class EventInitialPresenterImpl implements EventInitialContract.EventInit
     }
 
     @NonNull
-    private List<FieldViewModel> applyEffects(
+    private List<FieldViewModel> applyEventInitialEffects(
             @NonNull List<FieldViewModel> viewModels,
             @NonNull Result<RuleEffect> calcResult) {
         if (calcResult.error() != null) {
@@ -417,22 +402,13 @@ public class EventInitialPresenterImpl implements EventInitialContract.EventInit
             return viewModels;
         }
 
-        Map<String, FieldViewModel> fieldViewModels = toMap(viewModels);
-        applyRuleEffects(fieldViewModels, calcResult);
+        Map<String, FieldViewModel> fieldViewModels = EventUtils.toMap(viewModels);
+        applyEventInitialRuleEffects(fieldViewModels, calcResult);
 
         return new ArrayList<>(fieldViewModels.values());
     }
 
-    @NonNull
-    private static Map<String, FieldViewModel> toMap(@NonNull List<FieldViewModel> fieldViewModels) {
-        Map<String, FieldViewModel> map = new LinkedHashMap<>();
-        for (FieldViewModel fieldViewModel : fieldViewModels) {
-            map.put(fieldViewModel.uid(), fieldViewModel);
-        }
-        return map;
-    }
-
-    private void applyRuleEffects(Map<String, FieldViewModel> fieldViewModels, Result<RuleEffect> calcResult) {
+    private void applyEventInitialRuleEffects(Map<String, FieldViewModel> fieldViewModels, Result<RuleEffect> calcResult) {
         //TODO: APPLY RULE EFFECTS TO ALL MODELS
         view.setHideSection(null);
         for (RuleEffect ruleEffect : calcResult.items()) {

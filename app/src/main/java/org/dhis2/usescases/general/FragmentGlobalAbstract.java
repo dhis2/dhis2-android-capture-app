@@ -1,11 +1,9 @@
 package org.dhis2.usescases.general;
 
+import android.Manifest;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.app.ActivityOptionsCompat;
-import androidx.appcompat.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,9 +18,15 @@ import org.dhis2.utils.OnDialogClickListener;
 import java.lang.reflect.Type;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.ActivityOptionsCompat;
 import androidx.fragment.app.Fragment;
 
 import static android.content.Context.MODE_PRIVATE;
+import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenterImpl.ACCESS_COARSE_LOCATION_PERMISSION_REQUEST;
 
 /**
  * QUADRAM. Created by ppajuelo on 18/10/2017.
@@ -121,4 +125,23 @@ public abstract class FragmentGlobalAbstract extends Fragment implements Abstrac
         Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
     }
 
+    public boolean checkLocationPermission() {
+        if (getContext() != null && isAdded()) {
+            if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                // Should we show an explanation?
+                if (ActivityCompat.shouldShowRequestPermissionRationale(getAbstractActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)) {
+                    // TODO CRIS:  Show an explanation to the user *asynchronously* -- don't block
+                    // this thread waiting for the user's response! After the user
+                    // sees the explanation, try again to request the permission.
+
+                } else {
+                    ActivityCompat.requestPermissions(getAbstractActivity(),
+                            new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                            ACCESS_COARSE_LOCATION_PERMISSION_REQUEST);
+                }
+                return false;
+            }
+        }
+        return true;
+    }
 }

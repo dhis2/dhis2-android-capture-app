@@ -22,6 +22,7 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
@@ -700,11 +701,24 @@ class EnrollmentFormRepository implements FormRepository {
     @NonNull
     private Flowable<String> enrollmentProgram() {
         return briteDatabase
-                .createQuery(EnrollmentModel.TABLE, SELECT_PROGRAM, enrollmentUid == null ? "" : enrollmentUid)
+                .createQuery(EnrollmentModel.TABLE, SELECT_PROGRAM, enrollmentUid)
                 .mapToOne(cursor -> {
                     programUid = cursor.getString(0);
                     return programUid;
                 })
                 .toFlowable(BackpressureStrategy.LATEST);
+    }
+
+    @NonNull
+    public String getOrgUnitCode(String orgUnitUid) {
+        String ouCode = "";
+        Cursor cursor = briteDatabase.query(SELECT + OrganisationUnitModel.Columns.CODE +
+                FROM + OrganisationUnitModel.TABLE + WHERE + OrganisationUnitModel.Columns.UID +
+                EQUAL + QUESTION_MARK + LIMIT_1, orgUnitUid);
+        if (cursor != null && cursor.moveToFirst()) {
+            ouCode = cursor.getString(0);
+            cursor.close();
+        }
+        return ouCode;
     }
 }

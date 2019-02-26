@@ -18,6 +18,7 @@ import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionModel;
@@ -415,7 +416,8 @@ public class EventRepository implements FormRepository {
         FieldViewModelUtils fieldViewModelUtils = new FieldViewModelUtils(cursor);
 
         ValueTypeDeviceRenderingModel fieldRendering = null;
-        Cursor rendering = briteDatabase.query("SELECT * FROM ValueTypeDeviceRendering WHERE uid = ?", fieldViewModelUtils.uid);
+        Cursor rendering = briteDatabase.query(SELECT + ALL + FROM + ValueTypeDeviceRenderingModel.TABLE + WHERE +
+                ValueTypeDeviceRenderingModel.Columns.UID + EQUAL + QUESTION_MARK, fieldViewModelUtils.getUid());
         if (rendering != null && rendering.moveToFirst()) {
             fieldRendering = ValueTypeDeviceRenderingModel.create(cursor);
             rendering.close();
@@ -432,11 +434,12 @@ public class EventRepository implements FormRepository {
                 "",
                 "");
 
-        return fieldFactory.create(fieldViewModelUtils.uid, isEmpty(fieldViewModelUtils.formLabel) ?
-                        fieldViewModelUtils.label : fieldViewModelUtils.formLabel, fieldViewModelUtils.valueType,
-                fieldViewModelUtils.mandatory, fieldViewModelUtils.optionSetUid, fieldViewModelUtils.dataValue,
-                fieldViewModelUtils.section, fieldViewModelUtils.allowFutureDates,
-                fieldViewModelUtils.eventStatus == EventStatus.ACTIVE, null, fieldViewModelUtils.description, fieldRendering);
+        return fieldFactory.create(fieldViewModelUtils.getUid(), isEmpty(fieldViewModelUtils.getFormLabel()) ?
+                        fieldViewModelUtils.getLabel() : fieldViewModelUtils.getFormLabel(), fieldViewModelUtils.getValueType(),
+                fieldViewModelUtils.isMandatory(), fieldViewModelUtils.getOptionSetUid(), fieldViewModelUtils.getDataValue(),
+                fieldViewModelUtils.getSection(), fieldViewModelUtils.getAllowFutureDates(),
+                fieldViewModelUtils.getEventStatus() == EventStatus.ACTIVE, null,
+                fieldViewModelUtils.getDescription(), fieldRendering);
     }
 
     @NonNull
@@ -460,6 +463,19 @@ public class EventRepository implements FormRepository {
             return FormSectionViewModel.createForSection(
                     eventUid, cursor.getString(2), cursor.getString(3), cursor.getString(4));
         }
+    }
+
+    @NonNull
+    public String getOrgUnitCode(String orgUnitUid) {
+        String ouCode = "";
+        Cursor cursor = briteDatabase.query(SELECT + OrganisationUnitModel.Columns.CODE +
+                FROM + OrganisationUnitModel.TABLE + WHERE + OrganisationUnitModel.Columns.UID +
+                EQUAL + QUESTION_MARK + LIMIT_1, orgUnitUid);
+        if (cursor != null && cursor.moveToFirst()) {
+            ouCode = cursor.getString(0);
+            cursor.close();
+        }
+        return ouCode;
     }
 
     @SuppressWarnings({"squid:S1172", "squid:CommentedOutCodeLine"})

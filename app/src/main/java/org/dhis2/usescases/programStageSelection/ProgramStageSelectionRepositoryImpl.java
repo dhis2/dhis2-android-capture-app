@@ -11,6 +11,7 @@ import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
@@ -31,12 +32,17 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.annotation.Nonnull;
-
 import androidx.annotation.NonNull;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+
+import static org.dhis2.data.database.SqlConstants.EQUAL;
+import static org.dhis2.data.database.SqlConstants.FROM;
+import static org.dhis2.data.database.SqlConstants.LIMIT_1;
+import static org.dhis2.data.database.SqlConstants.QUESTION_MARK;
+import static org.dhis2.data.database.SqlConstants.SELECT;
+import static org.dhis2.data.database.SqlConstants.WHERE;
 
 /**
  * QUADRAM. Created by ppajuelo on 02/11/2017.
@@ -211,15 +217,16 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
                 );
     }
 
-    @Nonnull
-    private String getOrgUnitCode(String orgUnitUid) {
+    @NonNull
+    public String getOrgUnitCode(String orgUnitUid) {
         String ouCode = "";
-        Cursor cursor = briteDatabase.query("SELECT code FROM OrganisationUnit WHERE uid = ? LIMIT 1", orgUnitUid);
+        Cursor cursor = briteDatabase.query(SELECT + OrganisationUnitModel.Columns.CODE +
+                FROM + OrganisationUnitModel.TABLE + WHERE + OrganisationUnitModel.Columns.UID +
+                EQUAL + QUESTION_MARK + LIMIT_1, orgUnitUid);
         if (cursor != null && cursor.moveToFirst()) {
             ouCode = cursor.getString(0);
             cursor.close();
         }
-
         return ouCode;
     }
 

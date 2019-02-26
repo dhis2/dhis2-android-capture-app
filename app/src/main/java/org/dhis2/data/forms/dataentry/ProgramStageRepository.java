@@ -209,7 +209,7 @@ final class ProgramStageRepository implements DataEntryRepository {
         ValueTypeDeviceRenderingModel fieldRendering = null;
         Cursor rendering = briteDatabase.query("SELECT ValueTypeDeviceRendering.* FROM ValueTypeDeviceRendering" +
                 " JOIN ProgramStageDataElement ON ProgramStageDataElement.uid = ValueTypeDeviceRendering.uid" +
-                " WHERE ProgramStageDataElement.uid = ?", fieldViewModelUtils.uid);
+                " WHERE ProgramStageDataElement.uid = ?", fieldViewModelUtils.getUid());
         if (rendering != null && rendering.moveToFirst()) {
             fieldRendering = ValueTypeDeviceRenderingModel.create(cursor);
             rendering.close();
@@ -231,12 +231,13 @@ final class ProgramStageRepository implements DataEntryRepository {
         boolean hasExpired = DateUtils.getInstance().hasExpired(eventModel, programModel.expiryDays(), programModel.completeEventsExpiryDays(), programStageModel.periodType() != null ? programStageModel.periodType() : programModel.expiryPeriodType());
 
 
-        return fieldFactory.create(fieldViewModelUtils.uid, isEmpty(fieldViewModelUtils.formLabel) ?
-                        fieldViewModelUtils.label : fieldViewModelUtils.formLabel, fieldViewModelUtils.valueType,
-                fieldViewModelUtils.mandatory, fieldViewModelUtils.optionSetUid, fieldViewModelUtils.dataValue, fieldViewModelUtils.section,
-                fieldViewModelUtils.allowFutureDates,
-                accessDataWrite && fieldViewModelUtils.eventStatus == EventStatus.ACTIVE && !hasExpired, renderingType,
-                fieldViewModelUtils.description, fieldRendering);
+        return fieldFactory.create(fieldViewModelUtils.getUid(), isEmpty(fieldViewModelUtils.getFormLabel()) ?
+                        fieldViewModelUtils.getLabel() : fieldViewModelUtils.getFormLabel(), fieldViewModelUtils.getValueType(),
+                fieldViewModelUtils.isMandatory(), fieldViewModelUtils.getOptionSetUid(), fieldViewModelUtils.getDataValue(),
+                fieldViewModelUtils.getSection(),
+                fieldViewModelUtils.getAllowFutureDates(),
+                accessDataWrite && fieldViewModelUtils.getEventStatus() == EventStatus.ACTIVE && !hasExpired, renderingType,
+                fieldViewModelUtils.getDescription(), fieldRendering);
     }
 
     @NonNull

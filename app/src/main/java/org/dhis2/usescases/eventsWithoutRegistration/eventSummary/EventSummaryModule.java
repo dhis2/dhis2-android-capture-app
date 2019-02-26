@@ -37,6 +37,14 @@ public class EventSummaryModule {
 
     @Provides
     @PerActivity
+    EventSummaryRepository eventSummaryRepository(@NonNull Context context,
+                                                  @NonNull BriteDatabase briteDatabase,
+                                                  @NonNull FormRepository formRepository) {
+        return new EventSummaryRepositoryImpl(context, briteDatabase, formRepository, eventUid);
+    }
+
+    @Provides
+    @PerActivity
     EventSummaryContract.EventSummaryView provideView(EventSummaryContract.EventSummaryView activity) {
         return activity;
     }
@@ -56,11 +64,8 @@ public class EventSummaryModule {
     }
 
     @Provides
-    @PerActivity
-    EventSummaryRepository eventSummaryRepository(@NonNull Context context,
-                                                  @NonNull BriteDatabase briteDatabase,
-                                                  @NonNull FormRepository formRepository) {
-        return new EventSummaryRepositoryImpl(context, briteDatabase, formRepository, eventUid);
+    RulesRepository rulesRepository(@NonNull BriteDatabase briteDatabase) {
+        return new RulesRepository(briteDatabase);
     }
 
     @Provides
@@ -68,10 +73,5 @@ public class EventSummaryModule {
                                   @NonNull RuleExpressionEvaluator evaluator,
                                   @NonNull RulesRepository rulesRepository) {
         return new EventRepository(briteDatabase, evaluator, rulesRepository, eventUid);
-    }
-
-    @Provides
-    RulesRepository rulesRepository(@NonNull BriteDatabase briteDatabase) {
-        return new RulesRepository(briteDatabase);
     }
 }

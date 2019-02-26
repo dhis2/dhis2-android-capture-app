@@ -1,17 +1,21 @@
 package org.dhis2.usescases.general;
 
+import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.PopupMenu;
@@ -28,6 +32,7 @@ import org.dhis2.usescases.login.LoginActivity;
 import org.dhis2.usescases.main.MainActivity;
 import org.dhis2.usescases.map.MapSelectorActivity;
 import org.dhis2.usescases.splash.SplashActivity;
+import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.OnDialogClickListener;
@@ -44,6 +49,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.ContentLoadingProgressBar;
@@ -51,6 +57,8 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import rx.Observable;
 import rx.subjects.BehaviorSubject;
 import timber.log.Timber;
+
+import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenterImpl.ACCESS_COARSE_LOCATION_PERMISSION_REQUEST;
 
 /**
  * QUADRAM. Created by Javi on 28/07/2017.
@@ -351,6 +359,75 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
             if (SyncUtils.isSyncRunning())
                 progressBar.setVisibility(View.VISIBLE);
             else progressBar.setVisibility(View.GONE);
+        }
+    }
+
+    public boolean checkLocationPermission() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_COARSE_LOCATION)) {
+                // TODO CRIS:  Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+
+            } else {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                        ACCESS_COARSE_LOCATION_PERMISSION_REQUEST);
+            }
+            return false;
+        }
+        return true;
+    }
+
+    protected int programTheme(String color) {
+        int programTheme = ColorUtils.getThemeFromColor(color);
+        SharedPreferences prefs = getAbstracContext().getSharedPreferences(
+                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
+        if (programTheme != -1) {
+            prefs.edit().putInt(Constants.PROGRAM_THEME, programTheme).apply();
+        }
+        return programTheme;
+    }
+
+    protected int getPrimaryColorFromTheme() {
+        SharedPreferences prefs = getAbstracContext().getSharedPreferences(
+                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
+        prefs.edit().remove(Constants.PROGRAM_THEME).apply();
+        int colorPrimary;
+        switch (prefs.getInt(Constants.THEME, R.style.AppTheme)) {
+            case R.style.AppTheme:
+                colorPrimary = R.color.colorPrimary;
+                break;
+            case R.style.RedTheme:
+                colorPrimary = R.color.colorPrimaryRed;
+                break;
+            case R.style.OrangeTheme:
+                colorPrimary = R.color.colorPrimaryOrange;
+                break;
+            case R.style.GreenTheme:
+                colorPrimary = R.color.colorPrimaryGreen;
+                break;
+            default:
+                colorPrimary = R.color.colorPrimary;
+                break;
+        }
+        return colorPrimary;
+    }
+
+    protected void applyColors(){
+        SharedPreferences prefs = getAbstracContext().getSharedPreferences(
+                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
+        setTheme(prefs.getInt(Constants.PROGRAM_THEME, prefs.getInt(Constants.THEME, R.style.AppTheme)));
+
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            TypedValue typedValue = new TypedValue();
+            TypedArray a = obtainStyledAttributes(typedValue.data, new int[]{R.attr.colorPrimaryDark});
+            int colorToReturn = a.getColor(0, 0);
+            a.recycle();
+            window.setStatusBarColor(colorToReturn);
         }
     }
 }

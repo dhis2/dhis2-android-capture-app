@@ -4,6 +4,7 @@ import org.dhis2.Bindings.Bindings;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.schedulers.SchedulerProvider;
+import org.dhis2.usescases.eventsWithoutRegistration.EventUtils;
 import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.rules.models.RuleAction;
@@ -17,7 +18,6 @@ import org.hisp.dhis.rules.models.RuleActionWarningOnCompletion;
 import org.hisp.dhis.rules.models.RuleEffect;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -126,7 +126,7 @@ public class EventSummaryInteractorImpl implements EventSummaryContract.EventSum
                 .onErrorReturn(throwable -> Result.failure(new Exception(throwable)));
 
         // Combining results of two repositories into a single stream.
-        Flowable<List<FieldViewModel>> viewModelsFlowable = Flowable.zip(fieldsFlowable, ruleEffectFlowable, this::applyEffects);
+        Flowable<List<FieldViewModel>> viewModelsFlowable = Flowable.zip(fieldsFlowable, ruleEffectFlowable, this::applyEventSummaryEffects);
 
         compositeDisposable.add(viewModelsFlowable
                 .subscribeOn(schedulerProvider.io())
@@ -157,7 +157,7 @@ public class EventSummaryInteractorImpl implements EventSummaryContract.EventSum
     }
 
     @NonNull
-    private List<FieldViewModel> applyEffects(
+    private List<FieldViewModel> applyEventSummaryEffects(
             @NonNull List<FieldViewModel> viewModels,
             @NonNull Result<RuleEffect> calcResult) {
         if (calcResult.error() != null) {
@@ -165,19 +165,10 @@ public class EventSummaryInteractorImpl implements EventSummaryContract.EventSum
             return viewModels;
         }
 
-        Map<String, FieldViewModel> fieldViewModels = toMap(viewModels);
-        applyRuleEffects(fieldViewModels, calcResult);
+        Map<String, FieldViewModel> fieldViewModels = EventUtils.toMap(viewModels);
+        applyEventSummaryRuleEffects(fieldViewModels, calcResult);
 
         return new ArrayList<>(fieldViewModels.values());
-    }
-
-    @NonNull
-    private static Map<String, FieldViewModel> toMap(@NonNull List<FieldViewModel> fieldViewModels) {
-        Map<String, FieldViewModel> map = new LinkedHashMap<>();
-        for (FieldViewModel fieldViewModel : fieldViewModels) {
-            map.put(fieldViewModel.uid(), fieldViewModel);
-        }
-        return map;
     }
 
     private void applyWarning(Map<String, FieldViewModel> fieldViewModels, RuleAction ruleAction) {
@@ -229,7 +220,7 @@ public class EventSummaryInteractorImpl implements EventSummaryContract.EventSum
         }
     }
 
-    private void applyRuleEffects(Map<String, FieldViewModel> fieldViewModels, Result<RuleEffect> calcResult) {
+    private void applyEventSummaryRuleEffects(Map<String, FieldViewModel> fieldViewModels, Result<RuleEffect> calcResult) {
         //TODO: APPLY RULE EFFECTS TO ALL MODELS
         view.messageOnComplete(null, true);
         view.fieldWithError(false);

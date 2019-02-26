@@ -49,6 +49,7 @@ import me.toptas.fancyshowcase.FancyShowCaseView;
 import me.toptas.fancyshowcase.FocusShape;
 import timber.log.Timber;
 
+import static org.dhis2.utils.DateUtils.DATE_FORMAT_YEAR;
 import static org.dhis2.utils.Period.DAILY;
 import static org.dhis2.utils.Period.MONTHLY;
 import static org.dhis2.utils.Period.NONE;
@@ -76,7 +77,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
     private ArrayList<Date> chosenDateMonth = new ArrayList<>();
     private ArrayList<Date> chosenDateYear = new ArrayList<>();
     private SimpleDateFormat monthFormat = new SimpleDateFormat("MMM-yyyy", Locale.getDefault());
-    private SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy", Locale.getDefault());
+    private SimpleDateFormat yearFormat = new SimpleDateFormat(DATE_FORMAT_YEAR, Locale.getDefault());
     private TreeNode treeNode;
     private Context context;
 

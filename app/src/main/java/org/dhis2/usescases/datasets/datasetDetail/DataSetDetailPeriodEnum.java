@@ -120,7 +120,7 @@ public enum DataSetDetailPeriodEnum {
 
                 for(int year = currentYear; year > 2008; year--){
                     DateTime currentMonth = new DateTime().withYear(year);
-                    String date = currentMonth.toString(DateTimeFormat.forPattern("yyyy"));
+                    String date = currentMonth.toString(DateTimeFormat.forPattern(DATE_FORMAT_YEAR));
                     listDataSet.add(new DataSetDetailModel(dataset.getUidDataSet(),
                             dataset.getNameOrgUnit(),dataset.getNameCatCombo(),
                             date));

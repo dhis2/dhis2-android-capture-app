@@ -54,7 +54,7 @@ public class RxDateDialog {
     }
 
     public DateDialog create() {
-        return DateDialog.newInstace(actionTrigger, period);
+        return DateDialog.newInstace(activity, actionTrigger, period);
     }
 
     private void notifyClick(SingleEmitter<List<Date>> callback, List<Date> button) {

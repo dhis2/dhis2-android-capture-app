@@ -76,4 +76,6 @@ public interface FormRepository {
     void saveCategoryOption(CategoryOptionComboModel selectedOption);
 
     Observable<Boolean> captureCoodinates();
+
+    String getOrgUnitCode(String orgUnitUid);
 }

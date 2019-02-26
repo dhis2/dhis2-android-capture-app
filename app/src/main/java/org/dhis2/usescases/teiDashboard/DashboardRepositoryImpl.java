@@ -521,63 +521,44 @@ public class DashboardRepositoryImpl implements DashboardRepository {
             if (!stringBooleanPair.val1()) {
                 return;
             }
-
-            Cursor cursor = briteDatabase.query(SELECT_USERNAME);
-            cursor.moveToFirst();
-            String userName = cursor.getString(0);
-            cursor.close();
-
-            Cursor cursor1 = briteDatabase.query(SELECT_ENROLLMENT, programUid == null ? "" : programUid, EnrollmentStatus.ACTIVE.name(), teiUid == null ? "" : teiUid);
-            cursor1.moveToFirst();
-            String mEnrollmentUid = cursor1.getString(0);
-
-            SQLiteStatement insetNoteStatement = briteDatabase.getWritableDatabase()
-                    .compileStatement(INSERT_NOTE);
-
-
-            sqLiteBind(insetNoteStatement, 1, codeGenerator.generate()); //enrollment
-            sqLiteBind(insetNoteStatement, 2, mEnrollmentUid == null ? "" : mEnrollmentUid); //enrollment
-            sqLiteBind(insetNoteStatement, 3, stringBooleanPair.val0()); //VALUE
-            sqLiteBind(insetNoteStatement, 4, userName == null ? "" : userName); //storeBy
-            sqLiteBind(insetNoteStatement, 5, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime())); //storeDate
-
+            SQLiteStatement insetNoteStatement = getInsertNoteStatement(stringBooleanPair);
             briteDatabase.executeInsert(NoteModel.TABLE, insetNoteStatement);
-
             insetNoteStatement.clearBindings();
         };
 
     }
 
+    private SQLiteStatement getInsertNoteStatement(Pair<String, Boolean> stringBooleanPair) {
+        Cursor cursor = briteDatabase.query(SELECT_USERNAME);
+        cursor.moveToFirst();
+        String userName = cursor.getString(0);
+        cursor.close();
+
+        Cursor cursor1 = briteDatabase.query(SELECT_ENROLLMENT, programUid == null ? "" : programUid, EnrollmentStatus.ACTIVE.name(), teiUid == null ? "" : teiUid);
+        cursor1.moveToFirst();
+        String mEnrollmentUid = cursor1.getString(0);
+
+        SQLiteStatement insetNoteStatement = briteDatabase.getWritableDatabase()
+                .compileStatement(INSERT_NOTE);
+
+
+        sqLiteBind(insetNoteStatement, 1, codeGenerator.generate()); //enrollment
+        sqLiteBind(insetNoteStatement, 2, mEnrollmentUid == null ? "" : mEnrollmentUid); //enrollment
+        sqLiteBind(insetNoteStatement, 3, stringBooleanPair.val0()); //VALUE
+        sqLiteBind(insetNoteStatement, 4, userName == null ? "" : userName); //storeBy
+        sqLiteBind(insetNoteStatement, 5, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime())); //storeDate
+
+        return insetNoteStatement;
+    }
+
     @Override
     public Observable<Boolean> handleNote(Pair<String, Boolean> stringBooleanPair) {
         if (stringBooleanPair.val1()) {
-
-            Cursor cursor = briteDatabase.query(SELECT_USERNAME);
-            cursor.moveToFirst();
-            String userName = cursor.getString(0);
-            cursor.close();
-
-            Cursor cursor1 = briteDatabase.query(SELECT_ENROLLMENT, programUid == null ? "" : programUid, EnrollmentStatus.ACTIVE.name(), teiUid == null ? "" : teiUid);
-            cursor1.moveToFirst();
-            String mEnrollmentUid = cursor1.getString(0);
-
-            SQLiteStatement insetNoteStatement = briteDatabase.getWritableDatabase()
-                    .compileStatement(INSERT_NOTE);
-
-
-            sqLiteBind(insetNoteStatement, 1, codeGenerator.generate()); //enrollment
-            sqLiteBind(insetNoteStatement, 2, mEnrollmentUid == null ? "" : mEnrollmentUid); //enrollment
-            sqLiteBind(insetNoteStatement, 3, stringBooleanPair.val0()); //VALUE
-            sqLiteBind(insetNoteStatement, 4, userName == null ? "" : userName); //storeBy
-            sqLiteBind(insetNoteStatement, 5, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime())); //storeDate
-
+            SQLiteStatement insetNoteStatement = getInsertNoteStatement(stringBooleanPair);
             long success = briteDatabase.executeInsert(NoteModel.TABLE, insetNoteStatement);
-
             insetNoteStatement.clearBindings();
-
             return Observable.just(success == 1).flatMap(value -> updateEnrollment(success).toObservable())
                     .map(value -> value == 1);
-
         } else
             return Observable.just(false);
     }

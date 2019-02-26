@@ -16,11 +16,11 @@ import androidx.databinding.ViewDataBinding;
 
 public abstract class GlobalDateView extends FieldLayout implements View.OnClickListener {
 
-    public ViewDataBinding binding;
-    public String label;
-    public Date date;
-    public TextInputEditText editText;
-    public OnDateSelected listener;
+    protected ViewDataBinding binding;
+    protected String label;
+    protected Date date;
+    protected TextInputEditText editText;
+    protected OnDateSelected listener;
 
     public GlobalDateView(Context context) {
         super(context);

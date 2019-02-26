@@ -1,7 +1,5 @@
 package org.dhis2.data.forms.dataentry;
 
-import android.database.Cursor;
-
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.forms.FormRepository;
@@ -18,8 +16,6 @@ import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-
-import javax.annotation.Nonnull;
 
 import androidx.annotation.NonNull;
 import io.reactivex.BackpressureStrategy;
@@ -87,7 +83,7 @@ public final class EventsRuleEngineRepository implements RuleEngineRepository {
                     Date eventDate = parseDate(cursor.getString(3));
                     Date dueDate = cursor.isNull(4) ? eventDate : parseDate(cursor.getString(4));
                     String orgUnit = cursor.getString(5);
-                    String orgUnitCode = getOrgUnitCode(orgUnit);
+                    String orgUnitCode = formRepository.getOrgUnitCode(orgUnit);
                     String programStageName = cursor.getString(6);
 
                     return RuleEvent.builder()
@@ -103,17 +99,6 @@ public final class EventsRuleEngineRepository implements RuleEngineRepository {
                             .build();
 
                 }).toFlowable(BackpressureStrategy.LATEST);
-    }
-
-    @NonNull
-    private String getOrgUnitCode(String orgUnitUid) {
-        String ouCode = "";
-        Cursor cursor = briteDatabase.query("SELECT code FROM OrganisationUnit WHERE uid = ? LIMIT 1", orgUnitUid);
-        if (cursor != null && cursor.moveToFirst() && cursor.getString(0) != null) {
-            ouCode = cursor.getString(0);
-            cursor.close();
-        }
-        return ouCode;
     }
 
     @NonNull

@@ -7,15 +7,10 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
-import android.content.res.TypedArray;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Spinner;
 
@@ -354,7 +349,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         int programTheme = ColorUtils.getThemeFromColor(color);
         int programColor = ColorUtils.getColorFrom(color, ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY));
 
-
         SharedPreferences prefs = getAbstracContext().getSharedPreferences(
                 Constants.SHARE_PREFS, Context.MODE_PRIVATE);
         if (programTheme != -1) {
@@ -364,41 +358,14 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             binding.appbatlayout.setBackgroundColor(programColor);
         } else {
             prefs.edit().remove(Constants.PROGRAM_THEME).apply();
-            int colorPrimary;
-            switch (prefs.getInt(Constants.THEME, R.style.AppTheme)) {
-                case R.style.AppTheme:
-                    colorPrimary = R.color.colorPrimary;
-                    break;
-                case R.style.RedTheme:
-                    colorPrimary = R.color.colorPrimaryRed;
-                    break;
-                case R.style.OrangeTheme:
-                    colorPrimary = R.color.colorPrimaryOrange;
-                    break;
-                case R.style.GreenTheme:
-                    colorPrimary = R.color.colorPrimaryGreen;
-                    break;
-                default:
-                    colorPrimary = R.color.colorPrimary;
-                    break;
-            }
+            int colorPrimary = getPrimaryColorFromTheme();
             binding.enrollmentButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, colorPrimary)));
             binding.mainToolbar.setBackgroundColor(ContextCompat.getColor(this, colorPrimary));
             binding.appbatlayout.setBackgroundColor(ContextCompat.getColor(this, colorPrimary));
         }
 
         binding.executePendingBindings();
-        setTheme(prefs.getInt(Constants.PROGRAM_THEME, prefs.getInt(Constants.THEME, R.style.AppTheme)));
-
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
-            Window window = getWindow();
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            TypedValue typedValue = new TypedValue();
-            TypedArray a = obtainStyledAttributes(typedValue.data, new int[]{R.attr.colorPrimaryDark});
-            int colorToReturn = a.getColor(0, 0);
-            a.recycle();
-            window.setStatusBarColor(colorToReturn);
-        }
+        applyColors();
     }
 
     @Override

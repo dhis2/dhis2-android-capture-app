@@ -2,6 +2,8 @@ package org.dhis2.utils.custom_views;
 
 import android.app.Dialog;
 import androidx.databinding.DataBindingUtil;
+
+import android.content.Context;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -41,21 +43,14 @@ public class DateDialog extends DialogFragment {
         return callback;
     }
 
-    public static DateDialog newInstace(Period mPeriod) {
-        if (period != mPeriod || instace == null) {
-            period = mPeriod;
-            instace = new DateDialog();
-            adapter = new DateAdapter(period);
-        }
-        return instace;
-    }
-
-    public static DateDialog newInstace(ActionTrigger<DateDialog> mActionTrigger, Period mPeriod) {
+    public static DateDialog newInstace(Context context,
+                                        ActionTrigger<DateDialog> mActionTrigger,
+                                        Period mPeriod) {
         if (period != mPeriod || instace == null) {
             period = mPeriod;
             dialogActionTrigger = mActionTrigger;
             instace = new DateDialog();
-            adapter = new DateAdapter(period);
+            adapter = new DateAdapter(period, context);
         }
         return instace;
     }

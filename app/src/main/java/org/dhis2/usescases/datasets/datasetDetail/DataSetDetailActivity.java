@@ -42,6 +42,8 @@ import io.reactivex.Flowable;
 import io.reactivex.processors.PublishProcessor;
 import timber.log.Timber;
 
+import static org.dhis2.utils.DateUtils.DATE_FORMAT_MONTH2;
+import static org.dhis2.utils.DateUtils.DATE_FORMAT_YEAR;
 import static org.dhis2.utils.Period.DAILY;
 import static org.dhis2.utils.Period.MONTHLY;
 import static org.dhis2.utils.Period.NONE;
@@ -58,8 +60,8 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
     private String dataSetUid;
     private Period currentPeriod = Period.NONE;
     private StringBuilder orgUnitFilter = new StringBuilder();
-    private SimpleDateFormat monthFormat = new SimpleDateFormat("yyyy-MM", Locale.getDefault());
-    private SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy", Locale.getDefault());
+    private SimpleDateFormat monthFormat = new SimpleDateFormat(DATE_FORMAT_MONTH2, Locale.getDefault());
+    private SimpleDateFormat yearFormat = new SimpleDateFormat(DATE_FORMAT_YEAR, Locale.getDefault());
     private Date chosenDateDay = new Date();
     private TreeNode treeNode;
     private AndroidTreeView treeView;
@@ -145,24 +147,8 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
     }
 
     private Drawable getCurrentPeriodDrawable() {
-        switch (currentPeriod) {
-            case NONE:
-                currentPeriod = DAILY;
-                return ContextCompat.getDrawable(getContext(), R.drawable.ic_view_day);
-            case DAILY:
-                currentPeriod = WEEKLY;
-                return ContextCompat.getDrawable(getContext(), R.drawable.ic_view_week);
-            case WEEKLY:
-                currentPeriod = MONTHLY;
-                return ContextCompat.getDrawable(getContext(), R.drawable.ic_view_month);
-            case MONTHLY:
-                currentPeriod = YEARLY;
-                return ContextCompat.getDrawable(getContext(), R.drawable.ic_view_year);
-            case YEARLY:
-                currentPeriod = NONE;
-                return ContextCompat.getDrawable(getContext(), R.drawable.ic_view_none);
-        }
-        return null;
+        currentPeriod = DateUtils.getCurrentPeriod(currentPeriod);
+        return DateUtils.getCurrentPeriodDrawable(getContext(), currentPeriod);
     }
 
     private String getCurrentPeriodText() {
@@ -253,25 +239,15 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
     }
 
     private void setSelectedDates(List<Date> selectedDates, SimpleDateFormat weeklyFormat) {
-        String textToShow;
         if (currentPeriod == WEEKLY) {
-            textToShow = weeklyFormat.format(selectedDates.get(0)) + ", " + yearFormat.format(selectedDates.get(0));
             chosenDateWeek = (ArrayList<Date>) selectedDates;
-            if (selectedDates.size() > 1)
-                textToShow += "... " /*+ weeklyFormat.format(selectedDates.get(1))*/;
         } else if (currentPeriod == MONTHLY) {
-            textToShow = monthFormat.format(selectedDates.get(0));
             chosenDateMonth = (ArrayList<Date>) selectedDates;
-            if (selectedDates.size() > 1)
-                textToShow += "... " /*+ monthFormat.format(selectedDates.get(1))*/;
         } else {
-            textToShow = yearFormat.format(selectedDates.get(0));
             chosenDateYear = (ArrayList<Date>) selectedDates;
-            if (selectedDates.size() > 1)
-                textToShow += "... " /*+ yearFormat.format(selectedDates.get(1))*/;
-
         }
-        binding.buttonPeriodText.setText(textToShow);
+        binding.buttonPeriodText.setText(DateUtils.setSelectedDatesTextToShow(currentPeriod, selectedDates, chosenDateWeek,
+                chosenDateMonth, chosenDateYear, weeklyFormat));
 
         // TODO
         presenter.getDataSetWithDates(selectedDates, currentPeriod, orgUnitFilter.toString());
@@ -281,25 +257,20 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
         ArrayList<Date> date = new ArrayList<>();
         date.add(new Date());
 
-        String text = "";
-
         switch (currentPeriod) {
             case WEEKLY:
-                text = weeklyFormat.format(date.get(0)) + ", " + yearFormat.format(date.get(0));
                 chosenDateWeek = date;
                 break;
             case MONTHLY:
-                text = monthFormat.format(date.get(0));
                 chosenDateMonth = date;
                 break;
             case YEARLY:
-                text = yearFormat.format(date.get(0));
                 chosenDateYear = date;
                 break;
             default:
                 break;
         }
-        binding.buttonPeriodText.setText(text);
+        binding.buttonPeriodText.setText(DateUtils.getNotSelectedDatesText(currentPeriod, weeklyFormat));
 
         // TODO
         presenter.getDataSetWithDates(date, currentPeriod, orgUnitFilter.toString());

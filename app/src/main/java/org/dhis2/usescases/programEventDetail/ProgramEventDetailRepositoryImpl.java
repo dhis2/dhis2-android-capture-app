@@ -120,22 +120,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
                     EventModel.TABLE + POINT + EventModel.Columns.LAST_UPDATED + DESC + pageQuery;
 
             return briteDatabase.createQuery(EventModel.TABLE, String.format(selectEventWithProgramUidAndDates, programUid == null ? "" : programUid))
-                    .mapToList(cursor -> {
-                        EventModel eventModel = EventModel.create(cursor);
-
-                        Cursor program = briteDatabase.query(SELECT + ALL + FROM + ProgramModel.TABLE +
-                                WHERE + ProgramModel.Columns.UID + EQUAL + QUESTION_MARK, programUid);
-                        if (program != null && program.moveToFirst()) {
-                            ProgramModel programModel = ProgramModel.create(program);
-                            if (DateUtils.getInstance().hasExpired(eventModel, programModel.expiryDays(), programModel.completeEventsExpiryDays(), programModel.expiryPeriodType())) {
-                                ContentValues contentValues = eventModel.toContentValues();
-                                contentValues.put(EventModel.Columns.STATUS, EventStatus.SKIPPED.toString());
-                                briteDatabase.update(EventModel.TABLE, contentValues, "uid = ?", eventModel.uid());
-                            }
-                            program.close();
-                        }
-                        return eventModel;
-                    }).toFlowable(BackpressureStrategy.LATEST);
+                    .mapToList(cursor -> getEventFromCursor(cursor, programUid)).toFlowable(BackpressureStrategy.LATEST);
         }
     }
 
@@ -196,7 +181,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
         }
     }
 
-    private EventModel getEventFromCursor(Cursor cursor, String programUid){
+    private EventModel getEventFromCursor(Cursor cursor, String programUid) {
         EventModel eventModel = EventModel.create(cursor);
 
         Cursor program = briteDatabase.query(SELECT + ALL + FROM + ProgramModel.TABLE +

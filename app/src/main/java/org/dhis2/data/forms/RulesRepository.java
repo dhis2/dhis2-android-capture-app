@@ -12,6 +12,7 @@ import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramRuleActionModel;
 import org.hisp.dhis.android.core.program.ProgramRuleActionType;
@@ -54,8 +55,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-
-import javax.annotation.Nonnull;
 
 import androidx.annotation.NonNull;
 import io.reactivex.BackpressureStrategy;
@@ -629,11 +628,13 @@ public final class RulesRepository {
                 ).toFlowable(BackpressureStrategy.LATEST);
     }
 
-    @Nonnull
-    private String getOrgUnitCode(String orgUnitUid) {
+    @NonNull
+    public String getOrgUnitCode(String orgUnitUid) {
         String ouCode = "";
-        Cursor cursor = briteDatabase.query("SELECT code FROM OrganisationUnit WHERE uid = ? LIMIT 1", orgUnitUid);
-        if (cursor != null && cursor.moveToFirst() && cursor.getString(0) != null) {
+        Cursor cursor = briteDatabase.query(SELECT + OrganisationUnitModel.Columns.CODE +
+                FROM + OrganisationUnitModel.TABLE + WHERE + OrganisationUnitModel.Columns.UID +
+                EQUAL + QUESTION_MARK + LIMIT_1, orgUnitUid);
+        if (cursor != null && cursor.moveToFirst()) {
             ouCode = cursor.getString(0);
             cursor.close();
         }

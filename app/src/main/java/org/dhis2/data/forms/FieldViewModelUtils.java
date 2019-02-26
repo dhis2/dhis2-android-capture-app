@@ -10,18 +10,18 @@ import androidx.annotation.NonNull;
 import static android.text.TextUtils.isEmpty;
 
 public class FieldViewModelUtils {
-    public String uid;
-    public String label;
-    public ValueType valueType;
-    public boolean mandatory;
-    public String optionSetUid;
-    public String dataValue;
-    public String optionCodeName;
-    public String section;
-    public Boolean allowFutureDates;
-    public EventStatus eventStatus;
-    public String formLabel;
-    public String description;
+    private String uid;
+    private String label;
+    private ValueType valueType;
+    private boolean mandatory;
+    private String optionSetUid;
+    private String dataValue;
+    private String optionCodeName;
+    private String section;
+    private Boolean allowFutureDates;
+    private EventStatus eventStatus;
+    private String formLabel;
+    private String description;
 
     public FieldViewModelUtils(@NonNull Cursor cursor) {
         uid = cursor.getString(0);
@@ -39,5 +39,53 @@ public class FieldViewModelUtils {
         if (!isEmpty(optionCodeName)) {
             dataValue = optionCodeName;
         }
+    }
+
+    public String getUid() {
+        return uid;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public ValueType getValueType() {
+        return valueType;
+    }
+
+    public boolean isMandatory() {
+        return mandatory;
+    }
+
+    public String getOptionSetUid() {
+        return optionSetUid;
+    }
+
+    public String getDataValue() {
+        return dataValue;
+    }
+
+    public String getOptionCodeName() {
+        return optionCodeName;
+    }
+
+    public String getSection() {
+        return section;
+    }
+
+    public Boolean getAllowFutureDates() {
+        return allowFutureDates;
+    }
+
+    public EventStatus getEventStatus() {
+        return eventStatus;
+    }
+
+    public String getFormLabel() {
+        return formLabel;
+    }
+
+    public String getDescription() {
+        return description;
     }
 }

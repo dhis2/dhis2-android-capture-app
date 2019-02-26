@@ -52,7 +52,6 @@ public class TeiProgramListActivity extends ActivityGlobalAbstract implements Te
     protected void onResume() {
         super.onResume();
         presenter.init(this);
-
     }
 
     @Override
@@ -87,7 +86,7 @@ public class TeiProgramListActivity extends ActivityGlobalAbstract implements Te
 
     @Override
     public void goToEnrollmentScreen(String enrollmentUid, String programUid) {
-        SetProgramTheme(presenter.getProgramColor(programUid));
+        setProgramTheme(presenter.getProgramColor(programUid));
         Intent data = new Intent();
         data.putExtra("GO_TO_ENROLLMENT", enrollmentUid);
         setResult(RESULT_OK, data);
@@ -98,7 +97,7 @@ public class TeiProgramListActivity extends ActivityGlobalAbstract implements Te
     @Override
     public void changeCurrentProgram(String program) {
         if (program != null)
-            SetProgramTheme(presenter.getProgramColor(program));
+            setProgramTheme(presenter.getProgramColor(program));
         Intent data = new Intent();
         data.putExtra("CHANGE_PROGRAM", program);
         setResult(RESULT_OK, data);
@@ -106,7 +105,7 @@ public class TeiProgramListActivity extends ActivityGlobalAbstract implements Te
         finish();
     }
 
-    private void SetProgramTheme(String color) {
+    private void setProgramTheme(String color) {
         int programTheme = ColorUtils.getThemeFromColor(color);
         int programColor = ColorUtils.getColorFrom(color,
                 ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY));
@@ -118,38 +117,11 @@ public class TeiProgramListActivity extends ActivityGlobalAbstract implements Te
             binding.toolbar.setBackgroundColor(programColor);
         } else {
             prefs.edit().remove(Constants.PROGRAM_THEME).apply();
-            int colorPrimary;
-            switch (prefs.getInt(Constants.THEME, R.style.AppTheme)) {
-                case R.style.AppTheme:
-                    colorPrimary = R.color.colorPrimary;
-                    break;
-                case R.style.RedTheme:
-                    colorPrimary = R.color.colorPrimaryRed;
-                    break;
-                case R.style.OrangeTheme:
-                    colorPrimary = R.color.colorPrimaryOrange;
-                    break;
-                case R.style.GreenTheme:
-                    colorPrimary = R.color.colorPrimaryGreen;
-                    break;
-                default:
-                    colorPrimary = R.color.colorPrimary;
-                    break;
-            }
+            int colorPrimary = getPrimaryColorFromTheme();
             binding.toolbar.setBackgroundColor(ContextCompat.getColor(this, colorPrimary));
         }
 
         binding.executePendingBindings();
-        setTheme(prefs.getInt(Constants.PROGRAM_THEME, prefs.getInt(Constants.THEME, R.style.AppTheme)));
-
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
-            Window window = getWindow();
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            TypedValue typedValue = new TypedValue();
-            TypedArray a = obtainStyledAttributes(typedValue.data, new int[]{R.attr.colorPrimaryDark});
-            int colorToReturn = a.getColor(0, 0);
-            a.recycle();
-            window.setStatusBarColor(colorToReturn);
-        }
+        applyColors();
     }
 }

@@ -4,7 +4,6 @@ import android.app.DatePickerDialog;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.widget.RelativeLayout;
 
 import java.util.Calendar;
@@ -51,12 +50,6 @@ public abstract class FieldLayout extends RelativeLayout {
         } else
             setBackgroundColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY));
     }*/
-
-    public void nextFocus(View view) {
-        View nextView;
-        if ((nextView = view.focusSearch(FOCUS_DOWN)) != null)
-            nextView.requestFocus();
-    }
 
     protected DatePickerDialog setUpDatePickerDialog(Date date, Calendar selectedCalendar, boolean allowFutureDates,
                                                      DatePickerDialog.OnDateSetListener onDateSetListener) {

@@ -172,25 +172,13 @@ public class TeiDataDetailPresenterImpl implements TeiDataDetailContracts.TeiDat
 
     @Override
     public void onLocationClick() {
-        if (ActivityCompat.checkSelfPermission(view.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(view.getAbstractActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)) {
-                // TODO CRIS:  Show an expanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
-
-            } else {
-                ActivityCompat.requestPermissions(view.getAbstractActivity(),
-                        new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
-                        ACCESS_COARSE_LOCATION_PERMISSION_REQUEST);
-            }
-            return;
+        if (view.checkLocationPermission()) {
+            mFusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
+                if (location != null) {
+                    saveLocation(location.getLatitude(), location.getLongitude());
+                }
+            });
         }
-        mFusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
-            if (location != null) {
-                saveLocation(location.getLatitude(), location.getLongitude());
-            }
-        });
     }
 
     @Override
@@ -211,5 +199,15 @@ public class TeiDataDetailPresenterImpl implements TeiDataDetailContracts.TeiDat
                                 Timber::e
                         )
         );
+    }
+
+    @Override
+    public void onDettach() {
+        disposable.clear();
+    }
+
+    @Override
+    public void displayMessage(String message) {
+        view.displayMessage(message);
     }
 }

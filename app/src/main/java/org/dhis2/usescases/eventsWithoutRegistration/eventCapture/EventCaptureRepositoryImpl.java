@@ -7,6 +7,7 @@ import android.database.Cursor;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.R;
+import org.dhis2.data.forms.FieldViewModelUtils;
 import org.dhis2.data.forms.FormRepository;
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
@@ -42,8 +43,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-
-import javax.annotation.Nonnull;
 
 import androidx.annotation.NonNull;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -399,21 +398,12 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     @NonNull
     private FieldViewModel transform(@NonNull Cursor cursor) {
-        String uid = cursor.getString(0);
-        String dataValue = cursor.getString(5);
-        String optionCodeName = cursor.getString(6);
-        EventStatus eventStatus = EventStatus.valueOf(cursor.getString(9));
-        String formName = cursor.getString(10);
-        String description = cursor.getString(11);
-        if (!isEmpty(optionCodeName)) {
-            dataValue = optionCodeName;
-        }
-
+        FieldViewModelUtils fieldViewModelUtils = new FieldViewModelUtils(cursor);
         ValueTypeDeviceRenderingModel fieldRendering = null;
         try {
             Cursor rendering = briteDatabase.query("SELECT ValueTypeDeviceRendering.* FROM ValueTypeDeviceRendering" +
                     " JOIN ProgramStageDataElement ON ProgramStageDataElement.uid = ValueTypeDeviceRendering.uid" +
-                    " WHERE ProgramStageDataElement.dataElement = ?", uid);
+                    " WHERE ProgramStageDataElement.dataElement = ?", fieldViewModelUtils.getUid());
             if (rendering != null) {
                 if (rendering.moveToFirst())
                     fieldRendering = ValueTypeDeviceRenderingModel.create(rendering);
@@ -424,10 +414,12 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         }
 
 
-        return fieldFactory.create(uid, formName == null ? cursor.getString(1) : formName,
+        return fieldFactory.create(fieldViewModelUtils.getUid(),
+                fieldViewModelUtils.getFormLabel() == null ? cursor.getString(1) : fieldViewModelUtils.getFormLabel(),
                 ValueType.valueOf(cursor.getString(2)), cursor.getInt(3) == 1,
-                cursor.getString(4), dataValue, cursor.getString(7), cursor.getInt(8) == 1,
-                isEnrollmentOpen() && eventStatus == EventStatus.ACTIVE && accessDataWrite, null, description, fieldRendering);
+                cursor.getString(4), fieldViewModelUtils.getDataValue(), cursor.getString(7), cursor.getInt(8) == 1,
+                isEnrollmentOpen() && fieldViewModelUtils.getEventStatus() == EventStatus.ACTIVE && accessDataWrite,
+                null, fieldViewModelUtils.getDescription(), fieldRendering);
     }
 
     @NonNull
@@ -599,7 +591,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                     Date eventDate = parseDate(cursor.getString(3));
                     Date dueDate = cursor.isNull(4) ? eventDate : parseDate(cursor.getString(4));
                     String orgUnit = cursor.getString(5);
-                    String orgUnitCode = getOrgUnitCode(orgUnit);
+                    String orgUnitCode = formRepository.getOrgUnitCode(orgUnit);
                     String programStageName = cursor.getString(6);
                     RuleEvent.Status status = RuleEvent.Status.valueOf(cursor.getString(2));
 
@@ -616,18 +608,6 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                             .build();
 
                 }).toFlowable(BackpressureStrategy.LATEST);
-    }
-
-    @Nonnull
-    private String getOrgUnitCode(String orgUnitUid) {
-        String ouCode = "";
-        Cursor cursor = briteDatabase.query(SELECT + OrganisationUnitModel.Columns.UID + FROM + OrganisationUnitModel.TABLE +
-                WHERE + OrganisationUnitModel.Columns.UID + EQUAL + QUESTION_MARK + LIMIT_1, orgUnitUid);
-        if (cursor != null && cursor.moveToFirst() && cursor.getString(0) != null) {
-            ouCode = cursor.getString(0);
-            cursor.close();
-        }
-        return ouCode;
     }
 
     private static final String QUERY_VALUES = "SELECT " +

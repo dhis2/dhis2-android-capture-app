@@ -47,6 +47,8 @@ public class AbstractActivityContracts {
         void showDescription(String description);
 
         SharedPreferences getSharedPreferences();
+
+        boolean checkLocationPermission();
     }
 
     public interface Presenter {

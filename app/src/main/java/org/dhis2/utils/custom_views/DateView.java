@@ -18,7 +18,7 @@ import timber.log.Timber;
 /**
  * QUADRAM. Created by frodriguez on 1/15/2018.
  */
-
+@SuppressWarnings("squid:MaximumInheritanceDepth")
 public class DateView extends GlobalDateView {
 
     private Calendar selectedCalendar;

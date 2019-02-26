@@ -1,18 +1,17 @@
 package org.dhis2.usescases.qrCodes.eventsworegistration;
 
 import android.annotation.SuppressLint;
-import androidx.annotation.NonNull;
 
 import org.dhis2.data.qr.QRInterface;
 
+import androidx.annotation.NonNull;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
-public class QrEventsWORegistrationPresenter implements QrEventsWORegistrationContracts.Presenter {
+public class QrEventsWORegistrationPresenter extends QrGlobalPresenter implements QrEventsWORegistrationContracts.Presenter {
 
     private final QRInterface qrInterface;
-    private QrEventsWORegistrationContracts.View view;
 
     QrEventsWORegistrationPresenter(QRInterface qrInterface) {
         this.qrInterface = qrInterface;
@@ -20,7 +19,7 @@ public class QrEventsWORegistrationPresenter implements QrEventsWORegistrationCo
 
     @SuppressLint({"RxLeakedSubscription", "CheckResult"})
     public void generateQrs(@NonNull String eventUid, @NonNull QrEventsWORegistrationContracts.View view) {
-        this.view = view;
+        this.qrEventWORegistrationView = view;
         qrInterface.eventWORegistrationQRs(eventUid)
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -29,21 +28,4 @@ public class QrEventsWORegistrationPresenter implements QrEventsWORegistrationCo
                         Timber::d
                 );
     }
-
-    @Override
-    public void onBackClick() {
-        if (view != null)
-            view.onBackClick();
-    }
-
-    @Override
-    public void onPrevQr() {
-        view.onPrevQr();
-    }
-
-    @Override
-    public void onNextQr() {
-        view.onNextQr();
-    }
-
 }

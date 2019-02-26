@@ -1,5 +1,9 @@
 package org.dhis2.utils;
 
+import android.content.Context;
+import android.graphics.drawable.Drawable;
+
+import org.dhis2.R;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.period.PeriodType;
@@ -15,6 +19,13 @@ import java.util.concurrent.TimeUnit;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+
+import static org.dhis2.utils.Period.DAILY;
+import static org.dhis2.utils.Period.MONTHLY;
+import static org.dhis2.utils.Period.NONE;
+import static org.dhis2.utils.Period.WEEKLY;
+import static org.dhis2.utils.Period.YEARLY;
 
 /**
  * QUADRAM. Created by ppajuelo on 16/01/2018.
@@ -32,6 +43,8 @@ public class DateUtils {
     public static final String DATE_FORMAT_EXPRESSION = "yyyy-MM-dd";
     public static final String DATE_FORMAT_WEEK = "w yyyy";
     public static final String DATE_FORMAT_MONTH = "MMM yyyy";
+    public static final String DATE_FORMAT_MONTH2 = "yyyy-MM";
+    public static final String DATE_FORMAT_YEAR = "yyyy";
 
     public Date[] getDateFromDateAndPeriod(Date date, Period period) {
         switch (period) {
@@ -934,7 +947,7 @@ public class DateUtils {
                 );
                 break;
             case Yearly:
-                formattedDate = new SimpleDateFormat("yyyy", locale).format(initDate);
+                formattedDate = new SimpleDateFormat(DATE_FORMAT_YEAR, locale).format(initDate);
                 break;
             case FinancialApril:
                 formattedDate = String.format(periodString,
@@ -994,5 +1007,90 @@ public class DateUtils {
         cal.set(Calendar.MILLISECOND, 0);
 
         return cal;
+    }
+
+    public static String setSelectedDatesTextToShow(Period currentPeriod,
+                                                    List<Date> selectedDates,
+                                                    List<Date> chosenDateWeek,
+                                                    List<Date> chosenDateMonth,
+                                                    List<Date> chosenDateYear,
+                                                    SimpleDateFormat weeklyFormat) {
+        SimpleDateFormat monthFormat = new SimpleDateFormat(DATE_FORMAT_MONTH2, Locale.getDefault());
+        SimpleDateFormat yearFormat = new SimpleDateFormat(DATE_FORMAT_YEAR, Locale.getDefault());
+        String textToShow;
+        if (currentPeriod == WEEKLY) {
+            textToShow = weeklyFormat.format(selectedDates.get(0)) + ", " + yearFormat.format(selectedDates.get(0));
+            if (selectedDates.size() > 1)
+                textToShow += "... " /*+ weeklyFormat.format(selectedDates.get(1))*/;
+        } else if (currentPeriod == MONTHLY) {
+            textToShow = monthFormat.format(selectedDates.get(0));
+            if (selectedDates.size() > 1)
+                textToShow += "... " /*+ monthFormat.format(selectedDates.get(1))*/;
+        } else {
+            textToShow = yearFormat.format(selectedDates.get(0));
+            if (selectedDates.size() > 1)
+                textToShow += "... " /*+ yearFormat.format(selectedDates.get(1))*/;
+        }
+
+        return textToShow;
+    }
+
+    public static String getNotSelectedDatesText(Period currentPeriod, SimpleDateFormat weeklyFormat) {
+        ArrayList<Date> date = new ArrayList<>();
+        date.add(new Date());
+
+        SimpleDateFormat monthFormat = new SimpleDateFormat(DATE_FORMAT_MONTH2, Locale.getDefault());
+        SimpleDateFormat yearFormat = new SimpleDateFormat(DATE_FORMAT_YEAR, Locale.getDefault());
+
+        String text = "";
+
+        switch (currentPeriod) {
+            case WEEKLY:
+                text = weeklyFormat.format(date.get(0)) + ", " + yearFormat.format(date.get(0));
+                break;
+            case MONTHLY:
+                text = monthFormat.format(date.get(0));
+                break;
+            case YEARLY:
+                text = yearFormat.format(date.get(0));
+                break;
+            default:
+                break;
+        }
+
+        return text;
+    }
+
+    public static Drawable getCurrentPeriodDrawable(Context context, Period currentPeriod) {
+        switch (currentPeriod) {
+            case NONE:
+                return ContextCompat.getDrawable(context, R.drawable.ic_view_day);
+            case DAILY:
+                return ContextCompat.getDrawable(context, R.drawable.ic_view_week);
+            case WEEKLY:
+                return ContextCompat.getDrawable(context, R.drawable.ic_view_month);
+            case MONTHLY:
+                return ContextCompat.getDrawable(context, R.drawable.ic_view_year);
+            case YEARLY:
+                return ContextCompat.getDrawable(context, R.drawable.ic_view_none);
+            default:
+                return null;
+        }
+    }
+
+    public static Period getCurrentPeriod(Period currentPeriod) {
+        switch (currentPeriod) {
+            case NONE:
+                return DAILY;
+            case DAILY:
+                return WEEKLY;
+            case WEEKLY:
+                return MONTHLY;
+            case MONTHLY:
+                return YEARLY;
+            case YEARLY:
+            default:
+                return NONE;
+        }
     }
 }

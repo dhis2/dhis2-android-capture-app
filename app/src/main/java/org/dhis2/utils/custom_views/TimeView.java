@@ -20,7 +20,7 @@ import timber.log.Timber;
 /**
  * QUADRAM. Created by frodriguez on 1/15/2018.
  */
-
+@SuppressWarnings("squid:MaximumInheritanceDepth")
 public class TimeView extends GlobalDateView {
 
     public TimeView(Context context) {
