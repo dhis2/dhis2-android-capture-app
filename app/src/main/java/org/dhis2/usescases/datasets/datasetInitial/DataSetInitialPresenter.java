@@ -6,6 +6,8 @@ import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.period.PeriodType;
 
+import java.util.Locale;
+
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
@@ -76,9 +78,10 @@ public class DataSetInitialPresenter implements DataSetInitialContract.Presenter
     public void onActionButtonClick() {
         Bundle bundle = DataSetTableActivity.getBundle(
                 view.getDataSetUid(),
-                view.getSelectedOrgUnit(),
+                view.getSelectedOrgUnit().uid(),
+                view.getSelectedOrgUnit().name(),
                 view.getPeriodType(),
-                DateUtils.databaseDateFormat().format(view.getSelectedPeriod()),
+                DateUtils.getInstance().getPeriodUIString(PeriodType.valueOf(view.getPeriodType()), view.getSelectedPeriod(), Locale.getDefault()),
                 view.getSelectedCatOptions()
         );
         view.startActivity(DataSetTableActivity.class, bundle, true, false, null);

@@ -154,8 +154,8 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
     }
 
     @Override
-    public String getSelectedOrgUnit() {
-        return selectedOrgUnit.uid();
+    public OrganisationUnitModel getSelectedOrgUnit() {
+        return selectedOrgUnit;
     }
 
     @Override

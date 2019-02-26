@@ -74,6 +74,7 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
 
                     String orgUnitName = "";
                     String periodName = "";
+                    String periodType = "";
                     String catOptCombName = "";
                     State state = State.SYNCED;
                     Cursor orgUnitCursor = briteDatabase.query("SELECT OrganisationUnit.displayName FROM OrganisationUnit WHERE uid = ?", organisationUnitUid);
@@ -85,6 +86,7 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
                     Cursor periodCursor = briteDatabase.query("SELECT Period.* FROM Period WHERE Period.periodId = ?", period);
                     if (periodCursor != null && periodCursor.moveToFirst()) {
                         PeriodModel periodModel = PeriodModel.create(periodCursor);
+                        periodType = periodModel.periodType().name();
                         periodName = DateUtils.getInstance().getPeriodUIString(periodModel.periodType(), periodModel.startDate(), Locale.getDefault());
                         periodCursor.close();
                     }
@@ -128,7 +130,7 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
                             state = toPost;
                     }
 
-                    return DataSetDetailModel.create(organisationUnitUid, categoryOptionCombo, period, orgUnitName, catOptCombName, periodName, state);
+                    return DataSetDetailModel.create(organisationUnitUid, categoryOptionCombo, period, orgUnitName, catOptCombName, periodName, state, periodType);
                 }).toFlowable(BackpressureStrategy.LATEST);
     }
 }

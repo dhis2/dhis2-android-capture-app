@@ -44,6 +44,14 @@
                 android:textSize="20sp"
                 tools:text="DATA_SET_TITLE" />
 
+            <ImageView
+                android:id="@+id/more"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="12dp"
+                android:onClick="@{()->presenter.optionsClick()}"
+                app:srcCompat="@drawable/ic_arrow_drop_down_black_24dp"/>
+
         </LinearLayout>
 
         <com.google.android.material.tabs.TabLayout
@@ -63,7 +71,135 @@
             android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tab_layout"
-            tools:background="@color/red_060" />
+            app:layout_constraintVertical_bias="1.0"
+            tools:background="@color/red_060"
+            tools:layout_editor_absoluteX="0dp" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/selector_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?colorPrimary"
+            android:visibility="gone"
+            app:layout_constraintTop_toTopOf="@+id/viewPager">
+
+            <TextView
+                android:id="@+id/textView4"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:gravity="center|start"
+                android:textSize="12sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="@string/lorem" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/tableRecycler"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView4">
+
+            </androidx.recyclerview.widget.RecyclerView>
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <LinearLayout
+            android:id="@+id/infoContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="?colorPrimary"
+            android:visibility="gone"
+            android:padding="10dp"
+            tools:visibility="visible"
+            app:layout_constraintTop_toTopOf="@+id/tab_layout">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:baselineAligned="false"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/programStageIcon"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:layout_marginBottom="8dp"
+                    android:padding="7dp"
+                    android:tint="?colorPrimaryDark"
+                    app:imageBackground="@{ @drawable/photo_temp }"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:srcCompat="@drawable/ic_clinical_f_outline"
+                    tools:background="@drawable/photo_temp"
+                    tools:tint="@color/black_de0" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:onClick="@{() -> presenter.onRefreshClick()}"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_sync" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/dataSetOrgUnitInputLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/org_unit"
+                android:textColorHint="@color/greyish">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/dataSetOrgUnitEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:focusable="false"
+                    android:onClick="@{()->presenter.onOrgUnitSelectorClick()}"
+                    android:textColor="@color/white"
+                    android:textSize="15sp"
+                    tools:text="Ngelehun CHC" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/dataSetPeriodInputLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/report_period"
+                android:textColorHint="@color/greyish">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/dataSetPeriodEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:focusable="false"
+                    android:onClick="@{()->presenter.onReportPeriodClick()}"
+                    android:textColor="@color/white"
+                    android:textSize="15sp"
+                    tools:text="June 2018" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <LinearLayout
+                android:id="@+id/catComboContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+
+        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
