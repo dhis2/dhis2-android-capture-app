@@ -94,14 +94,16 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
 
         });
 
+        activity.getPresenter().initCompletionPercentage(sectionSelectorAdapter.completionPercentage());
+        activity.getPresenter().subscribeToSection();
+
         return binding.getRoot();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        activity.getPresenter().initCompletionPercentage(sectionSelectorAdapter.completionPercentage());
-        activity.getPresenter().subscribeToSection();
+
     }
 
     public void setSectionTitle(DataEntryArguments arguments, FormSectionViewModel formSectionViewModel) {

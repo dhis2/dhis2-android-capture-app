@@ -127,6 +127,8 @@ public class ProgramPresenter implements ProgramContract.Presenter {
 
     @Override
     public void dispose() {
+        if(!myOrgs.isEmpty())
+            myOrgs.clear();
         compositeDisposable.clear();
     }
 

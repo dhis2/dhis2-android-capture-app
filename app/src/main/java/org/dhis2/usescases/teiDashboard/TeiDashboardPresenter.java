@@ -108,8 +108,8 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
-                            (dashboardProgramModel) -> {
-                                this.dashboardProgramModel = dashboardProgramModel;
+                            dashboardModel -> {
+                                this.dashboardProgramModel = dashboardModel;
                                 this.programWritePermission = dashboardProgramModel.getCurrentProgram().accessDataWrite();
                                 this.teType = dashboardProgramModel.getTei().trackedEntityType();
                                 view.setData(dashboardProgramModel);
@@ -127,11 +127,16 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                     metadataRepository.getTeiActivePrograms(teUid),
                     metadataRepository.getTEIEnrollments(teUid),
                     DashboardProgramModel::new)
+                    .flatMap(dashboardProgramModel1 -> metadataRepository.getObjectStylesForPrograms(dashboardProgramModel1.getEnrollmentProgramModels())
+                    .map(stringObjectStyleMap -> {
+                        dashboardProgramModel1.setProgramsObjectStyles(stringObjectStyleMap);
+                        return dashboardProgramModel1;
+                    }))
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
-                            dashboardProgramModel -> {
-                                this.dashboardProgramModel = dashboardProgramModel;
+                            dashboardModel -> {
+                                this.dashboardProgramModel = dashboardModel;
                                 this.teType = dashboardProgramModel.getTei().trackedEntityType();
                                 view.setData(dashboardProgramModel);
                             },

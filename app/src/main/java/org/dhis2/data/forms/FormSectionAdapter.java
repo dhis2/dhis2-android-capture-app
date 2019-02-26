@@ -35,7 +35,7 @@ public class FormSectionAdapter extends FragmentStatePagerAdapter {
                     .forEnrollment(viewModel.uid()));
         } else if (viewModel.type().equals(FormSectionViewModel.Type.PROGRAM_STAGE)) {
             return DataEntryFragment.create(DataEntryArguments
-                    .forEvent(viewModel.uid()));
+                    .forEvent(viewModel.uid(),viewModel.renderType()));
         } else if (viewModel.type().equals(FormSectionViewModel.Type.SECTION)) {
             return DataEntryFragment.create(DataEntryArguments
                     .forEventSection(viewModel.uid(), viewModel.sectionUid(), viewModel.renderType()));

@@ -7,8 +7,10 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import org.dhis2.R;
+import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ItemProgramStageBinding;
 
+import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
 import java.util.List;
@@ -21,13 +23,13 @@ import java.util.List;
 public class ProgramStageSelectionAdapter extends RecyclerView.Adapter<ProgramStageSelectionViewHolder> {
 
     private ProgramStageSelectionContract.Presenter presenter;
-    private List<ProgramStageModel> programStageModels;
+    private List<Pair<ProgramStageModel, ObjectStyleModel>> programStageModels;
 
     ProgramStageSelectionAdapter(@NonNull ProgramStageSelectionContract.Presenter presenter) {
         this.presenter = presenter;
     }
 
-    public void setProgramStageModels(List<ProgramStageModel> programStageModels) {
+    public void setProgramStageModels(List<Pair<ProgramStageModel, ObjectStyleModel>> programStageModels) {
         this.programStageModels = programStageModels;
     }
 
@@ -40,8 +42,9 @@ public class ProgramStageSelectionAdapter extends RecyclerView.Adapter<ProgramSt
 
     @Override
     public void onBindViewHolder(ProgramStageSelectionViewHolder holder, int position) {
-        ProgramStageModel programStageModel = programStageModels.get(position);
-        holder.bind(presenter, programStageModel);
+        ProgramStageModel programStageModel = programStageModels.get(position).val0();
+        ObjectStyleModel objectStyleModel = programStageModels.get(position).val1();
+        holder.bind(presenter, programStageModel, objectStyleModel);
     }
 
     @Override

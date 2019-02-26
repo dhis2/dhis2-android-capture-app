@@ -33,7 +33,7 @@ import timber.log.Timber;
 
 public class OptionSetDialog extends DialogFragment {
 
-    static OptionSetDialog instace;
+    private static OptionSetDialog instace;
     private DialogOptionSetBinding binding;
     private CompositeDisposable disposable;
     //1st param is text to search, 2nd param is uid of optionSet,3rd param is page
@@ -52,6 +52,10 @@ public class OptionSetDialog extends DialogFragment {
             instace = new OptionSetDialog();
         }
         return instace;
+    }
+
+    public static Boolean isCreated(){
+        return instace != null;
     }
 
     @Override
