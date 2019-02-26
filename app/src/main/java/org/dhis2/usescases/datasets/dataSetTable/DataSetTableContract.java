@@ -58,13 +58,13 @@ public class DataSetTableContract {
 
         void onBackClick();
 
-        void init(View view, String orgUnitUid, String periodTypeName, String catCombo, String periodFinalDate);
+        void init(View view, String orgUnitUid, String periodTypeName, String catCombo, String periodFinalDate, String periodId);
 
         String getOrgUnitUid();
         String getPeriodTypeName();
         String getPeriodFinalDate();
         String getCatCombo();
-
+        String getPeriodId();
         void optionsClick();
 
         void onOrgUnitSelectorClick();

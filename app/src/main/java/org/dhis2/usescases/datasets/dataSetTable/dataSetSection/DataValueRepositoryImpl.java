@@ -300,7 +300,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
     @Override
     public Flowable<List<DataSetTableModel>> getDataValues(String orgUnitUid, String periodType, String initPeriodType, String catOptionComb, String section) {
         List<DataSetTableModel> listData = new ArrayList<>();
-        return briteDatabase.createQuery(DataValueModel.TABLE, DATA_VALUES, orgUnitUid, catOptionComb,dataSetUid, periodType, section)
+        return briteDatabase.createQuery(DataValueModel.TABLE, DATA_VALUES, orgUnitUid, catOptionComb,dataSetUid, initPeriodType, section)
                 .mapToList(cursor -> {
 
                     for (DataSetTableModel dataValue : listData) {

@@ -49,13 +49,13 @@ public class DataValuePresenter implements DataValueContract.Presenter{
 
     private List<DataSetTableModel> dataValuesChanged;
     private DataTableModel dataTableModel;
-
+    private String periodId;
     public DataValuePresenter(DataValueRepository repository){
         this.repository = repository;
     }
 
     @Override
-    public void init(DataValueContract.View view, String orgUnitUid, String periodTypeName, String periodFinalDate, String attributeOptionCombo, String section) {
+    public void init(DataValueContract.View view, String orgUnitUid, String periodTypeName, String periodFinalDate, String attributeOptionCombo, String section, String periodId) {
         compositeDisposable = new CompositeDisposable();
         this.view = view;
         dataValuesChanged = new ArrayList<>();
@@ -63,7 +63,7 @@ public class DataValuePresenter implements DataValueContract.Presenter{
         this.periodTypeName = periodTypeName;
         this.periodFinalDate = periodFinalDate;
         this.attributeOptionCombo = attributeOptionCombo;
-
+        this.periodId = periodId;
         compositeDisposable.add(
                 Flowable.zip(
                         repository.getDataElements(section),
@@ -78,11 +78,11 @@ public class DataValuePresenter implements DataValueContract.Presenter{
                         )
         );
 
-        if(periodFinalDate == null)
+        //if(periodFinalDate == null)
             compositeDisposable.add(
                     Flowable.zip(
-                            repository.getPeriod(periodTypeName),
-                            repository.getDataInputPeriod(periodTypeName),
+                            repository.getPeriod(periodId),
+                            repository.getDataInputPeriod(periodId),
                             Pair::create
                     )
 
@@ -187,7 +187,7 @@ public class DataValuePresenter implements DataValueContract.Presenter{
                 repository.getCatOptionCombo()
                         .flatMap(data ->
                                 Flowable.zip(
-                                        repository.getDataValues(orgUnitUid, periodTypeName, periodFinalDate, attributeOptionCombo, section),
+                                        repository.getDataValues(orgUnitUid, periodTypeName, periodId, attributeOptionCombo, section),
                                         repository.getDataSet(),
                                         repository.getGreyedFields(getUidCatOptionsCombo(data), section),
                                         repository.getMandatoryDataElement(getUidCatOptionsCombo(data)),

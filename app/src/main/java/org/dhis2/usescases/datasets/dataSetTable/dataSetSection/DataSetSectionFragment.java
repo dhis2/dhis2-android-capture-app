@@ -71,6 +71,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
     @Inject
     DataValueContract.Presenter presenterFragment;
 
+    private TableView tableView;
     @NonNull
     public static DataSetSectionFragment create(@NonNull String sectionUid, boolean accessDataWrite, String dataSetUid) {
         Bundle bundle = new Bundle();
@@ -96,8 +97,17 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_dataset_section, container, false);
         adapter = new DataSetTableAdapter(getAbstracContext());
-        binding.tableView.setAdapter(adapter);
-        binding.tableView.setEnabled(false);
+
+        tableView = new TableView(getContext());
+        tableView.setBackgroundColor(getResources().getColor(R.color.white));
+        tableView.setUnSelectedColor(getResources().getColor(R.color.table_bg));
+        tableView.setSelectedColor(getResources().getColor(R.color.colorPrimaryLight));
+        tableView.setShadowColor(getResources().getColor(R.color.rfab__color_shadow));
+        tableView.setRowHeaderWidth(120);
+        binding.tableLayout.addView(tableView);
+        /*binding.tableView.setAdapter(adapter);
+        binding.tableView.setEnabled(false);*/
+        tableView.setAdapter(adapter);
         binding.setPresenter(presenterFragment);
         return binding.getRoot();
     }
@@ -108,7 +118,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
         section = getArguments().getString(Constants.DATA_SET_SECTION);
         accessDataWrite = getArguments().getBoolean(Constants.ACCESS_DATA);
         presenterFragment.init(this, presenter.getOrgUnitUid(), presenter.getPeriodTypeName(),
-                presenter.getPeriodFinalDate(), presenter.getCatCombo(), section);
+                presenter.getPeriodFinalDate(), presenter.getCatCombo(), section, presenter.getPeriodId());
         presenterFragment.getData(this, section);
         presenterFragment.initializeProcessor(this);
     }
@@ -133,7 +143,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
         boolean isNumber = true;
         int row = 0, column = 0;
 
-        binding.tableView.setHeaderCount(columnHeaderItems.size());
+        tableView.setHeaderCount(columnHeaderItems.size());
 
         adapter.setShowColumnTotal(dataTableModel.section().showColumnTotals());
         adapter.setShowRowTotal(dataTableModel.section().showRowTotals());
