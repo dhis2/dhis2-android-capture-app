@@ -30,7 +30,7 @@ public class DataSetInitialContract {
         void showCatComboSelector(String catOptionUid, List<CategoryOptionModel> data);
 
         String getDataSetUid();
-        String getSelectedOrgUnit();
+        OrganisationUnitModel getSelectedOrgUnit();
         Date getSelectedPeriod();
         String getSelectedCatOptions();
 

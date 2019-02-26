@@ -119,10 +119,11 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
     }
 
     @Override
-    public void onDataSetClick(String orgUnit, String orgUnitName, String periodType, String initPeriodType, String catOptionComb) {
+    public void onDataSetClick(String orgUnit, String orgUnitName, String periodId, String periodType, String initPeriodType, String catOptionComb) {
         Bundle bundle = new Bundle();
         bundle.putString(Constants.ORG_UNIT, orgUnit);
-        bundle.putString(Constants.ORG_UNIT_NAME, orgUnitName+" - "+initPeriodType);
+        bundle.putString(Constants.ORG_UNIT_NAME, orgUnitName);
+        bundle.putString(Constants.PERIOD_TYPE_DATE, initPeriodType);
         bundle.putString(Constants.PERIOD_TYPE, periodType);
         bundle.putString(Constants.CAT_COMB, catOptionComb);
         bundle.putString(Constants.DATA_SET_UID, view.dataSetUid());
