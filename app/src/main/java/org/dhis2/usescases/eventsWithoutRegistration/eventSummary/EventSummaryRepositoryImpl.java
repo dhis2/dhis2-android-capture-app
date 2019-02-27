@@ -144,14 +144,29 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
             "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'\n" +
             "LIMIT 1;";
 
-    private static final String QUERY_VALUES = "SELECT " +
+   /* private static final String QUERY_VALUES = "SELECT " +
             "  eventDate," +
             "  programStage," +
             "  dataElement," +
             "  value" +
             " FROM TrackedEntityDataValue " +
             "  INNER JOIN Event ON TrackedEntityDataValue.event = Event.uid " +
-            " WHERE event = ? AND value IS NOT NULL AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "';";
+            " WHERE event = ? AND value IS NOT NULL AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "';";*/
+
+    private static final String QUERY_VALUES = "SELECT " +
+            "  Event.eventDate," +
+            "  Event.programStage," +
+            "  TrackedEntityDataValue.dataElement," +
+            "  TrackedEntityDataValue.value," +
+            "  ProgramRuleVariable.useCodeForOptionSet," +
+            "  Option.code," +
+            "  Option.name" +
+            " FROM TrackedEntityDataValue " +
+            "  INNER JOIN Event ON TrackedEntityDataValue.event = Event.uid " +
+            "  INNER JOIN DataElement ON DataElement.uid = TrackedEntityDataValue.dataElement " +
+            "  LEFT JOIN ProgramRuleVariable ON ProgramRuleVariable.dataElement = DataElement.uid " +
+            "  LEFT JOIN Option ON (Option.optionSet = DataElement.optionSet AND Option.code = TrackedEntityDataValue.value) " +
+            " WHERE Event.uid = ? AND value IS NOT NULL AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "';";
 
     private static final String EVENT_QUERY = "SELECT * FROM Event WHERE Event.uid = ? LIMIT 1";
     private static final String PROGRAM_QUERY = "SELECT * FROM Program JOIN ProgramStage ON " +
@@ -419,9 +434,16 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
         return briteDatabase.createQuery(Arrays.asList(EventModel.TABLE,
                 TrackedEntityDataValueModel.TABLE), QUERY_VALUES, eventUid == null ? "" : eventUid)
                 .mapToList(cursor -> {
-                    Date eventDate = parseDate(cursor.getString(0));
-                    return RuleDataValue.create(eventDate, cursor.getString(1),
-                            cursor.getString(2), cursor.getString(3));
+                    Date eventDate = DateUtils.databaseDateFormat().parse(cursor.getString(0));
+                    String programStage = cursor.getString(1);
+                    String dataElement = cursor.getString(2);
+                    String value = cursor.getString(3) != null ? cursor.getString(3) : "";
+                    Boolean useCode = cursor.getInt(4) == 1;
+                    String optionCode = cursor.getString(5);
+                    String optionName = cursor.getString(6);
+                    if (!isEmpty(optionCode) && !isEmpty(optionName))
+                        value = useCode ? optionCode : optionName; //If de has optionSet then check if value should be code or name for program rules
+                    return RuleDataValue.create(eventDate, programStage,dataElement,value);
                 }).toFlowable(BackpressureStrategy.LATEST);
     }
 

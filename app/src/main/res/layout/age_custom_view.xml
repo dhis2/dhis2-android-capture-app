@@ -60,6 +60,42 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:hint="@string/hint_year"
+                android:textColorHint="@color/text_black_808"
+                android:theme="@style/loginInputText">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/input_year"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="date"
+                    android:textColorHint="@color/text_black_333"
+                    tools:text="yyyy" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:hint="@string/hint_month"
+                android:layout_weight="1"
+                android:textColorHint="@color/text_black_808"
+                android:theme="@style/loginInputText">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/input_month"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="date"
+                    android:textColorHint="@color/text_black_333" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
                 android:hint="@string/hint_day"
                 android:textColorHint="@color/text_black_808"
                 android:theme="@style/loginInputText">
@@ -70,40 +106,6 @@
                     android:layout_height="wrap_content"
                     android:inputType="date"
                     android:textColorHint="@color/text_black_333" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:textColorHint="@color/text_black_808"
-                android:theme="@style/loginInputText">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/input_month"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/hint_month"
-                    android:inputType="date"
-                    android:textColorHint="@color/text_black_333" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:textColorHint="@color/text_black_808"
-                android:theme="@style/loginInputText">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/input_year"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/hint_year"
-                    android:inputType="date"
-                    android:textColorHint="@color/text_black_333"
-                    tools:text="01" />
             </com.google.android.material.textfield.TextInputLayout>
 
 

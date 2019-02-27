@@ -297,7 +297,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                                     fieldViewModel.uid() + "." + uid, //fist
                                     displayName + "-" + optionCode, ValueType.TEXT, false,
                                     fieldViewModel.optionSet(), fieldViewModel.value(), fieldViewModel.programStageSection(),
-                                    fieldViewModel.allowFutureDate(), fieldViewModel.editable() == null ? false : fieldViewModel.editable(), renderingType, fieldViewModel.description(), fieldRendering, optionCount,objectStyle));
+                                    fieldViewModel.allowFutureDate(), fieldViewModel.editable() == null ? false : fieldViewModel.editable(), renderingType, fieldViewModel.description(), fieldRendering, optionCount, objectStyle));
 
                             cursor.moveToNext();
                         }
@@ -385,16 +385,17 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
 //        int optionCount = cursor.getInt(14);
         int optionCount = 0;
-        try{
-            Cursor countCursor = briteDatabase.query("SELECT COUNT (uid) FROM Option WHERE optionSet = ?", optionSet);
-            if(countCursor!=null){
-                if(countCursor.moveToFirst())
-                    optionCount = countCursor.getInt(0);
-                countCursor.close();
+        if (!isEmpty(optionSet))
+            try {
+                Cursor countCursor = briteDatabase.query("SELECT COUNT (uid) FROM Option WHERE optionSet = ?", optionSet);
+                if (countCursor != null) {
+                    if (countCursor.moveToFirst())
+                        optionCount = countCursor.getInt(0);
+                    countCursor.close();
+                }
+            } catch (Exception e) {
+                Timber.e(e);
             }
-        }catch (Exception e){
-            Timber.e(e);
-        }
 
 
         ValueTypeDeviceRenderingModel fieldRendering = null;
@@ -423,7 +424,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         return fieldFactory.create(uid, formName == null ? cursor.getString(1) : formName,
                 ValueType.valueOf(cursor.getString(2)), cursor.getInt(3) == 1,
                 optionSet, dataValue, cursor.getString(7), cursor.getInt(8) == 1,
-                isEnrollmentOpen() && eventStatus == EventStatus.ACTIVE && accessDataWrite, null, description, fieldRendering, optionCount,objectStyle);
+                isEnrollmentOpen() && eventStatus == EventStatus.ACTIVE && accessDataWrite, null, description, fieldRendering, optionCount, objectStyle);
     }
 
     @NonNull
@@ -762,13 +763,19 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     }
 
     private static final String QUERY_VALUES = "SELECT " +
-            "  eventDate," +
-            "  programStage," +
-            "  dataElement," +
-            "  value" +
+            "  Event.eventDate," +
+            "  Event.programStage," +
+            "  TrackedEntityDataValue.dataElement," +
+            "  TrackedEntityDataValue.value," +
+            "  ProgramRuleVariable.useCodeForOptionSet," +
+            "  Option.code," +
+            "  Option.name" +
             " FROM TrackedEntityDataValue " +
             "  INNER JOIN Event ON TrackedEntityDataValue.event = Event.uid " +
-            " WHERE event = ? AND value IS NOT NULL AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "';";
+            "  INNER JOIN DataElement ON DataElement.uid = TrackedEntityDataValue.dataElement " +
+            "  LEFT JOIN ProgramRuleVariable ON ProgramRuleVariable.dataElement = DataElement.uid " +
+            "  LEFT JOIN Option ON (Option.optionSet = DataElement.optionSet AND Option.code = TrackedEntityDataValue.value) " +
+            " WHERE Event.uid = ? AND value IS NOT NULL AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "';";
 
     @NonNull
     private Flowable<List<RuleDataValue>> queryDataValues(String eventUid) {
@@ -776,8 +783,16 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 TrackedEntityDataValueModel.TABLE), QUERY_VALUES, eventUid == null ? "" : eventUid)
                 .mapToList(cursor -> {
                     Date eventDate = parseDate(cursor.getString(0));
-                    return RuleDataValue.create(eventDate, cursor.getString(1),
-                            cursor.getString(2), cursor.getString(3));
+                    String programStage = cursor.getString(1);
+                    String dataElement = cursor.getString(2);
+                    String value = cursor.getString(3);
+                    Boolean useCode = cursor.getInt(4) == 1;
+                    String optionCode = cursor.getString(5);
+                    String optionName = cursor.getString(6);
+                    if (!isEmpty(optionCode) && !isEmpty(optionName))
+                        value = useCode ? optionCode : optionName; //If de has optionSet then check if value should be code or name for program rules
+                    return RuleDataValue.create(eventDate, programStage,
+                            dataElement, value);
                 }).toFlowable(BackpressureStrategy.LATEST);
     }
 
