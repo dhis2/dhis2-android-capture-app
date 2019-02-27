@@ -1,12 +1,18 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection;
 
+import android.database.Cursor;
+
 import com.gabrielittner.auto.value.cursor.ColumnName;
 import com.google.auto.value.AutoValue;
 
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel;
+import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel;
+import org.hisp.dhis.android.core.category.CategoryModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
+import org.hisp.dhis.android.core.dataset.DataSetModel;
+import org.hisp.dhis.android.core.dataset.SectionModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,28 +33,32 @@ public abstract class DataTableModel {
         public static final String DATA_ELEMENTS_DISABLED = "dataElementDisabled";
         public static final String COMPULSORY_CELLS = "compulsoryCells";
         public static final String CAT_OPTION_COMBO_CAT_OPTION = "catOptionComboCatOption";
-        public static final String ORDER_LIST_CAT_OPTIONS = "orderListCatOptions";
+        public static final String LIST_CAT_OPTIONS_CAT_COMBO_OPTIONS = "listCatOptionsCatComboOptions";
+        public static final String DATA_SET = "dataSet";
+    }
+
+    public static DataTableModel fromCursor(Cursor cursor){
+        return AutoValue_DataTableModel.createFromCursor(cursor);
+    }
+
+    public static DataTableModel create(SectionModel section, Map<String, List<List<CategoryOptionModel>>> headers, List<DataElementModel> rows,
+                                        List<DataSetTableModel> dataValues,Map<String, List<String>> dataElementDisabled,
+                                        Map<String, List<String>> compulsoryCells, Map<String, List<String>> catOptionComboCatOption,
+                                        Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>> listCatOptionsCatComboOptions, DataSetModel dataSet) {
+        return new AutoValue_DataTableModel(section, headers, rows, dataValues, dataElementDisabled, compulsoryCells, catOptionComboCatOption, listCatOptionsCatComboOptions, dataSet);
     }
 
     @Nullable
     @ColumnName(DataTableModel.Columns.SECTION)
-    public abstract String section();
+    public abstract SectionModel section();
 
     @Nullable
     @ColumnName(DataTableModel.Columns.HEADERS)
-    public abstract Map<String, List<DataElementModel>> headers();
+    public abstract Map<String, List<List<CategoryOptionModel>>> headers();
 
     @Nullable
     @ColumnName(DataTableModel.Columns.ROWS)
-    public abstract Map<String, List<List<CategoryOptionModel>>> rows();
-
-    @Nullable
-    @ColumnName(DataTableModel.Columns.CELLS)
-    public abstract List<List<FieldViewModel>> cells();
-
-    @Nullable
-    @ColumnName(DataTableModel.Columns.VALUES)
-    public abstract ArrayList<List<String>> values();
+    public abstract List<DataElementModel> rows();
 
     @Nullable
     @ColumnName(DataTableModel.Columns.DATA_VALUES)
@@ -56,7 +66,7 @@ public abstract class DataTableModel {
 
     @Nullable
     @ColumnName(DataTableModel.Columns.DATA_ELEMENTS_DISABLED)
-    public abstract Map<String, Map<String, List<String>>> dataElementDisabled();
+    public abstract Map<String, List<String>> dataElementDisabled();
 
     @Nullable
     @ColumnName(DataTableModel.Columns.COMPULSORY_CELLS)
@@ -67,8 +77,11 @@ public abstract class DataTableModel {
     public abstract Map<String, List<String>> catOptionComboCatOption();
 
     @Nullable
-    @ColumnName(DataTableModel.Columns.ORDER_LIST_CAT_OPTIONS)
-    public abstract Map<String, List<List<CategoryOptionModel>>> orderListCatOptions();
+    @ColumnName(DataTableModel.Columns.LIST_CAT_OPTIONS_CAT_COMBO_OPTIONS)
+    public abstract Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>> listCatOptionsCatComboOptions();
 
+    @Nullable
+    @ColumnName(DataTableModel.Columns.DATA_SET)
+    public abstract DataSetModel dataSet();
 
 }

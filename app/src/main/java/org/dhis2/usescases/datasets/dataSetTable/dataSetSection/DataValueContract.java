@@ -6,9 +6,9 @@ import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.hisp.dhis.android.core.category.CategoryModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
-import org.hisp.dhis.android.core.dataelement.DataElementModel;
-import org.hisp.dhis.android.core.dataset.SectionModel;
+import org.hisp.dhis.android.core.dataset.DataInputPeriodModel;
 import org.hisp.dhis.android.core.datavalue.DataValueModel;
+import org.hisp.dhis.android.core.period.PeriodModel;
 
 import java.util.List;
 import java.util.Map;
@@ -21,18 +21,20 @@ public class DataValueContract {
 
     public interface View {
         void showSnackBar();
+
+        void setPeriod(PeriodModel periodModel);
+
+        void setDataInputPeriod(DataInputPeriodModel dataInputPeriod);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter{
-        void init(View view, String orgUnitUid, String periodTypeName, String periodInitialDate, String catCombo);
-
-        void insertDataValues(List<DataValueModel> dataValues);
+        void init(View view, String orgUnitUid, String periodTypeName, String periodInitialDate, String catCombo, String section, String periodId);
 
         void save();
 
         void complete();
 
-        void getData(@NonNull DataSetSectionFragment dataSetSectionFragment, @Nullable String sectionUid);
+        void getData(@NonNull DataSetSectionFragment dataSetSectionFragment, @Nullable String section);
         void initializeProcessor(@NonNull DataSetSectionFragment dataSetSectionFragment);
         Map<String, List<List<CategoryOptionModel>>> transformCategories(@NonNull Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>> map);
 
@@ -40,13 +42,6 @@ public class DataValueContract {
 
         List<FieldViewModel> transformToFieldViewModels(List<DataSetTableModel> dataValues);
 
-        Map<String, List<DataElementModel>> getDataElements();
-        Map<String, List<List<CategoryOptionModel>>> getCatOptions();
-        List<DataSetTableModel> getDataValues();
-        Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>> getMapWithoutTransform();
-        Map<String, Map<String, List<String>>> getDataElementDisabled();
-        Map<String, List<String>> getCompulsoryDataElement();
-        List<SectionModel> getSections();
 
     }
 }

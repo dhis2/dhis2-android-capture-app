@@ -129,6 +129,7 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
         bundle.putString(Constants.CAT_COMB, catOptionComb);
         bundle.putString(Constants.DATA_SET_UID, view.dataSetUid());
         bundle.putBoolean(Constants.ACCESS_DATA, view.accessDataWrite());
+        bundle.putString(Constants.PERIOD_ID, periodId);
         view.startActivity(DataSetTableActivity.class, bundle, false, false, null);
     }
 

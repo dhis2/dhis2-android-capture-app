@@ -26,9 +26,10 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
 
     private String orgUnitUid;
     private String periodTypeName;
-    private String periodInitialDate;
+    private String periodFinalDate;
     private String catCombo;
     private boolean open = true;
+    private String periodId;
 
     public DataSetTablePresenter(DataSetTableRepository dataSetTableRepository,
                                  DataSetInitialRepository dataSetInitialRepository) {
@@ -42,14 +43,15 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
     }
 
     @Override
-    public void init(DataSetTableContract.View view, String orgUnitUid, String periodTypeName, String periodInitialDate, String catCombo) {
+    public void init(DataSetTableContract.View view, String orgUnitUid, String periodTypeName, String catCombo,
+                     String periodFinalDate, String periodId) {
         this.view = view;
         compositeDisposable = new CompositeDisposable();
         this.orgUnitUid = orgUnitUid;
         this.periodTypeName = periodTypeName;
-        this.periodInitialDate = periodInitialDate;
+        this.periodFinalDate = periodFinalDate;
         this.catCombo = catCombo;
-
+        this.periodId = periodId;
 
         compositeDisposable.add(
                 Flowable.zip(
@@ -87,8 +89,12 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
         return periodTypeName;
     }
 
-    public String getPeriodInitialDate() {
-        return periodInitialDate;
+    public String getPeriodFinalDate() {
+        return periodFinalDate;
+    }
+
+    public String getPeriodId(){
+        return periodId;
     }
 
     public String getCatCombo() {
@@ -139,8 +145,8 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
                     view.getSelectedOrgUnit() != null ? view.getSelectedOrgUnit().uid() : orgUnitUid,
                     view.getSelectedOrgUnit() != null ? view.getSelectedOrgUnit().name() : view.getOrgUnitName(),
                     periodTypeName,
-                    view.getSelectedPeriod() != null ? DateUtils.getInstance().getPeriodUIString(PeriodType.valueOf(periodTypeName), view.getSelectedPeriod(), Locale.getDefault()) : periodInitialDate,
-                    view.getSelectedPeriod() != null ? DateUtils.getInstance().generateId(PeriodType.valueOf(periodTypeName), view.getSelectedPeriod(), Locale.getDefault()) : periodInitialDate,
+                    view.getSelectedPeriod() != null ? DateUtils.getInstance().getPeriodUIString(PeriodType.valueOf(periodTypeName), view.getSelectedPeriod(), Locale.getDefault()) : periodFinalDate,
+                    view.getSelectedPeriod() != null ? DateUtils.getInstance().generateId(PeriodType.valueOf(periodTypeName), view.getSelectedPeriod(), Locale.getDefault()) : periodId,
                     view.getSelectedCatOptions()
             );
             view.startActivity(DataSetTableActivity.class, bundle, true, false, null);

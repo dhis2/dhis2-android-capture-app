@@ -26,6 +26,7 @@ import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.period.PeriodType;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -120,7 +121,10 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
 //                .setMaxDate() TODO: Depends on dataSet open Future settings. Default: TODAY
                 .setMaxDate(DateUtils.getInstance().getCalendar().getTime())
                 .setPossitiveListener(selectedDate -> {
-                    this.selectedPeriod = selectedDate;
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTime(selectedDate);
+                    calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
+                    this.selectedPeriod = calendar.getTime();
                     binding.dataSetPeriodEditText.setText(DateUtils.getInstance().getPeriodUIString(periodType, selectedDate, Locale.getDefault()));
                     checkActionVisivbility();
                 })
