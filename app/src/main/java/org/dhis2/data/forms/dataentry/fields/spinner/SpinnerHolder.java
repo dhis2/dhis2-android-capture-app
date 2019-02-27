@@ -151,7 +151,7 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
 
         editText.setText(optionDisplayName);
         processor.onNext(
-                RowAction.create(viewModel.uid(), isSearchMode ? optionDisplayName : optionCode)
+                RowAction.create(viewModel.uid(), isSearchMode ? optionDisplayName : optionCode,true)
         );
       /*  View nextView;
         if ((nextView = editText.focusSearch(View.FOCUS_DOWN)) != null)

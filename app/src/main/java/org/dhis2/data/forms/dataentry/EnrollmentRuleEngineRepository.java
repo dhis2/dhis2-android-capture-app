@@ -39,7 +39,10 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
 
     private static final String QUERY_ATTRIBUTE_VALUES = "SELECT\n" +
             "  Field.id,\n" +
-            "  Value.value\n" +
+            "  Value.value,\n" +
+            "  ProgramRuleVariable.useCodeForOptionSet,\n" +
+            "  Option.code,\n" +
+            "  Option.name" +
             "FROM (Enrollment INNER JOIN Program ON Program.uid = Enrollment.program)\n" +
             "  INNER JOIN (\n" +
             "      SELECT\n" +
@@ -51,6 +54,8 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
             "  INNER JOIN TrackedEntityAttributeValue AS Value ON (\n" +
             "    Value.trackedEntityAttribute = Field.id\n" +
             "        AND Value.trackedEntityInstance = Enrollment.trackedEntityInstance)\n" +
+            "  LEFT JOIN ProgramRuleVariable ON ProgramRuleVariable.trackedEntityAttribute = Field.id " +
+            "  LEFT JOIN Option ON (Option.optionSet = DataElement.optionSet AND Option.code = Value.value) " +
             "WHERE Enrollment.uid = ? AND Value.value IS NOT NULL;";
 
     @NonNull

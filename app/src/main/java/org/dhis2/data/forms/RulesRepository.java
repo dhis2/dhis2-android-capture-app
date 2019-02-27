@@ -178,13 +178,19 @@ public final class RulesRepository {
             " AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "' ORDER BY Event.eventDate,Event.lastUpdated DESC LIMIT 10";
 
     private static final String QUERY_VALUES = "SELECT " +
-            "  eventDate," +
-            "  programStage," +
-            "  dataElement," +
-            "  value" +
+            "  Event.eventDate," +
+            "  Event.programStage," +
+            "  TrackedEntityDataValue.dataElement," +
+            "  TrackedEntityDataValue.value," +
+            "  ProgramRuleVariable.useCodeForOptionSet," +
+            "  Option.code," +
+            "  Option.name" +
             " FROM TrackedEntityDataValue " +
             "  INNER JOIN Event ON TrackedEntityDataValue.event = Event.uid " +
-            " WHERE event = ? AND value IS NOT NULL AND " + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'";
+            "  INNER JOIN DataElement ON DataElement.uid = TrackedEntityDataValue.dataElement " +
+            "  LEFT JOIN ProgramRuleVariable ON ProgramRuleVariable.dataElement = DataElement.uid " +
+            "  LEFT JOIN Option ON (Option.optionSet = DataElement.optionSet AND Option.code = TrackedEntityDataValue.value) " +
+            " WHERE Event.uid = ? AND value IS NOT NULL AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "';";
 
     private static final String QUERY_ENROLLMENT = "SELECT\n" +
             "  Enrollment.uid,\n" +
@@ -200,7 +206,10 @@ public final class RulesRepository {
 
     private static final String QUERY_ATTRIBUTE_VALUES = "SELECT\n" +
             "  Field.id,\n" +
-            "  Value.value\n" +
+            "  Value.value,\n" +
+            "  ProgramRuleVariable.useCodeForOptionSet,\n" +
+            "  Option.code,\n" +
+            "  Option.name" +
             "FROM (Enrollment INNER JOIN Program ON Program.uid = Enrollment.program)\n" +
             "  INNER JOIN (\n" +
             "      SELECT\n" +
@@ -212,6 +221,8 @@ public final class RulesRepository {
             "  INNER JOIN TrackedEntityAttributeValue AS Value ON (\n" +
             "    Value.trackedEntityAttribute = Field.id\n" +
             "        AND Value.trackedEntityInstance = Enrollment.trackedEntityInstance)\n" +
+            "  LEFT JOIN ProgramRuleVariable ON ProgramRuleVariable.trackedEntityAttribute = Field.id " +
+            "  LEFT JOIN Option ON (Option.optionSet = DataElement.optionSet AND Option.code = Value.value) " +
             "WHERE Enrollment.uid = ? AND Value.value IS NOT NULL;";
 
     @NonNull
@@ -516,9 +527,16 @@ public final class RulesRepository {
                                             if (dataValueCursor != null && dataValueCursor.moveToFirst()) {
                                                 for (int i = 0; i < dataValueCursor.getCount(); i++) {
                                                     Date eventDateV = DateUtils.databaseDateFormat().parse(dataValueCursor.getString(0));
+                                                    String programStage = cursor.getString(1);
+                                                    String dataElement = cursor.getString(2);
                                                     String value = cursor.getString(3) != null ? dataValueCursor.getString(3) : "";
-                                                    dataValues.add(RuleDataValue.create(eventDateV, dataValueCursor.getString(1),
-                                                            dataValueCursor.getString(2), value));
+                                                    Boolean useCode = cursor.getInt(4) == 1;
+                                                    String optionCode = cursor.getString(5);
+                                                    String optionName = cursor.getString(6);
+                                                    if (!isEmpty(optionCode) && !isEmpty(optionName))
+                                                        value = useCode ? optionCode : optionName; //If de has optionSet then check if value should be code or name for program rules
+                                                    dataValues.add(RuleDataValue.create(eventDateV, programStage,
+                                                            dataElement, value));
                                                     dataValueCursor.moveToNext();
                                                 }
                                                 dataValueCursor.close();
@@ -557,9 +575,16 @@ public final class RulesRepository {
                     if (dataValueCursor != null && dataValueCursor.moveToFirst()) {
                         for (int i = 0; i < dataValueCursor.getCount(); i++) {
                             Date eventDateV = DateUtils.databaseDateFormat().parse(dataValueCursor.getString(0));
+                            String programStage = cursor.getString(1);
+                            String dataElement = cursor.getString(2);
                             String value = cursor.getString(3) != null ? dataValueCursor.getString(3) : "";
-                            dataValues.add(RuleDataValue.create(eventDateV, dataValueCursor.getString(1),
-                                    dataValueCursor.getString(2), value));
+                            Boolean useCode = cursor.getInt(4) == 1;
+                            String optionCode = cursor.getString(5);
+                            String optionName = cursor.getString(6);
+                            if (!isEmpty(optionCode) && !isEmpty(optionName))
+                                value = useCode ? optionCode : optionName; //If de has optionSet then check if value should be code or name for program rules
+                            dataValues.add(RuleDataValue.create(eventDateV, programStage,
+                                    dataElement, value));
                             dataValueCursor.moveToNext();
                         }
                         dataValueCursor.close();
