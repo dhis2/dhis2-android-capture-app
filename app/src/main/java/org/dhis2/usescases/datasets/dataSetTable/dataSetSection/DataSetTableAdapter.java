@@ -73,18 +73,22 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
     @NonNull
     private final List<Row> rows;
 
+    LayoutInflater layoutInflater;
+
     private Boolean showRowTotal = false;
     private Boolean showColumnTotal = false;
 
 
 
-    public DataSetTableAdapter(Context context, boolean accessDataWrite) {
+    public DataSetTableAdapter(Context context) {
         super(context);
         rows = new ArrayList<>();
         processor = PublishProcessor.create();
-        LayoutInflater layoutInflater = LayoutInflater.from(context);
+        layoutInflater = LayoutInflater.from(context);
         viewModels = new ArrayList<>();
+    }
 
+    public void initializeRows(Boolean accessDataWrite){
         rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name(), new ObservableBoolean(accessDataWrite)));
         rows.add(BUTTON, new FileRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name()));
         rows.add(CHECKBOX, new RadioButtonRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name(), accessDataWrite));
@@ -98,7 +102,6 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
         //rows.add(ORG_UNIT, new OrgUnitRow(fragmentManager, layoutInflater, processor, true, orgUnits, ProgramStageSectionRenderingType.LISTING.name()));
         //rows.add(IMAGE, new ImageRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name()));
         //rows.add(UNSUPPORTED, new UnsupportedRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name()));
-
     }
 
     /**

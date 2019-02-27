@@ -19,6 +19,7 @@ public abstract class DataSetTableModel{
     public static class Columns extends DataSetModel.Columns {
         public static final String CATEGORY_OPTION = "catOption";
         public static final String LIST_CATEGORY_OPTION = "listCategory";
+        public static final String CATEGORY_COMBO = "catCombo";
     }
 
     public static DataSetTableModel fromCursor(Cursor cursor){
@@ -26,8 +27,8 @@ public abstract class DataSetTableModel{
     }
     public static DataSetTableModel create(Long id, String dataElement, String period, String organisationUnit,
                                            String categoryOptionCombo, String attributeOptionCombo, String value, String storedBy,
-                                           String catOption, List<String> listCategory) {
-        return new AutoValue_DataSetTableModel(id, dataElement, period, organisationUnit, categoryOptionCombo, attributeOptionCombo, value, storedBy, catOption, listCategory);
+                                           String catOption, List<String> listCategory, String catCombo) {
+        return new AutoValue_DataSetTableModel(id, dataElement, period, organisationUnit, categoryOptionCombo, attributeOptionCombo, value, storedBy, catOption, listCategory, catCombo);
     }
 
 
@@ -71,4 +72,8 @@ public abstract class DataSetTableModel{
     @Nullable
     @ColumnName(LIST_CATEGORY_OPTION)
     public abstract List<String> listCategoryOption();
+
+    @Nullable
+    @ColumnName(DataSetTableModel.Columns.CATEGORY_COMBO)
+    public abstract String catCombo();
 }

@@ -3,6 +3,7 @@ package org.dhis2.utils;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.hisp.dhis.android.core.dataset.DataInputPeriodModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.period.PeriodType;
@@ -977,5 +978,14 @@ public class DateUtils {
 
         return completedDay != null &&
                 completedDay.getTime() + TimeUnit.DAYS.toMillis(compExpDays) < date.getTime();
+    }
+
+    public Boolean isDataSetExpired(int expiredDays, Date periodInitialDate){
+        return Calendar.getInstance().getTime().getTime() > periodInitialDate.getTime() + TimeUnit.DAYS.toMillis(expiredDays);
+    }
+
+    public Boolean isInsideInputPeriod(DataInputPeriodModel dataInputPeriodModel){
+        return dataInputPeriodModel.openingDate().getTime() < Calendar.getInstance().getTime().getTime()
+            && Calendar.getInstance().getTime().getTime() < dataInputPeriodModel.closingDate().getTime();
     }
 }

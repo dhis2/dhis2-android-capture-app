@@ -56,7 +56,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     String periodInitialDate;
     String catCombo;
     String dataSetUid;
-
+    String periodId;
     boolean accessDataWrite;
     boolean tableSelectorVisible = false;
 
@@ -94,6 +94,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
         orgUnitName = getIntent().getStringExtra(Constants.ORG_UNIT_NAME);
         periodTypeName = getIntent().getStringExtra(Constants.PERIOD_TYPE);
         periodInitialDate = getIntent().getStringExtra(Constants.PERIOD_TYPE_DATE);
+        periodId = getIntent().getStringExtra(Constants.PERIOD_ID);
         catCombo = getIntent().getStringExtra(Constants.CAT_COMB);
         dataSetUid = getIntent().getStringExtra(Constants.DATA_SET_UID);
         accessDataWrite = getIntent().getBooleanExtra(Constants.ACCESS_DATA, true);
@@ -125,7 +126,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     @Override
     protected void onResume() {
         super.onResume();
-        presenter.init(this, orgUnitUid, periodTypeName, periodInitialDate, catCombo);
+        presenter.init(this, orgUnitUid, periodTypeName, catCombo, periodInitialDate, periodId);
     }
 
     @Override
