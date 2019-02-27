@@ -11,6 +11,7 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import org.dhis2.App;
 
@@ -97,17 +98,18 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_dataset_section, container, false);
         adapter = new DataSetTableAdapter(getAbstracContext());
+        /*adapter = new DataSetTableAdapter(getAbstracContext());
 
         tableView = new TableView(getContext());
         tableView.setBackgroundColor(getResources().getColor(R.color.white));
         tableView.setUnSelectedColor(getResources().getColor(R.color.table_bg));
         tableView.setSelectedColor(getResources().getColor(R.color.colorPrimaryLight));
         tableView.setShadowColor(getResources().getColor(R.color.rfab__color_shadow));
-        tableView.setRowHeaderWidth(120);
+        tableView.setRowHeaderWidth(350);
         binding.tableLayout.addView(tableView);
-        /*binding.tableView.setAdapter(adapter);
-        binding.tableView.setEnabled(false);*/
-        tableView.setAdapter(adapter);
+        *//*binding.tableView.setAdapter(adapter);
+        binding.tableView.setEnabled(false);*//*
+        tableView.setAdapter(adapter);*/
         binding.setPresenter(presenterFragment);
         return binding.getRoot();
     }
@@ -120,7 +122,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
         presenterFragment.init(this, presenter.getOrgUnitUid(), presenter.getPeriodTypeName(),
                 presenter.getPeriodFinalDate(), presenter.getCatCombo(), section, presenter.getPeriodId());
         presenterFragment.getData(this, section);
-        presenterFragment.initializeProcessor(this);
+        /*presenterFragment.initializeProcessor(this);*/
     }
 
 
@@ -133,107 +135,131 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
             isEditable = true;
         }
 
-        adapter.initializeRows(isEditable);
+        presenterFragment.setCurrentNumTables(dataTableModel.catCombos().size());
 
-        List<List<CategoryOptionModel>> columnHeaderItems = (new ArrayList<>(dataTableModel.headers().values()).get(0));
-        ArrayList<List<String>> cells = new ArrayList<>();
-        List<List<FieldViewModel>> listFields = new ArrayList<>();
-        List<List<String>> listCatOptions = presenterFragment.getCatOptionCombos((new ArrayList<>(dataTableModel.listCatOptionsCatComboOptions().values()).get(0)), 0, new ArrayList<>(), null);
-        int countColumn = 0;
-        boolean isNumber = true;
-        int row = 0, column = 0;
+        presenterFragment.initializeProcessor(this);
+        for(String catCombo: dataTableModel.catCombos()) {
+            List<List<CategoryOptionModel>> columnHeaderItems = dataTableModel.headers().get(catCombo);
+            ArrayList<List<String>> cells = new ArrayList<>();
+            List<List<FieldViewModel>> listFields = new ArrayList<>();
+            List<DataElementModel> rows = new ArrayList<>();
+            List<List<String>> listCatOptions = presenterFragment.getCatOptionCombos(dataTableModel.listCatOptionsCatComboOptions().get(catCombo), 0, new ArrayList<>(), null);
+            int countColumn = 0;
+            boolean isNumber = false;
+            int row = 0, column = 0;
+            adapter.setShowColumnTotal(dataTableModel.section() == null? false :dataTableModel.section().showColumnTotals());
+            adapter.setShowRowTotal(dataTableModel.section() == null? false :dataTableModel.section().showRowTotals());
+            adapter.initializeRows(isEditable);
+            TableView tableView = new TableView(getContext());
+            tableView.setBackgroundColor(getResources().getColor(R.color.white));
+            tableView.setUnSelectedColor(getResources().getColor(R.color.table_bg));
+            tableView.setSelectedColor(getResources().getColor(R.color.colorPrimaryLight));
+            tableView.setShadowColor(getResources().getColor(R.color.rfab__color_shadow));
+            tableView.setRowHeaderWidth(350);
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 
-        tableView.setHeaderCount(columnHeaderItems.size());
+            layoutParams.setMargins(0, 0, 0, 40);
 
-        adapter.setShowColumnTotal(dataTableModel.section().showColumnTotals());
-        adapter.setShowRowTotal(dataTableModel.section().showRowTotals());
 
-        for (DataElementModel de : dataTableModel.rows()) {
-            ArrayList<String> values = new ArrayList<>();
-            ArrayList<FieldViewModel> fields = new ArrayList<>();
-            int totalRow = 0;
+            binding.tableLayout.addView(tableView, layoutParams);
+            /*binding.tableView.setAdapter(adapter);
+            binding.tableView.setEnabled(false);*/
+            tableView.setAdapter(adapter);
+            tableView.setHeaderCount(columnHeaderItems.size());
+            for (DataElementModel de : dataTableModel.rows()) {
+                if(de.categoryCombo().equals(catCombo))
+                    rows.add(de);
 
-            for (List<String> catOpts : listCatOptions) {
-                boolean exitsValue = false;
-                boolean compulsory = false;
-                FieldViewModelFactoryImpl fieldFactory = createField();
+                ArrayList<String> values = new ArrayList<>();
+                ArrayList<FieldViewModel> fields = new ArrayList<>();
+                int totalRow = 0;
+                if(de.categoryCombo().equals(catCombo)) {
+                    for (List<String> catOpts : listCatOptions) {
+                        boolean exitsValue = false;
+                        boolean compulsory = false;
+                        FieldViewModelFactoryImpl fieldFactory = createField();
 
-                boolean editable = /*!dataTableModel.dataElementDisabled().containsKey(section) || */!dataTableModel.dataElementDisabled().containsKey(de.uid())
-                        || !dataTableModel.dataElementDisabled().get(de.uid()).containsAll(catOpts);
+                        boolean editable = /*!dataTableModel.dataElementDisabled().containsKey(section) || */!dataTableModel.dataElementDisabled().containsKey(de.uid())
+                                || !dataTableModel.dataElementDisabled().get(de.uid()).containsAll(catOpts);
 
-                if(!editable) {
-                    String a = "";
-                }
+                        if (dataTableModel.compulsoryCells().containsKey(de.uid()) && dataTableModel.compulsoryCells().get(de.uid()).containsAll(catOpts))
+                            compulsory = true;
 
-                if (dataTableModel.compulsoryCells().containsKey(de.uid()) && dataTableModel.compulsoryCells().get(de.uid()).containsAll(catOpts))
-                    compulsory = true;
-
-                if (de.valueType() != ValueType.NUMBER && de.valueType() != ValueType.INTEGER) {
-                    isNumber = false;
-                }
-
-                for (DataSetTableModel dataValue : dataTableModel.dataValues()) {
-
-                    if (dataValue.listCategoryOption().containsAll(catOpts)
-                            && Objects.equals(dataValue.dataElement(), de.uid())) {
-
-                        if (isNumber) {
-                            if (adapter.getShowRowTotal())
-                                totalRow = totalRow + Integer.parseInt(dataValue.value());
+                        if (de.valueType() == ValueType.NUMBER || de.valueType() == ValueType.INTEGER) {
+                            isNumber = true;
                         }
 
-                        fields.add(fieldFactory.create(dataValue.id().toString(), "", de.valueType(),
-                                compulsory, "", dataValue.value(), section, true,
-                                editable, null, null, de.uid(), catOpts, "", row, column, dataValue.categoryOptionCombo(), dataValue.catCombo()));
-                        values.add(dataValue.value());
-                        exitsValue = true;
+                        for (DataSetTableModel dataValue : dataTableModel.dataValues()) {
+
+                            if (dataValue.listCategoryOption().containsAll(catOpts)
+                                    && Objects.equals(dataValue.dataElement(), de.uid()) && dataValue.catCombo().equals(catCombo)) {
+
+                                if (isNumber) {
+                                    if (adapter.getShowRowTotal())
+                                        totalRow = totalRow + Integer.parseInt(dataValue.value());
+                                }
+
+                                fields.add(fieldFactory.create(dataValue.id().toString(), "", de.valueType(),
+                                        compulsory, "", dataValue.value(), section, true,
+                                        editable, null, null, de.uid(), catOpts, "", row, column, dataValue.categoryOptionCombo(), dataValue.catCombo()));
+                                values.add(dataValue.value());
+                                exitsValue = true;
+                            }
+                        }
+
+                        if (!exitsValue) {
+                            //If value type is null, it is due to is dataElement for Total row/column
+                            fields.add(fieldFactory.create("", "", de.valueType(),
+                                    compulsory, "", "", section, true,
+                                    editable, null, null, de.uid() == null ? "" : de.uid(), catOpts, "", row, column, ""/*SET CATEGORYOPTIONCOMBO*/, ""));
+
+                            values.add("");
+                        }
+                        countColumn++;
+                        column++;
                     }
+                    countColumn = 0;
+                    if (isNumber && adapter.getShowRowTotal()) {
+                        setTotalRow(totalRow, fields, values, row, column);
+                    }
+                    listFields.add(fields);
+                    cells.add(values);
+                    column = 0;
+                    row++;
                 }
-
-                if (!exitsValue) {
-                    //If value type is null, it is due to is dataElement for Total row/column
-                    fields.add(fieldFactory.create("", "", de.valueType(),
-                            compulsory, "", "", section, true,
-                            editable, null, null, de.uid()== null ? "": de.uid(), catOpts, "", row, column,""/*SET CATEGORYOPTIONCOMBO*/,"" ));
-
-                    values.add("");
-                }
-                countColumn++;
-                column++;
             }
-            countColumn = 0;
-            if (isNumber && adapter.getShowRowTotal()) {
-                setTotalRow(totalRow, fields, values, row, column);
+
+            if (isNumber) {
+                if (adapter.getShowColumnTotal())
+                    setTotalColumn(listFields, cells, dataTableModel.rows(), row, column);
+                if (adapter.getShowRowTotal())
+                    for (int i = 0; i < columnHeaderItems.size(); i++) {
+                        if (i == columnHeaderItems.size() - 1)
+                            columnHeaderItems.get(i).add(CategoryOptionModel.builder().displayName(getString(R.string.total)).build());
+                        else
+                            columnHeaderItems.get(i).add(CategoryOptionModel.builder().displayName("").build());
+                    }
+
             }
-            listFields.add(fields);
-            cells.add(values);
-            column = 0;
-            row++;
+
+            adapter.swap(listFields);
+            //if (!tableCreated)
+                adapter.setAllItems(
+                        dataTableModel.headers().get(catCombo),
+                        rows,
+                        cells, adapter.getShowRowTotal());
+            /*else
+                adapter.setCellItems(cells);
+
+            tableCreated = false;*/
+
+            if(!catCombo.equals(dataTableModel.catCombos().get(dataTableModel.catCombos().size()-1)))
+                adapter = new DataSetTableAdapter(getAbstracContext());
+
         }
 
-        if (isNumber) {
-            if (adapter.getShowColumnTotal())
-                setTotalColumn(listFields, cells, dataTableModel.rows(), row, column);
-            if (adapter.getShowRowTotal())
-                for (int i = 0; i< columnHeaderItems.size(); i++) {
-                    if(i==columnHeaderItems.size()-1)
-                        columnHeaderItems.get(i).add(CategoryOptionModel.builder().displayName(getString(R.string.total)).build());
-                    else
-                        columnHeaderItems.get(i).add(CategoryOptionModel.builder().displayName("").build());
-                }
-
-        }
-
-        adapter.swap(listFields);
-        if(!tableCreated)
-            adapter.setAllItems(
-                    (new ArrayList<>(dataTableModel.headers().values()).get(0)),
-                    dataTableModel.rows(),
-                    cells, adapter.getShowRowTotal());
-        else
-            adapter.setCellItems(cells);
-
-        tableCreated = true;
+        binding.scroll.scrollTo(0,1000);
     }
 
     private void setTotalColumn(List<List<FieldViewModel>> listFields, ArrayList<List<String>> cells,
@@ -338,5 +364,16 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
     @Override
     public void setDataInputPeriod(DataInputPeriodModel dataInputPeriod) {
         this.dataInputPeriodModel = dataInputPeriod;
+    }
+
+    @Override
+    public void goToTable(int numTable) {
+        int[] position = new int[2];
+        binding.tableLayout.getChildAt(numTable).getLocationOnScreen(position);
+        binding.scroll.scrollTo(0, position[1]);
+    }
+
+    public int currentNumTables(){
+        return presenterFragment.getCurrentNumTables();
     }
 }

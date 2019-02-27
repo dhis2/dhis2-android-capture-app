@@ -7,7 +7,18 @@
             name="title"
             type="String" />
     </data>
-    <CheckBox
+
+    <RadioGroup
+        android:id="@+id/radioGroup"
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:buttonTint="?colorPrimary">
+
+    </RadioGroup>
+
+   <!-- <CheckBox
+        android:id="@+id/checkbox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:buttonTint="?colorPrimary"
@@ -16,5 +27,5 @@
         android:background="@drawable/white_button_bg"
         android:padding="8dp"
         android:layout_marginEnd="8dp"
-        tools:checked="true"/>
+        tools:checked="true"/>-->
 </layout>

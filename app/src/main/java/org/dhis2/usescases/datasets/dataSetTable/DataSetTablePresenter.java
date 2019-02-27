@@ -167,4 +167,14 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
                         )
         );
     }
+
+    @Override
+    public void onClickSelectTable(int numTable) {
+        view.goToTable(numTable);
+    }
+
+    @Override
+    public void setCurrentNumTables(int numTables) {
+        view.setCurrentNumTables(numTables);
+    }
 }

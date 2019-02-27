@@ -25,6 +25,8 @@ public class DataValueContract {
         void setPeriod(PeriodModel periodModel);
 
         void setDataInputPeriod(DataInputPeriodModel dataInputPeriod);
+
+        void goToTable(int numTable);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter{
@@ -40,6 +42,8 @@ public class DataValueContract {
 
         List<FieldViewModel> transformToFieldViewModels(List<DataSetTableModel> dataValues);
 
+        void setCurrentNumTables(int numTables);
 
+        int getCurrentNumTables();
     }
 }

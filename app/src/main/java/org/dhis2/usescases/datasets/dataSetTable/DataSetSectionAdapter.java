@@ -30,18 +30,25 @@ public final class DataSetSectionAdapter extends FragmentStatePagerAdapter {
     private boolean accessDataWrite;
     private String dataSetUid;
     private Context context;
-
+    private List<DataSetSectionFragment> fragments;
     DataSetSectionAdapter(FragmentManager fm, boolean accessDataWrite, String dataSetUid, Context context) {
         super(fm);
+        fragments = new ArrayList<>();
         sectionArrays = new ArrayList<>();
         this.accessDataWrite = accessDataWrite;
         this.dataSetUid = dataSetUid;
         this.context = context;
     }
 
+    public DataSetSectionFragment getCurrentItem(int position){
+        return fragments.get(position);
+    }
+
     @Override
     public Fragment getItem(int position) {
-        return DataSetSectionFragment.create(sectionArrays.get(position), accessDataWrite, dataSetUid);
+        DataSetSectionFragment fragment = DataSetSectionFragment.create(sectionArrays.get(position), accessDataWrite, dataSetUid);
+        fragments.add(fragment);
+        return fragment;
     }
 
     void swapData(Map<String, List<DataElementModel>> dataElements) {

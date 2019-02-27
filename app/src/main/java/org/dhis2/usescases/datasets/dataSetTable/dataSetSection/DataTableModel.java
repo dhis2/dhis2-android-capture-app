@@ -35,6 +35,7 @@ public abstract class DataTableModel {
         public static final String CAT_OPTION_COMBO_CAT_OPTION = "catOptionComboCatOption";
         public static final String LIST_CAT_OPTIONS_CAT_COMBO_OPTIONS = "listCatOptionsCatComboOptions";
         public static final String DATA_SET = "dataSet";
+        public static final String CAT_COMBOS = "catCombos";
     }
 
     public static DataTableModel fromCursor(Cursor cursor){
@@ -44,8 +45,8 @@ public abstract class DataTableModel {
     public static DataTableModel create(SectionModel section, Map<String, List<List<CategoryOptionModel>>> headers, List<DataElementModel> rows,
                                         List<DataSetTableModel> dataValues,Map<String, List<String>> dataElementDisabled,
                                         Map<String, List<String>> compulsoryCells, Map<String, List<String>> catOptionComboCatOption,
-                                        Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>> listCatOptionsCatComboOptions, DataSetModel dataSet) {
-        return new AutoValue_DataTableModel(section, headers, rows, dataValues, dataElementDisabled, compulsoryCells, catOptionComboCatOption, listCatOptionsCatComboOptions, dataSet);
+                                        Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>> listCatOptionsCatComboOptions, DataSetModel dataSet, List<String> catCombos) {
+        return new AutoValue_DataTableModel(section, headers, rows, dataValues, dataElementDisabled, compulsoryCells, catOptionComboCatOption, listCatOptionsCatComboOptions, dataSet, catCombos);
     }
 
     @Nullable
@@ -83,5 +84,9 @@ public abstract class DataTableModel {
     @Nullable
     @ColumnName(DataTableModel.Columns.DATA_SET)
     public abstract DataSetModel dataSet();
+
+    @Nullable
+    @ColumnName(Columns.CAT_COMBOS)
+    public abstract List<String> catCombos();
 
 }

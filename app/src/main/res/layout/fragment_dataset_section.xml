@@ -14,24 +14,34 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <LinearLayout
-            android:id="@+id/tableLayout"
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/scroll"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
             android:layout_weight="1"
-            android:orientation="vertical">
+            android:layout_height="0dp">
 
-           <!-- <com.evrencoskun.tableview.TableView
-                android:id="@+id/tableView"
+            <LinearLayout
+                android:id="@+id/tableLayout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/white"
-                app:unselected_color="@color/table_bg"
-                app:selected_color="?colorPrimaryLight"
-                app:shadow_color="@color/rfab__color_shadow"
+                android:orientation="vertical">
 
-                app:row_header_width="120dp" />-->
-        </LinearLayout>
+                <!--<com.evrencoskun.tableview.TableView
+                    android:id="@+id/tableView"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:background="@color/white"
+                    app:unselected_color="@color/table_bg"
+                    app:selected_color="?colorPrimaryLight"
+                    app:shadow_color="@color/rfab__color_shadow"
+
+                    app:row_header_width="120dp" />-->
+
+
+            </LinearLayout>
+
+        </androidx.core.widget.NestedScrollView>
+
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/save_layout"

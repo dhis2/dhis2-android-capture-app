@@ -1,24 +1,41 @@
 package org.dhis2.usescases.datasets.dataSetTable;
 
-import org.dhis2.databinding.ItemDatasetBinding;
-import org.dhis2.databinding.ItemTableCheckboxBinding;
-import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailContract;
-import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailModel;
 
-import androidx.databinding.library.baseAdapters.BR;
+import android.widget.RadioButton;
+
+import org.dhis2.R;
+import org.dhis2.databinding.ItemTableCheckboxBinding;
+
 import androidx.recyclerview.widget.RecyclerView;
-import io.reactivex.disposables.CompositeDisposable;
 
 public class TableCheckboxViewHolder extends RecyclerView.ViewHolder{
 
     private ItemTableCheckboxBinding binding;
-
-    public TableCheckboxViewHolder(ItemTableCheckboxBinding binding) {
+    private DataSetTableContract.Presenter presenter;
+    private boolean isFirst = true;
+    public TableCheckboxViewHolder(ItemTableCheckboxBinding binding, DataSetTableContract.Presenter presenter) {
         super(binding.getRoot());
         this.binding = binding;
+        this.presenter = presenter;
+        isFirst = true;
     }
 
     public void bind(String title) {
-        binding.setTitle(title);
+        RadioButton radio = new RadioButton(binding.getRoot().getContext());
+        radio.setText(title);
+
+        radio.setTextColor(binding.getRoot().getContext().getResources().getColor(R.color.white));
+
+        radio.setOnCheckedChangeListener((checkButton, isChecked) ->{
+            if(isChecked)
+                presenter.onClickSelectTable(this.getAdapterPosition());
+        } );
+
+        if(isFirst)
+            radio.setChecked(true);
+
+        isFirst = false;
+        binding.radioGroup.addView(radio);
+        //binding.setTitle(title);
     }
 }
