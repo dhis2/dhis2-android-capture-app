@@ -110,10 +110,10 @@ public class DataValuePresenter implements DataValueContract.Presenter{
 
     public void complete(){
         compositeDisposable.add(
-                repository.completeDataSet(orgUnitUid, periodInitialDate, catCombo)
+                repository.completeDataSet(orgUnitUid, periodId, attributeOptionCombo)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe( aLong -> view.showSnackBar(), Timber::e)
+                        .subscribe( completed -> view.onComplete(), Timber::e)
         );
     }
 

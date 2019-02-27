@@ -22,6 +22,8 @@ public class DataValueContract {
     public interface View {
         void showSnackBar();
 
+        void onComplete();
+
         void setPeriod(PeriodModel periodModel);
 
         void setDataInputPeriod(DataInputPeriodModel dataInputPeriod);

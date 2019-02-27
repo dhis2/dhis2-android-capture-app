@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -103,7 +104,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
         tableView.setUnSelectedColor(getResources().getColor(R.color.table_bg));
         tableView.setSelectedColor(getResources().getColor(R.color.colorPrimaryLight));
         tableView.setShadowColor(getResources().getColor(R.color.rfab__color_shadow));
-        tableView.setRowHeaderWidth(120);
+        tableView.setRowHeaderWidth(350);
         binding.tableLayout.addView(tableView);
         /*binding.tableView.setAdapter(adapter);
         binding.tableView.setEnabled(false);*/
@@ -312,6 +313,11 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
     public void showSnackBar() {
         Snackbar mySnackbar = Snackbar.make(binding.getRoot(), R.string.datavalue_saved , Snackbar.LENGTH_SHORT);
         mySnackbar.show();
+    }
+
+    @Override
+    public void onComplete() {
+        activity.finish();
     }
 
     @Override
