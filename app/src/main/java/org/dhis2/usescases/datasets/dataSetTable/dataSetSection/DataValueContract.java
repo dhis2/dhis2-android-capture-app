@@ -30,6 +30,8 @@ public class DataValueContract {
 
         void save();
 
+        void complete();
+
         void getData(@NonNull DataSetSectionFragment dataSetSectionFragment, @Nullable String sectionUid);
         void initializeProcessor(@NonNull DataSetSectionFragment dataSetSectionFragment);
         Map<String, List<List<CategoryOptionModel>>> transformCategories(@NonNull Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>> map);

@@ -37,4 +37,6 @@ public interface DataValueRepository {
     Flowable<String> getNewIDDataValue();
 
     Flowable<Map<String, List<String>>> getCategoryOptionComboCatOption();
+
+    Flowable<Boolean> completeDataSet(String orgUnitUid, String periodInitialDate, String catCombo);
 }

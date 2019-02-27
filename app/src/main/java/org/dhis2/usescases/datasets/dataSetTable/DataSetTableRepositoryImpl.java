@@ -1,5 +1,8 @@
 package org.dhis2.usescases.datasets.dataSetTable;
 
+import android.content.ContentValues;
+import android.service.autofill.Dataset;
+
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.tuples.Pair;
@@ -7,11 +10,17 @@ import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.category.CategoryModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
+import org.hisp.dhis.android.core.common.BaseDataModel;
+import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
+import org.hisp.dhis.android.core.dataset.DataSet;
+import org.hisp.dhis.android.core.dataset.DataSetCompleteRegistration;
 import org.hisp.dhis.android.core.dataset.DataSetModel;
 import org.hisp.dhis.android.core.dataset.SectionGreyedFieldsLinkModel;
 import org.hisp.dhis.android.core.dataset.SectionModel;
 import org.hisp.dhis.android.core.datavalue.DataValueModel;
+import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.period.PeriodType;
 
 import java.util.ArrayList;
@@ -22,6 +31,7 @@ import java.util.Map;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import nl.jqno.equalsverifier.internal.lib.bytebuddy.description.annotation.AnnotationValue;
 
 public class DataSetTableRepositoryImpl implements DataSetTableRepository {
 

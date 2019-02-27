@@ -1,5 +1,7 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection;
 
+import android.content.ContentValues;
+
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.tuples.Pair;
@@ -9,7 +11,9 @@ import org.hisp.dhis.android.core.category.CategoryModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboCategoryOptionLinkModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
+import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
+import org.hisp.dhis.android.core.dataset.DataSetCompleteRegistration;
 import org.hisp.dhis.android.core.dataset.DataSetModel;
 import org.hisp.dhis.android.core.dataset.SectionGreyedFieldsLinkModel;
 import org.hisp.dhis.android.core.dataset.SectionModel;
@@ -361,5 +365,33 @@ public class DataValueRepositoryImpl implements DataValueRepository {
     public Flowable<List<SectionModel>> getSectionByDataSet() {
         return briteDatabase.createQuery(SectionModel.TABLE, SECTION_TOTAL_ROW_COLUMN, dataSetUid)
                 .mapToList(SectionModel::create).toFlowable(BackpressureStrategy.LATEST);
+    }
+
+    public Flowable<Boolean> completeDataSet(String orgUnitUid, String periodInitialDate, String catCombo){
+        boolean updateOrInserted;
+        String where = "period = ? AND dataSet = ? AND attributeOptionCombo = ?";
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(DataSetCompleteRegistration.Columns.STATE, State.TO_UPDATE.name());
+        String completeDate = DateUtils.databaseDateFormat().format(DateUtils.getInstance().getToday());
+        contentValues.put("date", completeDate);
+        String[] values = {periodInitialDate, dataSetUid, catCombo};
+
+        updateOrInserted = briteDatabase.update(DataSetCompleteRegistration.class.getSimpleName(), contentValues, where, values)>0;
+
+        if(!updateOrInserted) {
+            DataSetCompleteRegistration dataSetCompleteRegistration =
+                    DataSetCompleteRegistration.builder().dataSet(dataSetUid)
+                            .period(periodInitialDate)
+                            .organisationUnit(orgUnitUid)
+                            .attributeOptionCombo(catCombo)
+                            .date(DateUtils.getInstance().getToday())
+                            .state(State.TO_POST).build();
+
+            updateOrInserted = briteDatabase.insert(DataSetCompleteRegistration.class.getSimpleName(), dataSetCompleteRegistration.toContentValues())>0;
+        }
+
+        return Flowable.just(updateOrInserted);
+
     }
 }
