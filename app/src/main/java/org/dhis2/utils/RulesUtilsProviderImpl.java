@@ -79,9 +79,9 @@ public class RulesUtilsProviderImpl implements RulesUtilsProvider {
             else if (ruleAction instanceof RuleActionHideProgramStage)
                 hideProgramStage((RuleActionHideProgramStage) ruleAction, rulesActionCallbacks);
             else if (ruleAction instanceof RuleActionHideOption)
-                hideOption((RuleActionHideOption) ruleAction, fieldViewModels, rulesActionCallbacks);
+                hideOption((RuleActionHideOption) ruleAction, rulesActionCallbacks);
             else if (ruleAction instanceof RuleActionHideOptionGroup)
-                hideOptionGroup((RuleActionHideOptionGroup) ruleAction, fieldViewModels,  rulesActionCallbacks);
+                hideOptionGroup((RuleActionHideOptionGroup) ruleAction, rulesActionCallbacks);
             else
                 rulesActionCallbacks.unsupportedRuleAction();
 
@@ -211,15 +211,13 @@ public class RulesUtilsProviderImpl implements RulesUtilsProvider {
         programStages.remove(hideProgramStage.programStage());
     }
 
-    private void hideOption(RuleActionHideOption ruleAction,
-                            Map<String, FieldViewModel> fieldViewModels,
+    private void hideOption(RuleActionHideOption hideOption,
                             RulesActionCallbacks rulesActionCallbacks) {
-        ruleAction.option();
+        rulesActionCallbacks.setOptionToHide(hideOption.field());
     }
 
-    private void hideOptionGroup(RuleActionHideOptionGroup ruleAction,
-                                 Map<String, FieldViewModel> fieldViewModels,
+    private void hideOptionGroup(RuleActionHideOptionGroup hideOptionGroup,
                                  RulesActionCallbacks rulesActionCallbacks) {
-        ruleAction.optionGroup();
+        rulesActionCallbacks.setOptionGroupToHide(hideOptionGroup.optionGroup());
     }
 }

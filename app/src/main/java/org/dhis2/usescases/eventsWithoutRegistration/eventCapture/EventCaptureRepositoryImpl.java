@@ -513,7 +513,9 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                                                     "ProgramRuleAction.dataElement, " +
                                                     "ProgramRuleAction.location, " +
                                                     "ProgramRuleAction.content, " +
-                                                    "ProgramRuleAction.data " +
+                                                    "ProgramRuleAction.data, " +
+                                                    "ProgramRuleAction.option, " +
+                                                    "ProgramRuleAction.optionGroup " +
                                                     "FROM ProgramRuleAction WHERE programRule = ?", ruleModel.uid());
                                     if (actionsCursor != null) {
                                         if (actionsCursor.moveToFirst()) {
@@ -566,7 +568,9 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 "ProgramRuleAction.dataElement, " +
                 "ProgramRuleAction.location, " +
                 "ProgramRuleAction.content, " +
-                "ProgramRuleAction.data " +
+                "ProgramRuleAction.data, " +
+                "ProgramRuleAction.option, " +
+                "ProgramRuleAction.optionGroup " +
                 "FROM ProgramRuleAction WHERE programRule = ?", programRuleUid);
         if (actionsCursor != null) {
             if (actionsCursor.moveToFirst()) {

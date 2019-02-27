@@ -16,6 +16,7 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.maintenance.D2ErrorTableInfo;
+import org.hisp.dhis.android.core.option.OptionGroupOptionLinkTableInfo;
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.option.OptionSetModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
@@ -45,6 +46,7 @@ import io.reactivex.Observable;
 import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
+import static android.text.TextUtils.join;
 
 
 /**
@@ -404,20 +406,37 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     }
 
     @Override
-    public Observable<List<OptionModel>> searchOptions(String text, String idOptionSet, int page) {
+    public Observable<List<OptionModel>> searchOptions(String text, String idOptionSet, int page, List<String> optionsToHide, List<String> optionsGroupsToHide) {
         String pageQuery = String.format(Locale.US, " LIMIT %d,%d", page * 15, 15);
+        String formattedOptionsToHide = "'" + join("','", optionsToHide) + "'";
+        String formattedOptionGroupsToHide = "'" + join("','", optionsGroupsToHide) + "'";
 
-        String optionQuery = !isEmpty(text) ?
-                "select Option.* from OptionSet " +
-                        "JOIN Option ON Option.optionSet = OptionSet.uid " +
-                        "where OptionSet.uid = ? and Option.displayName like '%" + text + "%' " + pageQuery :
-                "select Option.* from OptionSet " +
-                        "JOIN Option ON Option.optionSet = OptionSet.uid " +
-                        "where OptionSet.uid = ? " + pageQuery;
+        String optionGroupQuery = "SELECT Option.* FROM Option " +
+                "JOIN OptionGroupOptionLink ON OptionGroupOptionLink.option = Option.uid  " +
+                "AND Option.optionSet = ? " +
+                "AND OptionGroupOptionLink.optionGroup NOT IN ("+ formattedOptionGroupsToHide +") " +
+                "ORDER BY  Option.sortOrder ASC";
 
-        return briteDatabase.createQuery(OptionSetModel.TABLE, optionQuery, idOptionSet)
-                .mapToList(OptionModel::create);
+        return briteDatabase.createQuery(OptionGroupOptionLinkTableInfo.TABLE_INFO.name(), optionGroupQuery, idOptionSet)
+                .mapToList(OptionModel::create)
+                .flatMap( list -> {
+                    if (list.isEmpty()){
+                        String optionQuery = !isEmpty(text) ?
+                                "select Option.* from OptionSet " +
+                                        "JOIN Option ON Option.optionSet = OptionSet.uid " +
+                                        "where OptionSet.uid = ? and Option.displayName like '%" + text + "%' " +
+                                        "AND Option.uid NOT IN ("+ formattedOptionsToHide +") " + pageQuery :
+                                "select Option.* from OptionSet " +
+                                        "JOIN Option ON Option.optionSet = OptionSet.uid " +
+                                        "where OptionSet.uid = ? " +
+                                        "AND Option.uid NOT IN ("+ formattedOptionsToHide +") " + pageQuery;
 
+                        return briteDatabase.createQuery(OptionSetModel.TABLE, optionQuery, idOptionSet)
+                                .mapToList(OptionModel::create);
+                    } else {
+                        return Observable.just(list);
+                    }
+                });
     }
 
 

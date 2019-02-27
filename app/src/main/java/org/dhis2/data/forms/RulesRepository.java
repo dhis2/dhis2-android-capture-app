@@ -116,7 +116,9 @@ public final class RulesRepository {
             "  ProgramRuleAction.dataElement,\n" +
             "  ProgramRuleAction.location,\n" +
             "  ProgramRuleAction.content,\n" +
-            "  ProgramRuleAction.data\n" +
+            "  ProgramRuleAction.data,\n" +
+            "  ProgramRuleAction.option,\n" +
+            "  ProgramRuleAction.optionGroup\n" +
             "FROM ProgramRuleAction\n" +
             "  INNER JOIN ProgramRule ON ProgramRuleAction.programRule = ProgramRule.uid\n" +
             "WHERE program = ? AND ProgramRuleAction.programRuleActionType IN (\n" +
@@ -131,7 +133,7 @@ public final class RulesRepository {
             "  \"ERRORONCOMPLETE\",\n" +
             "  \"CREATEEVENT\",\n" +
             "  \"HIDEPROGRAMSTAGE\",\n" +
-            "  \"SETMANDATORYFIELD\"" +
+            "  \"SETMANDATORYFIELD\",\n" +
             "  \"HIDEOPTION\",\n" +
             "  \"HIDEOPTIONGROUP\"" +
             ");";
@@ -440,6 +442,8 @@ public final class RulesRepository {
         String location = cursor.getString(7);
         String content = cursor.getString(8);
         String data = cursor.getString(9);
+        String option = cursor.getString(10);
+        String optionGroup = cursor.getString(11);
 
         if (dataElement == null && attribute == null) {
             dataElement = "";
@@ -481,9 +485,9 @@ public final class RulesRepository {
             case SETMANDATORYFIELD:
                 return RuleActionSetMandatoryField.create(isEmpty(attribute) ? dataElement : attribute);
             case HIDEOPTION:
-                return RuleActionHideOption.create(content, isEmpty(attribute) ? dataElement : attribute);
+                return RuleActionHideOption.create(content, isEmpty(attribute) ? dataElement : attribute, option);
             case HIDEOPTIONGROUP:
-                return RuleActionHideOptionGroup.create(content, isEmpty(attribute) ? dataElement : attribute);
+                return RuleActionHideOptionGroup.create(content, optionGroup);
             default:
                 throw new IllegalArgumentException(
                         "Unsupported RuleActionType: " + cursor.getString(3));

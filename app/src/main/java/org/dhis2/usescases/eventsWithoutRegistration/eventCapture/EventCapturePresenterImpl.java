@@ -65,6 +65,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private Map<String, FieldViewModel> emptyMandatoryFields;
     //Rules data
     private List<String> sectionsToHide;
+    private List<String> optionsToHide = new ArrayList<>();
+    private List<String> optionsGroupsToHide = new ArrayList<>();
     private boolean canComplete;
     private String completeMessage;
     private Map<String, String> errors;
@@ -293,7 +295,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         compositeDisposable.add(
                 EventCaptureFormFragment.getInstance().optionSetActions()
                         .flatMap(
-                                data -> metadataRepository.searchOptions(data.val0(), data.val1(), data.val2()).toFlowable(BackpressureStrategy.LATEST)
+                                data -> metadataRepository.searchOptions(data.val0(), data.val1(), data.val2(), optionsToHide, optionsGroupsToHide).toFlowable(BackpressureStrategy.LATEST)
                         )
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
@@ -323,6 +325,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
         //Reset effects
         sectionsToHide.clear();
+        optionsToHide.clear();
+        optionsGroupsToHide.clear();
         completeMessage = null;
         canComplete = true;
 
@@ -633,6 +637,16 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     @Override
     public void setHideProgramStage(String programStageUid) {
         //do not apply
+    }
+
+    @Override
+    public void setOptionToHide(String optionUid) {
+        optionsToHide.add(optionUid);
+    }
+
+    @Override
+    public void setOptionGroupToHide(String optionGroupUid) {
+        optionsGroupsToHide.add(optionGroupUid);
     }
 
     //endregion
