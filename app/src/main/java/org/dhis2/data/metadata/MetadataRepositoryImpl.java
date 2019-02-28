@@ -216,6 +216,8 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     private final String SELECT_DEFAULT_CAT_COMBO = String.format("SELECT %s FROM %s WHERE %s.%s = '1'",
             CategoryComboModel.Columns.UID, CategoryComboModel.TABLE, CategoryComboModel.TABLE, CategoryComboModel.Columns.IS_DEFAULT);
 
+    private final String SELECT_DEFAULT_CAT_OPTION_COMBO = String.format("SELECT %s FROM %s WHERE %s.%s = 'default'",
+            CategoryOptionComboModel.Columns.UID, CategoryOptionComboModel.TABLE, CategoryOptionComboModel.TABLE, CategoryOptionComboModel.Columns.CODE);
 
     private static final String RESOURCES_QUERY = String.format("SELECT * FROM %s WHERE %s.%s = ? LIMIT 1",
             ResourceModel.TABLE, ResourceModel.TABLE, ResourceModel.Columns.RESOURCE_TYPE);
@@ -263,6 +265,12 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     public Observable<String> getDefaultCategoryOptionId() {
         return briteDatabase
                 .createQuery(CategoryComboModel.TABLE, SELECT_DEFAULT_CAT_COMBO)
+                .mapToOne(cursor -> cursor.getString(0));
+    }
+    @Override
+    public Observable<String> getDefaultCategoryOptionComboId() {
+        return briteDatabase
+                .createQuery(CategoryOptionComboModel.TABLE, SELECT_DEFAULT_CAT_OPTION_COMBO)
                 .mapToOne(cursor -> cursor.getString(0));
     }
 

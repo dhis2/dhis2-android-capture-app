@@ -1,6 +1,8 @@
 package org.dhis2.usescases.datasets.datasetInitial;
 
 import androidx.databinding.DataBindingUtil;
+
+import android.content.Context;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
 import com.google.android.material.textfield.TextInputEditText;
@@ -168,7 +170,10 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
         StringBuilder catComb = new StringBuilder("");
         for (int i = 0; i < selectedCatOptions.keySet().size(); i++) {
             CategoryOptionModel catOpt = selectedCatOptions.get(selectedCatOptions.keySet().toArray()[i]);
-            catComb.append(catOpt.uid());
+            if(catOpt.code().equals("default"))
+                catComb.append(getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE).getString(Constants.PREF_DEFAULT_CAT_OPTION_COMBO, ""));
+            else
+                catComb.append(catOpt.uid());
             if (i < selectedCatOptions.values().size() - 1)
                 catComb.append(", ");
         }

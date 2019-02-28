@@ -54,8 +54,8 @@ public class Constants {
     public static final String DATA_SET_NAME = "DATA_SET_NAME";
     public static final int DESCRIPTION_DIALOG = 111;
     public static final String PERIOD_TYPE = "PERIOD_TYPE";
+    public static final String PERIOD_ID = "PERIOD_ID";
     public static final String PERIOD_TYPE_DATE = "PERIOD_TYPE_DATE";
-    public static final String PERIOD_ID = "periodId";
     public static final String CAT_COMB = "CAT_COMB";
     public static final String DEFAULT_CAT_COMBO = "DEFAULT_CAT_COMB";
     public static final String DATA_SET_SECTION = "DATA_SET_SECTION";
@@ -71,6 +71,7 @@ public class Constants {
     public static final String SECURE_USER_NAME = "SECURE_USER_NAME";
     public static final String SECURE_PASS = "SECURE_PASS";
     public static final String SECURE_CREDENTIALS = "SECURE_CREDENTIALS";
+    public static final String PREF_DEFAULT_CAT_OPTION_COMBO = "PREF_DEFAULT_CAT_OPTION_COMBO";
 
     public static String LAST_DATA_SYNC = "last_data_sync";
     public static String LAST_DATA_SYNC_STATUS = "last_data_sync_status";

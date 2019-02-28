@@ -57,6 +57,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     String catCombo;
     String dataSetUid;
     String periodId;
+
     boolean accessDataWrite;
     boolean tableSelectorVisible = false;
 
@@ -75,6 +76,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
                                    @NonNull String orgUnitName,
                                    @NonNull String periodTypeName,
                                    @NonNull String periodInitialDate,
+                                   @NonNull String periodId,
                                    @NonNull String catCombo) {
         Bundle bundle = new Bundle();
         bundle.putString(Constants.DATA_SET_UID, dataSetUid);
@@ -82,6 +84,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
         bundle.putString(Constants.ORG_UNIT_NAME, orgUnitName);
         bundle.putString(Constants.PERIOD_TYPE, periodTypeName);
         bundle.putString(Constants.PERIOD_TYPE_DATE, periodInitialDate);
+        bundle.putString(Constants.PERIOD_ID, periodId);
         bundle.putString(Constants.CAT_COMB, catCombo);
         return bundle;
     }
@@ -93,8 +96,8 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
         orgUnitUid = getIntent().getStringExtra(Constants.ORG_UNIT);
         orgUnitName = getIntent().getStringExtra(Constants.ORG_UNIT_NAME);
         periodTypeName = getIntent().getStringExtra(Constants.PERIOD_TYPE);
-        periodInitialDate = getIntent().getStringExtra(Constants.PERIOD_TYPE_DATE);
         periodId = getIntent().getStringExtra(Constants.PERIOD_ID);
+        periodInitialDate = getIntent().getStringExtra(Constants.PERIOD_TYPE_DATE);
         catCombo = getIntent().getStringExtra(Constants.CAT_COMB);
         dataSetUid = getIntent().getStringExtra(Constants.DATA_SET_UID);
         accessDataWrite = getIntent().getBooleanExtra(Constants.ACCESS_DATA, true);
