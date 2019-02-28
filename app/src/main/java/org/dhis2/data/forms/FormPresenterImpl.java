@@ -1,6 +1,5 @@
 package org.dhis2.data.forms;
 
-import androidx.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.squareup.sqlbrite2.BriteDatabase;
@@ -26,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import androidx.annotation.NonNull;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -117,6 +117,7 @@ class FormPresenterImpl implements FormPresenter {
                     .subscribe(program -> view.initReportDatePicker(program.selectEnrollmentDatesInFuture(), program.selectIncidentDatesInFuture()),
                             Timber::e)
             );
+
         } else {
             view.hideDates();
             compositeDisposable.add(formRepository.getProgramCategoryCombo()
@@ -128,6 +129,12 @@ class FormPresenterImpl implements FormPresenter {
                             },
                             Timber::e));
         }
+
+        compositeDisposable.add(formRepository.getOrgUnitDates()
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(orgUnit -> view.setMinMaxDates(orgUnit.openingDate(), orgUnit.closedDate()),
+                        Timber::e));
 
         //region SECTIONS
         Flowable<List<FormSectionViewModel>> sectionsFlowable = formRepository.sections();

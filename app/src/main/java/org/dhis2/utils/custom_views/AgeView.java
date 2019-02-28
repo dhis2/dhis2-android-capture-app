@@ -7,6 +7,7 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 
 import org.dhis2.R;
 import org.dhis2.databinding.AgeCustomViewAccentBinding;
@@ -41,6 +42,7 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
     private OnAgeSet listener;
     private String label;
     private String description;
+    private TextInputLayout inputLayout;
 
     public AgeView(Context context) {
         super(context);
@@ -75,7 +77,7 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
     }
 
     public void setWarningOrError(String warningOrError) {
-        date.setError(warningOrError);
+        inputLayout.setError(warningOrError);
     }
 
     private void onFocusChanged(View view, boolean b) {
@@ -193,6 +195,7 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
         else
             binding = AgeCustomViewBinding.inflate(inflater, this, true);
 
+        inputLayout = findViewById(R.id.inputLayout);
         date = findViewById(R.id.date_picker);
         day = findViewById(R.id.input_days);
         month = findViewById(R.id.input_month);

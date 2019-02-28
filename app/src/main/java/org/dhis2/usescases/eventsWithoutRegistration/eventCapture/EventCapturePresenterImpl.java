@@ -62,7 +62,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private ObservableField<String> currentSection;
     private FlowableProcessor<Integer> currentSectionPosition;
     private List<FormSectionViewModel> sectionList;
-    private Map<String, FieldViewModel> emptyMandatoryFields;
+    private Map<String, Map<String, FieldViewModel>> emptyMandatoryFields;
     //Rules data
     private List<String> sectionsToHide;
     private boolean canComplete;
@@ -71,6 +71,10 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private EventStatus eventStatus;
     private boolean hasExpired;
     private boolean snackBarIsShowing;
+
+    private enum RuleEffectType {
+        FROM_LIST, FROM_SECTION
+    }
 
     public EventCapturePresenterImpl(String eventUid, EventCaptureContract.EventCaptureRepository eventCaptureRepository, MetadataRepository metadataRepository, RulesUtilsProvider rulesUtils, DataEntryStore dataEntryStore) {
         this.eventUid = eventUid;
@@ -151,15 +155,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                 Flowable.zip(
                         eventCaptureRepository.list(),
                         eventCaptureRepository.calculate().subscribeOn(Schedulers.computation()),
-                        (a, b) -> this.applyEffects("FROM LIST", a, b))
-                        .map(fields -> {
-                            emptyMandatoryFields = new HashMap<>();
-                            for (FieldViewModel fieldViewModel : fields) {
-                                if (fieldViewModel.mandatory() && isEmpty(fieldViewModel.value()))
-                                    emptyMandatoryFields.put(fieldViewModel.uid(), fieldViewModel);
-                            }
-                            return fields;
-                        })
+                        (a, b) -> this.applyEffects(RuleEffectType.FROM_LIST, a, b))
+                        .map(this::updateMandatoryFields)
                         .map(fields -> {
                             HashMap<String, List<FieldViewModel>> fieldMap = new HashMap<>();
 
@@ -204,6 +201,17 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                         ));
 
 
+    }
+
+    private List<FieldViewModel> updateMandatoryFields(List<FieldViewModel> fields) {
+        for (FieldViewModel fieldViewModel : fields) {
+            if (fieldViewModel.mandatory() && isEmpty(fieldViewModel.value())) {
+                if (!emptyMandatoryFields.containsKey(fieldViewModel.programStageSection()))
+                    emptyMandatoryFields.put(fieldViewModel.programStageSection(), new HashMap<>());
+                emptyMandatoryFields.get(fieldViewModel.programStageSection()).put(fieldViewModel.uid(), fieldViewModel);
+            }
+        }
+        return fields;
     }
 
     private void checkExpiration() {
@@ -255,7 +263,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                 EventCaptureFormFragment.getInstance().setSectionTitle(arguments, formSectionViewModel);
                             } else {
                                 DataEntryArguments arguments =
-                                        DataEntryArguments.forEvent(formSectionViewModel.uid(),formSectionViewModel.renderType());
+                                        DataEntryArguments.forEvent(formSectionViewModel.uid(), formSectionViewModel.renderType());
                                 EventCaptureFormFragment.getInstance().setSingleSection(arguments, formSectionViewModel);
                             }
 
@@ -264,7 +272,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                     sectionList.size() - sectionsToHide.size());
                             return Flowable.zip(
                                     eventCaptureRepository.list(sectionList.get(position).sectionUid()),
-                                    eventCaptureRepository.calculate().subscribeOn(Schedulers.computation()), (a, b) -> this.applyEffects("FROM SECTION", a, b));
+                                    eventCaptureRepository.calculate().subscribeOn(Schedulers.computation()), (a, b) -> this.applyEffects(RuleEffectType.FROM_SECTION, a, b));
                         })
                         .observeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
@@ -312,7 +320,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
     @NonNull
     private List<FieldViewModel> applyEffects(
-            String whereDoIComeFrom,
+            RuleEffectType whereDoIComeFrom,
             @NonNull List<FieldViewModel> viewModels,
             @NonNull Result<RuleEffect> calcResult) {
 
@@ -322,6 +330,11 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         }
 
         //Reset effects
+        if (whereDoIComeFrom == RuleEffectType.FROM_LIST)
+            emptyMandatoryFields.clear();
+        else if (emptyMandatoryFields.containsKey(viewModels.get(0).programStageSection()))
+            emptyMandatoryFields.get(viewModels.get(0).programStageSection()).clear();
+
         sectionsToHide.clear();
         completeMessage = null;
         canComplete = true;
@@ -329,8 +342,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         Map<String, FieldViewModel> fieldViewModels = toMap(viewModels);
         rulesUtils.applyRuleEffects(fieldViewModels, calcResult, this);
 
+        return updateMandatoryFields(new ArrayList<>(fieldViewModels.values()));
 
-        return new ArrayList<>(fieldViewModels.values());
     }
 
     private void checkProgress() {

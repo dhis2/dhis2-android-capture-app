@@ -21,13 +21,9 @@ import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeAttribute;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeAttributeEntityDIModule;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeAttributeFields;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeAttributeTableInfo;
 
 import java.util.Arrays;
@@ -385,7 +381,8 @@ public class SearchRepositoryImpl implements SearchRepository {
         if (selectedProgramUid != null) {
             String orgUnitQuery = "SELECT * FROM OrganisationUnit " +
                     "JOIN OrganisationUnitProgramLink ON OrganisationUnitProgramLink.organisationUnit = OrganisationUnit.uid " +
-                    "WHERE OrganisationUnitProgramLink.program = ?";
+                    "JOIN UserOrganisationUnit ON UserOrganisationUnit.organisationUnit = OrganisationUnit.uid " +
+                    "WHERE OrganisationUnitProgramLink.program = ? AND UserOrganisationUnit.organisationUnitScope = 'SCOPE_DATA_CAPTURE'";
             return briteDatabase.createQuery(OrganisationUnitModel.TABLE, orgUnitQuery, selectedProgramUid)
                     .mapToList(OrganisationUnitModel::create);
         } else

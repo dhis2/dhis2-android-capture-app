@@ -20,6 +20,7 @@ import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionModel;
@@ -398,6 +399,14 @@ public class EventRepository implements FormRepository {
         return briteDatabase.createQuery("ProgramStage", "SELECT ProgramStage.captureCoordinates FROM ProgramStage " +
                 "JOIN Event ON Event.programStage = ProgramStage.uid WHERE Event.uid = ?", eventUid)
                 .mapToOne(cursor -> cursor.getInt(0) == 1);
+    }
+
+    @Override
+    public Observable<OrganisationUnitModel> getOrgUnitDates() {
+        return briteDatabase.createQuery("SELECT * FROM OrganisationUnit " +
+                "JOIN Event ON Event.organisationUnit = OrganisationUnit.uid " +
+                "WHERE Event.uid = ?", eventUid)
+                .mapToOne(OrganisationUnitModel::create);
     }
 
     @NonNull
