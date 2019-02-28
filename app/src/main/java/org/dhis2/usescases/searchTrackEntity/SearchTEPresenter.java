@@ -457,11 +457,29 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         orgUnitDialog.setTitle("Enrollment Org Unit")
                 .setPossitiveListener(v -> {
                     if (orgUnitDialog.getSelectedOrgUnit() != null)
-                        enrollInOrgUnit(orgUnitDialog.getSelectedOrgUnit(), programUid, uid, selectedEnrollmentDate);
+                        showEnrollmentDatePicker(orgUnitDialog.getSelectedOrgUnitModel(), programUid, uid);
                     orgUnitDialog.dismiss();
                 })
                 .setNegativeListener(v -> orgUnitDialog.dismiss());
 
+        compositeDisposable.add(getOrgUnits()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        allOrgUnits -> {
+                            if (orgUnits.size() > 1) {
+                                orgUnitDialog.setOrgUnits(orgUnits);
+                                if (!orgUnitDialog.isAdded())
+                                    orgUnitDialog.show(view.getAbstracContext().getSupportFragmentManager(), "OrgUnitEnrollment");
+                            } else if (orgUnits.size() == 1)
+                                enrollInOrgUnit(orgUnits.get(0).uid(), programUid, uid, selectedEnrollmentDate);
+                        },
+                        Timber::d
+                )
+        );
+    }
+
+    private void showEnrollmentDatePicker(OrganisationUnitModel selectedOrgUnitModel, String programUid, String uid) {
         Calendar c = Calendar.getInstance();
         int year = c.get(Calendar.YEAR);
         int month = c.get(Calendar.MONTH);
@@ -478,43 +496,29 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                     selectedCalendar.set(Calendar.SECOND, 0);
                     selectedCalendar.set(Calendar.MILLISECOND, 0);
                     selectedEnrollmentDate = selectedCalendar.getTime();
-                    String enrollmentDate = DateUtils.uiDateFormat().format(selectedEnrollmentDate);
 
-                    compositeDisposable.add(getOrgUnits()
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(
-                                    allOrgUnits -> {
-                                        ArrayList<OrganisationUnitModel> orgUnits = new ArrayList<>();
-                                        for (OrganisationUnitModel orgUnit : allOrgUnits) {
-                                            boolean afterOpening = false;
-                                            boolean beforeClosing = false;
-                                            if (orgUnit.openingDate() == null || !selectedEnrollmentDate.before(orgUnit.openingDate()))
-                                                afterOpening = true;
-                                            if (orgUnit.closedDate() == null || !selectedEnrollmentDate.after(orgUnit.closedDate()))
-                                                beforeClosing = true;
-                                            if (afterOpening && beforeClosing)
-                                                orgUnits.add(orgUnit);
-                                        }
-                                        if (orgUnits.size() > 1) {
-                                            orgUnitDialog.setOrgUnits(orgUnits);
-                                            if (!orgUnitDialog.isAdded())
-                                                orgUnitDialog.show(view.getAbstracContext().getSupportFragmentManager(), "OrgUnitEnrollment");
-                                        } else
-                                            enrollInOrgUnit(orgUnits.get(0).uid(), programUid, uid, selectedEnrollmentDate);
-                                    },
-                                    Timber::d
-                            )
-                    );
-
+                    enrollInOrgUnit(selectedOrgUnitModel.uid(), programUid, uid, selectedEnrollmentDate);
 
                 }),
                 year,
                 month,
                 day);
-        if (selectedProgram != null && !selectedProgram.selectEnrollmentDatesInFuture()) {
+
+        if (selectedOrgUnitModel.openingDate() != null)
+            dateDialog.getDatePicker().setMinDate(selectedOrgUnitModel.openingDate().getTime());
+
+        if (selectedOrgUnitModel.closedDate() == null && !selectedProgram.selectEnrollmentDatesInFuture()) {
             dateDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
+        } else if (selectedOrgUnitModel.closedDate() != null && !selectedProgram.selectEnrollmentDatesInFuture()) {
+            if (selectedOrgUnitModel.closedDate().before(new Date(System.currentTimeMillis()))) {
+                dateDialog.getDatePicker().setMaxDate(selectedOrgUnitModel.closedDate().getTime());
+            } else {
+                dateDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
+            }
+        } else if (selectedOrgUnitModel.closedDate() != null && selectedProgram.selectEnrollmentDatesInFuture()) {
+            dateDialog.getDatePicker().setMaxDate(selectedOrgUnitModel.closedDate().getTime());
         }
+
         dateDialog.setTitle(selectedProgram.enrollmentDateLabel());
         dateDialog.setButton(DialogInterface.BUTTON_NEGATIVE, view.getContext().getString(R.string.date_dialog_clear), (dialog, which) -> {
             dialog.dismiss();

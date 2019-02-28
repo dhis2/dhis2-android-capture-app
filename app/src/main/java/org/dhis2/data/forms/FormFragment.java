@@ -43,6 +43,7 @@ import org.hisp.dhis.rules.models.RuleActionErrorOnCompletion;
 import org.hisp.dhis.rules.models.RuleActionShowError;
 import org.hisp.dhis.rules.models.RuleActionWarningOnCompletion;
 
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -103,6 +104,8 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     private RuleActionShowError showError;
     private String programUid;
     private String teiUid;
+    private Date openingDate;
+    private Date closingDate;
 
 
     public FormFragment() {
@@ -323,6 +326,12 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
         return captureCoordinates -> coordinatesView.setVisibility(captureCoordinates ? View.VISIBLE : View.GONE);
     }
 
+    @Override
+    public void setMinMaxDates(Date openingDate, Date closingDate) {
+        this.openingDate = openingDate;
+        this.closingDate = closingDate;
+    }
+
     @NonNull
     @Override
     public Consumer<String> renderTitle() {
@@ -377,12 +386,14 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     public void initReportDatePicker(boolean reportAllowFutureDates, boolean incidentAllowFutureDates) {
         reportDate.setOnClickListener(v -> {
             DatePickerDialogFragment dialog = DatePickerDialogFragment.create(reportAllowFutureDates);
+            dialog.setOpeningClosingDates(openingDate,closingDate);
             dialog.show(getFragmentManager());
             dialog.setFormattedOnDateSetListener(publishReportDateChange());
         });
 
         incidentDate.setOnClickListener(v -> {
             DatePickerDialogFragment dialog = DatePickerDialogFragment.create(incidentAllowFutureDates);
+            dialog.setOpeningClosingDates(openingDate,closingDate);
             dialog.show(getFragmentManager());
             dialog.setFormattedOnDateSetListener(publishIncidentDateChange());
         });
@@ -390,6 +401,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
         reportDate.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
                 DatePickerDialogFragment dialog = DatePickerDialogFragment.create(reportAllowFutureDates);
+                dialog.setOpeningClosingDates(openingDate,closingDate);
                 dialog.show(getFragmentManager());
                 dialog.setFormattedOnDateSetListener(publishReportDateChange());
             }
@@ -398,6 +410,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
         incidentDate.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
                 DatePickerDialogFragment dialog = DatePickerDialogFragment.create(incidentAllowFutureDates);
+                dialog.setOpeningClosingDates(openingDate,closingDate);
                 dialog.show(getFragmentManager());
                 dialog.setFormattedOnDateSetListener(publishIncidentDateChange());
             }

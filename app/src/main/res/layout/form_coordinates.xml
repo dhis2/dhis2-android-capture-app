@@ -41,6 +41,7 @@
             android:layout_below="@id/renderImage">
 
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/inputLayout"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"

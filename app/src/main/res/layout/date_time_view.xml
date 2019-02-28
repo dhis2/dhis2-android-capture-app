@@ -36,7 +36,7 @@
             android:layout_below="@id/renderImage"
             android:orientation="horizontal">
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/button"
+            android:id="@+id/inputLayout"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
