@@ -80,10 +80,11 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
 
 
 
-    public DataSetTableAdapter(Context context) {
+    public DataSetTableAdapter(Context context, FlowableProcessor<RowAction> processor) {
         super(context);
         rows = new ArrayList<>();
-        processor = PublishProcessor.create();
+        this.processor = processor;
+        //processor = PublishProcessor.create();
         layoutInflater = LayoutInflater.from(context);
         viewModels = new ArrayList<>();
     }

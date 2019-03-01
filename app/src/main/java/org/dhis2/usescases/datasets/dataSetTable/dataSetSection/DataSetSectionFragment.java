@@ -97,7 +97,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_dataset_section, container, false);
-        adapter = new DataSetTableAdapter(getAbstracContext());
+
         /*adapter = new DataSetTableAdapter(getAbstracContext());
 
         tableView = new TableView(getContext());
@@ -136,7 +136,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
         }
 
         presenterFragment.setCurrentNumTables(dataTableModel.catCombos().size());
-
+        adapter = new DataSetTableAdapter(getAbstracContext() , presenterFragment.getProcessor());
         presenterFragment.initializeProcessor(this);
         for(String catCombo: dataTableModel.catCombos()) {
             List<List<CategoryOptionModel>> columnHeaderItems = dataTableModel.headers().get(catCombo);
@@ -255,7 +255,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
             tableCreated = false;*/
 
             if(!catCombo.equals(dataTableModel.catCombos().get(dataTableModel.catCombos().size()-1)))
-                adapter = new DataSetTableAdapter(getAbstracContext());
+                adapter = new DataSetTableAdapter(getAbstracContext(), presenterFragment.getProcessor());
 
         }
 

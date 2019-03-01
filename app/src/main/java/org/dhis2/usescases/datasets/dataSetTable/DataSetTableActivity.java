@@ -105,12 +105,6 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
         binding.setPresenter(presenter);
         binding.dataSetName.setText(String.format("%s - %s", orgUnitName, periodInitialDate));
 
-        FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(this);
-        layoutManager.setFlexDirection(FlexDirection.ROW);
-        layoutManager.setJustifyContent(JustifyContent.FLEX_START);
-        binding.tableRecycler.setLayoutManager(layoutManager);
-
-        binding.tableRecycler.setAdapter(new TableCheckboxAdapter(presenter));
         //DataSet Selector
         binding.dataSetOrgUnitEditText.setText(orgUnitName);
         binding.dataSetPeriodEditText.setText(periodInitialDate);
@@ -154,6 +148,12 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
                     for(int i =0; i< viewPagerAdapter.getCurrentItem(binding.tabLayout.getSelectedTabPosition()).currentNumTables() ; i++){
                         tables.add("Table "+ i);
                     }
+                    FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(getContext());
+                    layoutManager.setFlexDirection(FlexDirection.ROW);
+                    layoutManager.setJustifyContent(JustifyContent.FLEX_START);
+                    binding.tableRecycler.setLayoutManager(layoutManager);
+
+                    binding.tableRecycler.setAdapter(new TableCheckboxAdapter(presenter));
                     ((TableCheckboxAdapter)binding.tableRecycler.getAdapter()).swapData(tables);
                 }
 
@@ -294,6 +294,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
     @Override
     public void goToTable(int numTable) {
+        ((TableCheckboxAdapter)binding.tableRecycler.getAdapter()).setSelectedPosition(numTable);
         viewPagerAdapter.getCurrentItem(binding.tabLayout.getSelectedTabPosition()).goToTable(numTable);
     }
 

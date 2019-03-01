@@ -5,6 +5,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
+import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Quintet;
 import org.dhis2.data.tuples.Sextet;
@@ -32,6 +33,8 @@ import androidx.annotation.NonNull;
 import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.processors.FlowableProcessor;
+import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
@@ -52,6 +55,9 @@ public class DataValuePresenter implements DataValueContract.Presenter{
     private DataTableModel dataTableModel;
     private String periodId;
     private int currentNumTables;
+
+    @NonNull
+    private FlowableProcessor<RowAction> processor;
     public DataValuePresenter(DataValueRepository repository){
         this.repository = repository;
     }
@@ -60,6 +66,7 @@ public class DataValuePresenter implements DataValueContract.Presenter{
     public void init(DataValueContract.View view, String orgUnitUid, String periodTypeName, String periodFinalDate, String attributeOptionCombo, String section, String periodId) {
         compositeDisposable = new CompositeDisposable();
         this.view = view;
+        processor = PublishProcessor.create();
         dataValuesChanged = new ArrayList<>();
         this.orgUnitUid = orgUnitUid;
         this.periodTypeName = periodTypeName;
@@ -170,7 +177,7 @@ public class DataValuePresenter implements DataValueContract.Presenter{
                                         if (entry.getValue().containsAll(rowAction.listCategoryOption()))
                                             catOptionCombo = entry.getKey();
                                     }
-                                    dataSetTableModel = DataSetTableModel.create(Long.parseLong("0"), rowAction.dataElement(), periodTypeName, orgUnitUid,
+                                    dataSetTableModel = DataSetTableModel.create(Long.parseLong("0"), rowAction.dataElement(), periodId, orgUnitUid,
                                             catOptionCombo, attributeOptionCombo, rowAction.value() != null ? rowAction.value() : "", "",
                                             "", rowAction.listCategoryOption(), rowAction.catCombo());
                                     dataTableModel.dataValues().add(dataSetTableModel);
@@ -307,5 +314,11 @@ public class DataValuePresenter implements DataValueContract.Presenter{
     @Override
     public int getCurrentNumTables() {
         return currentNumTables;
+    }
+
+    @Override
+    @NonNull
+    public FlowableProcessor<RowAction> getProcessor() {
+        return processor;
     }
 }

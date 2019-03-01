@@ -12,30 +12,35 @@ public class TableCheckboxViewHolder extends RecyclerView.ViewHolder{
 
     private ItemTableCheckboxBinding binding;
     private DataSetTableContract.Presenter presenter;
-    private boolean isFirst = true;
+
     public TableCheckboxViewHolder(ItemTableCheckboxBinding binding, DataSetTableContract.Presenter presenter) {
         super(binding.getRoot());
         this.binding = binding;
         this.presenter = presenter;
-        isFirst = true;
     }
 
-    public void bind(String title) {
-        RadioButton radio = new RadioButton(binding.getRoot().getContext());
+    public void bind(String title, int position, int selectedPosition) {
+        /*RadioButton radio = new RadioButton(binding.getRoot().getContext());
         radio.setText(title);
 
         radio.setTextColor(binding.getRoot().getContext().getResources().getColor(R.color.white));
-
-        radio.setOnCheckedChangeListener((checkButton, isChecked) ->{
-            if(isChecked)
+*/
+        binding.setTitle(title);
+        if(position != selectedPosition)
+            binding.radioButton.setChecked(false);
+        binding.radioButton.setOnCheckedChangeListener((checkButton, isChecked) ->{
+            if(isChecked) {
                 presenter.onClickSelectTable(this.getAdapterPosition());
+
+            }
         } );
 
-        if(isFirst)
+        binding.executePendingBindings();
+
+       /* if(position == 0)
             radio.setChecked(true);
 
-        isFirst = false;
-        binding.radioGroup.addView(radio);
+        binding.radioGroup.addView(radio);*/
         //binding.setTitle(title);
     }
 }

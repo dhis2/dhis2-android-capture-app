@@ -8,14 +8,16 @@
             type="String" />
     </data>
 
-    <RadioGroup
-        android:id="@+id/radioGroup"
+    <RadioButton
+        android:id="@+id/radioButton"
         android:orientation="horizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:buttonTint="?colorPrimary">
+        android:buttonTint="?colorPrimary"
+        android:background="@drawable/white_button_bg"
+        android:text="@{title}">
 
-    </RadioGroup>
+    </RadioButton>
 
    <!-- <CheckBox
         android:id="@+id/checkbox"

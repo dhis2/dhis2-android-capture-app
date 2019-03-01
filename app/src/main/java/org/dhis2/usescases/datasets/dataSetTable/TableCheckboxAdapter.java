@@ -23,14 +23,14 @@ public class TableCheckboxAdapter extends RecyclerView.Adapter<TableCheckboxView
 
     private List<String> tables;
     private DataSetTableContract.Presenter presenter;
-
+    private int selectedPosition;
     public TableCheckboxAdapter(DataSetTableContract.Presenter presenter){
         this.tables = new ArrayList<>();
         this.presenter = presenter;
     }
 
     public void swapData(List<String> tables){
-        this.tables = tables;
+        this.tables = new ArrayList<>(tables);
         notifyDataSetChanged();
     }
 
@@ -45,11 +45,16 @@ public class TableCheckboxAdapter extends RecyclerView.Adapter<TableCheckboxView
 
     @Override
     public void onBindViewHolder(@NonNull TableCheckboxViewHolder holder, int position) {
-        holder.bind(tables.get(position));
+        holder.bind(tables.get(position), position, selectedPosition);
     }
 
     @Override
     public int getItemCount() {
         return tables.size();
+    }
+
+    public void setSelectedPosition(int selectedPosition){
+        this.selectedPosition = selectedPosition;
+        notifyDataSetChanged();
     }
 }
