@@ -4,6 +4,7 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
@@ -46,6 +47,17 @@ import timber.log.Timber;
  */
 
 public class Bindings {
+
+    @BindingAdapter("elevation")
+    public static void setElevation(View view, float elevation) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            view.setElevation(elevation);
+        } else {
+            Drawable drawable = view.getResources().getDrawable(android.R.drawable.dialog_holo_light_frame);
+            drawable.setColorFilter(new PorterDuffColorFilter(view.getResources().getColor(R.color.colorGreyDefault), PorterDuff.Mode.MULTIPLY));
+            view.setBackground(drawable);
+        }
+    }
 
     @BindingAdapter("date")
     public static void setDate(TextView textView, String date) {

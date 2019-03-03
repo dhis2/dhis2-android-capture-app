@@ -112,8 +112,6 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
                 ).subscribe(result -> {
                             if (result == -5)
                                 dataEntryView.showMessage(R.string.unique_warning);
-                            else
-                                Timber.d(result.toString());
                         },
                         Timber::d)
         );

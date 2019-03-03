@@ -435,7 +435,6 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 .switchMap(
                         event -> formRepository.ruleEngine()
                                 .switchMap(ruleEngine -> {
-//                                    return Flowable.fromCallable(ruleEngine.evaluate(event));
                                     if (isEmpty(lastUpdatedUid))
                                         return Flowable.fromCallable(ruleEngine.evaluate(event));
                                     else

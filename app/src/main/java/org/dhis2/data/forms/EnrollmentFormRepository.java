@@ -627,9 +627,9 @@ class EnrollmentFormRepository implements FormRepository {
                                 .mapToList(ProgramStageModel::create).map(programstages -> Trio.create(programModel.useFirstStageDuringRegistration(), programstages, programModel.trackedEntityType())))
                 .map(data -> {
                     ProgramStageModel stageToOpen = null;
-                    if (data.val0()) {
+                    if (data.val0() && !data.val1().isEmpty()) {
                         stageToOpen = data.val1().get(0);
-                    } else {
+                    } else if(!data.val1().isEmpty()){
                         for (ProgramStageModel programStage : data.val1()) {
                             if (programStage.openAfterEnrollment() && stageToOpen == null)
                                 stageToOpen = programStage;

@@ -164,17 +164,6 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
                     id))
                     .mapToList(cursor -> {
                         EventModel eventModel = EventModel.create(cursor);
-
-                        Cursor program = briteDatabase.query("SELECT * FROM Program WHERE uid = ?", programUid);
-                        if (program != null && program.moveToFirst()) {
-                            ProgramModel programModel = ProgramModel.create(program);
-                            if (DateUtils.getInstance().hasExpired(eventModel, programModel.expiryDays(), programModel.completeEventsExpiryDays(), programModel.expiryPeriodType())) {
-                                ContentValues contentValues = eventModel.toContentValues();
-                                contentValues.put(EventModel.Columns.STATUS, EventStatus.SKIPPED.toString());
-                                briteDatabase.update(EventModel.TABLE, contentValues, "uid = ?", eventModel.uid());
-                            }
-                            program.close();
-                        }
                         return transformIntoEventViewModel(eventModel);
                     }).toFlowable(BackpressureStrategy.LATEST);
         }
