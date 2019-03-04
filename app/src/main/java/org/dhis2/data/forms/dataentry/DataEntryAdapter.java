@@ -156,14 +156,8 @@ public final class DataEntryAdapter extends Adapter {
             return Constants.SPINNER;
         } else if (viewModel instanceof CoordinateViewModel) {
             return Constants.COORDINATES;
-
         } else if (viewModel instanceof DateTimeViewModel) {
-            if (((DateTimeViewModel) viewModel).valueType() == ValueType.DATE)
-                return Constants.DATE;
-            if (((DateTimeViewModel) viewModel).valueType() == ValueType.TIME)
-                return Constants.TIME;
-            else
-                return Constants.DATETIME;
+            return getDateTimeItemViewType(viewModel);
         } else if (viewModel instanceof AgeViewModel) {
             return Constants.AGEVIEW;
         } else if (viewModel instanceof FileViewModel) {
@@ -178,6 +172,15 @@ public final class DataEntryAdapter extends Adapter {
             throw new IllegalStateException("Unsupported view model type: "
                     + viewModel.getClass());
         }
+    }
+
+    private int getDateTimeItemViewType(FieldViewModel viewModel) {
+        if (((DateTimeViewModel) viewModel).valueType() == ValueType.DATE)
+            return Constants.DATE;
+        if (((DateTimeViewModel) viewModel).valueType() == ValueType.TIME)
+            return Constants.TIME;
+        else
+            return Constants.DATETIME;
     }
 
     @Override
