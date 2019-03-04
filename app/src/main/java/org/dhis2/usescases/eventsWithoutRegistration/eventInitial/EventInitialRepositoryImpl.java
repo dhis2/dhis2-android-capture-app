@@ -415,7 +415,8 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     @Override
     public boolean isEnrollmentOpen() {
         Boolean isEnrollmentOpen = true;
-        Cursor enrollmentCursor = briteDatabase.query("SELECT Enrollment.* FROM Enrollment JOIN Event ON Event.enrollment = Enrollment.uid WHERE Event.uid = ?", eventUid);
+        String event = eventUid != null && !eventUid.isEmpty() ? eventUid : "";
+        Cursor enrollmentCursor = briteDatabase.query("SELECT Enrollment.* FROM Enrollment JOIN Event ON Event.enrollment = Enrollment.uid WHERE Event.uid = ?", event);
         if (enrollmentCursor != null) {
             if (enrollmentCursor.moveToFirst()) {
                 EnrollmentModel enrollment = EnrollmentModel.create(enrollmentCursor);
