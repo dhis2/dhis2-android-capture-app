@@ -684,6 +684,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
             if (programAccessData.moveToFirst()) {
                 canWrite = ProgramModel.create(programAccessData).accessDataWrite();
                 if (canWrite) {
+                    programAccessData.close();
                     Cursor stageAccessData = briteDatabase.query("SELECT ProgramStage.* FROM ProgramStage JOIN Event ON Event.programStage = ProgramStage.uid WHERE Event.uid = ? ", eventUid);
                     if (stageAccessData != null) {
                         if (stageAccessData.moveToFirst()) {
@@ -693,7 +694,8 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                     }
                 }
             }
-            programAccessData.close();
+            if(!programAccessData.isClosed())
+                programAccessData.close();
         }
         return canWrite;
     }
