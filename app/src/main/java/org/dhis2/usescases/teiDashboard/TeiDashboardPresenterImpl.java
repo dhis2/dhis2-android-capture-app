@@ -111,10 +111,10 @@ public class TeiDashboardPresenterImpl implements TeiDashboardContracts.TeiDashb
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
-                            dashboardProgramModelResult -> {
-                                dashboardProgramModel = dashboardProgramModelResult;
-                                programWritePermission = dashboardProgramModel.getCurrentProgram().accessDataWrite();
-                                teType = dashboardProgramModel.getTei().trackedEntityType();
+                            dashboardModel -> {
+                                this.dashboardProgramModel = dashboardModel;
+                                this.programWritePermission = dashboardProgramModel.getCurrentProgram().accessDataWrite();
+                                this.teType = dashboardProgramModel.getTei().trackedEntityType();
                                 view.setData(dashboardProgramModel);
                             },
                             Timber::e
@@ -130,12 +130,17 @@ public class TeiDashboardPresenterImpl implements TeiDashboardContracts.TeiDashb
                     metadataRepository.getTeiActivePrograms(teUid),
                     metadataRepository.getTEIEnrollments(teUid),
                     DashboardProgramModel::new)
+                    .flatMap(dashboardProgramModel1 -> metadataRepository.getObjectStylesForPrograms(dashboardProgramModel1.getEnrollmentProgramModels())
+                    .map(stringObjectStyleMap -> {
+                        dashboardProgramModel1.setProgramsObjectStyles(stringObjectStyleMap);
+                        return dashboardProgramModel1;
+                    }))
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
-                            dashboardProgramModelResult -> {
-                                dashboardProgramModel = dashboardProgramModelResult;
-                                teType = dashboardProgramModel.getTei().trackedEntityType();
+                            dashboardModel -> {
+                                this.dashboardProgramModel = dashboardModel;
+                                this.teType = dashboardProgramModel.getTei().trackedEntityType();
                                 view.setData(dashboardProgramModel);
                             },
                             Timber::e)
@@ -425,11 +430,11 @@ public class TeiDashboardPresenterImpl implements TeiDashboardContracts.TeiDashb
                         Observable.fromIterable(indicators)
                                 .filter(ProgramIndicatorModel::displayInForm)
                                 .map(indicator -> {
-                                    String indcatorValue = d2.evaluateProgramIndicator(
+                                    String indicatorValue = d2.programModule().programIndicatorEngine.getProgramIndicatorValue(
                                             dashboardProgramModel.getCurrentEnrollment().uid(),
                                             null,
                                             indicator.uid());
-                                    return Pair.create(indicator, indcatorValue == null ? "" : indcatorValue);
+                                    return Pair.create(indicator, indicatorValue == null ? "" : indicatorValue);
                                 })
                                 .filter(pair -> !pair.val1().isEmpty())
                                 .flatMap(pair -> dashboardRepository.getLegendColorForIndicator(pair.val0(), pair.val1()))

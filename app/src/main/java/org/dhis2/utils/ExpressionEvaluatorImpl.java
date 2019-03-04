@@ -3,7 +3,7 @@ package org.dhis2.utils;
 import org.apache.commons.jexl2.JexlEngine;
 import org.hisp.dhis.rules.RuleExpressionEvaluator;
 
-import javax.annotation.Nonnull;
+import androidx.annotation.NonNull;
 
 import androidx.annotation.NonNull;
 
@@ -13,13 +13,13 @@ import androidx.annotation.NonNull;
 
 public class ExpressionEvaluatorImpl implements RuleExpressionEvaluator {
 
-    private JexlEngine jexl;
+    private final JexlEngine jexl;
 
     public ExpressionEvaluatorImpl(@NonNull JexlEngine jexl) {
         this.jexl = jexl;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public String evaluate(@NonNull String expression) {
         try {

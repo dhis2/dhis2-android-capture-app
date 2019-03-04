@@ -29,10 +29,10 @@ import static android.text.TextUtils.isEmpty;
 
 public class AgeView extends FieldLayout implements View.OnClickListener, View.OnFocusChangeListener {
 
-    private TextInputEditText dateTIET;
-    private TextInputEditText dayTIET;
-    private TextInputEditText monthTIET;
-    private TextInputEditText yearTIET;
+    private TextInputEditText date;
+    private TextInputEditText day;
+    private TextInputEditText month;
+    private TextInputEditText year;
     private ViewDataBinding binding;
 
     private Calendar selectedCalendar;
@@ -40,6 +40,7 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
 
     private OnAgeSet listener;
     private String label;
+    private String description;
 
     public AgeView(Context context) {
         super(context);
@@ -58,11 +59,12 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
 
     @Override
     public void performOnFocusAction() {
-        dateTIET.performClick();
+        date.performClick();
     }
 
     public void setLabel(String label, String description) {
         this.label = label;
+        this.description = description;
         if (binding instanceof AgeCustomViewAccentBinding) {
             ((AgeCustomViewAccentBinding) binding).setLabel(label);
             ((AgeCustomViewAccentBinding) binding).setDescription(description);
@@ -73,7 +75,7 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
     }
 
     public void setWarningOrError(String warningOrError) {
-        dateTIET.setError(warningOrError);
+        date.setError(warningOrError);
     }
 
     private void onFocusChanged(View view, boolean b) {
@@ -89,7 +91,7 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
         int day = c.get(Calendar.DAY_OF_MONTH);
 
         DatePickerDialog dateDialog = new DatePickerDialog(getContext(), (
-                (datePicker, year1, month1, day1) -> handleDateInput(year1, month1, day1)),
+                (datePicker, year1, month1, day1) -> handleDateInput(view, year1, month1, day1)),
                 year,
                 month,
                 day);
@@ -111,31 +113,29 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
                 case R.id.input_year:
                     handleSingleInputs();
                     break;
-                default:
-                    break;
             }
     }
 
-    private void handleSingleInputs() {
+    protected void handleSingleInputs() {
 
         Calendar calendar = Calendar.getInstance();
 
-        calendar.add(Calendar.DAY_OF_MONTH, isEmpty(dayTIET.getText().toString()) ? 0 : -Integer.valueOf(dayTIET.getText().toString()));
-        calendar.add(Calendar.MONTH, isEmpty(monthTIET.getText().toString()) ? 0 : -Integer.valueOf(monthTIET.getText().toString()));
-        calendar.add(Calendar.YEAR, isEmpty(yearTIET.getText().toString()) ? 0 : -Integer.valueOf(yearTIET.getText().toString()));
+        calendar.add(Calendar.DAY_OF_MONTH, isEmpty(day.getText().toString()) ? 0 : -Integer.valueOf(day.getText().toString()));
+        calendar.add(Calendar.MONTH, isEmpty(month.getText().toString()) ? 0 : -Integer.valueOf(month.getText().toString()));
+        calendar.add(Calendar.YEAR, isEmpty(year.getText().toString()) ? 0 : -Integer.valueOf(year.getText().toString()));
         calendar.set(Calendar.HOUR_OF_DAY, 0);
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
 
         String birthDate = DateUtils.uiDateFormat().format(calendar.getTime());
-        if (!dateTIET.getText().toString().equals(birthDate)) {
-            dateTIET.setText(birthDate);
+        if (!date.getText().toString().equals(birthDate)) {
+            date.setText(birthDate);
             listener.onAgeSet(calendar.getTime());
         }
     }
 
-    private void handleDateInput(int year1, int month1, int day1) {
+    protected void handleDateInput(View view, int year1, int month1, int day1) {
         selectedCalendar.set(Calendar.YEAR, year1);
         selectedCalendar.set(Calendar.MONTH, month1);
         selectedCalendar.set(Calendar.DAY_OF_MONTH, day1);
@@ -147,13 +147,14 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
         String result = dateFormat.format(selectedCalendar.getTime());
 
         int[] dateDifference = DateUtils.getDifference(selectedCalendar.getTime(), Calendar.getInstance().getTime());
-        dayTIET.setText(String.valueOf(dateDifference[2]));
-        monthTIET.setText(String.valueOf(dateDifference[1]));
-        yearTIET.setText(String.valueOf(dateDifference[0]));
+        day.setText(String.valueOf(dateDifference[2]));
+        month.setText(String.valueOf(dateDifference[1]));
+        year.setText(String.valueOf(dateDifference[0]));
 
-        if (!result.equals(dateTIET.getText().toString())) {
-            dateTIET.setText(result);
+        if (!result.equals(date.getText().toString())) {
+            date.setText(result);
             listener.onAgeSet(selectedCalendar.getTime());
+//            nextFocus(view);
         }
     }
 
@@ -177,11 +178,11 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
         String result = dateFormat.format(initialDate);
 
         int[] dateDifference = DateUtils.getDifference(initialDate, Calendar.getInstance().getTime());
-        dayTIET.setText(String.valueOf(dateDifference[2]));
-        monthTIET.setText(String.valueOf(dateDifference[1]));
-        yearTIET.setText(String.valueOf(dateDifference[0]));
+        day.setText(String.valueOf(dateDifference[2]));
+        month.setText(String.valueOf(dateDifference[1]));
+        year.setText(String.valueOf(dateDifference[0]));
 
-        dateTIET.setText(result);
+        date.setText(result);
     }
 
 
@@ -192,39 +193,39 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
         else
             binding = AgeCustomViewBinding.inflate(inflater, this, true);
 
-        dateTIET = findViewById(R.id.date_picker);
-        dayTIET = findViewById(R.id.input_days);
-        monthTIET = findViewById(R.id.input_month);
-        yearTIET = findViewById(R.id.input_year);
+        date = findViewById(R.id.date_picker);
+        day = findViewById(R.id.input_days);
+        month = findViewById(R.id.input_month);
+        year = findViewById(R.id.input_year);
         selectedCalendar = Calendar.getInstance();
         dateFormat = DateUtils.uiDateFormat();
 
-        dateTIET.setFocusable(false); //Makes editText not editable
-        dateTIET.setClickable(true);//  but clickable
-        dateTIET.setOnFocusChangeListener(this::onFocusChanged);
-        dateTIET.setOnClickListener(this);
+        date.setFocusable(false); //Makes editText not editable
+        date.setClickable(true);//  but clickable
+        date.setOnFocusChangeListener(this::onFocusChanged);
+        date.setOnClickListener(this);
 
-        dayTIET.setFocusable(false);
-        dayTIET.setClickable(true);
-        monthTIET.setFocusable(false);
-        monthTIET.setClickable(true);
-        yearTIET.setFocusable(false);
-        yearTIET.setClickable(true);
+        day.setFocusable(true);
+        day.setClickable(true);
+        month.setFocusable(true);
+        month.setClickable(true);
+        year.setFocusable(true);
+        year.setClickable(true);
 
-        dayTIET.setFilters(new InputFilter[]{new InputFilter.LengthFilter(2)});
-        monthTIET.setFilters(new InputFilter[]{new InputFilter.LengthFilter(2)});
-        yearTIET.setFilters(new InputFilter[]{new InputFilter.LengthFilter(4)});
+        day.setFilters(new InputFilter[]{new InputFilter.LengthFilter(2)});
+        month.setFilters(new InputFilter[]{new InputFilter.LengthFilter(2)});
+        year.setFilters(new InputFilter[]{new InputFilter.LengthFilter(4)});
 
-        dayTIET.setOnFocusChangeListener(this);
-        monthTIET.setOnFocusChangeListener(this);
-        yearTIET.setOnFocusChangeListener(this);
+        day.setOnFocusChangeListener(this);
+        month.setOnFocusChangeListener(this);
+        year.setOnFocusChangeListener(this);
     }
 
     public void setEditable(Boolean editable) {
-        dateTIET.setEnabled(editable);
-        dayTIET.setEnabled(editable);
-        monthTIET.setEnabled(editable);
-        yearTIET.setEnabled(editable);
+        date.setEnabled(editable);
+        day.setEnabled(editable);
+        month.setEnabled(editable);
+        year.setEnabled(editable);
     }
 
     public interface OnAgeSet {

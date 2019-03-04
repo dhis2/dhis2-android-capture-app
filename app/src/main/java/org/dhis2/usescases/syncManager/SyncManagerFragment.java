@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.jakewharton.rxbinding2.widget.RxTextView;
 
 import org.dhis2.BuildConfig;
@@ -124,7 +125,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
-                // do nothing
+                /*NO USE*/
             }
         });
         binding.metadataPeriods.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -136,7 +137,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
-                // do nothing
+                /*NO USE*/
             }
         });
 
@@ -310,8 +311,20 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         new AlertDialog.Builder(context, R.style.CustomDialog)
                 .setTitle(getString(R.string.wipe_data))
                 .setMessage(getString(R.string.wipe_data_meesage))
+                .setView(R.layout.warning_layout)
                 .setPositiveButton(getString(R.string.wipe_data_ok), (dialog, which) -> showDeleteProgress())
                 .setNegativeButton(getString(R.string.wipe_data_no), (dialog, which) -> dialog.dismiss())
+                .show();
+    }
+
+    @Override
+    public void deleteLocalData() {
+        new AlertDialog.Builder(context, R.style.CustomDialog)
+                .setTitle(getString(R.string.delete_local_data))
+                .setMessage(getString(R.string.delete_local_data_message))
+                .setView(R.layout.warning_layout)
+                .setPositiveButton(getString(R.string.action_accept), (dialog, which) -> presenter.deleteLocalData())
+                .setNegativeButton(getString(R.string.cancel), (dialog, which) -> dialog.dismiss())
                 .show();
     }
 
@@ -337,6 +350,8 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
     @Override
     public void showTutorial() {
+        /*SharedPreferences prefs = getAbstracContext().getSharedPreferences(
+                Constants.SHARE_PREFS, Context.MODE_PRIVATE);*/
         NestedScrollView scrollView = getAbstractActivity().findViewById(R.id.scrollView);
         new Handler().postDelayed(() -> {
             FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
@@ -397,6 +412,15 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
     @Override
     public void showSyncErrors(List<D2Error> data) {
-        ErrorDialog.newInstace().setData(data).show(getChildFragmentManager().beginTransaction(), "ErrorDialog");
+        if (!ErrorDialog.newInstace().isAdded())
+            ErrorDialog.newInstace().setData(data).show(getChildFragmentManager().beginTransaction(), "ErrorDialog");
+    }
+
+    @Override
+    public void showLocalDataDeleted(boolean error) {
+        Snackbar deleteDataSnack = Snackbar.make(binding.getRoot(),
+                error ? R.string.delete_local_data_error : R.string.delete_local_data_done,
+                Snackbar.LENGTH_SHORT);
+        deleteDataSnack.show();
     }
 }

@@ -1,7 +1,9 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventInitial;
 
+import android.Manifest;
 import android.app.DatePickerDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -9,7 +11,6 @@ import android.view.View;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 
-import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
@@ -17,7 +18,6 @@ import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.tuples.Quartet;
 import org.dhis2.data.tuples.Trio;
-import org.dhis2.usescases.eventsWithoutRegistration.EventUtils;
 import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryActivity;
 import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryRepository;
 import org.dhis2.usescases.map.MapSelectorActivity;
@@ -38,11 +38,13 @@ import org.hisp.dhis.rules.models.RuleEffect;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -58,7 +60,7 @@ import timber.log.Timber;
 public class EventInitialPresenterImpl implements EventInitialContract.EventInitialPresenter {
 
     public static final int ACCESS_COARSE_LOCATION_PERMISSION_REQUEST = 101;
-    private EventInitialContract.EventInitialView view;
+    static private EventInitialContract.EventInitialView view;
     private final MetadataRepository metadataRepository;
     private final EventInitialRepository eventInitialRepository;
     private final EventSummaryRepository eventSummaryRepository;
@@ -70,6 +72,7 @@ public class EventInitialPresenterImpl implements EventInitialContract.EventInit
     private ProgramModel programModel;
     private CategoryComboModel catCombo;
     private String programId;
+    private String programStageId;
     private List<OrganisationUnitModel> orgUnits;
 
     public EventInitialPresenterImpl(@NonNull EventSummaryRepository eventSummaryRepository,
@@ -81,7 +84,6 @@ public class EventInitialPresenterImpl implements EventInitialContract.EventInit
         this.eventInitialRepository = eventInitialRepository;
         this.eventSummaryRepository = eventSummaryRepository;
         this.schedulerProvider = schedulerProvider;
-        Bindings.setMetadataRepository(metadataRepository);
     }
 
     @Override
@@ -89,6 +91,7 @@ public class EventInitialPresenterImpl implements EventInitialContract.EventInit
         view = mview;
         this.eventId = eventId;
         this.programId = programId;
+        this.programStageId = programStageId;
 
         compositeDisposable = new CompositeDisposable();
 
@@ -133,10 +136,8 @@ public class EventInitialPresenterImpl implements EventInitialContract.EventInit
             );
 
         getOrgUnits(programId);
-        if (TextUtils.isEmpty(programStageId))
-            getProgramStages(programId);
-        else
-            getProgramStage(programStageId);
+
+        getProgramStages(programId, programStageId);
 
         if (eventId != null)
             getEventSections(eventId);
@@ -170,23 +171,14 @@ public class EventInitialPresenterImpl implements EventInitialContract.EventInit
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        orgUnitsResult -> {
-                            orgUnits = orgUnitsResult;
+                        orgUnits -> {
+                            this.orgUnits = orgUnits;
                             view.addTree(OrgUnitUtils.renderTree(view.getContext(), orgUnits, false));
                         },
                         throwable -> view.renderError(throwable.getMessage())
                 ));
     }
 
-    private void getProgramStages(String programUid) {
-        compositeDisposable.add(eventInitialRepository.programStage(programUid)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        programStageModel -> view.setProgramStage(programStageModel),
-                        throwable -> view.showProgramStageSelection()
-                ));
-    }
 
     @Override
     public void getEventSections(@NonNull String eventId) {
@@ -224,8 +216,31 @@ public class EventInitialPresenterImpl implements EventInitialContract.EventInit
     }
 
     @Override
+    public void getStageObjectStyle(String uid) {
+        compositeDisposable.add(metadataRepository.getObjectStyle(uid)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        objectStyleModel -> view.renderObjectStyle(objectStyleModel),
+                        Timber::e
+                )
+        );
+    }
+
+    @Override
     public void getProgramStage(String programStageUid) {
         compositeDisposable.add(eventInitialRepository.programStageWithId(programStageUid)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        programStageModel -> view.setProgramStage(programStageModel),
+                        throwable -> view.showProgramStageSelection()
+                ));
+    }
+
+    private void getProgramStages(String programUid, String programStageUid) {
+
+        compositeDisposable.add((TextUtils.isEmpty(programStageId) ? eventInitialRepository.programStage(programUid) : eventInitialRepository.programStageWithId(programStageUid))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -265,8 +280,7 @@ public class EventInitialPresenterImpl implements EventInitialContract.EventInit
                         catComboUid, catOptionUid,
                         latitude, longitude)
                         .switchMap(
-                                eventIdResult ->
-                                        eventInitialRepository.updateTrackedEntityInstance(eventIdResult, trackedEntityInstanceUid, orgUnitUid)
+                                eventId -> eventInitialRepository.updateTrackedEntityInstance(eventId, trackedEntityInstanceUid, orgUnitUid)
                         )
                         .distinctUntilChanged()
                         .subscribeOn(Schedulers.io())
@@ -301,7 +315,7 @@ public class EventInitialPresenterImpl implements EventInitialContract.EventInit
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        eventModel -> view.onEventUpdated(eventModel.uid()),
+                        (eventModel) -> view.onEventUpdated(eventModel.uid()),
                         error -> displayMessage(error.getLocalizedMessage())
 
                 ));
@@ -314,17 +328,30 @@ public class EventInitialPresenterImpl implements EventInitialContract.EventInit
 
     @Override
     public void onOrgUnitButtonClick() {
+//        view.openDrawer();
         view.showOrgUnitSelector(orgUnits);
     }
 
     @Override
     public void onLocationClick() {
-        if (view.checkLocationPermission()) {
-            mFusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
-                if (location != null)
-                    view.setLocation(location.getLatitude(), location.getLongitude());
-            });
+        if (ActivityCompat.checkSelfPermission(view.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(view.getAbstractActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)) {
+                // TODO CRIS:  Show an expanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+
+            } else {
+                ActivityCompat.requestPermissions(view.getAbstractActivity(),
+                        new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                        ACCESS_COARSE_LOCATION_PERMISSION_REQUEST);
+            }
+            return;
         }
+        mFusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
+            if (location != null)
+                view.setLocation(location.getLatitude(), location.getLongitude());
+        });
     }
 
     @Override
@@ -360,8 +387,8 @@ public class EventInitialPresenterImpl implements EventInitialContract.EventInit
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        orgUnitsResult -> {
-                            orgUnits = orgUnitsResult;
+                        orgUnits -> {
+                            this.orgUnits = orgUnits;
                             view.addTree(OrgUnitUtils.renderTree(view.getContext(), orgUnits, true));
                         },
                         throwable -> view.showNoOrgUnits()
@@ -383,7 +410,7 @@ public class EventInitialPresenterImpl implements EventInitialContract.EventInit
                 .onErrorReturn(throwable -> Result.failure(new Exception(throwable)));
 
         // Combining results of two repositories into a single stream.
-        Flowable<List<FieldViewModel>> viewModelsFlowable = Flowable.zip(fieldsFlowable, ruleEffectFlowable, this::applyEventInitialEffects);
+        Flowable<List<FieldViewModel>> viewModelsFlowable = Flowable.zip(fieldsFlowable, ruleEffectFlowable, this::applyEffects);
 
         compositeDisposable.add(viewModelsFlowable
                 .subscribeOn(AndroidSchedulers.mainThread())
@@ -394,21 +421,30 @@ public class EventInitialPresenterImpl implements EventInitialContract.EventInit
     }
 
     @NonNull
-    private List<FieldViewModel> applyEventInitialEffects(
+    private List<FieldViewModel> applyEffects(
             @NonNull List<FieldViewModel> viewModels,
             @NonNull Result<RuleEffect> calcResult) {
         if (calcResult.error() != null) {
-            Timber.e(calcResult.error());
+            calcResult.error().printStackTrace();
             return viewModels;
         }
 
-        Map<String, FieldViewModel> fieldViewModels = EventUtils.toMap(viewModels);
-        applyEventInitialRuleEffects(fieldViewModels, calcResult);
+        Map<String, FieldViewModel> fieldViewModels = toMap(viewModels);
+        applyRuleEffects(fieldViewModels, calcResult);
 
         return new ArrayList<>(fieldViewModels.values());
     }
 
-    private void applyEventInitialRuleEffects(Map<String, FieldViewModel> fieldViewModels, Result<RuleEffect> calcResult) {
+    @NonNull
+    private static Map<String, FieldViewModel> toMap(@NonNull List<FieldViewModel> fieldViewModels) {
+        Map<String, FieldViewModel> map = new LinkedHashMap<>();
+        for (FieldViewModel fieldViewModel : fieldViewModels) {
+            map.put(fieldViewModel.uid(), fieldViewModel);
+        }
+        return map;
+    }
+
+    private void applyRuleEffects(Map<String, FieldViewModel> fieldViewModels, Result<RuleEffect> calcResult) {
         //TODO: APPLY RULE EFFECTS TO ALL MODELS
         view.setHideSection(null);
         for (RuleEffect ruleEffect : calcResult.items()) {
@@ -417,7 +453,7 @@ public class EventInitialPresenterImpl implements EventInitialContract.EventInit
                 RuleActionShowWarning showWarning = (RuleActionShowWarning) ruleAction;
                 FieldViewModel model = fieldViewModels.get(showWarning.field());
 
-                if (model instanceof EditTextViewModel) {
+                if (model != null && model instanceof EditTextViewModel) {
                     fieldViewModels.put(showWarning.field(),
                             ((EditTextViewModel) model).withWarning(showWarning.content()));
                 }
@@ -425,7 +461,7 @@ public class EventInitialPresenterImpl implements EventInitialContract.EventInit
                 RuleActionShowError showError = (RuleActionShowError) ruleAction;
                 FieldViewModel model = fieldViewModels.get(showError.field());
 
-                if (model instanceof EditTextViewModel) {
+                if (model != null && model instanceof EditTextViewModel) {
                     fieldViewModels.put(showError.field(),
                             ((EditTextViewModel) model).withError(showError.content()));
                 }

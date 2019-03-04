@@ -1,5 +1,7 @@
 package org.dhis2.data.forms.dataentry.fields.image;
 
+import androidx.databinding.Observable;
+import androidx.databinding.ObservableField;
 import android.view.View;
 
 import org.dhis2.Bindings.Bindings;
@@ -7,7 +9,6 @@ import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.FormImageBinding;
 
-import androidx.databinding.ObservableField;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.processors.FlowableProcessor;
 
@@ -18,15 +19,15 @@ import io.reactivex.processors.FlowableProcessor;
 public class ImageHolder extends FormViewHolder {
 
     private final CompositeDisposable disposable;
-    private final FormImageBinding formImageBinding;
+    private final FormImageBinding binding;
     private final ObservableField<String> currentSelector;
     private boolean isEditable;
 
-    private ImageViewModel model;
+    ImageViewModel model;
 
     public ImageHolder(FormImageBinding mBinding, FlowableProcessor<RowAction> processor, ObservableField<String> imageSelector) {
         super(mBinding);
-        this.formImageBinding = mBinding;
+        this.binding = mBinding;
         this.currentSelector = imageSelector;
         this.disposable = new CompositeDisposable();
 
@@ -59,27 +60,28 @@ public class ImageHolder extends FormViewHolder {
         descriptionText = viewModel.description();
         String[] labelAndCode = viewModel.label().split("-");
         String labelName = labelAndCode[0];
+        String code = labelAndCode[1];
         label = new StringBuilder(labelName);
         if (viewModel.mandatory())
             label.append("*");
-        formImageBinding.setLabel(label.toString());
-        formImageBinding.setCurrentSelection(currentSelector);
+        binding.setLabel(label.toString());
+        binding.setCurrentSelection(currentSelector);
 
         String[] uids = viewModel.uid().split("\\.");
-        Bindings.setObjectStyle(formImageBinding.icon, itemView, uids[1]);
-        Bindings.setObjectStyle(formImageBinding.label, itemView, uids[1]);
+        Bindings.setObjectStyle(binding.icon, itemView, viewModel.objectStyle());
+        Bindings.setObjectStyle(binding.label, itemView, viewModel.objectStyle());
 
         if (viewModel.value() != null && !viewModel.value().equals(currentSelector.get()))
             currentSelector.set(viewModel.value());
         if (viewModel.warning() != null) {
-            formImageBinding.errorMessage.setVisibility(View.VISIBLE);
-            formImageBinding.errorMessage.setText(viewModel.warning());
+            binding.errorMessage.setVisibility(View.VISIBLE);
+            binding.errorMessage.setText(viewModel.warning());
         } else if (viewModel.error() != null) {
-            formImageBinding.errorMessage.setVisibility(View.VISIBLE);
-            formImageBinding.errorMessage.setText(viewModel.error());
+            binding.errorMessage.setVisibility(View.VISIBLE);
+            binding.errorMessage.setText(viewModel.error());
         } else {
-            formImageBinding.errorMessage.setVisibility(View.GONE);
-            formImageBinding.errorMessage.setText(null);
+            binding.errorMessage.setVisibility(View.GONE);
+            binding.errorMessage.setText(null);
         }
     }
 

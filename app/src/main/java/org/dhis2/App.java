@@ -31,6 +31,7 @@ import org.dhis2.usescases.sync.SyncModule;
 import org.dhis2.utils.UtilsModule;
 import org.dhis2.utils.timber.Dhis2DebugTree;
 import org.dhis2.utils.timber.ReleaseTree;
+import org.hisp.dhis.android.core.configuration.Configuration;
 import org.hisp.dhis.android.core.configuration.ConfigurationManager;
 import org.hisp.dhis.android.core.configuration.ConfigurationModel;
 
@@ -138,7 +139,7 @@ public class App extends MultiDexApplication implements Components {
     }
 
     private void setUpServerComponent() {
-        ConfigurationModel configuration = configurationManager.get();
+        Configuration configuration = configurationManager.get();
         if (configuration != null) {
             serverComponent = appComponent.plus(new ServerModule(configuration));
         }
@@ -218,7 +219,7 @@ public class App extends MultiDexApplication implements Components {
     ////////////////////////////////////////////////////////////////////////
     @NonNull
     @Override
-    public ServerComponent createServerComponent(@NonNull ConfigurationModel configuration) {
+    public ServerComponent createServerComponent(@NonNull Configuration configuration) {
         serverComponent = appComponent.plus(new ServerModule(configuration));
         return serverComponent;
 

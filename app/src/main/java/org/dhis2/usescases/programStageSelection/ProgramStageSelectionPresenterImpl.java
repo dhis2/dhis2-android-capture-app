@@ -53,6 +53,7 @@ public class ProgramStageSelectionPresenterImpl implements ProgramStageSelection
         Flowable<List<ProgramStageModel>> stageModelsFlowable = Flowable.zip(stagesFlowable, ruleEffectFlowable, this::applyEffects);
 
         compositeDisposable.add(stageModelsFlowable
+                .map(data -> programStageSelectionRepository.objectStyle(data))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(

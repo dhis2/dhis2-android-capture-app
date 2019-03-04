@@ -122,6 +122,9 @@ public class EventCaptureContract {
         @NonNull
         Flowable<Result<RuleEffect>> calculate();
 
+        @NonNull
+        Flowable<Result<RuleEffect>> calculate(String lastUpdatedElement);
+
         Observable<Boolean> completeEvent();
 
         Flowable<EventStatus> eventStatus();
@@ -139,6 +142,8 @@ public class EventCaptureContract {
         Observable<String> programStage();
 
         boolean getAccessDataWrite();
+
+        void setLastUpdated(String lastUpdatedUid);
     }
 
 }

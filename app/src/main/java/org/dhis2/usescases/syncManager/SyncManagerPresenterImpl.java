@@ -16,6 +16,8 @@ import java.io.File;
 import java.util.concurrent.TimeUnit;
 
 import androidx.work.Constraints;
+import androidx.work.ExistingPeriodicWorkPolicy;
+import androidx.work.ExistingWorkPolicy;
 import androidx.work.NetworkType;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.PeriodicWorkRequest;
@@ -74,7 +76,7 @@ public class SyncManagerPresenterImpl implements SyncManagerContracts.SyncManage
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build());
         PeriodicWorkRequest request = syncDataBuilder.build();
-        WorkManager.getInstance().enqueue(request);
+        WorkManager.getInstance().enqueueUniquePeriodicWork(scheduleTag, ExistingPeriodicWorkPolicy.REPLACE, request);
     }
 
     @Override
@@ -86,19 +88,19 @@ public class SyncManagerPresenterImpl implements SyncManagerContracts.SyncManage
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build());
         PeriodicWorkRequest request = syncDataBuilder.build();
-        WorkManager.getInstance().enqueue(request);
+        WorkManager.getInstance().enqueueUniquePeriodicWork(scheduleTag, ExistingPeriodicWorkPolicy.REPLACE, request);
     }
 
     @Override
     public void syncData() {
-
         OneTimeWorkRequest.Builder syncDataBuilder = new OneTimeWorkRequest.Builder(SyncDataWorker.class);
         syncDataBuilder.addTag(Constants.DATA);
         syncDataBuilder.setConstraints(new Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build());
         OneTimeWorkRequest request = syncDataBuilder.build();
-        WorkManager.getInstance().enqueue(request);
+        WorkManager.getInstance().beginUniqueWork(Constants.DATA, ExistingWorkPolicy.KEEP, request).enqueue();
+//        WorkManager.getInstance().enqueue(request);
     }
 
     @Override
@@ -109,7 +111,7 @@ public class SyncManagerPresenterImpl implements SyncManagerContracts.SyncManage
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build());
         OneTimeWorkRequest request = syncDataBuilder.build();
-        WorkManager.getInstance().enqueue(request);
+        WorkManager.getInstance().beginUniqueWork(Constants.META, ExistingWorkPolicy.KEEP, request).enqueue();
     }
 
 
@@ -150,6 +152,7 @@ public class SyncManagerPresenterImpl implements SyncManagerContracts.SyncManage
     public void wipeDb() {
         try {
             WorkManager.getInstance().cancelAllWork();
+            WorkManager.getInstance().pruneWork();
             d2.wipeModule().wipeEverything();
             // clearing cache data
             deleteDir(view.getAbstracContext().getCacheDir());
@@ -163,12 +166,21 @@ public class SyncManagerPresenterImpl implements SyncManagerContracts.SyncManage
     }
 
     @Override
+    public void onDeleteLocalData() {
+        view.deleteLocalData();
+    }
+
+    @Override
     public void deleteLocalData() {
+        boolean error = false;
         try {
             d2.wipeModule().wipeData();
         } catch (D2Error e) {
             Timber.e(e);
+            error = true;
         }
+
+        view.showLocalDataDeleted(error);
     }
 
     @Override

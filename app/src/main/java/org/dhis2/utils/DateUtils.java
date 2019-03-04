@@ -7,6 +7,7 @@ import org.dhis2.R;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.period.PeriodType;
+import org.hisp.dhis.android.core.program.ProgramModel;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -217,7 +218,7 @@ public class DateUtils {
 
     /**********************
      COMPARE DATES REGION*/
-
+    @Deprecated
     public boolean hasExpired(@NonNull EventModel event, int expiryDays, int completeEventExpiryDays, @Nullable PeriodType expiryPeriodType) {
         Calendar expiredDate = Calendar.getInstance();
 

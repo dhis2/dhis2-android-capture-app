@@ -211,7 +211,8 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
         String uid = displayText.content();
 
         EditTextViewModel textViewModel = EditTextViewModel.create(uid,
-                displayText.content(), false, ruleEffect.data(), "Information", 1, ValueType.TEXT, null, false, null, null);
+                displayText.content(), false, ruleEffect.data(), "Information", 1, ValueType.TEXT, null,
+                false, null, null, null);
 
         if (condition1(uid) || condition2(uid, textViewModel)) {
             fieldViewModels.put(uid, textViewModel);

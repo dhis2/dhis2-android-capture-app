@@ -1,5 +1,8 @@
 package org.dhis2.data.forms.dataentry;
 
+import android.database.Cursor;
+import androidx.annotation.NonNull;
+
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.forms.FormRepository;
@@ -17,7 +20,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import androidx.annotation.NonNull;
+import javax.annotation.Nonnull;
+
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 
@@ -39,10 +43,10 @@ public final class EventsRuleEngineRepository implements RuleEngineRepository {
             "  eventDate," +
             "  programStage," +
             "  dataElement," +
-            "  VALUE" +
+            "  value" +
             " FROM TrackedEntityDataValue " +
             "  INNER JOIN Event ON TrackedEntityDataValue.event = Event.uid " +
-            " WHERE event = ? AND VALUE IS NOT NULL AND " + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'";
+            " WHERE event = ? AND value IS NOT NULL AND " + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'";
 
     @NonNull
     private final BriteDatabase briteDatabase;
@@ -75,19 +79,19 @@ public final class EventsRuleEngineRepository implements RuleEngineRepository {
 
     @NonNull
     private Flowable<RuleEvent> queryEvent(@NonNull List<RuleDataValue> dataValues) {
-        return briteDatabase.createQuery(EventModel.TABLE, QUERY_EVENT, eventUid)
+        return briteDatabase.createQuery(EventModel.TABLE, QUERY_EVENT, eventUid == null ? "" : eventUid)
                 .mapToOne(cursor -> {
-                    String mEeventUid = cursor.getString(0);
+                    String eventUid = cursor.getString(0);
                     String programStageUid = cursor.getString(1);
                     RuleEvent.Status status = RuleEvent.Status.valueOf(cursor.getString(2));
                     Date eventDate = parseDate(cursor.getString(3));
                     Date dueDate = cursor.isNull(4) ? eventDate : parseDate(cursor.getString(4));
                     String orgUnit = cursor.getString(5);
-                    String orgUnitCode = formRepository.getOrgUnitCode(orgUnit);
+                    String orgUnitCode = getOrgUnitCode(orgUnit);
                     String programStageName = cursor.getString(6);
 
                     return RuleEvent.builder()
-                            .event(mEeventUid)
+                            .event(eventUid)
                             .programStage(programStageUid)
                             .programStageName(programStageName)
                             .status(status)
@@ -101,10 +105,21 @@ public final class EventsRuleEngineRepository implements RuleEngineRepository {
                 }).toFlowable(BackpressureStrategy.LATEST);
     }
 
+    @Nonnull
+    private String getOrgUnitCode(String orgUnitUid) {
+        String ouCode = "";
+        Cursor cursor = briteDatabase.query("SELECT code FROM OrganisationUnit WHERE uid = ? LIMIT 1", orgUnitUid);
+        if (cursor != null && cursor.moveToFirst() && cursor.getString(0) != null) {
+            ouCode = cursor.getString(0);
+            cursor.close();
+        }
+        return ouCode;
+    }
+
     @NonNull
     private Flowable<List<RuleDataValue>> queryDataValues() {
         return briteDatabase.createQuery(Arrays.asList(EventModel.TABLE,
-                TrackedEntityDataValueModel.TABLE), QUERY_VALUES, eventUid)
+                TrackedEntityDataValueModel.TABLE), QUERY_VALUES, eventUid == null ? "" : eventUid)
                 .mapToList(cursor -> {
                     Date eventDate = parseDate(cursor.getString(0));
                     String value = cursor.getString(3) != null ? cursor.getString(3) : "";
@@ -114,7 +129,11 @@ public final class EventsRuleEngineRepository implements RuleEngineRepository {
     }
 
     @NonNull
-    private static Date parseDate(@NonNull String date) throws ParseException {
-        return BaseIdentifiableObject.DATE_FORMAT.parse(date);
+    private static Date parseDate(@NonNull String date) {
+        try {
+            return BaseIdentifiableObject.DATE_FORMAT.parse(date);
+        } catch (ParseException parseException) {
+            throw new RuntimeException(parseException);
+        }
     }
 }

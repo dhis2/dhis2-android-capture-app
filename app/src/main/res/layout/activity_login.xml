@@ -92,7 +92,7 @@
                         android:inputType="textUri"
                         android:onTextChanged="@{presenter::onServerChanged}"
                         android:padding="5dp"
-                        android:text="https://"
+                        android:text="@string/login_https"
                         android:textColor="@color/text_black_333"
                         android:textSize="17sp" />
 

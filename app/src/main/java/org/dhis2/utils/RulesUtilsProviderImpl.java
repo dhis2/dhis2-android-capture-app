@@ -1,7 +1,10 @@
 package org.dhis2.utils;
 
+import android.database.Cursor;
+
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
+import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.rules.models.RuleAction;
@@ -32,10 +35,15 @@ import timber.log.Timber;
 
 public class RulesUtilsProviderImpl implements RulesUtilsProvider {
 
+    private final CodeGenerator codeGenerator;
+
     private HashMap<String, FieldViewModel> currentFieldViewModels;
 
 
-    @SuppressWarnings("squid:S3776")
+    public RulesUtilsProviderImpl(CodeGenerator codeGenerator) {
+        this.codeGenerator = codeGenerator;
+    }
+
     @Override
     public void applyRuleEffects(Map<String, FieldViewModel> fieldViewModels,
                                  Result<RuleEffect> calcResult,
@@ -126,21 +134,16 @@ public class RulesUtilsProviderImpl implements RulesUtilsProvider {
         String uid = displayText.content();
 
         EditTextViewModel textViewModel = EditTextViewModel.create(uid,
-                displayText.content(), false, ruleEffect.data(), "Information", 1, ValueType.TEXT, null, false, null, null);
+                displayText.content(), false, ruleEffect.data(), "Information", 1,
+                ValueType.TEXT, null, false, null, null,ObjectStyleModel.builder().build());
 
-        if (condition1(uid) || condition2(uid, textViewModel)) {
+        if (this.currentFieldViewModels == null ||
+                !this.currentFieldViewModels.containsKey(uid)) {
+            fieldViewModels.put(uid, textViewModel);
+        } else if (this.currentFieldViewModels.containsKey(uid) &&
+                !Objects.equals(currentFieldViewModels.get(uid).value(), textViewModel.value())) {
             fieldViewModels.put(uid, textViewModel);
         }
-    }
-
-    private boolean condition1(String uid) {
-        return this.currentFieldViewModels == null ||
-                !this.currentFieldViewModels.containsKey(uid);
-    }
-
-    private boolean condition2(String uid, EditTextViewModel textViewModel) {
-        return this.currentFieldViewModels.containsKey(uid) &&
-                !currentFieldViewModels.get(uid).value().equals(textViewModel.value());
     }
 
     private void displayKeyValuePair(RuleActionDisplayKeyValuePair displayKeyValuePair,
@@ -162,7 +165,7 @@ public class RulesUtilsProviderImpl implements RulesUtilsProvider {
                         Map<String, FieldViewModel> fieldViewModels, RulesActionCallbacks rulesActionCallbacks) {
 
         if (fieldViewModels.get(assign.field()) == null)
-            rulesActionCallbacks.save(assign.field(), ruleEffect.data());
+            rulesActionCallbacks.setCalculatedValue(assign.content(), ruleEffect.data());
         else {
             String value = fieldViewModels.get(assign.field()).value();
 
@@ -175,7 +178,6 @@ public class RulesUtilsProviderImpl implements RulesUtilsProvider {
         }
     }
 
-    @SuppressWarnings("squid:S1172")
     private void createEvent(RuleActionCreateEvent createEvent, Map<String, FieldViewModel> fieldViewModels, RulesActionCallbacks rulesActionCallbacks) {
         //TODO: Create Event
     }

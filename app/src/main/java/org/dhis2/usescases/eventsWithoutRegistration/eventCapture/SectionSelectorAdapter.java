@@ -20,7 +20,7 @@ import io.reactivex.processors.PublishProcessor;
  */
 public class SectionSelectorAdapter extends RecyclerView.Adapter<EventSectionHolder> {
     private final EventCaptureContract.EventCapturePresenter presenter;
-    private List<EventSectionModel> items;
+    List<EventSectionModel> items;
     private float percentage;
     private FlowableProcessor<Float> percentageFlowable;
 
@@ -49,7 +49,7 @@ public class SectionSelectorAdapter extends RecyclerView.Adapter<EventSectionHol
         return items != null ? items.size() : 0;
     }
 
-    public void swapData(List<EventSectionModel> update) {
+    public void swapData(String currentSection, List<EventSectionModel> update) {
 
         this.items.clear();
         this.items.addAll(update);
@@ -70,11 +70,6 @@ public class SectionSelectorAdapter extends RecyclerView.Adapter<EventSectionHol
             wValues += (float) sectionModel.numberOfCompletedFields();
             totals += (float) sectionModel.numberOfTotalFields();
         }
-
-        if (totals == 0) {
-            return 0;
-        }
-
         percentage = wValues / totals;
         return percentage;
     }

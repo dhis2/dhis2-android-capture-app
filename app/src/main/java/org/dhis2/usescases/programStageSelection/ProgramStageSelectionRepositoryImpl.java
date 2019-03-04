@@ -5,8 +5,10 @@ import android.database.Cursor;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.forms.RulesRepository;
+import org.dhis2.data.tuples.Pair;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.Result;
+import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
@@ -31,6 +33,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+
+import javax.annotation.Nonnull;
 
 import androidx.annotation.NonNull;
 import io.reactivex.BackpressureStrategy;
@@ -277,6 +281,26 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
                                         .onErrorReturn(error -> Result.failure(new Exception(error)))
                                 )
                 );
+    }
+
+    @Override
+    public List<Pair<ProgramStageModel, ObjectStyleModel>> objectStyle(List<ProgramStageModel> programStageModels) {
+        List<Pair<ProgramStageModel, ObjectStyleModel>> finalList = new ArrayList<>();
+        for (ProgramStageModel stageModel : programStageModels) {
+            ObjectStyleModel objectStyleModel = null;
+            Cursor cursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ? LIMIT 1", stageModel.uid());
+            if (cursor != null) {
+                if (cursor.moveToFirst()) {
+                    objectStyleModel = ObjectStyleModel.create(cursor);
+                }
+                cursor.close();
+            }
+            if (objectStyleModel == null)
+                objectStyleModel = ObjectStyleModel.builder().build();
+            finalList.add(Pair.create(stageModel, objectStyleModel));
+        }
+
+        return finalList;
     }
 
 

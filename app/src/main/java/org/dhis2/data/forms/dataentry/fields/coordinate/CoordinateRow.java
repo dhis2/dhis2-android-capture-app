@@ -23,12 +23,24 @@ public class CoordinateRow implements Row<CoordinateHolder, CoordinateViewModel>
     @NonNull
     private final LayoutInflater inflater;
     private final boolean isBgTransparent;
+    private final String renderType;
+    private boolean isSearchMode = false;
 
     public CoordinateRow(@NonNull LayoutInflater layoutInflater,
                          @NonNull FlowableProcessor<RowAction> processor, boolean isBgTransparent) {
         this.inflater = layoutInflater;
         this.processor = processor;
         this.isBgTransparent = isBgTransparent;
+        this.renderType = null;
+        this.isSearchMode = true;
+    }
+
+    public CoordinateRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor,
+                         @NonNull FlowableProcessor<Integer> currentPosition,boolean isBgTransparent, String renderType) {
+        this.inflater = layoutInflater;
+        this.processor = processor;
+        this.isBgTransparent = isBgTransparent;
+        this.renderType= renderType;
     }
 
     @NonNull

@@ -12,6 +12,7 @@ import org.hisp.dhis.rules.models.RuleActionShowError;
 
 public interface RulesActionCallbacks {
 
+    void setCalculatedValue(String calculatedValueVariable, String value);
 
     void setShowError(@NonNull RuleActionShowError showError, FieldViewModel model);
 

@@ -1,5 +1,8 @@
 package org.dhis2.data.forms.dataentry;
 
+import android.database.Cursor;
+import androidx.annotation.NonNull;
+
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.forms.FormRepository;
@@ -16,7 +19,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import androidx.annotation.NonNull;
+import javax.annotation.Nonnull;
+
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 
@@ -35,7 +39,7 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
 
     private static final String QUERY_ATTRIBUTE_VALUES = "SELECT\n" +
             "  Field.id,\n" +
-            "  Value.VALUE\n" +
+            "  Value.value\n" +
             "FROM (Enrollment INNER JOIN Program ON Program.uid = Enrollment.program)\n" +
             "  INNER JOIN (\n" +
             "      SELECT\n" +
@@ -47,7 +51,7 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
             "  INNER JOIN TrackedEntityAttributeValue AS Value ON (\n" +
             "    Value.trackedEntityAttribute = Field.id\n" +
             "        AND Value.trackedEntityInstance = Enrollment.trackedEntityInstance)\n" +
-            "WHERE Enrollment.uid = ? AND Value.VALUE IS NOT NULL;";
+            "WHERE Enrollment.uid = ? AND Value.value IS NOT NULL;";
 
     @NonNull
     private final BriteDatabase briteDatabase;
@@ -83,7 +87,7 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
     @NonNull
     private Flowable<RuleEnrollment> queryEnrollment(
             @NonNull List<RuleAttributeValue> attributeValues) {
-        return briteDatabase.createQuery(EnrollmentModel.TABLE, QUERY_ENROLLMENT, enrollmentUid)
+        return briteDatabase.createQuery(EnrollmentModel.TABLE, QUERY_ENROLLMENT, enrollmentUid == null ? "" : enrollmentUid)
                 .mapToOne(cursor -> {
                     Date enrollmentDate = parseDate(cursor.getString(2));
                     Date incidentDate = cursor.isNull(1) ?
@@ -92,7 +96,7 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
                             .valueOf(cursor.getString(3));
                     String orgUnit = cursor.getString(4);
                     String programName = cursor.getString(5);
-                    String ouCode = formRepository.getOrgUnitCode(orgUnit);
+                    String ouCode = getOrgUnitCode(orgUnit);
 
                     return RuleEnrollment.create(cursor.getString(0),
                             incidentDate, enrollmentDate, status, orgUnit, ouCode, attributeValues, programName);
@@ -102,14 +106,30 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
     @NonNull
     private Flowable<List<RuleAttributeValue>> queryAttributeValues() {
         return briteDatabase.createQuery(Arrays.asList(EnrollmentModel.TABLE,
-                TrackedEntityAttributeValueModel.TABLE), QUERY_ATTRIBUTE_VALUES, enrollmentUid)
+                TrackedEntityAttributeValueModel.TABLE), QUERY_ATTRIBUTE_VALUES, enrollmentUid == null ? "" : enrollmentUid)
                 .mapToList(cursor -> RuleAttributeValue.create(
                         cursor.getString(0), cursor.getString(1))
                 ).toFlowable(BackpressureStrategy.LATEST);
     }
 
     @NonNull
-    private static Date parseDate(@NonNull String date) throws ParseException {
-        return BaseIdentifiableObject.DATE_FORMAT.parse(date);
+    private static Date parseDate(@NonNull String date) {
+        try {
+            return BaseIdentifiableObject.DATE_FORMAT.parse(date);
+        } catch (ParseException parseException) {
+            throw new RuntimeException(parseException);
+        }
+    }
+
+    @Nonnull
+    private String getOrgUnitCode(String orgUnitUid) {
+        String ouCode = "";
+        Cursor cursor = briteDatabase.query("SELECT code FROM OrganisationUnit WHERE uid = ? LIMIT 1", orgUnitUid);
+        if (cursor != null && cursor.moveToFirst()) {
+            ouCode = cursor.getString(0);
+            cursor.close();
+        }
+
+        return ouCode;
     }
 }

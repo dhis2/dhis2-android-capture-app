@@ -9,24 +9,19 @@ import timber.log.Timber;
 
 public class SyncUtils {
 
-    private SyncUtils(){
-        // hide public constructor
-    }
-
     public static boolean isSyncRunning(String syncTag) {
         List<WorkStatus> statuses = null;
         boolean running = false;
         try {
             statuses = WorkManager.getInstance().getStatusesByTag(syncTag).get();
-        } catch (Exception e) {
-            Timber.e(e);
-        }
-        if (statuses != null) {
             for (WorkStatus workStatus : statuses) {
                 if (workStatus.getState() == State.RUNNING)
                     running = true;
             }
+        } catch (Exception e) {
+            Timber.e(e);
         }
+
         return running;
     }
 

@@ -14,6 +14,7 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ViewDataBinding;
 import androidx.fragment.app.FragmentManager;
 import io.reactivex.Observable;
 import io.reactivex.processors.FlowableProcessor;
@@ -30,6 +31,8 @@ public class OrgUnitRow implements Row<OrgUnitHolder, OrgUnitViewModel> {
     private final FragmentManager fm;
     private final Observable<List<OrganisationUnitModel>> orgUnits;
     private final String renderType;
+    private FormButtonBinding binding;
+    private boolean isSearchMode = false;
 
     public OrgUnitRow(FragmentManager fm, LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor,
                       boolean isBgTransparent, Observable<List<OrganisationUnitModel>> orgUnits) {
@@ -39,9 +42,11 @@ public class OrgUnitRow implements Row<OrgUnitHolder, OrgUnitViewModel> {
         this.fm = fm;
         this.orgUnits = orgUnits;
         this.renderType = null;
+        this.isSearchMode = true;
     }
 
     public OrgUnitRow(FragmentManager fm, LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor,
+                      @NonNull FlowableProcessor<Integer> currentPosition,
                       boolean isBgTransparent, Observable<List<OrganisationUnitModel>> orgUnits, String renderType) {
         this.inflater = layoutInflater;
         this.processor = processor;
@@ -54,7 +59,7 @@ public class OrgUnitRow implements Row<OrgUnitHolder, OrgUnitViewModel> {
     @NonNull
     @Override
     public OrgUnitHolder onCreate(@NonNull ViewGroup parent) {
-        FormButtonBinding binding = DataBindingUtil.inflate(
+        ViewDataBinding binding = DataBindingUtil.inflate(
                 inflater,
                 isBgTransparent ? R.layout.custom_text_view : R.layout.custom_text_view_accent,
                 parent,

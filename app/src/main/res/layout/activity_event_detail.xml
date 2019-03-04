@@ -164,16 +164,16 @@
                                 <TextView
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
+                                    android:text="@{stage.displayName()}"
                                     android:textColor="?colorPrimary"
                                     android:textSize="16sp"
-                                    app:programStage='@{event.programStage()}'
                                     tools:text="Program Stage Name" />
 
                                 <TextView
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:textSize="14sp"
-                                    app:programStageDescription='@{event.programStage()}' />
+                                    android:text="@{stage.displayDescription()}"
+                                    android:textSize="14sp" />
 
                             </LinearLayout>
 

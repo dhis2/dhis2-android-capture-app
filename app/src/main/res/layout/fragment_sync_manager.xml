@@ -227,7 +227,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/item_margin"
-                android:onClick="@{()->presenter.deleteLocalData()}"
+                android:onClick="@{()->presenter.onDeleteLocalData()}"
                 android:text="@string/delete_local_data" />
 
 

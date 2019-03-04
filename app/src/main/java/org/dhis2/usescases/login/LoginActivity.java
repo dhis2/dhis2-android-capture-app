@@ -28,6 +28,7 @@ import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 import de.adorsys.android.securestoragelibrary.SecurePreferences;
 
+import static android.text.TextUtils.isEmpty;
 import static org.dhis2.utils.Constants.RQ_QR_SCANNER;
 
 @SuppressWarnings("squid:MaximumInheritanceDepth")
@@ -42,6 +43,7 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
     List<String> urls;
 
     private boolean isPinScreenVisible = false;
+    private String qrUrl;
 
 
     @Override
@@ -125,6 +127,11 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
         }
 
         binding.userPassEdit.setSelection(binding.userPassEdit.getText().length());
+    }
+
+    @Override
+    public void setUrl(String url) {
+        binding.serverUrlEdit.setText(!isEmpty(qrUrl) ? qrUrl : url);
     }
 
 
@@ -300,7 +307,7 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == RQ_QR_SCANNER && resultCode == RESULT_OK) {
-            binding.serverUrlEdit.setText(data.getStringExtra(Constants.EXTRA_DATA));
+            qrUrl = data.getStringExtra(Constants.EXTRA_DATA);
         }
     }
 }

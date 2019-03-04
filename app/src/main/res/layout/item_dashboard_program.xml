@@ -121,8 +121,7 @@
             android:layout_height="match_parent"
             android:layout_margin="10dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:programSyncState="@{program}" />
+            app:layout_constraintTop_toTopOf="parent"/>
 
         <ImageView
             android:id="@+id/overdue"

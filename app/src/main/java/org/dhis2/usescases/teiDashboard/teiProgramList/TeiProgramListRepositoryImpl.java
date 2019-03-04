@@ -164,7 +164,7 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
 
     @NonNull
     @Override
-    public Observable<String> saveToEnroll(@NonNull String orgUnit, @NonNull String programUid, @NonNull String teiUid) {
+    public Observable<String> saveToEnroll(@NonNull String orgUnit, @NonNull String programUid, @NonNull String teiUid, Date enrollmentDate) {
         Date currentDate = Calendar.getInstance().getTime();
         return Observable.defer(() -> {
 
@@ -188,7 +188,7 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
                     .uid(codeGenerator.generate())
                     .created(currentDate)
                     .lastUpdated(currentDate)
-                    .enrollmentDate(currentDate)
+                    .enrollmentDate(enrollmentDate)
                     .program(programUid)
                     .organisationUnit(orgUnit)
                     .trackedEntityInstance(teiUid)
@@ -203,16 +203,22 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
                 return Observable.error(new SQLiteConstraintException(message));
             }
 
-            updateProgramTable(currentDate, programUid);
-
             return Observable.just(enrollmentModel.uid());
         });
     }
 
     @Override
-    public Observable<List<OrganisationUnitModel>> getOrgUnits() {
-        return briteDatabase.createQuery(OrganisationUnitModel.TABLE, SELECT + ALL + FROM + OrganisationUnitModel.TABLE)
-                .mapToList(OrganisationUnitModel::create);
+    public Observable<List<OrganisationUnitModel>> getOrgUnits(String programUid) {
+
+        if (programUid != null) {
+            String orgUnitQuery = "SELECT * FROM OrganisationUnit " +
+                    "JOIN OrganisationUnitProgramLink ON OrganisationUnitProgramLink.organisationUnit = OrganisationUnit.uid " +
+                    "WHERE OrganisationUnitProgramLink.program = ?";
+            return briteDatabase.createQuery(OrganisationUnitModel.TABLE, orgUnitQuery, programUid)
+                    .mapToList(OrganisationUnitModel::create);
+        } else
+            return briteDatabase.createQuery(OrganisationUnitModel.TABLE, " SELECT * FROM OrganisationUnit")
+                    .mapToList(OrganisationUnitModel::create);
     }
 
     @Override
@@ -224,10 +230,16 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
         return null;
     }
 
-    @SuppressWarnings({"squid:S1172", "squid:CommentedOutCodeLine"})
-    private void updateProgramTable(Date lastUpdated, String programUid) {
-        /*ContentValues program = new ContentValues();TODO: Crash if active
-        program.put(EnrollmentModel.Columns.LAST_UPDATED, BaseIdentifiableObject.DATE_FORMAT.format(lastUpdated));
-        briteDatabase.update(ProgramModel.TABLE, program, ProgramModel.Columns.UID + " = ?", programUid);*/
+    @Override
+    public ProgramModel getProgram(String programUid) {
+        ProgramModel programModel = null;
+        Cursor programCursor = briteDatabase.query("SELECT * FROM Program WHERE uid = ? LIMIT 1", programUid);
+        if (programCursor != null) {
+            if (programCursor.moveToFirst())
+                programModel = ProgramModel.create(programCursor);
+            programCursor.close();
+        }
+        return programModel;
     }
+
 }

@@ -61,6 +61,7 @@ public final class DataEntryAdapter extends Adapter {
 
     @NonNull
     private final List<Row> rows;
+    private final DataEntryArguments dataEntryArguments;
 
     private final FlowableProcessor<Trio<String, String, Integer>> processorOptionSet;
 
@@ -76,28 +77,22 @@ public final class DataEntryAdapter extends Adapter {
         imageSelector = new ObservableField<>("");
         currentPosition = PublishProcessor.create();
         this.processorOptionSet = PublishProcessor.create();
+        this.dataEntryArguments = dataEntryArguments;
 
-        addRows(layoutInflater, fragmentManager, dataEntryArguments, orgUnits, isEditable);
-    }
+        rows.add(Constants.EDITTEXT, new EditTextRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType(), isEditable));
+        rows.add(Constants.BUTTON, new FileRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
+        rows.add(Constants.CHECKBOX, new RadioButtonRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
+        rows.add(Constants.SPINNER, new SpinnerRow(layoutInflater, processor, currentPosition, processorOptionSet, true, dataEntryArguments.renderType()));
+        rows.add(Constants.COORDINATES, new CoordinateRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
+        rows.add(Constants.TIME, new DateTimeRow(layoutInflater, processor, currentPosition, Constants.TIME, true, dataEntryArguments.renderType()));
+        rows.add(Constants.DATE, new DateTimeRow(layoutInflater, processor, currentPosition, Constants.DATE, true, dataEntryArguments.renderType()));
+        rows.add(Constants.DATETIME, new DateTimeRow(layoutInflater, processor, currentPosition, Constants.DATETIME, true, dataEntryArguments.renderType()));
+        rows.add(Constants.AGEVIEW, new AgeRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
+        rows.add(Constants.YES_NO, new RadioButtonRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
+        rows.add(Constants.ORG_UNIT, new OrgUnitRow(fragmentManager, layoutInflater, processor, currentPosition, true, orgUnits, dataEntryArguments.renderType()));
+        rows.add(Constants.IMAGE, new ImageRow(layoutInflater, processor, currentPosition, dataEntryArguments.renderType()));
+        rows.add(Constants.UNSUPPORTED, new UnsupportedRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
 
-    private void addRows(@NonNull LayoutInflater layoutInflater,
-                         @NonNull FragmentManager fragmentManager,
-                         @NonNull DataEntryArguments dataEntryArguments,
-                         @NonNull Observable<List<OrganisationUnitModel>> orgUnits,
-                         ObservableBoolean isEditable) {
-        rows.add(Constants.EDITTEXT, new EditTextRow(layoutInflater, processor, true, dataEntryArguments.renderType(), isEditable));
-        rows.add(Constants.BUTTON, new FileRow(layoutInflater, true));
-        rows.add(Constants.CHECKBOX, new RadioButtonRow(layoutInflater, processor, true));
-        rows.add(Constants.SPINNER, new SpinnerRow(layoutInflater, processor, processorOptionSet, true, dataEntryArguments.renderType()));
-        rows.add(Constants.COORDINATES, new CoordinateRow(layoutInflater, processor, true));
-        rows.add(Constants.TIME, new DateTimeRow(layoutInflater, processor, currentPosition, Constants.TIME, true));
-        rows.add(Constants.DATE, new DateTimeRow(layoutInflater, processor, currentPosition, Constants.DATE, true));
-        rows.add(Constants.DATETIME, new DateTimeRow(layoutInflater, processor, currentPosition, Constants.DATETIME, true));
-        rows.add(Constants.AGEVIEW, new AgeRow(layoutInflater, processor, true));
-        rows.add(Constants.YES_NO, new RadioButtonRow(layoutInflater, processor, true));
-        rows.add(Constants.ORG_UNIT, new OrgUnitRow(fragmentManager, layoutInflater, processor, true, orgUnits, dataEntryArguments.renderType()));
-        rows.add(Constants.IMAGE, new ImageRow(layoutInflater, processor, dataEntryArguments.renderType()));
-        rows.add(Constants.UNSUPPORTED, new UnsupportedRow(layoutInflater));
     }
 
     public DataEntryAdapter(@NonNull LayoutInflater layoutInflater,
@@ -114,8 +109,22 @@ public final class DataEntryAdapter extends Adapter {
         imageSelector = new ObservableField<>("");
         currentPosition = PublishProcessor.create();
         this.processorOptionSet = processorOptSet;
+        this.dataEntryArguments = dataEntryArguments;
 
-        addRows(layoutInflater, fragmentManager, dataEntryArguments, orgUnits, isEditable);
+        rows.add(Constants.EDITTEXT, new EditTextRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType(), isEditable));
+        rows.add(Constants.BUTTON, new FileRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
+        rows.add(Constants.CHECKBOX, new RadioButtonRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
+        rows.add(Constants.SPINNER, new SpinnerRow(layoutInflater, processor, currentPosition, processorOptionSet, true, dataEntryArguments.renderType()));
+        rows.add(Constants.COORDINATES, new CoordinateRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
+        rows.add(Constants.TIME, new DateTimeRow(layoutInflater, processor, currentPosition, Constants.TIME, true, dataEntryArguments.renderType()));
+        rows.add(Constants.DATE, new DateTimeRow(layoutInflater, processor, currentPosition, Constants.DATE, true, dataEntryArguments.renderType()));
+        rows.add(Constants.DATETIME, new DateTimeRow(layoutInflater, processor, currentPosition, Constants.DATETIME, true, dataEntryArguments.renderType()));
+        rows.add(Constants.AGEVIEW, new AgeRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
+        rows.add(Constants.YES_NO, new RadioButtonRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
+        rows.add(Constants.ORG_UNIT, new OrgUnitRow(fragmentManager, layoutInflater, processor, currentPosition, true, orgUnits, dataEntryArguments.renderType()));
+        rows.add(Constants.IMAGE, new ImageRow(layoutInflater, processor, currentPosition, dataEntryArguments.renderType()));
+        rows.add(Constants.UNSUPPORTED, new UnsupportedRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
+
     }
 
     @NonNull
@@ -152,7 +161,12 @@ public final class DataEntryAdapter extends Adapter {
             return Constants.COORDINATES;
 
         } else if (viewModel instanceof DateTimeViewModel) {
-            return dateTimeViewModelValueType((DateTimeViewModel) viewModel);
+            if (((DateTimeViewModel) viewModel).valueType() == ValueType.DATE)
+                return Constants.DATE;
+            if (((DateTimeViewModel) viewModel).valueType() == ValueType.TIME)
+                return Constants.TIME;
+            else
+                return Constants.DATETIME;
         } else if (viewModel instanceof AgeViewModel) {
             return Constants.AGEVIEW;
         } else if (viewModel instanceof FileViewModel) {
@@ -167,15 +181,6 @@ public final class DataEntryAdapter extends Adapter {
             throw new IllegalStateException("Unsupported view model type: "
                     + viewModel.getClass());
         }
-    }
-
-    private int dateTimeViewModelValueType(DateTimeViewModel viewModel) {
-        if (viewModel.valueType() == ValueType.DATE)
-            return Constants.DATE;
-        if (viewModel.valueType() == ValueType.TIME)
-            return Constants.TIME;
-        else
-            return Constants.DATETIME;
     }
 
     @Override

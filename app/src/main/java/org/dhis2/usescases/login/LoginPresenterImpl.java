@@ -3,11 +3,14 @@ package org.dhis2.usescases.login;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.view.View;
 
 import com.github.pwittchen.rxbiometric.library.RxBiometric;
 
 import org.dhis2.App;
+import org.dhis2.R;
+import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.server.ConfigurationRepository;
 import org.dhis2.data.server.UserManager;
 import org.dhis2.usescases.main.MainActivity;
@@ -82,9 +85,16 @@ public class LoginPresenterImpl implements LoginContracts.LoginPresenter {
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(
-                                    systemInfo -> view.getBinding().serverUrlEdit.setText(systemInfo.contextPath()),
+                                    systemInfo -> {
+                                        if (systemInfo.contextPath() != null)
+                                            view.setUrl(systemInfo.contextPath());
+                                        else
+                                            view.setUrl(view.getContext().getString(R.string.login_https));
+                                    },
                                     Timber::e));
-        }
+        } else
+            view.setUrl(view.getContext().getString(R.string.login_https));
+
 
         //TODO: UNCOMMENT WHEN GREEN LIGHT
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
@@ -219,7 +229,7 @@ public class LoginPresenterImpl implements LoginContracts.LoginPresenter {
     public void logOut() {
         if (userManager != null)
             disposable.add(Observable.fromCallable(
-                    userManager.getD2().logout())
+                    userManager.getD2().userModule().logOut())
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
