@@ -26,6 +26,7 @@ import org.dhis2.utils.Period;
 import org.hisp.dhis.android.core.maintenance.D2Error;
 
 import java.util.List;
+import java.util.Objects;
 
 import javax.inject.Inject;
 
@@ -55,7 +56,7 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        ((App) getApplicationContext()).userComponent().plus(new MainModule()).inject(this);
+        Objects.requireNonNull(((App) getApplicationContext()).userComponent()).plus(new MainModule()).inject(this);
 
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
