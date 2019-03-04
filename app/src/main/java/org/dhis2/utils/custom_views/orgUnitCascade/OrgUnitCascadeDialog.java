@@ -114,7 +114,7 @@ public class OrgUnitCascadeDialog extends DialogFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.dialog_cascade_orgunit, container, false);
-
+        binding.orgUnitEditText.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_search, 0, 0, 0);
         binding.orgUnitEditText.setHint(title);
         binding.acceptButton.setOnClickListener(view -> {
             if (binding.recycler.getAdapter() != null) {
