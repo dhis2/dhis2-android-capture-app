@@ -3,11 +3,9 @@ package org.dhis2.data.forms.dataentry;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
-import android.util.Log;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
-import org.dhis2.data.forms.dataentry.DataEntryRepository;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import org.hisp.dhis.android.core.D2;
@@ -93,7 +91,7 @@ final class EnrollmentRepository implements DataEntryRepository {
     @Override
     public Observable<List<FieldViewModel>> list() {
         return briteDatabase
-                .createQuery(TrackedEntityAttributeValueModel.TABLE, QUERY, enrollment == null ? "" : enrollment)
+                .createQuery(TrackedEntityAttributeValueModel.TABLE, QUERY, enrollment)
                 .mapToList(this::transform);
     }
 
@@ -105,7 +103,7 @@ final class EnrollmentRepository implements DataEntryRepository {
 
     @NonNull
     private FieldViewModel transform(@NonNull Cursor cursor) {
-        String uid = cursor.getString(0);
+        @NonNull String uid = cursor.getString(0) == null ? "" : cursor.getString(0);
         String label = cursor.getString(1);
         ValueType valueType = ValueType.valueOf(cursor.getString(2));
         boolean mandatory = cursor.getInt(3) == 1;
@@ -142,13 +140,13 @@ final class EnrollmentRepository implements DataEntryRepository {
                 String teiUid = null;
                 Cursor tei = briteDatabase.query("SELECT TrackedEntityInstance.uid FROM TrackedEntityInstance " +
                         "JOIN Enrollment ON Enrollment.trackedEntityInstance = TrackedEntityInstance.uid " +
-                        "WHERE Enrollment.uid = ?", enrollment == null ? "" : enrollment);
+                        "WHERE Enrollment.uid = ?", enrollment);
                 if (tei != null && tei.moveToFirst()) {
                     teiUid = tei.getString(0);
                     tei.close();
                 }
 
-                if (teiUid != null) { //checks if tei has been deleted);
+                if (teiUid != null) { //checks if tei has been deleted
                     dataValue = d2.trackedEntityModule().reservedValueManager.getValue(uid, pattern == null || pattern.contains("OU") ? null : orgUnitUid);
 
                     //Checks if ValueType is Numeric and that it start with a 0, then removes the 0
@@ -157,18 +155,18 @@ final class EnrollmentRepository implements DataEntryRepository {
                             dataValue = d2.trackedEntityModule().reservedValueManager.getValue(uid, pattern == null || pattern.contains("OU") ? null : orgUnitUid);
                         }
 
-                    String INSERT = "INSERT INTO TrackedEntityAttributeValue\n" +
+                    String insert = "INSERT INTO TrackedEntityAttributeValue\n" +
                             "(lastUpdated, value, trackedEntityAttribute, trackedEntityInstance)\n" +
                             "VALUES (?,?,?,?)";
                     SQLiteStatement updateStatement = briteDatabase.getWritableDatabase()
-                            .compileStatement(INSERT);
+                            .compileStatement(insert);
                     sqLiteBind(updateStatement, 1, BaseIdentifiableObject.DATE_FORMAT
                             .format(Calendar.getInstance().getTime()));
                     sqLiteBind(updateStatement, 2, dataValue == null ? "" : dataValue);
                     sqLiteBind(updateStatement, 3, uid == null ? "" : uid);
-                    sqLiteBind(updateStatement, 4, teiUid == null ? "" : teiUid);
+                    sqLiteBind(updateStatement, 4, teiUid);
 
-                    long insert = briteDatabase.executeInsert(
+                    briteDatabase.executeInsert(
                             TrackedEntityAttributeValueModel.TABLE, updateStatement);
                     updateStatement.clearBindings();
                 }
@@ -179,7 +177,9 @@ final class EnrollmentRepository implements DataEntryRepository {
 
         ValueTypeDeviceRenderingModel fieldRendering = null;
         Cursor rendering = briteDatabase.query("SELECT ValueTypeDeviceRendering.* FROM ValueTypeDeviceRendering " +
-                "JOIN ProgramTrackedEntityAttribute ON ProgramTrackedEntityAttribute.uid = ValueTypeDeviceRendering.uid WHERE ProgramTrackedEntityAttribute.trackedEntityAttribute = ?", uid);
+                "JOIN ProgramTrackedEntityAttribute ON ProgramTrackedEntityAttribute.uid = ValueTypeDeviceRendering.uid " +
+                        "WHERE ProgramTrackedEntityAttribute.trackedEntityAttribute = ?",
+                uid);
         if (rendering != null) {
             if (rendering.moveToFirst())
                 fieldRendering = ValueTypeDeviceRenderingModel.create(rendering);
@@ -187,13 +187,9 @@ final class EnrollmentRepository implements DataEntryRepository {
         }
 
         ObjectStyleModel objectStyle = ObjectStyleModel.builder().build();
-        Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", uid);
-        try {
+        try (Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", uid)) {
             if (objStyleCursor.moveToFirst())
                 objectStyle = ObjectStyleModel.create(objStyleCursor);
-        } finally {
-            if (objStyleCursor != null)
-                objStyleCursor.close();
         }
 
         return fieldFactory.create(uid,
@@ -211,7 +207,7 @@ final class EnrollmentRepository implements DataEntryRepository {
             contentValues.put(TrackedEntityAttributeValueModel.Columns.VALUE, content);
             int row = briteDatabase.update(TrackedEntityAttributeValueModel.TABLE, contentValues, "trackedEntityAttribute = ?", field == null ? "" : field);
             if (row == -1)
-                Log.d(this.getClass().getSimpleName(), String.format("Error updating field %s", field == null ? "" : field));
+                Timber.d("Error updating field %s", field == null ? "" : field);
         }
     }
 }

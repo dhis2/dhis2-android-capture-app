@@ -4,11 +4,7 @@ package org.dhis2.usescases.splash;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
-import org.dhis2.Bindings.Bindings;
-import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.server.UserManager;
 import org.dhis2.usescases.login.LoginActivity;
 import org.dhis2.usescases.main.MainActivity;
@@ -18,6 +14,8 @@ import org.dhis2.utils.SyncUtils;
 
 import java.util.concurrent.TimeUnit;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
@@ -31,7 +29,7 @@ public class SplashPresenterImpl implements SplashContracts.SplashPresenter {
     @NonNull
     private final CompositeDisposable compositeDisposable;
 
-    SplashPresenterImpl(@Nullable UserManager userManager, MetadataRepository metadataRepository, SplashRepository splashRepository) {
+    SplashPresenterImpl(@Nullable UserManager userManager, SplashRepository splashRepository) {
         this.userManager = userManager;
         this.compositeDisposable = new CompositeDisposable();
         this.splashRespository = splashRepository;
@@ -65,11 +63,11 @@ public class SplashPresenterImpl implements SplashContracts.SplashPresenter {
             return;
         }
 
-        if (SyncUtils.isSyncRunning()){
+        if (SyncUtils.isSyncRunning()) {
 
             view.startActivity(SyncActivity.class, null, true, true, null);
 
-        }else {
+        } else {
 
             compositeDisposable.add(
                     splashRespository.checkExpiredEvents()

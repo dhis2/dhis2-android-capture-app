@@ -1,13 +1,12 @@
 package org.dhis2.usescases.splash;
 
-import androidx.annotation.Nullable;
-
-import org.dhis2.data.dagger.PerActivity;
-import org.dhis2.data.metadata.MetadataRepository;
-import org.dhis2.data.server.ServerComponent;
-import org.dhis2.data.server.UserManager;
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import org.dhis2.data.dagger.PerActivity;
+import org.dhis2.data.server.ServerComponent;
+import org.dhis2.data.server.UserManager;
+
+import androidx.annotation.Nullable;
 import dagger.Module;
 import dagger.Provides;
 
@@ -26,8 +25,8 @@ public final class SplashModule {
 
     @Provides
     @PerActivity
-    SplashContracts.SplashPresenter providePresenter(MetadataRepository metadataRepository, SplashRepository splashRepository) {
-        return new SplashPresenterImpl(userManager, metadataRepository, splashRepository);
+    SplashContracts.SplashPresenter providePresenter(SplashRepository splashRepository) {
+        return new SplashPresenterImpl(userManager, splashRepository);
     }
 
     @Provides

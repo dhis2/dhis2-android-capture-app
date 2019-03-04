@@ -40,7 +40,6 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
 
     private OnAgeSet listener;
     private String label;
-    private String description;
 
     public AgeView(Context context) {
         super(context);
@@ -64,7 +63,6 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
 
     public void setLabel(String label, String description) {
         this.label = label;
-        this.description = description;
         if (binding instanceof AgeCustomViewAccentBinding) {
             ((AgeCustomViewAccentBinding) binding).setLabel(label);
             ((AgeCustomViewAccentBinding) binding).setDescription(description);
@@ -86,15 +84,15 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
     @Override
     public void onClick(View view) {
         Calendar c = Calendar.getInstance();
-        int year = c.get(Calendar.YEAR);
-        int month = c.get(Calendar.MONTH);
-        int day = c.get(Calendar.DAY_OF_MONTH);
+        int yearAux = c.get(Calendar.YEAR);
+        int monthAux = c.get(Calendar.MONTH);
+        int dayAux = c.get(Calendar.DAY_OF_MONTH);
 
         DatePickerDialog dateDialog = new DatePickerDialog(getContext(), (
-                (datePicker, year1, month1, day1) -> handleDateInput(view, year1, month1, day1)),
-                year,
-                month,
-                day);
+                (datePicker, year1, month1, day1) -> handleDateInput(year1, month1, day1)),
+                yearAux,
+                monthAux,
+                dayAux);
         dateDialog.getDatePicker().setMaxDate(c.getTimeInMillis());
         dateDialog.setTitle(label);
         dateDialog.show();
@@ -112,6 +110,8 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
                 case R.id.input_month:
                 case R.id.input_year:
                     handleSingleInputs();
+                    break;
+                default:
                     break;
             }
     }
@@ -135,7 +135,7 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
         }
     }
 
-    protected void handleDateInput(View view, int year1, int month1, int day1) {
+    protected void handleDateInput(int year1, int month1, int day1) {
         selectedCalendar.set(Calendar.YEAR, year1);
         selectedCalendar.set(Calendar.MONTH, month1);
         selectedCalendar.set(Calendar.DAY_OF_MONTH, day1);
@@ -154,7 +154,6 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
         if (!result.equals(date.getText().toString())) {
             date.setText(result);
             listener.onAgeSet(selectedCalendar.getTime());
-//            nextFocus(view);
         }
     }
 

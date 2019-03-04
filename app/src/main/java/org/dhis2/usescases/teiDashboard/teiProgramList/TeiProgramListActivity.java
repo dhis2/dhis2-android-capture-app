@@ -3,12 +3,7 @@ package org.dhis2.usescases.teiDashboard.teiProgramList;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.TypedArray;
-import android.os.Build;
 import android.os.Bundle;
-import android.util.TypedValue;
-import android.view.Window;
-import android.view.WindowManager;
 
 import org.dhis2.App;
 import org.dhis2.R;

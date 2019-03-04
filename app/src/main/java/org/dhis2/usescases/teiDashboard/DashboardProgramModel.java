@@ -1,6 +1,5 @@
 package org.dhis2.usescases.teiDashboard;
 
-import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
@@ -13,8 +12,6 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
 import java.util.List;
 import java.util.Map;
-
-import androidx.databinding.BaseObservable;
 
 import androidx.databinding.BaseObservable;
 

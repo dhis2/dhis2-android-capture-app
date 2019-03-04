@@ -8,6 +8,7 @@ import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+@SuppressWarnings("squid:S00107")
 public interface FieldViewModelFactory {
 
     @NonNull

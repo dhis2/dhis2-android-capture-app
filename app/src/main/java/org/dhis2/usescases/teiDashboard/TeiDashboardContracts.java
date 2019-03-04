@@ -89,7 +89,7 @@ public class TeiDashboardContracts {
 
         void goToAddRelationship(String teiTypeToAdd);
 
-        void addRelationship(String trackEntityInstance_A, String relationshipType);
+        void addRelationship(String trackEntityInstanceA, String relationshipType);
 
         void deleteRelationship(Relationship relationshipModel);
 

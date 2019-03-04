@@ -20,8 +20,6 @@ import org.dhis2.utils.custom_views.OptionSetPopUp;
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
-import java.util.Map;
-
 import androidx.appcompat.widget.PopupMenu;
 import androidx.databinding.ViewDataBinding;
 import androidx.fragment.app.FragmentActivity;
@@ -45,9 +43,9 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
 
     private SpinnerViewModel viewModel;
     private int numberOfOptions = 0;
-    private Map<String, OptionModel> options;
 
-    SpinnerHolder(ViewDataBinding mBinding, FlowableProcessor<RowAction> processor, FlowableProcessor<Trio<String, String, Integer>> processorOptionSet, String renderType, boolean isSearchMode) {
+    SpinnerHolder(ViewDataBinding mBinding, FlowableProcessor<RowAction> processor,
+                  FlowableProcessor<Trio<String, String, Integer>> processorOptionSet, String renderType, boolean isSearchMode) {
         super(mBinding);
         this.editText = mBinding.getRoot().findViewById(R.id.input_editText);
         this.iconView = mBinding.getRoot().findViewById(R.id.renderImage);
@@ -102,6 +100,7 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
     }
 
     public void dispose() {
+        // unused
     }
 
     @Override
@@ -117,9 +116,6 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
                     .setClearListener(view -> {
                                 processor.onNext(
                                         RowAction.create(viewModel.uid(), null));
-                               /* View nextView;
-                                if ((nextView = editText.focusSearch(View.FOCUS_DOWN)) != null)
-                                    nextView.requestFocus();*/
                                 dialog.dismiss();
                             }
                     ).show(((FragmentActivity) binding.getRoot().getContext()).getSupportFragmentManager(), null);

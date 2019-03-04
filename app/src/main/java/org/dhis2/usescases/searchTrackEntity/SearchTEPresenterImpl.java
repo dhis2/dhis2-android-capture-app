@@ -36,6 +36,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nullable;
@@ -183,29 +184,6 @@ public class SearchTEPresenterImpl implements SearchTEContractsModule.SearchTEPr
 
     //------------------------------------------
     //region DATA
-    private void addOfflineData() {
-        compositeDisposable.add(
-                view.offlinePage()
-                        .startWith(0)
-                        .flatMap(page -> {
-                            this.currentPage = page;
-                            return searchRepository.trackedEntityInstances(trackedEntity.uid(), selectedProgram, queryData, page).toFlowable(BackpressureStrategy.BUFFER);
-                        })
-                        .debounce(500, TimeUnit.MILLISECONDS, Schedulers.io())
-                        .map(trackedEntityInstanceModels -> {
-                            List<SearchTeiModel> teiModels = new ArrayList<>();
-                            for (TrackedEntityInstanceModel tei : trackedEntityInstanceModels)
-                                if (view.fromRelationshipTEI() == null || !tei.uid().equals(view.fromRelationshipTEI())) //If fetching for relationship, discard selected TEI
-                                    teiModels.add(new SearchTeiModel(tei, new ArrayList<>()));
-                            return teiModels;
-                        })
-                        .flatMap(list -> searchRepository.transformIntoModel(list, selectedProgram))
-                        .map(this::getMessage)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(view.swapTeiListData(), Timber::d)
-        );
-    }
 
     @Override
     public void getTrakedEntities() {
@@ -242,11 +220,12 @@ public class SearchTEPresenterImpl implements SearchTEContractsModule.SearchTEPr
                                 List<String> filterList = new ArrayList<>();
                                 Date enrollementDate = null;
                                 if (queryData != null) {
-                                    for (String key : queryData.keySet()) {
-                                        if (key.equals(Constants.ENROLLMENT_DATE_UID))
-                                            enrollementDate = DateUtils.uiDateFormat().parse(queryData.get(key));
-                                        else if (!key.equals(Constants.INCIDENT_DATE_UID)) //TODO: HOW TO INCLUDE INCIDENT DATE IN ONLINE SEARCH
-                                            filterList.add(key + ":LIKE:" + queryData.get(key));
+                                    for (Map.Entry<String, String> entry : queryData.entrySet()) {
+                                        if (entry.getKey().equalsIgnoreCase(Constants.ENROLLMENT_DATE_UID)) {
+                                            enrollementDate = DateUtils.uiDateFormat().parse(entry.getValue());
+                                        } else if (!entry.getKey().equals(Constants.INCIDENT_DATE_UID)) { //TODO: HOW TO INCLUDE INCIDENT DATE IN ONLINE SEARCH
+                                            filterList.add(entry.getKey() + ":LIKE:" + entry.getValue());
+                                        }
                                     }
                                 }
                                 List<String> orgUnitsUids = new ArrayList<>();
@@ -340,7 +319,7 @@ public class SearchTEPresenterImpl implements SearchTEContractsModule.SearchTEPr
 
         String messageId = "";
         if (selectedProgram != null && !selectedProgram.displayFrontPageList()) {
-            if (selectedProgram != null && selectedProgram.minAttributesRequiredToSearch() > queryData.size())
+            if (selectedProgram.minAttributesRequiredToSearch() > queryData.size())
                 messageId = String.format(view.getContext().getString(R.string.search_min_num_attr), selectedProgram.minAttributesRequiredToSearch());
             else if (selectedProgram.maxTeiCountToReturn() != 0 && teiList.size() > selectedProgram.maxTeiCountToReturn())
                 messageId = String.format(view.getContext().getString(R.string.search_max_tei_reached), selectedProgram.maxTeiCountToReturn());

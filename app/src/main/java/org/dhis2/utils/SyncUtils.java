@@ -9,6 +9,10 @@ import timber.log.Timber;
 
 public class SyncUtils {
 
+    private SyncUtils() {
+        // hide public constructor
+    }
+
     public static boolean isSyncRunning(String syncTag) {
         List<WorkStatus> statuses = null;
         boolean running = false;

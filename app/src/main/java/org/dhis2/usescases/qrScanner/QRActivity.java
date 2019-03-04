@@ -22,22 +22,14 @@ import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.databinding.DataBindingUtil;
-import timber.log.Timber;
-
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
 /**
  * QUADRAM. Created by ppajuelo on 15/01/2018.
  */
-
+@SuppressWarnings("squid:MaximumInheritanceDepth")
 public class QRActivity extends ActivityGlobalAbstract implements ZXingScannerView.ResultHandler {
 
-    ActivityQrBinding binding;
     private ZXingScannerView mScannerView;
     private boolean isPermissionRequested = false;
 
@@ -45,7 +37,7 @@ public class QRActivity extends ActivityGlobalAbstract implements ZXingScannerVi
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_qr);
+        ActivityQrBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_qr);
         mScannerView = binding.scannerView;
         mScannerView.setAutoFocus(true);
         ArrayList<BarcodeFormat> formats = new ArrayList<>();
@@ -79,14 +71,12 @@ public class QRActivity extends ActivityGlobalAbstract implements ZXingScannerVi
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case 101: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    initScanner();
-                } else {
-                    finish();
-                }
+        // If request is cancelled, the result arrays are empty.
+        if (requestCode == 101) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                initScanner();
+            } else {
+                finish();
             }
         }
     }

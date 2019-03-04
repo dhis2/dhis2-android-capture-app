@@ -33,7 +33,6 @@ import org.dhis2.utils.timber.Dhis2DebugTree;
 import org.dhis2.utils.timber.ReleaseTree;
 import org.hisp.dhis.android.core.configuration.Configuration;
 import org.hisp.dhis.android.core.configuration.ConfigurationManager;
-import org.hisp.dhis.android.core.configuration.ConfigurationModel;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

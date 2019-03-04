@@ -5,43 +5,27 @@ import android.view.ViewGroup;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.Row;
-import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.FormButtonBinding;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
-import io.reactivex.processors.FlowableProcessor;
 
 /**
  * QUADRAM. Created by ppajuelo on 19/03/2018.
  */
 
 public class FileRow implements Row<FileHolder, FileViewModel> {
-    private final String renderType;
-    FormButtonBinding binding;
+
+    private FormButtonBinding binding;
     @NonNull
     private final LayoutInflater inflater;
-    @NonNull
-    private final FlowableProcessor<RowAction> processor;
     private final boolean isBgTransparent;
-    private boolean isSearchMode = false;
 
 
-    public FileRow(@NonNull LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor, boolean isBgTransparent) {
+    public FileRow(@NonNull LayoutInflater layoutInflater, boolean isBgTransparent) {
         this.inflater = layoutInflater;
-        this.processor = processor;
         this.isBgTransparent = isBgTransparent;
-        this.renderType = null;
-        isSearchMode = true;
-    }
-
-    public FileRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor,
-                   @NonNull FlowableProcessor<Integer> currentPosition,boolean isBgTransparent, String renderType) {
-        this.inflater = layoutInflater;
-        this.processor = processor;
-        this.isBgTransparent = isBgTransparent;
-        this.renderType = renderType;
     }
 
     @NonNull
@@ -63,6 +47,6 @@ public class FileRow implements Row<FileHolder, FileViewModel> {
 
     @Override
     public void deAttach(@NonNull FileHolder viewHolder) {
-
+        // unused
     }
 }

@@ -1,7 +1,6 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
 import android.os.Handler;
-import android.util.Log;
 
 import com.google.android.material.snackbar.Snackbar;
 
@@ -115,7 +114,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.EventCapt
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                programStageUid -> view.setProgramStage(programStageUid),
+                                view::setProgramStage,
                                 Timber::e
                         )
         );
@@ -212,7 +211,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.EventCapt
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                hasExpired -> this.hasExpired = hasExpired,
+                                hasExpiredResult -> hasExpired = hasExpiredResult,
                                 Timber::e
                         )
         );
@@ -256,7 +255,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.EventCapt
                             } else {
                                 DataEntryArguments arguments =
                                         DataEntryArguments.forEvent(formSectionViewModel.uid(), formSectionViewModel.renderType());
-                                EventCaptureFormFragment.getInstance().setSingleSection(arguments, formSectionViewModel);
+                                EventCaptureFormFragment.getInstance().setSingleSection(arguments);
                             }
 
                             EventCaptureFormFragment.getInstance().setSectionProgress(
@@ -273,9 +272,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.EventCapt
                                     EventCaptureFormFragment.getInstance().showFields(updates);
                                     checkProgress();
                                 },
-                                throwable -> {
-                                    Log.d("ERROR", "Something went wrong");
-                                }
+                                throwable -> Timber.e("Something went wrong")
                         )
         );
 
@@ -317,7 +314,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.EventCapt
             @NonNull Result<RuleEffect> calcResult) {
 
         if (calcResult.error() != null) {
-            calcResult.error().printStackTrace();
+            Timber.e(calcResult.error());
             return viewModels;
         }
 
@@ -358,7 +355,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.EventCapt
         view.clearFocus();
 
         new Handler().postDelayed(
-                () -> changeSection(),
+                this::changeSection,
                 1000);
 
     }
@@ -381,7 +378,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.EventCapt
                         Observable.just(completeMessage != null ? completeMessage : "")
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())
-                                .filter(completeMessage -> !isEmpty(completeMessage))
+                                .filter(completeMessageResult -> !isEmpty(completeMessageResult))
                                 .subscribe(
                                         data -> view.showMessageOnComplete(canComplete, completeMessage),
                                         Timber::e,
@@ -571,7 +568,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.EventCapt
 
     @Override
     public void setCalculatedValue(String calculatedValueVariable, String value) {
-
+        // unused
     }
 
     @Override
@@ -615,13 +612,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.EventCapt
     public void sethideSection(String sectionUid) {
         if (!sectionsToHide.contains(sectionUid))
             sectionsToHide.add(sectionUid);
-
-       /* for (FormSectionViewModel formSectionViewModel : getFinalSections())
-            if (formSectionViewModel.sectionUid().equals(currentSection.get()))
-                EventCaptureFormFragment.getInstance().setSectionProgress(
-                        getFinalSections().indexOf(formSectionViewModel),
-                        sectionList.size() - sectionsToHide.size());*/
-
     }
 
     @Override

@@ -42,16 +42,16 @@ import static org.dhis2.data.database.SqlConstants.WHERE;
 
 class HomeRepositoryImpl implements HomeRepository {
 
-    private final static String SELECT_EVENTS = "SELECT Event.* FROM Event " +
+    private static final String SELECT_EVENTS = "SELECT Event.* FROM Event " +
             "WHERE %s " +
             "Event.program = ? " +
-            "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'";
+            AND + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'";
 
-    private final static String SELECT_TEIS = "SELECT Event.* FROM Event " +
+    private static final String SELECT_TEIS = "SELECT Event.* FROM Event " +
             "JOIN Enrollment ON Enrollment.uid = Event.enrollment " +
             "WHERE %s " +
             "Event.program = ? " +
-            "AND Event.state != 'TO_DELETE' " +
+            AND + "Event.state != 'TO_DELETE' " +
             "GROUP BY Enrollment.trackedEntityInstance";
 
     private static final String TRACKED_ENTITY_TYPE_NAME = SELECT +
@@ -87,19 +87,12 @@ class HomeRepositoryImpl implements HomeRepository {
     private static final String[] TABLE_NAMES = new String[]{ProgramModel.TABLE, ObjectStyleModel.TABLE, OrganisationUnitProgramLinkModel.TABLE};
     private static final Set<String> TABLE_SET = new HashSet<>(Arrays.asList(TABLE_NAMES));
 
-    private final static String SELECT_ORG_UNITS =
+    private static final String SELECT_ORG_UNITS =
             "SELECT * FROM " + OrganisationUnitModel.TABLE + ", " + UserOrganisationUnitLinkModel.TABLE + " " +
                     "WHERE " + OrganisationUnitModel.TABLE + "." + OrganisationUnitModel.Columns.UID + " = " + UserOrganisationUnitLinkModel.TABLE + "." + UserOrganisationUnitLinkModel.Columns.ORGANISATION_UNIT +
                     " AND " + UserOrganisationUnitLinkModel.TABLE + "." + UserOrganisationUnitLinkModel.Columns.ORGANISATION_UNIT_SCOPE + " = '" + OrganisationUnitModel.Scope.SCOPE_DATA_CAPTURE +
                     "' AND UserOrganisationUnit.root = '1' " +
                     " ORDER BY " + OrganisationUnitModel.TABLE + "." + OrganisationUnitModel.Columns.DISPLAY_NAME + " ASC";
-
-    private final static String SELECT_ORG_UNITS_BY_PARENT =
-            "SELECT * FROM " + OrganisationUnitModel.TABLE + ", " + UserOrganisationUnitLinkModel.TABLE + " " +
-                    "WHERE " + OrganisationUnitModel.TABLE + "." + OrganisationUnitModel.Columns.UID + " = " + UserOrganisationUnitLinkModel.TABLE + "." + UserOrganisationUnitLinkModel.Columns.ORGANISATION_UNIT +
-                    " AND " + UserOrganisationUnitLinkModel.TABLE + "." + UserOrganisationUnitLinkModel.Columns.ORGANISATION_UNIT_SCOPE + " = '" + OrganisationUnitModel.Scope.SCOPE_DATA_CAPTURE +
-                    " AND " + OrganisationUnitModel.TABLE + "." + OrganisationUnitModel.Columns.PARENT + " = ? " +
-                    "' ORDER BY " + OrganisationUnitModel.TABLE + "." + OrganisationUnitModel.Columns.DISPLAY_NAME + " ASC";
 
     private final BriteDatabase briteDatabase;
 
@@ -222,12 +215,12 @@ class HomeRepositoryImpl implements HomeRepository {
     @NonNull
     @Override
     public Observable<List<OrganisationUnitModel>> orgUnits(String parentUid) {
-        String SELECT_ORG_UNITS_BY_PARENT = "SELECT OrganisationUnit.* FROM OrganisationUnit " +
+        String selectOrgUnitsByParent = "SELECT OrganisationUnit.* FROM OrganisationUnit " +
                 "JOIN UserOrganisationUnit ON UserOrganisationUnit.organisationUnit = OrganisationUnit.uid " +
                 "WHERE OrganisationUnit.parent = ? AND UserOrganisationUnit.organisationUnitScope = 'SCOPE_DATA_CAPTURE' " +
                 "ORDER BY OrganisationUnit.displayName ASC";
 
-        return briteDatabase.createQuery(OrganisationUnitModel.TABLE, SELECT_ORG_UNITS_BY_PARENT, parentUid)
+        return briteDatabase.createQuery(OrganisationUnitModel.TABLE, selectOrgUnitsByParent, parentUid)
                 .mapToList(OrganisationUnitModel::create);
     }
 

@@ -536,7 +536,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
 
                                 @Override
                                 public void onSkipped(String id) {
-
+                                    // unused
                                 }
                             })
                             .build();
@@ -562,11 +562,12 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                             .dismissListener(new DismissListener() {
                                 @Override
                                 public void onDismiss(String id) {
+                                    // unused
                                 }
 
                                 @Override
                                 public void onSkipped(String id) {
-
+                                    // unused
                                 }
                             })
                             .build();
@@ -583,7 +584,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                     HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
 
                     if (!prefs.getBoolean("TUTO_SHOWN", false) && !BuildConfig.DEBUG) {
-                        HelpManager.getInstance().showHelp();/* getAbstractActivity().fancyShowCaseQueue.show();*/
+                        HelpManager.getInstance().showHelp();
                         prefs.edit().putBoolean("TUTO_SHOWN", true).apply();
                     }
 

@@ -44,7 +44,6 @@ import javax.inject.Inject;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.view.GravityCompat;
 import androidx.databinding.DataBindingUtil;
@@ -63,7 +62,6 @@ import static org.dhis2.utils.Period.DAILY;
 import static org.dhis2.utils.Period.MONTHLY;
 import static org.dhis2.utils.Period.NONE;
 import static org.dhis2.utils.Period.WEEKLY;
-import static org.dhis2.utils.Period.YEARLY;
 
 /**
  * QUADRAM. Created by Cristian on 13/02/2018.
@@ -172,8 +170,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         } else {
             chosenDateYear = (ArrayList<Date>) selectedDates;
         }
-        binding.buttonPeriodText.setText(DateUtils.setSelectedDatesTextToShow(currentPeriod, selectedDates, chosenDateWeek,
-                chosenDateMonth, chosenDateYear, weeklyFormat));
+        binding.buttonPeriodText.setText(DateUtils.setSelectedDatesTextToShow(currentPeriod, selectedDates, weeklyFormat));
 
         presenter.setFilters(selectedDates, currentPeriod, orgUnitFilter.toString());
         endlessScrollListener.resetState(0);

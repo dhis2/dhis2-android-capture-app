@@ -275,52 +275,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         }
     }
 
-    private void setUpNewEventActionButton() {
-        if (eventCreationType == EventCreationType.REFERAL && tempCreate.equals(PERMANENT)) {
-            setUpReferralPermanentActionButton();
-        } else if (eventCreationType == EventCreationType.SCHEDULE) {
-            setUpScheduleActionButton();
-        } else {
-            setUpOtherActionButton();
-        }
-    }
-
-    private void setUpOtherActionButton() {
-        presenter.createEvent(
-                enrollmentUid,
-                programStageModel.uid(),
-                selectedDate,
-                selectedOrgUnit,
-                null,
-                catComboIsDefaultOrNull() ? null : selectedCatOptionCombo.uid(),
-                selectedLat,
-                selectedLon,
-                getTrackedEntityInstance);
-    }
-
-    private void setUpReferralPermanentActionButton() {
-        presenter.createEventPermanent(
-                enrollmentUid,
-                getTrackedEntityInstance,
-                programStageModel.uid(),
-                selectedDate,
-                selectedOrgUnit,
-                null,
-                catComboIsDefaultOrNull() ? null : selectedCatOptionCombo.uid(),
-                selectedLat, selectedLon);
-    }
-
-    private void setUpScheduleActionButton() {
-        presenter.scheduleEvent(
-                enrollmentUid,
-                programStageModel.uid(),
-                selectedDate,
-                selectedOrgUnit,
-                null,
-                catComboIsDefaultOrNull() ? null : selectedCatOptionCombo.uid(),
-                selectedLat, selectedLon);
-    }
-
     private void setUpScrenByCreatinType(EventCreationType eventCreationType) {
 
         if (eventCreationType == EventCreationType.REFERAL) {
@@ -428,17 +382,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         binding.setName(activityTitle);
     }
 
-//        if (eventModel == null) {
-//            Calendar now = DateUtils.getInstance().getCalendar();
-//            if (periodType == null) {
-//
-//                if (eventCreationType != EventCreationType.SCHEDULE)
-//                    selectedDate = now.getTime();
-//                else {
-//                    now.add(Calendar.DAY_OF_YEAR, getIntent().getIntExtra(Constants.EVENT_SCHEDULE_INTERVAL, 0));
-//                    selectedDate = DateUtils.getInstance().getNextPeriod(null, now.getTime(), 1);
-//                }
-
     @Override
     public void setProgram(@NonNull ProgramModel program) {
         this.program = program;
@@ -448,8 +391,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         if (eventModel == null) {
             setUpNewEventLayout();
         }
-
-//        binding.date.setOnClickListener(onDateClickListener);
 
         presenter.filterOrgUnits(DateUtils.uiDateFormat().format(selectedDate));
 

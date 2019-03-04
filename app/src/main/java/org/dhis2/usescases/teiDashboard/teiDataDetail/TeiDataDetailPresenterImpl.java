@@ -1,8 +1,6 @@
 package org.dhis2.usescases.teiDashboard.teiDataDetail;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -14,14 +12,11 @@ import org.dhis2.usescases.teiDashboard.DashboardRepository;
 import org.dhis2.utils.Constants;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 
-import androidx.core.app.ActivityCompat;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
-
-import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenterImpl.ACCESS_COARSE_LOCATION_PERMISSION_REQUEST;
 
 /**
  * QUADRAM. Created by frodriguez on 12/13/2017.

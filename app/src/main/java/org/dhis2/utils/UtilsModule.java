@@ -17,7 +17,7 @@ public final class UtilsModule {
 
     @Provides
     @Singleton
-    RulesUtilsProvider rulesUtilsProvider(CodeGenerator codeGenerator) {
-        return new RulesUtilsProviderImpl(codeGenerator);
+    RulesUtilsProvider rulesUtilsProvider() {
+        return new RulesUtilsProviderImpl();
     }
 }

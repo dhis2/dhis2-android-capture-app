@@ -1,7 +1,6 @@
 package org.dhis2.data.forms.dataentry;
 
 import android.database.Cursor;
-import androidx.annotation.NonNull;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
@@ -22,6 +21,7 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
+import androidx.annotation.NonNull;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 
@@ -79,9 +79,9 @@ public final class EventsRuleEngineRepository implements RuleEngineRepository {
 
     @NonNull
     private Flowable<RuleEvent> queryEvent(@NonNull List<RuleDataValue> dataValues) {
-        return briteDatabase.createQuery(EventModel.TABLE, QUERY_EVENT, eventUid == null ? "" : eventUid)
+        return briteDatabase.createQuery(EventModel.TABLE, QUERY_EVENT, eventUid)
                 .mapToOne(cursor -> {
-                    String eventUid = cursor.getString(0);
+                    String eventUidAux = cursor.getString(0);
                     String programStageUid = cursor.getString(1);
                     RuleEvent.Status status = RuleEvent.Status.valueOf(cursor.getString(2));
                     Date eventDate = parseDate(cursor.getString(3));
@@ -91,7 +91,7 @@ public final class EventsRuleEngineRepository implements RuleEngineRepository {
                     String programStageName = cursor.getString(6);
 
                     return RuleEvent.builder()
-                            .event(eventUid)
+                            .event(eventUidAux)
                             .programStage(programStageUid)
                             .programStageName(programStageName)
                             .status(status)
@@ -119,7 +119,7 @@ public final class EventsRuleEngineRepository implements RuleEngineRepository {
     @NonNull
     private Flowable<List<RuleDataValue>> queryDataValues() {
         return briteDatabase.createQuery(Arrays.asList(EventModel.TABLE,
-                TrackedEntityDataValueModel.TABLE), QUERY_VALUES, eventUid == null ? "" : eventUid)
+                TrackedEntityDataValueModel.TABLE), QUERY_VALUES, eventUid)
                 .mapToList(cursor -> {
                     Date eventDate = parseDate(cursor.getString(0));
                     String value = cursor.getString(3) != null ? cursor.getString(3) : "";
@@ -129,11 +129,7 @@ public final class EventsRuleEngineRepository implements RuleEngineRepository {
     }
 
     @NonNull
-    private static Date parseDate(@NonNull String date) {
-        try {
-            return BaseIdentifiableObject.DATE_FORMAT.parse(date);
-        } catch (ParseException parseException) {
-            throw new RuntimeException(parseException);
-        }
+    private static Date parseDate(@NonNull String date) throws ParseException {
+        return BaseIdentifiableObject.DATE_FORMAT.parse(date);
     }
 }

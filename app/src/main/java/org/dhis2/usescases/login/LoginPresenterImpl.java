@@ -3,14 +3,12 @@ package org.dhis2.usescases.login;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.view.View;
 
 import com.github.pwittchen.rxbiometric.library.RxBiometric;
 
 import org.dhis2.App;
 import org.dhis2.R;
-import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.server.ConfigurationRepository;
 import org.dhis2.data.server.UserManager;
 import org.dhis2.usescases.main.MainActivity;

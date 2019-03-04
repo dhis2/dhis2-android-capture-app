@@ -600,13 +600,9 @@ class EnrollmentFormRepository implements FormRepository {
                 "");
 
         ObjectStyleModel objectStyle = ObjectStyleModel.builder().build();
-        Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", uid);
-        try {
+        try (Cursor objStyleCursor = briteDatabase.query(SELECT + ALL + FROM + "ObjectStyle WHERE uid = ?", uid)) {
             if (objStyleCursor.moveToFirst())
                 objectStyle = ObjectStyleModel.create(objStyleCursor);
-        } finally {
-            if (objStyleCursor != null)
-                objStyleCursor.close();
         }
 
         return fieldFactory.create(uid, label, valueType, mandatory, optionSetUid, dataValue, section,

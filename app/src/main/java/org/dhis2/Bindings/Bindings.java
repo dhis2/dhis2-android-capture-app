@@ -47,6 +47,10 @@ import timber.log.Timber;
 
 public class Bindings {
 
+    private Bindings(){
+        // hide public constructor
+    }
+
     @BindingAdapter("date")
     public static void setDate(TextView textView, String date) {
         SimpleDateFormat formatIn = DateUtils.databaseDateFormat();

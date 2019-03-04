@@ -4,7 +4,6 @@ import org.dhis2.BR;
 import org.dhis2.databinding.ItemProgramEventBinding;
 
 import androidx.recyclerview.widget.RecyclerView;
-import io.reactivex.disposables.CompositeDisposable;
 
 /**
  * QUADRAM. Created by Cristian on 13/02/2018.
@@ -13,12 +12,10 @@ import io.reactivex.disposables.CompositeDisposable;
 public class ProgramEventDetailViewHolder extends RecyclerView.ViewHolder {
 
     private ItemProgramEventBinding binding;
-    private CompositeDisposable disposable;
 
     public ProgramEventDetailViewHolder(ItemProgramEventBinding binding) {
         super(binding.getRoot());
         this.binding = binding;
-        disposable = new CompositeDisposable();
     }
 
     public void bind(ProgramEventDetailContract.ProgramEventDetailPresenter presenter, ProgramEventViewModel event) {

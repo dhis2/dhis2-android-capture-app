@@ -78,7 +78,6 @@ public class TeiProgramListInteractorImpl implements TeiProgramListContract.TeiP
                     selectedCalendar.set(Calendar.SECOND, 0);
                     selectedCalendar.set(Calendar.MILLISECOND, 0);
                     selectedEnrollmentDate = selectedCalendar.getTime();
-                    String enrollmentDate = DateUtils.uiDateFormat().format(selectedEnrollmentDate);
 
                     compositeDisposable.add(getOrgUnits(programUid)
                             .subscribeOn(Schedulers.io())
@@ -113,13 +112,14 @@ public class TeiProgramListInteractorImpl implements TeiProgramListContract.TeiP
                 month,
                 day);
         ProgramModel selectedProgram = getProgramFromUid(programUid);
-        if (selectedProgram != null && !selectedProgram.selectEnrollmentDatesInFuture()) {
+        if (selectedProgram != null && selectedProgram.selectEnrollmentDatesInFuture() != null &&
+                !selectedProgram.selectEnrollmentDatesInFuture()) {
             dateDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
         }
-        dateDialog.setTitle(selectedProgram.enrollmentDateLabel());
-        dateDialog.setButton(DialogInterface.BUTTON_NEGATIVE, view.getContext().getString(R.string.date_dialog_clear), (dialog, which) -> {
-            dialog.dismiss();
-        });
+        if (selectedProgram != null && selectedProgram.enrollmentDateLabel() != null) {
+            dateDialog.setTitle(selectedProgram.enrollmentDateLabel());
+        }
+        dateDialog.setButton(DialogInterface.BUTTON_NEGATIVE, view.getContext().getString(R.string.date_dialog_clear), (dialog, which) -> dialog.dismiss());
         dateDialog.show();
 
     }
@@ -130,7 +130,7 @@ public class TeiProgramListInteractorImpl implements TeiProgramListContract.TeiP
 
     private void enrollInOrgUnit(String orgUnitUid, String programUid, String teiUid, Date enrollmentDate) {
         compositeDisposable.add(
-                teiProgramListRepository.saveToEnroll(orgUnitUid, programUid, teiUid,enrollmentDate)
+                teiProgramListRepository.saveToEnroll(orgUnitUid, programUid, teiUid, enrollmentDate)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(enrollmentUid -> view.goToEnrollmentScreen(enrollmentUid, programUid),

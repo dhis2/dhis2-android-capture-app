@@ -100,7 +100,6 @@ public class SyncManagerPresenterImpl implements SyncManagerContracts.SyncManage
                 .build());
         OneTimeWorkRequest request = syncDataBuilder.build();
         WorkManager.getInstance().beginUniqueWork(Constants.DATA, ExistingWorkPolicy.KEEP, request).enqueue();
-//        WorkManager.getInstance().enqueue(request);
     }
 
     @Override

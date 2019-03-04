@@ -60,7 +60,7 @@ import timber.log.Timber;
 public class EventInitialPresenterImpl implements EventInitialContract.EventInitialPresenter {
 
     public static final int ACCESS_COARSE_LOCATION_PERMISSION_REQUEST = 101;
-    static private EventInitialContract.EventInitialView view;
+    private EventInitialContract.EventInitialView view;
     private final MetadataRepository metadataRepository;
     private final EventInitialRepository eventInitialRepository;
     private final EventSummaryRepository eventSummaryRepository;
@@ -171,8 +171,8 @@ public class EventInitialPresenterImpl implements EventInitialContract.EventInit
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        orgUnits -> {
-                            this.orgUnits = orgUnits;
+                        orgUnitsResults -> {
+                            orgUnits = orgUnitsResults;
                             view.addTree(OrgUnitUtils.renderTree(view.getContext(), orgUnits, false));
                         },
                         throwable -> view.renderError(throwable.getMessage())
@@ -280,7 +280,7 @@ public class EventInitialPresenterImpl implements EventInitialContract.EventInit
                         catComboUid, catOptionUid,
                         latitude, longitude)
                         .switchMap(
-                                eventId -> eventInitialRepository.updateTrackedEntityInstance(eventId, trackedEntityInstanceUid, orgUnitUid)
+                                eventIdResult -> eventInitialRepository.updateTrackedEntityInstance(eventIdResult, trackedEntityInstanceUid, orgUnitUid)
                         )
                         .distinctUntilChanged()
                         .subscribeOn(Schedulers.io())
@@ -315,7 +315,7 @@ public class EventInitialPresenterImpl implements EventInitialContract.EventInit
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        (eventModel) -> view.onEventUpdated(eventModel.uid()),
+                        eventModel -> view.onEventUpdated(eventModel.uid()),
                         error -> displayMessage(error.getLocalizedMessage())
 
                 ));
@@ -328,7 +328,6 @@ public class EventInitialPresenterImpl implements EventInitialContract.EventInit
 
     @Override
     public void onOrgUnitButtonClick() {
-//        view.openDrawer();
         view.showOrgUnitSelector(orgUnits);
     }
 
@@ -387,8 +386,8 @@ public class EventInitialPresenterImpl implements EventInitialContract.EventInit
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        orgUnits -> {
-                            this.orgUnits = orgUnits;
+                        orgUnitsResult -> {
+                            orgUnits = orgUnitsResult;
                             view.addTree(OrgUnitUtils.renderTree(view.getContext(), orgUnits, true));
                         },
                         throwable -> view.showNoOrgUnits()
@@ -425,7 +424,7 @@ public class EventInitialPresenterImpl implements EventInitialContract.EventInit
             @NonNull List<FieldViewModel> viewModels,
             @NonNull Result<RuleEffect> calcResult) {
         if (calcResult.error() != null) {
-            calcResult.error().printStackTrace();
+            Timber.e(calcResult.error());
             return viewModels;
         }
 
@@ -453,7 +452,7 @@ public class EventInitialPresenterImpl implements EventInitialContract.EventInit
                 RuleActionShowWarning showWarning = (RuleActionShowWarning) ruleAction;
                 FieldViewModel model = fieldViewModels.get(showWarning.field());
 
-                if (model != null && model instanceof EditTextViewModel) {
+                if (model instanceof EditTextViewModel) {
                     fieldViewModels.put(showWarning.field(),
                             ((EditTextViewModel) model).withWarning(showWarning.content()));
                 }
@@ -461,7 +460,7 @@ public class EventInitialPresenterImpl implements EventInitialContract.EventInit
                 RuleActionShowError showError = (RuleActionShowError) ruleAction;
                 FieldViewModel model = fieldViewModels.get(showError.field());
 
-                if (model != null && model instanceof EditTextViewModel) {
+                if (model instanceof EditTextViewModel) {
                     fieldViewModels.put(showError.field(),
                             ((EditTextViewModel) model).withError(showError.content()));
                 }

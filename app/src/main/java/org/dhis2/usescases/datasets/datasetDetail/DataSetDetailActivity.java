@@ -246,8 +246,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
         } else {
             chosenDateYear = (ArrayList<Date>) selectedDates;
         }
-        binding.buttonPeriodText.setText(DateUtils.setSelectedDatesTextToShow(currentPeriod, selectedDates, chosenDateWeek,
-                chosenDateMonth, chosenDateYear, weeklyFormat));
+        binding.buttonPeriodText.setText(DateUtils.setSelectedDatesTextToShow(currentPeriod, selectedDates, weeklyFormat));
 
         // TODO
         presenter.getDataSetWithDates(selectedDates, currentPeriod, orgUnitFilter.toString());

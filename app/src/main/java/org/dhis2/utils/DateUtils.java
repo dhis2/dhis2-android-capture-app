@@ -7,7 +7,6 @@ import org.dhis2.R;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.period.PeriodType;
-import org.hisp.dhis.android.core.program.ProgramModel;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -1012,9 +1011,6 @@ public class DateUtils {
 
     public static String setSelectedDatesTextToShow(Period currentPeriod,
                                                     List<Date> selectedDates,
-                                                    List<Date> chosenDateWeek,
-                                                    List<Date> chosenDateMonth,
-                                                    List<Date> chosenDateYear,
                                                     SimpleDateFormat weeklyFormat) {
         SimpleDateFormat monthFormat = new SimpleDateFormat(DATE_FORMAT_MONTH2, Locale.getDefault());
         SimpleDateFormat yearFormat = new SimpleDateFormat(DATE_FORMAT_YEAR, Locale.getDefault());

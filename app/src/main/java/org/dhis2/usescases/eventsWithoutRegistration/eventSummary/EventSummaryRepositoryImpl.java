@@ -3,8 +3,6 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventSummary;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
@@ -41,6 +39,8 @@ import java.util.Locale;
 
 import javax.annotation.Nonnull;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
@@ -48,6 +48,13 @@ import io.reactivex.Observable;
 import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
+import static org.dhis2.data.database.SqlConstants.ALL;
+import static org.dhis2.data.database.SqlConstants.AND;
+import static org.dhis2.data.database.SqlConstants.FROM;
+import static org.dhis2.data.database.SqlConstants.NOT_EQUAL;
+import static org.dhis2.data.database.SqlConstants.POINT;
+import static org.dhis2.data.database.SqlConstants.SELECT;
+import static org.dhis2.data.database.SqlConstants.WHERE;
 
 /**
  * QUADRAM. Created by Cristian on 22/03/2018.
@@ -70,19 +77,19 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
 
     private static final List<String> SECTION_TABLES = Arrays.asList(
             EventModel.TABLE, ProgramModel.TABLE, ProgramStageModel.TABLE, ProgramStageSectionModel.TABLE);
-    private static final String SELECT_SECTIONS = "SELECT\n" +
+    private static final String SELECT_SECTIONS = SELECT +
             "  Program.uid AS programUid,\n" +
             "  ProgramStage.uid AS programStageUid,\n" +
             "  ProgramStageSection.uid AS programStageSectionUid,\n" +
             "  ProgramStageSection.displayName AS programStageSectionDisplayName,\n" +
             "  ProgramStage.displayName AS programStageDisplayName,\n" +
             "  ProgramStageSection.mobileRenderType AS renderType\n" +
-            "FROM Event\n" +
+            FROM + EventModel.TABLE +
             "  JOIN Program ON Event.program = Program.uid\n" +
             "  JOIN ProgramStage ON Event.programStage = ProgramStage.uid\n" +
             "  LEFT OUTER JOIN ProgramStageSection ON ProgramStageSection.programStage = Event.programStage\n" +
-            "WHERE Event.uid = ?\n" +
-            "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "' ORDER BY ProgramStageSection.sortOrder";
+            WHERE + "Event.uid = ?\n" +
+            AND + EventModel.TABLE + POINT + EventModel.Columns.STATE + NOT_EQUAL + "'" + State.TO_DELETE + "' ORDER BY ProgramStageSection.sortOrder";
 
     private static final String QUERY = "SELECT\n" +
             "  Field.id,\n" +
@@ -99,7 +106,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
             "  Field.displayDescription,\n" +
             "  Field.formOrder,\n" +
             "  Field.sectionOrder\n" +
-            "FROM Event\n" +
+            FROM + EventModel.TABLE +
             "  LEFT OUTER JOIN (\n" +
             "      SELECT\n" +
             "        DataElement.displayName AS label,\n" +
@@ -138,10 +145,10 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
             "  Event.dueDate,\n" +
             "  Event.organisationUnit,\n" +
             "  ProgramStage.displayName\n" +
-            "FROM Event\n" +
+            FROM + EventModel.TABLE +
             "JOIN ProgramStage ON ProgramStage.uid = Event.programStage\n" +
             "WHERE Event.uid = ?\n" +
-            "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'\n" +
+            "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + NOT_EQUAL + "'" + State.TO_DELETE + "'\n" +
             "LIMIT 1;";
 
     private static final String QUERY_VALUES = "SELECT " +
@@ -151,10 +158,10 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
             "  value" +
             " FROM TrackedEntityDataValue " +
             "  INNER JOIN Event ON TrackedEntityDataValue.event = Event.uid " +
-            " WHERE event = ? AND value IS NOT NULL AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "';";
+            " WHERE event = ? AND value IS NOT NULL AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + NOT_EQUAL + "'" + State.TO_DELETE + "';";
 
-    private static final String EVENT_QUERY = "SELECT * FROM Event WHERE Event.uid = ? LIMIT 1";
-    private static final String PROGRAM_QUERY = "SELECT * FROM Program JOIN ProgramStage ON " +
+    private static final String EVENT_QUERY = SELECT + ALL + FROM + EventModel.TABLE + WHERE + "Event.uid = ? LIMIT 1";
+    private static final String PROGRAM_QUERY = SELECT + ALL + FROM + "Program JOIN ProgramStage ON " +
             "ProgramStage.program = Program.uid JOIN Event On Event.programStage = ProgramStage.uid WHERE Event.uid = ?";
 
     private static final String ACCESS_QUERY = "SELECT ProgramStage.accessDataWrite FROM ProgramStage JOIN Event ON Event.programStage = ProgramStage.uid WHERE Event.uid = ? LIMIT 1";
@@ -252,38 +259,34 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
         }
 
         int optionCount = 0;
-        try{
-            Cursor countCursor = briteDatabase.query("SELECT COUNT (uid) FROM Option WHERE optionSet = ?", optionSet);
-            if(countCursor!=null){
-                if(countCursor.moveToFirst())
+        try {
+            Cursor countCursor = briteDatabase.query(SELECT + "COUNT (uid) FROM Option WHERE optionSet = ?", optionSet);
+            if (countCursor != null) {
+                if (countCursor.moveToFirst())
                     optionCount = countCursor.getInt(0);
                 countCursor.close();
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             Timber.e(e);
         }
 
         ValueTypeDeviceRenderingModel fieldRendering = null;
-        Cursor rendering = briteDatabase.query("SELECT * FROM ValueTypeDeviceRendering WHERE uid = ?", uid);
-        if(rendering!=null && rendering.moveToFirst()){
+        Cursor rendering = briteDatabase.query(SELECT + ALL + FROM + "ValueTypeDeviceRendering WHERE uid = ?", uid);
+        if (rendering != null && rendering.moveToFirst()) {
             fieldRendering = ValueTypeDeviceRenderingModel.create(rendering);
             rendering.close();
         }
 
         ObjectStyleModel objectStyle = ObjectStyleModel.builder().build();
-        Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", uid);
-        try {
+        try (Cursor objStyleCursor = briteDatabase.query(SELECT + ALL + FROM + "ObjectStyle WHERE uid = ?", uid)) {
             if (objStyleCursor.moveToFirst())
                 objectStyle = ObjectStyleModel.create(objStyleCursor);
-        } finally {
-            if (objStyleCursor != null)
-                objStyleCursor.close();
         }
 
         return fieldFactory.create(uid, formName == null ? cursor.getString(1) : formName,
                 ValueType.valueOf(cursor.getString(2)), cursor.getInt(3) == 1,
                 optionSet, dataValue, cursor.getString(7), cursor.getInt(8) == 1,
-                eventStatus == EventStatus.ACTIVE, null, description, fieldRendering,optionCount,objectStyle);
+                eventStatus == EventStatus.ACTIVE, null, description, fieldRendering, optionCount, objectStyle);
     }
 
     @NonNull
@@ -312,23 +315,16 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
             ContentValues values = event.toContentValues();
             switch (event.status()) {
                 case ACTIVE:
-                    values.put(EventModel.Columns.STATUS, EventStatus.COMPLETED.name());
-                    values.put(EventModel.Columns.COMPLETE_DATE, lastUpdated);
-                    break;
                 case SKIPPED:
-                    values.put(EventModel.Columns.STATUS, EventStatus.COMPLETED.name()); //TODO: Can this happen?
-                    values.put(EventModel.Columns.COMPLETE_DATE, lastUpdated);
-                    break;
                 case VISITED:
-                    values.put(EventModel.Columns.STATUS, EventStatus.COMPLETED.name()); //TODO: Can this happen?
-                    values.put(EventModel.Columns.COMPLETE_DATE, lastUpdated);
-                    break;
                 case SCHEDULE:
                     values.put(EventModel.Columns.STATUS, EventStatus.COMPLETED.name()); //TODO: Can this happen?
                     values.put(EventModel.Columns.COMPLETE_DATE, lastUpdated);
                     break;
                 case COMPLETED:
                     values.put(EventModel.Columns.STATUS, EventStatus.ACTIVE.name()); //TODO: This should check dates?
+                    break;
+                default:
                     break;
             }
 
@@ -379,7 +375,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
     private Flowable<RuleEvent> queryEvent(@NonNull List<RuleDataValue> dataValues) {
         return briteDatabase.createQuery(EventModel.TABLE, QUERY_EVENT, eventUid == null ? "" : eventUid)
                 .mapToOne(cursor -> {
-                    String eventUid = cursor.getString(0);
+                    String eventUidAux = cursor.getString(0);
                     String programStageUid = cursor.getString(1);
                     Date eventDate = parseDate(cursor.getString(3));
                     Date dueDate = cursor.isNull(4) ? eventDate : parseDate(cursor.getString(4));
@@ -389,7 +385,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
                     RuleEvent.Status status = RuleEvent.Status.valueOf(cursor.getString(2));
 
                     return RuleEvent.builder()
-                            .event(eventUid)
+                            .event(eventUidAux)
                             .programStage(programStageUid)
                             .programStageName(programStageName)
                             .status(status)
@@ -406,7 +402,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
     @Nonnull
     private String getOrgUnitCode(String orgUnitUid) {
         String ouCode = "";
-        Cursor cursor = briteDatabase.query("SELECT code FROM OrganisationUnit WHERE uid = ? LIMIT 1", orgUnitUid);
+        Cursor cursor = briteDatabase.query(SELECT + "code FROM OrganisationUnit WHERE uid = ? LIMIT 1", orgUnitUid);
         if (cursor != null && cursor.moveToFirst() && cursor.getString(0) != null) {
             ouCode = cursor.getString(0);
             cursor.close();
@@ -426,11 +422,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
     }
 
     @NonNull
-    private static Date parseDate(@NonNull String date) {
-        try {
-            return BaseIdentifiableObject.DATE_FORMAT.parse(date);
-        } catch (ParseException parseException) {
-            throw new RuntimeException(parseException);
-        }
+    private static Date parseDate(@NonNull String date) throws ParseException {
+        return BaseIdentifiableObject.DATE_FORMAT.parse(date);
     }
 }

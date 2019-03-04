@@ -29,7 +29,7 @@ import java.util.List;
 public class RulesUtilsProviderImplTest {
 
     String testUid = "XXXXXX";
-    private RulesUtilsProviderImpl ruleUtils = new RulesUtilsProviderImpl(new CodeGeneratorImpl());
+    private RulesUtilsProviderImpl ruleUtils = new RulesUtilsProviderImpl();
     private FieldViewModelFactoryImpl fieldFactory = new FieldViewModelFactoryImpl(
             "",
             "",

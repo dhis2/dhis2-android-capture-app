@@ -35,8 +35,8 @@ import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentManager;
@@ -53,20 +53,9 @@ import static android.text.TextUtils.isEmpty;
 
 public class FormAdapter extends RecyclerView.Adapter {
 
-    private long ENROLLMENT_DATE_ID = 1;
-    private long INCIDENT_DATE_ID = 2;
+    private static final long ENROLLMENT_DATE_ID = 1;
+    private static final long INCIDENT_DATE_ID = 2;
 
-    private final int EDITTEXT = 0;
-    private final int BUTTON = 1;
-    private final int CHECKBOX = 2;
-    private final int SPINNER = 3;
-    private final int COORDINATES = 4;
-    private final int TIME = 5;
-    private final int DATE = 6;
-    private final int DATETIME = 7;
-    private final int AGEVIEW = 8;
-    private final int YES_NO = 9;
-    private final int ORG_UNIT = 10;
     private int programData = 0;
     private List<TrackedEntityAttributeModel> attributeList;
     private ProgramModel programModel;
@@ -78,7 +67,7 @@ public class FormAdapter extends RecyclerView.Adapter {
     private final List<Row> rows;
 
     private Context context;
-    private HashMap<String, String> queryData;
+    private Map<String, String> queryData;
 
     public FormAdapter(FragmentManager fm, LayoutInflater layoutInflater, Observable<List<OrganisationUnitModel>> orgUnits, Context context) {
         setHasStableIds(true);
@@ -88,21 +77,22 @@ public class FormAdapter extends RecyclerView.Adapter {
         attributeList = new ArrayList<>();
         rows = new ArrayList<>();
 
-        rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, false));
-        rows.add(BUTTON, new FileRow(layoutInflater, processor, false));
-        rows.add(CHECKBOX, new RadioButtonRow(layoutInflater, processor, false));
-        rows.add(SPINNER, new SpinnerRow(layoutInflater, processor, processorOptionSet, false));
-        rows.add(COORDINATES, new CoordinateRow(layoutInflater, processor, false));
-        rows.add(TIME, new DateTimeRow(layoutInflater, processor, TIME, false));
-        rows.add(DATE, new DateTimeRow(layoutInflater, processor, DATE, false));
-        rows.add(DATETIME, new DateTimeRow(layoutInflater, processor, DATETIME, false));
-        rows.add(AGEVIEW, new AgeRow(layoutInflater, processor, false));
-        rows.add(YES_NO, new RadioButtonRow(layoutInflater, processor, false));
-        rows.add(ORG_UNIT, new OrgUnitRow(fm, layoutInflater, processor, false, orgUnits));
+        rows.add(Constants.EDITTEXT, new EditTextRow(layoutInflater, processor, false));
+        rows.add(Constants.BUTTON, new FileRow(layoutInflater, false));
+        rows.add(Constants.CHECKBOX, new RadioButtonRow(layoutInflater, processor, false));
+        rows.add(Constants.SPINNER, new SpinnerRow(layoutInflater, processor, processorOptionSet, false));
+        rows.add(Constants.COORDINATES, new CoordinateRow(layoutInflater, processor, false));
+        rows.add(Constants.TIME, new DateTimeRow(layoutInflater, processor, Constants.TIME, false));
+        rows.add(Constants.DATE, new DateTimeRow(layoutInflater, processor, Constants.DATE, false));
+        rows.add(Constants.DATETIME, new DateTimeRow(layoutInflater, processor, Constants.DATETIME, false));
+        rows.add(Constants.AGEVIEW, new AgeRow(layoutInflater, processor, false));
+        rows.add(Constants.YES_NO, new RadioButtonRow(layoutInflater, processor, false));
+        rows.add(Constants.ORG_UNIT, new OrgUnitRow(fm, layoutInflater, processor, false, orgUnits));
     }
 
+    @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return rows.get(viewType).onCreate(parent);
     }
 
@@ -110,11 +100,13 @@ public class FormAdapter extends RecyclerView.Adapter {
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         FieldViewModel viewModel;
         if (position < programData) {
+
+            String enrollmentDate = !isEmpty(programModel.enrollmentDateLabel()) ? programModel.enrollmentDateLabel() : context.getString(R.string.enrollmment_date);
+            String incidentDate = !isEmpty(programModel.incidentDateLabel()) ? programModel.incidentDateLabel() : context.getString(R.string.incident_date);
+
             viewModel = DateTimeViewModel.create(
                     position == 0 ? Constants.ENROLLMENT_DATE_UID : Constants.INCIDENT_DATE_UID,
-                    holder.getAdapterPosition() == 0 ?
-                            !isEmpty(programModel.enrollmentDateLabel()) ? programModel.enrollmentDateLabel() : context.getString(R.string.enrollmment_date) :
-                            !isEmpty(programModel.incidentDateLabel()) ? programModel.incidentDateLabel() : context.getString(R.string.incident_date),
+                    holder.getAdapterPosition() == 0 ? enrollmentDate : incidentDate,
                     false,
                     ValueType.DATE,
                     null,
@@ -124,36 +116,35 @@ public class FormAdapter extends RecyclerView.Adapter {
 
         } else {
             TrackedEntityAttributeModel attr = attributeList.get(holder.getAdapterPosition() - programData);
-            //String label = attr.displayShortName() != null ? attr.displayShortName() : attr.displayName();
             String label = attr.displayName();
             switch (holder.getItemViewType()) {
-                case EDITTEXT:
+                case Constants.EDITTEXT:
                     viewModel = EditTextViewModel.create(attr.uid(), label, false,
                             queryData.get(attr.uid()), label, 1, attr.valueType(), null, !attr.generated(),
                             attr.displayDescription(), null, ObjectStyleModel.builder().build());
                     break;
-                case BUTTON:
+                case Constants.BUTTON:
                     viewModel = FileViewModel.create(attr.uid(), label, false, queryData.get(attr.uid()), null, attr.displayDescription(), ObjectStyleModel.builder().build());
                     break;
-                case CHECKBOX:
-                case YES_NO:
+                case Constants.CHECKBOX:
+                case Constants.YES_NO:
                     viewModel = RadioButtonViewModel.fromRawValue(attr.uid(), label, attr.valueType(), false, queryData.get(attr.uid()), null, true, attr.displayDescription(), ObjectStyleModel.builder().build());
                     break;
-                case SPINNER:
+                case Constants.SPINNER:
                     viewModel = SpinnerViewModel.create(attr.uid(), label, "", false, attr.optionSet(), queryData.get(attr.uid()), null, true, attr.displayDescription(), 20, ObjectStyleModel.builder().build());
                     break;
-                case COORDINATES:
+                case Constants.COORDINATES:
                     viewModel = CoordinateViewModel.create(attr.uid(), label, false, queryData.get(attr.uid()), null, true, attr.displayDescription(), ObjectStyleModel.builder().build());
                     break;
-                case TIME:
-                case DATE:
-                case DATETIME:
+                case Constants.TIME:
+                case Constants.DATE:
+                case Constants.DATETIME:
                     viewModel = DateTimeViewModel.create(attr.uid(), label, false, attr.valueType(), queryData.get(attr.uid()), null, true, true, attr.displayDescription(), ObjectStyleModel.builder().build());
                     break;
-                case AGEVIEW:
+                case Constants.AGEVIEW:
                     viewModel = AgeViewModel.create(attr.uid(), label, false, queryData.get(attr.uid()), null, true, attr.displayDescription(), ObjectStyleModel.builder().build());
                     break;
-                case ORG_UNIT:
+                case Constants.ORG_UNIT:
                     viewModel = OrgUnitViewModel.create(attr.uid(), label, false, queryData.get(attr.uid()), null, true, attr.displayDescription(), ObjectStyleModel.builder().build());
                     break;
                 default:
@@ -185,14 +176,14 @@ public class FormAdapter extends RecyclerView.Adapter {
     public int getItemViewType(int position) {
 
         if (position < programData)
-            return DATE;
+            return Constants.DATE;
 
         if (attributeList.get(position - programData).optionSet() != null)
-            return SPINNER;
+            return Constants.SPINNER;
         else {
             switch (attributeList.get(position - programData).valueType()) {
                 case AGE:
-                    return AGEVIEW;
+                    return Constants.AGEVIEW;
                 case TEXT:
                 case EMAIL:
                 case LETTER:
@@ -207,43 +198,37 @@ public class FormAdapter extends RecyclerView.Adapter {
                 case INTEGER_ZERO_OR_POSITIVE:
                 case UNIT_INTERVAL:
                 case URL:
-                    return EDITTEXT;
+                    return Constants.EDITTEXT;
                 case TIME:
-                    return TIME;
+                    return Constants.TIME;
                 case DATE:
-                    return DATE;
+                    return Constants.DATE;
                 case DATETIME:
-                    return DATETIME;
+                    return Constants.DATETIME;
                 case FILE_RESOURCE:
-                    return BUTTON;
+                    return Constants.BUTTON;
                 case COORDINATE:
-                    return COORDINATES;
+                    return Constants.COORDINATES;
                 case BOOLEAN:
                 case TRUE_ONLY:
-                    return YES_NO;
+                    return Constants.YES_NO;
                 case ORGANISATION_UNIT:
-                    return ORG_UNIT;
+                    return Constants.ORG_UNIT;
                 case TRACKER_ASSOCIATE:
                 default:
-                    return EDITTEXT;
+                    return Constants.EDITTEXT;
             }
         }
 
     }
 
-    public void setList(List<TrackedEntityAttributeModel> modelList, ProgramModel programModel, HashMap<String, String> queryData) {
+    public void setList(List<TrackedEntityAttributeModel> modelList, ProgramModel programModel, Map<String, String> queryData) {
         this.queryData = queryData;
         if (programModel != null) {
             this.programModel = programModel;
-            programData = programModel.displayIncidentDate() ? 1 : 1;
+            programData = programModel.displayIncidentDate() ? 1 : 0;
         } else {
             programData = 0;
-           /* List<TrackedEntityAttributeModel> modelListnew = new ArrayList<>();
-            for (TrackedEntityAttributeModel attributeModel : modelList) {
-                if (attributeModel.displayInListNoProgram())
-                    modelListnew.add(attributeModel);
-            }
-            modelList = new ArrayList<>(modelListnew);*/
         }
 
         this.attributeList = modelList;

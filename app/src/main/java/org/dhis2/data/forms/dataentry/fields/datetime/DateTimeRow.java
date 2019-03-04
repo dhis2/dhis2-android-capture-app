@@ -1,8 +1,5 @@
 package org.dhis2.data.forms.dataentry.fields.datetime;
 
-import androidx.databinding.DataBindingUtil;
-import androidx.databinding.ViewDataBinding;
-import androidx.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -13,6 +10,9 @@ import org.dhis2.databinding.FormDateTextBinding;
 import org.dhis2.databinding.FormDateTimeTextBinding;
 import org.dhis2.databinding.FormTimeTextBinding;
 
+import androidx.annotation.NonNull;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ViewDataBinding;
 import io.reactivex.processors.FlowableProcessor;
 
 /**
@@ -21,35 +21,30 @@ import io.reactivex.processors.FlowableProcessor;
 
 public class DateTimeRow implements Row<DateTimeHolder, DateTimeViewModel> {
 
-    private final int TIME = 5;
-    private final int DATE = 6;
-    private final int DATETIME = 7;
+    private static final int TIME = 5;
+    private static final int DATE = 6;
+
     private final LayoutInflater inflater;
     private final FlowableProcessor<RowAction> processor;
     private final boolean isBgTransparent;
-    private final String renderType;
     private final FlowableProcessor<Integer> currentPosition;
 
     private int viewType;
-    private boolean isSearchMode = false;
 
     public DateTimeRow(LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor, int viewType, boolean isBgTransparent) {
         this.processor = processor;
         this.inflater = layoutInflater;
         this.viewType = viewType;
         this.isBgTransparent = isBgTransparent;
-        this.renderType = null;
         this.currentPosition = null;
-        this.isSearchMode = true;
     }
 
     public DateTimeRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor,
-                       @NonNull FlowableProcessor<Integer> currentPosition,int viewType, boolean isBgTransparent, String renderType) {
+                       @NonNull FlowableProcessor<Integer> currentPosition, int viewType, boolean isBgTransparent) {
         this.processor = processor;
         this.inflater = layoutInflater;
         this.viewType = viewType;
         this.isBgTransparent = isBgTransparent;
-        this.renderType = renderType;
         this.currentPosition = currentPosition;
     }
 

@@ -150,7 +150,7 @@ public class SearchRepositoryImpl implements SearchRepository {
             ProgramModel.TABLE, ProgramModel.Columns.UID
     );
 
-    private final String SELECT_TRACKED_ENTITY_TYPE_ATTRIBUTES = String.format(
+    private static final String SELECT_TRACKED_ENTITY_TYPE_ATTRIBUTES = String.format(
             "SELECT %s.* FROM %s " +
                     "JOIN %s ON %s.trackedEntityAttribute = %s.%s " +
                     "WHERE %s.trackedEntityType = ? AND %s.searchable = 1",

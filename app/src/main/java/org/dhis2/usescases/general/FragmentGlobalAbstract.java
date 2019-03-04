@@ -126,22 +126,22 @@ public abstract class FragmentGlobalAbstract extends Fragment implements Abstrac
     }
 
     public boolean checkLocationPermission() {
-        if (getContext() != null && isAdded()) {
-            if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                // Should we show an explanation?
-                if (ActivityCompat.shouldShowRequestPermissionRationale(getAbstractActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)) {
-                    // TODO CRIS:  Show an explanation to the user *asynchronously* -- don't block
-                    // this thread waiting for the user's response! After the user
-                    // sees the explanation, try again to request the permission.
+        if (getContext() != null && isAdded() &&
+                ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(getAbstractActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)) {
+                // TODO CRIS:  Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
 
-                } else {
-                    ActivityCompat.requestPermissions(getAbstractActivity(),
-                            new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
-                            ACCESS_COARSE_LOCATION_PERMISSION_REQUEST);
-                }
-                return false;
+            } else {
+                ActivityCompat.requestPermissions(getAbstractActivity(),
+                        new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                        ACCESS_COARSE_LOCATION_PERMISSION_REQUEST);
             }
+            return false;
         }
+
         return true;
     }
 }

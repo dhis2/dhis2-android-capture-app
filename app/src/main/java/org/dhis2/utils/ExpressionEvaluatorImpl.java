@@ -5,8 +5,6 @@ import org.hisp.dhis.rules.RuleExpressionEvaluator;
 
 import androidx.annotation.NonNull;
 
-import androidx.annotation.NonNull;
-
 /**
  * QUADRAM. Created by ppajuelo on 19/09/2018.
  */

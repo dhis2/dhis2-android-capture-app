@@ -10,6 +10,7 @@ import org.hisp.dhis.android.core.option.OptionModel;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import androidx.appcompat.widget.PopupMenu;
 import io.reactivex.processors.FlowableProcessor;
@@ -33,7 +34,7 @@ public class OptionSetPopUp {
         return instance;
     }
 
-    public static Boolean isCreated(){
+    public static Boolean isCreated() {
         return instance != null;
     }
 
@@ -48,7 +49,7 @@ public class OptionSetPopUp {
         menu.show();
     }
 
-    public HashMap<String, OptionModel> getOptions() {
+    public Map<String, OptionModel> getOptions() {
         return optionsMap;
     }
 
@@ -75,6 +76,10 @@ public class OptionSetPopUp {
     }
 
     public void dismiss() {
+        dismissInstance();
+    }
+
+    private static void dismissInstance() {
         instance = null;
     }
 }

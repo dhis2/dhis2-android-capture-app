@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 
 import com.google.gson.Gson;
 
@@ -68,11 +67,6 @@ public class ErrorDialog extends DialogFragment {
         this.shareMessageTitle = context.getString(R.string.sync_error_title);
         this.divider = new DividerItemDecoration(context, DividerItemDecoration.VERTICAL);
         this.shareData = new ObservableArrayList<>();
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
     }
 
     @Override

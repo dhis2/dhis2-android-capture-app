@@ -3,8 +3,6 @@ package org.dhis2.data.forms.dataentry.fields.edittext;
 import android.annotation.SuppressLint;
 import android.text.InputFilter;
 import android.text.InputType;
-import android.text.TextUtils;
-import android.text.method.DigitsKeyListener;
 import android.util.Patterns;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,7 +36,6 @@ import androidx.databinding.ObservableBoolean;
 import androidx.databinding.ViewDataBinding;
 import io.reactivex.functions.Predicate;
 import io.reactivex.processors.FlowableProcessor;
-import timber.log.Timber;
 
 import static android.content.Context.MODE_PRIVATE;
 import static android.text.TextUtils.isEmpty;
@@ -54,8 +51,8 @@ final class EditTextCustomHolder extends FormViewHolder {
     private final TextInputLayout inputLayout;
     private TextInputAutoCompleteTextView editText;
     private ImageView icon;
-    List<String> autoCompleteValues;
-    EditTextViewModel editTextModel;
+    private List<String> autoCompleteValues;
+    private EditTextViewModel editTextModel;
     private Boolean isEditable;
 
     @SuppressLint("RxLeakedSubscription")
@@ -81,7 +78,7 @@ final class EditTextCustomHolder extends FormViewHolder {
             }
         });
 
-        if(this.isEditable) {
+        if (this.isEditable) {
             editText.setFocusable(true);
             editText.setFocusableInTouchMode(true);
             editText.setEnabled(true);
@@ -104,7 +101,7 @@ final class EditTextCustomHolder extends FormViewHolder {
 
     private void setInputType(ValueType valueType) {
 
-        if(this.isEditable) {
+        if (this.isEditable) {
             editText.setFocusable(true);
             editText.setFocusableInTouchMode(true);
             editText.setEnabled(true);
@@ -138,7 +135,7 @@ final class EditTextCustomHolder extends FormViewHolder {
         this.editTextModel = (EditTextViewModel) model;
 
         Bindings.setObjectStyle(icon, itemView, editTextModel.objectStyle());
-        if(this.isEditable) {
+        if (this.isEditable) {
             editText.setFocusable(true);
             editText.setFocusableInTouchMode(true);
             editText.setEnabled(true);
@@ -148,7 +145,7 @@ final class EditTextCustomHolder extends FormViewHolder {
             editText.setEnabled(false);
         }
 
-        if(editTextModel.value() != null)
+        if (editTextModel.value() != null)
             editText.post(() -> editText.setText(valueOf(editTextModel.value())));
         else
             editText.setText(null);
