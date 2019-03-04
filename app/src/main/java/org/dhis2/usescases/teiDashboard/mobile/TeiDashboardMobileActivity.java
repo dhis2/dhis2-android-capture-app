@@ -183,9 +183,9 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
     }
 
     @Override
-    public void showCatComboDialog(String eventId, String programStage, List<CategoryOptionComboModel> catComboOptions) {
-        CategoryComboDialog dialog = new CategoryComboDialog(getAbstracContext(), programStage, catComboOptions, 123,
-                selectedOption -> presenter.changeCatOption(eventId, selectedOption));
+    public void showCatComboDialog(String eventId, String catCombo, List<CategoryOptionComboModel> catComboOptions, String title) {
+        CategoryComboDialog dialog = new CategoryComboDialog(getAbstracContext(), catCombo, catComboOptions, 123,
+                selectedOption -> presenter.changeCatOption(eventId, selectedOption), title);
         dialog.setCancelable(false);
         dialog.setCanceledOnTouchOutside(false);
         dialog.show();
