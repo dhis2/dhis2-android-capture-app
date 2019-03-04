@@ -275,7 +275,8 @@ public class MetadataRepositoryImpl implements MetadataRepository {
                 cursor.moveToNext();
             }
             cursor.close();
-        }
+        }else if(cursor != null)
+            cursor.close();
         return options;
     }
 
@@ -387,13 +388,16 @@ public class MetadataRepositoryImpl implements MetadataRepository {
         if (teiCursor != null && teiCursor.moveToFirst()) {
             currentTei = teiCursor.getInt(0);
             teiCursor.close();
-        }
+        }else if(teiCursor != null)
+            teiCursor.close();
 
         Cursor eventCursor = briteDatabase.query(EVENT_COUNT);
         if (eventCursor != null && eventCursor.moveToFirst()) {
             currentEvent = eventCursor.getInt(0);
             eventCursor.close();
         }
+        else if(eventCursor != null)
+            eventCursor.close();
 
         return Flowable.just(Pair.create(currentEvent, currentTei));
 
