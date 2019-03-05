@@ -2,7 +2,7 @@ package org.dhis2.usescases.datasets.dataSetTable;
 
 import org.dhis2.data.tuples.Pair;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
-import org.hisp.dhis.android.core.dataelement.DataElementModel;
+import org.hisp.dhis.android.core.dataelement.DataElement;
 
 import java.util.List;
 import java.util.Map;
@@ -18,7 +18,7 @@ public class DataSetTablePresenterImpl implements DataSetTableContract.DataSetTa
     private final DataSetTableRepository tableRepository;
     private DataSetTableContract.DataSetTableView view;
     private CompositeDisposable compositeDisposable;
-    private Pair<Map<String, List<DataElementModel>>, Map<String, List<CategoryOptionComboModel>>> tableData;
+    private Pair<Map<String, List<DataElement>>, Map<String, List<CategoryOptionComboModel>>> tableData;
 
     public DataSetTablePresenterImpl(DataSetTableRepository dataSetTableRepository) {
         this.tableRepository = dataSetTableRepository;
@@ -74,7 +74,7 @@ public class DataSetTablePresenterImpl implements DataSetTableContract.DataSetTa
     }
 
     @Override
-    public List<DataElementModel> getDataElements(String key) {
+    public List<DataElement> getDataElements(String key) {
         return tableData.val0().get(key);
     }
 

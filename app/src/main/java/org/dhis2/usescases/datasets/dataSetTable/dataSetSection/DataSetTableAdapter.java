@@ -1,7 +1,6 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection;
 
 import android.content.Context;
-import androidx.databinding.DataBindingUtil;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,13 +11,15 @@ import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder;
 
 import org.dhis2.R;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
-import org.hisp.dhis.android.core.dataelement.DataElementModel;
+import org.hisp.dhis.android.core.dataelement.DataElement;
+
+import androidx.databinding.DataBindingUtil;
 
 /**
  * QUADRAM. Created by ppajuelo on 02/10/2018.
  */
 
-class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionComboModel, DataElementModel, String> {
+class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionComboModel, DataElement, String> {
     public DataSetTableAdapter(Context context) {
         super(context);
     }

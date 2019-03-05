@@ -9,7 +9,6 @@ import org.dhis2.data.tuples.Trio;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.State;
-import org.hisp.dhis.android.core.dataelement.DataElementModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
@@ -37,6 +36,9 @@ import timber.log.Timber;
 
 import static org.dhis2.data.database.SqlConstants.ALL;
 import static org.dhis2.data.database.SqlConstants.COMMA;
+import static org.dhis2.data.database.SqlConstants.DATA_ELEMENT_FORM_NAME;
+import static org.dhis2.data.database.SqlConstants.DATA_ELEMENT_TABLE;
+import static org.dhis2.data.database.SqlConstants.DATA_ELEMENT_UID;
 import static org.dhis2.data.database.SqlConstants.EQUAL;
 import static org.dhis2.data.database.SqlConstants.FROM;
 import static org.dhis2.data.database.SqlConstants.QUESTION_MARK;
@@ -112,8 +114,8 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
             if (attrValue.has(TrackedEntityDataValueModel.Columns.DATA_ELEMENT) &&
                     attrValue.getString(TrackedEntityDataValueModel.Columns.DATA_ELEMENT) != null) {
                 // LOOK FOR dataElement ON LOCAL DATABASE.
-                Cursor cursor = briteDatabase.query(SELECT + ALL + FROM + DataElementModel.TABLE +
-                        WHERE + DataElementModel.Columns.UID + EQUAL + QUESTION_MARK, attrValue.getString(
+                Cursor cursor = briteDatabase.query(SELECT + ALL + FROM + DATA_ELEMENT_TABLE +
+                        WHERE + DATA_ELEMENT_UID + EQUAL + QUESTION_MARK, attrValue.getString(
                         TrackedEntityDataValueModel.Columns.DATA_ELEMENT));
                 // IF FOUND, OPEN DASHBOARD
                 if (cursor != null && cursor.moveToFirst() && cursor.getCount() > 0) {
@@ -197,14 +199,14 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                 if (attrValue.has(TrackedEntityDataValueModel.Columns.DATA_ELEMENT) &&
                         attrValue.getString(TrackedEntityDataValueModel.Columns.DATA_ELEMENT) != null) {
                     // LOOK FOR dataElement ON LOCAL DATABASE.
-                    Cursor cursor = briteDatabase.query(SELECT + ALL + FROM + DataElementModel.TABLE +
-                                    WHERE + DataElementModel.Columns.UID + EQUAL + QUESTION_MARK,
+                    Cursor cursor = briteDatabase.query(SELECT + ALL + FROM + DATA_ELEMENT_TABLE +
+                                    WHERE + DATA_ELEMENT_UID + EQUAL + QUESTION_MARK,
                             attrValue.getString(TrackedEntityDataValueModel.Columns.DATA_ELEMENT));
                     // IF FOUND, OPEN DASHBOARD
                     if (cursor != null && cursor.moveToFirst() && cursor.getCount() > 0) {
                         this.teiDataJson.add(attrValue);
                         attributes.add(Trio.create(trackedEntityDataValueModelBuilder.build(),
-                                cursor.getString(cursor.getColumnIndex(DataElementModel.Columns.FORM_NAME)), true));
+                                cursor.getString(cursor.getColumnIndex(DATA_ELEMENT_FORM_NAME)), true));
                     } else {
                         attributes.add(Trio.create(trackedEntityDataValueModelBuilder.build(), null, false));
                     }

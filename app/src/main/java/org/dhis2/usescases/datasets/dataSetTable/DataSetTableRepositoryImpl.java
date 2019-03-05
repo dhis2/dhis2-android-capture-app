@@ -4,7 +4,7 @@ import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
-import org.hisp.dhis.android.core.dataelement.DataElementModel;
+import org.hisp.dhis.android.core.dataelement.DataElement;
 import org.hisp.dhis.android.core.dataset.DataSetModel;
 import org.hisp.dhis.android.core.datavalue.DataValueModel;
 import org.hisp.dhis.android.core.period.PeriodModel;
@@ -18,6 +18,8 @@ import java.util.Map;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+
+import static org.dhis2.data.database.SqlConstants.DATA_ELEMENT_TABLE;
 
 public class DataSetTableRepositoryImpl implements DataSetTableRepository {
 
@@ -88,20 +90,20 @@ public class DataSetTableRepositoryImpl implements DataSetTableRepository {
     }
 
     @Override
-    public Flowable<Map<String, List<DataElementModel>>> getDataElements() {
-        Map<String, List<DataElementModel>> map = new HashMap<>();
-        return briteDatabase.createQuery(DataElementModel.TABLE, DATA_ELEMENTS, dataSetUid)
+    public Flowable<Map<String, List<DataElement>>> getDataElements() {
+        Map<String, List<DataElement>> map = new HashMap<>();
+        return briteDatabase.createQuery(DATA_ELEMENT_TABLE, DATA_ELEMENTS, dataSetUid)
                 .mapToList(cursor -> {
-                    DataElementModel dataElementModel = DataElementModel.create(cursor);
+                    DataElement dataElement = DataElement.create(cursor);
                     String section = cursor.getString(cursor.getColumnIndex("sectionName"));
                     if (section == null)
                         section = "NO_SECTION";
                     if (map.get(section) == null) {
                         map.put(section, new ArrayList<>());
                     }
-                    map.get(section).add(dataElementModel);
+                    map.get(section).add(dataElement);
 
-                    return dataElementModel;
+                    return dataElement;
                 })
                 .flatMap(dataElementModels -> Observable.just(map)).toFlowable(BackpressureStrategy.LATEST);
     }

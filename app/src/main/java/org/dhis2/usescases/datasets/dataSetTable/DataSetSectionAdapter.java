@@ -1,16 +1,16 @@
 package org.dhis2.usescases.datasets.dataSetTable;
 
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentStatePagerAdapter;
-
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetSectionFragment;
-import org.hisp.dhis.android.core.dataelement.DataElementModel;
+import org.hisp.dhis.android.core.dataelement.DataElement;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentStatePagerAdapter;
 
 /**
  * QUADRAM. Created by ppajuelo on 02/10/2018.
@@ -30,7 +30,7 @@ public final class DataSetSectionAdapter extends FragmentStatePagerAdapter {
         return DataSetSectionFragment.create(sectionArrays.get(position));
     }
 
-    void swapData(Map<String, List<DataElementModel>> dataElements) {
+    void swapData(Map<String, List<DataElement>> dataElements) {
         sectionArrays = new ArrayList<>(dataElements.keySet());
         notifyDataSetChanged();
     }

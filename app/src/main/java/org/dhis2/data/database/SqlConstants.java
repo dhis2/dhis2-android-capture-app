@@ -1,5 +1,6 @@
 package org.dhis2.data.database;
 
+import org.hisp.dhis.android.core.dataelement.DataElementModel;
 import org.hisp.dhis.android.core.program.ProgramRuleActionModel;
 import org.hisp.dhis.android.core.program.ProgramRuleModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
@@ -11,6 +12,12 @@ import org.hisp.dhis.android.core.user.AuthenticatedUserModel;
 import org.hisp.dhis.android.core.user.UserModel;
 
 public class SqlConstants {
+
+    public static final String DATA_ELEMENT_TABLE = DataElementModel.TABLE;
+    public static final String DATA_ELEMENT_UID = DataElementModel.Columns.UID;
+    public static final String DATA_ELEMENT_FORM_NAME = DataElementModel.Columns.FORM_NAME;
+
+
 
     public static final String RESOURCE_TABLE = ResourceModel.TABLE;
     public static final String USER_TABLE = UserModel.TABLE;

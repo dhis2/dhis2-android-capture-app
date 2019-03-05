@@ -13,7 +13,7 @@ import org.dhis2.usescases.datasets.dataSetTable.DataSetTableContract;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.utils.Constants;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
-import org.hisp.dhis.android.core.dataelement.DataElementModel;
+import org.hisp.dhis.android.core.dataelement.DataElement;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,7 +64,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
 
         String dataSetSection = getArguments().getString(Constants.DATA_SET_SECTION);
 
-        List<DataElementModel> dataElements = presenter.getDataElements(dataSetSection);
+        List<DataElement> dataElements = presenter.getDataElements(dataSetSection);
         List<CategoryOptionComboModel> catOptions = presenter.getCatOptionCombos(dataSetSection);
 
         ArrayList<List<String>> cells = new ArrayList<>();
