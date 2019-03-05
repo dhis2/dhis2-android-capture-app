@@ -31,7 +31,7 @@ import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramRuleActionType;
 import org.hisp.dhis.android.core.program.ProgramRuleModel;
 import org.hisp.dhis.android.core.program.ProgramRuleVariableModel;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
+import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.program.ProgramStageSectionModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
@@ -69,6 +69,7 @@ import static org.dhis2.data.database.SqlConstants.FROM;
 import static org.dhis2.data.database.SqlConstants.LIMIT_1;
 import static org.dhis2.data.database.SqlConstants.NOT_EQUAL;
 import static org.dhis2.data.database.SqlConstants.POINT;
+import static org.dhis2.data.database.SqlConstants.PROGRAM_STAGE_TABLE;
 import static org.dhis2.data.database.SqlConstants.QUESTION_MARK;
 import static org.dhis2.data.database.SqlConstants.SELECT;
 import static org.dhis2.data.database.SqlConstants.WHERE;
@@ -82,7 +83,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
 
     private static final List<String> SECTION_TABLES = Arrays.asList(
-            EventModel.TABLE, ProgramModel.TABLE, ProgramStageModel.TABLE, ProgramStageSectionModel.TABLE);
+            EventModel.TABLE, ProgramModel.TABLE, PROGRAM_STAGE_TABLE, ProgramStageSectionModel.TABLE);
     private static final String SELECT_SECTIONS = "SELECT\n" +
             "  Program.uid AS programUid,\n" +
             "  ProgramStage.uid AS programStageUid,\n" +
@@ -188,17 +189,17 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     @Override
     public Flowable<String> programStageName() {
-        return briteDatabase.createQuery(ProgramStageModel.TABLE,
+        return briteDatabase.createQuery(PROGRAM_STAGE_TABLE,
                 "SELECT ProgramStage.* FROM ProgramStage " +
                         "JOIN Event ON Event.programStage = ProgramStage.uid " +
                         WHERE + EventModel.TABLE + POINT + EventModel.Columns.UID + EQUAL + QUESTION_MARK + LIMIT_1, eventUid)
-                .mapToOne(cursor -> ProgramStageModel.create(cursor).displayName())
+                .mapToOne(cursor -> ProgramStage.create(cursor).displayName())
                 .toFlowable(BackpressureStrategy.LATEST);
     }
 
     @Override
     public Flowable<String> eventDate() {
-        return briteDatabase.createQuery(ProgramStageModel.TABLE,
+        return briteDatabase.createQuery(PROGRAM_STAGE_TABLE,
                 SELECT + "Event.*" + FROM + EventModel.TABLE + WHERE +
                         "Event.uid = ? LIMIT 1", eventUid)
                 .mapToOne(cursor -> EventModel.create(cursor).eventDate())
@@ -208,7 +209,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     @Override
     public Flowable<String> orgUnit() {
-        return briteDatabase.createQuery(ProgramStageModel.TABLE,
+        return briteDatabase.createQuery(PROGRAM_STAGE_TABLE,
                 "SELECT OrganisationUnit.* FROM OrganisationUnit " +
                         "JOIN Event ON Event.organisationUnit = OrganisationUnit.uid " +
                         WHERE + EventModel.TABLE + POINT + EventModel.Columns.UID + EQUAL + QUESTION_MARK + LIMIT_1, eventUid)
@@ -293,13 +294,9 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                             }
 
                             ObjectStyleModel objectStyle = ObjectStyleModel.builder().build();
-                            Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", uid);
-                            try {
+                            try (Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", uid)) {
                                 if (objStyleCursor.moveToFirst())
                                     objectStyle = ObjectStyleModel.create(objStyleCursor);
-                            } finally {
-                                if (objStyleCursor != null)
-                                    objStyleCursor.close();
                             }
 
                             renderList.add(fieldFactory.create(
@@ -344,7 +341,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
             where = String.format(Locale.US, "WHERE Event.uid = '%s'", eventUid == null ? "" : eventUid);
         } else {
             where = String.format(Locale.US, "WHERE Event.uid = '%s' AND " +
-                    "Field.section = '%s'", eventUid == null ? "" : eventUid, sectionUid == null ? "" : sectionUid);
+                    "Field.section = '%s'", eventUid == null ? "" : eventUid, sectionUid);
         }
 
         return String.format(Locale.US, QUERY, where);
@@ -481,7 +478,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     private Flowable<List<Rule>> getRulesFor(String lastUpdatedElement) {
         AtomicReference<String> selectedProgramUid = new AtomicReference<>("");
-        return briteDatabase.createQuery(ProgramStageModel.TABLE,
+        return briteDatabase.createQuery(PROGRAM_STAGE_TABLE,
                 "SELECT Event.* FROM Event " +
                         WHERE + EventModel.TABLE + POINT + EventModel.Columns.UID + EQUAL + QUESTION_MARK + LIMIT_1, eventUid)
                 .mapToOne(cursor -> EventModel.create(cursor).program())
@@ -700,7 +697,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                     Cursor stageAccessData = briteDatabase.query(SELECT + "ProgramStage.* FROM ProgramStage JOIN Event ON Event.programStage = ProgramStage.uid WHERE Event.uid = ? ", eventUid);
                     if (stageAccessData != null) {
                         if (stageAccessData.moveToFirst()) {
-                            canWrite = ProgramStageModel.create(stageAccessData).accessDataWrite();
+                            canWrite = ProgramStage.create(stageAccessData).access().data().write();
                         }
                         stageAccessData.close();
                     }

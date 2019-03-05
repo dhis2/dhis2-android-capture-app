@@ -6,7 +6,7 @@ import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
+import org.hisp.dhis.android.core.program.ProgramStage;
 
 import java.util.Date;
 import java.util.List;
@@ -19,7 +19,7 @@ import androidx.databinding.BaseObservable;
 
 public class EventDetailModel extends BaseObservable {
 
-    private final ProgramStageModel programStage;
+    private final ProgramStage programStage;
     private final List<CategoryOptionComboModel> optionComboList;
     private final ProgramModel programModel;
     private final String catComboName;
@@ -28,7 +28,7 @@ public class EventDetailModel extends BaseObservable {
     private final OrganisationUnitModel orgUnit;
 
     EventDetailModel(EventModel eventModel,
-                     ProgramStageModel programStage,
+                     ProgramStage programStage,
                      OrganisationUnitModel orgUnit,
                      Pair<String, List<CategoryOptionComboModel>> optionComboList,
                      ProgramModel programModel,
@@ -47,7 +47,7 @@ public class EventDetailModel extends BaseObservable {
         return eventModel;
     }
 
-    public ProgramStageModel getProgramStage() {
+    public ProgramStage getProgramStage() {
         return programStage;
     }
 

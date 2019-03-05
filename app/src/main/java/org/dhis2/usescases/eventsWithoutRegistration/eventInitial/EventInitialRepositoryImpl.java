@@ -21,7 +21,7 @@ import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitProgramLinkModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
+import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
 import java.text.ParseException;
@@ -50,6 +50,10 @@ import static org.dhis2.data.database.SqlConstants.NOT_EQUAL;
 import static org.dhis2.data.database.SqlConstants.ON;
 import static org.dhis2.data.database.SqlConstants.ORDER_BY_CASE;
 import static org.dhis2.data.database.SqlConstants.POINT;
+import static org.dhis2.data.database.SqlConstants.PROGRAM_STAGE_ACCESS_DATA_WRITE;
+import static org.dhis2.data.database.SqlConstants.PROGRAM_STAGE_PROGRAM;
+import static org.dhis2.data.database.SqlConstants.PROGRAM_STAGE_TABLE;
+import static org.dhis2.data.database.SqlConstants.PROGRAM_STAGE_UID;
 import static org.dhis2.data.database.SqlConstants.QUESTION_MARK;
 import static org.dhis2.data.database.SqlConstants.QUOTE;
 import static org.dhis2.data.database.SqlConstants.SELECT;
@@ -320,22 +324,22 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     @NonNull
     @Override
-    public Observable<ProgramStageModel> programStage(String programUid) {
+    public Observable<ProgramStage> programStage(String programUid) {
         String id = programUid == null ? "" : programUid;
-        String selectProgramStage = SELECT + ALL + FROM + ProgramStageModel.TABLE + WHERE +
-                ProgramStageModel.Columns.PROGRAM + EQUAL + QUOTE + id + QUOTE + LIMIT_1;
-        return briteDatabase.createQuery(ProgramStageModel.TABLE, selectProgramStage)
-                .mapToOne(ProgramStageModel::create);
+        String selectProgramStage = SELECT + ALL + FROM + PROGRAM_STAGE_TABLE + WHERE +
+                PROGRAM_STAGE_PROGRAM + EQUAL + QUOTE + id + QUOTE + LIMIT_1;
+        return briteDatabase.createQuery(PROGRAM_STAGE_TABLE, selectProgramStage)
+                .mapToOne(ProgramStage::create);
     }
 
     @NonNull
     @Override
-    public Observable<ProgramStageModel> programStageWithId(String programStageUid) {
+    public Observable<ProgramStage> programStageWithId(String programStageUid) {
         String id = programStageUid == null ? "" : programStageUid;
-        String selectProgramStageWithId = SELECT + ALL + FROM + ProgramStageModel.TABLE + WHERE +
-                ProgramStageModel.Columns.UID + EQUAL + QUOTE + id + QUOTE + LIMIT_1;
-        return briteDatabase.createQuery(ProgramStageModel.TABLE, selectProgramStageWithId)
-                .mapToOne(ProgramStageModel::create);
+        String selectProgramStageWithId = SELECT + ALL + FROM + PROGRAM_STAGE_TABLE + WHERE +
+                PROGRAM_STAGE_UID + EQUAL + QUOTE + id + QUOTE + LIMIT_1;
+        return briteDatabase.createQuery(PROGRAM_STAGE_TABLE, selectProgramStageWithId)
+                .mapToOne(ProgramStage::create);
     }
 
 
@@ -416,13 +420,13 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     @Override
     public Observable<Boolean> accessDataWrite(String programId) {
-        String writePermission = SELECT + ProgramStageModel.TABLE + POINT + ProgramStageModel.Columns.ACCESS_DATA_WRITE + FROM +
-                ProgramStageModel.TABLE + WHERE + ProgramStageModel.TABLE + POINT + ProgramStageModel.Columns.PROGRAM +
+        String writePermission = SELECT + PROGRAM_STAGE_TABLE + POINT + PROGRAM_STAGE_ACCESS_DATA_WRITE + FROM +
+                PROGRAM_STAGE_TABLE + WHERE + PROGRAM_STAGE_TABLE + POINT + PROGRAM_STAGE_PROGRAM +
                 EQUAL + QUESTION_MARK + LIMIT_1;
         String programWritePermission = SELECT + ProgramModel.TABLE + POINT + ProgramModel.Columns.ACCESS_DATA_WRITE + FROM +
                 ProgramModel.TABLE + WHERE + ProgramModel.TABLE + POINT + ProgramModel.Columns.UID +
                 EQUAL + QUESTION_MARK + LIMIT_1;
-        return briteDatabase.createQuery(ProgramStageModel.TABLE, writePermission, programId == null ? "" : programId)
+        return briteDatabase.createQuery(PROGRAM_STAGE_TABLE, writePermission, programId == null ? "" : programId)
                 .mapToOne(cursor -> cursor.getInt(0) == 1)
                 .flatMap(programStageAccessDataWrite ->
                         briteDatabase.createQuery(ProgramModel.TABLE, programWritePermission, programId == null ? "" : programId)

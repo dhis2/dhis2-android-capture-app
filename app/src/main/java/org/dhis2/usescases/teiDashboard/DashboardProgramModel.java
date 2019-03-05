@@ -5,7 +5,7 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
+import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
@@ -25,7 +25,7 @@ public class DashboardProgramModel extends BaseObservable {
     private List<TrackedEntityAttributeValueModel> trackedEntityAttributeValues;
     private List<EventModel> eventModels;
     private EnrollmentModel currentEnrollment;
-    private List<ProgramStageModel> programStages;
+    private List<ProgramStage> programStages;
     private List<ProgramModel> enrollmentProgramModels;
     private OrganisationUnitModel orgnUnit;
     private List<EnrollmentModel> teiEnrollments;
@@ -35,7 +35,7 @@ public class DashboardProgramModel extends BaseObservable {
     public DashboardProgramModel(
             TrackedEntityInstanceModel tei,
             EnrollmentModel currentEnrollment,
-            List<ProgramStageModel> programStages,
+            List<ProgramStage> programStages,
             List<EventModel> events,
             List<ProgramTrackedEntityAttributeModel> trackedEntityAttributeModels,
             List<TrackedEntityAttributeValueModel> trackedEntityAttributeValues,
@@ -74,7 +74,7 @@ public class DashboardProgramModel extends BaseObservable {
         return currentEnrollment;
     }
 
-    public List<ProgramStageModel> getProgramStages() {
+    public List<ProgramStage> getProgramStages() {
         return programStages;
     }
 

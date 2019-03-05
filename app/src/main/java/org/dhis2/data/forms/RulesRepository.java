@@ -19,7 +19,6 @@ import org.hisp.dhis.android.core.program.ProgramRuleActionType;
 import org.hisp.dhis.android.core.program.ProgramRuleModel;
 import org.hisp.dhis.android.core.program.ProgramRuleVariableModel;
 import org.hisp.dhis.android.core.program.ProgramRuleVariableSourceType;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 import org.hisp.dhis.rules.models.Rule;
@@ -77,6 +76,9 @@ import static org.dhis2.data.database.SqlConstants.NOT_EQUAL;
 import static org.dhis2.data.database.SqlConstants.ON;
 import static org.dhis2.data.database.SqlConstants.ORDER_BY;
 import static org.dhis2.data.database.SqlConstants.POINT;
+import static org.dhis2.data.database.SqlConstants.PROGRAM_STAGE_DISPLAY_NAME;
+import static org.dhis2.data.database.SqlConstants.PROGRAM_STAGE_TABLE;
+import static org.dhis2.data.database.SqlConstants.PROGRAM_STAGE_UID;
 import static org.dhis2.data.database.SqlConstants.QUESTION_MARK;
 import static org.dhis2.data.database.SqlConstants.QUOTE;
 import static org.dhis2.data.database.SqlConstants.SELECT;
@@ -161,10 +163,10 @@ public final class RulesRepository {
                     EventModel.TABLE + POINT + EventModel.Columns.EVENT_DATE + COMMA +
                     EventModel.TABLE + POINT + EventModel.Columns.DUE_DATE + COMMA +
                     EventModel.TABLE + POINT + EventModel.Columns.ORGANISATION_UNIT + COMMA +
-                    ProgramStageModel.TABLE + POINT + ProgramStageModel.Columns.DISPLAY_NAME +
+                    PROGRAM_STAGE_TABLE + POINT + PROGRAM_STAGE_DISPLAY_NAME +
                     FROM + EventModel.TABLE +
-                    JOIN + ProgramStageModel.TABLE +
-                    ON + ProgramStageModel.TABLE + POINT + ProgramStageModel.Columns.UID +
+                    JOIN + PROGRAM_STAGE_TABLE +
+                    ON + PROGRAM_STAGE_TABLE + POINT + PROGRAM_STAGE_UID +
                     EQUAL + EventModel.TABLE + POINT + EventModel.Columns.PROGRAM_STAGE +
                     WHERE + EventModel.TABLE + POINT + EventModel.Columns.PROGRAM +
                     EQUAL + QUESTION_MARK +
@@ -186,10 +188,10 @@ public final class RulesRepository {
                     EventModel.TABLE + POINT + EventModel.Columns.EVENT_DATE + COMMA +
                     EventModel.TABLE + POINT + EventModel.Columns.DUE_DATE + COMMA +
                     EventModel.TABLE + POINT + EventModel.Columns.ORGANISATION_UNIT + COMMA +
-                    ProgramStageModel.TABLE + POINT + ProgramStageModel.Columns.DISPLAY_NAME +
+                    PROGRAM_STAGE_TABLE + POINT + PROGRAM_STAGE_DISPLAY_NAME +
                     FROM + EventModel.TABLE +
-                    JOIN + ProgramStageModel.TABLE +
-                    ON + ProgramStageModel.TABLE + POINT + ProgramStageModel.Columns.UID +
+                    JOIN + PROGRAM_STAGE_TABLE +
+                    ON + PROGRAM_STAGE_TABLE + POINT + PROGRAM_STAGE_UID +
                     EQUAL + EventModel.TABLE + POINT + EventModel.Columns.PROGRAM_STAGE +
                     WHERE + EventModel.TABLE + POINT + EventModel.Columns.ENROLLMENT +
                     EQUAL + QUESTION_MARK +
@@ -211,10 +213,10 @@ public final class RulesRepository {
                     EventModel.TABLE + POINT + EventModel.Columns.EVENT_DATE + COMMA +
                     EventModel.TABLE + POINT + EventModel.Columns.DUE_DATE + COMMA +
                     EventModel.TABLE + POINT + EventModel.Columns.ORGANISATION_UNIT + COMMA +
-                    ProgramStageModel.TABLE + POINT + ProgramStageModel.Columns.DISPLAY_NAME +
+                    PROGRAM_STAGE_TABLE + POINT + PROGRAM_STAGE_DISPLAY_NAME +
                     FROM + EventModel.TABLE +
-                    JOIN + ProgramStageModel.TABLE +
-                    ON + ProgramStageModel.TABLE + POINT + ProgramStageModel.Columns.UID +
+                    JOIN + PROGRAM_STAGE_TABLE +
+                    ON + PROGRAM_STAGE_TABLE + POINT + PROGRAM_STAGE_UID +
                     EQUAL + EventModel.TABLE + POINT + EventModel.Columns.PROGRAM_STAGE +
                     WHERE + EventModel.TABLE + POINT + EventModel.Columns.ENROLLMENT +
                     EQUAL + QUESTION_MARK +

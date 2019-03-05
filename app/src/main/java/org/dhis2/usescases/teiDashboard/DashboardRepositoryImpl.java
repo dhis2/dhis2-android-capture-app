@@ -27,7 +27,7 @@ import org.hisp.dhis.android.core.legendset.LegendModel;
 import org.hisp.dhis.android.core.legendset.ProgramIndicatorLegendSetLinkModel;
 import org.hisp.dhis.android.core.program.ProgramIndicatorModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
+import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.relationship.RelationshipTypeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
@@ -61,6 +61,11 @@ import static org.dhis2.data.database.SqlConstants.LIMIT_1;
 import static org.dhis2.data.database.SqlConstants.ON;
 import static org.dhis2.data.database.SqlConstants.ORDER_BY;
 import static org.dhis2.data.database.SqlConstants.POINT;
+import static org.dhis2.data.database.SqlConstants.PROGRAM_STAGE_DISPLAY_GENERATE_EVENT_BOX;
+import static org.dhis2.data.database.SqlConstants.PROGRAM_STAGE_PROGRAM;
+import static org.dhis2.data.database.SqlConstants.PROGRAM_STAGE_SORT_ORDER;
+import static org.dhis2.data.database.SqlConstants.PROGRAM_STAGE_TABLE;
+import static org.dhis2.data.database.SqlConstants.PROGRAM_STAGE_UID;
 import static org.dhis2.data.database.SqlConstants.QUESTION_MARK;
 import static org.dhis2.data.database.SqlConstants.QUOTE;
 import static org.dhis2.data.database.SqlConstants.SELECT;
@@ -102,15 +107,15 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
     private static final String PROGRAM_STAGE_QUERY = String.format(SELECT + ALL + FROM + VARIABLE +
                     WHERE + TABLE_POINT_FIELD_EQUALS,
-            ProgramStageModel.TABLE, ProgramStageModel.TABLE, ProgramStageModel.Columns.PROGRAM);
+            PROGRAM_STAGE_TABLE, PROGRAM_STAGE_TABLE, PROGRAM_STAGE_PROGRAM);
 
     private static final String PROGRAM_STAGE_FROM_EVENT = String.format(
             SELECT + VARIABLE + POINT + ALL + FROM + VARIABLE + JOIN + VARIABLE +
                     ON + TABLE_POINT_FIELD_EQUALS + TABLE_POINT_FIELD +
                     WHERE + TABLE_POINT_FIELD_EQUALS + QUESTION_MARK +
                     LIMIT_1,
-            ProgramStageModel.TABLE, ProgramStageModel.TABLE, EventModel.TABLE,
-            ProgramStageModel.TABLE, ProgramStageModel.Columns.UID, EventModel.TABLE, EventModel.Columns.PROGRAM_STAGE,
+            PROGRAM_STAGE_TABLE, PROGRAM_STAGE_TABLE, EventModel.TABLE,
+            PROGRAM_STAGE_TABLE, PROGRAM_STAGE_UID, EventModel.TABLE, EventModel.Columns.PROGRAM_STAGE,
             EventModel.TABLE, EventModel.Columns.UID);
 
     private static final String GET_EVENT_FROM_UID = String.format(
@@ -130,13 +135,13 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                     "ELSE %s.%s END DESC, %s.%s ASC",
             EventModel.TABLE, EventModel.TABLE,
             EnrollmentModel.TABLE, EnrollmentModel.TABLE, EnrollmentModel.Columns.UID, EventModel.TABLE, EventModel.Columns.ENROLLMENT,
-            ProgramStageModel.TABLE, ProgramStageModel.TABLE, ProgramStageModel.Columns.UID, EventModel.TABLE, EventModel.Columns.PROGRAM_STAGE,
+            PROGRAM_STAGE_TABLE, PROGRAM_STAGE_TABLE, PROGRAM_STAGE_UID, EventModel.TABLE, EventModel.Columns.PROGRAM_STAGE,
             EnrollmentModel.TABLE, EnrollmentModel.Columns.PROGRAM,
             EnrollmentModel.TABLE, EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE,
             EventModel.TABLE, EventModel.Columns.STATE, State.TO_DELETE,
-            ProgramStageModel.TABLE, ProgramModel.Columns.UID, ProgramStageModel.Columns.UID, ProgramStageModel.TABLE, ProgramStageModel.Columns.PROGRAM,
+            PROGRAM_STAGE_TABLE, ProgramModel.Columns.UID, PROGRAM_STAGE_UID, PROGRAM_STAGE_TABLE, PROGRAM_STAGE_PROGRAM,
             EventModel.TABLE, EventModel.Columns.DUE_DATE,
-            EventModel.TABLE, EventModel.Columns.EVENT_DATE, ProgramStageModel.TABLE, ProgramStageModel.Columns.SORT_ORDER);
+            EventModel.TABLE, EventModel.Columns.EVENT_DATE, PROGRAM_STAGE_TABLE, PROGRAM_STAGE_SORT_ORDER);
 
     private static final String EVENTS_DISPLAY_BOX = String.format(
             SELECT + EventModel.TABLE + POINT + ALL + FROM + VARIABLE +
@@ -147,14 +152,14 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                     AND + TABLE_POINT_FIELD_EQUALS + QUESTION_MARK,
             EventModel.TABLE,
             EnrollmentModel.TABLE, EnrollmentModel.TABLE, EnrollmentModel.Columns.UID, EventModel.TABLE, EventModel.Columns.ENROLLMENT,
-            ProgramStageModel.TABLE, ProgramStageModel.TABLE, ProgramStageModel.Columns.UID, EventModel.TABLE, EventModel.Columns.PROGRAM_STAGE,
+            PROGRAM_STAGE_TABLE, PROGRAM_STAGE_TABLE, PROGRAM_STAGE_UID, EventModel.TABLE, EventModel.Columns.PROGRAM_STAGE,
             EnrollmentModel.TABLE, EnrollmentModel.Columns.PROGRAM,
             EnrollmentModel.TABLE, EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE,
-            ProgramStageModel.TABLE, ProgramStageModel.Columns.DISPLAY_GENERATE_EVENT_BOX);
+            PROGRAM_STAGE_TABLE, PROGRAM_STAGE_DISPLAY_GENERATE_EVENT_BOX);
 
 
     private static final Set<String> EVENTS_TABLE = new HashSet<>(Arrays.asList(EventModel.TABLE, EnrollmentModel.TABLE));
-    private static final Set<String> EVENTS_PROGRAM_STAGE_TABLE = new HashSet<>(Arrays.asList(EventModel.TABLE, EnrollmentModel.TABLE, ProgramStageModel.TABLE));
+    private static final Set<String> EVENTS_PROGRAM_STAGE_TABLE = new HashSet<>(Arrays.asList(EventModel.TABLE, EnrollmentModel.TABLE, PROGRAM_STAGE_TABLE));
 
     private static final String ATTRIBUTE_VALUES_QUERY = String.format(
             SELECT + TrackedEntityAttributeValueModel.TABLE + POINT + ALL + COMMA +
@@ -265,10 +270,10 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     }
 
     @Override
-    public Observable<List<ProgramStageModel>> getProgramStages(String programUid) {
+    public Observable<List<ProgramStage>> getProgramStages(String programUid) {
         String id = programUid == null ? "" : programUid;
-        return briteDatabase.createQuery(ProgramStageModel.TABLE, PROGRAM_STAGE_QUERY + "'" + id + "'")
-                .mapToList(ProgramStageModel::create);
+        return briteDatabase.createQuery(PROGRAM_STAGE_TABLE, PROGRAM_STAGE_QUERY + "'" + id + "'")
+                .mapToList(ProgramStage::create);
     }
 
     @Override
@@ -302,10 +307,10 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     }
 
     @Override
-    public Observable<ProgramStageModel> displayGenerateEvent(String eventUid) {
+    public Observable<ProgramStage> displayGenerateEvent(String eventUid) {
         String id = eventUid == null ? "" : eventUid;
-        return briteDatabase.createQuery(ProgramStageModel.TABLE, PROGRAM_STAGE_FROM_EVENT, id)
-                .mapToOne(ProgramStageModel::create);
+        return briteDatabase.createQuery(PROGRAM_STAGE_TABLE, PROGRAM_STAGE_FROM_EVENT, id)
+                .mapToOne(ProgramStage::create);
     }
 
     @Override

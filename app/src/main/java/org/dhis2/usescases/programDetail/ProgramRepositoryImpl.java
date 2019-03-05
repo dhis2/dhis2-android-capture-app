@@ -3,7 +3,7 @@ package org.dhis2.usescases.programDetail;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
+import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
@@ -11,6 +11,8 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import io.reactivex.Observable;
+
+import static org.dhis2.data.database.SqlConstants.PROGRAM_STAGE_TABLE;
 
 /**
  * QUADRAM. Created by ppajuelo on 02/11/2017.
@@ -61,11 +63,11 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 
     @NonNull
     @Override
-    public Observable<List<ProgramStageModel>> programStage(String programStageId, String teiUid) {
-        return briteDatabase.createQuery(ProgramStageModel.TABLE, SELECT_PROGRAM_STAGE_FOR_TEI,
+    public Observable<List<ProgramStage>> programStage(String programStageId, String teiUid) {
+        return briteDatabase.createQuery(PROGRAM_STAGE_TABLE, SELECT_PROGRAM_STAGE_FOR_TEI,
                 programStageId == null ? "" : programStageId,
                 teiUid == null ? "" : teiUid)
-                .mapToList(ProgramStageModel::create);
+                .mapToList(ProgramStage::create);
     }
 
     @NonNull

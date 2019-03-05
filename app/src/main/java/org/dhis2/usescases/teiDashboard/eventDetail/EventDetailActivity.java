@@ -147,7 +147,7 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
 
     @Override
     public void setDataEditable() {
-        if (binding.getStage().accessDataWrite()) {
+        if (binding.getStage().access().data().write()) {
             isEditable.set(!isEditable.get());
         } else
             displayMessage(null);
@@ -314,7 +314,7 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
             }
             return false;
         });
-        popupMenu.getMenu().getItem(1).setVisible(binding.getStage().accessDataWrite() && eventDetailModel.isEnrollmentActive());
+        popupMenu.getMenu().getItem(1).setVisible(binding.getStage().access().data().write() && eventDetailModel.isEnrollmentActive());
         popupMenu.show();
     }
 }

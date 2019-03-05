@@ -16,7 +16,7 @@ import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
+import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 
@@ -172,7 +172,7 @@ final class ProgramStageRepository implements DataEntryRepository {
                                     fieldViewModel.uid() + "." + uid, //fist
                                     displayName + "-" + optionCode, ValueType.TEXT, false,
                                     fieldViewModel.optionSet(), fieldViewModel.value(), fieldViewModel.programStageSection(),
-                                    fieldViewModel.allowFutureDate(), fieldViewModel.editable() == null ? false : fieldViewModel.editable(), renderingType, fieldViewModel.description(), null, optionCount,objectStyle));
+                                    fieldViewModel.allowFutureDate(), fieldViewModel.editable() == null ? false : fieldViewModel.editable(), renderingType, fieldViewModel.description(), null, optionCount, objectStyle));
 
                             cursor.moveToNext();
                         }
@@ -230,14 +230,14 @@ final class ProgramStageRepository implements DataEntryRepository {
         }
 
         int optionCount = 0;
-        try{
+        try {
             Cursor countCursor = briteDatabase.query("SELECT COUNT (uid) FROM Option WHERE optionSet = ?", optionSetUid);
-            if(countCursor!=null){
-                if(countCursor.moveToFirst())
+            if (countCursor != null) {
+                if (countCursor.moveToFirst())
                     optionCount = countCursor.getInt(0);
                 countCursor.close();
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             Timber.e(e);
         }
         ValueTypeDeviceRenderingModel fieldRendering = null;
@@ -255,27 +255,23 @@ final class ProgramStageRepository implements DataEntryRepository {
         eventCursor.close();
         Cursor programStageCursor = briteDatabase.query("SELECT * FROM ProgramStage WHERE uid = ?", eventModel.programStage());
         programStageCursor.moveToFirst();
-        ProgramStageModel programStageModel = ProgramStageModel.create(programStageCursor);
+        ProgramStage programStage = ProgramStage.create(programStageCursor);
         programStageCursor.close();
         Cursor programCursor = briteDatabase.query("SELECT * FROM Program WHERE uid = ?", eventModel.program());
         programCursor.moveToFirst();
         ProgramModel programModel = ProgramModel.create(programCursor);
         programCursor.close();
 
-        boolean hasExpired = DateUtils.getInstance().hasExpired(eventModel, programModel.expiryDays(), programModel.completeEventsExpiryDays(), programStageModel.periodType() != null ? programStageModel.periodType() : programModel.expiryPeriodType());
+        boolean hasExpired = DateUtils.getInstance().hasExpired(eventModel, programModel.expiryDays(), programModel.completeEventsExpiryDays(), programStage.periodType() != null ? programStage.periodType() : programModel.expiryPeriodType());
 
         ObjectStyleModel objectStyle = ObjectStyleModel.builder().build();
-        Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", uid);
-        try {
+        try (Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", uid)) {
             if (objStyleCursor.moveToFirst())
                 objectStyle = ObjectStyleModel.create(objStyleCursor);
-        } finally {
-            if (objStyleCursor != null)
-                objStyleCursor.close();
         }
 
         return fieldFactory.create(uid, isEmpty(formLabel) ? label : formLabel, valueType, mandatory, optionSetUid, dataValue, section,
-                allowFutureDates, accessDataWrite && eventStatus == EventStatus.ACTIVE && !hasExpired, renderingType, description, fieldRendering, optionCount,objectStyle);
+                allowFutureDates, accessDataWrite && eventStatus == EventStatus.ACTIVE && !hasExpired, renderingType, description, fieldRendering, optionCount, objectStyle);
     }
 
     @NonNull
@@ -283,10 +279,10 @@ final class ProgramStageRepository implements DataEntryRepository {
     private String prepareStatement() {
         String where;
         if (isEmpty(sectionUid)) {
-            where = String.format(Locale.US, "WHERE Event.uid = '%s'", eventUid == null ? "" : eventUid);
+            where = String.format(Locale.US, "WHERE Event.uid = '%s'", eventUid);
         } else {
             where = String.format(Locale.US, "WHERE Event.uid = '%s' AND " +
-                    "Field.section = '%s'", eventUid == null ? "" : eventUid, sectionUid == null ? "" : sectionUid);
+                    "Field.section = '%s'", eventUid, sectionUid);
         }
 
         return String.format(Locale.US, QUERY, where);

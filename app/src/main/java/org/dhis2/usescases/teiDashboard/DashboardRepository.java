@@ -1,7 +1,6 @@
 package org.dhis2.usescases.teiDashboard;
 
 import android.content.Context;
-import androidx.annotation.NonNull;
 
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
@@ -11,13 +10,14 @@ import org.hisp.dhis.android.core.enrollment.note.NoteModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramIndicatorModel;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
+import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.relationship.RelationshipTypeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 
 import java.util.Calendar;
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
@@ -28,7 +28,7 @@ import io.reactivex.functions.Consumer;
 
 public interface DashboardRepository {
 
-    Observable<List<ProgramStageModel>> getProgramStages(String programStages);
+    Observable<List<ProgramStage>> getProgramStages(String programStages);
 
     Observable<EnrollmentModel> getEnrollment(String programUid, String teiUid);
 
@@ -46,7 +46,7 @@ public interface DashboardRepository {
 
     Consumer<Pair<String, Boolean>> handleNote();
 
-    Observable<Boolean> handleNote(Pair<String,Boolean> pair);
+    Observable<Boolean> handleNote(Pair<String, Boolean> pair);
 
     void setDashboardDetails(String teiUid, String programUid);
 
@@ -56,7 +56,7 @@ public interface DashboardRepository {
 
     Flowable<Long> updateEnrollmentStatus(@NonNull String uid, @NonNull EnrollmentStatus value);
 
-    Observable<ProgramStageModel> displayGenerateEvent(String eventUid);
+    Observable<ProgramStage> displayGenerateEvent(String eventUid);
 
     Observable<String> generateNewEvent(String lastModifiedEventUid, Integer standardInterval);
 
@@ -68,5 +68,5 @@ public interface DashboardRepository {
 
     Integer getObjectStyle(Context context, String uid);
 
-    Observable<List<Pair<RelationshipTypeModel,String>>> relationshipsForTeiType(String teType);
+    Observable<List<Pair<RelationshipTypeModel, String>>> relationshipsForTeiType(String teType);
 }

@@ -24,7 +24,6 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 import org.hisp.dhis.rules.models.RuleDataValue;
@@ -53,6 +52,7 @@ import static org.dhis2.data.database.SqlConstants.AND;
 import static org.dhis2.data.database.SqlConstants.FROM;
 import static org.dhis2.data.database.SqlConstants.NOT_EQUAL;
 import static org.dhis2.data.database.SqlConstants.POINT;
+import static org.dhis2.data.database.SqlConstants.PROGRAM_STAGE_TABLE;
 import static org.dhis2.data.database.SqlConstants.SELECT;
 import static org.dhis2.data.database.SqlConstants.WHERE;
 
@@ -76,7 +76,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
 
 
     private static final List<String> SECTION_TABLES = Arrays.asList(
-            EventModel.TABLE, ProgramModel.TABLE, ProgramStageModel.TABLE, ProgramStageSectionModel.TABLE);
+            EventModel.TABLE, ProgramModel.TABLE, PROGRAM_STAGE_TABLE, ProgramStageSectionModel.TABLE);
     private static final String SELECT_SECTIONS = SELECT +
             "  Program.uid AS programUid,\n" +
             "  ProgramStage.uid AS programStageUid,\n" +
@@ -365,7 +365,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
 
     @Override
     public Observable<Boolean> accessDataWrite(String eventId) {
-        return briteDatabase.createQuery(ProgramStageModel.TABLE, ACCESS_QUERY, eventId == null ? "" : eventId)
+        return briteDatabase.createQuery(PROGRAM_STAGE_TABLE, ACCESS_QUERY, eventId == null ? "" : eventId)
                 .mapToOne(cursor -> cursor.getInt(0) == 1)
                 .flatMap(programStageAccessDataWrite -> briteDatabase.createQuery(ProgramModel.TABLE, PROGRAM_ACCESS_QUERY, eventId == null ? "" : eventId)
                         .mapToOne(cursor -> (cursor.getInt(0) == 1) && programStageAccessDataWrite));

@@ -15,8 +15,8 @@ import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.program.ProgramStageDataElementModel;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
@@ -41,6 +41,8 @@ import static org.dhis2.data.database.SqlConstants.NOT_EQUAL;
 import static org.dhis2.data.database.SqlConstants.ON;
 import static org.dhis2.data.database.SqlConstants.ORDER_BY;
 import static org.dhis2.data.database.SqlConstants.POINT;
+import static org.dhis2.data.database.SqlConstants.PROGRAM_STAGE_TABLE;
+import static org.dhis2.data.database.SqlConstants.PROGRAM_STAGE_UID;
 import static org.dhis2.data.database.SqlConstants.QUESTION_MARK;
 import static org.dhis2.data.database.SqlConstants.QUOTE;
 import static org.dhis2.data.database.SqlConstants.SELECT;
@@ -130,14 +132,14 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
 
     @NonNull
     @Override
-    public Observable<ProgramStageModel> programStage(String eventUid) {
-        String query = SELECT + ProgramStageModel.TABLE + POINT + ALL + FROM + ProgramStageModel.TABLE +
+    public Observable<ProgramStage> programStage(String eventUid) {
+        String query = SELECT + PROGRAM_STAGE_TABLE + POINT + ALL + FROM + PROGRAM_STAGE_TABLE +
                 JOIN + EventModel.TABLE + ON + EventModel.TABLE + POINT + EventModel.Columns.PROGRAM_STAGE +
-                EQUAL + ProgramStageModel.TABLE + POINT + ProgramStageModel.Columns.UID +
+                EQUAL + PROGRAM_STAGE_TABLE + POINT + PROGRAM_STAGE_UID +
                 WHERE + EventModel.TABLE + POINT + EventModel.Columns.UID +
                 EQUAL + QUESTION_MARK + LIMIT_1;
-        return briteDatabase.createQuery(ProgramStageModel.TABLE, query, eventUid == null ? "" : eventUid)
-                .mapToOne(ProgramStageModel::create);
+        return briteDatabase.createQuery(PROGRAM_STAGE_TABLE, query, eventUid == null ? "" : eventUid)
+                .mapToOne(ProgramStage::create);
     }
 
     @Override

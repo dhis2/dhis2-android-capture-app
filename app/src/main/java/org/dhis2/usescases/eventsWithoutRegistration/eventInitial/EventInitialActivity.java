@@ -50,7 +50,7 @@ import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
+import org.hisp.dhis.android.core.program.ProgramStage;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -106,7 +106,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     private Date selectedOrgUnitClosedDate;
     private CategoryOptionComboModel selectedCatOptionCombo;
     private CategoryComboModel selectedCatCombo;
-    private ProgramStageModel programStageModel;
+    private ProgramStage programStage;
     private String selectedLat;
     private String selectedLon;
     private List<CategoryOptionComboModel> categoryOptionComboModels;
@@ -238,7 +238,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                         presenter.createEventPermanent(
                                 enrollmentUid,
                                 getTrackedEntityInstance,
-                                programStageModel.uid(),
+                                programStage.uid(),
                                 selectedDate,
                                 selectedOrgUnit,
                                 null,
@@ -247,7 +247,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                     } else if (eventCreationType == EventCreationType.SCHEDULE) {
                         presenter.scheduleEvent(
                                 enrollmentUid,
-                                programStageModel.uid(),
+                                programStage.uid(),
                                 selectedDate,
                                 selectedOrgUnit,
                                 null,
@@ -256,7 +256,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                     } else {
                         presenter.createEvent(
                                 enrollmentUid,
-                                programStageModel.uid(),
+                                programStage.uid(),
                                 selectedDate,
                                 selectedOrgUnit,
                                 null,
@@ -266,7 +266,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                                 getTrackedEntityInstance);
                     }
                 } else {
-                    presenter.editEvent(getTrackedEntityInstance, programStageModel.uid(), eventUid, DateUtils.databaseDateFormat().format(selectedDate), selectedOrgUnit, null,
+                    presenter.editEvent(getTrackedEntityInstance, programStage.uid(), eventUid, DateUtils.databaseDateFormat().format(selectedDate), selectedOrgUnit, null,
                             catComboIsDefaultOrNull() ? null : selectedCatOptionCombo.uid(), selectedLat, selectedLon);
                     //TODO: WHERE TO UPDATE CHANGES IN DATE, ORGUNIT, CATCOMBO, COORDINATES
                     startFormActivity(eventUid);
@@ -572,9 +572,9 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     }
 
     @Override
-    public void setProgramStage(ProgramStageModel programStage) {
-        this.programStageModel = programStage;
-        if (programStageModel.captureCoordinates()) {
+    public void setProgramStage(ProgramStage programStage) {
+        this.programStage = programStage;
+        if (this.programStage.captureCoordinates()) {
             binding.coordinatesLayout.setVisibility(View.VISIBLE);
             binding.location1.setOnClickListener(v -> presenter.onLocationClick());
             binding.location2.setOnClickListener(v -> presenter.onLocation2Click());
@@ -592,7 +592,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         else
             binding.dateLayout.setHint(getString(R.string.event_date));
 
-        presenter.getStageObjectStyle(programStageModel.uid());
+        presenter.getStageObjectStyle(this.programStage.uid());
     }
 
     @Override

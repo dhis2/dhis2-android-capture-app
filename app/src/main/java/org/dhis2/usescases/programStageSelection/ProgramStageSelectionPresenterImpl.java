@@ -2,7 +2,7 @@ package org.dhis2.usescases.programStageSelection;
 
 import org.dhis2.utils.Result;
 import org.dhis2.utils.RulesUtilsProvider;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
+import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.rules.models.RuleEffect;
 
 import java.util.ArrayList;
@@ -44,13 +44,13 @@ public class ProgramStageSelectionPresenterImpl implements ProgramStageSelection
     public void getProgramStages(String programId, @NonNull String uid, @NonNull ProgramStageSelectionContract.ProgramStageSelectionView view) {
         this.view = view;
 
-        Flowable<List<ProgramStageModel>> stagesFlowable = programStageSelectionRepository.enrollmentProgramStages(programId, uid);
+        Flowable<List<ProgramStage>> stagesFlowable = programStageSelectionRepository.enrollmentProgramStages(programId, uid);
 
         Flowable<Result<RuleEffect>> ruleEffectFlowable = programStageSelectionRepository.calculate().subscribeOn(Schedulers.computation())
                 .onErrorReturn(throwable -> Result.failure(new Exception(throwable)));
 
         // Combining results of two repositories into a single stream.
-        Flowable<List<ProgramStageModel>> stageModelsFlowable = Flowable.zip(stagesFlowable, ruleEffectFlowable, this::applyEffects);
+        Flowable<List<ProgramStage>> stageModelsFlowable = Flowable.zip(stagesFlowable, ruleEffectFlowable, this::applyEffects);
 
         compositeDisposable.add(stageModelsFlowable
                 .map(data -> programStageSelectionRepository.objectStyle(data))
@@ -61,13 +61,13 @@ public class ProgramStageSelectionPresenterImpl implements ProgramStageSelection
                         Timber::e));
     }
 
-    private List<ProgramStageModel> applyEffects(List<ProgramStageModel> stageModels, Result<RuleEffect> calcResult) {
+    private List<ProgramStage> applyEffects(List<ProgramStage> stageModels, Result<RuleEffect> calcResult) {
         if (calcResult.error() != null) {
             Timber.e(calcResult.error());
             return stageModels;
         }
 
-        Map<String, ProgramStageModel> stageViewModels = toMap(stageModels);
+        Map<String, ProgramStage> stageViewModels = toMap(stageModels);
 
         ruleUtils.applyRuleEffects(stageViewModels, calcResult);
 
@@ -75,9 +75,9 @@ public class ProgramStageSelectionPresenterImpl implements ProgramStageSelection
     }
 
     @NonNull
-    private static Map<String, ProgramStageModel> toMap(@NonNull List<ProgramStageModel> stageViewModels) {
-        Map<String, ProgramStageModel> map = new LinkedHashMap<>();
-        for (ProgramStageModel stageModelModel : stageViewModels) {
+    private static Map<String, ProgramStage> toMap(@NonNull List<ProgramStage> stageViewModels) {
+        Map<String, ProgramStage> map = new LinkedHashMap<>();
+        for (ProgramStage stageModelModel : stageViewModels) {
             map.put(stageModelModel.uid(), stageModelModel);
         }
         return map;
@@ -94,7 +94,7 @@ public class ProgramStageSelectionPresenterImpl implements ProgramStageSelection
     }
 
     @Override
-    public void onProgramStageClick(ProgramStageModel programStage) {
+    public void onProgramStageClick(ProgramStage programStage) {
         view.setResult(programStage.uid(), programStage.repeatable(), programStage.periodType());
     }
 }

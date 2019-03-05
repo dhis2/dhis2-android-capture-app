@@ -14,7 +14,7 @@ import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
+import org.hisp.dhis.android.core.program.ProgramStage;
 
 import java.util.Date;
 import java.util.List;
@@ -52,7 +52,7 @@ public class EventInitialContract {
 
         void onEventUpdated(String eventUid);
 
-        void setProgramStage(ProgramStageModel programStage);
+        void setProgramStage(ProgramStage programStage);
 
         void onEventSections(List<FormSectionViewModel> formSectionViewModels);
 
@@ -88,23 +88,23 @@ public class EventInitialContract {
         void onBackClick();
 
         @SuppressWarnings("squid:S00107")
-        void createEvent(String enrollmentUid, String programStageModel, Date date, String orgUnitUid,
+        void createEvent(String enrollmentUid, String programStage, Date date, String orgUnitUid,
                          String catOption, String catOptionCombo,
                          String latitude, String longitude, String trackedEntityInstance);
 
         @SuppressWarnings("squid:S00107")
-        void createEventPermanent(String enrollmentUid, String trackedEntityInstanceUid, String programStageModel,
+        void createEventPermanent(String enrollmentUid, String trackedEntityInstanceUid, String programStage,
                                   Date date, String orgUnitUid,
                                   String catOption, String catOptionCombo,
                                   String latitude, String longitude);
 
         @SuppressWarnings("squid:S00107")
-        void scheduleEvent(String enrollmentUid, String programStageModel, Date dueDate, String orgUnitUid,
+        void scheduleEvent(String enrollmentUid, String programStage, Date dueDate, String orgUnitUid,
                            String catOption, String catOptionCombo,
                            String latitude, String longitude);
 
         @SuppressWarnings("squid:S00107")
-        void editEvent(String trackedEntityInstance, String programStageModel, String eventUid, String date, String orgUnitUid,
+        void editEvent(String trackedEntityInstance, String programStage, String eventUid, String date, String orgUnitUid,
                        String catOption, String catOptionCombo,
                        String latitude, String longitude);
 

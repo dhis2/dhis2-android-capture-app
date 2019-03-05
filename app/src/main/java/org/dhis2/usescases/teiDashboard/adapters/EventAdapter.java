@@ -9,7 +9,7 @@ import org.dhis2.usescases.teiDashboard.TeiDashboardContracts;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
+import org.hisp.dhis.android.core.program.ProgramStage;
 
 import java.util.List;
 import java.util.Objects;
@@ -25,13 +25,13 @@ import timber.log.Timber;
 
 public class EventAdapter extends RecyclerView.Adapter<EventViewHolder> {
 
-    private final List<ProgramStageModel> programStageList;
+    private final List<ProgramStage> programStageList;
     private final TeiDashboardContracts.TeiDashboardPresenter presenter;
     private final EnrollmentModel enrollment;
     private final ProgramModel program;
     private List<EventModel> events;
 
-    public EventAdapter(TeiDashboardContracts.TeiDashboardPresenter presenter, List<ProgramStageModel> programStageList, List<EventModel> eventList, EnrollmentModel currentEnrollment, ProgramModel currentProgram) {
+    public EventAdapter(TeiDashboardContracts.TeiDashboardPresenter presenter, List<ProgramStage> programStageList, List<EventModel> eventList, EnrollmentModel currentEnrollment, ProgramModel currentProgram) {
         this.events = eventList;
         this.enrollment = currentEnrollment;
         this.programStageList = programStageList;
@@ -48,8 +48,8 @@ public class EventAdapter extends RecyclerView.Adapter<EventViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull EventViewHolder holder, int position) {
-        ProgramStageModel programStage = null;
-        for (ProgramStageModel stage : programStageList)
+        ProgramStage programStage = null;
+        for (ProgramStage stage : programStageList)
             if (Objects.equals(events.get(position).programStage(), stage.uid()))
                 programStage = stage;
         if (programStage != null)

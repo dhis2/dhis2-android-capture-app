@@ -233,7 +233,7 @@ public class EventInitialPresenterImpl implements EventInitialContract.EventInit
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        programStageModel -> view.setProgramStage(programStageModel),
+                        programStage -> view.setProgramStage(programStage),
                         throwable -> view.showProgramStageSelection()
                 ));
     }
@@ -244,7 +244,7 @@ public class EventInitialPresenterImpl implements EventInitialContract.EventInit
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        programStageModel -> view.setProgramStage(programStageModel),
+                        programStage -> view.setProgramStage(programStage),
                         throwable -> view.showProgramStageSelection()
                 ));
     }
@@ -255,13 +255,13 @@ public class EventInitialPresenterImpl implements EventInitialContract.EventInit
     }
 
     @Override
-    public void createEvent(String enrollmentUid, String programStageModel, Date date, String orgUnitUid,
+    public void createEvent(String enrollmentUid, String programStage, Date date, String orgUnitUid,
                             String categoryOptionComboUid, String categoryOptionsUid,
                             String latitude, String longitude, String trackedEntityInstance) {
         if (programModel != null)
             compositeDisposable.add(
                     eventInitialRepository.createEvent(enrollmentUid, trackedEntityInstance, view.getContext(), programModel.uid(),
-                            programStageModel, date, orgUnitUid,
+                            programStage, date, orgUnitUid,
                             categoryOptionComboUid, categoryOptionsUid,
                             latitude, longitude)
                             .subscribeOn(Schedulers.io())
@@ -271,12 +271,12 @@ public class EventInitialPresenterImpl implements EventInitialContract.EventInit
     }
 
     @Override
-    public void createEventPermanent(String enrollmentUid, String trackedEntityInstanceUid, String programStageModel, Date date, String orgUnitUid,
+    public void createEventPermanent(String enrollmentUid, String trackedEntityInstanceUid, String programStage, Date date, String orgUnitUid,
                                      String catComboUid, String catOptionUid,
                                      String latitude, String longitude) {
         compositeDisposable.add(
                 eventInitialRepository.createEvent(enrollmentUid, trackedEntityInstanceUid, view.getContext(),
-                        programModel.uid(), programStageModel, date, orgUnitUid,
+                        programModel.uid(), programStage, date, orgUnitUid,
                         catComboUid, catOptionUid,
                         latitude, longitude)
                         .switchMap(
@@ -291,13 +291,13 @@ public class EventInitialPresenterImpl implements EventInitialContract.EventInit
     }
 
     @Override
-    public void scheduleEvent(String enrollmentUid, String programStageModel, Date dueDate, String orgUnitUid,
+    public void scheduleEvent(String enrollmentUid, String programStage, Date dueDate, String orgUnitUid,
                               String categoryOptionComboUid, String categoryOptionsUid,
                               String latitude, String longitude) {
         if (programModel != null)
             compositeDisposable.add(
                     eventInitialRepository.scheduleEvent(enrollmentUid, null, view.getContext(), programModel.uid(),
-                            programStageModel, dueDate, orgUnitUid,
+                            programStage, dueDate, orgUnitUid,
                             categoryOptionComboUid, categoryOptionsUid,
                             latitude, longitude)
                             .subscribeOn(Schedulers.io())
@@ -307,7 +307,7 @@ public class EventInitialPresenterImpl implements EventInitialContract.EventInit
     }
 
     @Override
-    public void editEvent(String trackedEntityInstance, String programStageModel, String eventUid, String date, String orgUnitUid,
+    public void editEvent(String trackedEntityInstance, String programStage, String eventUid, String date, String orgUnitUid,
                           String catComboUid, String catOptionCombo,
                           String latitude, String longitude) {
 

@@ -14,7 +14,7 @@ import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.Constants;
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.period.PeriodType;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
+import org.hisp.dhis.android.core.program.ProgramStage;
 
 import java.util.List;
 
@@ -78,9 +78,9 @@ public class ProgramStageSelectionActivity extends ActivityGlobalAbstract implem
     }
 
     @Override
-    public void setData(List<Pair<ProgramStageModel, ObjectStyleModel>> programStageModels) {
-        if (programStageModels != null && !programStageModels.isEmpty()) {
-            adapter.setProgramStageModels(programStageModels);
+    public void setData(List<Pair<ProgramStage, ObjectStyleModel>> programStages) {
+        if (programStages != null && !programStages.isEmpty()) {
+            adapter.setProgramStages(programStages);
             adapter.notifyDataSetChanged();
         } else {
             // if there are no program stages to select, the event cannot be added

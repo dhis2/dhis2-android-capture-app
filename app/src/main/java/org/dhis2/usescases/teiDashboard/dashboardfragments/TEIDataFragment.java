@@ -25,7 +25,7 @@ import org.dhis2.utils.EventCreationType;
 import org.dhis2.utils.custom_views.CustomDialog;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
+import org.hisp.dhis.android.core.program.ProgramStage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,7 +67,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
 
     private EventAdapter adapter;
     private CustomDialog dialog;
-    private ProgramStageModel programStageFromEvent;
+    private ProgramStage programStageFromEvent;
     private ObservableBoolean followUp = new ObservableBoolean(false);
 
     private boolean hasCatComb;
@@ -146,7 +146,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
             SharedPreferences prefs = context.getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE);
             hasCatComb = !nprogram.getCurrentProgram().categoryCombo().equals(prefs.getString(Constants.DEFAULT_CAT_COMBO, ""));
             List<EventModel> events = new ArrayList<>();
-            adapter = new EventAdapter(presenter, nprogram.getProgramStages(), events, nprogram.getCurrentEnrollment(),nprogram.getCurrentProgram());
+            adapter = new EventAdapter(presenter, nprogram.getProgramStages(), events, nprogram.getCurrentEnrollment(), nprogram.getCurrentProgram());
             binding.teiRecycler.setLayoutManager(new LinearLayoutManager(getAbstracContext()));
             binding.teiRecycler.setAdapter(adapter);
             binding.setTrackEntity(nprogram.getTei());
@@ -213,10 +213,10 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
         };
     }
 
-    public Consumer<ProgramStageModel> displayGenerateEvent() {
-        return programStageModel -> {
-            this.programStageFromEvent = programStageModel;
-            if (programStageModel.displayGenerateEventBox() || programStageModel.allowGenerateNextVisit()) {
+    public Consumer<ProgramStage> displayGenerateEvent() {
+        return programStage -> {
+            this.programStageFromEvent = programStage;
+            if (programStage.displayGenerateEventBox() || programStage.allowGenerateNextVisit()) {
                 dialog = new CustomDialog(
                         getContext(),
                         getString(R.string.dialog_generate_new_event),
@@ -226,7 +226,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
                         RC_GENERATE_EVENT,
                         this);
                 dialog.show();
-            } else if (programStageModel.remindCompleted())
+            } else if (programStage.remindCompleted())
                 showDialogCloseProgram();
         };
     }

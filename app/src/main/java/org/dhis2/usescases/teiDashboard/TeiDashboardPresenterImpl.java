@@ -29,7 +29,7 @@ import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.program.ProgramIndicatorModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
+import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.relationship.Relationship;
 import org.hisp.dhis.android.core.relationship.RelationshipHelper;
 import org.hisp.dhis.android.core.relationship.RelationshipItem;
@@ -131,10 +131,10 @@ public class TeiDashboardPresenterImpl implements TeiDashboardContracts.TeiDashb
                     metadataRepository.getTEIEnrollments(teUid),
                     DashboardProgramModel::new)
                     .flatMap(dashboardProgramModel1 -> metadataRepository.getObjectStylesForPrograms(dashboardProgramModel1.getEnrollmentProgramModels())
-                    .map(stringObjectStyleMap -> {
-                        dashboardProgramModel1.setProgramsObjectStyles(stringObjectStyleMap);
-                        return dashboardProgramModel1;
-                    }))
+                            .map(stringObjectStyleMap -> {
+                                dashboardProgramModel1.setProgramsObjectStyles(stringObjectStyleMap);
+                                return dashboardProgramModel1;
+                            }))
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
@@ -567,7 +567,7 @@ public class TeiDashboardPresenterImpl implements TeiDashboardContracts.TeiDashb
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(categoryOptionComboModels -> {
-                            for (ProgramStageModel programStage : dashboardProgramModel.getProgramStages()) {
+                            for (ProgramStage programStage : dashboardProgramModel.getProgramStages()) {
                                 if (event.programStage().equals(programStage.uid()))
                                     view.showCatComboDialog(event.uid(), programStage.displayName(), categoryOptionComboModels);
                             }

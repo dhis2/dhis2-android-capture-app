@@ -21,7 +21,7 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
+import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.program.ProgramStageSectionModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 import org.hisp.dhis.rules.RuleEngine;
@@ -47,6 +47,7 @@ import timber.log.Timber;
 import static android.text.TextUtils.isEmpty;
 import static org.dhis2.data.database.SqlConstants.FROM;
 import static org.dhis2.data.database.SqlConstants.LIMIT_1;
+import static org.dhis2.data.database.SqlConstants.PROGRAM_STAGE_TABLE;
 import static org.dhis2.data.database.SqlConstants.SELECT;
 import static org.dhis2.data.database.SqlConstants.WHERE;
 
@@ -55,10 +56,10 @@ import static org.dhis2.data.database.SqlConstants.WHERE;
 })
 public class EventRepository implements FormRepository {
     private static final List<String> TITLE_TABLES = Arrays.asList(
-            ProgramModel.TABLE, ProgramStageModel.TABLE);
+            ProgramModel.TABLE, PROGRAM_STAGE_TABLE);
 
     private static final List<String> SECTION_TABLES = Arrays.asList(
-            EventModel.TABLE, ProgramModel.TABLE, ProgramStageModel.TABLE, ProgramStageSectionModel.TABLE);
+            EventModel.TABLE, ProgramModel.TABLE, PROGRAM_STAGE_TABLE, ProgramStageSectionModel.TABLE);
 
     private static final String SELECT_PROGRAM = "SELECT Program.*\n" +
             "FROM Program JOIN Event ON Event.program = Program.uid \n" +

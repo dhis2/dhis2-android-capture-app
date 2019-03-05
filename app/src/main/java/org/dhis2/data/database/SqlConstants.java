@@ -1,6 +1,22 @@
 package org.dhis2.data.database;
 
+import org.hisp.dhis.android.core.program.ProgramStageModel;
+
 public class SqlConstants {
+
+    public static final String PROGRAM_STAGE_TABLE = ProgramStageModel.TABLE;
+    public static final String PROGRAM_STAGE_PROGRAM = ProgramStageModel.Columns.PROGRAM;
+    public static final String PROGRAM_STAGE_UID = ProgramStageModel.Columns.UID;
+    public static final String PROGRAM_STAGE_SORT_ORDER = ProgramStageModel.Columns.SORT_ORDER;
+    public static final String PROGRAM_STAGE_DISPLAY_GENERATE_EVENT_BOX = ProgramStageModel.Columns.DISPLAY_GENERATE_EVENT_BOX;
+    public static final String PROGRAM_STAGE_MIN_DAYS_FROM_START = ProgramStageModel.Columns.MIN_DAYS_FROM_START;
+    public static final String PROGRAM_STAGE_REPORT_DATE_TO_USE = ProgramStageModel.Columns.REPORT_DATE_TO_USE;
+    public static final String PROGRAM_STAGE_PERIOD_TYPE = ProgramStageModel.Columns.PERIOD_TYPE;
+    public static final String PROGRAM_STAGE_AUTO_GENERATE_EVENT = ProgramStageModel.Columns.AUTO_GENERATE_EVENT;
+    public static final String PROGRAM_STAGE_ACCESS_DATA_WRITE = ProgramStageModel.Columns.ACCESS_DATA_WRITE;
+    public static final String PROGRAM_STAGE_DISPLAY_NAME = ProgramStageModel.Columns.DISPLAY_NAME;
+
+
     public static final String SELECT = "SELECT ";
     public static final String SELECT_DISTINCT = "SELECT DISTINCT ";
     public static final String FROM = " FROM ";

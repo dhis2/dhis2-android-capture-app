@@ -20,7 +20,7 @@ import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.option.OptionSetModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
+import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.resource.ResourceModel;
 import org.hisp.dhis.android.core.settings.SystemSettingModel;
@@ -51,6 +51,8 @@ import static org.dhis2.data.database.SqlConstants.JOIN;
 import static org.dhis2.data.database.SqlConstants.LIMIT_1;
 import static org.dhis2.data.database.SqlConstants.ON;
 import static org.dhis2.data.database.SqlConstants.POINT;
+import static org.dhis2.data.database.SqlConstants.PROGRAM_STAGE_TABLE;
+import static org.dhis2.data.database.SqlConstants.PROGRAM_STAGE_UID;
 import static org.dhis2.data.database.SqlConstants.QUESTION_MARK;
 import static org.dhis2.data.database.SqlConstants.QUOTE;
 import static org.dhis2.data.database.SqlConstants.SELECT;
@@ -125,7 +127,7 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     private static final Set<String> PROGRAM_TRACKED_ENTITY_ATTRIBUTES_NO_PROGRAM_TABLES = new HashSet<>(Arrays.asList(TrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.TABLE));
 
     private static final String SELECT_PROGRAM_STAGE = String.format(SELECT + ALL + FROM + VARIABLE + WHERE + TABLE_POINT_FIELD_EQUALS,
-            ProgramStageModel.TABLE, ProgramStageModel.TABLE, ProgramStageModel.Columns.UID);
+            PROGRAM_STAGE_TABLE, PROGRAM_STAGE_TABLE, PROGRAM_STAGE_UID);
 
     private static final String SELECT_CATEGORY_OPTION_COMBO = String.format(SELECT + ALL + FROM + VARIABLE + WHERE + TABLE_POINT_FIELD_EQUALS,
             CategoryOptionComboModel.TABLE, CategoryOptionComboModel.TABLE, CategoryOptionComboModel.Columns.UID);
@@ -251,11 +253,11 @@ public class MetadataRepositoryImpl implements MetadataRepository {
 
     @NonNull
     @Override
-    public Observable<ProgramStageModel> programStage(String programStageId) {
+    public Observable<ProgramStage> programStage(String programStageId) {
         String id = programStageId == null ? "" : programStageId;
         return briteDatabase
-                .createQuery(ProgramStageModel.TABLE, SELECT_PROGRAM_STAGE + "'" + id + "'" + LIMIT_1)
-                .mapToOne(ProgramStageModel::create);
+                .createQuery(PROGRAM_STAGE_TABLE, SELECT_PROGRAM_STAGE + "'" + id + "'" + LIMIT_1)
+                .mapToOne(ProgramStage::create);
     }
 
 

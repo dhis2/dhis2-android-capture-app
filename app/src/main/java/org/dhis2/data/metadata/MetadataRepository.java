@@ -9,7 +9,7 @@ import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
+import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.resource.ResourceModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
@@ -74,7 +74,7 @@ public interface MetadataRepository {
     //ProgramStage
 
     @NonNull
-    Observable<ProgramStageModel> programStage(String programStageId);
+    Observable<ProgramStage> programStage(String programStageId);
 
     /*ENROLLMENTS*/
     Observable<List<EnrollmentModel>> getTEIEnrollments(String teiUid);

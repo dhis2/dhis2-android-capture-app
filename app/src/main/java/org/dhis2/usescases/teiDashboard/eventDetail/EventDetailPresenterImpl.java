@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.os.Handler;
-import android.util.Log;
 import android.view.View;
 
 import org.dhis2.R;
@@ -20,7 +19,7 @@ import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.period.PeriodType;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
+import org.hisp.dhis.android.core.program.ProgramStage;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -90,7 +89,7 @@ public class EventDetailPresenterImpl implements EventDetailContracts.EventDetai
                                     eventDetailModel = data;
                                     view.setData(data, metadataRepository);
                                 },
-                                throwable -> Log.d("ERROR", throwable.getMessage()))
+                                Timber::e)
 
         );
     }
@@ -128,8 +127,8 @@ public class EventDetailPresenterImpl implements EventDetailContracts.EventDetai
     }
 
     @Override
-    public void eventStatus(View buttonView, EventModel eventModel, ProgramStageModel stageModel) {
-        if (stageModel.accessDataWrite()) {
+    public void eventStatus(View buttonView, EventModel eventModel, ProgramStage stageModel) {
+        if (stageModel.access().data().write()) {
             FormFragment formFragment = (FormFragment) view.getAbstractActivity().getSupportFragmentManager().getFragments().get(0);
             formFragment.getDatesLayout().getRootView().requestFocus();
             new Handler().postDelayed(() -> {
@@ -268,7 +267,7 @@ public class EventDetailPresenterImpl implements EventDetailContracts.EventDetai
                     String result = DateUtils.uiDateFormat().format(selectedDate);
                     view.setDate(result);
 
-                    if (eventDetailModel.getProgramStage().accessDataWrite()) {
+                    if (eventDetailModel.getProgramStage().access().data().write()) {
                         dataEntryStore.updateEvent(selectedDate, eventDetailModel.getEventModel());
                     }
                 }),
@@ -301,7 +300,7 @@ public class EventDetailPresenterImpl implements EventDetailContracts.EventDetai
                     String result = DateUtils.uiDateFormat().format(selectedDate);
                     view.setDate(result);
 
-                    if (eventDetailModel.getProgramStage().accessDataWrite()) {
+                    if (eventDetailModel.getProgramStage().access().data().write()) {
                         dataEntryStore.updateEvent(selectedDate, eventDetailModel.getEventModel());
                     }
                 });

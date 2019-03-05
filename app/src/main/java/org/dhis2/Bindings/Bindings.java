@@ -28,7 +28,7 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
+import org.hisp.dhis.android.core.program.ProgramStage;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -166,7 +166,7 @@ public class Bindings {
     }
 
     @BindingAdapter(value = {"eventStatusIcon", "enrollmentStatusIcon", "eventProgramStage", "eventProgram"}, requireAll = false)
-    public static void setEventIcon(ImageView view, EventModel event, EnrollmentModel enrollmentModel, ProgramStageModel eventProgramStage, ProgramModel program) {
+    public static void setEventIcon(ImageView view, EventModel event, EnrollmentModel enrollmentModel, ProgramStage eventProgramStage, ProgramModel program) {
         EventStatus status = event.status();
         EnrollmentStatus enrollmentStatus = enrollmentModel.enrollmentStatus();
 
@@ -209,7 +209,7 @@ public class Bindings {
 
     @BindingAdapter(value = {"eventStatusText", "enrollmentStatus", "eventProgramStage", "eventProgram"})
     public static void setEventText(TextView view, EventModel event, EnrollmentModel enrollmentModel,
-                                    ProgramStageModel eventProgramStage, ProgramModel program) {
+                                    ProgramStage eventProgramStage, ProgramModel program) {
         EventStatus status = event.status();
         EnrollmentStatus enrollmentStatus = enrollmentModel.enrollmentStatus();
         if (status == null)
@@ -227,7 +227,7 @@ public class Bindings {
         }
     }
 
-    private static void setEnrollmentActionActive(TextView view, EventModel event, EventStatus status, ProgramModel program, ProgramStageModel eventProgramStage) {
+    private static void setEnrollmentActionActive(TextView view, EventModel event, EventStatus status, ProgramModel program, ProgramStage eventProgramStage) {
         switch (status) {
             case ACTIVE:
                 if (DateUtils.getInstance().hasExpired(event, program.expiryDays(), program.completeEventsExpiryDays(), eventProgramStage.periodType() != null ? eventProgramStage.periodType() : program.expiryPeriodType())) {
@@ -263,7 +263,7 @@ public class Bindings {
     }
 
     @BindingAdapter(value = {"eventColor", "eventProgramStage", "eventProgram"})
-    public static void setEventColor(View view, EventModel event, ProgramStageModel programStage, ProgramModel program) {
+    public static void setEventColor(View view, EventModel event, ProgramStage programStage, ProgramModel program) {
         int bgColor;
         if (DateUtils.getInstance().isEventExpired(null, event.completedDate(), program.completeEventsExpiryDays())) {
             bgColor = R.drawable.item_event_dark_gray_ripple;
@@ -273,7 +273,7 @@ public class Bindings {
         view.setBackground(ContextCompat.getDrawable(view.getContext(), bgColor));
     }
 
-    private static int getEventBgColor(EventModel event, ProgramStageModel programStage, ProgramModel program){
+    private static int getEventBgColor(EventModel event, ProgramStage programStage, ProgramModel program) {
         int bgColor;
         switch (event.status()) {
             case ACTIVE:

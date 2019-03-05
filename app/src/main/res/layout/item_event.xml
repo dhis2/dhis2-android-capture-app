@@ -13,7 +13,7 @@
 
         <variable
             name="stage"
-            type="org.hisp.dhis.android.core.program.ProgramStageModel" />
+            type="org.hisp.dhis.android.core.program.ProgramStage" />
 
         <variable
             name="enrollment"
@@ -21,7 +21,7 @@
 
         <variable
             name="program"
-            type="org.hisp.dhis.android.core.program.ProgramModel"/>
+            type="org.hisp.dhis.android.core.program.ProgramModel" />
     </data>
 
     <RelativeLayout
@@ -38,10 +38,10 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fitsSystemWindows="false"
-            android:paddingBottom="8dp"
-            android:paddingEnd="16dp"
             android:paddingStart="16dp"
             android:paddingTop="8dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="8dp"
             android:transitionName="shared_view">
 
 
@@ -89,12 +89,12 @@
                     android:id="@+id/event_icon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="end"
                     app:enrollmentStatusIcon="@{enrollment}"
+                    app:eventProgram="@{program}"
                     app:eventProgramStage="@{stage}"
                     app:eventStatusIcon="@{event}"
-                    app:eventProgram="@{program}"
                     app:srcCompat="@drawable/ic_edit"
-                    android:layout_gravity="end"
                     tools:ignore="ContentDescription" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -105,9 +105,9 @@
                     android:textColor="@color/icon_color"
                     android:textSize="12sp"
                     app:enrollmentStatus="@{enrollment}"
+                    app:eventProgram="@{program}"
                     app:eventProgramStage="@{stage}"
                     app:eventStatusText='@{event}'
-                    app:eventProgram="@{program}"
                     tools:text="Read only" />
             </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>

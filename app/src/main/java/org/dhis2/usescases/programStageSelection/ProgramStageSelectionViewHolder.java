@@ -8,7 +8,7 @@ import org.dhis2.BR;
 import org.dhis2.Bindings.Bindings;
 import org.dhis2.databinding.ItemProgramStageBinding;
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
+import org.hisp.dhis.android.core.program.ProgramStage;
 
 import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
@@ -26,7 +26,7 @@ public class ProgramStageSelectionViewHolder extends RecyclerView.ViewHolder {
         this.binding = binding;
     }
 
-    public void bind(ProgramStageSelectionContract.ProgramStageSelectionPresenter presenter, ProgramStageModel programStage, ObjectStyleModel data) {
+    public void bind(ProgramStageSelectionContract.ProgramStageSelectionPresenter presenter, ProgramStage programStage, ObjectStyleModel data) {
         binding.setVariable(BR.presenter, presenter);
         binding.setVariable(BR.programStage, programStage);
         binding.executePendingBindings();
@@ -47,7 +47,7 @@ public class ProgramStageSelectionViewHolder extends RecyclerView.ViewHolder {
         }
 
         itemView.setOnClickListener(view -> {
-            if (programStage.accessDataWrite())
+            if (programStage.access().data().write())
                 presenter.onProgramStageClick(programStage);
             else
                 presenter.displayMessage(null);

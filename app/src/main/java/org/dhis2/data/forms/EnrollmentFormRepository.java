@@ -26,7 +26,7 @@ import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
+import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 import org.hisp.dhis.rules.RuleEngine;
@@ -61,6 +61,14 @@ import static org.dhis2.data.database.SqlConstants.LIMIT_1;
 import static org.dhis2.data.database.SqlConstants.ON;
 import static org.dhis2.data.database.SqlConstants.ORDER_BY;
 import static org.dhis2.data.database.SqlConstants.POINT;
+import static org.dhis2.data.database.SqlConstants.PROGRAM_STAGE_AUTO_GENERATE_EVENT;
+import static org.dhis2.data.database.SqlConstants.PROGRAM_STAGE_MIN_DAYS_FROM_START;
+import static org.dhis2.data.database.SqlConstants.PROGRAM_STAGE_PERIOD_TYPE;
+import static org.dhis2.data.database.SqlConstants.PROGRAM_STAGE_PROGRAM;
+import static org.dhis2.data.database.SqlConstants.PROGRAM_STAGE_REPORT_DATE_TO_USE;
+import static org.dhis2.data.database.SqlConstants.PROGRAM_STAGE_SORT_ORDER;
+import static org.dhis2.data.database.SqlConstants.PROGRAM_STAGE_TABLE;
+import static org.dhis2.data.database.SqlConstants.PROGRAM_STAGE_UID;
 import static org.dhis2.data.database.SqlConstants.QUESTION_MARK;
 import static org.dhis2.data.database.SqlConstants.SELECT;
 import static org.dhis2.data.database.SqlConstants.SELECT_DISTINCT;
@@ -121,22 +129,22 @@ class EnrollmentFormRepository implements FormRepository {
                     LIMIT_1;
 
     private static final String SELECT_AUTO_GENERATE_PROGRAM_STAGE =
-            SELECT + ProgramStageModel.TABLE + POINT + ProgramStageModel.Columns.UID + COMMA +
+            SELECT + PROGRAM_STAGE_TABLE + POINT + PROGRAM_STAGE_UID + COMMA +
                     ProgramModel.TABLE + POINT + ProgramModel.Columns.UID + COMMA +
                     EnrollmentModel.TABLE + POINT + EnrollmentModel.Columns.ORGANISATION_UNIT + COMMA +
-                    ProgramStageModel.TABLE + POINT + ProgramStageModel.Columns.MIN_DAYS_FROM_START + COMMA +
-                    ProgramStageModel.TABLE + POINT + ProgramStageModel.Columns.REPORT_DATE_TO_USE + COMMA +
+                    PROGRAM_STAGE_TABLE + POINT + PROGRAM_STAGE_MIN_DAYS_FROM_START + COMMA +
+                    PROGRAM_STAGE_TABLE + POINT + PROGRAM_STAGE_REPORT_DATE_TO_USE + COMMA +
                     EnrollmentModel.TABLE + POINT + EnrollmentModel.Columns.INCIDENT_DATE + COMMA +
                     EnrollmentModel.TABLE + POINT + EnrollmentModel.Columns.ENROLLMENT_DATE + COMMA +
-                    ProgramStageModel.TABLE + POINT + ProgramStageModel.Columns.PERIOD_TYPE +
+                    PROGRAM_STAGE_TABLE + POINT + PROGRAM_STAGE_PERIOD_TYPE +
                     FROM + EnrollmentModel.TABLE +
                     JOIN + ProgramModel.TABLE + ON + EnrollmentModel.TABLE + POINT + EnrollmentModel.Columns.PROGRAM +
                     EQUAL + ProgramModel.TABLE + POINT + ProgramModel.Columns.UID +
-                    JOIN + ProgramStageModel.TABLE + ON + ProgramModel.TABLE + POINT + ProgramModel.Columns.UID +
-                    EQUAL + ProgramStageModel.TABLE + POINT + ProgramStageModel.Columns.PROGRAM +
+                    JOIN + PROGRAM_STAGE_TABLE + ON + ProgramModel.TABLE + POINT + ProgramModel.Columns.UID +
+                    EQUAL + PROGRAM_STAGE_TABLE + POINT + PROGRAM_STAGE_PROGRAM +
                     WHERE + EnrollmentModel.TABLE + POINT + EnrollmentModel.Columns.UID +
                     EQUAL + QUESTION_MARK +
-                    AND + ProgramStageModel.TABLE + POINT + ProgramStageModel.Columns.AUTO_GENERATE_EVENT +
+                    AND + PROGRAM_STAGE_TABLE + POINT + PROGRAM_STAGE_AUTO_GENERATE_EVENT +
                     EQUAL + "1";
 
     private static final String SELECT_PROGRAM =
@@ -247,7 +255,7 @@ class EnrollmentFormRepository implements FormRepository {
     @Override
     public Flowable<String> title() {
         return briteDatabase
-                .createQuery(TITLE_TABLES, SELECT_TITLE, enrollmentUid == null ? "" : enrollmentUid)
+                .createQuery(TITLE_TABLES, SELECT_TITLE, enrollmentUid)
                 .mapToOne(cursor -> cursor.getString(0)).toFlowable(BackpressureStrategy.LATEST)
                 .distinctUntilChanged();
     }
@@ -255,9 +263,9 @@ class EnrollmentFormRepository implements FormRepository {
     @NonNull
     @Override
     public Flowable<Pair<ProgramModel, String>> reportDate() {
-        return briteDatabase.createQuery(ProgramModel.TABLE, SELECT_ENROLLMENT_PROGRAM, enrollmentUid == null ? "" : enrollmentUid)
+        return briteDatabase.createQuery(ProgramModel.TABLE, SELECT_ENROLLMENT_PROGRAM, enrollmentUid)
                 .mapToOne(ProgramModel::create)
-                .flatMap(programModel -> briteDatabase.createQuery(EnrollmentModel.TABLE, SELECT_ENROLLMENT_DATE, enrollmentUid == null ? "" : enrollmentUid)
+                .flatMap(programModel -> briteDatabase.createQuery(EnrollmentModel.TABLE, SELECT_ENROLLMENT_DATE, enrollmentUid)
                         .mapToOne(EnrollmentModel::create)
                         .map(enrollmentModel -> Pair.create(programModel, enrollmentModel.enrollmentDate() != null ?
                                 DateUtils.uiDateFormat().format(enrollmentModel.enrollmentDate()) : "")))
@@ -268,9 +276,9 @@ class EnrollmentFormRepository implements FormRepository {
     @NonNull
     @Override
     public Flowable<Pair<ProgramModel, String>> incidentDate() {
-        return briteDatabase.createQuery(ProgramModel.TABLE, SELECT_ENROLLMENT_PROGRAM, enrollmentUid == null ? "" : enrollmentUid)
+        return briteDatabase.createQuery(ProgramModel.TABLE, SELECT_ENROLLMENT_PROGRAM, enrollmentUid)
                 .mapToOne(ProgramModel::create)
-                .flatMap(programModel -> briteDatabase.createQuery(EnrollmentModel.TABLE, SELECT_INCIDENT_DATE, enrollmentUid == null ? "" : enrollmentUid)
+                .flatMap(programModel -> briteDatabase.createQuery(EnrollmentModel.TABLE, SELECT_INCIDENT_DATE, enrollmentUid)
                         .mapToOne(EnrollmentModel::create)
                         .map(enrollmentModel -> Pair.create(programModel, enrollmentModel.incidentDate() != null ?
                                 DateUtils.uiDateFormat().format(enrollmentModel.incidentDate()) : "")))
@@ -280,7 +288,7 @@ class EnrollmentFormRepository implements FormRepository {
 
     @Override
     public Flowable<ProgramModel> getAllowDatesInFuture() {
-        return briteDatabase.createQuery(ProgramModel.TABLE, SELECT_ENROLLMENT_PROGRAM, enrollmentUid == null ? "" : enrollmentUid)
+        return briteDatabase.createQuery(ProgramModel.TABLE, SELECT_ENROLLMENT_PROGRAM, enrollmentUid)
                 .mapToOne(ProgramModel::create)
                 .toFlowable(BackpressureStrategy.LATEST);
     }
@@ -289,7 +297,7 @@ class EnrollmentFormRepository implements FormRepository {
     @Override
     public Flowable<ReportStatus> reportStatus() {
         return briteDatabase
-                .createQuery(EnrollmentModel.TABLE, SELECT_ENROLLMENT_STATUS, enrollmentUid == null ? "" : enrollmentUid)
+                .createQuery(EnrollmentModel.TABLE, SELECT_ENROLLMENT_STATUS, enrollmentUid)
                 .mapToOne(cursor ->
                         ReportStatus.fromEnrollmentStatus(EnrollmentStatus.valueOf(cursor.getString(0)))).toFlowable(BackpressureStrategy.LATEST)
                 .distinctUntilChanged();
@@ -483,7 +491,7 @@ class EnrollmentFormRepository implements FormRepository {
     @Override
     public Observable<List<FieldViewModel>> fieldValues() {
         return briteDatabase
-                .createQuery(TrackedEntityAttributeValueModel.TABLE, QUERY, enrollmentUid == null ? "" : enrollmentUid)
+                .createQuery(TrackedEntityAttributeValueModel.TABLE, QUERY, enrollmentUid)
                 .mapToList(this::transform);
     }
 
@@ -568,14 +576,14 @@ class EnrollmentFormRepository implements FormRepository {
         }
 
         int optionCount = 0;
-        try{
+        try {
             Cursor countCursor = briteDatabase.query("SELECT COUNT (uid) FROM Option WHERE optionSet = ?", optionSetUid);
-            if(countCursor!=null){
-                if(countCursor.moveToFirst())
+            if (countCursor != null) {
+                if (countCursor.moveToFirst())
                     optionCount = countCursor.getInt(0);
                 countCursor.close();
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             Timber.e(e);
         }
 
@@ -606,7 +614,7 @@ class EnrollmentFormRepository implements FormRepository {
         }
 
         return fieldFactory.create(uid, label, valueType, mandatory, optionSetUid, dataValue, section,
-                allowFutureDates, status == EnrollmentStatus.ACTIVE, null, description, fieldRendering,optionCount,objectStyle);
+                allowFutureDates, status == EnrollmentStatus.ACTIVE, null, description, fieldRendering, optionCount, objectStyle);
     }
 
     @Nullable
@@ -614,21 +622,21 @@ class EnrollmentFormRepository implements FormRepository {
     public Observable<Trio<String, String, String>> useFirstStageDuringRegistration() { //enrollment uid, trackedEntityType, event uid
 
         String selectProgramQuery = SELECT + ALL + FROM + ProgramModel.TABLE + WHERE + ProgramModel.Columns.UID + EQUAL + QUESTION_MARK;
-        String selectProgramStageQuery = SELECT + ALL + FROM + ProgramStageModel.TABLE +
-                WHERE + ProgramStageModel.Columns.PROGRAM + EQUAL + QUESTION_MARK +
-                ORDER_BY + ProgramStageModel.TABLE + POINT + ProgramStageModel.Columns.SORT_ORDER;
+        String selectProgramStageQuery = SELECT + ALL + FROM + PROGRAM_STAGE_TABLE +
+                WHERE + PROGRAM_STAGE_PROGRAM + EQUAL + QUESTION_MARK +
+                ORDER_BY + PROGRAM_STAGE_TABLE + POINT + PROGRAM_STAGE_SORT_ORDER;
 
         return briteDatabase.createQuery(ProgramModel.TABLE, selectProgramQuery, programUid)
                 .mapToOne(ProgramModel::create)
                 .flatMap(programModel ->
-                        briteDatabase.createQuery(ProgramStageModel.TABLE, selectProgramStageQuery, programModel.uid())
-                                .mapToList(ProgramStageModel::create).map(programstages -> Trio.create(programModel.useFirstStageDuringRegistration(), programstages, programModel.trackedEntityType())))
+                        briteDatabase.createQuery(PROGRAM_STAGE_TABLE, selectProgramStageQuery, programModel.uid())
+                                .mapToList(ProgramStage::create).map(programstages -> Trio.create(programModel.useFirstStageDuringRegistration(), programstages, programModel.trackedEntityType())))
                 .map(data -> {
-                    ProgramStageModel stageToOpen = null;
+                    ProgramStage stageToOpen = null;
                     if (data.val0()) {
                         stageToOpen = data.val1().get(0);
                     } else {
-                        for (ProgramStageModel programStage : data.val1()) {
+                        for (ProgramStage programStage : data.val1()) {
                             if (programStage.openAfterEnrollment() && stageToOpen == null)
                                 stageToOpen = programStage;
                         }
@@ -655,7 +663,7 @@ class EnrollmentFormRepository implements FormRepository {
     }
 
 
-    private Trio<String, String, String> searchEventAndOpenDashboard(ProgramStageModel stageToOpen) {
+    private Trio<String, String, String> searchEventAndOpenDashboard(ProgramStage stageToOpen) {
         String eventUidQuery = SELECT + EventModel.TABLE + POINT + EventModel.Columns.UID +
                 FROM + EventModel.TABLE +
                 WHERE + EventModel.TABLE + POINT + EventModel.Columns.PROGRAM_STAGE +
@@ -683,7 +691,7 @@ class EnrollmentFormRepository implements FormRepository {
                         .lastUpdated(createdDate)
                         .eventDate(createdDate)
                         .enrollment(enrollmentUid)
-                        .program(stageToOpen.program())
+                        .program(stageToOpen.program().uid())
                         .programStage(stageToOpen.uid())
                         .organisationUnit(enrollmentOrgUnitCursor.getString(0))
                         .status(EventStatus.ACTIVE)

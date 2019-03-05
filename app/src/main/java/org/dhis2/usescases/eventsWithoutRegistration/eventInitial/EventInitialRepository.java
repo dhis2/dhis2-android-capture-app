@@ -6,7 +6,7 @@ import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
+import org.hisp.dhis.android.core.program.ProgramStage;
 
 import java.util.Date;
 import java.util.List;
@@ -56,10 +56,10 @@ public interface EventInitialRepository {
     Observable<EventModel> newlyCreatedEvent(long rowId);
 
     @NonNull
-    Observable<ProgramStageModel> programStage(String programUid);
+    Observable<ProgramStage> programStage(String programUid);
 
     @NonNull
-    Observable<ProgramStageModel> programStageWithId(String programStageUid);
+    Observable<ProgramStage> programStageWithId(String programStageUid);
 
     @SuppressWarnings("squid:S00107")
     @NonNull

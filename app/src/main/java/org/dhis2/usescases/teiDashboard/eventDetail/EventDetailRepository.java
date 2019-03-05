@@ -1,21 +1,19 @@
 package org.dhis2.usescases.teiDashboard.eventDetail;
 
-import androidx.annotation.NonNull;
-
 import org.dhis2.data.tuples.Pair;
-
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.program.ProgramStageDataElementModel;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 
@@ -38,7 +36,7 @@ public interface EventDetailRepository {
     Observable<List<TrackedEntityDataValueModel>> dataValueModelList(String eventUid);
 
     @NonNull
-    Observable<ProgramStageModel> programStage(String eventUid);
+    Observable<ProgramStage> programStage(String eventUid);
 
     void deleteNotPostedEvent(String eventUid);
 
@@ -52,7 +50,7 @@ public interface EventDetailRepository {
 
     Observable<List<OrganisationUnitModel>> getOrgUnits();
 
-    Observable<Pair<String,List<CategoryOptionComboModel>>> getCategoryOptionCombos();
+    Observable<Pair<String, List<CategoryOptionComboModel>>> getCategoryOptionCombos();
 
     @NonNull
     Flowable<EventStatus> eventStatus(String eventUid);

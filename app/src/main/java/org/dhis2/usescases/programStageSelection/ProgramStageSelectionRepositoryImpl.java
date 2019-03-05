@@ -14,7 +14,7 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
+import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 import org.hisp.dhis.rules.RuleEngine;
@@ -42,6 +42,9 @@ import io.reactivex.Observable;
 import static org.dhis2.data.database.SqlConstants.EQUAL;
 import static org.dhis2.data.database.SqlConstants.FROM;
 import static org.dhis2.data.database.SqlConstants.LIMIT_1;
+import static org.dhis2.data.database.SqlConstants.PROGRAM_STAGE_PROGRAM;
+import static org.dhis2.data.database.SqlConstants.PROGRAM_STAGE_SORT_ORDER;
+import static org.dhis2.data.database.SqlConstants.PROGRAM_STAGE_TABLE;
 import static org.dhis2.data.database.SqlConstants.QUESTION_MARK;
 import static org.dhis2.data.database.SqlConstants.SELECT;
 import static org.dhis2.data.database.SqlConstants.WHERE;
@@ -53,8 +56,8 @@ import static org.dhis2.data.database.SqlConstants.WHERE;
 public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectionRepository {
 
     private static final String PROGRAM_STAGE_QUERY = String.format("SELECT * FROM %s WHERE %s.%s = ? ORDER BY %s.%s ASC",
-            ProgramStageModel.TABLE, ProgramStageModel.TABLE, ProgramStageModel.Columns.PROGRAM,
-            ProgramStageModel.TABLE, ProgramStageModel.Columns.SORT_ORDER);
+            PROGRAM_STAGE_TABLE, PROGRAM_STAGE_TABLE, PROGRAM_STAGE_PROGRAM,
+            PROGRAM_STAGE_TABLE, PROGRAM_STAGE_SORT_ORDER);
 
     private static final String CURRENT_PROGRAM_STAGES = "SELECT ProgramStage.* FROM ProgramStage WHERE ProgramStage.uid IN " +
             "(SELECT DISTINCT Event.programStage FROM Event WHERE Event.enrollment = ? AND Event.State != 'TO_DELETE' ) ORDER BY ProgramStage.sortOrder ASC";
@@ -234,28 +237,28 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
 
     @NonNull
     @Override
-    public Observable<List<ProgramStageModel>> getProgramStages(String programUid) {
-        return briteDatabase.createQuery(ProgramStageModel.TABLE, PROGRAM_STAGE_QUERY, programUid == null ? "" : programUid)
-                .mapToList(ProgramStageModel::create);
+    public Observable<List<ProgramStage>> getProgramStages(String programUid) {
+        return briteDatabase.createQuery(PROGRAM_STAGE_TABLE, PROGRAM_STAGE_QUERY, programUid == null ? "" : programUid)
+                .mapToList(ProgramStage::create);
     }
 
     @NonNull
     @Override
-    public Flowable<List<ProgramStageModel>> enrollmentProgramStages(String programId, String enrollmentUid) {
-        List<ProgramStageModel> enrollmentStages = new ArrayList<>();
-        List<ProgramStageModel> selectableStages = new ArrayList<>();
-        return briteDatabase.createQuery(ProgramStageModel.TABLE, /*ENROLLMENT_PROGRAM_STAGES*/CURRENT_PROGRAM_STAGES, enrollmentUid == null ? "" : enrollmentUid)
-                .mapToList(ProgramStageModel::create)
+    public Flowable<List<ProgramStage>> enrollmentProgramStages(String programId, String enrollmentUid) {
+        List<ProgramStage> enrollmentStages = new ArrayList<>();
+        List<ProgramStage> selectableStages = new ArrayList<>();
+        return briteDatabase.createQuery(PROGRAM_STAGE_TABLE, /*ENROLLMENT_PROGRAM_STAGES*/CURRENT_PROGRAM_STAGES, enrollmentUid == null ? "" : enrollmentUid)
+                .mapToList(ProgramStage::create)
                 .flatMap(data -> {
                     enrollmentStages.addAll(data);
-                    return briteDatabase.createQuery(ProgramStageModel.TABLE, PROGRAM_STAGE_QUERY, programId == null ? "" : programId)
-                            .mapToList(ProgramStageModel::create);
+                    return briteDatabase.createQuery(PROGRAM_STAGE_TABLE, PROGRAM_STAGE_QUERY, programId == null ? "" : programId)
+                            .mapToList(ProgramStage::create);
                 })
                 .map(data -> {
                     boolean isSelectable;
-                    for (ProgramStageModel programStage : data) {
+                    for (ProgramStage programStage : data) {
                         isSelectable = true;
-                        for (ProgramStageModel enrollmentStage : enrollmentStages) {
+                        for (ProgramStage enrollmentStage : enrollmentStages) {
                             if (enrollmentStage.uid().equals(programStage.uid())) {
                                 isSelectable = programStage.repeatable();
                             }
@@ -282,9 +285,9 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
     }
 
     @Override
-    public List<Pair<ProgramStageModel, ObjectStyleModel>> objectStyle(List<ProgramStageModel> programStageModels) {
-        List<Pair<ProgramStageModel, ObjectStyleModel>> finalList = new ArrayList<>();
-        for (ProgramStageModel stageModel : programStageModels) {
+    public List<Pair<ProgramStage, ObjectStyleModel>> objectStyle(List<ProgramStage> programStages) {
+        List<Pair<ProgramStage, ObjectStyleModel>> finalList = new ArrayList<>();
+        for (ProgramStage stageModel : programStages) {
             ObjectStyleModel objectStyleModel = null;
             Cursor cursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ? LIMIT 1", stageModel.uid());
             if (cursor != null) {

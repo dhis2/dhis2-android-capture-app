@@ -8,23 +8,25 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
+import org.hisp.dhis.android.core.program.ProgramStage;
+
 import java.util.Locale;
 
 import androidx.recyclerview.widget.RecyclerView;
+
 /**
  * Created by ppajuelo on 29/11/2017.
  */
 
 class EventViewHolder extends RecyclerView.ViewHolder {
-    ItemEventBinding binding;
+    private ItemEventBinding binding;
 
     EventViewHolder(ItemEventBinding binding) {
         super(binding.getRoot());
         this.binding = binding;
     }
 
-    public void bind(TeiDashboardContracts.TeiDashboardPresenter presenter, EventModel eventModel, ProgramStageModel programStage, EnrollmentModel enrollment, ProgramModel program) {
+    public void bind(TeiDashboardContracts.TeiDashboardPresenter presenter, EventModel eventModel, ProgramStage programStage, EnrollmentModel enrollment, ProgramModel program) {
         binding.setVariable(BR.event, eventModel);
         binding.setVariable(BR.stage, programStage);
         binding.setVariable(BR.enrollment, enrollment);
