@@ -34,7 +34,7 @@ public class EventCaptureContract {
 
         Consumer<Float> updatePercentage();
 
-        void setMandatoryWarning(Map<String, FieldViewModel> emptyMandatoryFields);
+        void setMandatoryWarning(Map<String, Map<String, FieldViewModel>> emptyMandatoryFields);
 
         void attemptToFinish(boolean canComplete);
 

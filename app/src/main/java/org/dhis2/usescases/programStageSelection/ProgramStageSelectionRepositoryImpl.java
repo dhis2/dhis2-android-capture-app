@@ -77,11 +77,12 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
             "  Value.value,\n" +
             "  ProgramRuleVariable.useCodeForOptionSet,\n" +
             "  Option.code,\n" +
-            "  Option.name" +
+            "  Option.name\n" +
             "FROM (Enrollment INNER JOIN Program ON Program.uid = Enrollment.program)\n" +
             "  INNER JOIN (\n" +
             "      SELECT\n" +
             "        TrackedEntityAttribute.uid AS id,\n" +
+            "        TrackedEntityAttribute.optionSet AS optionSet,\n" +
             "        ProgramTrackedEntityAttribute.program AS program\n" +
             "      FROM ProgramTrackedEntityAttribute INNER JOIN TrackedEntityAttribute\n" +
             "          ON TrackedEntityAttribute.uid = ProgramTrackedEntityAttribute.trackedEntityAttribute\n" +
@@ -90,7 +91,7 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
             "    Value.trackedEntityAttribute = Field.id\n" +
             "        AND Value.trackedEntityInstance = Enrollment.trackedEntityInstance)\n" +
             "  LEFT JOIN ProgramRuleVariable ON ProgramRuleVariable.trackedEntityAttribute = Field.id " +
-            "  LEFT JOIN Option ON (Option.optionSet = DataElement.optionSet AND Option.code = Value.value) " +
+            "  LEFT JOIN Option ON (Option.optionSet = Field.optionSet AND Option.code = Value.value) " +
             "WHERE Enrollment.uid = ? AND Value.value IS NOT NULL;";
 
     private static final String QUERY_EVENT = "SELECT Event.uid,\n" +
