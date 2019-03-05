@@ -26,7 +26,6 @@ import org.hisp.dhis.android.core.resource.Resource;
 import org.hisp.dhis.android.core.settings.SystemSetting;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeModel;
-import org.hisp.dhis.android.core.user.AuthenticatedUserModel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,6 +44,7 @@ import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
 import static org.dhis2.data.database.SqlConstants.ALL;
+import static org.dhis2.data.database.SqlConstants.AUTH_USER_TABLE;
 import static org.dhis2.data.database.SqlConstants.FROM;
 import static org.dhis2.data.database.SqlConstants.JOIN;
 import static org.dhis2.data.database.SqlConstants.LIMIT_1;
@@ -418,7 +418,7 @@ public class MetadataRepositoryImpl implements MetadataRepository {
 
     @Override
     public Observable<String> getServerUrl() {
-        return briteDatabase.createQuery(AuthenticatedUserModel.TABLE, "SELECT SystemInfo.contextPath FROM SystemInfo" + LIMIT_1)
+        return briteDatabase.createQuery(AUTH_USER_TABLE, "SELECT SystemInfo.contextPath FROM SystemInfo" + LIMIT_1)
                 .mapToOne(cursor -> cursor.getString(0));
     }
 
