@@ -2,6 +2,7 @@ package org.dhis2.data.database;
 
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
 import org.hisp.dhis.android.core.datavalue.DataValueModel;
+import org.hisp.dhis.android.core.period.PeriodModel;
 import org.hisp.dhis.android.core.program.ProgramRuleActionModel;
 import org.hisp.dhis.android.core.program.ProgramRuleModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
@@ -14,6 +15,12 @@ import org.hisp.dhis.android.core.user.UserModel;
 
 public class SqlConstants {
 
+
+    //    PERIOD
+    public static final String PERIOD_TABLE = PeriodModel.TABLE;
+    public static final String PERIOD_PERIOD_ID = PeriodModel.Columns.PERIOD_ID;
+
+    //    DATA VALUE
     public static final String DATA_VALUE_TABLE = DataValueModel.TABLE;
     public static final String DATA_VALUE_OU = DataValueModel.Columns.ORGANISATION_UNIT;
     public static final String DATA_VALUE_PERIOD = DataValueModel.Columns.PERIOD;
@@ -23,13 +30,13 @@ public class SqlConstants {
     public static final String DATA_VALUE_STATE = DataValueModel.Columns.STATE;
 
 
-
+    //    DATA ELEMENT
     public static final String DATA_ELEMENT_TABLE = DataElementModel.TABLE;
     public static final String DATA_ELEMENT_UID = DataElementModel.Columns.UID;
     public static final String DATA_ELEMENT_FORM_NAME = DataElementModel.Columns.FORM_NAME;
 
 
-
+    //    RESOURCE
     public static final String RESOURCE_TABLE = ResourceModel.TABLE;
     public static final String USER_TABLE = UserModel.TABLE;
     public static final String PROGRAM_RULE_ACTION_TABLE = ProgramRuleActionModel.TABLE;
@@ -37,6 +44,7 @@ public class SqlConstants {
     public static final String SYSTEM_SETTING_TABLE = SystemSettingModel.TABLE;
 
 
+    //    TRACKED ENTITY ATTRIBUTE
     public static final String TE_ATTR_TABLE = TrackedEntityAttributeModel.TABLE;
     public static final String TE_ATTR_UID = TrackedEntityAttributeModel.Columns.UID;
     public static final String TE_ATTR_VALUE_TYPE = TrackedEntityAttributeModel.Columns.VALUE_TYPE;
@@ -47,6 +55,7 @@ public class SqlConstants {
     public static final String TE_ATTR_SORT_ORDER_IN_LIST_NO_PROGRAM = TrackedEntityAttributeModel.Columns.SORT_ORDER_IN_LIST_NO_PROGRAM;
 
 
+    //    PROGRAM TRACKED ENTITY ATTRIBUTE
     public static final String PROGRAM_TE_ATTR_TABLE = ProgramTrackedEntityAttributeModel.TABLE;
     public static final String PROGRAM_TE_ATTR_TRACKED_ENTITY_ATTRIBUTE = ProgramTrackedEntityAttributeModel.Columns.TRACKED_ENTITY_ATTRIBUTE;
     public static final String PROGRAM_TE_ATTR_PROGRAM = ProgramTrackedEntityAttributeModel.Columns.PROGRAM;
@@ -55,6 +64,7 @@ public class SqlConstants {
     public static final String PROGRAM_TE_ATTR_DISPLAY_IN_LIST = ProgramTrackedEntityAttributeModel.Columns.DISPLAY_IN_LIST;
 
 
+    //    PROGRAM RULE
     public static final String PROGRAM_RULE_TABLE = ProgramRuleModel.TABLE;
     public static final String PROGRAM_RULE_UID = ProgramRuleModel.Columns.UID;
     public static final String PROGRAM_RULE_PROGRAM_STAGE = ProgramRuleModel.Columns.PROGRAM_STAGE;
@@ -62,6 +72,8 @@ public class SqlConstants {
     public static final String PROGRAM_RULE_CONDITION = ProgramRuleModel.Columns.CONDITION;
     public static final String PROGRAM_RULE_PROGRAM = ProgramRuleModel.Columns.PROGRAM;
 
+
+    //    PROGRAM STAGE
     public static final String PROGRAM_STAGE_TABLE = ProgramStageModel.TABLE;
     public static final String PROGRAM_STAGE_PROGRAM = ProgramStageModel.Columns.PROGRAM;
     public static final String PROGRAM_STAGE_UID = ProgramStageModel.Columns.UID;

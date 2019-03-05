@@ -9,7 +9,7 @@ import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.dataset.DataSetDataElementLinkModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
-import org.hisp.dhis.android.core.period.PeriodModel;
+import org.hisp.dhis.android.core.period.Period;
 import org.hisp.dhis.android.core.period.PeriodType;
 
 import java.util.List;
@@ -36,6 +36,8 @@ import static org.dhis2.data.database.SqlConstants.GROUP_BY;
 import static org.dhis2.data.database.SqlConstants.JOIN;
 import static org.dhis2.data.database.SqlConstants.NOT_EQUAL;
 import static org.dhis2.data.database.SqlConstants.ON;
+import static org.dhis2.data.database.SqlConstants.PERIOD_PERIOD_ID;
+import static org.dhis2.data.database.SqlConstants.PERIOD_TABLE;
 import static org.dhis2.data.database.SqlConstants.POINT;
 import static org.dhis2.data.database.SqlConstants.QUESTION_MARK;
 import static org.dhis2.data.database.SqlConstants.QUOTE;
@@ -109,12 +111,12 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
 
     private String setPeriod(String period) {
         String periodName = "";
-        Cursor periodCursor = briteDatabase.query(SELECT + PeriodModel.TABLE + POINT + ALL +
-                        FROM + PeriodModel.TABLE +
-                        WHERE + PeriodModel.TABLE + POINT + PeriodModel.Columns.PERIOD_ID + EQUAL + QUESTION_MARK,
+        Cursor periodCursor = briteDatabase.query(SELECT + PERIOD_TABLE + POINT + ALL +
+                        FROM + PERIOD_TABLE +
+                        WHERE + PERIOD_TABLE + POINT + PERIOD_PERIOD_ID + EQUAL + QUESTION_MARK,
                 period);
         if (periodCursor != null && periodCursor.moveToFirst()) {
-            PeriodModel periodModel = PeriodModel.create(periodCursor);
+            Period periodModel = Period.create(periodCursor);
             periodName = DateUtils.getInstance().getPeriodUIString(periodModel.periodType(), periodModel.startDate(), Locale.getDefault());
             periodCursor.close();
         }

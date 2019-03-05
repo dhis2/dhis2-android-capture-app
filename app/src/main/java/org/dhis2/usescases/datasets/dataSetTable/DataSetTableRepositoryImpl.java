@@ -7,7 +7,7 @@ import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.dataelement.DataElement;
 import org.hisp.dhis.android.core.dataset.DataSetModel;
 import org.hisp.dhis.android.core.datavalue.DataValue;
-import org.hisp.dhis.android.core.period.PeriodModel;
+import org.hisp.dhis.android.core.period.Period;
 import org.hisp.dhis.android.core.period.PeriodType;
 
 import java.util.ArrayList;
@@ -21,6 +21,7 @@ import io.reactivex.Observable;
 
 import static org.dhis2.data.database.SqlConstants.DATA_ELEMENT_TABLE;
 import static org.dhis2.data.database.SqlConstants.DATA_VALUE_TABLE;
+import static org.dhis2.data.database.SqlConstants.PERIOD_TABLE;
 
 public class DataSetTableRepositoryImpl implements DataSetTableRepository {
 
@@ -131,8 +132,8 @@ public class DataSetTableRepositoryImpl implements DataSetTableRepository {
 
     @Override
     public Flowable<List<DataValue>> getDataValues(String orgUnitUid, String periodType, String initPeriodType, String catOptionComb) {
-        return briteDatabase.createQuery(PeriodModel.TABLE, PERIOD_CODE, periodType, initPeriodType)
-                .mapToOne(PeriodModel::create)
+        return briteDatabase.createQuery(PERIOD_TABLE, PERIOD_CODE, periodType, initPeriodType)
+                .mapToOne(Period::create)
                 .flatMap(periodModel -> briteDatabase.createQuery(DATA_VALUE_TABLE, DATA_VALUES, periodModel.periodId())
                         .mapToList(cursor -> DataValue.builder()
                                 .build())).toFlowable(BackpressureStrategy.LATEST);
