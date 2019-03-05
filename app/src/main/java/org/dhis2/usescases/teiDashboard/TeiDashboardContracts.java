@@ -13,7 +13,6 @@ import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.relationship.Relationship;
-import org.hisp.dhis.android.core.relationship.RelationshipModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 
 import java.util.Calendar;
@@ -111,7 +110,7 @@ public class TeiDashboardContracts {
 
         void openDashboard(String teiUid);
 
-        void subscribeToRelationshipLabel(RelationshipModel relationship, TextView textView);
+        void subscribeToRelationshipLabel(Relationship relationship, TextView textView);
 
         void completeEnrollment(TEIDataFragment teiDataFragment);
 

@@ -101,6 +101,35 @@ final class EnrollmentRepository implements DataEntryRepository {
                 .mapToList(OrganisationUnitModel::create);
     }
 
+    private int getOptionCount(String optionSet) {
+        int optionCount = 0;
+        if (!isEmpty(optionSet)) {
+            try {
+                Cursor countCursor = briteDatabase.query("SELECT COUNT (uid) FROM Option WHERE optionSet = ?", optionSet);
+                if (countCursor != null) {
+                    if (countCursor.moveToFirst())
+                        optionCount = countCursor.getInt(0);
+                    countCursor.close();
+                }
+            } catch (Exception e) {
+                Timber.e(e);
+            }
+        }
+        return optionCount;
+    }
+
+    private String getTeiUid() {
+        String teiUid = null;
+        Cursor tei = briteDatabase.query("SELECT TrackedEntityInstance.uid FROM TrackedEntityInstance " +
+                "JOIN Enrollment ON Enrollment.trackedEntityInstance = TrackedEntityInstance.uid " +
+                "WHERE Enrollment.uid = ?", enrollment);
+        if (tei != null && tei.moveToFirst()) {
+            teiUid = tei.getString(0);
+            tei.close();
+        }
+        return teiUid;
+    }
+
     @NonNull
     private FieldViewModel transform(@NonNull Cursor cursor) {
         @NonNull String uid = cursor.getString(0) == null ? "" : cursor.getString(0);
@@ -122,59 +151,76 @@ final class EnrollmentRepository implements DataEntryRepository {
             dataValue = optionCodeName;
         }
 
-        int optionCount = 0;
-        if (!isEmpty(optionSet))
-            try {
-                Cursor countCursor = briteDatabase.query("SELECT COUNT (uid) FROM Option WHERE optionSet = ?", optionSet);
-                if (countCursor != null) {
-                    if (countCursor.moveToFirst())
-                        optionCount = countCursor.getInt(0);
-                    countCursor.close();
-                }
-            } catch (Exception e) {
-                Timber.e(e);
-            }
+        insertTEAttributeValue(generated, dataValue, uid, pattern, orgUnitUid, valueType);
 
-        if (generated && dataValue == null) {
-            try {
-                String teiUid = null;
-                Cursor tei = briteDatabase.query("SELECT TrackedEntityInstance.uid FROM TrackedEntityInstance " +
-                        "JOIN Enrollment ON Enrollment.trackedEntityInstance = TrackedEntityInstance.uid " +
-                        "WHERE Enrollment.uid = ?", enrollment);
-                if (tei != null && tei.moveToFirst()) {
-                    teiUid = tei.getString(0);
-                    tei.close();
-                }
+        int optionCount = getOptionCount(optionSet);
+        ValueTypeDeviceRendering fieldRendering = getFieldRendering(uid);
+        ObjectStyleModel objectStyle = getObjectStyle(uid);
 
-                if (teiUid != null) { //checks if tei has been deleted
-                    dataValue = d2.trackedEntityModule().reservedValueManager.getValue(uid, pattern == null || pattern.contains("OU") ? null : orgUnitUid);
 
-                    //Checks if ValueType is Numeric and that it start with a 0, then removes the 0
-                    if (valueType == ValueType.NUMBER)
-                        while (dataValue.startsWith("0")) {
-                            dataValue = d2.trackedEntityModule().reservedValueManager.getValue(uid, pattern == null || pattern.contains("OU") ? null : orgUnitUid);
-                        }
+        return fieldFactory.create(uid,
+                label, valueType, mandatory, optionSet, dataValue, null, allowFutureDates,
+                !generated && enrollmentStatus == EnrollmentStatus.ACTIVE, null, description, fieldRendering, optionCount, objectStyle);
 
-                    String insert = "INSERT INTO TrackedEntityAttributeValue\n" +
-                            "(lastUpdated, value, trackedEntityAttribute, trackedEntityInstance)\n" +
-                            "VALUES (?,?,?,?)";
-                    SQLiteStatement updateStatement = briteDatabase.getWritableDatabase()
-                            .compileStatement(insert);
-                    sqLiteBind(updateStatement, 1, BaseIdentifiableObject.DATE_FORMAT
-                            .format(Calendar.getInstance().getTime()));
-                    sqLiteBind(updateStatement, 2, dataValue == null ? "" : dataValue);
-                    sqLiteBind(updateStatement, 3, uid == null ? "" : uid);
-                    sqLiteBind(updateStatement, 4, teiUid);
+    }
 
-                    briteDatabase.executeInsert(
-                            TrackedEntityAttributeValueModel.TABLE, updateStatement);
-                    updateStatement.clearBindings();
-                }
-            } catch (D2Error e) {
-                Timber.e(e);
+    private String getDataValue(String uid, String pattern, String orgUnitUid, ValueType valueType) throws D2Error {
+        //checks if tei has been deleted
+        String dataValue = d2.trackedEntityModule().reservedValueManager.getValue(uid, pattern == null || pattern.contains("OU") ? null : orgUnitUid);
+
+        //Checks if ValueType is Numeric and that it start with a 0, then removes the 0
+        if (valueType == ValueType.NUMBER) {
+            while (dataValue.startsWith("0")) {
+                dataValue = d2.trackedEntityModule().reservedValueManager.getValue(uid, pattern == null || pattern.contains("OU") ? null : orgUnitUid);
             }
         }
 
+        return dataValue;
+    }
+
+    private void insertTEAttributeValue(boolean generated, String dataValue, String uid, String pattern, String orgUnitUid, ValueType valueType) {
+        if (!generated && dataValue != null) {
+            return;
+        }
+        try {
+            String teiUid = getTeiUid();
+
+            if (teiUid == null) {
+                return;
+            }
+
+            dataValue = getDataValue(uid, pattern, orgUnitUid, valueType);
+
+            String insert = "INSERT INTO TrackedEntityAttributeValue\n" +
+                    "(lastUpdated, value, trackedEntityAttribute, trackedEntityInstance)\n" +
+                    "VALUES (?,?,?,?)";
+            SQLiteStatement updateStatement = briteDatabase.getWritableDatabase()
+                    .compileStatement(insert);
+            sqLiteBind(updateStatement, 1, BaseIdentifiableObject.DATE_FORMAT
+                    .format(Calendar.getInstance().getTime()));
+            sqLiteBind(updateStatement, 2, dataValue == null ? "" : dataValue);
+            sqLiteBind(updateStatement, 3, uid == null ? "" : uid);
+            sqLiteBind(updateStatement, 4, teiUid);
+
+            briteDatabase.executeInsert(
+                    TrackedEntityAttributeValueModel.TABLE, updateStatement);
+            updateStatement.clearBindings();
+        } catch (D2Error e) {
+            Timber.e(e);
+        }
+    }
+
+    private ObjectStyleModel getObjectStyle(String uid) {
+        ObjectStyleModel objectStyle = ObjectStyleModel.builder().build();
+        try (Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", uid)) {
+            if (objStyleCursor.moveToFirst())
+                objectStyle = ObjectStyleModel.create(objStyleCursor);
+        }
+        return objectStyle;
+    }
+
+
+    private ValueTypeDeviceRendering getFieldRendering(String uid) {
         ValueTypeDeviceRendering fieldRendering = null;
         Cursor rendering = briteDatabase.query("SELECT ValueTypeDeviceRendering.* FROM ValueTypeDeviceRendering " +
                         "JOIN ProgramTrackedEntityAttribute ON ProgramTrackedEntityAttribute.uid = ValueTypeDeviceRendering.uid " +
@@ -185,17 +231,7 @@ final class EnrollmentRepository implements DataEntryRepository {
                 fieldRendering = ValueTypeDeviceRendering.create(rendering);
             rendering.close();
         }
-
-        ObjectStyleModel objectStyle = ObjectStyleModel.builder().build();
-        try (Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", uid)) {
-            if (objStyleCursor.moveToFirst())
-                objectStyle = ObjectStyleModel.create(objStyleCursor);
-        }
-
-        return fieldFactory.create(uid,
-                label, valueType, mandatory, optionSet, dataValue, null, allowFutureDates,
-                !generated && enrollmentStatus == EnrollmentStatus.ACTIVE, null, description, fieldRendering, optionCount, objectStyle);
-
+        return fieldRendering;
     }
 
     @Override

@@ -34,7 +34,6 @@ import org.hisp.dhis.android.core.relationship.Relationship;
 import org.hisp.dhis.android.core.relationship.RelationshipHelper;
 import org.hisp.dhis.android.core.relationship.RelationshipItem;
 import org.hisp.dhis.android.core.relationship.RelationshipItemTrackedEntityInstance;
-import org.hisp.dhis.android.core.relationship.RelationshipModel;
 import org.hisp.dhis.android.core.relationship.RelationshipType;
 import org.hisp.dhis.android.core.relationship.RelationshipTypeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
@@ -495,7 +494,7 @@ public class TeiDashboardPresenterImpl implements TeiDashboardContracts.TeiDashb
 
     @Override
     @SuppressWarnings({"squid:S1172", "squid:CommentedOutCodeLine"})
-    public void subscribeToRelationshipLabel(RelationshipModel relationship, TextView textView) {
+    public void subscribeToRelationshipLabel(Relationship relationship, TextView textView) {
 
        /*
         compositeDisposable.add(

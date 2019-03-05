@@ -88,7 +88,7 @@ public class DashboardProgramModel extends BaseObservable {
         sortOrder--;
         if (sortOrder < trackedEntityAttributes.size())
             for (TrackedEntityAttributeValueModel attribute : trackedEntityAttributeValues)
-                if (attribute.trackedEntityAttribute().equals(trackedEntityAttributes.get(sortOrder).trackedEntityAttribute()))
+                if (attribute.trackedEntityAttribute().equals(trackedEntityAttributes.get(sortOrder).trackedEntityAttribute().uid()))
                     attributeValue = attribute;
 
 

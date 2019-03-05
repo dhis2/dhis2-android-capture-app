@@ -131,10 +131,16 @@ final class EditTextCustomHolder extends FormViewHolder {
                 editTextModel.value() == null ? "" : valueOf(editTextModel.value()));
     }
 
-    public void update(@NonNull FieldViewModel model) {
-        this.editTextModel = (EditTextViewModel) model;
+    private void setErrors() {
+        if (!isEmpty(editTextModel.warning())) {
+            inputLayout.setError(editTextModel.warning());
+        } else if (!isEmpty(editTextModel.error())) {
+            inputLayout.setError(editTextModel.error());
+        } else
+            inputLayout.setError(null);
+    }
 
-        Bindings.setObjectStyle(icon, itemView, editTextModel.objectStyle());
+    private void setEnabled() {
         if (this.isEditable) {
             editText.setFocusable(true);
             editText.setFocusableInTouchMode(true);
@@ -144,19 +150,21 @@ final class EditTextCustomHolder extends FormViewHolder {
             editText.setFocusableInTouchMode(false);
             editText.setEnabled(false);
         }
+    }
+
+    public void update(@NonNull FieldViewModel model) {
+        this.editTextModel = (EditTextViewModel) model;
+
+        Bindings.setObjectStyle(icon, itemView, editTextModel.objectStyle());
+
+        setEnabled();
 
         if (editTextModel.value() != null)
             editText.post(() -> editText.setText(valueOf(editTextModel.value())));
         else
             editText.setText(null);
 
-        if (!isEmpty(editTextModel.warning())) {
-            inputLayout.setError(editTextModel.warning());
-        } else if (!isEmpty(editTextModel.error())) {
-            inputLayout.setError(editTextModel.error());
-        } else
-            inputLayout.setError(null);
-
+        setErrors();
 
         editText.setSelection(editText.getText() == null ?
                 0 : editText.getText().length());

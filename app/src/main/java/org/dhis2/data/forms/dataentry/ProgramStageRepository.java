@@ -147,49 +147,56 @@ final class ProgramStageRepository implements DataEntryRepository {
         ArrayList<FieldViewModel> renderList = new ArrayList<>();
 
         if (renderingType != ProgramStageSectionRenderingType.LISTING) {
-
             for (FieldViewModel fieldViewModel : fieldViewModels) {
-                if (!isEmpty(fieldViewModel.optionSet())) {
-                    Cursor cursor = briteDatabase.query(OPTIONS, fieldViewModel.optionSet() == null ? "" : fieldViewModel.optionSet());
-                    if (cursor != null && cursor.moveToFirst()) {
-                        int optionCount = cursor.getCount();
-                        for (int i = 0; i < optionCount; i++) {
-                            String uid = cursor.getString(0);
-                            String displayName = cursor.getString(1);
-                            String optionCode = cursor.getString(2);
-
-                            ObjectStyleModel objectStyle = ObjectStyleModel.builder().build();
-                            Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", fieldViewModel.uid());
-                            try {
-                                if (objStyleCursor.moveToFirst())
-                                    objectStyle = ObjectStyleModel.create(objStyleCursor);
-                            } finally {
-                                if (objStyleCursor != null)
-                                    objStyleCursor.close();
-                            }
-
-                            renderList.add(fieldFactory.create(
-                                    fieldViewModel.uid() + "." + uid, //fist
-                                    displayName + "-" + optionCode, ValueType.TEXT, false,
-                                    fieldViewModel.optionSet(), fieldViewModel.value(), fieldViewModel.programStageSection(),
-                                    fieldViewModel.allowFutureDate(), fieldViewModel.editable() == null ? false : fieldViewModel.editable(), renderingType, fieldViewModel.description(), null, optionCount, objectStyle));
-
-                            cursor.moveToNext();
-                        }
-                        cursor.close();
-                    }
-
-
-                } else
-                    renderList.add(fieldViewModel);
+                renderList.addAll(parseRenderList(fieldViewModel));
             }
-
-
-        } else
+        } else {
             renderList.addAll(fieldViewModels);
+        }
+        return renderList;
+    }
+
+    private ArrayList<FieldViewModel> parseRenderList(FieldViewModel fieldViewModel) {
+        ArrayList<FieldViewModel> renderList = new ArrayList<>();
+
+        if (!isEmpty(fieldViewModel.optionSet())) {
+            Cursor cursor = briteDatabase.query(OPTIONS, fieldViewModel.optionSet() == null ? "" : fieldViewModel.optionSet());
+            if (cursor != null && cursor.moveToFirst()) {
+                int optionCount = cursor.getCount();
+                renderList.addAll(parseOptionCount(fieldViewModel, cursor, optionCount));
+                cursor.close();
+            }
+        } else {
+            renderList.add(fieldViewModel);
+        }
 
         return renderList;
+    }
 
+    private ArrayList<FieldViewModel> parseOptionCount(FieldViewModel fieldViewModel, Cursor cursor, int optionCount) {
+        ArrayList<FieldViewModel> renderList = new ArrayList<>();
+
+        for (int i = 0; i < optionCount; i++) {
+            String uid = cursor.getString(0);
+            String displayName = cursor.getString(1);
+            String optionCode = cursor.getString(2);
+
+            ObjectStyleModel objectStyle = ObjectStyleModel.builder().build();
+            try (Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", fieldViewModel.uid())) {
+                if (objStyleCursor.moveToFirst())
+                    objectStyle = ObjectStyleModel.create(objStyleCursor);
+            }
+
+            renderList.add(fieldFactory.create(
+                    fieldViewModel.uid() + "." + uid, //fist
+                    displayName + "-" + optionCode, ValueType.TEXT, false,
+                    fieldViewModel.optionSet(), fieldViewModel.value(), fieldViewModel.programStageSection(),
+                    fieldViewModel.allowFutureDate(), fieldViewModel.editable() == null ? false : fieldViewModel.editable(), renderingType, fieldViewModel.description(), null, optionCount, objectStyle));
+
+            cursor.moveToNext();
+        }
+
+        return renderList;
     }
 
     @Override

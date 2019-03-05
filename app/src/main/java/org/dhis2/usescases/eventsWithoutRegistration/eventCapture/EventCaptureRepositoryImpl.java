@@ -273,55 +273,57 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
         ArrayList<FieldViewModel> renderList = new ArrayList<>();
 
-        if (renderingType != ProgramStageSectionRenderingType.LISTING) {
-
-            for (FieldViewModel fieldViewModel : fieldViewModels) {
-                if (!isEmpty(fieldViewModel.optionSet())) {
-                    Cursor cursor = briteDatabase.query(OPTIONS, fieldViewModel.optionSet() == null ? "" : fieldViewModel.optionSet());
-                    if (cursor != null && cursor.moveToFirst()) {
-                        int optionCount = cursor.getCount();
-                        for (int i = 0; i < optionCount; i++) {
-                            String uid = cursor.getString(0);
-                            String displayName = cursor.getString(1);
-                            String optionCode = cursor.getString(2);
-
-                            ValueTypeDeviceRendering fieldRendering = null;
-                            Cursor rendering = briteDatabase.query("SELECT ValueTypeDeviceRendering.* FROM ValueTypeDeviceRendering" +
-                                    " JOIN ProgramStageDataElement ON ProgramStageDataElement.uid = ValueTypeDeviceRendering.uid" +
-                                    " WHERE ProgramStageDataElement.uid = ?", uid);
-                            if (rendering != null && rendering.moveToFirst()) {
-                                fieldRendering = ValueTypeDeviceRendering.create(rendering);
-                                rendering.close();
-                            }
-
-                            ObjectStyleModel objectStyle = ObjectStyleModel.builder().build();
-                            try (Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", uid)) {
-                                if (objStyleCursor.moveToFirst())
-                                    objectStyle = ObjectStyleModel.create(objStyleCursor);
-                            }
-
-                            renderList.add(fieldFactory.create(
-                                    fieldViewModel.uid() + "." + uid, //fist
-                                    displayName + "-" + optionCode, ValueType.TEXT, false,
-                                    fieldViewModel.optionSet(), fieldViewModel.value(), fieldViewModel.programStageSection(),
-                                    fieldViewModel.allowFutureDate(), fieldViewModel.editable() == null ? false : fieldViewModel.editable(), renderingType, fieldViewModel.description(), fieldRendering, optionCount, objectStyle));
-
-                            cursor.moveToNext();
-                        }
-                        cursor.close();
-                    }
-
-
-                } else
-                    renderList.add(fieldViewModel);
-            }
-
-
-        } else
+        if (renderingType == ProgramStageSectionRenderingType.LISTING) {
             renderList.addAll(fieldViewModels);
+            return renderList;
+        }
+
+        for (FieldViewModel fieldViewModel : fieldViewModels) {
+            if (!isEmpty(fieldViewModel.optionSet())) {
+                renderList.addAll(parseFieldViewModel(fieldViewModel));
+            } else
+                renderList.add(fieldViewModel);
+        }
+        return renderList;
+    }
+
+    private ArrayList<FieldViewModel> parseFieldViewModel(FieldViewModel fieldViewModel) {
+        ArrayList<FieldViewModel> renderList = new ArrayList<>();
+        Cursor cursor = briteDatabase.query(OPTIONS, fieldViewModel.optionSet() == null ? "" : fieldViewModel.optionSet());
+        if (cursor != null && cursor.moveToFirst()) {
+            int optionCount = cursor.getCount();
+            for (int i = 0; i < optionCount; i++) {
+                String uid = cursor.getString(0);
+                String displayName = cursor.getString(1);
+                String optionCode = cursor.getString(2);
+
+                ValueTypeDeviceRendering fieldRendering = null;
+                Cursor rendering = briteDatabase.query("SELECT ValueTypeDeviceRendering.* FROM ValueTypeDeviceRendering" +
+                        " JOIN ProgramStageDataElement ON ProgramStageDataElement.uid = ValueTypeDeviceRendering.uid" +
+                        " WHERE ProgramStageDataElement.uid = ?", uid);
+                if (rendering != null && rendering.moveToFirst()) {
+                    fieldRendering = ValueTypeDeviceRendering.create(rendering);
+                    rendering.close();
+                }
+
+                ObjectStyleModel objectStyle = ObjectStyleModel.builder().build();
+                try (Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", uid)) {
+                    if (objStyleCursor.moveToFirst())
+                        objectStyle = ObjectStyleModel.create(objStyleCursor);
+                }
+
+                renderList.add(fieldFactory.create(
+                        fieldViewModel.uid() + "." + uid, //fist
+                        displayName + "-" + optionCode, ValueType.TEXT, false,
+                        fieldViewModel.optionSet(), fieldViewModel.value(), fieldViewModel.programStageSection(),
+                        fieldViewModel.allowFutureDate(), fieldViewModel.editable() == null ? false : fieldViewModel.editable(), renderingType, fieldViewModel.description(), fieldRendering, optionCount, objectStyle));
+
+                cursor.moveToNext();
+            }
+            cursor.close();
+        }
 
         return renderList;
-
     }
 
     @NonNull
@@ -348,12 +350,8 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         return String.format(Locale.US, QUERY, where);
     }
 
-    @NonNull
-    @SuppressFBWarnings("VA_FORMAT_STRING_USES_NEWLINE")
-    private String prepareStatement(String eventUid) {
-
+    private StringBuilder getSectionUids() {
         StringBuilder sectionUids = new StringBuilder();
-
         Cursor sectionsCursor = briteDatabase.query(SELECT_SECTIONS, eventUid);
         if (sectionsCursor != null && sectionsCursor.moveToFirst()) {
             for (int i = 0; i < sectionsCursor.getCount(); i++) {
@@ -365,6 +363,14 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
             }
             sectionsCursor.close();
         }
+        return sectionUids;
+    }
+
+    @NonNull
+    @SuppressFBWarnings("VA_FORMAT_STRING_USES_NEWLINE")
+    private String prepareStatement(String eventUid) {
+
+        StringBuilder sectionUids = getSectionUids();
 
         String where;
         if (isEmpty(sectionUids)) {
@@ -534,7 +540,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                     else
                         return Observable.just(new ArrayList<Rule>());
                 }).map(ruleList -> {
-                    Map<String, Rule> ruleMap = new HashMap<>();
+                    HashMap<String, Rule> ruleMap = new HashMap<>();
                     for (Rule rule : ruleList)
                         ruleMap.put(rule.name(), rule);
 
@@ -543,18 +549,24 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                             "WHERE ProgramRule.program = ? " +
                             "AND ProgramRuleAction.programRuleActionType IN (?,?)", selectedProgramUid.get(), ProgramRuleActionType.HIDEFIELD.name(), ProgramRuleActionType.HIDESECTION.name());
                     if (hideRulesCursor != null) {
-                        if (hideRulesCursor.moveToFirst()) {
-                            for (int i = 0; i < hideRulesCursor.getCount(); i++) {
-                                ProgramRule rule = ProgramRule.create(hideRulesCursor);
-                                ruleMap.put(rule.displayName(), Rule.create(rule.programStage().uid(), rule.priority(), rule.condition(), getRuleActionsFor(rule.uid()), rule.displayName()));
-                                hideRulesCursor.moveToNext();
-                            }
-                        }
-                        hideRulesCursor.close();
+                        ruleMap.putAll(addHideRules(hideRulesCursor));
                     }
                     List<Rule> finalRules = new ArrayList<>(ruleMap.values());
                     return finalRules;
                 }).toFlowable(BackpressureStrategy.LATEST);
+    }
+
+    private Map<String, Rule> addHideRules(Cursor hideRulesCursor) {
+        Map<String, Rule> ruleMap = new HashMap<>();
+        if (hideRulesCursor.moveToFirst()) {
+            for (int i = 0; i < hideRulesCursor.getCount(); i++) {
+                ProgramRule rule = ProgramRule.create(hideRulesCursor);
+                ruleMap.put(rule.displayName(), Rule.create(rule.programStage().uid(), rule.priority(), rule.condition(), getRuleActionsFor(rule.uid()), rule.displayName()));
+                hideRulesCursor.moveToNext();
+            }
+        }
+        hideRulesCursor.close();
+        return ruleMap;
     }
 
     private List<RuleAction> getRuleActionsFor(String programRuleUid) {
