@@ -28,8 +28,8 @@ import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.program.ProgramRule;
 import org.hisp.dhis.android.core.program.ProgramRuleActionType;
-import org.hisp.dhis.android.core.program.ProgramRuleModel;
 import org.hisp.dhis.android.core.program.ProgramRuleVariableModel;
 import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.program.ProgramStageSectionModel;
@@ -69,6 +69,7 @@ import static org.dhis2.data.database.SqlConstants.FROM;
 import static org.dhis2.data.database.SqlConstants.LIMIT_1;
 import static org.dhis2.data.database.SqlConstants.NOT_EQUAL;
 import static org.dhis2.data.database.SqlConstants.POINT;
+import static org.dhis2.data.database.SqlConstants.PROGRAM_RULE_TABLE;
 import static org.dhis2.data.database.SqlConstants.PROGRAM_STAGE_TABLE;
 import static org.dhis2.data.database.SqlConstants.QUESTION_MARK;
 import static org.dhis2.data.database.SqlConstants.SELECT;
@@ -498,12 +499,12 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                     }
 
                     if (!isEmpty(st))
-                        return briteDatabase.createQuery(ProgramRuleModel.TABLE,
+                        return briteDatabase.createQuery(PROGRAM_RULE_TABLE,
                                 String.format(SELECT + "ProgramRule.* FROM ProgramRule " +
                                         "LEFT JOIN ProgramRuleAction ON ProgramRuleAction.programRule = ProgramRule.uid " +
                                         "WHERE program = ? AND %s", st.toString()), selectedProgramUid.get())
                                 .mapToList(cursor -> {
-                                    ProgramRuleModel ruleModel = ProgramRuleModel.create(cursor);
+                                    ProgramRule rule = ProgramRule.create(cursor);
                                     List<RuleAction> ruleActions = new ArrayList<>();
                                     Cursor actionsCursor = briteDatabase.query(
                                             "SELECT " +
@@ -517,7 +518,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                                                     "ProgramRuleAction.location, " +
                                                     "ProgramRuleAction.content, " +
                                                     "ProgramRuleAction.data " +
-                                                    "FROM ProgramRuleAction WHERE programRule = ?", ruleModel.uid());
+                                                    "FROM ProgramRuleAction WHERE programRule = ?", rule.uid());
                                     if (actionsCursor != null) {
                                         if (actionsCursor.moveToFirst()) {
                                             for (int i = 0; i < actionsCursor.getCount(); i++) {
@@ -528,7 +529,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                                         actionsCursor.close();
                                     }
 
-                                    return Rule.create(ruleModel.programStage(), ruleModel.priority(), ruleModel.condition(), ruleActions, ruleModel.displayName());
+                                    return Rule.create(rule.programStage().uid(), rule.priority(), rule.condition(), ruleActions, rule.displayName());
                                 });
                     else
                         return Observable.just(new ArrayList<Rule>());
@@ -544,8 +545,8 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                     if (hideRulesCursor != null) {
                         if (hideRulesCursor.moveToFirst()) {
                             for (int i = 0; i < hideRulesCursor.getCount(); i++) {
-                                ProgramRuleModel ruleModel = ProgramRuleModel.create(hideRulesCursor);
-                                ruleMap.put(ruleModel.displayName(), Rule.create(ruleModel.programStage(), ruleModel.priority(), ruleModel.condition(), getRuleActionsFor(ruleModel.uid()), ruleModel.displayName()));
+                                ProgramRule rule = ProgramRule.create(hideRulesCursor);
+                                ruleMap.put(rule.displayName(), Rule.create(rule.programStage().uid(), rule.priority(), rule.condition(), getRuleActionsFor(rule.uid()), rule.displayName()));
                                 hideRulesCursor.moveToNext();
                             }
                         }

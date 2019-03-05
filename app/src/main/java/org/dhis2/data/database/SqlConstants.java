@@ -1,8 +1,16 @@
 package org.dhis2.data.database;
 
+import org.hisp.dhis.android.core.program.ProgramRuleModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
 public class SqlConstants {
+
+    public static final String PROGRAM_RULE_TABLE = ProgramRuleModel.TABLE;
+    public static final String PROGRAM_RULE_UID = ProgramRuleModel.Columns.UID;
+    public static final String PROGRAM_RULE_PROGRAM_STAGE = ProgramRuleModel.Columns.PROGRAM_STAGE;
+    public static final String PROGRAM_RULE_PRIORITY = ProgramRuleModel.Columns.PRIORITY;
+    public static final String PROGRAM_RULE_CONDITION = ProgramRuleModel.Columns.CONDITION;
+    public static final String PROGRAM_RULE_PROGRAM = ProgramRuleModel.Columns.PROGRAM;
 
     public static final String PROGRAM_STAGE_TABLE = ProgramStageModel.TABLE;
     public static final String PROGRAM_STAGE_PROGRAM = ProgramStageModel.Columns.PROGRAM;

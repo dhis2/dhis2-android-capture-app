@@ -16,7 +16,6 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramRuleActionModel;
 import org.hisp.dhis.android.core.program.ProgramRuleActionType;
-import org.hisp.dhis.android.core.program.ProgramRuleModel;
 import org.hisp.dhis.android.core.program.ProgramRuleVariableModel;
 import org.hisp.dhis.android.core.program.ProgramRuleVariableSourceType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
@@ -76,6 +75,12 @@ import static org.dhis2.data.database.SqlConstants.NOT_EQUAL;
 import static org.dhis2.data.database.SqlConstants.ON;
 import static org.dhis2.data.database.SqlConstants.ORDER_BY;
 import static org.dhis2.data.database.SqlConstants.POINT;
+import static org.dhis2.data.database.SqlConstants.PROGRAM_RULE_CONDITION;
+import static org.dhis2.data.database.SqlConstants.PROGRAM_RULE_PRIORITY;
+import static org.dhis2.data.database.SqlConstants.PROGRAM_RULE_PROGRAM;
+import static org.dhis2.data.database.SqlConstants.PROGRAM_RULE_PROGRAM_STAGE;
+import static org.dhis2.data.database.SqlConstants.PROGRAM_RULE_TABLE;
+import static org.dhis2.data.database.SqlConstants.PROGRAM_RULE_UID;
 import static org.dhis2.data.database.SqlConstants.PROGRAM_STAGE_DISPLAY_NAME;
 import static org.dhis2.data.database.SqlConstants.PROGRAM_STAGE_TABLE;
 import static org.dhis2.data.database.SqlConstants.PROGRAM_STAGE_UID;
@@ -88,12 +93,12 @@ import static org.dhis2.data.database.SqlConstants.WHERE;
 @SuppressWarnings("PMD")
 public final class RulesRepository {
     private static final String QUERY_RULES =
-            SELECT + ProgramRuleModel.TABLE + POINT + ProgramRuleModel.Columns.UID + COMMA +
-                    ProgramRuleModel.TABLE + POINT + ProgramRuleModel.Columns.PROGRAM_STAGE + COMMA +
-                    ProgramRuleModel.TABLE + POINT + ProgramRuleModel.Columns.PRIORITY + COMMA +
-                    ProgramRuleModel.TABLE + POINT + ProgramRuleModel.Columns.CONDITION +
-                    FROM + ProgramRuleModel.TABLE +
-                    WHERE + ProgramRuleModel.TABLE + POINT + ProgramRuleModel.Columns.PROGRAM +
+            SELECT + PROGRAM_RULE_TABLE + POINT + PROGRAM_RULE_UID + COMMA +
+                    PROGRAM_RULE_TABLE + POINT + PROGRAM_RULE_PROGRAM_STAGE + COMMA +
+                    PROGRAM_RULE_TABLE + POINT + PROGRAM_RULE_PRIORITY + COMMA +
+                    PROGRAM_RULE_TABLE + POINT + PROGRAM_RULE_CONDITION +
+                    FROM + PROGRAM_RULE_TABLE +
+                    WHERE + PROGRAM_RULE_TABLE + POINT + PROGRAM_RULE_PROGRAM +
                     EQUAL + QUESTION_MARK;
 
     private static final String QUERY_VARIABLES = SELECT +
@@ -299,7 +304,7 @@ public final class RulesRepository {
     @NonNull
     private Flowable<List<Quartet<String, String, Integer, String>>> queryRules(
             @NonNull String programUid) {
-        return briteDatabase.createQuery(ProgramRuleModel.TABLE, QUERY_RULES, programUid)
+        return briteDatabase.createQuery(PROGRAM_RULE_TABLE, QUERY_RULES, programUid)
                 .mapToList(RulesRepository::mapToQuartet).toFlowable(BackpressureStrategy.LATEST);
     }
 
