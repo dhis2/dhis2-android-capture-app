@@ -1,5 +1,6 @@
 package org.dhis2.data.database;
 
+import org.hisp.dhis.android.core.category.CategoryOptionComboCategoryOptionLinkModel;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
 import org.hisp.dhis.android.core.datavalue.DataValueModel;
 import org.hisp.dhis.android.core.period.PeriodModel;
@@ -14,6 +15,10 @@ import org.hisp.dhis.android.core.user.AuthenticatedUserModel;
 import org.hisp.dhis.android.core.user.UserModel;
 
 public class SqlConstants {
+
+    public static final String CAT_OPTION_COMBO_CAT_OPTION_LINK_TABLE = CategoryOptionComboCategoryOptionLinkModel.TABLE;
+    public static final String CAT_OPTION_COMBO_CAT_OPTION_LINK_CATEGORY_OPTION = CategoryOptionComboCategoryOptionLinkModel.Columns.CATEGORY_OPTION;
+    public static final String CAT_OPTION_COMBO_CAT_OPTION_LINK_CATEGORY_OPTION_COMBO = CategoryOptionComboCategoryOptionLinkModel.Columns.CATEGORY_OPTION_COMBO;
 
 
     //    PERIOD

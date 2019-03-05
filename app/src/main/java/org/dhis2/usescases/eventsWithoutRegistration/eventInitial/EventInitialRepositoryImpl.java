@@ -10,7 +10,6 @@ import com.squareup.sqlbrite2.BriteDatabase;
 import org.dhis2.utils.CodeGenerator;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
-import org.hisp.dhis.android.core.category.CategoryOptionComboCategoryOptionLinkModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.State;
@@ -39,6 +38,9 @@ import static android.text.TextUtils.isEmpty;
 import static org.dhis2.data.database.SqlConstants.ALL;
 import static org.dhis2.data.database.SqlConstants.AND;
 import static org.dhis2.data.database.SqlConstants.ASC;
+import static org.dhis2.data.database.SqlConstants.CAT_OPTION_COMBO_CAT_OPTION_LINK_CATEGORY_OPTION;
+import static org.dhis2.data.database.SqlConstants.CAT_OPTION_COMBO_CAT_OPTION_LINK_CATEGORY_OPTION_COMBO;
+import static org.dhis2.data.database.SqlConstants.CAT_OPTION_COMBO_CAT_OPTION_LINK_TABLE;
 import static org.dhis2.data.database.SqlConstants.ELSE;
 import static org.dhis2.data.database.SqlConstants.END;
 import static org.dhis2.data.database.SqlConstants.EQUAL;
@@ -90,8 +92,8 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     private static final String SELECT_CAT_OPTION_FROM_OPTION_COMBO = String.format(
             SELECT + TABLE_POINT_FIELD + FROM + VARIABLE + WHERE + TABLE_POINT_FIELD_EQUALS + QUESTION_MARK,
-            CategoryOptionComboCategoryOptionLinkModel.TABLE, CategoryOptionComboCategoryOptionLinkModel.Columns.CATEGORY_OPTION, CategoryOptionComboCategoryOptionLinkModel.TABLE,
-            CategoryOptionComboCategoryOptionLinkModel.TABLE, CategoryOptionComboCategoryOptionLinkModel.Columns.CATEGORY_OPTION_COMBO
+            CAT_OPTION_COMBO_CAT_OPTION_LINK_TABLE, CAT_OPTION_COMBO_CAT_OPTION_LINK_CATEGORY_OPTION, CAT_OPTION_COMBO_CAT_OPTION_LINK_TABLE,
+            CAT_OPTION_COMBO_CAT_OPTION_LINK_TABLE, CAT_OPTION_COMBO_CAT_OPTION_LINK_CATEGORY_OPTION_COMBO
     );
 
     private final BriteDatabase briteDatabase;
