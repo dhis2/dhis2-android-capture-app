@@ -498,53 +498,56 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void apply() {
-        binding.drawerLayout.closeDrawers();
-        binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+        if(treeView.getSelected().size() > 0) {
+            binding.drawerLayout.closeDrawers();
+            binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
-        orgUnitFilter = new StringBuilder();
-        for (int i = 0; i < treeView.getSelected().size(); i++) {
-            orgUnitFilter.append("'");
-            orgUnitFilter.append(((OrganisationUnitModel) treeView.getSelected().get(i).getValue()).uid());
-            orgUnitFilter.append("'");
-            if (i < treeView.getSelected().size() - 1)
-                orgUnitFilter.append(", ");
-        }
+            orgUnitFilter = new StringBuilder();
+            for (int i = 0; i < treeView.getSelected().size(); i++) {
+                orgUnitFilter.append("'");
+                orgUnitFilter.append(((OrganisationUnitModel) treeView.getSelected().get(i).getValue()).uid());
+                orgUnitFilter.append("'");
+                if (i < treeView.getSelected().size() - 1)
+                    orgUnitFilter.append(", ");
+            }
 
-        if (treeView.getSelected().size() == 1) {
-            binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
-        } else if (treeView.getSelected().size() > 1) {
-            binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
-        }
+            if (treeView.getSelected().size() == 1) {
+                binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
+            } else if (treeView.getSelected().size() > 1) {
+                binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
+            }
 
-        switch (currentPeriod) {
-            case NONE:
-                presenter.setFilters(null, currentPeriod, orgUnitFilter.toString());
-                endlessScrollListener.resetState(0);
-                pageProcessor.onNext(0);
-                break;
-            case DAILY:
-                ArrayList<Date> datesD = new ArrayList<>();
-                datesD.add(chosenDateDay);
-                presenter.setFilters(datesD, currentPeriod, orgUnitFilter.toString());
-                endlessScrollListener.resetState(0);
-                pageProcessor.onNext(0);
-                break;
-            case WEEKLY:
-                presenter.setFilters(chosenDateWeek, currentPeriod, orgUnitFilter.toString());
-                endlessScrollListener.resetState(0);
-                pageProcessor.onNext(0);
-                break;
-            case MONTHLY:
-                presenter.setFilters(chosenDateMonth, currentPeriod, orgUnitFilter.toString());
-                endlessScrollListener.resetState(0);
-                pageProcessor.onNext(0);
-                break;
-            case YEARLY:
-                presenter.setFilters(chosenDateYear, currentPeriod, orgUnitFilter.toString());
-                endlessScrollListener.resetState(0);
-                pageProcessor.onNext(0);
-                break;
-        }
+            switch (currentPeriod) {
+                case NONE:
+                    presenter.setFilters(null, currentPeriod, orgUnitFilter.toString());
+                    endlessScrollListener.resetState(0);
+                    pageProcessor.onNext(0);
+                    break;
+                case DAILY:
+                    ArrayList<Date> datesD = new ArrayList<>();
+                    datesD.add(chosenDateDay);
+                    presenter.setFilters(datesD, currentPeriod, orgUnitFilter.toString());
+                    endlessScrollListener.resetState(0);
+                    pageProcessor.onNext(0);
+                    break;
+                case WEEKLY:
+                    presenter.setFilters(chosenDateWeek, currentPeriod, orgUnitFilter.toString());
+                    endlessScrollListener.resetState(0);
+                    pageProcessor.onNext(0);
+                    break;
+                case MONTHLY:
+                    presenter.setFilters(chosenDateMonth, currentPeriod, orgUnitFilter.toString());
+                    endlessScrollListener.resetState(0);
+                    pageProcessor.onNext(0);
+                    break;
+                case YEARLY:
+                    presenter.setFilters(chosenDateYear, currentPeriod, orgUnitFilter.toString());
+                    endlessScrollListener.resetState(0);
+                    pageProcessor.onNext(0);
+                    break;
+            }
+        }else
+            displayMessage(getString(R.string.org_unit_selection_warning));
     }
 
     @Override

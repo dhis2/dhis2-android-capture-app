@@ -37,7 +37,6 @@ import androidx.databinding.ObservableBoolean;
 import androidx.databinding.ViewDataBinding;
 import io.reactivex.functions.Predicate;
 import io.reactivex.processors.FlowableProcessor;
-import timber.log.Timber;
 
 import static android.content.Context.MODE_PRIVATE;
 import static android.text.TextUtils.isEmpty;
@@ -70,7 +69,7 @@ final class EditTextCustomHolder extends FormViewHolder {
             icon.setVisibility(View.VISIBLE);
 
         editText.setOnFocusChangeListener((v, hasFocus) -> {
-            if (!hasFocus && editTextModel != null && editTextModel.editable()) {
+            if (!hasFocus && editTextModel != null && editTextModel.editable() && valueHasChanged()) {
                 if (!isEmpty(editText.getText()) && validate()) {
                     checkAutocompleteRendering();
                     processor.onNext(RowAction.create(editTextModel.uid(), editText.getText().toString()));
@@ -80,7 +79,7 @@ final class EditTextCustomHolder extends FormViewHolder {
             }
         });
 
-        if(this.isEditable) {
+        if (this.isEditable) {
             editText.setFocusable(true);
             editText.setFocusableInTouchMode(true);
             editText.setEnabled(true);
@@ -102,16 +101,6 @@ final class EditTextCustomHolder extends FormViewHolder {
     }
 
     private void setInputType(ValueType valueType) {
-
-        if(this.isEditable) {
-            editText.setFocusable(true);
-            editText.setFocusableInTouchMode(true);
-            editText.setEnabled(true);
-        } else {
-            editText.setFocusable(false);
-            editText.setFocusableInTouchMode(false);
-            editText.setEnabled(false);
-        }
 
         editText.setFilters(new InputFilter[]{});
 
@@ -187,7 +176,7 @@ final class EditTextCustomHolder extends FormViewHolder {
         this.editTextModel = (EditTextViewModel) model;
 
         Bindings.setObjectStyle(icon, itemView, editTextModel.objectStyle());
-        if(this.isEditable) {
+        if (this.isEditable) {
             editText.setFocusable(true);
             editText.setFocusableInTouchMode(true);
             editText.setEnabled(true);
@@ -197,7 +186,7 @@ final class EditTextCustomHolder extends FormViewHolder {
             editText.setEnabled(false);
         }
 
-        if(editTextModel.value() != null)
+        if (editTextModel.value() != null)
             editText.post(() -> editText.setText(valueOf(editTextModel.value())));
         else
             editText.setText(null);
@@ -226,6 +215,18 @@ final class EditTextCustomHolder extends FormViewHolder {
         }
 
         descriptionText = editTextModel.description();
+
+
+        if (model.editable()) {
+            editText.setFocusable(true);
+            editText.setFocusableInTouchMode(true);
+            editText.setEnabled(true);
+        } else {
+            editText.setFocusable(false);
+            editText.setFocusableInTouchMode(false);
+            editText.setEnabled(false);
+        }
+
         setInputType(editTextModel.valueType());
         setRenderingType(editTextModel.fieldRendering());
     }

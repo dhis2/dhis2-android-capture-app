@@ -44,6 +44,7 @@
                         android:background="?attr/period_button"
                         android:onClick="@{()->presenter.onTimeButtonClick()}"
                         android:padding="7dp"
+                        android:tint="@color/colorGreyDefault"
                         app:srcCompat="@drawable/ic_view_none"
                         tools:ignore="ContentDescription" />
 

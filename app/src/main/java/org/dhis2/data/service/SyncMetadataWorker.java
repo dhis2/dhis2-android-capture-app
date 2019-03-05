@@ -8,6 +8,8 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.util.Log;
 
+import com.google.firebase.perf.metrics.AddTrace;
+
 import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.utils.Constants;
@@ -44,8 +46,15 @@ public class SyncMetadataWorker extends Worker {
         super(context, workerParams);
     }
 
+    @Override
+    public void onStopped(boolean cancelled) {
+        super.onStopped(cancelled);
+        Log.d(this.getClass().getSimpleName(), "Metadata process finished");
+    }
+
     @NonNull
     @Override
+    @AddTrace(name = "MetadataSyncTrace")
     public Result doWork() {
         Objects.requireNonNull(((App) getApplicationContext()).userComponent()).plus(new SyncMetadataWorkerModule()).inject(this);
 
@@ -74,12 +83,6 @@ public class SyncMetadataWorker extends Worker {
         cancelNotification();
 
         return Result.SUCCESS;
-    }
-
-    @Override
-    public void onStopped(boolean cancelled) {
-        super.onStopped(cancelled);
-        Log.d(this.getClass().getSimpleName(), "Metadata process finished");
     }
 
     private void triggerNotification(int id, String title, String content) {
