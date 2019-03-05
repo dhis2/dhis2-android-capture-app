@@ -22,7 +22,7 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute;
-import org.hisp.dhis.android.core.resource.ResourceModel;
+import org.hisp.dhis.android.core.resource.Resource;
 import org.hisp.dhis.android.core.settings.SystemSettingModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeModel;
@@ -57,6 +57,7 @@ import static org.dhis2.data.database.SqlConstants.PROGRAM_TE_ATTR_TABLE;
 import static org.dhis2.data.database.SqlConstants.PROGRAM_TE_ATTR_TRACKED_ENTITY_ATTRIBUTE;
 import static org.dhis2.data.database.SqlConstants.QUESTION_MARK;
 import static org.dhis2.data.database.SqlConstants.QUOTE;
+import static org.dhis2.data.database.SqlConstants.RESOURCE_TABLE;
 import static org.dhis2.data.database.SqlConstants.SELECT;
 import static org.dhis2.data.database.SqlConstants.TABLE_POINT_FIELD;
 import static org.dhis2.data.database.SqlConstants.TABLE_POINT_FIELD_EQUALS;
@@ -382,11 +383,11 @@ public class MetadataRepositoryImpl implements MetadataRepository {
 
     @NonNull
     @Override
-    public Observable<List<ResourceModel>> syncState(ProgramModel program) {
-        String syncState = "SELECT * FROM " + ResourceModel.TABLE;
+    public Observable<List<Resource>> syncState(ProgramModel program) {
+        String syncState = "SELECT * FROM " + RESOURCE_TABLE;
         return briteDatabase
-                .createQuery(ResourceModel.TABLE, syncState)
-                .mapToList(ResourceModel::create);
+                .createQuery(RESOURCE_TABLE, syncState)
+                .mapToList(Resource::create);
     }
 
     @Override

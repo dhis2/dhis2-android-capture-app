@@ -11,7 +11,7 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute;
-import org.hisp.dhis.android.core.resource.ResourceModel;
+import org.hisp.dhis.android.core.resource.Resource;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeModel;
 
@@ -101,7 +101,7 @@ public interface MetadataRepository {
 
 
     @NonNull
-    Observable<List<ResourceModel>> syncState(ProgramModel program);
+    Observable<List<Resource>> syncState(ProgramModel program);
 
     Flowable<Pair<Integer, Integer>> getDownloadedData();
 

@@ -3,9 +3,14 @@ package org.dhis2.data.database;
 import org.hisp.dhis.android.core.program.ProgramRuleModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
+import org.hisp.dhis.android.core.resource.ResourceModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 
 public class SqlConstants {
+
+    public static final String RESOURCE_TABLE = ResourceModel.TABLE;
+
+
 
     public static final String TE_ATTR_TABLE = TrackedEntityAttributeModel.TABLE;
     public static final String TE_ATTR_UID = TrackedEntityAttributeModel.Columns.UID;
