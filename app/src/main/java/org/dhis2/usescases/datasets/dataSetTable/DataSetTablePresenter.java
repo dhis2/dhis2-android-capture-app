@@ -147,7 +147,7 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
                     periodTypeName,
                     view.getSelectedPeriod() != null ? DateUtils.getInstance().getPeriodUIString(PeriodType.valueOf(periodTypeName), view.getSelectedPeriod(), Locale.getDefault()) : periodFinalDate,
                     view.getSelectedPeriod() != null ? DateUtils.getInstance().generateId(PeriodType.valueOf(periodTypeName), view.getSelectedPeriod(), Locale.getDefault()) : periodId,
-                    view.getSelectedCatOptions()
+                    catCombo/*view.getSelectedCatOptions() Fixed is the same always*/
             );
             view.startActivity(DataSetTableActivity.class, bundle, true, false, null);
         }
