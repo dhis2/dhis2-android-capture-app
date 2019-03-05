@@ -8,10 +8,12 @@ import org.hisp.dhis.android.core.resource.ResourceModel;
 import org.hisp.dhis.android.core.settings.SystemSettingModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.user.AuthenticatedUserModel;
+import org.hisp.dhis.android.core.user.UserModel;
 
 public class SqlConstants {
 
     public static final String RESOURCE_TABLE = ResourceModel.TABLE;
+    public static final String USER_TABLE = UserModel.TABLE;
     public static final String PROGRAM_RULE_ACTION_TABLE = ProgramRuleActionModel.TABLE;
     public static final String AUTH_USER_TABLE = AuthenticatedUserModel.TABLE;
     public static final String SYSTEM_SETTING_TABLE = SystemSettingModel.TABLE;
