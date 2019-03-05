@@ -1,6 +1,7 @@
 package org.dhis2.data.database;
 
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
+import org.hisp.dhis.android.core.datavalue.DataValueModel;
 import org.hisp.dhis.android.core.program.ProgramRuleActionModel;
 import org.hisp.dhis.android.core.program.ProgramRuleModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
@@ -12,6 +13,16 @@ import org.hisp.dhis.android.core.user.AuthenticatedUserModel;
 import org.hisp.dhis.android.core.user.UserModel;
 
 public class SqlConstants {
+
+    public static final String DATA_VALUE_TABLE = DataValueModel.TABLE;
+    public static final String DATA_VALUE_OU = DataValueModel.Columns.ORGANISATION_UNIT;
+    public static final String DATA_VALUE_PERIOD = DataValueModel.Columns.PERIOD;
+    public static final String DATA_VALUE_ATTRIBUTE_OPTION_COMBO = DataValueModel.Columns.ATTRIBUTE_OPTION_COMBO;
+    public static final String DATA_VALUE_DATA_ELEMENT = DataValueModel.Columns.DATA_ELEMENT;
+    public static final String DATA_VALUE_CATEGORY_OPTION_COMBO = DataValueModel.Columns.CATEGORY_OPTION_COMBO;
+    public static final String DATA_VALUE_STATE = DataValueModel.Columns.STATE;
+
+
 
     public static final String DATA_ELEMENT_TABLE = DataElementModel.TABLE;
     public static final String DATA_ELEMENT_UID = DataElementModel.Columns.UID;

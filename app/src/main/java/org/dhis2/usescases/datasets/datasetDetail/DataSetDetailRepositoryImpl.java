@@ -8,7 +8,6 @@ import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.dataset.DataSetDataElementLinkModel;
-import org.hisp.dhis.android.core.datavalue.DataValueModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.period.PeriodModel;
 import org.hisp.dhis.android.core.period.PeriodType;
@@ -24,6 +23,13 @@ import io.reactivex.Observable;
 import static org.dhis2.data.database.SqlConstants.ALL;
 import static org.dhis2.data.database.SqlConstants.AND;
 import static org.dhis2.data.database.SqlConstants.COMMA;
+import static org.dhis2.data.database.SqlConstants.DATA_VALUE_ATTRIBUTE_OPTION_COMBO;
+import static org.dhis2.data.database.SqlConstants.DATA_VALUE_CATEGORY_OPTION_COMBO;
+import static org.dhis2.data.database.SqlConstants.DATA_VALUE_DATA_ELEMENT;
+import static org.dhis2.data.database.SqlConstants.DATA_VALUE_OU;
+import static org.dhis2.data.database.SqlConstants.DATA_VALUE_PERIOD;
+import static org.dhis2.data.database.SqlConstants.DATA_VALUE_STATE;
+import static org.dhis2.data.database.SqlConstants.DATA_VALUE_TABLE;
 import static org.dhis2.data.database.SqlConstants.EQUAL;
 import static org.dhis2.data.database.SqlConstants.FROM;
 import static org.dhis2.data.database.SqlConstants.GROUP_BY;
@@ -40,20 +46,20 @@ import static org.dhis2.data.database.SqlConstants.WHERE;
 public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
 
     private static final String GET_DATA_SETS = SELECT +
-            DataValueModel.TABLE + POINT + DataValueModel.Columns.ORGANISATION_UNIT + COMMA +
-            DataValueModel.TABLE + POINT + DataValueModel.Columns.PERIOD + COMMA +
-            DataValueModel.TABLE + POINT + DataValueModel.Columns.ATTRIBUTE_OPTION_COMBO +
-            FROM + DataValueModel.TABLE +
+            DATA_VALUE_TABLE + POINT + DATA_VALUE_OU + COMMA +
+            DATA_VALUE_TABLE + POINT + DATA_VALUE_PERIOD + COMMA +
+            DATA_VALUE_TABLE + POINT + DATA_VALUE_ATTRIBUTE_OPTION_COMBO +
+            FROM + DATA_VALUE_TABLE +
             JOIN + DataSetDataElementLinkModel.TABLE +
             ON + DataSetDataElementLinkModel.TABLE + POINT + DataSetDataElementLinkModel.Columns.DATA_ELEMENT +
-            EQUAL + DataValueModel.TABLE + POINT + DataValueModel.Columns.DATA_ELEMENT +
+            EQUAL + DATA_VALUE_TABLE + POINT + DATA_VALUE_DATA_ELEMENT +
             WHERE + DataSetDataElementLinkModel.TABLE + POINT + DataSetDataElementLinkModel.Columns.DATA_SET +
             EQUAL + QUESTION_MARK + VARIABLE +
-            GROUP_BY + DataValueModel.TABLE + POINT + DataValueModel.Columns.PERIOD + COMMA +
-            DataValueModel.TABLE + POINT + DataValueModel.Columns.ORGANISATION_UNIT + COMMA +
-            DataValueModel.TABLE + POINT + DataValueModel.Columns.CATEGORY_OPTION_COMBO;
+            GROUP_BY + DATA_VALUE_TABLE + POINT + DATA_VALUE_PERIOD + COMMA +
+            DATA_VALUE_TABLE + POINT + DATA_VALUE_OU + COMMA +
+            DATA_VALUE_TABLE + POINT + DATA_VALUE_CATEGORY_OPTION_COMBO;
 
-    private static final String DATA_SETS_ORG_UNIT_FILTER = AND + DataValueModel.TABLE + POINT + DataValueModel.Columns.ORGANISATION_UNIT +
+    private static final String DATA_SETS_ORG_UNIT_FILTER = AND + DATA_VALUE_TABLE + POINT + DATA_VALUE_OU +
             "IN (%s) ";
 
     private final BriteDatabase briteDatabase;
@@ -131,12 +137,12 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
     private State setState(Cursor cursor, String period, String organisationUnitUid, String categoryOptionCombo) {
         State state = State.SYNCED;
 
-        Cursor stateCursor = briteDatabase.query(SELECT + DataValueModel.TABLE + POINT + DataValueModel.Columns.STATE +
-                        FROM + DataValueModel.TABLE +
-                        WHERE + DataValueModel.Columns.PERIOD + EQUAL + QUESTION_MARK +
-                        AND + DataValueModel.Columns.ORGANISATION_UNIT + EQUAL + QUESTION_MARK +
-                        AND + DataValueModel.Columns.ATTRIBUTE_OPTION_COMBO + EQUAL + QUESTION_MARK +
-                        AND + DataValueModel.Columns.STATE + NOT_EQUAL + QUOTE + State.SYNCED + QUOTE,
+        Cursor stateCursor = briteDatabase.query(SELECT + DATA_VALUE_TABLE + POINT + DATA_VALUE_STATE +
+                        FROM + DATA_VALUE_TABLE +
+                        WHERE + DATA_VALUE_PERIOD + EQUAL + QUESTION_MARK +
+                        AND + DATA_VALUE_OU + EQUAL + QUESTION_MARK +
+                        AND + DATA_VALUE_ATTRIBUTE_OPTION_COMBO + EQUAL + QUESTION_MARK +
+                        AND + DATA_VALUE_STATE + NOT_EQUAL + QUOTE + State.SYNCED + QUOTE,
                 period, organisationUnitUid, categoryOptionCombo);
         if (stateCursor != null && stateCursor.moveToFirst()) {
             State errorState = null;
@@ -176,7 +182,7 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
 
         String sql = setOrgUnitFilter(orgUnits);
 
-        return briteDatabase.createQuery(DataValueModel.TABLE, sql, dataSetUid)
+        return briteDatabase.createQuery(DATA_VALUE_TABLE, sql, dataSetUid)
                 .mapToList(cursor -> {
                     String organisationUnitUid = cursor.getString(0);
                     String period = cursor.getString(1);
