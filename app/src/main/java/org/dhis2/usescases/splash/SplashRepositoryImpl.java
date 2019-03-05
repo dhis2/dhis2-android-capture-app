@@ -6,7 +6,6 @@ import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
-import org.hisp.dhis.android.core.settings.SystemSettingModel;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -16,6 +15,7 @@ import io.reactivex.Observable;
 
 import static org.dhis2.data.database.SqlConstants.EQUAL;
 import static org.dhis2.data.database.SqlConstants.QUESTION_MARK;
+import static org.dhis2.data.database.SqlConstants.SYSTEM_SETTING_TABLE;
 
 /**
  * QUADRAM. Created by ppajuelo on 16/05/2018.
@@ -36,7 +36,7 @@ public class SplashRepositoryImpl implements SplashRepository {
 
     @Override
     public Observable<String> getIconForFlag() {
-        return briteDatabase.createQuery(SystemSettingModel.TABLE, FLAG_QUERY)
+        return briteDatabase.createQuery(SYSTEM_SETTING_TABLE, FLAG_QUERY)
                 .mapToOne(cursor -> cursor.getString(0));
     }
 

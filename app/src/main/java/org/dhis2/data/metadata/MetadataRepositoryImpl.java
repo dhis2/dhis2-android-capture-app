@@ -23,7 +23,7 @@ import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute;
 import org.hisp.dhis.android.core.resource.Resource;
-import org.hisp.dhis.android.core.settings.SystemSettingModel;
+import org.hisp.dhis.android.core.settings.SystemSetting;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeModel;
 import org.hisp.dhis.android.core.user.AuthenticatedUserModel;
@@ -59,6 +59,7 @@ import static org.dhis2.data.database.SqlConstants.QUESTION_MARK;
 import static org.dhis2.data.database.SqlConstants.QUOTE;
 import static org.dhis2.data.database.SqlConstants.RESOURCE_TABLE;
 import static org.dhis2.data.database.SqlConstants.SELECT;
+import static org.dhis2.data.database.SqlConstants.SYSTEM_SETTING_TABLE;
 import static org.dhis2.data.database.SqlConstants.TABLE_POINT_FIELD;
 import static org.dhis2.data.database.SqlConstants.TABLE_POINT_FIELD_EQUALS;
 import static org.dhis2.data.database.SqlConstants.TE_ATTR_DISPLAY_IN_LIST_NO_PROGRAM;
@@ -330,12 +331,12 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     @Override
     public Observable<Pair<String, Integer>> getTheme() {
         return briteDatabase
-                .createQuery(SystemSettingModel.TABLE, "SELECT * FROM " + SystemSettingModel.TABLE)
-                .mapToList(SystemSettingModel::create)
+                .createQuery(SYSTEM_SETTING_TABLE, "SELECT * FROM " + SYSTEM_SETTING_TABLE)
+                .mapToList(SystemSetting::create)
                 .map(systemSettingModels -> {
                     String flag = "";
                     String style = "";
-                    for (SystemSettingModel settingModel : systemSettingModels)
+                    for (SystemSetting settingModel : systemSettingModels)
                         if (settingModel.key().equals("style"))
                             style = settingModel.value();
                         else
