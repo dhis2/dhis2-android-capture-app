@@ -513,7 +513,9 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                                                     "ProgramRuleAction.dataElement, " +
                                                     "ProgramRuleAction.location, " +
                                                     "ProgramRuleAction.content, " +
-                                                    "ProgramRuleAction.data " +
+                                                    "ProgramRuleAction.data, " +
+                                                    "ProgramRuleAction.option, " +
+                                                    "ProgramRuleAction.optionGroup " +
                                                     "FROM ProgramRuleAction WHERE programRule = ?", ruleModel.uid());
                                     if (actionsCursor != null) {
                                         if (actionsCursor.moveToFirst()) {
@@ -537,7 +539,8 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                     Cursor hideRulesCursor = briteDatabase.query("SELECT ProgramRule.* FROM ProgramRule " +
                             "JOIN ProgramRuleAction ON ProgramRuleAction.programRule = ProgramRule.uid " +
                             "WHERE ProgramRule.program = ? " +
-                            "AND ProgramRuleAction.programRuleActionType IN (?,?)", selectedProgramUid.get(), ProgramRuleActionType.HIDEFIELD.name(), ProgramRuleActionType.HIDESECTION.name());
+                            "AND ProgramRuleAction.programRuleActionType IN (?,?,?,?)", selectedProgramUid.get(), ProgramRuleActionType.HIDEFIELD.name(), ProgramRuleActionType.HIDESECTION.name(),
+                            ProgramRuleActionType.HIDEOPTION.name(), ProgramRuleActionType.HIDEOPTIONGROUP.name());
                     if (hideRulesCursor != null) {
                         if (hideRulesCursor.moveToFirst()) {
                             for (int i = 0; i < hideRulesCursor.getCount(); i++) {
@@ -565,7 +568,9 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 "ProgramRuleAction.dataElement, " +
                 "ProgramRuleAction.location, " +
                 "ProgramRuleAction.content, " +
-                "ProgramRuleAction.data " +
+                "ProgramRuleAction.data, " +
+                "ProgramRuleAction.option, " +
+                "ProgramRuleAction.optionGroup " +
                 "FROM ProgramRuleAction WHERE programRule = ?", programRuleUid);
         if (actionsCursor != null) {
             if (actionsCursor.moveToFirst()) {
