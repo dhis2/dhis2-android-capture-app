@@ -20,7 +20,6 @@ import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
@@ -55,6 +54,12 @@ import static org.dhis2.data.database.SqlConstants.ON;
 import static org.dhis2.data.database.SqlConstants.OR;
 import static org.dhis2.data.database.SqlConstants.ORDER_BY;
 import static org.dhis2.data.database.SqlConstants.POINT;
+import static org.dhis2.data.database.SqlConstants.PROGRAM_TE_ATTR_DISPLAY_IN_LIST;
+import static org.dhis2.data.database.SqlConstants.PROGRAM_TE_ATTR_PROGRAM;
+import static org.dhis2.data.database.SqlConstants.PROGRAM_TE_ATTR_SEARCHABLE;
+import static org.dhis2.data.database.SqlConstants.PROGRAM_TE_ATTR_SORT_ORDER;
+import static org.dhis2.data.database.SqlConstants.PROGRAM_TE_ATTR_TABLE;
+import static org.dhis2.data.database.SqlConstants.PROGRAM_TE_ATTR_TRACKED_ENTITY_ATTRIBUTE;
 import static org.dhis2.data.database.SqlConstants.QUESTION_MARK;
 import static org.dhis2.data.database.SqlConstants.QUOTE;
 import static org.dhis2.data.database.SqlConstants.SELECT;
@@ -84,12 +89,12 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     private static final String SELECT_PROGRAM_ATTRIBUTES = SELECT + TrackedEntityAttributeModel.TABLE + POINT + ALL +
             FROM + TrackedEntityAttributeModel.TABLE +
-            INNER_JOIN + ProgramTrackedEntityAttributeModel.TABLE +
+            INNER_JOIN + PROGRAM_TE_ATTR_TABLE +
             ON + TrackedEntityAttributeModel.TABLE + POINT + TrackedEntityAttributeModel.Columns.UID +
-            EQUAL + ProgramTrackedEntityAttributeModel.TABLE + POINT + ProgramTrackedEntityAttributeModel.Columns.TRACKED_ENTITY_ATTRIBUTE +
-            WHERE + "(" + ProgramTrackedEntityAttributeModel.TABLE + POINT + ProgramTrackedEntityAttributeModel.Columns.SEARCHABLE +
+            EQUAL + PROGRAM_TE_ATTR_TABLE + POINT + PROGRAM_TE_ATTR_TRACKED_ENTITY_ATTRIBUTE +
+            WHERE + "(" + PROGRAM_TE_ATTR_TABLE + POINT + PROGRAM_TE_ATTR_SEARCHABLE +
             EQUAL + "1 OR " + TrackedEntityAttributeModel.TABLE + POINT + TrackedEntityAttributeModel.Columns.UNIQUE + EQUAL + "'1')" +
-            AND + ProgramTrackedEntityAttributeModel.TABLE + POINT + ProgramTrackedEntityAttributeModel.Columns.PROGRAM + EQUAL;
+            AND + PROGRAM_TE_ATTR_TABLE + POINT + PROGRAM_TE_ATTR_PROGRAM + EQUAL;
 
     private static final String SELECT_OPTION_SET = SELECT + ALL + FROM + OptionModel.TABLE + WHERE + OptionModel.TABLE +
             POINT + OptionModel.Columns.OPTION_SET + EQUAL;
@@ -113,11 +118,11 @@ public class SearchRepositoryImpl implements SearchRepository {
                     AND + TABLE_POINT_FIELD_EQUALS + "1" +
                     ORDER_BY + TABLE_POINT_FIELD + ASC,
             TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.Columns.VALUE_TYPE, TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.Columns.OPTION_SET, TrackedEntityAttributeValueModel.TABLE,
-            ProgramTrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.Columns.TRACKED_ENTITY_ATTRIBUTE, TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_ATTRIBUTE,
+            PROGRAM_TE_ATTR_TABLE, PROGRAM_TE_ATTR_TABLE, PROGRAM_TE_ATTR_TRACKED_ENTITY_ATTRIBUTE, TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_ATTRIBUTE,
             TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.Columns.UID, TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_ATTRIBUTE,
-            ProgramTrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.Columns.PROGRAM, TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_INSTANCE,
-            ProgramTrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.Columns.DISPLAY_IN_LIST,
-            ProgramTrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.Columns.SORT_ORDER);
+            PROGRAM_TE_ATTR_TABLE, PROGRAM_TE_ATTR_PROGRAM, TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_INSTANCE,
+            PROGRAM_TE_ATTR_TABLE, PROGRAM_TE_ATTR_DISPLAY_IN_LIST,
+            PROGRAM_TE_ATTR_TABLE, PROGRAM_TE_ATTR_SORT_ORDER);
 
     private static final String PROGRAM_TRACKED_ENTITY_ATTRIBUTES_VALUES_QUERY = String.format(
             "SELECT DISTINCT %s.*, TrackedEntityAttribute.valueType, TrackedEntityAttribute.optionSet, ProgramTrackedEntityAttribute.displayInList FROM %s " +
@@ -127,7 +132,7 @@ public class SearchRepositoryImpl implements SearchRepository {
             TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.TABLE,
             TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.Columns.UID, TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_ATTRIBUTE,
             TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_INSTANCE,
-            ProgramTrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.Columns.DISPLAY_IN_LIST,
+            PROGRAM_TE_ATTR_TABLE, PROGRAM_TE_ATTR_DISPLAY_IN_LIST,
             TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.Columns.SORT_ORDER_IN_LIST_NO_PROGRAM
     );
 
@@ -158,7 +163,7 @@ public class SearchRepositoryImpl implements SearchRepository {
             TrackedEntityTypeAttributeTableInfo.TABLE_INFO.name(), TrackedEntityTypeAttributeTableInfo.TABLE_INFO.name(), TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.Columns.UID,
             TrackedEntityTypeAttributeTableInfo.TABLE_INFO.name(), TrackedEntityTypeAttributeTableInfo.TABLE_INFO.name());
 
-    private static final String[] TABLE_NAMES = new String[]{TrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.TABLE};
+    private static final String[] TABLE_NAMES = new String[]{TrackedEntityAttributeModel.TABLE, PROGRAM_TE_ATTR_TABLE};
     private static final Set<String> TABLE_SET = new HashSet<>(Arrays.asList(TABLE_NAMES));
     private static final String[] TEI_TABLE_NAMES = new String[]{TrackedEntityInstanceModel.TABLE,
             EnrollmentModel.TABLE, TrackedEntityAttributeValueModel.TABLE};

@@ -2,8 +2,19 @@ package org.dhis2.data.database;
 
 import org.hisp.dhis.android.core.program.ProgramRuleModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
+import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
 
 public class SqlConstants {
+
+    public static final String PROGRAM_TE_ATTR_TABLE = ProgramTrackedEntityAttributeModel.TABLE;
+    public static final String PROGRAM_TE_ATTR_TRACKED_ENTITY_ATTRIBUTE = ProgramTrackedEntityAttributeModel.Columns.TRACKED_ENTITY_ATTRIBUTE;
+    public static final String PROGRAM_TE_ATTR_PROGRAM = ProgramTrackedEntityAttributeModel.Columns.PROGRAM;
+    public static final String PROGRAM_TE_ATTR_SORT_ORDER = ProgramTrackedEntityAttributeModel.Columns.SORT_ORDER;
+    public static final String PROGRAM_TE_ATTR_SEARCHABLE = ProgramTrackedEntityAttributeModel.Columns.SEARCHABLE;
+    public static final String PROGRAM_TE_ATTR_DISPLAY_IN_LIST = ProgramTrackedEntityAttributeModel.Columns.DISPLAY_IN_LIST;
+
+
+
 
     public static final String PROGRAM_RULE_TABLE = ProgramRuleModel.TABLE;
     public static final String PROGRAM_RULE_UID = ProgramRuleModel.Columns.UID;

@@ -6,7 +6,7 @@ import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStage;
-import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
+import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
@@ -21,7 +21,7 @@ import androidx.databinding.BaseObservable;
 public class DashboardProgramModel extends BaseObservable {
 
     private TrackedEntityInstanceModel tei;
-    private List<ProgramTrackedEntityAttributeModel> trackedEntityAttributesModel;
+    private List<ProgramTrackedEntityAttribute> trackedEntityAttributes;
     private List<TrackedEntityAttributeValueModel> trackedEntityAttributeValues;
     private List<EventModel> eventModels;
     private EnrollmentModel currentEnrollment;
@@ -37,7 +37,7 @@ public class DashboardProgramModel extends BaseObservable {
             EnrollmentModel currentEnrollment,
             List<ProgramStage> programStages,
             List<EventModel> events,
-            List<ProgramTrackedEntityAttributeModel> trackedEntityAttributeModels,
+            List<ProgramTrackedEntityAttribute> trackedEntityAttributes,
             List<TrackedEntityAttributeValueModel> trackedEntityAttributeValues,
             OrganisationUnitModel orgnUnit,
             List<ProgramModel> enrollmentProgramModels) {
@@ -48,18 +48,18 @@ public class DashboardProgramModel extends BaseObservable {
         this.enrollmentProgramModels = enrollmentProgramModels;
         this.tei = tei;
         this.eventModels = events;
-        this.trackedEntityAttributesModel = trackedEntityAttributeModels;
+        this.trackedEntityAttributes = trackedEntityAttributes;
         this.trackedEntityAttributeValues = trackedEntityAttributeValues;
     }
 
     public DashboardProgramModel(TrackedEntityInstanceModel tei,
-                                 List<ProgramTrackedEntityAttributeModel> trackedEntityAttributeModels,
+                                 List<ProgramTrackedEntityAttribute> trackedEntityAttributes,
                                  List<TrackedEntityAttributeValueModel> trackedEntityAttributeValues,
                                  OrganisationUnitModel orgnUnit,
                                  List<ProgramModel> enrollmentProgramModels,
                                  List<EnrollmentModel> teiEnrollments) {
         this.tei = tei;
-        this.trackedEntityAttributesModel = trackedEntityAttributeModels;
+        this.trackedEntityAttributes = trackedEntityAttributes;
         this.trackedEntityAttributeValues = trackedEntityAttributeValues;
         this.orgnUnit = orgnUnit;
         this.enrollmentProgramModels = enrollmentProgramModels;
@@ -86,9 +86,9 @@ public class DashboardProgramModel extends BaseObservable {
     public String getAttributeBySortOrder(int sortOrder) {
         TrackedEntityAttributeValueModel attributeValue = null;
         sortOrder--;
-        if (sortOrder < trackedEntityAttributesModel.size())
+        if (sortOrder < trackedEntityAttributes.size())
             for (TrackedEntityAttributeValueModel attribute : trackedEntityAttributeValues)
-                if (attribute.trackedEntityAttribute().equals(trackedEntityAttributesModel.get(sortOrder).trackedEntityAttribute()))
+                if (attribute.trackedEntityAttribute().equals(trackedEntityAttributes.get(sortOrder).trackedEntityAttribute()))
                     attributeValue = attribute;
 
 
