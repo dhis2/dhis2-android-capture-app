@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -338,6 +339,11 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
     public void showSnackBar() {
         Snackbar mySnackbar = Snackbar.make(binding.getRoot(), R.string.datavalue_saved , Snackbar.LENGTH_SHORT);
         mySnackbar.show();
+    }
+
+    @Override
+    public void onComplete() {
+        activity.finish();
     }
 
     @Override

@@ -117,6 +117,15 @@ public class DataValuePresenter implements DataValueContract.Presenter{
         );
     }
 
+    public void complete(){
+        compositeDisposable.add(
+                repository.completeDataSet(orgUnitUid, periodId, attributeOptionCombo)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe( completed -> view.onComplete(), Timber::e)
+        );
+    }
+
     private List<DataValueModel> tranformDataSetTableModelToDataValueModel(){
         List<DataValueModel> listDataValue = new ArrayList<>();
         Date currentDate = Calendar.getInstance().getTime();

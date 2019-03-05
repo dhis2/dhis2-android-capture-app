@@ -988,4 +988,26 @@ public class DateUtils {
         return dataInputPeriodModel.openingDate().getTime() < Calendar.getInstance().getTime().getTime()
             && Calendar.getInstance().getTime().getTime() < dataInputPeriodModel.closingDate().getTime();
     }
+
+    public String generateId(PeriodType periodType, Date date, Locale locale) {
+
+        String formattedDate;
+        Date initDate = getNextPeriod(periodType, date, 0);
+
+        switch (periodType) {
+            case Monthly:
+                formattedDate = new SimpleDateFormat("yyyyMM", locale).format(initDate);
+                break;
+            case Yearly:
+                formattedDate = new SimpleDateFormat("yyyy", locale).format(initDate);
+                break;
+            case Daily:
+                formattedDate = new SimpleDateFormat("yyyyMMdd", locale).format(initDate);
+                break;
+            default:
+                formattedDate = new SimpleDateFormat("yyyy", locale).format(initDate);
+                break;
+        }
+        return formattedDate;
+    }
 }
