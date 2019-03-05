@@ -325,19 +325,22 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
         binding.treeViewContainer.removeAllViews();
 
         binding.orgUnitAll.setOnClickListener(view -> {
-            treeView.selectAll(false);
-            for (TreeNode node : treeView.getSelected()) {
-                ((OrgUnitHolder) node.getViewHolder()).check();
+            if(treeView!=null) {
+                treeView.selectAll(false);
+                for (TreeNode node : treeView.getSelected()) {
+                    ((OrgUnitHolder) node.getViewHolder()).check();
+                }
             }
         });
 
         binding.orgUnitUnselectAll.setOnClickListener(view -> {
-            for (TreeNode node : treeView.getSelected()) {
-                ((OrgUnitHolder) node.getViewHolder()).uncheck();
-                ((OrgUnitHolder) node.getViewHolder()).update();
+            if(treeView!=null) {
+                for (TreeNode node : treeView.getSelected()) {
+                    ((OrgUnitHolder) node.getViewHolder()).uncheck();
+                    ((OrgUnitHolder) node.getViewHolder()).update();
+                }
+                treeView.deselectAll();
             }
-            treeView.deselectAll();
-
         });
         treeView = new AndroidTreeView(context, treeNode);
 
