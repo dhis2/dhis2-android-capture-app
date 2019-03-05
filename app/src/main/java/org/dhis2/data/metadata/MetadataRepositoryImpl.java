@@ -24,7 +24,6 @@ import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute;
 import org.hisp.dhis.android.core.resource.ResourceModel;
 import org.hisp.dhis.android.core.settings.SystemSettingModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeModel;
 import org.hisp.dhis.android.core.user.AuthenticatedUserModel;
@@ -61,6 +60,9 @@ import static org.dhis2.data.database.SqlConstants.QUOTE;
 import static org.dhis2.data.database.SqlConstants.SELECT;
 import static org.dhis2.data.database.SqlConstants.TABLE_POINT_FIELD;
 import static org.dhis2.data.database.SqlConstants.TABLE_POINT_FIELD_EQUALS;
+import static org.dhis2.data.database.SqlConstants.TE_ATTR_DISPLAY_IN_LIST_NO_PROGRAM;
+import static org.dhis2.data.database.SqlConstants.TE_ATTR_TABLE;
+import static org.dhis2.data.database.SqlConstants.TE_ATTR_UID;
 import static org.dhis2.data.database.SqlConstants.VARIABLE;
 import static org.dhis2.data.database.SqlConstants.WHERE;
 
@@ -125,11 +127,11 @@ public class MetadataRepositoryImpl implements MetadataRepository {
                     JOIN + VARIABLE + ON + TABLE_POINT_FIELD_EQUALS + TABLE_POINT_FIELD +
                     "WHERE %s.%s = '1' GROUP BY %s.%s",
             PROGRAM_TE_ATTR_TABLE, PROGRAM_TE_ATTR_TABLE,
-            TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.Columns.UID, PROGRAM_TE_ATTR_TABLE,
+            TE_ATTR_TABLE, TE_ATTR_TABLE, TE_ATTR_UID, PROGRAM_TE_ATTR_TABLE,
             PROGRAM_TE_ATTR_TRACKED_ENTITY_ATTRIBUTE,
-            TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.Columns.DISPLAY_IN_LIST_NO_PROGRAM, TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.Columns.UID);
+            TE_ATTR_TABLE, TE_ATTR_DISPLAY_IN_LIST_NO_PROGRAM, TE_ATTR_TABLE, TE_ATTR_UID);
 
-    private static final Set<String> PROGRAM_TRACKED_ENTITY_ATTRIBUTES_NO_PROGRAM_TABLES = new HashSet<>(Arrays.asList(TrackedEntityAttributeModel.TABLE,
+    private static final Set<String> PROGRAM_TRACKED_ENTITY_ATTRIBUTES_NO_PROGRAM_TABLES = new HashSet<>(Arrays.asList(TE_ATTR_TABLE,
             PROGRAM_TE_ATTR_TABLE));
 
     private static final String SELECT_PROGRAM_STAGE = String.format(SELECT + ALL + FROM + VARIABLE + WHERE + TABLE_POINT_FIELD_EQUALS,

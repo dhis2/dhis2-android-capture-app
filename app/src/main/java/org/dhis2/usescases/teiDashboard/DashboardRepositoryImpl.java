@@ -29,7 +29,6 @@ import org.hisp.dhis.android.core.program.ProgramIndicatorModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.relationship.RelationshipTypeModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
@@ -76,6 +75,10 @@ import static org.dhis2.data.database.SqlConstants.SELECT_DISTINCT;
 import static org.dhis2.data.database.SqlConstants.TABLE_POINT_FIELD;
 import static org.dhis2.data.database.SqlConstants.TABLE_POINT_FIELD_EQUALS;
 import static org.dhis2.data.database.SqlConstants.TABLE_POINT_FIELD_NOT_EQUALS;
+import static org.dhis2.data.database.SqlConstants.TE_ATTR_OPTION_SET;
+import static org.dhis2.data.database.SqlConstants.TE_ATTR_TABLE;
+import static org.dhis2.data.database.SqlConstants.TE_ATTR_UID;
+import static org.dhis2.data.database.SqlConstants.TE_ATTR_VALUE_TYPE;
 import static org.dhis2.data.database.SqlConstants.VARIABLE;
 import static org.dhis2.data.database.SqlConstants.WHERE;
 import static org.hisp.dhis.android.core.utils.StoreUtils.sqLiteBind;
@@ -166,8 +169,8 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
     private static final String ATTRIBUTE_VALUES_QUERY = String.format(
             SELECT + TrackedEntityAttributeValueModel.TABLE + POINT + ALL + COMMA +
-                    TrackedEntityAttributeModel.TABLE + POINT + TrackedEntityAttributeModel.Columns.VALUE_TYPE + COMMA +
-                    TrackedEntityAttributeModel.TABLE + POINT + TrackedEntityAttributeModel.Columns.OPTION_SET +
+                    TE_ATTR_TABLE + POINT + TE_ATTR_VALUE_TYPE + COMMA +
+                    TE_ATTR_TABLE + POINT + TE_ATTR_OPTION_SET +
                     FROM + VARIABLE +
                     JOIN + VARIABLE + ON + TABLE_POINT_FIELD_EQUALS + TABLE_POINT_FIELD +
                     JOIN + VARIABLE + ON + TABLE_POINT_FIELD_EQUALS + TABLE_POINT_FIELD +
@@ -176,15 +179,15 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                     ORDER_BY + TABLE_POINT_FIELD,
             TrackedEntityAttributeValueModel.TABLE,
             PROGRAM_TE_ATTR_TABLE, PROGRAM_TE_ATTR_TABLE, PROGRAM_TE_ATTR_TRACKED_ENTITY_ATTRIBUTE, TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_ATTRIBUTE,
-            TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.Columns.UID, TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_ATTRIBUTE,
+            TE_ATTR_TABLE, TE_ATTR_TABLE, TE_ATTR_UID, TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_ATTRIBUTE,
             PROGRAM_TE_ATTR_TABLE, PROGRAM_TE_ATTR_PROGRAM,
             TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_INSTANCE,
             PROGRAM_TE_ATTR_TABLE, PROGRAM_TE_ATTR_SORT_ORDER);
 
     private static final String ATTRIBUTE_VALUES_NO_PROGRAM_QUERY = String.format(
             SELECT + VARIABLE + POINT + ALL + COMMA +
-                    TrackedEntityAttributeModel.TABLE + POINT + TrackedEntityAttributeModel.Columns.VALUE_TYPE +
-                    TrackedEntityAttributeModel.TABLE + POINT + TrackedEntityAttributeModel.Columns.OPTION_SET +
+                    TE_ATTR_TABLE + POINT + TE_ATTR_VALUE_TYPE +
+                    TE_ATTR_TABLE + POINT + TE_ATTR_OPTION_SET +
                     FROM + VARIABLE +
                     JOIN + VARIABLE + TABLE_POINT_FIELD_EQUALS + TABLE_POINT_FIELD +
                     JOIN + VARIABLE + TABLE_POINT_FIELD_EQUALS + TABLE_POINT_FIELD +
@@ -192,9 +195,8 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                     GROUP_BY + TABLE_POINT_FIELD,
             TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.TABLE,
             PROGRAM_TE_ATTR_TABLE, PROGRAM_TE_ATTR_TABLE, PROGRAM_TE_ATTR_TRACKED_ENTITY_ATTRIBUTE, TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_ATTRIBUTE,
-            TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.Columns.UID, TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_ATTRIBUTE,
+            TE_ATTR_TABLE, TE_ATTR_TABLE, TE_ATTR_UID, TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_ATTRIBUTE,
             TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_INSTANCE, TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_ATTRIBUTE);
-
     private static final Set<String> ATTRIBUTE_VALUES_TABLE = new HashSet<>(Arrays.asList(TrackedEntityAttributeValueModel.TABLE, PROGRAM_TE_ATTR_TABLE));
 
     private final BriteDatabase briteDatabase;

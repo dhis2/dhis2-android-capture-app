@@ -12,7 +12,6 @@ import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
@@ -42,6 +41,8 @@ import static org.dhis2.data.database.SqlConstants.POINT;
 import static org.dhis2.data.database.SqlConstants.QUESTION_MARK;
 import static org.dhis2.data.database.SqlConstants.QUOTE;
 import static org.dhis2.data.database.SqlConstants.SELECT;
+import static org.dhis2.data.database.SqlConstants.TE_ATTR_TABLE;
+import static org.dhis2.data.database.SqlConstants.TE_ATTR_UID;
 import static org.dhis2.data.database.SqlConstants.WHERE;
 import static org.dhis2.data.forms.dataentry.DataEntryStore.valueType.ATTR;
 import static org.dhis2.data.forms.dataentry.DataEntryStore.valueType.DATA_ELEMENT;
@@ -143,9 +144,9 @@ public final class DataValueStore implements DataEntryStore {
 
     private valueType getValueType(@Nonnull String uid) {
         Cursor attrCursor = briteDatabase.query(SELECT +
-                TrackedEntityAttributeModel.TABLE + POINT + TrackedEntityAttributeModel.Columns.UID +
-                FROM + TrackedEntityAttributeModel.TABLE +
-                WHERE + TrackedEntityAttributeModel.TABLE + POINT + TrackedEntityAttributeModel.Columns.UID +
+                TE_ATTR_TABLE + POINT + TE_ATTR_UID +
+                FROM + TE_ATTR_TABLE +
+                WHERE + TE_ATTR_TABLE + POINT + TE_ATTR_UID +
                 EQUAL + QUESTION_MARK, uid);
         String attrUid = null;
         if (attrCursor != null && attrCursor.moveToFirst()) {

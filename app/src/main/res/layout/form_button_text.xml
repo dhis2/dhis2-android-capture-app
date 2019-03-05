@@ -10,7 +10,7 @@
 
         <variable
             name="attribute"
-            type="org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel" />
+            type="org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute" />
 
         <variable
             name="label"

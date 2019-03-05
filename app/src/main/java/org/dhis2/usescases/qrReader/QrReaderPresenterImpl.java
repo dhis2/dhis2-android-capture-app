@@ -15,7 +15,6 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
@@ -42,6 +41,9 @@ import static org.dhis2.data.database.SqlConstants.EQUAL;
 import static org.dhis2.data.database.SqlConstants.FROM;
 import static org.dhis2.data.database.SqlConstants.QUESTION_MARK;
 import static org.dhis2.data.database.SqlConstants.SELECT;
+import static org.dhis2.data.database.SqlConstants.TE_ATTR_DISPLAY_NAME;
+import static org.dhis2.data.database.SqlConstants.TE_ATTR_TABLE;
+import static org.dhis2.data.database.SqlConstants.TE_ATTR_UID;
 import static org.dhis2.data.database.SqlConstants.WHERE;
 import static org.dhis2.utils.DateUtils.DATABASE_FORMAT_EXPRESSION;
 
@@ -258,10 +260,10 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                 if (attrValue.has(TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_ATTRIBUTE) &&
                         attrValue.getString(TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_ATTRIBUTE) != null) {
                     Cursor cursor = briteDatabase.query(SELECT +
-                                    TrackedEntityAttributeModel.Columns.UID + COMMA +
-                                    TrackedEntityAttributeModel.Columns.DISPLAY_NAME +
-                                    FROM + TrackedEntityAttributeModel.TABLE +
-                                    WHERE + TrackedEntityAttributeModel.Columns.UID +
+                                    TE_ATTR_UID + COMMA +
+                                    TE_ATTR_DISPLAY_NAME +
+                                    FROM + TE_ATTR_TABLE +
+                                    WHERE + TE_ATTR_UID +
                                     EQUAL + QUESTION_MARK,
                             attrValue.getString(TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_ATTRIBUTE));
                     // TRACKED ENTITY ATTRIBUTE FOUND, TRACKED ENTITY ATTRIBUTE VALUE CAN BE SAVED.

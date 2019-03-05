@@ -3,12 +3,12 @@ package org.dhis2.usescases.reservedValue;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
-
 import java.util.List;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
+
+import static org.dhis2.data.database.SqlConstants.TE_ATTR_TABLE;
 
 public class ReservedValueRepositoryImpl implements ReservedValueRepository {
 
@@ -28,7 +28,7 @@ public class ReservedValueRepositoryImpl implements ReservedValueRepository {
 
     @Override
     public Flowable<List<ReservedValueModel>> getDataElements() {
-        return briteDatabase.createQuery(TrackedEntityAttributeModel.TABLE, SELECT_DATA_ELEMENTS)
+        return briteDatabase.createQuery(TE_ATTR_TABLE, SELECT_DATA_ELEMENTS)
                 .mapToList(cursor -> {
                     String uid = cursor.getString(0);
                     String displayName = cursor.getString(1);

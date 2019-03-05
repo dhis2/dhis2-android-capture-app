@@ -8,7 +8,7 @@ import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeModel;
 
 import java.util.HashMap;
@@ -26,7 +26,7 @@ import io.reactivex.functions.Consumer;
 public class SearchTEContractsModule {
 
     public interface SearchTEView extends AbstractActivityContracts.View {
-        void setForm(List<TrackedEntityAttributeModel> trackedEntityAttributeModels, @Nullable ProgramModel program, HashMap<String, String> queryData);
+        void setForm(List<TrackedEntityAttribute> trackedEntityAttributes, @Nullable ProgramModel program, HashMap<String, String> queryData);
 
         Consumer<Pair<List<SearchTeiModel>, String>> swapTeiListData();
 

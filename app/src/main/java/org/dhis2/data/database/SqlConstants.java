@@ -3,8 +3,19 @@ package org.dhis2.data.database;
 import org.hisp.dhis.android.core.program.ProgramRuleModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 
 public class SqlConstants {
+
+    public static final String TE_ATTR_TABLE = TrackedEntityAttributeModel.TABLE;
+    public static final String TE_ATTR_UID = TrackedEntityAttributeModel.Columns.UID;
+    public static final String TE_ATTR_VALUE_TYPE = TrackedEntityAttributeModel.Columns.VALUE_TYPE;
+    public static final String TE_ATTR_OPTION_SET = TrackedEntityAttributeModel.Columns.OPTION_SET;
+    public static final String TE_ATTR_DISPLAY_IN_LIST_NO_PROGRAM = TrackedEntityAttributeModel.Columns.DISPLAY_IN_LIST_NO_PROGRAM;
+    public static final String TE_ATTR_DISPLAY_NAME = TrackedEntityAttributeModel.Columns.DISPLAY_NAME;
+    public static final String TE_ATTR_UNIQUE = TrackedEntityAttributeModel.Columns.UNIQUE;
+    public static final String TE_ATTR_SORT_ORDER_IN_LIST_NO_PROGRAM = TrackedEntityAttributeModel.Columns.SORT_ORDER_IN_LIST_NO_PROGRAM;
+
 
     public static final String PROGRAM_TE_ATTR_TABLE = ProgramTrackedEntityAttributeModel.TABLE;
     public static final String PROGRAM_TE_ATTR_TRACKED_ENTITY_ATTRIBUTE = ProgramTrackedEntityAttributeModel.Columns.TRACKED_ENTITY_ATTRIBUTE;
@@ -12,8 +23,6 @@ public class SqlConstants {
     public static final String PROGRAM_TE_ATTR_SORT_ORDER = ProgramTrackedEntityAttributeModel.Columns.SORT_ORDER;
     public static final String PROGRAM_TE_ATTR_SEARCHABLE = ProgramTrackedEntityAttributeModel.Columns.SEARCHABLE;
     public static final String PROGRAM_TE_ATTR_DISPLAY_IN_LIST = ProgramTrackedEntityAttributeModel.Columns.DISPLAY_IN_LIST;
-
-
 
 
     public static final String PROGRAM_RULE_TABLE = ProgramRuleModel.TABLE;

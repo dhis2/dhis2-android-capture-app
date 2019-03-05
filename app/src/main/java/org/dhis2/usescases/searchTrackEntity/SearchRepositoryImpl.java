@@ -20,7 +20,7 @@ import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeAttributeTableInfo;
@@ -66,6 +66,12 @@ import static org.dhis2.data.database.SqlConstants.SELECT;
 import static org.dhis2.data.database.SqlConstants.SELECT_DISTINCT;
 import static org.dhis2.data.database.SqlConstants.TABLE_POINT_FIELD;
 import static org.dhis2.data.database.SqlConstants.TABLE_POINT_FIELD_EQUALS;
+import static org.dhis2.data.database.SqlConstants.TE_ATTR_OPTION_SET;
+import static org.dhis2.data.database.SqlConstants.TE_ATTR_SORT_ORDER_IN_LIST_NO_PROGRAM;
+import static org.dhis2.data.database.SqlConstants.TE_ATTR_TABLE;
+import static org.dhis2.data.database.SqlConstants.TE_ATTR_UID;
+import static org.dhis2.data.database.SqlConstants.TE_ATTR_UNIQUE;
+import static org.dhis2.data.database.SqlConstants.TE_ATTR_VALUE_TYPE;
 import static org.dhis2.data.database.SqlConstants.VARIABLE;
 import static org.dhis2.data.database.SqlConstants.WHERE;
 
@@ -87,13 +93,13 @@ public class SearchRepositoryImpl implements SearchRepository {
             EQUAL + QUOTE + "WITH_REGISTRATION" + QUOTE +
             AND + ProgramModel.TABLE + POINT + ProgramModel.Columns.TRACKED_ENTITY_TYPE + EQUAL;
 
-    private static final String SELECT_PROGRAM_ATTRIBUTES = SELECT + TrackedEntityAttributeModel.TABLE + POINT + ALL +
-            FROM + TrackedEntityAttributeModel.TABLE +
+    private static final String SELECT_PROGRAM_ATTRIBUTES = SELECT + TE_ATTR_TABLE + POINT + ALL +
+            FROM + TE_ATTR_TABLE +
             INNER_JOIN + PROGRAM_TE_ATTR_TABLE +
-            ON + TrackedEntityAttributeModel.TABLE + POINT + TrackedEntityAttributeModel.Columns.UID +
+            ON + TE_ATTR_TABLE + POINT + TE_ATTR_UID +
             EQUAL + PROGRAM_TE_ATTR_TABLE + POINT + PROGRAM_TE_ATTR_TRACKED_ENTITY_ATTRIBUTE +
             WHERE + "(" + PROGRAM_TE_ATTR_TABLE + POINT + PROGRAM_TE_ATTR_SEARCHABLE +
-            EQUAL + "1 OR " + TrackedEntityAttributeModel.TABLE + POINT + TrackedEntityAttributeModel.Columns.UNIQUE + EQUAL + "'1')" +
+            EQUAL + "1 OR " + TE_ATTR_TABLE + POINT + TE_ATTR_UNIQUE + EQUAL + "'1')" +
             AND + PROGRAM_TE_ATTR_TABLE + POINT + PROGRAM_TE_ATTR_PROGRAM + EQUAL;
 
     private static final String SELECT_OPTION_SET = SELECT + ALL + FROM + OptionModel.TABLE + WHERE + OptionModel.TABLE +
@@ -117,9 +123,9 @@ public class SearchRepositoryImpl implements SearchRepository {
                     AND + TABLE_POINT_FIELD_EQUALS + QUESTION_MARK +
                     AND + TABLE_POINT_FIELD_EQUALS + "1" +
                     ORDER_BY + TABLE_POINT_FIELD + ASC,
-            TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.Columns.VALUE_TYPE, TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.Columns.OPTION_SET, TrackedEntityAttributeValueModel.TABLE,
+            TrackedEntityAttributeValueModel.TABLE, TE_ATTR_TABLE, TE_ATTR_VALUE_TYPE, TE_ATTR_TABLE, TE_ATTR_OPTION_SET, TrackedEntityAttributeValueModel.TABLE,
             PROGRAM_TE_ATTR_TABLE, PROGRAM_TE_ATTR_TABLE, PROGRAM_TE_ATTR_TRACKED_ENTITY_ATTRIBUTE, TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_ATTRIBUTE,
-            TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.Columns.UID, TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_ATTRIBUTE,
+            TE_ATTR_TABLE, TE_ATTR_TABLE, TE_ATTR_UID, TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_ATTRIBUTE,
             PROGRAM_TE_ATTR_TABLE, PROGRAM_TE_ATTR_PROGRAM, TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_INSTANCE,
             PROGRAM_TE_ATTR_TABLE, PROGRAM_TE_ATTR_DISPLAY_IN_LIST,
             PROGRAM_TE_ATTR_TABLE, PROGRAM_TE_ATTR_SORT_ORDER);
@@ -130,10 +136,10 @@ public class SearchRepositoryImpl implements SearchRepository {
                     "LEFT JOIN ProgramTrackedEntityAttribute ON ProgramTrackedEntityAttribute.trackedEntityAttribute = TrackedEntityAttribute.uid " +
                     "WHERE %s.%s = ? AND %s.%s = 1 ORDER BY %s.%s ASC",
             TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.TABLE,
-            TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.Columns.UID, TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_ATTRIBUTE,
+            TE_ATTR_TABLE, TE_ATTR_TABLE, TE_ATTR_UID, TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_ATTRIBUTE,
             TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_INSTANCE,
             PROGRAM_TE_ATTR_TABLE, PROGRAM_TE_ATTR_DISPLAY_IN_LIST,
-            TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.Columns.SORT_ORDER_IN_LIST_NO_PROGRAM
+            TE_ATTR_TABLE, TE_ATTR_SORT_ORDER_IN_LIST_NO_PROGRAM
     );
 
     private static final String PROGRAM_COLOR_QUERY = String.format(
@@ -159,11 +165,12 @@ public class SearchRepositoryImpl implements SearchRepository {
             "SELECT %s.* FROM %s " +
                     "JOIN %s ON %s.trackedEntityAttribute = %s.%s " +
                     "WHERE %s.trackedEntityType = ? AND %s.searchable = 1",
-            TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.TABLE,
-            TrackedEntityTypeAttributeTableInfo.TABLE_INFO.name(), TrackedEntityTypeAttributeTableInfo.TABLE_INFO.name(), TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.Columns.UID,
+            TE_ATTR_TABLE, TE_ATTR_TABLE,
+            TrackedEntityTypeAttributeTableInfo.TABLE_INFO.name(), TrackedEntityTypeAttributeTableInfo.TABLE_INFO.name(),
+            TE_ATTR_TABLE, TE_ATTR_UID,
             TrackedEntityTypeAttributeTableInfo.TABLE_INFO.name(), TrackedEntityTypeAttributeTableInfo.TABLE_INFO.name());
 
-    private static final String[] TABLE_NAMES = new String[]{TrackedEntityAttributeModel.TABLE, PROGRAM_TE_ATTR_TABLE};
+    private static final String[] TABLE_NAMES = new String[]{TE_ATTR_TABLE, PROGRAM_TE_ATTR_TABLE};
     private static final Set<String> TABLE_SET = new HashSet<>(Arrays.asList(TABLE_NAMES));
     private static final String[] TEI_TABLE_NAMES = new String[]{TrackedEntityInstanceModel.TABLE,
             EnrollmentModel.TABLE, TrackedEntityAttributeValueModel.TABLE};
@@ -181,21 +188,21 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     @NonNull
     @Override
-    public Observable<List<TrackedEntityAttributeModel>> programAttributes(String programId) {
+    public Observable<List<TrackedEntityAttribute>> programAttributes(String programId) {
         String id = programId == null ? "" : programId;
         return briteDatabase.createQuery(TABLE_SET, SELECT_PROGRAM_ATTRIBUTES + "'" + id + "'")
-                .mapToList(TrackedEntityAttributeModel::create);
+                .mapToList(TrackedEntityAttribute::create);
     }
 
     @Override
-    public Observable<List<TrackedEntityAttributeModel>> programAttributes() {
+    public Observable<List<TrackedEntityAttribute>> programAttributes() {
         String selectAttributes = SELECT_DISTINCT + "TrackedEntityAttribute.* FROM TrackedEntityAttribute " +
                 "JOIN ProgramTrackedEntityAttribute " +
                 "ON ProgramTrackedEntityAttribute.trackedEntityAttribute = TrackedEntityAttribute " +
                 "JOIN Program ON Program.uid = ProgramTrackedEntityAttribute.program " +
                 "WHERE Program.trackedEntityType = ? AND ProgramTrackedEntityAttribute.searchable = 1";
-        return briteDatabase.createQuery(TrackedEntityAttributeModel.TABLE, selectAttributes, teiType)
-                .mapToList(TrackedEntityAttributeModel::create);
+        return briteDatabase.createQuery(TE_ATTR_TABLE, selectAttributes, teiType)
+                .mapToList(TrackedEntityAttribute::create);
     }
 
     @Override
@@ -617,8 +624,8 @@ public class SearchRepositoryImpl implements SearchRepository {
     }
 
     @Override
-    public Observable<List<TrackedEntityAttributeModel>> trackedEntityTypeAttributes() {
-        return briteDatabase.createQuery(TrackedEntityAttributeModel.TABLE, SELECT_TRACKED_ENTITY_TYPE_ATTRIBUTES, teiType)
-                .mapToList(TrackedEntityAttributeModel::create);
+    public Observable<List<TrackedEntityAttribute>> trackedEntityTypeAttributes() {
+        return briteDatabase.createQuery(TE_ATTR_TABLE, SELECT_TRACKED_ENTITY_TYPE_ATTRIBUTES, teiType)
+                .mapToList(TrackedEntityAttribute::create);
     }
 }

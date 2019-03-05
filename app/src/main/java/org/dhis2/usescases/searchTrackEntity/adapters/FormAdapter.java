@@ -32,7 +32,7 @@ import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,7 +57,7 @@ public class FormAdapter extends RecyclerView.Adapter {
     private static final long INCIDENT_DATE_ID = 2;
 
     private int programData = 0;
-    private List<TrackedEntityAttributeModel> attributeList;
+    private List<TrackedEntityAttribute> attributeList;
     private ProgramModel programModel;
     @NonNull
     private final FlowableProcessor<RowAction> processor;
@@ -115,7 +115,7 @@ public class FormAdapter extends RecyclerView.Adapter {
                     ObjectStyleModel.builder().build());
 
         } else {
-            TrackedEntityAttributeModel attr = attributeList.get(holder.getAdapterPosition() - programData);
+            TrackedEntityAttribute attr = attributeList.get(holder.getAdapterPosition() - programData);
             String label = attr.displayName();
             switch (holder.getItemViewType()) {
                 case Constants.EDITTEXT:
@@ -131,7 +131,7 @@ public class FormAdapter extends RecyclerView.Adapter {
                     viewModel = RadioButtonViewModel.fromRawValue(attr.uid(), label, attr.valueType(), false, queryData.get(attr.uid()), null, true, attr.displayDescription(), ObjectStyleModel.builder().build());
                     break;
                 case Constants.SPINNER:
-                    viewModel = SpinnerViewModel.create(attr.uid(), label, "", false, attr.optionSet(), queryData.get(attr.uid()), null, true, attr.displayDescription(), 20, ObjectStyleModel.builder().build());
+                    viewModel = SpinnerViewModel.create(attr.uid(), label, "", false, attr.optionSet().uid(), queryData.get(attr.uid()), null, true, attr.displayDescription(), 20, ObjectStyleModel.builder().build());
                     break;
                 case Constants.COORDINATES:
                     viewModel = CoordinateViewModel.create(attr.uid(), label, false, queryData.get(attr.uid()), null, true, attr.displayDescription(), ObjectStyleModel.builder().build());
@@ -222,7 +222,7 @@ public class FormAdapter extends RecyclerView.Adapter {
 
     }
 
-    public void setList(List<TrackedEntityAttributeModel> modelList, ProgramModel programModel, Map<String, String> queryData) {
+    public void setList(List<TrackedEntityAttribute> modelList, ProgramModel programModel, Map<String, String> queryData) {
         this.queryData = queryData;
         if (programModel != null) {
             this.programModel = programModel;

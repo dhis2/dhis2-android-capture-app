@@ -4,7 +4,7 @@ import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
 import java.util.Date;
@@ -23,9 +23,9 @@ import io.reactivex.Observable;
 public interface SearchRepository {
 
     @NonNull
-    Observable<List<TrackedEntityAttributeModel>> programAttributes(String programId);
+    Observable<List<TrackedEntityAttribute>> programAttributes(String programId);
 
-    Observable<List<TrackedEntityAttributeModel>> programAttributes();
+    Observable<List<TrackedEntityAttribute>> programAttributes();
 
     Observable<List<OptionModel>> optionSet(String optionSetId);
 
@@ -48,5 +48,5 @@ public interface SearchRepository {
 
     String getProgramColor(@NonNull String programUid);
 
-    Observable<List<TrackedEntityAttributeModel>> trackedEntityTypeAttributes();
+    Observable<List<TrackedEntityAttribute>> trackedEntityTypeAttributes();
 }
