@@ -21,7 +21,7 @@ import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
-import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
+import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
@@ -284,12 +284,12 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                             String displayName = cursor.getString(1);
                             String optionCode = cursor.getString(2);
 
-                            ValueTypeDeviceRenderingModel fieldRendering = null;
+                            ValueTypeDeviceRendering fieldRendering = null;
                             Cursor rendering = briteDatabase.query("SELECT ValueTypeDeviceRendering.* FROM ValueTypeDeviceRendering" +
                                     " JOIN ProgramStageDataElement ON ProgramStageDataElement.uid = ValueTypeDeviceRendering.uid" +
                                     " WHERE ProgramStageDataElement.uid = ?", uid);
                             if (rendering != null && rendering.moveToFirst()) {
-                                fieldRendering = ValueTypeDeviceRenderingModel.create(rendering);
+                                fieldRendering = ValueTypeDeviceRendering.create(rendering);
                                 rendering.close();
                             }
 
@@ -402,14 +402,14 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         }
 
 
-        ValueTypeDeviceRenderingModel fieldRendering = null;
+        ValueTypeDeviceRendering fieldRendering = null;
         try {
             Cursor rendering = briteDatabase.query("SELECT ValueTypeDeviceRendering.* FROM ValueTypeDeviceRendering" +
                     " JOIN ProgramStageDataElement ON ProgramStageDataElement.uid = ValueTypeDeviceRendering.uid" +
                     " WHERE ProgramStageDataElement.dataElement = ?", uid);
             if (rendering != null) {
                 if (rendering.moveToFirst())
-                    fieldRendering = ValueTypeDeviceRenderingModel.create(rendering);
+                    fieldRendering = ValueTypeDeviceRendering.create(rendering);
                 rendering.close();
             }
         } catch (Exception e) {

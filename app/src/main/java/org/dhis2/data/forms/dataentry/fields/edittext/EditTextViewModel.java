@@ -1,7 +1,5 @@
 package org.dhis2.data.forms.dataentry.fields.edittext;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.text.InputType;
 
 import com.google.auto.value.AutoValue;
@@ -9,9 +7,12 @@ import com.google.auto.value.AutoValue;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.ValueType;
-import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
+import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
 
 import javax.annotation.Nonnull;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * QUADRAM. Created by frodriguez on 1/24/2018.
@@ -22,16 +23,16 @@ import javax.annotation.Nonnull;
 public abstract class EditTextViewModel extends EditTextModel<String> {
 
     @Nullable
-    public abstract ValueTypeDeviceRenderingModel fieldRendering();
+    public abstract ValueTypeDeviceRendering fieldRendering();
 
     @NonNull
     public static EditTextViewModel create(@NonNull String uid, @NonNull String label,
                                            @NonNull Boolean mandatory, @Nullable String value, @NonNull String hint,
                                            @NonNull Integer lines, @NonNull ValueType valueType, @Nullable String section,
                                            @NonNull Boolean editable, @Nullable String description,
-                                           @Nullable ValueTypeDeviceRenderingModel fieldRendering, ObjectStyleModel objectStyle) {
+                                           @Nullable ValueTypeDeviceRendering fieldRendering, ObjectStyleModel objectStyle) {
         return new AutoValue_EditTextViewModel(uid, label, mandatory,
-                value, section, null, editable, null, description, objectStyle,hint, lines,
+                value, section, null, editable, null, description, objectStyle, hint, lines,
                 InputType.TYPE_CLASS_TEXT, valueType, null, null, fieldRendering);
     }
 

@@ -2,7 +2,7 @@ package org.dhis2.data.forms.dataentry.fields;
 
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.ValueType;
-import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
+import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
 import androidx.annotation.NonNull;
@@ -23,7 +23,7 @@ public interface FieldViewModelFactory {
                           @NonNull Boolean editable,
                           @Nullable ProgramStageSectionRenderingType renderingType,
                           @Nullable String description,
-                          @Nullable ValueTypeDeviceRenderingModel fieldRendering,
+                          @Nullable ValueTypeDeviceRendering fieldRendering,
                           @Nullable Integer optionCount,
                           @NonNull ObjectStyleModel objectStyle);
 }
