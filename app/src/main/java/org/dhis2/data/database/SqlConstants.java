@@ -3,6 +3,7 @@ package org.dhis2.data.database;
 import org.hisp.dhis.android.core.category.CategoryOptionComboCategoryOptionLinkModel;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
 import org.hisp.dhis.android.core.datavalue.DataValueModel;
+import org.hisp.dhis.android.core.legendset.ProgramIndicatorLegendSetLinkModel;
 import org.hisp.dhis.android.core.period.PeriodModel;
 import org.hisp.dhis.android.core.program.ProgramRuleActionModel;
 import org.hisp.dhis.android.core.program.ProgramRuleModel;
@@ -16,6 +17,15 @@ import org.hisp.dhis.android.core.user.UserModel;
 
 public class SqlConstants {
 
+
+//    PROGRAM INDICATOR LEGEND SET LINK
+    public static final String PROGRAM_INDICATOR_LEGEND_SET_LINK_TABLE = ProgramIndicatorLegendSetLinkModel.TABLE;
+    public static final String PROGRAM_INDICATOR_LEGEND_SET_LINK_LEGEND_SET = ProgramIndicatorLegendSetLinkModel.Columns.LEGEND_SET;
+    public static final String PROGRAM_INDICATOR_LEGEND_SET_LINK_PROGRAM_INDICATOR = ProgramIndicatorLegendSetLinkModel.Columns.PROGRAM_INDICATOR;
+
+
+
+//    CATEGORY OPTION COMBO CATEGORY OPTION LINK
     public static final String CAT_OPTION_COMBO_CAT_OPTION_LINK_TABLE = CategoryOptionComboCategoryOptionLinkModel.TABLE;
     public static final String CAT_OPTION_COMBO_CAT_OPTION_LINK_CATEGORY_OPTION = CategoryOptionComboCategoryOptionLinkModel.Columns.CATEGORY_OPTION;
     public static final String CAT_OPTION_COMBO_CAT_OPTION_LINK_CATEGORY_OPTION_COMBO = CategoryOptionComboCategoryOptionLinkModel.Columns.CATEGORY_OPTION_COMBO;

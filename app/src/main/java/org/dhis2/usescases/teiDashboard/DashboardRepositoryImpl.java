@@ -24,7 +24,6 @@ import org.hisp.dhis.android.core.enrollment.note.NoteModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.legendset.LegendModel;
-import org.hisp.dhis.android.core.legendset.ProgramIndicatorLegendSetLinkModel;
 import org.hisp.dhis.android.core.program.ProgramIndicatorModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStage;
@@ -59,6 +58,9 @@ import static org.dhis2.data.database.SqlConstants.LIMIT_1;
 import static org.dhis2.data.database.SqlConstants.ON;
 import static org.dhis2.data.database.SqlConstants.ORDER_BY;
 import static org.dhis2.data.database.SqlConstants.POINT;
+import static org.dhis2.data.database.SqlConstants.PROGRAM_INDICATOR_LEGEND_SET_LINK_LEGEND_SET;
+import static org.dhis2.data.database.SqlConstants.PROGRAM_INDICATOR_LEGEND_SET_LINK_PROGRAM_INDICATOR;
+import static org.dhis2.data.database.SqlConstants.PROGRAM_INDICATOR_LEGEND_SET_LINK_TABLE;
 import static org.dhis2.data.database.SqlConstants.PROGRAM_STAGE_DISPLAY_GENERATE_EVENT_BOX;
 import static org.dhis2.data.database.SqlConstants.PROGRAM_STAGE_PROGRAM;
 import static org.dhis2.data.database.SqlConstants.PROGRAM_STAGE_SORT_ORDER;
@@ -225,8 +227,10 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                     "AND %s.%s <= ?\n" +
                     "AND %s.%s > ?",
             LegendModel.TABLE, LegendModel.Columns.COLOR, LegendModel.TABLE,
-            ProgramIndicatorLegendSetLinkModel.TABLE, ProgramIndicatorLegendSetLinkModel.TABLE, ProgramIndicatorLegendSetLinkModel.Columns.LEGEND_SET, LegendModel.TABLE, LegendModel.Columns.LEGEND_SET,
-            ProgramIndicatorModel.TABLE, ProgramIndicatorModel.TABLE, ProgramIndicatorModel.Columns.UID, ProgramIndicatorLegendSetLinkModel.TABLE, ProgramIndicatorLegendSetLinkModel.Columns.PROGRAM_INDICATOR,
+            PROGRAM_INDICATOR_LEGEND_SET_LINK_TABLE, PROGRAM_INDICATOR_LEGEND_SET_LINK_TABLE,
+            PROGRAM_INDICATOR_LEGEND_SET_LINK_LEGEND_SET, LegendModel.TABLE, LegendModel.Columns.LEGEND_SET,
+            ProgramIndicatorModel.TABLE, ProgramIndicatorModel.TABLE, ProgramIndicatorModel.Columns.UID,
+            PROGRAM_INDICATOR_LEGEND_SET_LINK_TABLE, PROGRAM_INDICATOR_LEGEND_SET_LINK_PROGRAM_INDICATOR,
             ProgramIndicatorModel.TABLE, ProgramIndicatorModel.Columns.UID,
             LegendModel.TABLE, LegendModel.Columns.START_VALUE,
             LegendModel.TABLE, LegendModel.Columns.END_VALUE);
