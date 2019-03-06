@@ -7,6 +7,7 @@ import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.hisp.dhis.android.core.category.CategoryModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
+import org.hisp.dhis.android.core.dataset.DataInputPeriodModel;
 import org.hisp.dhis.android.core.dataset.DataSetModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.period.PeriodType;
@@ -14,6 +15,8 @@ import org.hisp.dhis.android.core.period.PeriodType;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 
 public class DataSetInitialRepositoryImpl implements DataSetInitialRepository {
@@ -38,6 +41,10 @@ public class DataSetInitialRepositoryImpl implements DataSetInitialRepository {
             "JOIN CategoryCategoryOptionLink ON CategoryCategoryOptionLink.categoryOption = CategoryOption.uid " +
             "WHERE CategoryCategoryOptionLink.category = ? ORDER BY CategoryOption.displayName ASC";
 
+    private static final String GET_DATA_INPUT_PERIOD = "SELECT DataInputPeriod.*, Period.startDate as initialPeriodDate, Period.endDate as endPeriodDate " +
+            "FROM DataInputPeriod " +
+            "JOIN Period ON Period.periodId = DataInputPeriod.period " +
+            "WHERE dataset = ? ORDER BY initialPeriodDate DESC";
 
     private final BriteDatabase briteDatabase;
     private final String dataSetUid;
@@ -45,6 +52,13 @@ public class DataSetInitialRepositoryImpl implements DataSetInitialRepository {
     public DataSetInitialRepositoryImpl(com.squareup.sqlbrite2.BriteDatabase briteDatabase, String dataSetUid) {
         this.briteDatabase = briteDatabase;
         this.dataSetUid = dataSetUid;
+    }
+
+    @Override
+    public Flowable<List<DateRangeInputPeriodModel>> getDataInputPeriod(){
+        return briteDatabase.createQuery(DataInputPeriodModel.TABLE, GET_DATA_INPUT_PERIOD, dataSetUid)
+                .mapToList(DateRangeInputPeriodModel::fromCursor)
+                .toFlowable(BackpressureStrategy.LATEST);
     }
 
     @NonNull

@@ -20,9 +20,11 @@ import org.dhis2.utils.Constants;
 import org.dhis2.utils.custom_views.OrgUnitDialog;
 import org.dhis2.utils.custom_views.PeriodDialog;
 import org.dhis2.utils.DateUtils;
+import org.dhis2.utils.custom_views.PeriodDialogInputPeriod;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
+import org.hisp.dhis.android.core.dataset.DataInputPeriodModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.period.PeriodType;
 
@@ -114,8 +116,9 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
     }
 
     @Override
-    public void showPeriodSelector(PeriodType periodType) {
-        new PeriodDialog()
+    public void showPeriodSelector(PeriodType periodType, List<DateRangeInputPeriodModel> periods) {
+        new PeriodDialogInputPeriod()
+                .setInputPeriod(periods)
                 .setPeriod(periodType)
 //                .setMinDate() TODO: Depends on dataSet expiration settings and orgUnit Opening date
 //                .setMaxDate() TODO: Depends on dataSet open Future settings. Default: TODAY
