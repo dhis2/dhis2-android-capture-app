@@ -49,6 +49,7 @@ public class DataSetTableRepositoryImpl implements DataSetTableRepository {
             "       SectionDataElementLink.sortOrder AS sortOrder " +
             "   FROM Section " +
             "   JOIN SectionDataElementLink ON SectionDataElementLink.section = Section.uid " +
+            "   WHERE Section.dataSet = ? " +
             ") AS DataSetSection ON DataSetSection.sectionDataElement = DataElement.uid " +
             "JOIN DataSetDataElementLink ON DataSetDataElementLink.dataElement = DataElement.uid " +
             "WHERE DataSetDataElementLink.dataSet = ? " +
@@ -155,7 +156,7 @@ public class DataSetTableRepositoryImpl implements DataSetTableRepository {
     @Override
     public Flowable<Map<String, List<DataElementModel>>> getDataElements() {
         Map<String, List<DataElementModel>> map = new HashMap<>();
-        return briteDatabase.createQuery(DataElementModel.TABLE, DATA_ELEMENTS, dataSetUid)
+        return briteDatabase.createQuery(DataElementModel.TABLE, DATA_ELEMENTS, dataSetUid, dataSetUid)
                 .mapToList(cursor -> {
                     DataElementModel dataElementModel = DataElementModel.create(cursor);
                     String section = cursor.getString(cursor.getColumnIndex("sectionName"));

@@ -61,7 +61,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
             "JOIN CategoryOptionComboCategoryOptionLink ON CategoryOptionComboCategoryOptionLink.categoryOptionCombo = DataValue.categoryOptionCombo " +
             "JOIN DataSetDataElementLink ON DataSetDataElementLink.dataElement = DataValue.dataElement " +
             "JOIN DataElement ON DataElement.uid = DataSetDataElementLink.dataElement " +
-            "JOIN Section ON Section.dataSet = DataSetDataElementLink.dataSet " +
+            "LEFT JOIN Section ON Section.dataSet = DataSetDataElementLink.dataSet " +
             "WHERE DataValue.organisationUnit = ? " +
             "AND DataValue.attributeOptionCombo = ? " +
             "AND DataSetDataElementLink.dataSet = ? " +
