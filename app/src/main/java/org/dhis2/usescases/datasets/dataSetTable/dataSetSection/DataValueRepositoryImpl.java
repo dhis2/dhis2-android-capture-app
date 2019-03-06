@@ -45,16 +45,17 @@ public class DataValueRepositoryImpl implements DataValueRepository {
             "   SELECT " +
             "       Section.sortOrder AS sectionOrder," +
             "       Section.displayName AS sectionName," +
+            "       Section.name as name, " +
             "       Section.uid AS sectionId," +
             "       SectionDataElementLink.dataElement AS sectionDataElement, " +
             "       SectionDataElementLink.sortOrder AS sortOrder " +
             "   FROM Section " +
             "   JOIN SectionDataElementLink ON SectionDataElementLink.section = Section.uid " +
-            "   WHERE Section.name = ? " +
             ") AS DataSetSection ON DataSetSection.sectionDataElement = DataElement.uid " +
             "JOIN DataSetDataElementLink ON DataSetDataElementLink.dataElement = DataElement.uid " +
-            "WHERE DataSetDataElementLink.dataSet = ? " +
-            "ORDER BY DataSetSection.sectionOrder,DataSetSection.sortOrder";
+            "WHERE DataSetDataElementLink.dataSet = ? "
+            /*"AND DataSetSection.name = ? " +
+            "ORDER BY DataSetSection.sectionOrder,DataSetSection.sortOrder"*/;
 
     private final String DATA_VALUES = "SELECT DataValue.*, CategoryOptionComboCategoryOptionLink.categoryOption as catOption, DataElement.categoryCombo as catCombo FROM DataValue " +
             "JOIN CategoryOptionComboCategoryOptionLink ON CategoryOptionComboCategoryOptionLink.categoryOptionCombo = DataValue.categoryOptionCombo " +
@@ -64,8 +65,8 @@ public class DataValueRepositoryImpl implements DataValueRepository {
             "WHERE DataValue.organisationUnit = ? " +
             "AND DataValue.attributeOptionCombo = ? " +
             "AND DataSetDataElementLink.dataSet = ? " +
-            "AND DataValue.period = ? " +
-            "AND Section.name = ?";
+            "AND DataValue.period = ? "
+            /*"AND Section.name = ?"*/;
 
     private final String CATEGORY_OPTION = "SELECT CategoryOption.*, Category.uid AS category, section.displayName as SectionName, CategoryCombo.uid as catCombo," +
             "CategoryCategoryComboLink.sortOrder as sortOrder FROM CategoryOption " +
@@ -78,9 +79,9 @@ public class DataValueRepositoryImpl implements DataValueRepository {
             "JOIN CategoryCombo ON CategoryCombo.uid = DataElement.categoryCombo " +
             "LEFT JOIN (SELECT section.displayName, section.uid, SectionDataElementLINK.dataElement as dataelement, Section.name FROM Section " +
             "JOIN SectionDataElementLINK ON SectionDataElementLink.section = Section.uid) as section on section.dataelement = DataElement.uid " +
-            "WHERE DataSetDataElementLink.dataSet = ? " +
-            "AND section.name = ? " +
-            "GROUP BY CategoryOption.uid, section.uid ORDER BY section.uid, CategoryCategoryComboLink.sortOrder, CategoryCategoryOptionLink.sortOrder";
+            "WHERE DataSetDataElementLink.dataSet = ? "
+            /*"AND section.name = ? " +
+            "GROUP BY CategoryOption.uid, section.uid ORDER BY section.uid, CategoryCategoryComboLink.sortOrder, CategoryCategoryOptionLink.sortOrder"*/;
 
     private final String CATEGORY_OPTION_COMBO = "SELECT CategoryOptionCombo.*,section.displayName as SectionName FROM CategoryOptionCombo " +
             "JOIN DataElement ON DataElement.categoryCombo = CategoryOptionCombo.categoryCombo " +
@@ -182,7 +183,15 @@ public class DataValueRepositoryImpl implements DataValueRepository {
     @Override
     public Flowable<List<DataElementModel>> getDataElements(String section) {
         Map<String, List<DataElementModel>> map = new HashMap<>();
-        return briteDatabase.createQuery(DataElementModel.TABLE, DATA_ELEMENTS, section, dataSetUid)
+        String query = DATA_ELEMENTS;
+        if(!section.equals("NO_SECTION")) {
+            query = query + " AND DataSetSection.name = ? ";
+            query = query + " ORDER BY DataSetSection.sectionOrder,DataSetSection.sortOrder";
+            return briteDatabase.createQuery(DataElementModel.TABLE, query, dataSetUid, section)
+                    .mapToList(DataElementModel::create).toFlowable(BackpressureStrategy.LATEST);
+        }
+        query = query + " ORDER BY DataSetSection.sectionOrder,DataSetSection.sortOrder";
+        return briteDatabase.createQuery(DataElementModel.TABLE, query, dataSetUid)
                 .mapToList(DataElementModel::create)
                     /*DataElementModel dataElementModel = DataElementModel.create(cursor);
                     String section = cursor.getString(cursor.getColumnIndex("sectionName"));
@@ -270,8 +279,12 @@ public class DataValueRepositoryImpl implements DataValueRepository {
     @Override
     public Flowable<Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>>> getCatOptions(String section) {
         Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>> map = new HashMap<>();
-
-        return briteDatabase.createQuery(CategoryOptionModel.TABLE, CATEGORY_OPTION, dataSetUid, section)
+        String query = CATEGORY_OPTION;
+        if(!section.equals("NO_SECTION")){
+            query = query + "AND section.name = '" + section +"' ";
+        }
+        query = query + "GROUP BY CategoryOption.uid, section.uid ORDER BY section.uid, CategoryCategoryComboLink.sortOrder, CategoryCategoryOptionLink.sortOrder";
+        return briteDatabase.createQuery(CategoryOptionModel.TABLE, query, dataSetUid)
                 .mapToList(cursor -> {
                     CategoryOptionModel catOption = CategoryOptionModel.create(cursor);
                     CategoryModel category = CategoryModel.builder().uid(cursor.getString(cursor.getColumnIndex("category"))).build();
@@ -304,7 +317,10 @@ public class DataValueRepositoryImpl implements DataValueRepository {
     @Override
     public Flowable<List<DataSetTableModel>> getDataValues(String orgUnitUid, String periodType, String initPeriodType, String catOptionComb, String section) {
         List<DataSetTableModel> listData = new ArrayList<>();
-        return briteDatabase.createQuery(DataValueModel.TABLE, DATA_VALUES, orgUnitUid, catOptionComb,dataSetUid, initPeriodType, section)
+        String query = DATA_VALUES;
+        if(!section.equals("NO_SECTION"))
+            query = query + "AND Section.name = '" + section +"' ";
+        return briteDatabase.createQuery(DataValueModel.TABLE, query, orgUnitUid, catOptionComb,dataSetUid, initPeriodType)
                 .mapToList(cursor -> {
 
                     for (DataSetTableModel dataValue : listData) {
@@ -342,10 +358,10 @@ public class DataValueRepositoryImpl implements DataValueRepository {
 
         String query = SECTION_GREYED_FIELDS.replace("?", categoryOptionCombo.toString().substring(1, categoryOptionCombo.toString().length()-1));
         if(!section.isEmpty() && !section.equals("NO_SECTION"))
-            query = query + "and Section.name = ? ";
+            query = query + "and Section.name = '" + section +"' ";
 
         query = query + "GROUP BY section, dataElement, categoryOption";
-        return briteDatabase.createQuery(SectionGreyedFieldsLinkModel.TABLE, query, section)
+        return briteDatabase.createQuery(SectionGreyedFieldsLinkModel.TABLE, query)
                 .mapToList(cursor -> {
 
                     if(mapData.containsKey(cursor.getString(cursor.getColumnIndex("dataElement")))){
@@ -406,7 +422,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
     @Override
     public Flowable<SectionModel> getSectionByDataSet(String section) {
         return briteDatabase.createQuery(SectionModel.TABLE, SECTION_TOTAL_ROW_COLUMN, dataSetUid, section)
-                .mapToOne(SectionModel::create).toFlowable(BackpressureStrategy.LATEST);
+                .mapToOneOrDefault(SectionModel::create, SectionModel.builder().build()).toFlowable(BackpressureStrategy.LATEST);
     }
 
     public Flowable<Boolean> completeDataSet(String orgUnitUid, String periodInitialDate, String catCombo){

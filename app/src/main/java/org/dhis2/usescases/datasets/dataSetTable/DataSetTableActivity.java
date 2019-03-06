@@ -70,6 +70,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     DataSetTableContract.Presenter presenter;
     private ActivityDatasetTableBinding binding;
     private DataSetSectionAdapter viewPagerAdapter;
+    private int currentNumTables = 0;
 
     public static Bundle getBundle(@NonNull String dataSetUid,
                                    @NonNull String orgUnitUid,
@@ -106,20 +107,6 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dataset_table);
         binding.setPresenter(presenter);
         binding.dataSetName.setText(String.format("%s - %s", orgUnitName, periodInitialDate));
-
-        //Table Selector
-        FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(this);
-        layoutManager.setFlexDirection(FlexDirection.ROW);
-        layoutManager.setJustifyContent(JustifyContent.FLEX_START);
-        binding.tableRecycler.setLayoutManager(layoutManager);
-
-        //SAMPLE TABLES
-        List<String> tables = new ArrayList<>();
-        tables.add("Table 1");
-        tables.add("Table 2");
-        tables.add("Table 3");
-
-        binding.tableRecycler.setAdapter(new TableCheckboxAdapter(tables));
 
         //DataSet Selector
         binding.dataSetOrgUnitEditText.setText(orgUnitName);
@@ -158,8 +145,20 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
             public void onTabReselected(TabLayout.Tab tab) {
                 if (tableSelectorVisible)
                     binding.selectorLayout.setVisibility(View.GONE);
-                else
+                else {
                     binding.selectorLayout.setVisibility(View.VISIBLE);
+                    List<String> tables = new ArrayList<>();
+                    for(int i =0; i< viewPagerAdapter.getCurrentItem(binding.tabLayout.getSelectedTabPosition()).currentNumTables() ; i++){
+                        tables.add("Table "+ i);
+                    }
+                    FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(getContext());
+                    layoutManager.setFlexDirection(FlexDirection.ROW);
+                    layoutManager.setJustifyContent(JustifyContent.FLEX_START);
+                    binding.tableRecycler.setLayoutManager(layoutManager);
+
+                    binding.tableRecycler.setAdapter(new TableCheckboxAdapter(presenter));
+                    ((TableCheckboxAdapter)binding.tableRecycler.getAdapter()).swapData(tables);
+                }
 
                 tableSelectorVisible = !tableSelectorVisible;
             }
@@ -294,5 +293,21 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     @Override
     public String getOrgUnitName() {
         return orgUnitName;
+    }
+
+    @Override
+    public void goToTable(int numTable) {
+        ((TableCheckboxAdapter)binding.tableRecycler.getAdapter()).setSelectedPosition(numTable);
+        viewPagerAdapter.getCurrentItem(binding.tabLayout.getSelectedTabPosition()).goToTable(numTable);
+    }
+
+    @Override
+    public void setCurrentNumTables(int numTables) {
+        //Table Selector
+        List<String> tables = new ArrayList<>();
+        for(int i =0; i< numTables ; i++){
+            tables.add("Table "+ i);
+        }
+        ((TableCheckboxAdapter)binding.tableRecycler.getAdapter()).swapData(tables);
     }
 }

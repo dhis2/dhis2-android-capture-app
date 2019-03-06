@@ -147,7 +147,7 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
                     periodTypeName,
                     view.getSelectedPeriod() != null ? DateUtils.getInstance().getPeriodUIString(PeriodType.valueOf(periodTypeName), view.getSelectedPeriod(), Locale.getDefault()) : periodFinalDate,
                     view.getSelectedPeriod() != null ? DateUtils.getInstance().generateId(PeriodType.valueOf(periodTypeName), view.getSelectedPeriod(), Locale.getDefault()) : periodId,
-                    view.getSelectedCatOptions()
+                    catCombo/*view.getSelectedCatOptions() Fixed is the same always*/
             );
             view.startActivity(DataSetTableActivity.class, bundle, true, false, null);
         }
@@ -167,5 +167,15 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
                                 Timber::d
                         )
         );
+    }
+
+    @Override
+    public void onClickSelectTable(int numTable) {
+        view.goToTable(numTable);
+    }
+
+    @Override
+    public void setCurrentNumTables(int numTables) {
+        view.setCurrentNumTables(numTables);
     }
 }

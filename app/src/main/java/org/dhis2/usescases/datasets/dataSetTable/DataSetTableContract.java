@@ -50,7 +50,9 @@ public class DataSetTableContract {
 
         void setData(DataSetInitialModel dataSetInitialModel);
 
+        void goToTable(int numTable);
 
+        void setCurrentNumTables(int numTables);
 
     }
 
@@ -74,6 +76,10 @@ public class DataSetTableContract {
         void onRefreshClick();
 
         void onCatOptionClick(String catOptionUid);
+
+        void onClickSelectTable(int numTable);
+
+        void setCurrentNumTables(int numTables);
     }
 
 }

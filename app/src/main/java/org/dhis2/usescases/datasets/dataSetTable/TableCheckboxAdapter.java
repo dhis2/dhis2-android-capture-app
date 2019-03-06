@@ -22,9 +22,16 @@ import androidx.recyclerview.widget.RecyclerView;
 public class TableCheckboxAdapter extends RecyclerView.Adapter<TableCheckboxViewHolder> {
 
     private List<String> tables;
+    private DataSetTableContract.Presenter presenter;
+    private int selectedPosition;
+    public TableCheckboxAdapter(DataSetTableContract.Presenter presenter){
+        this.tables = new ArrayList<>();
+        this.presenter = presenter;
+    }
 
-    public TableCheckboxAdapter(List<String> tables){
-        this.tables = tables;
+    public void swapData(List<String> tables){
+        this.tables = new ArrayList<>(tables);
+        notifyDataSetChanged();
     }
 
     @NonNull
@@ -33,16 +40,21 @@ public class TableCheckboxAdapter extends RecyclerView.Adapter<TableCheckboxView
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         ItemTableCheckboxBinding binding = DataBindingUtil.inflate(inflater, R.layout.item_table_checkbox, parent, false);
 
-        return new TableCheckboxViewHolder(binding);
+        return new TableCheckboxViewHolder(binding, presenter);
     }
 
     @Override
     public void onBindViewHolder(@NonNull TableCheckboxViewHolder holder, int position) {
-        holder.bind(tables.get(position));
+        holder.bind(tables.get(position), position, selectedPosition);
     }
 
     @Override
     public int getItemCount() {
         return tables.size();
+    }
+
+    public void setSelectedPosition(int selectedPosition){
+        this.selectedPosition = selectedPosition;
+        notifyDataSetChanged();
     }
 }

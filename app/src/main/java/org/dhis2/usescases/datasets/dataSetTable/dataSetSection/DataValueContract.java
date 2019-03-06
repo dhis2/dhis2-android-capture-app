@@ -1,6 +1,7 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection;
 
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
+import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel;
 import org.dhis2.usescases.general.AbstractActivityContracts;
@@ -16,6 +17,7 @@ import java.util.Map;
 import javax.annotation.Nullable;
 
 import androidx.annotation.NonNull;
+import io.reactivex.processors.FlowableProcessor;
 
 public class DataValueContract {
 
@@ -27,6 +29,8 @@ public class DataValueContract {
         void setPeriod(PeriodModel periodModel);
 
         void setDataInputPeriod(DataInputPeriodModel dataInputPeriod);
+
+        void goToTable(int numTable);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter{
@@ -44,6 +48,10 @@ public class DataValueContract {
 
         List<FieldViewModel> transformToFieldViewModels(List<DataSetTableModel> dataValues);
 
+        void setCurrentNumTables(int numTables);
 
+        int getCurrentNumTables();
+
+        FlowableProcessor<RowAction> getProcessor();
     }
 }
