@@ -598,6 +598,20 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         else
             binding.dateLayout.setHint(getString(R.string.event_date));
 
+        if (eventCreationType == EventCreationType.SCHEDULE && programStage.hideDueDate()) {
+            binding.dateLayout.setVisibility(View.GONE);
+
+            Calendar now = DateUtils.getInstance().getCalendar();
+            if (periodType == null) {
+                now.add(Calendar.DAY_OF_YEAR, getIntent().getIntExtra(Constants.EVENT_SCHEDULE_INTERVAL, 0));
+                selectedDate = DateUtils.getInstance().getNextPeriod(null, now.getTime(), 0);
+                selectedDateString = DateUtils.uiDateFormat().format(selectedDate);
+            } else {
+                now.setTime(DateUtils.getInstance().getNextPeriod(periodType, now.getTime(), eventCreationType != EventCreationType.SCHEDULE ? 0 : 1));
+                selectedDate = now.getTime();
+                selectedDateString = DateUtils.getInstance().getPeriodUIString(periodType, selectedDate, Locale.getDefault());
+            }
+        }
         presenter.getStageObjectStyle(programStageModel.uid());
     }
 

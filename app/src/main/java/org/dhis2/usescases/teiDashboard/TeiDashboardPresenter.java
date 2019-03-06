@@ -22,6 +22,7 @@ import org.dhis2.usescases.teiDashboard.eventDetail.EventDetailActivity;
 import org.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
 import org.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
@@ -156,7 +157,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                 dashboardRepository.getTEIEnrollmentEvents(programUid, teUid)
                         .map(eventModels -> {
                             for (EventModel eventModel : eventModels) {
-                                if (eventModel.status() == EventStatus.SCHEDULE && eventModel.dueDate() != null && eventModel.dueDate().before(Calendar.getInstance().getTime())) { //If a schedule event dueDate is before today the event is skipped
+                                if (eventModel.status() == EventStatus.SCHEDULE && eventModel.dueDate() != null && eventModel.dueDate().before(DateUtils.getInstance().getToday())) { //If a schedule event dueDate is before today the event is skipped
                                     dashboardRepository.updateState(eventModel, EventStatus.SKIPPED);
                                 }
                             }
