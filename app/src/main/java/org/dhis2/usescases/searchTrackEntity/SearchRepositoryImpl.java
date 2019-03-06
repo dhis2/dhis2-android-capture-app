@@ -200,7 +200,7 @@ public class SearchRepositoryImpl implements SearchRepository {
             String dataId = queryData.keySet().toArray()[i].toString();
             String dataValue = queryData.get(dataId);
 
-            if (i >= initialLoop)
+            if (i > initialLoop)
                 attr.append(" INNER JOIN  ");
 
             attr.append(attrQuery.replace("ATTR_ID", dataId).replace("ATTR_VALUE", dataValue));

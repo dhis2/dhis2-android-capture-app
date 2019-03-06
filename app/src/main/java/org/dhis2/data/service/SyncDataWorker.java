@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 
+import com.google.firebase.perf.metrics.AddTrace;
+
 import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.utils.Constants;
@@ -45,6 +47,7 @@ public class SyncDataWorker extends Worker {
 
     @NonNull
     @Override
+    @AddTrace(name = "MetadataSyncTrace")
     public Result doWork() {
         Objects.requireNonNull(((App) getApplicationContext()).userComponent()).plus(new SyncDataWorkerModule()).inject(this);
 

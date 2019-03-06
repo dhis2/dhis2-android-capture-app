@@ -415,44 +415,47 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
 
     @Override
     public void apply() {
-        binding.drawerLayout.closeDrawers();
-        binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+        if (treeView.getSelected().size() > 0) {
+            binding.drawerLayout.closeDrawers();
+            binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
-        orgUnitFilter = new StringBuilder();
-        for (int i = 0; i < treeView.getSelected().size(); i++) {
-            orgUnitFilter.append("'");
-            orgUnitFilter.append(((OrganisationUnitModel) treeView.getSelected().get(i).getValue()).uid());
-            orgUnitFilter.append("'");
-            if (i < treeView.getSelected().size() - 1)
-                orgUnitFilter.append(", ");
-        }
+            orgUnitFilter = new StringBuilder();
+            for (int i = 0; i < treeView.getSelected().size(); i++) {
+                orgUnitFilter.append("'");
+                orgUnitFilter.append(((OrganisationUnitModel) treeView.getSelected().get(i).getValue()).uid());
+                orgUnitFilter.append("'");
+                if (i < treeView.getSelected().size() - 1)
+                    orgUnitFilter.append(", ");
+            }
 
-        if (treeView.getSelected().size() == 1) {
-            binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
-        } else if (treeView.getSelected().size() > 1) {
-            binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
-        }
+            if (treeView.getSelected().size() == 1) {
+                binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
+            } else if (treeView.getSelected().size() > 1) {
+                binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
+            }
 
-        switch (currentPeriod) {
-            case NONE:
-                getSelectedPrograms(null, currentPeriod, orgUnitFilter.toString());
-                break;
-            case DAILY:
-                ArrayList<Date> datesD = new ArrayList<>();
-                datesD.add(chosenDateDay);
-                getSelectedPrograms(datesD, currentPeriod, orgUnitFilter.toString());
-                break;
-            case WEEKLY:
-                getSelectedPrograms(chosenDateWeek, currentPeriod, orgUnitFilter.toString());
-                break;
-            case MONTHLY:
-                getSelectedPrograms(chosenDateMonth, currentPeriod, orgUnitFilter.toString());
-                break;
-            case YEARLY:
-                getSelectedPrograms(chosenDateYear, currentPeriod, orgUnitFilter.toString());
-                break;
-        }
-        ((ProgramModelAdapter) binding.programRecycler.getAdapter()).setCurrentPeriod(currentPeriod);
+            switch (currentPeriod) {
+                case NONE:
+                    getSelectedPrograms(null, currentPeriod, orgUnitFilter.toString());
+                    break;
+                case DAILY:
+                    ArrayList<Date> datesD = new ArrayList<>();
+                    datesD.add(chosenDateDay);
+                    getSelectedPrograms(datesD, currentPeriod, orgUnitFilter.toString());
+                    break;
+                case WEEKLY:
+                    getSelectedPrograms(chosenDateWeek, currentPeriod, orgUnitFilter.toString());
+                    break;
+                case MONTHLY:
+                    getSelectedPrograms(chosenDateMonth, currentPeriod, orgUnitFilter.toString());
+                    break;
+                case YEARLY:
+                    getSelectedPrograms(chosenDateYear, currentPeriod, orgUnitFilter.toString());
+                    break;
+            }
+            ((ProgramModelAdapter) binding.programRecycler.getAdapter()).setCurrentPeriod(currentPeriod);
+        } else
+            displayMessage(getString(R.string.org_unit_selection_warning));
     }
 
     @Override
