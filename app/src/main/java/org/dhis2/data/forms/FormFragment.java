@@ -444,16 +444,18 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
                 }
                 break;
             case RQ_EVENT:
-                openDashboard();
+                openDashboard(data.getStringExtra(Constants.EVENT_UID));
                 break;
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    void openDashboard(){
+    private void openDashboard(@Nullable String eventUid){
         Bundle bundle = new Bundle();
         bundle.putString("PROGRAM_UID", programUid);
         bundle.putString("TEI_UID", teiUid);
+        if(eventUid != null)
+            bundle.putString(Constants.EVENT_UID, eventUid);
         startActivity(TeiDashboardMobileActivity.class, bundle, false, false, null);
         getActivity().finish();
     }
@@ -500,7 +502,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
                 } else { //val0 is program uid, val1 is trackedEntityInstance, val2 is empty
                     this.programUid = enrollmentTrio.val1();
                     this.teiUid = enrollmentTrio.val0();
-                    openDashboard();
+                    openDashboard(null);
                 }
             } else {
                 checkAction();

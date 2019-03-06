@@ -37,6 +37,7 @@ import org.dhis2.utils.Constants;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.custom_views.CategoryComboDialog;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
+import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -170,6 +171,9 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
         setViewpagerAdapter();
 
         TEIDataFragment.getInstance().setData(programModel);
+        Boolean enrollmentStatus = program.getCurrentEnrollment().enrollmentStatus() == EnrollmentStatus.ACTIVE;
+        if(getIntent().getStringExtra(Constants.EVENT_UID) != null && enrollmentStatus)
+            TEIDataFragment.getInstance().displayGenerateEvent(getIntent().getStringExtra(Constants.EVENT_UID));
 
         if (!HelpManager.getInstance().isTutorialReadyForScreen(getClass().getName())) {
             setTutorial();
