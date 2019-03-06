@@ -106,7 +106,7 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
                         State toPost = null;
                         State toUpdate = null;
                         for (int i = 0; i < cursor.getCount(); i++) {
-                            State stateValue = State.valueOf(cursor.getString(0));
+                            State stateValue = State.valueOf(stateCursor.getString(0));
                             switch (stateValue) {
                                 case ERROR:
                                     errorState = State.ERROR;

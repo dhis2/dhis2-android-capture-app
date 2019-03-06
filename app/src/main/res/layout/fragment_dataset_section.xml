@@ -50,22 +50,7 @@
             android:background="@color/sectionSelectorBgColor"
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
-
             app:layout_constraintBottom_toBottomOf="parent">
-
-            <TextView
-                android:id="@+id/saveButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:onClick="@{()->presenter.save()}"
-                android:text="@string/save"
-                android:textColor="@color/colorGreyDefault"
-                android:textSize="14sp"
-                android:padding="5dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/completeButton"
-                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/completeButton"

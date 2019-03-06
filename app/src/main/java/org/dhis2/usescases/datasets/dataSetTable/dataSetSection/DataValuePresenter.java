@@ -1,23 +1,17 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection;
 
 
-import com.google.android.material.snackbar.Snackbar;
-
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.data.tuples.Pair;
-import org.dhis2.data.tuples.Quintet;
 import org.dhis2.data.tuples.Sextet;
-import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel;
 import org.hisp.dhis.android.core.category.CategoryModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
+import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
-import org.hisp.dhis.android.core.dataelement.DataElementModule;
-import org.hisp.dhis.android.core.dataset.DataSetModel;
-import org.hisp.dhis.android.core.dataset.SectionModel;
 import org.hisp.dhis.android.core.datavalue.DataValueModel;
 
 import java.util.ArrayList;
@@ -107,16 +101,6 @@ public class DataValuePresenter implements DataValueContract.Presenter{
             );
     }
 
-    @Override
-    public void save() {
-        compositeDisposable.add(
-                repository.insertDataValue(tranformDataSetTableModelToDataValueModel())
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe( aLong -> view.showSnackBar(), Timber::e)
-        );
-    }
-
     public void complete(){
         compositeDisposable.add(
                 repository.completeDataSet(orgUnitUid, periodId, attributeOptionCombo)
@@ -126,11 +110,9 @@ public class DataValuePresenter implements DataValueContract.Presenter{
         );
     }
 
-    private List<DataValueModel> tranformDataSetTableModelToDataValueModel(){
-        List<DataValueModel> listDataValue = new ArrayList<>();
+    private DataValueModel tranformDataSetTableModelToDataValueModel(DataSetTableModel dataSetTableModel){
         Date currentDate = Calendar.getInstance().getTime();
-        for(DataSetTableModel dataSetTableModel: dataValuesChanged){
-            listDataValue.add(DataValueModel.builder()
+        return DataValueModel.builder()
                     .dataElement(dataSetTableModel.dataElement())
                     .period(dataSetTableModel.period())
                     .organisationUnit(dataSetTableModel.organisationUnit())
@@ -140,11 +122,9 @@ public class DataValuePresenter implements DataValueContract.Presenter{
                     .storedBy(dataSetTableModel.storedBy())
                     .created(currentDate)
                     .lastUpdated(currentDate)
+                    .state(State.TO_POST)
                     .comment("")
-                    .followUp(false).build());
-        }
-
-        return listDataValue;
+                    .followUp(false).build();
     }
 
     @Override
@@ -160,42 +140,47 @@ public class DataValuePresenter implements DataValueContract.Presenter{
     @Override
     public void initializeProcessor(@NonNull DataSetSectionFragment dataSetSectionFragment){
         compositeDisposable.add(dataSetSectionFragment.rowActions()
+                .flatMap(rowAction -> {
+                    boolean exists = false;
+                    dataValuesChanged.clear();
+                    if(rowAction.value() != null && !rowAction.value().isEmpty()) {
+                        DataSetTableModel dataSetTableModel = null;
+                        for (DataSetTableModel dataValue : dataTableModel.dataValues()) {
+                            if (dataValue.dataElement().equals(rowAction.dataElement()) &&
+                                    dataValue.listCategoryOption().containsAll(rowAction.listCategoryOption())) {
+                                dataSetTableModel = DataSetTableModel.create(dataValue.id(), dataValue.dataElement(),
+                                        dataValue.period(), dataValue.organisationUnit(),
+                                        dataValue.categoryOptionCombo(), dataValue.attributeOptionCombo(),
+                                        rowAction.value(), dataValue.storedBy(),
+                                        dataValue.catOption(), dataValue.listCategoryOption(),rowAction.catCombo());
+                                dataTableModel.dataValues().remove(dataValue);
+                                dataTableModel.dataValues().add(dataSetTableModel);
+                                exists = true;
+                                break;
+                            }
+                        }
+                        if (!exists && rowAction.value() != null) {
+                            String catOptionCombo = "";
+                            for (Map.Entry<String, List<String>> entry : dataTableModel.catOptionComboCatOption().entrySet()) {
+                                if (entry.getValue().containsAll(rowAction.listCategoryOption()))
+                                    catOptionCombo = entry.getKey();
+                            }
+                            dataSetTableModel = DataSetTableModel.create(Long.parseLong("0"), rowAction.dataElement(), periodId, orgUnitUid,
+                                    catOptionCombo, attributeOptionCombo, rowAction.value() != null ? rowAction.value() : "", "",
+                                    "", rowAction.listCategoryOption(), rowAction.catCombo());
+                            dataTableModel.dataValues().add(dataSetTableModel);
+                        }
+                        dataSetSectionFragment.updateData(rowAction);
+                        return repository.insertDataValue(tranformDataSetTableModelToDataValueModel(dataSetTableModel));
+                    }
+                    return Flowable.just(0);
+                })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(rowAction -> {
-                            boolean exists = false;
-                            if(rowAction.value() != null && !rowAction.value().isEmpty()) {
-                                DataSetTableModel dataSetTableModel = null;
-                                for (DataSetTableModel dataValue : dataTableModel.dataValues()) {
-                                    if (dataValue.dataElement().equals(rowAction.dataElement()) &&
-                                            dataValue.listCategoryOption().containsAll(rowAction.listCategoryOption())) {
-                                        dataSetTableModel = DataSetTableModel.create(dataValue.id(), dataValue.dataElement(),
-                                                dataValue.period(), dataValue.organisationUnit(),
-                                                dataValue.categoryOptionCombo(), dataValue.attributeOptionCombo(),
-                                                rowAction.value(), dataValue.storedBy(),
-                                                dataValue.catOption(), dataValue.listCategoryOption(),rowAction.catCombo());
-                                        dataTableModel.dataValues().remove(dataValue);
-                                        dataTableModel.dataValues().add(dataSetTableModel);
-                                        exists = true;
-                                        break;
-                                    }
-                                }
-                                if (!exists && rowAction.value() != null) {
-                                    String catOptionCombo = "";
-                                    for (Map.Entry<String, List<String>> entry : dataTableModel.catOptionComboCatOption().entrySet()) {
-                                        if (entry.getValue().containsAll(rowAction.listCategoryOption()))
-                                            catOptionCombo = entry.getKey();
-                                    }
-                                    dataSetTableModel = DataSetTableModel.create(Long.parseLong("0"), rowAction.dataElement(), periodId, orgUnitUid,
-                                            catOptionCombo, attributeOptionCombo, rowAction.value() != null ? rowAction.value() : "", "",
-                                            "", rowAction.listCategoryOption(), rowAction.catCombo());
-                                    dataTableModel.dataValues().add(dataSetTableModel);
-                                }
-                                dataValuesChanged.add(dataSetTableModel);
-                                dataSetSectionFragment.updateData(rowAction);
-                            }
-                        },
-                        Timber::e));
+                .subscribe(aLong -> {
+                    if(aLong.intValue() != 0)
+                        view.showSnackBar();
+                    }, Timber::e));
     }
 
     @Override

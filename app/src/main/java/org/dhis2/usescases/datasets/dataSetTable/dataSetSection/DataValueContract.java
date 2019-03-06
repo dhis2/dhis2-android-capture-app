@@ -36,8 +36,6 @@ public class DataValueContract {
     public interface Presenter extends AbstractActivityContracts.Presenter{
         void init(View view, String orgUnitUid, String periodTypeName, String periodInitialDate, String catCombo, String section, String periodId);
 
-        void save();
-
         void complete();
 
         void getData(@NonNull DataSetSectionFragment dataSetSectionFragment, @Nullable String section);
