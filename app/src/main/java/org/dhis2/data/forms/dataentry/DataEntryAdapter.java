@@ -77,6 +77,14 @@ public final class DataEntryAdapter extends Adapter {
         currentPosition = PublishProcessor.create();
         this.processorOptionSet = PublishProcessor.create();
 
+        initRows(layoutInflater, fragmentManager, dataEntryArguments, orgUnits, isEditable);
+    }
+
+    private void initRows(@NonNull LayoutInflater layoutInflater,
+                          @NonNull FragmentManager fragmentManager,
+                          @NonNull DataEntryArguments dataEntryArguments,
+                          @NonNull Observable<List<OrganisationUnitModel>> orgUnits,
+                          ObservableBoolean isEditable) {
         rows.add(Constants.EDITTEXT, new EditTextRow(layoutInflater, processor, true, dataEntryArguments.renderType(), isEditable));
         rows.add(Constants.BUTTON, new FileRow(layoutInflater, true));
         rows.add(Constants.CHECKBOX, new RadioButtonRow(layoutInflater, processor, true));
@@ -90,7 +98,6 @@ public final class DataEntryAdapter extends Adapter {
         rows.add(Constants.ORG_UNIT, new OrgUnitRow(fragmentManager, layoutInflater, processor, true, orgUnits, dataEntryArguments.renderType()));
         rows.add(Constants.IMAGE, new ImageRow(layoutInflater, processor, dataEntryArguments.renderType()));
         rows.add(Constants.UNSUPPORTED, new UnsupportedRow(layoutInflater));
-
     }
 
     public DataEntryAdapter(@NonNull LayoutInflater layoutInflater,
@@ -108,20 +115,7 @@ public final class DataEntryAdapter extends Adapter {
         currentPosition = PublishProcessor.create();
         this.processorOptionSet = processorOptSet;
 
-        rows.add(Constants.EDITTEXT, new EditTextRow(layoutInflater, processor, true, dataEntryArguments.renderType(), isEditable));
-        rows.add(Constants.BUTTON, new FileRow(layoutInflater, true));
-        rows.add(Constants.CHECKBOX, new RadioButtonRow(layoutInflater, processor, true));
-        rows.add(Constants.SPINNER, new SpinnerRow(layoutInflater, processor, processorOptionSet, true, dataEntryArguments.renderType()));
-        rows.add(Constants.COORDINATES, new CoordinateRow(layoutInflater, processor, true));
-        rows.add(Constants.TIME, new DateTimeRow(layoutInflater, processor, currentPosition, Constants.TIME, true));
-        rows.add(Constants.DATE, new DateTimeRow(layoutInflater, processor, currentPosition, Constants.DATE, true));
-        rows.add(Constants.DATETIME, new DateTimeRow(layoutInflater, processor, currentPosition, Constants.DATETIME, true));
-        rows.add(Constants.AGEVIEW, new AgeRow(layoutInflater, processor, true));
-        rows.add(Constants.YES_NO, new RadioButtonRow(layoutInflater, processor, true));
-        rows.add(Constants.ORG_UNIT, new OrgUnitRow(fragmentManager, layoutInflater, processor, true, orgUnits, dataEntryArguments.renderType()));
-        rows.add(Constants.IMAGE, new ImageRow(layoutInflater, processor, dataEntryArguments.renderType()));
-        rows.add(Constants.UNSUPPORTED, new UnsupportedRow(layoutInflater));
-
+        initRows(layoutInflater, fragmentManager, dataEntryArguments, orgUnits, isEditable);
     }
 
     @NonNull

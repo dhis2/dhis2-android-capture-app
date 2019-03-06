@@ -71,7 +71,7 @@ public class SearchTEContractsModule {
 
         void enroll(String programUid, String uid);
 
-        void onTEIClick(String TEIuid, boolean isOnline);
+        void onTEIClick(String teiUid, boolean isOnline);
 
         void getTrakedEntities();
 
@@ -79,13 +79,13 @@ public class SearchTEContractsModule {
 
         ProgramModel getProgramModel();
 
-        void addRelationship(String TEIuid, String relationshipTypeUid, boolean online);
+        void addRelationship(String teiUid, String relationshipTypeUid, boolean online);
 
-        void addRelationship(String TEIuid, boolean online);
+        void addRelationship(String teiUid, boolean online);
 
         void downloadTei(String teiUid);
 
-        void downloadTeiForRelationship(String TEIuid, String relationshipTypeUid);
+        void downloadTeiForRelationship(String teiUid, String relationshipTypeUid);
 
         Observable<List<OrganisationUnitModel>> getOrgUnits();
 

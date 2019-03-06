@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import org.dhis2.data.forms.FieldViewModelUtils;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import org.dhis2.utils.DateUtils;
@@ -28,7 +29,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.reactivex.Observable;
-import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -220,41 +220,11 @@ final class ProgramStageRepository implements DataEntryRepository {
 
     @NonNull
     private FieldViewModel transform(@NonNull Cursor cursor) {
-        String uid = cursor.getString(0);
-        String label = cursor.getString(1);
-        ValueType valueType = ValueType.valueOf(cursor.getString(2));
-        boolean mandatory = cursor.getInt(3) == 1;
-        String optionSetUid = cursor.getString(4);
-        String dataValue = cursor.getString(5);
-        String optionCodeName = cursor.getString(6);
-        String section = cursor.getString(7);
-        Boolean allowFutureDates = cursor.getInt(8) == 1;
-        EventStatus eventStatus = EventStatus.valueOf(cursor.getString(9));
-        String formLabel = cursor.getString(10);
-        String description = cursor.getString(11);
-        if (!isEmpty(optionCodeName)) {
-            dataValue = optionCodeName;
-        }
+        FieldViewModelUtils fieldViewModelUtils = new FieldViewModelUtils(cursor);
 
-        int optionCount = 0;
-        try {
-            Cursor countCursor = briteDatabase.query("SELECT COUNT (uid) FROM Option WHERE optionSet = ?", optionSetUid);
-            if (countCursor != null) {
-                if (countCursor.moveToFirst())
-                    optionCount = countCursor.getInt(0);
-                countCursor.close();
-            }
-        } catch (Exception e) {
-            Timber.e(e);
-        }
-        ValueTypeDeviceRendering fieldRendering = null;
-        Cursor rendering = briteDatabase.query("SELECT ValueTypeDeviceRendering.* FROM ValueTypeDeviceRendering" +
-                " JOIN ProgramStageDataElement ON ProgramStageDataElement.uid = ValueTypeDeviceRendering.uid" +
-                " WHERE ProgramStageDataElement.uid = ?", uid);
-        if (rendering != null && rendering.moveToFirst()) {
-            fieldRendering = ValueTypeDeviceRendering.create(rendering);
-            rendering.close();
-        }
+        int optionCount = FieldViewModelUtils.getOptionCount(briteDatabase, fieldViewModelUtils.getOptionSetUid());
+
+        ValueTypeDeviceRendering fieldRendering = FieldViewModelUtils.getValueTypeDeviceRendering(briteDatabase, fieldViewModelUtils.getUid());
 
         Cursor eventCursor = briteDatabase.query("SELECT * FROM Event WHERE uid = ?", eventUid);
         eventCursor.moveToFirst();
@@ -272,13 +242,18 @@ final class ProgramStageRepository implements DataEntryRepository {
         boolean hasExpired = DateUtils.getInstance().hasExpired(eventModel, programModel.expiryDays(), programModel.completeEventsExpiryDays(), programStage.periodType() != null ? programStage.periodType() : programModel.expiryPeriodType());
 
         ObjectStyleModel objectStyle = ObjectStyleModel.builder().build();
-        try (Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", uid)) {
+        try (Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", fieldViewModelUtils.getUid())) {
             if (objStyleCursor.moveToFirst())
                 objectStyle = ObjectStyleModel.create(objStyleCursor);
         }
 
-        return fieldFactory.create(uid, isEmpty(formLabel) ? label : formLabel, valueType, mandatory, optionSetUid, dataValue, section,
-                allowFutureDates, accessDataWrite && eventStatus == EventStatus.ACTIVE && !hasExpired, renderingType, description, fieldRendering, optionCount, objectStyle);
+        return fieldFactory.create(fieldViewModelUtils.getUid(),
+                isEmpty(fieldViewModelUtils.getFormLabel()) ? fieldViewModelUtils.getLabel() : fieldViewModelUtils.getFormLabel(),
+                fieldViewModelUtils.getValueType(), fieldViewModelUtils.isMandatory(), fieldViewModelUtils.getOptionSetUid(),
+                fieldViewModelUtils.getDataValue(), fieldViewModelUtils.getSection(),
+                fieldViewModelUtils.getAllowFutureDates(),
+                accessDataWrite && fieldViewModelUtils.getEventStatus() == EventStatus.ACTIVE && !hasExpired, renderingType,
+                fieldViewModelUtils.getDescription(), fieldRendering, optionCount, objectStyle);
     }
 
     @NonNull

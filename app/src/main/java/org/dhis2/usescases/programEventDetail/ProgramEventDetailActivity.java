@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -44,7 +43,6 @@ import javax.inject.Inject;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.core.view.GravityCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -177,6 +175,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         pageProcessor.onNext(0);
     }
 
+    @SuppressWarnings("common-java:DuplicatedBlocks")
     private void setNoSelectedDates(SimpleDateFormat weeklyFormat) {
         ArrayList<Date> date = new ArrayList<>();
         date.add(new Date());
@@ -465,34 +464,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     @Override
     public void showHideFilter() {
         binding.filterLayout.setVisibility(binding.filterLayout.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
-        checkFilterEnabled();
-    }
-
-    private void checkFilterEnabled() {
-        if (binding.filterLayout.getVisibility() == View.VISIBLE) {
-            binding.filter.setBackgroundColor(getPrimaryColor());
-            binding.filter.setColorFilter(ResourcesCompat.getColor(getResources(), R.color.white, getTheme()), PorterDuff.Mode.SRC_IN);
-            binding.filter.setBackgroundResource(0);
-        }
-        // when filter layout is hidden
-        else {
-            // not applied period filter
-            if (currentPeriod == Period.NONE && areAllOrgUnitsSelected() && !isFilteredByCatCombo) {
-                binding.filter.setBackgroundColor(getPrimaryColor());
-                binding.filter.setColorFilter(ResourcesCompat.getColor(getResources(), R.color.white, getTheme()), PorterDuff.Mode.SRC_IN);
-                binding.filter.setBackgroundResource(0);
-            }
-            // applied period filter
-            else {
-                binding.filter.setBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.white, getTheme()));
-                binding.filter.setColorFilter(getPrimaryColor(), PorterDuff.Mode.SRC_IN);
-                binding.filter.setBackgroundResource(R.drawable.white_circle);
-            }
-        }
-    }
-
-    public boolean areAllOrgUnitsSelected() {
-        return treeNode != null && treeNode.getChildren().size() == treeView.getSelected().size();
+        checkFilterEnabled(binding.filterLayout, binding.filter, currentPeriod, isFilteredByCatCombo, areAllOrgUnitsSelected(treeView, treeNode));
     }
 
     @Override

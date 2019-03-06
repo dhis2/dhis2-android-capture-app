@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
+import android.graphics.PorterDuff;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.TypedValue;
@@ -18,6 +19,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,6 +27,8 @@ import android.widget.Toast;
 import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.unnamed.b.atv.model.TreeNode;
+import com.unnamed.b.atv.view.AndroidTreeView;
 
 import org.dhis2.BuildConfig;
 import org.dhis2.R;
@@ -36,6 +40,7 @@ import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.OnDialogClickListener;
+import org.dhis2.utils.Period;
 import org.dhis2.utils.SyncUtils;
 import org.dhis2.utils.custom_views.CoordinatesView;
 import org.dhis2.utils.custom_views.CustomDialog;
@@ -52,6 +57,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.core.widget.ContentLoadingProgressBar;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import rx.Observable;
@@ -153,6 +159,16 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
     }
 
     public void showMoreOptions(View view) {
+        PopupMenu popupMenu = getMoreOptionsMenu(view);
+        popupMenu.getMenuInflater().inflate(R.menu.home_menu, popupMenu.getMenu());
+        popupMenu.setOnMenuItemClickListener(item -> {
+            showTutorial(false);
+            return false;
+        });
+        popupMenu.show();
+    }
+
+    protected PopupMenu getMoreOptionsMenu(View view) {
         PopupMenu popupMenu = new PopupMenu(this, view, Gravity.BOTTOM);
         try {
             Field[] fields = popupMenu.getClass().getDeclaredFields();
@@ -169,12 +185,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
         } catch (Exception e) {
             Timber.e(e);
         }
-        popupMenu.getMenuInflater().inflate(R.menu.home_menu, popupMenu.getMenu());
-        popupMenu.setOnMenuItemClickListener(item -> {
-            showTutorial(false);
-            return false;
-        });
-        popupMenu.show();
+        return popupMenu;
     }
 
     public Context getContext() {
@@ -415,7 +426,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
         return colorPrimary;
     }
 
-    protected void applyColors(){
+    protected void applyColors() {
         SharedPreferences prefs = getAbstracContext().getSharedPreferences(
                 Constants.SHARE_PREFS, Context.MODE_PRIVATE);
         setTheme(prefs.getInt(Constants.PROGRAM_THEME, prefs.getInt(Constants.THEME, R.style.AppTheme)));
@@ -429,5 +440,35 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
             a.recycle();
             window.setStatusBarColor(colorToReturn);
         }
+    }
+
+    protected void checkFilterEnabled(View filterLayout, ImageView filter,
+                                      Period currentPeriod,
+                                      boolean isFilteredByCatCombo,
+                                      boolean areAllOrgUnitsSelected) {
+        if (filterLayout.getVisibility() == View.VISIBLE) {
+            filter.setBackgroundColor(getPrimaryColor());
+            filter.setColorFilter(ResourcesCompat.getColor(getResources(), R.color.white, getTheme()), PorterDuff.Mode.SRC_IN);
+            filter.setBackgroundResource(0);
+        }
+        // when filter layout is hidden
+        else {
+            // not applied period filter
+            if (currentPeriod == Period.NONE && areAllOrgUnitsSelected && !isFilteredByCatCombo) {
+                filter.setBackgroundColor(getPrimaryColor());
+                filter.setColorFilter(ResourcesCompat.getColor(getResources(), R.color.white, getTheme()), PorterDuff.Mode.SRC_IN);
+                filter.setBackgroundResource(0);
+            }
+            // applied period filter
+            else {
+                filter.setBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.white, getTheme()));
+                filter.setColorFilter(getPrimaryColor(), PorterDuff.Mode.SRC_IN);
+                filter.setBackgroundResource(R.drawable.white_circle);
+            }
+        }
+    }
+
+    protected boolean areAllOrgUnitsSelected(AndroidTreeView treeView, TreeNode treeNode) {
+        return treeNode != null && treeNode.getChildren().size() == treeView.getSelected().size();
     }
 }

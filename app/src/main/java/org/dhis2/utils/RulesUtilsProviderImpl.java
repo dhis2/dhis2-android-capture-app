@@ -52,7 +52,7 @@ public class RulesUtilsProviderImpl implements RulesUtilsProvider {
 
     private void applyRuleEffect(RuleEffect ruleEffect,
                                  Map<String, FieldViewModel> fieldViewModels,
-                                 @NonNull RulesActionCallbacks rulesActionCallbacks){
+                                 @NonNull RulesActionCallbacks rulesActionCallbacks) {
         RuleAction ruleAction = ruleEffect.ruleAction();
 
         if (ruleAction instanceof RuleActionShowWarning)
@@ -134,10 +134,8 @@ public class RulesUtilsProviderImpl implements RulesUtilsProvider {
                 ValueType.TEXT, null, false, null, null, ObjectStyleModel.builder().build());
 
         if (this.currentFieldViewModels == null ||
-                !this.currentFieldViewModels.containsKey(uid)) {
-            fieldViewModels.put(uid, textViewModel);
-        } else if (this.currentFieldViewModels.containsKey(uid) &&
-                !Objects.equals(currentFieldViewModels.get(uid).value(), textViewModel.value())) {
+                !this.currentFieldViewModels.containsKey(uid) ||
+                (this.currentFieldViewModels.containsKey(uid) && !Objects.equals(currentFieldViewModels.get(uid).value(), textViewModel.value()))) {
             fieldViewModels.put(uid, textViewModel);
         }
     }

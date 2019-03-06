@@ -64,12 +64,6 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
     }
 
     @Override
-    protected void onPause() {
-        presenter.onDettach();
-        super.onPause();
-    }
-
-    @Override
     public void setAccessDataWrite(Boolean canWrite) {
         // do nothing
     }
@@ -91,6 +85,12 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
                 binding.catComboContainer.addView(categoryComboBinding.getRoot());
             }
         checkActionVisivbility();
+    }
+
+    @Override
+    protected void onPause() {
+        presenter.onDettach();
+        super.onPause();
     }
 
     /**

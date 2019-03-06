@@ -32,27 +32,6 @@ public class ProgramEventDetailViewHolder extends RecyclerView.ViewHolder {
                 stringBuilder.append("\n");
         }
         binding.dataValue.setText(stringBuilder);
-/*
-        disposable.add(presenter.getEventDataValueNew(event)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        values -> {
-                            StringBuilder stringBuilder = new StringBuilder("");
-                            int valuesSize = values.size() > 3 ? 3 : values.size();
-                            for (int i = 0; i < valuesSize; i++) {
-                                if (values.get(i) != null)
-                                    stringBuilder.append(values.get(i));
-                                if (i != valuesSize - 1)
-                                    stringBuilder.append("\n");
-                            }
-                            binding.dataValue.setText(stringBuilder);
-                        },
-                        Timber::d
-                ));*/
-
         itemView.setOnClickListener(view -> presenter.onEventClick(event.uid(), event.orgUnitUid()));
     }
-
-
 }

@@ -7,6 +7,7 @@ import android.database.Cursor;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.R;
+import org.dhis2.data.forms.FieldViewModelUtils;
 import org.dhis2.data.forms.FormRepository;
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.RulesRepository;
@@ -35,7 +36,6 @@ import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.program.ProgramStageSectionModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 import org.hisp.dhis.rules.models.Rule;
 import org.hisp.dhis.rules.models.RuleAction;
 import org.hisp.dhis.rules.models.RuleDataValue;
@@ -385,35 +385,14 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     @NonNull
     private FieldViewModel transform(@NonNull Cursor cursor) {
-        String uid = cursor.getString(0);
-        String dataValue = cursor.getString(5);
-        String optionCodeName = cursor.getString(6);
-        EventStatus eventStatus = EventStatus.valueOf(cursor.getString(9));
-        String formName = cursor.getString(10);
-        String description = cursor.getString(11);
-        String optionSet = cursor.getString(4);
-        if (!isEmpty(optionCodeName)) {
-            dataValue = optionCodeName;
-        }
-
-        int optionCount = 0;
-        try {
-            Cursor countCursor = briteDatabase.query("SELECT COUNT (uid) FROM Option WHERE optionSet = ?", optionSet);
-            if (countCursor != null) {
-                if (countCursor.moveToFirst())
-                    optionCount = countCursor.getInt(0);
-                countCursor.close();
-            }
-        } catch (Exception e) {
-            Timber.e(e);
-        }
-
+        FieldViewModelUtils fieldViewModelUtils = new FieldViewModelUtils(cursor);
+        int optionCount = FieldViewModelUtils.getOptionCount(briteDatabase, fieldViewModelUtils.getOptionSetUid());
 
         ValueTypeDeviceRendering fieldRendering = null;
         try {
             Cursor rendering = briteDatabase.query("SELECT ValueTypeDeviceRendering.* FROM ValueTypeDeviceRendering" +
                     " JOIN ProgramStageDataElement ON ProgramStageDataElement.uid = ValueTypeDeviceRendering.uid" +
-                    " WHERE ProgramStageDataElement.dataElement = ?", uid);
+                    " WHERE ProgramStageDataElement.dataElement = ?", fieldViewModelUtils.getUid());
             if (rendering != null) {
                 if (rendering.moveToFirst())
                     fieldRendering = ValueTypeDeviceRendering.create(rendering);
@@ -423,19 +402,18 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
             Timber.e(e);
         }
         ObjectStyleModel objectStyle = ObjectStyleModel.builder().build();
-        Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", uid);
-        try {
+        try (Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", fieldViewModelUtils.getUid())) {
             if (objStyleCursor.moveToFirst())
                 objectStyle = ObjectStyleModel.create(objStyleCursor);
-        } finally {
-            if (objStyleCursor != null)
-                objStyleCursor.close();
         }
 
-        return fieldFactory.create(uid, formName == null ? cursor.getString(1) : formName,
-                ValueType.valueOf(cursor.getString(2)), cursor.getInt(3) == 1,
-                optionSet, dataValue, cursor.getString(7), cursor.getInt(8) == 1,
-                isEnrollmentOpen() && eventStatus == EventStatus.ACTIVE && accessDataWrite, null, description, fieldRendering, optionCount, objectStyle);
+        return fieldFactory.create(fieldViewModelUtils.getUid(),
+                fieldViewModelUtils.getFormLabel() == null ? fieldViewModelUtils.getLabel() : fieldViewModelUtils.getFormLabel(),
+                fieldViewModelUtils.getValueType(), fieldViewModelUtils.isMandatory(),
+                fieldViewModelUtils.getOptionSetUid(), fieldViewModelUtils.getDataValue(), fieldViewModelUtils.getSection(),
+                fieldViewModelUtils.getAllowFutureDates(),
+                isEnrollmentOpen() && fieldViewModelUtils.getEventStatus() == EventStatus.ACTIVE && accessDataWrite, null,
+                fieldViewModelUtils.getDescription(), fieldRendering, optionCount, objectStyle);
     }
 
     @NonNull
@@ -494,7 +472,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         return st;
     }
 
-    private List<RuleAction> createRuleActions(Cursor cursor, ProgramRule rule) {
+    private List<RuleAction> createRuleActions(ProgramRule rule) {
         List<RuleAction> ruleActions = new ArrayList<>();
         Cursor actionsCursor = briteDatabase.query(
                 "SELECT " +
@@ -562,7 +540,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                                 .mapToList(cursor -> {
                                     ProgramRule rule = ProgramRule.create(cursor);
                                     return Rule.create(rule.programStage().uid(), rule.priority(), rule.condition(),
-                                            createRuleActions(cursor, rule), rule.displayName());
+                                            createRuleActions(rule), rule.displayName());
                                 });
                     else
                         return Observable.just(new ArrayList<Rule>());
@@ -668,25 +646,9 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
             enrollmentCursor.close();
 
-            updateTei(enrollmentModel.trackedEntityInstance());
+            FieldViewModelUtils.updateTEI(briteDatabase, enrollmentModel.trackedEntityInstance());
         }
 
-    }
-
-    private void updateTei(String teiUid) {
-        String selectTei = SELECT + ALL + FROM + TrackedEntityInstanceModel.TABLE + WHERE +
-                TrackedEntityInstanceModel.Columns.UID + EQUAL + QUESTION_MARK;
-        Cursor teiCursor = briteDatabase.query(selectTei, teiUid);
-        if (teiCursor != null && teiCursor.moveToFirst()) {
-            TrackedEntityInstanceModel teiModel = TrackedEntityInstanceModel.create(teiCursor);
-            ContentValues cv = teiModel.toContentValues();
-            cv.put(TrackedEntityInstanceModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
-            cv.put(TrackedEntityInstanceModel.Columns.STATE,
-                    teiModel.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
-            briteDatabase.update(TrackedEntityInstanceModel.TABLE, cv,
-                    TrackedEntityInstanceModel.Columns.UID + EQUAL + QUESTION_MARK, teiUid);
-            teiCursor.close();
-        }
     }
 
     @Override

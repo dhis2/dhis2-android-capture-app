@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteConstraintException;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import org.dhis2.data.forms.FieldViewModelUtils;
 import org.dhis2.utils.CodeGenerator;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
@@ -222,7 +223,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
             return Observable.error(new SQLiteConstraintException(message));
         } else {
             if (trackedEntityInstanceUid != null)
-                updateTei(trackedEntityInstanceUid);
+                FieldViewModelUtils.updateTEI(briteDatabase, trackedEntityInstanceUid);
             updateProgramTable(createDate, programUid);
             return Observable.just(uid);
         }
@@ -276,7 +277,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
             return Observable.error(new SQLiteConstraintException(message));
         } else {
             if (trackedEntityInstanceUid != null)
-                updateTei(trackedEntityInstanceUid);
+                FieldViewModelUtils.updateTEI(briteDatabase, trackedEntityInstanceUid);
             updateTrackedEntityInstance(uid, trackedEntityInstanceUid, orgUnitUid);
             updateProgramTable(createDate, program);
             return Observable.just(uid);
@@ -387,7 +388,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
             return Observable.error(new SQLiteConstraintException(message));
         }
         if (trackedEntityInstance != null)
-            updateTei(trackedEntityInstance);
+            FieldViewModelUtils.updateTEI(briteDatabase, trackedEntityInstance);
         return event(id).map(eventModel1 ->
 //            updateProgramTable(currentDate, eventModel1.program()); //TODO: This is crashing the app
                 eventModel1);
@@ -457,7 +458,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                 updateEnrollment(eventModel.enrollment());
 
             if (trackedEntityInstance != null)
-                updateTei(trackedEntityInstance);
+                FieldViewModelUtils.updateTEI(briteDatabase, trackedEntityInstance);
 
             eventCursor.close();
         }
@@ -490,21 +491,6 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                     enrollment.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
             briteDatabase.update(EnrollmentModel.TABLE, cv, EnrollmentModel.Columns.UID + EQUAL + QUESTION_MARK, enrollmentUid);
             enrollmentCursor.close();
-        }
-    }
-
-    private void updateTei(String teiUid) {
-        String selectTei = SELECT + ALL + FROM + TrackedEntityInstanceModel.TABLE + WHERE +
-                TrackedEntityInstanceModel.Columns.UID + EQUAL + QUESTION_MARK;
-        Cursor teiCursor = briteDatabase.query(selectTei, teiUid);
-        if (teiCursor != null && teiCursor.moveToFirst()) {
-            TrackedEntityInstanceModel teiModel = TrackedEntityInstanceModel.create(teiCursor);
-            ContentValues cv = teiModel.toContentValues();
-            cv.put(TrackedEntityInstanceModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
-            cv.put(TrackedEntityInstanceModel.Columns.STATE,
-                    teiModel.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
-            briteDatabase.update(TrackedEntityInstanceModel.TABLE, cv, TrackedEntityInstanceModel.Columns.UID + EQUAL + QUESTION_MARK, teiUid);
-            teiCursor.close();
         }
     }
 }

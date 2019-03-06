@@ -7,6 +7,7 @@ import android.database.Cursor;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.R;
+import org.dhis2.data.forms.FieldViewModelUtils;
 import org.dhis2.data.forms.FormRepository;
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
@@ -17,7 +18,6 @@ import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.State;
-import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
@@ -44,7 +44,6 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
-import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
 import static org.dhis2.data.database.SqlConstants.ALL;
@@ -247,46 +246,29 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
 
     @NonNull
     private FieldViewModel transform(@NonNull Cursor cursor) {
-        String uid = cursor.getString(0);
-        String dataValue = cursor.getString(5);
-        String optionCodeName = cursor.getString(6);
-        EventStatus eventStatus = EventStatus.valueOf(cursor.getString(9));
-        String formName = cursor.getString(10);
-        String description = cursor.getString(11);
-        String optionSet = cursor.getString(4);
-        if (!isEmpty(optionCodeName)) {
-            dataValue = optionCodeName;
-        }
-
-        int optionCount = 0;
-        try {
-            Cursor countCursor = briteDatabase.query(SELECT + "COUNT (uid) FROM Option WHERE optionSet = ?", optionSet);
-            if (countCursor != null) {
-                if (countCursor.moveToFirst())
-                    optionCount = countCursor.getInt(0);
-                countCursor.close();
-            }
-        } catch (Exception e) {
-            Timber.e(e);
-        }
+        FieldViewModelUtils fieldViewModelUtils = new FieldViewModelUtils(cursor);
+        int optionCount = FieldViewModelUtils.getOptionCount(briteDatabase, fieldViewModelUtils.getOptionSetUid());
 
         ValueTypeDeviceRendering fieldRendering = null;
-        Cursor rendering = briteDatabase.query(SELECT + ALL + FROM + "ValueTypeDeviceRendering WHERE uid = ?", uid);
+        Cursor rendering = briteDatabase.query(SELECT + ALL + FROM + "ValueTypeDeviceRendering WHERE uid = ?", fieldViewModelUtils.getUid());
         if (rendering != null && rendering.moveToFirst()) {
             fieldRendering = ValueTypeDeviceRendering.create(rendering);
             rendering.close();
         }
 
         ObjectStyleModel objectStyle = ObjectStyleModel.builder().build();
-        try (Cursor objStyleCursor = briteDatabase.query(SELECT + ALL + FROM + "ObjectStyle WHERE uid = ?", uid)) {
+        try (Cursor objStyleCursor = briteDatabase.query(SELECT + ALL + FROM + "ObjectStyle WHERE uid = ?", fieldViewModelUtils.getUid())) {
             if (objStyleCursor.moveToFirst())
                 objectStyle = ObjectStyleModel.create(objStyleCursor);
         }
 
-        return fieldFactory.create(uid, formName == null ? cursor.getString(1) : formName,
-                ValueType.valueOf(cursor.getString(2)), cursor.getInt(3) == 1,
-                optionSet, dataValue, cursor.getString(7), cursor.getInt(8) == 1,
-                eventStatus == EventStatus.ACTIVE, null, description, fieldRendering, optionCount, objectStyle);
+        return fieldFactory.create(fieldViewModelUtils.getUid(),
+                fieldViewModelUtils.getFormLabel() == null ? fieldViewModelUtils.getLabel() : fieldViewModelUtils.getFormLabel(),
+                fieldViewModelUtils.getValueType(), fieldViewModelUtils.isMandatory(),
+                fieldViewModelUtils.getOptionSetUid(), fieldViewModelUtils.getDataValue(), fieldViewModelUtils.getSection(),
+                fieldViewModelUtils.getAllowFutureDates(),
+                fieldViewModelUtils.getEventStatus() == EventStatus.ACTIVE, null,
+                fieldViewModelUtils.getDescription(), fieldRendering, optionCount, objectStyle);
     }
 
     @NonNull

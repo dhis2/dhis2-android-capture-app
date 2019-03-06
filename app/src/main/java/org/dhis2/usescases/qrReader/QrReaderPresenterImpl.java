@@ -132,39 +132,24 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
     }
 
     private TrackedEntityDataValueModel.Builder parseTEDataValueJson(JSONObject attrValue) throws JSONException, ParseException {
-        TrackedEntityDataValueModel.Builder trackedEntityDataValueModelBuilder = TrackedEntityDataValueModel.builder();
-
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATABASE_FORMAT_EXPRESSION, Locale.getDefault());
+        TrackedEntityDataValueModel.Builder trackedEntityDataValueModelBuilder = getTEDataValueBuilder(attrValue);
         trackedEntityDataValueModelBuilder.event(eventUid);
-        if (attrValue.has(TrackedEntityDataValueModel.Columns.DATA_ELEMENT)) {
-            trackedEntityDataValueModelBuilder.dataElement(attrValue.getString(TrackedEntityDataValueModel.Columns.DATA_ELEMENT));
-        }
-        if (attrValue.has(TrackedEntityDataValueModel.Columns.STORED_BY)) {
-            trackedEntityDataValueModelBuilder.storedBy(attrValue.getString(TrackedEntityDataValueModel.Columns.STORED_BY));
-        }
-        if (attrValue.has(TrackedEntityDataValueModel.Columns.VALUE)) {
-            trackedEntityDataValueModelBuilder.value(attrValue.getString(TrackedEntityDataValueModel.Columns.VALUE));
-        }
-        if (attrValue.has(TrackedEntityDataValueModel.Columns.PROVIDED_ELSEWHERE)) {
-            trackedEntityDataValueModelBuilder.providedElsewhere(Boolean.parseBoolean(attrValue.getString(TrackedEntityDataValueModel.Columns.PROVIDED_ELSEWHERE)));
-        }
-        if (attrValue.has(TrackedEntityDataValueModel.Columns.CREATED)) {
-            trackedEntityDataValueModelBuilder.created(simpleDateFormat.parse(attrValue.getString(TrackedEntityDataValueModel.Columns.CREATED)));
-        }
-        if (attrValue.has(TrackedEntityDataValueModel.Columns.LAST_UPDATED)) {
-            trackedEntityDataValueModelBuilder.lastUpdated(simpleDateFormat.parse(attrValue.getString(TrackedEntityDataValueModel.Columns.LAST_UPDATED)));
-        }
+
         return trackedEntityDataValueModelBuilder;
     }
 
     private TrackedEntityDataValueModel.Builder parseTEDataInfoJson(JSONObject attrValue) throws JSONException, ParseException {
-        TrackedEntityDataValueModel.Builder trackedEntityDataValueModelBuilder = TrackedEntityDataValueModel.builder();
-
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATABASE_FORMAT_EXPRESSION, Locale.getDefault());
-
+        TrackedEntityDataValueModel.Builder trackedEntityDataValueModelBuilder = getTEDataValueBuilder(attrValue);
         if (attrValue.has(TrackedEntityDataValueModel.Columns.EVENT)) {
             trackedEntityDataValueModelBuilder.event(attrValue.getString(TrackedEntityDataValueModel.Columns.EVENT));
         }
+        return trackedEntityDataValueModelBuilder;
+    }
+
+    private TrackedEntityDataValueModel.Builder getTEDataValueBuilder(JSONObject attrValue) throws JSONException, ParseException {
+        TrackedEntityDataValueModel.Builder trackedEntityDataValueModelBuilder = TrackedEntityDataValueModel.builder();
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATABASE_FORMAT_EXPRESSION, Locale.getDefault());
         if (attrValue.has(TrackedEntityDataValueModel.Columns.DATA_ELEMENT)) {
             trackedEntityDataValueModelBuilder.dataElement(attrValue.getString(TrackedEntityDataValueModel.Columns.DATA_ELEMENT));
         }

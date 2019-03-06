@@ -2,7 +2,6 @@ package org.dhis2.usescases.datasets.datasetDetail;
 
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
@@ -33,8 +32,6 @@ import java.util.Locale;
 
 import javax.inject.Inject;
 
-import androidx.core.content.ContextCompat;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.core.view.GravityCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -48,7 +45,6 @@ import static org.dhis2.utils.Period.DAILY;
 import static org.dhis2.utils.Period.MONTHLY;
 import static org.dhis2.utils.Period.NONE;
 import static org.dhis2.utils.Period.WEEKLY;
-import static org.dhis2.utils.Period.YEARLY;
 
 @SuppressWarnings("squid:MaximumInheritanceDepth")
 public class DataSetDetailActivity extends ActivityGlobalAbstract implements DataSetDetailContract.DataSetDetailView {
@@ -252,6 +248,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
         presenter.getDataSetWithDates(selectedDates, currentPeriod, orgUnitFilter.toString());
     }
 
+    @SuppressWarnings("common-java:DuplicatedBlocks")
     private void setNotSelectedDates(SimpleDateFormat weeklyFormat) {
         ArrayList<Date> date = new ArrayList<>();
         date.add(new Date());
@@ -275,7 +272,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
         presenter.getDataSetWithDates(date, currentPeriod, orgUnitFilter.toString());
     }
 
-    @SuppressLint({"RxLeakedSubscription", "CheckResult"})
+    @SuppressLint({"RxLeakedSubscription", "CheckResult", "common-java:DuplicatedBlocks"})
     @Override
     public void showRageDatePicker() {
         Calendar calendar = Calendar.getInstance();
@@ -357,7 +354,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
     @Override
     public void showHideFilter() {
         binding.filterLayout.setVisibility(binding.filterLayout.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
-        checkFilterEnabled();
+        checkFilterEnabled(binding.filterLayout, binding.filter, currentPeriod, isFilteredByCatCombo, areAllOrgUnitsSelected(treeView, treeNode));
     }
 
     @Override
@@ -413,32 +410,4 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
     public String dataSetUid() {
         return dataSetUid;
     }
-
-    private void checkFilterEnabled() {
-        if (binding.filterLayout.getVisibility() == View.VISIBLE) {
-            binding.filter.setBackgroundColor(getPrimaryColor());
-            binding.filter.setColorFilter(ResourcesCompat.getColor(getResources(), R.color.white, getTheme()), PorterDuff.Mode.SRC_IN);
-            binding.filter.setBackgroundResource(0);
-        }
-        // when filter layout is hidden
-        else {
-            // not applied period filter
-            if (currentPeriod == Period.NONE && areAllOrgUnitsSelected() && !isFilteredByCatCombo) {
-                binding.filter.setBackgroundColor(getPrimaryColor());
-                binding.filter.setColorFilter(ResourcesCompat.getColor(getResources(), R.color.white, getTheme()), PorterDuff.Mode.SRC_IN);
-                binding.filter.setBackgroundResource(0);
-            }
-            // applied period filter
-            else {
-                binding.filter.setBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.white, getTheme()));
-                binding.filter.setColorFilter(getPrimaryColor(), PorterDuff.Mode.SRC_IN);
-                binding.filter.setBackgroundResource(R.drawable.white_circle);
-            }
-        }
-    }
-
-    private boolean areAllOrgUnitsSelected() {
-        return treeNode != null && treeNode.getChildren().size() == treeView.getSelected().size();
-    }
-
 }

@@ -17,7 +17,6 @@ import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.State;
-import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
@@ -50,7 +49,6 @@ import io.reactivex.exceptions.OnErrorNotImplementedException;
 import io.reactivex.functions.Consumer;
 import timber.log.Timber;
 
-import static android.text.TextUtils.isEmpty;
 import static org.dhis2.data.database.SqlConstants.ALL;
 import static org.dhis2.data.database.SqlConstants.AND;
 import static org.dhis2.data.database.SqlConstants.COMMA;
@@ -560,41 +558,12 @@ class EnrollmentFormRepository implements FormRepository {
 
     @NonNull
     private FieldViewModel transform(@NonNull Cursor cursor) {
-        String uid = cursor.getString(0);
-        String label = cursor.getString(1);
-        ValueType valueType = ValueType.valueOf(cursor.getString(2));
-        boolean mandatory = cursor.getInt(3) == 1;
-        String optionSetUid = cursor.getString(4);
-        String dataValue = cursor.getString(5);
-        String optionCodeName = cursor.getString(6);
-        String section = cursor.getString(7);
-        Boolean allowFutureDates = cursor.getInt(8) == 1;
+        FieldViewModelUtils fieldViewModelUtils = new FieldViewModelUtils(cursor);
         EnrollmentStatus status = EnrollmentStatus.valueOf(cursor.getString(10));
-        String description = cursor.getString(11);
-        if (!isEmpty(optionCodeName)) {
-            dataValue = optionCodeName;
-        }
 
-        int optionCount = 0;
-        try {
-            Cursor countCursor = briteDatabase.query("SELECT COUNT (uid) FROM Option WHERE optionSet = ?", optionSetUid);
-            if (countCursor != null) {
-                if (countCursor.moveToFirst())
-                    optionCount = countCursor.getInt(0);
-                countCursor.close();
-            }
-        } catch (Exception e) {
-            Timber.e(e);
-        }
+        int optionCount = FieldViewModelUtils.getOptionCount(briteDatabase, fieldViewModelUtils.getOptionSetUid());
 
-        ValueTypeDeviceRendering fieldRendering = null;
-        Cursor rendering = briteDatabase.query("SELECT ValueTypeDeviceRendering.* FROM ValueTypeDeviceRendering " +
-                "JOIN ProgramTrackedEntityAttribute ON ProgramTrackedEntityAttribute.uid = ValueTypeDeviceRendering.uid WHERE ProgramTrackedEntityAttribute.trackedEntityAttribute = ?", uid);
-        if (rendering != null) {
-            if (rendering.moveToFirst())
-                fieldRendering = ValueTypeDeviceRendering.create(rendering);
-            rendering.close();
-        }
+        ValueTypeDeviceRendering fieldRendering = FieldViewModelUtils.getValueTypeDeviceRendering(briteDatabase, fieldViewModelUtils.getUid());
 
         FieldViewModelFactoryImpl fieldFactory = new FieldViewModelFactoryImpl(
                 "",
@@ -608,13 +577,15 @@ class EnrollmentFormRepository implements FormRepository {
                 "");
 
         ObjectStyleModel objectStyle = ObjectStyleModel.builder().build();
-        try (Cursor objStyleCursor = briteDatabase.query(SELECT + ALL + FROM + "ObjectStyle WHERE uid = ?", uid)) {
+        try (Cursor objStyleCursor = briteDatabase.query(SELECT + ALL + FROM + "ObjectStyle WHERE uid = ?", fieldViewModelUtils.getUid())) {
             if (objStyleCursor.moveToFirst())
                 objectStyle = ObjectStyleModel.create(objStyleCursor);
         }
 
-        return fieldFactory.create(uid, label, valueType, mandatory, optionSetUid, dataValue, section,
-                allowFutureDates, status == EnrollmentStatus.ACTIVE, null, description, fieldRendering, optionCount, objectStyle);
+        return fieldFactory.create(fieldViewModelUtils.getUid(), fieldViewModelUtils.getLabel(), fieldViewModelUtils.getValueType(),
+                fieldViewModelUtils.isMandatory(), fieldViewModelUtils.getOptionSetUid(), fieldViewModelUtils.getDataValue(), fieldViewModelUtils.getSection(),
+                fieldViewModelUtils.getAllowFutureDates(), status == EnrollmentStatus.ACTIVE, null,
+                fieldViewModelUtils.getDescription(), fieldRendering, optionCount, objectStyle);
     }
 
     @Nullable
