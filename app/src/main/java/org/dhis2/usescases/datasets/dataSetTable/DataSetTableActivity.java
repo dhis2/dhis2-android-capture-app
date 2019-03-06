@@ -1,6 +1,8 @@
 package org.dhis2.usescases.datasets.dataSetTable;
 
 import androidx.databinding.DataBindingUtil;
+
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.Menu;
@@ -94,6 +96,10 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //Orientation
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+
         orgUnitUid = getIntent().getStringExtra(Constants.ORG_UNIT);
         orgUnitName = getIntent().getStringExtra(Constants.ORG_UNIT_NAME);
         periodTypeName = getIntent().getStringExtra(Constants.PERIOD_TYPE);
