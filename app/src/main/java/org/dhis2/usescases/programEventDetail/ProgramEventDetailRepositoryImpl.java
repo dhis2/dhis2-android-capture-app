@@ -71,13 +71,18 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
         this.briteDatabase = briteDatabase;
     }
 
+    private String formatOrgUnitQuery(String orgUnitQuery) {
+        String orgQuery = "";
+        if (!isEmpty(orgUnitQuery))
+            orgQuery = String.format(" AND Event.organisationUnit IN (%s) ", orgUnitQuery);
+        return orgQuery;
+    }
+
     @NonNull
     private Flowable<List<ProgramEventViewModel>> programEvents(String programUid, List<Date> dates, Period period, String orgUnitQuery, int page) {
         String pageQuery = String.format(Locale.US, " LIMIT %d,%d", page * 20, 20);
 
-        String orgQuery = "";
-        if (!isEmpty(orgUnitQuery))
-            orgQuery = String.format(" AND Event.organisationUnit IN (%s) ", orgUnitQuery);
+        String orgQuery = formatOrgUnitQuery(orgUnitQuery);
 
         if (dates != null) {
             String selectEventWithProgramUidAndDates = SELECT + ALL + FROM + EventModel.TABLE + WHERE + EventModel.Columns.PROGRAM + "='%s' AND (%s) " +
@@ -86,16 +91,9 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
                     orgQuery +
                     ORDER_BY + EventModel.TABLE + POINT + EventModel.Columns.EVENT_DATE + " DESC, Event.lastUpdated DESC";
 
-            StringBuilder dateQuery = new StringBuilder();
-            String queryFormat = "(%s BETWEEN '%s' AND '%s') ";
-            for (int i = 0; i < dates.size(); i++) {
-                Date[] datesToQuery = DateUtils.getInstance().getDateFromDateAndPeriod(dates.get(i), period);
-                dateQuery.append(String.format(queryFormat, EventModel.Columns.EVENT_DATE, DateUtils.databaseDateFormat().format(datesToQuery[0]), DateUtils.databaseDateFormat().format(datesToQuery[1])));
-                if (i < dates.size() - 1)
-                    dateQuery.append("OR ");
-            }
 
             String queryToFormat = selectEventWithProgramUidAndDates + pageQuery;
+            StringBuilder dateQuery = getDateQuery(dates, period);
 
             return briteDatabase.createQuery(EventModel.TABLE, String.format(queryToFormat,
                     programUid == null ? "" : programUid,
@@ -128,6 +126,18 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
         }
     }
 
+    private StringBuilder getDateQuery(List<Date> dates, Period period) {
+        StringBuilder dateQuery = new StringBuilder();
+        String queryFormat = "(%s BETWEEN '%s' AND '%s') ";
+        for (int i = 0; i < dates.size(); i++) {
+            Date[] datesToQuery = DateUtils.getInstance().getDateFromDateAndPeriod(dates.get(i), period);
+            dateQuery.append(String.format(queryFormat, EventModel.Columns.EVENT_DATE, DateUtils.databaseDateFormat().format(datesToQuery[0]), DateUtils.databaseDateFormat().format(datesToQuery[1])));
+            if (i < dates.size() - 1)
+                dateQuery.append("OR ");
+        }
+        return dateQuery;
+    }
+
     @NonNull
     @Override
     public Flowable<List<ProgramEventViewModel>> filteredProgramEvents(String programUid, List<Date> dates,
@@ -137,31 +147,26 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
                                                                        int page) {
         if (orgUnitQuery == null)
             orgUnitQuery = "";
+
+        String programUidAux = programUid == null ? "" : programUid;
+
         String pageQuery = String.format(Locale.US, " LIMIT %d,%d", page * 20, 20);
 
         if (categoryOptionComboModel == null) {
-            return programEvents(programUid, dates, period, orgUnitQuery, page);
+            return programEvents(programUidAux, dates, period, orgUnitQuery, page);
         }
         if (dates != null) {
             String selectEventWithProgramUidAndDatesAndCatCombo = SELECT + ALL + FROM + EventModel.TABLE + WHERE + EventModel.Columns.PROGRAM + "='%s' AND " + EventModel.Columns.ATTRIBUTE_OPTION_COMBO + "='%s' AND (%s) " +
                     AND + EventModel.TABLE + POINT + EventModel.Columns.STATE + NOT_EQUAL + QUOTE + State.TO_DELETE + QUOTE +
                     AND + EventModel.TABLE + POINT + EventModel.Columns.ORGANISATION_UNIT + " IN (" + orgUnitQuery + ")";
 
-            StringBuilder dateQuery = new StringBuilder();
-            String queryFormat = "(%s BETWEEN '%s' AND '%s') ";
-            for (int i = 0; i < dates.size(); i++) {
-                Date[] datesToQuery = DateUtils.getInstance().getDateFromDateAndPeriod(dates.get(i), period);
-                dateQuery.append(String.format(queryFormat, EventModel.Columns.EVENT_DATE, DateUtils.getInstance().formatDate(datesToQuery[0]), DateUtils.getInstance().formatDate(datesToQuery[1])));
-                if (i < dates.size() - 1)
-                    dateQuery.append("OR ");
-            }
 
             String id = categoryOptionComboModel.uid() == null ? "" : categoryOptionComboModel.uid();
             String queryToFormat = selectEventWithProgramUidAndDatesAndCatCombo + pageQuery;
             return briteDatabase.createQuery(EventModel.TABLE, String.format(queryToFormat,
-                    programUid == null ? "" : programUid,
+                    programUidAux,
                     id,
-                    dateQuery))
+                    getDateQuery(dates, period)))
                     .mapToList(cursor -> transformIntoEventViewModel(EventModel.create(cursor))).toFlowable(BackpressureStrategy.LATEST);
         } else {
             String selectEventWithProgramUidAndDatesAndCatCombo = SELECT + ALL + FROM + EventModel.TABLE + WHERE + EventModel.Columns.PROGRAM + "='%s' AND " + EventModel.Columns.ATTRIBUTE_OPTION_COMBO + "='%s' " +
@@ -173,23 +178,26 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
             String queryToFormat = selectEventWithProgramUidAndDatesAndCatCombo + pageQuery;
 
             return briteDatabase.createQuery(EventModel.TABLE, String.format(queryToFormat,
-                    programUid == null ? "" : programUid,
+                    programUidAux,
                     id))
                     .mapToList(cursor -> {
                         EventModel eventModel = EventModel.create(cursor);
-
-                        Cursor program = briteDatabase.query(SELECT + ALL + FROM + "Program WHERE uid = ?", programUid);
-                        if (program != null && program.moveToFirst()) {
-                            ProgramModel programModel = ProgramModel.create(program);
-                            if (DateUtils.getInstance().hasExpired(eventModel, programModel.expiryDays(), programModel.completeEventsExpiryDays(), programModel.expiryPeriodType())) {
-                                ContentValues contentValues = eventModel.toContentValues();
-                                contentValues.put(EventModel.Columns.STATUS, EventStatus.SKIPPED.toString());
-                                briteDatabase.update(EventModel.TABLE, contentValues, "uid = ?", eventModel.uid());
-                            }
-                            program.close();
-                        }
+                        updateProgram(eventModel, programUidAux);
                         return transformIntoEventViewModel(eventModel);
                     }).toFlowable(BackpressureStrategy.LATEST);
+        }
+    }
+
+    private void updateProgram(EventModel eventModel, String programUid) {
+        Cursor program = briteDatabase.query(SELECT + ALL + FROM + "Program WHERE uid = ?", programUid);
+        if (program != null && program.moveToFirst()) {
+            ProgramModel programModel = ProgramModel.create(program);
+            if (DateUtils.getInstance().hasExpired(eventModel, programModel.expiryDays(), programModel.completeEventsExpiryDays(), programModel.expiryPeriodType())) {
+                ContentValues contentValues = eventModel.toContentValues();
+                contentValues.put(EventModel.Columns.STATUS, EventStatus.SKIPPED.toString());
+                briteDatabase.update(EventModel.TABLE, contentValues, "uid = ?", eventModel.uid());
+            }
+            program.close();
         }
     }
 

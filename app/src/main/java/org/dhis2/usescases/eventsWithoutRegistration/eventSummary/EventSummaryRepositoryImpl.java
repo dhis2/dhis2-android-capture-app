@@ -303,6 +303,54 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
                 );
     }
 
+    private ContentValues getContentValues(EventModel event, String lastUpdated) {
+        ContentValues values = event.toContentValues();
+        switch (event.status()) {
+            case ACTIVE:
+            case SKIPPED:
+            case VISITED:
+            case SCHEDULE:
+                values.put(EventModel.Columns.STATUS, EventStatus.COMPLETED.name()); //TODO: Can this happen?
+                values.put(EventModel.Columns.COMPLETE_DATE, lastUpdated);
+                break;
+            case COMPLETED:
+                values.put(EventModel.Columns.STATUS, EventStatus.ACTIVE.name()); //TODO: This should check dates?
+                break;
+            default:
+                break;
+        }
+
+        values.put(EventModel.Columns.STATE, State.TO_UPDATE.toString());
+        values.put(EventModel.Columns.LAST_UPDATED, lastUpdated);
+
+        return values;
+    }
+
+    private void updateEvent(EventModel event, ContentValues values) {
+        if (briteDatabase.update(EventModel.TABLE, values,
+                EventModel.Columns.UID + " = ?", eventUid == null ? "" : eventUid) <= 0) {
+
+            throw new IllegalStateException(String.format(Locale.US, "Event=[%s] " +
+                    "has not been successfully updated", event.uid()));
+        }
+    }
+
+    private void updateProgram(Cursor cursor, EventModel event, ContentValues values, String lastUpdated) {
+        Cursor programCursor = briteDatabase.query(PROGRAM_QUERY, eventUid == null ? "" : eventUid);
+        if (programCursor != null && cursor.moveToNext()) {
+            ProgramModel program = ProgramModel.create(programCursor);
+            programCursor.close();
+            ContentValues programValues = program.toContentValues();
+            values.put(ProgramModel.Columns.LAST_UPDATED, lastUpdated);
+            if (briteDatabase.update(ProgramModel.TABLE, programValues,
+                    ProgramModel.Columns.UID + " = ?", program.uid() == null ? "" : program.uid()) <= 0) {
+
+                throw new IllegalStateException(String.format(Locale.US, "Program=[%s] " +
+                        "has not been successfully updated", event.uid()));
+            }
+        }
+    }
+
     @Override
     public Observable<EventModel> changeStatus(String eventUid) {
         String lastUpdated = DateUtils.databaseDateFormat().format(DateUtils.getInstance().getToday());
@@ -311,47 +359,12 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
 
             EventModel event = EventModel.create(cursor);
             cursor.close();
+            ContentValues values = getContentValues(event, lastUpdated);
 
-            ContentValues values = event.toContentValues();
-            switch (event.status()) {
-                case ACTIVE:
-                case SKIPPED:
-                case VISITED:
-                case SCHEDULE:
-                    values.put(EventModel.Columns.STATUS, EventStatus.COMPLETED.name()); //TODO: Can this happen?
-                    values.put(EventModel.Columns.COMPLETE_DATE, lastUpdated);
-                    break;
-                case COMPLETED:
-                    values.put(EventModel.Columns.STATUS, EventStatus.ACTIVE.name()); //TODO: This should check dates?
-                    break;
-                default:
-                    break;
-            }
+            updateEvent(event, values);
 
+            updateProgram(cursor, event, values, lastUpdated);
 
-            values.put(EventModel.Columns.STATE, State.TO_UPDATE.toString());
-            values.put(EventModel.Columns.LAST_UPDATED, lastUpdated);
-
-            if (briteDatabase.update(EventModel.TABLE, values,
-                    EventModel.Columns.UID + " = ?", eventUid == null ? "" : eventUid) <= 0) {
-
-                throw new IllegalStateException(String.format(Locale.US, "Event=[%s] " +
-                        "has not been successfully updated", event.uid()));
-            }
-
-            Cursor programCursor = briteDatabase.query(PROGRAM_QUERY, eventUid == null ? "" : eventUid);
-            if (programCursor != null && cursor.moveToNext()) {
-                ProgramModel program = ProgramModel.create(programCursor);
-                programCursor.close();
-                ContentValues programValues = program.toContentValues();
-                values.put(ProgramModel.Columns.LAST_UPDATED, lastUpdated);
-                if (briteDatabase.update(ProgramModel.TABLE, programValues,
-                        ProgramModel.Columns.UID + " = ?", program.uid() == null ? "" : program.uid()) <= 0) {
-
-                    throw new IllegalStateException(String.format(Locale.US, "Program=[%s] " +
-                            "has not been successfully updated", event.uid()));
-                }
-            }
             return Observable.just(event);
         } else
             return null;

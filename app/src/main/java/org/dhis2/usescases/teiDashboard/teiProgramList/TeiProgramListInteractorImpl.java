@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 
 import org.dhis2.R;
 import org.dhis2.usescases.main.program.ProgramViewModel;
-import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.custom_views.OrgUnitDialog;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -49,6 +48,32 @@ public class TeiProgramListInteractorImpl implements TeiProgramListContract.TeiP
         getPrograms();
     }
 
+    private ArrayList<OrganisationUnitModel> getFilteredOrgUnits(List<OrganisationUnitModel> allOrgUnits) {
+        ArrayList<OrganisationUnitModel> orgUnits = new ArrayList<>();
+        for (OrganisationUnitModel orgUnit : allOrgUnits) {
+            boolean afterOpening = false;
+            boolean beforeClosing = false;
+            if (orgUnit.openingDate() == null || !selectedEnrollmentDate.before(orgUnit.openingDate()))
+                afterOpening = true;
+            if (orgUnit.closedDate() == null || !selectedEnrollmentDate.after(orgUnit.closedDate()))
+                beforeClosing = true;
+            if (afterOpening && beforeClosing)
+                orgUnits.add(orgUnit);
+        }
+        return orgUnits;
+    }
+
+    private void enrollInOrgUnitOrShowDialog(String programUid, String uid,
+                                             ArrayList<OrganisationUnitModel> orgUnits,
+                                             OrgUnitDialog orgUnitDialog) {
+        if (orgUnits.size() > 1) {
+            orgUnitDialog.setOrgUnits(orgUnits);
+            if (!orgUnitDialog.isAdded())
+                orgUnitDialog.show(view.getAbstracContext().getSupportFragmentManager(), "OrgUnitEnrollment");
+        } else
+            enrollInOrgUnit(orgUnits.get(0).uid(), programUid, uid, selectedEnrollmentDate);
+    }
+
     @Override
     public void enroll(String programUid, String uid) {
         selectedEnrollmentDate = Calendar.getInstance().getTime();
@@ -62,6 +87,10 @@ public class TeiProgramListInteractorImpl implements TeiProgramListContract.TeiP
                 })
                 .setNegativeListener(v -> orgUnitDialog.dismiss());
 
+        showDateDialog(orgUnitDialog, programUid, uid);
+    }
+
+    private void showDateDialog(OrgUnitDialog orgUnitDialog, String programUid, String uid) {
         Calendar c = Calendar.getInstance();
         int year = c.get(Calendar.YEAR);
         int month = c.get(Calendar.MONTH);
@@ -84,23 +113,8 @@ public class TeiProgramListInteractorImpl implements TeiProgramListContract.TeiP
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(
                                     allOrgUnits -> {
-                                        ArrayList<OrganisationUnitModel> orgUnits = new ArrayList<>();
-                                        for (OrganisationUnitModel orgUnit : allOrgUnits) {
-                                            boolean afterOpening = false;
-                                            boolean beforeClosing = false;
-                                            if (orgUnit.openingDate() == null || !selectedEnrollmentDate.before(orgUnit.openingDate()))
-                                                afterOpening = true;
-                                            if (orgUnit.closedDate() == null || !selectedEnrollmentDate.after(orgUnit.closedDate()))
-                                                beforeClosing = true;
-                                            if (afterOpening && beforeClosing)
-                                                orgUnits.add(orgUnit);
-                                        }
-                                        if (orgUnits.size() > 1) {
-                                            orgUnitDialog.setOrgUnits(orgUnits);
-                                            if (!orgUnitDialog.isAdded())
-                                                orgUnitDialog.show(view.getAbstracContext().getSupportFragmentManager(), "OrgUnitEnrollment");
-                                        } else
-                                            enrollInOrgUnit(orgUnits.get(0).uid(), programUid, uid, selectedEnrollmentDate);
+                                        ArrayList<OrganisationUnitModel> orgUnits = getFilteredOrgUnits(allOrgUnits);
+                                        enrollInOrgUnitOrShowDialog(programUid, uid, orgUnits, orgUnitDialog);
                                     },
                                     Timber::d
                             )
@@ -121,7 +135,6 @@ public class TeiProgramListInteractorImpl implements TeiProgramListContract.TeiP
         }
         dateDialog.setButton(DialogInterface.BUTTON_NEGATIVE, view.getContext().getString(R.string.date_dialog_clear), (dialog, which) -> dialog.dismiss());
         dateDialog.show();
-
     }
 
     private ProgramModel getProgramFromUid(String programUid) {

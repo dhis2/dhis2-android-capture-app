@@ -221,6 +221,10 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         });
 
         initProgressBar();
+        setUpActionButton();
+    }
+
+    private void setActionButtonText() {
         if (eventUid == null) {
             if (binding.actionButton != null)
                 binding.actionButton.setText(R.string.create);
@@ -229,42 +233,13 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                 binding.actionButton.setText(R.string.update);
 
         }
+    }
 
+    private void setActionButtonOnClick() {
         if (binding.actionButton != null) {
             binding.actionButton.setOnClickListener(v -> {
-
                 if (eventUid == null) { // This is a new Event
-                    if (eventCreationType == EventCreationType.REFERAL && tempCreate.equals(PERMANENT)) {
-                        presenter.createEventPermanent(
-                                enrollmentUid,
-                                getTrackedEntityInstance,
-                                programStage.uid(),
-                                selectedDate,
-                                selectedOrgUnit,
-                                null,
-                                catComboIsDefaultOrNull() ? null : selectedCatOptionCombo.uid(),
-                                selectedLat, selectedLon);
-                    } else if (eventCreationType == EventCreationType.SCHEDULE) {
-                        presenter.scheduleEvent(
-                                enrollmentUid,
-                                programStage.uid(),
-                                selectedDate,
-                                selectedOrgUnit,
-                                null,
-                                catComboIsDefaultOrNull() ? null : selectedCatOptionCombo.uid(),
-                                selectedLat, selectedLon);
-                    } else {
-                        presenter.createEvent(
-                                enrollmentUid,
-                                programStage.uid(),
-                                selectedDate,
-                                selectedOrgUnit,
-                                null,
-                                catComboIsDefaultOrNull() ? null : selectedCatOptionCombo.uid(),
-                                selectedLat,
-                                selectedLon,
-                                getTrackedEntityInstance);
-                    }
+                    newEventAction();
                 } else {
                     presenter.editEvent(getTrackedEntityInstance, programStage.uid(), eventUid, DateUtils.databaseDateFormat().format(selectedDate), selectedOrgUnit, null,
                             catComboIsDefaultOrNull() ? null : selectedCatOptionCombo.uid(), selectedLat, selectedLon);
@@ -272,6 +247,45 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                     startFormActivity(eventUid);
                 }
             });
+        }
+    }
+
+    private void setUpActionButton() {
+        setActionButtonText();
+        setActionButtonOnClick();
+    }
+
+    private void newEventAction() {
+        if (eventCreationType == EventCreationType.REFERAL && tempCreate.equals(PERMANENT)) {
+            presenter.createEventPermanent(
+                    enrollmentUid,
+                    getTrackedEntityInstance,
+                    programStage.uid(),
+                    selectedDate,
+                    selectedOrgUnit,
+                    null,
+                    catComboIsDefaultOrNull() ? null : selectedCatOptionCombo.uid(),
+                    selectedLat, selectedLon);
+        } else if (eventCreationType == EventCreationType.SCHEDULE) {
+            presenter.scheduleEvent(
+                    enrollmentUid,
+                    programStage.uid(),
+                    selectedDate,
+                    selectedOrgUnit,
+                    null,
+                    catComboIsDefaultOrNull() ? null : selectedCatOptionCombo.uid(),
+                    selectedLat, selectedLon);
+        } else {
+            presenter.createEvent(
+                    enrollmentUid,
+                    programStage.uid(),
+                    selectedDate,
+                    selectedOrgUnit,
+                    null,
+                    catComboIsDefaultOrNull() ? null : selectedCatOptionCombo.uid(),
+                    selectedLat,
+                    selectedLon,
+                    getTrackedEntityInstance);
         }
     }
 
