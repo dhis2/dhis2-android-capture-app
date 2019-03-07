@@ -46,4 +46,11 @@ public abstract class FileViewModel extends FieldViewModel {
         return new AutoValue_FileViewModel(uid(), label(), mandatory(), data, programStageSection(),
                 allowFutureDate(), false, optionSet(), warning(), error(),description(), objectStyle());
     }
+
+    @NonNull
+    @Override
+    public FieldViewModel withEditMode(boolean isEditable) {
+        return new AutoValue_FileViewModel(uid(), label(), mandatory(), value(), programStageSection(),
+                allowFutureDate(), isEditable, optionSet(), warning(), error(),description(), objectStyle());
+    }
 }

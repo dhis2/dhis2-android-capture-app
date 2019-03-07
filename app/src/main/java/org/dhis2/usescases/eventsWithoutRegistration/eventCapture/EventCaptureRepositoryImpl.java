@@ -16,6 +16,7 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.Result;
+import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
@@ -60,7 +61,6 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
-import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -143,14 +143,16 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     private final BriteDatabase briteDatabase;
     private final String eventUid;
     private final FormRepository formRepository;
+    private final D2 d2;
     private ProgramStageSectionRenderingType renderingType;
     private boolean accessDataWrite;
     private String lastUpdatedUid;
 
-    public EventCaptureRepositoryImpl(Context context, BriteDatabase briteDatabase, FormRepository formRepository, String eventUid) {
+    public EventCaptureRepositoryImpl(Context context, BriteDatabase briteDatabase, FormRepository formRepository, String eventUid, D2 d2) {
         this.briteDatabase = briteDatabase;
         this.eventUid = eventUid;
         this.formRepository = formRepository;
+        this.d2 = d2;
 
         fieldFactory = new FieldViewModelFactoryImpl(
                 context.getString(R.string.enter_text),
@@ -240,7 +242,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         } else
             renderingType = ProgramStageSectionRenderingType.LISTING;
 
-       checkAccess();
+        accessDataWrite = getAccessDataWrite();
 
         return briteDatabase
                 .createQuery(TrackedEntityDataValueModel.TABLE, prepareStatement(sectionUid, eventUid))
@@ -249,74 +251,73 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 .toFlowable(BackpressureStrategy.LATEST);
     }
 
-    private void checkAccess(){
-        Cursor accessCursor = briteDatabase.query(ACCESS_QUERY, eventUid == null ? "" : eventUid);
-        if (accessCursor != null && accessCursor.moveToFirst()) {
-            accessDataWrite = accessCursor.getInt(0) == 1;
-            accessCursor.close();
+    private ProgramStageSectionRenderingType renderingType(String sectionUid) {
+        ProgramStageSectionRenderingType renderingType = ProgramStageSectionRenderingType.LISTING;
+        Cursor cursor = briteDatabase.query(SECTION_RENDERING_TYPE, sectionUid == null ? "" : sectionUid);
+        if (cursor != null) {
+            if (cursor.moveToFirst())
+                renderingType = cursor.getString(0) != null ?
+                        ProgramStageSectionRenderingType.valueOf(cursor.getString(0)) :
+                        ProgramStageSectionRenderingType.LISTING;
+            cursor.close();
         }
 
-        Cursor programAccessCursor = briteDatabase.query(PROGRAM_ACCESS_QUERY, eventUid == null ? "" : eventUid);
-        if (programAccessCursor != null && programAccessCursor.moveToFirst()) {
-            accessDataWrite = accessDataWrite && programAccessCursor.getInt(0) == 1;
-            programAccessCursor.close();
-        }
+        if (cursor != null && !cursor.isClosed())
+            cursor.close();
+
+        return renderingType;
     }
 
     private List<FieldViewModel> checkRenderType(List<FieldViewModel> fieldViewModels) {
 
         ArrayList<FieldViewModel> renderList = new ArrayList<>();
 
-        if (renderingType != ProgramStageSectionRenderingType.LISTING) {
+        for (FieldViewModel fieldViewModel : fieldViewModels) {
+            renderingType = renderingType(fieldViewModel.programStageSection());
+            if (!isEmpty(fieldViewModel.optionSet()) && renderingType != ProgramStageSectionRenderingType.LISTING) {
+                Cursor cursor = briteDatabase.query(OPTIONS, fieldViewModel.optionSet() == null ? "" : fieldViewModel.optionSet());
+                if (cursor != null && cursor.moveToFirst()) {
+                    int optionCount = cursor.getCount();
+                    for (int i = 0; i < optionCount; i++) {
+                        String uid = cursor.getString(0);
+                        String displayName = cursor.getString(1);
+                        String optionCode = cursor.getString(2);
 
-            for (FieldViewModel fieldViewModel : fieldViewModels) {
-                if (!isEmpty(fieldViewModel.optionSet())) {
-                    Cursor cursor = briteDatabase.query(OPTIONS, fieldViewModel.optionSet() == null ? "" : fieldViewModel.optionSet());
-                    if (cursor != null && cursor.moveToFirst()) {
-                        int optionCount = cursor.getCount();
-                        for (int i = 0; i < optionCount; i++) {
-                            String uid = cursor.getString(0);
-                            String displayName = cursor.getString(1);
-                            String optionCode = cursor.getString(2);
-
-                            ValueTypeDeviceRenderingModel fieldRendering = null;
-                            Cursor rendering = briteDatabase.query("SELECT ValueTypeDeviceRendering.* FROM ValueTypeDeviceRendering" +
-                                    " JOIN ProgramStageDataElement ON ProgramStageDataElement.uid = ValueTypeDeviceRendering.uid" +
-                                    " WHERE ProgramStageDataElement.uid = ?", uid);
-                            if (rendering != null && rendering.moveToFirst()) {
+                        ValueTypeDeviceRenderingModel fieldRendering = null;
+                        Cursor rendering = briteDatabase.query("SELECT ValueTypeDeviceRendering.* FROM ValueTypeDeviceRendering" +
+                                " JOIN ProgramStageDataElement ON ProgramStageDataElement.uid = ValueTypeDeviceRendering.uid" +
+                                " WHERE ProgramStageDataElement.uid = ?", uid);
+                        try {
+                            if (rendering.moveToFirst())
                                 fieldRendering = ValueTypeDeviceRenderingModel.create(rendering);
+                        } finally {
+                            if (rendering != null)
                                 rendering.close();
-                            }
-
-                            ObjectStyleModel objectStyle = ObjectStyleModel.builder().build();
-                            Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", uid);
-                            try {
-                                if (objStyleCursor.moveToFirst())
-                                    objectStyle = ObjectStyleModel.create(objStyleCursor);
-                            } finally {
-                                if (objStyleCursor != null)
-                                    objStyleCursor.close();
-                            }
-
-                            renderList.add(fieldFactory.create(
-                                    fieldViewModel.uid() + "." + uid, //fist
-                                    displayName + "-" + optionCode, ValueType.TEXT, false,
-                                    fieldViewModel.optionSet(), fieldViewModel.value(), fieldViewModel.programStageSection(),
-                                    fieldViewModel.allowFutureDate(), fieldViewModel.editable() == null ? false : fieldViewModel.editable(), renderingType, fieldViewModel.description(), fieldRendering, optionCount, objectStyle));
-
-                            cursor.moveToNext();
                         }
-                        cursor.close();
+
+                        ObjectStyleModel objectStyle = ObjectStyleModel.builder().build();
+                        Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", uid);
+                        try {
+                            if (objStyleCursor.moveToFirst())
+                                objectStyle = ObjectStyleModel.create(objStyleCursor);
+                        } finally {
+                            if (objStyleCursor != null)
+                                objStyleCursor.close();
+                        }
+
+                        renderList.add(fieldFactory.create(
+                                fieldViewModel.uid() + "." + uid, //fist
+                                displayName + "-" + optionCode, ValueType.TEXT, false,
+                                fieldViewModel.optionSet(), fieldViewModel.value(), fieldViewModel.programStageSection(),
+                                fieldViewModel.allowFutureDate(), fieldViewModel.editable() == null ? false : fieldViewModel.editable(), renderingType, fieldViewModel.description(), fieldRendering, optionCount, objectStyle));
+
+                        cursor.moveToNext();
                     }
-
-
-                } else
-                    renderList.add(fieldViewModel);
-            }
-
-
-        } else
-            renderList.addAll(fieldViewModels);
+                    cursor.close();
+                }
+            } else
+                renderList.add(fieldViewModel);
+        }
 
         return renderList;
 
@@ -325,10 +326,11 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     @NonNull
     @Override
     public Flowable<List<FieldViewModel>> list() {
-        checkAccess();
+        accessDataWrite = getAccessDataWrite();
         return briteDatabase
                 .createQuery(TrackedEntityDataValueModel.TABLE, prepareStatement(eventUid))
                 .mapToList(this::transform)
+                .map(this::checkRenderType)
                 .toFlowable(BackpressureStrategy.LATEST);
     }
 
@@ -389,33 +391,27 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
             dataValue = optionCodeName;
         }
 
-//        int optionCount = cursor.getInt(14);
         int optionCount = 0;
         if (!isEmpty(optionSet)) {
+            Cursor countCursor = briteDatabase.query("SELECT COUNT (uid) FROM Option WHERE optionSet = ?", optionSet);
             try {
-                Cursor countCursor = briteDatabase.query("SELECT COUNT (uid) FROM Option WHERE optionSet = ?", optionSet);
-                if (countCursor != null) {
-                    if (countCursor.moveToFirst())
-                        optionCount = countCursor.getInt(0);
-                    countCursor.close();
-                }
-            } catch (Exception e) {
-                Timber.e(e);
+                if (countCursor.moveToFirst())
+                    optionCount = countCursor.getInt(0);
+            } finally {
+                countCursor.close();
             }
         }
 
         ValueTypeDeviceRenderingModel fieldRendering = null;
+        Cursor rendering = briteDatabase.query("SELECT ValueTypeDeviceRendering.* FROM ValueTypeDeviceRendering" +
+                " JOIN ProgramStageDataElement ON ProgramStageDataElement.uid = ValueTypeDeviceRendering.uid" +
+                " WHERE ProgramStageDataElement.dataElement = ? LIMIT 1", uid);
         try {
-            Cursor rendering = briteDatabase.query("SELECT ValueTypeDeviceRendering.* FROM ValueTypeDeviceRendering" +
-                    " JOIN ProgramStageDataElement ON ProgramStageDataElement.uid = ValueTypeDeviceRendering.uid" +
-                    " WHERE ProgramStageDataElement.dataElement = ?", uid);
-            if (rendering != null) {
-                if (rendering.moveToFirst())
-                    fieldRendering = ValueTypeDeviceRenderingModel.create(rendering);
+            if (rendering.moveToFirst())
+                fieldRendering = ValueTypeDeviceRenderingModel.create(rendering);
+        } finally {
+            if (rendering != null)
                 rendering.close();
-            }
-        } catch (Exception e) {
-            Timber.e(e);
         }
         ObjectStyleModel objectStyle = ObjectStyleModel.builder().build();
         Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", uid);
@@ -441,7 +437,6 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 .switchMap(
                         event -> formRepository.ruleEngine()
                                 .switchMap(ruleEngine -> {
-//                                    return Flowable.fromCallable(ruleEngine.evaluate(event));
                                     if (isEmpty(lastUpdatedUid))
                                         return Flowable.fromCallable(ruleEngine.evaluate(event));
                                     else
@@ -686,24 +681,16 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     @Override
     public boolean getAccessDataWrite() {
         boolean canWrite = true;
-        Cursor programAccessData = briteDatabase.query("SELECT Program.* FROM Program JOIN Event ON Event.program = Program.uid WHERE Event.uid = ? ", eventUid);
-        if (programAccessData != null) {
-            if (programAccessData.moveToFirst()) {
-                canWrite = ProgramModel.create(programAccessData).accessDataWrite();
-                if (canWrite) {
-                    programAccessData.close();
-                    Cursor stageAccessData = briteDatabase.query("SELECT ProgramStage.* FROM ProgramStage JOIN Event ON Event.programStage = ProgramStage.uid WHERE Event.uid = ? ", eventUid);
-                    if (stageAccessData != null) {
-                        if (stageAccessData.moveToFirst()) {
-                            canWrite = ProgramStageModel.create(stageAccessData).accessDataWrite();
-                        }
-                        stageAccessData.close();
-                    }
-                }
-            }
-            if(!programAccessData.isClosed())
-                programAccessData.close();
-        }
+        canWrite =
+                d2.programModule().programs.uid(
+                        d2.eventModule().events.uid(eventUid).get().program()
+                ).get().access().data().write();
+        if (canWrite)
+            canWrite =
+                    d2.programModule().programStages.uid(
+                            d2.eventModule().events.uid(eventUid).get().programStage()
+                    ).get().access().data().write();
+
         return canWrite;
     }
 

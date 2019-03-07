@@ -169,6 +169,7 @@ public class LoginPresenter implements LoginContracts.Presenter {
                                 if (user == null)
                                     return Response.error(404, ResponseBody.create(MediaType.parse("text"), "NOT FOUND"));
                                 else {
+                                    prefs.edit().putString(Constants.USER, user.userCredentials().username());
                                     return Response.success(null);
                                 }
                             });
