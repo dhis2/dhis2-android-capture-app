@@ -681,21 +681,6 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     @Override
     public boolean getAccessDataWrite() {
         boolean canWrite = true;
-     /*   Cursor programAccessData = briteDatabase.query("SELECT Program.* FROM Program JOIN Event ON Event.program = Program.uid WHERE Event.uid = ? LIMIT 1", eventUid);
-        if (programAccessData != null && programAccessData.moveToFirst())
-            canWrite = ProgramModel.create(programAccessData).accessDataWrite();
-        if (programAccessData != null)
-            programAccessData.close();
-
-        if (canWrite) {
-            Cursor stageAccessData = briteDatabase.query("SELECT ProgramStage.* FROM ProgramStage JOIN Event ON Event.programStage = ProgramStage.uid WHERE Event.uid = ? LIMIT 1", eventUid);
-            if (stageAccessData != null && stageAccessData.moveToFirst()) {
-                canWrite = ProgramStageModel.create(stageAccessData).accessDataWrite();
-                if (stageAccessData != null)
-                    stageAccessData.close();
-            }
-        }*/
-
         canWrite =
                 d2.programModule().programs.uid(
                         d2.eventModule().events.uid(eventUid).get().program()

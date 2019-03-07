@@ -36,7 +36,6 @@
                     android:layout_marginBottom="8dp"
                     android:background="@drawable/bg_rounded_corners_white"
                     android:drawablePadding="10dp"
-                    android:drawableStart="@{@drawable/ic_search}"
                     android:drawableTint="@color/icon_color"
                     android:paddingEnd="5dp"
                     android:paddingStart="5dp"

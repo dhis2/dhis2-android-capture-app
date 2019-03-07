@@ -577,7 +577,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 data -> openDashboard(data.get(0).uid()),
-                                t -> Log.d("ONLINE_SEARCH", t.getMessage()))
+                                Timber::d)
         );
 
     }
@@ -597,7 +597,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                     else
                                         addRelationship(TEIuid, relationshipTypeUid, false);
                                 },
-                                t -> Log.d("ONLINE_SEARCH", t.getMessage()))
+                                Timber::d)
         );
     }
 

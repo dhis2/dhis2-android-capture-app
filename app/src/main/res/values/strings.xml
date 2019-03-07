@@ -338,6 +338,9 @@
     <string name="tuto_settings_1">Synchronize your data…</string>
     <string name="tuto_settings_2">…your configuration…</string>
     <string name="tuto_settings_3">…set your local storage capacity…</string>
+    <string name="tuto_settings_reserved">Check and manage how many reserved values are left</string>
+    <string name="tuto_settings_errors">Check if a connection to the server failed</string>
+    <string name="tuto_settings_reset">Free some disk space</string>
     <string name="tuto_settings_4">…or delete everything to start over.</string>
     <string name="tuto_search_1">Find your entities both in local memory and online server.</string>
     <string name="tuto_search_2">You can switch to other programs</string>
