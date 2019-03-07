@@ -69,6 +69,7 @@ public class Constants {
     public static final String SECURE_USER_NAME = "SECURE_USER_NAME";
     public static final String SECURE_PASS = "SECURE_PASS";
     public static final String SECURE_CREDENTIALS = "SECURE_CREDENTIALS";
+    public static final String USER = "USER";
 
     public static String LAST_DATA_SYNC = "last_data_sync";
     public static String LAST_DATA_SYNC_STATUS = "last_data_sync_status";

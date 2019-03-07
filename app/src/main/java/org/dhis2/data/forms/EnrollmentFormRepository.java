@@ -562,16 +562,17 @@ class EnrollmentFormRepository implements FormRepository {
         }
 
         int optionCount = 0;
-        try{
-            Cursor countCursor = briteDatabase.query("SELECT COUNT (uid) FROM Option WHERE optionSet = ?", optionSetUid);
-            if(countCursor!=null){
-                if(countCursor.moveToFirst())
-                    optionCount = countCursor.getInt(0);
-                countCursor.close();
+        if (optionSetUid != null)
+            try {
+                Cursor countCursor = briteDatabase.query("SELECT COUNT (uid) FROM Option WHERE optionSet = ?", optionSetUid);
+                if (countCursor != null) {
+                    if (countCursor.moveToFirst())
+                        optionCount = countCursor.getInt(0);
+                    countCursor.close();
+                }
+            } catch (Exception e) {
+                Timber.e(e);
             }
-        }catch (Exception e){
-            Timber.e(e);
-        }
 
         ValueTypeDeviceRenderingModel fieldRendering = null;
         Cursor rendering = briteDatabase.query("SELECT ValueTypeDeviceRendering.* FROM ValueTypeDeviceRendering " +
@@ -604,7 +605,7 @@ class EnrollmentFormRepository implements FormRepository {
         }
 
         return fieldFactory.create(uid, label, valueType, mandatory, optionSetUid, dataValue, section,
-                allowFutureDates, status == EnrollmentStatus.ACTIVE, null, description, fieldRendering,optionCount,objectStyle);
+                allowFutureDates, status == EnrollmentStatus.ACTIVE, null, description, fieldRendering, optionCount, objectStyle);
     }
 
     @NonNull

@@ -44,4 +44,10 @@ public abstract class ImageViewModel extends FieldViewModel {
     public FieldViewModel withValue(String data) {
         return new AutoValue_ImageViewModel(uid(), label(), mandatory(), data, programStageSection(),
                 allowFutureDate(), false, optionSet(), warning(), error(),description(), objectStyle());    }
+
+    @NonNull
+    @Override
+    public FieldViewModel withEditMode(boolean isEditable) {
+        return new AutoValue_ImageViewModel(uid(), label(), mandatory(), value(), programStageSection(),
+                allowFutureDate(), isEditable, optionSet(), warning(), error(),description(), objectStyle());     }
 }

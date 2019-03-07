@@ -37,4 +37,10 @@ public abstract class UnsupportedViewModel extends FieldViewModel {
     public FieldViewModel withValue(String data) {
         return new AutoValue_UnsupportedViewModel(uid(), label(), false, data, programStageSection(), allowFutureDate(), false, optionSet(), warning(), error(), description(), objectStyle());
     }
+
+    @NonNull
+    @Override
+    public FieldViewModel withEditMode(boolean isEditable) {
+        return new AutoValue_UnsupportedViewModel(uid(), label(), false, value(), programStageSection(), allowFutureDate(), isEditable, optionSet(), warning(), error(), description(), objectStyle());
+    }
 }

@@ -23,6 +23,9 @@
             app:layout_constraintTop_toTopOf="parent"
             app:presenter="@{presenter}" />
 
+        <androidx.core.widget.ContentLoadingProgressBar
+            android:layout_width="200dp"
+            android:layout_height="200dp" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/formRecycler"
@@ -47,14 +50,28 @@
             android:id="@+id/sectionRecycler"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_marginBottom="100dp"
             android:visibility="gone"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:listitem="@layout/item_section_selector"
-            tools:visibility="visible"
-            android:layout_marginBottom="100dp"/>
+            tools:visibility="visible" />
+
+
+        <ProgressBar
+            android:id="@+id/progress"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_centerInParent="true"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:progressColor="@{@color/colorPrimary}"
+            tools:visibility="visible" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
