@@ -91,7 +91,8 @@ class EnrollmentFormRepository implements FormRepository {
             "ProgramStage.reportDateToUse, " +
             "Enrollment.incidentDate, " +
             "Enrollment.enrollmentDate, " +
-            "ProgramStage.periodType \n" +
+            "ProgramStage.periodType, \n" +
+            "ProgramStage.generatedByEnrollmentDate \n" +
             "FROM Enrollment\n" +
             "  JOIN Program ON Enrollment.program = Program.uid\n" +
             "  JOIN ProgramStage ON Program.uid = ProgramStage.program \n" +
@@ -400,6 +401,7 @@ class EnrollmentFormRepository implements FormRepository {
                 Date incidentDate = null;
                 Date enrollmentDate = null;
                 PeriodType periodType = cursor.getString(7) != null ? PeriodType.valueOf(cursor.getString(7)) : null;
+                Boolean generatedByEnrollmentDate = cursor.getInt(8) == 1;
 
                 if (incidentDateString != null)
                     try {
@@ -428,6 +430,10 @@ class EnrollmentFormRepository implements FormRepository {
                         cal.setTime(Calendar.getInstance().getTime());
                         break;
                 }
+
+                if(!generatedByEnrollmentDate && incidentDate != null)
+                    cal.setTime(incidentDate);
+
                 cal.set(Calendar.HOUR_OF_DAY, 0);
                 cal.set(Calendar.MINUTE, 0);
                 cal.set(Calendar.SECOND, 0);
