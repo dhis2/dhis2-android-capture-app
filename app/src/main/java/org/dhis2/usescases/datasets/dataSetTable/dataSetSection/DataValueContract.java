@@ -1,6 +1,6 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection;
 
-import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
+import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel;
@@ -51,5 +51,7 @@ public class DataValueContract {
         int getCurrentNumTables();
 
         FlowableProcessor<RowAction> getProcessor();
+
+        void addCells(List<List<FieldViewModel>> cells);
     }
 }

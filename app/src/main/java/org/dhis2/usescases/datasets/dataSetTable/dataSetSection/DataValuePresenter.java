@@ -1,8 +1,7 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection;
 
-
-import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
+import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Sextet;
@@ -50,6 +49,8 @@ public class DataValuePresenter implements DataValueContract.Presenter{
     private String periodId;
     private int currentNumTables;
 
+    private List<List<FieldViewModel>> cells;
+
     @NonNull
     private FlowableProcessor<RowAction> processor;
     public DataValuePresenter(DataValueRepository repository){
@@ -62,6 +63,7 @@ public class DataValuePresenter implements DataValueContract.Presenter{
         this.view = view;
         processor = PublishProcessor.create();
         dataValuesChanged = new ArrayList<>();
+        cells = new ArrayList<>();
         this.orgUnitUid = orgUnitUid;
         this.periodTypeName = periodTypeName;
         this.periodFinalDate = periodFinalDate;
@@ -100,14 +102,30 @@ public class DataValuePresenter implements DataValueContract.Presenter{
                                     Timber::e)
             );
     }
-
+    @Override
     public void complete(){
-        compositeDisposable.add(
-                repository.completeDataSet(orgUnitUid, periodId, attributeOptionCombo)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe( completed -> view.onComplete(), Timber::e)
-        );
+        if(checkAllFieldRequired())
+            compositeDisposable.add(
+                    repository.completeDataSet(orgUnitUid, periodId, attributeOptionCombo)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe( completed -> view.onComplete(), Timber::e)
+            );
+    }
+
+    private boolean checkAllFieldRequired(){
+        boolean checkAllField = true;
+        for(List<FieldViewModel> rowFields: cells){
+            boolean hasValue = false;
+            for(FieldViewModel field: rowFields){
+                if(field.value() != null && !field.value().isEmpty())
+                    hasValue = true;
+
+                if(hasValue && (field.value() == null || field.value().isEmpty()))
+                    checkAllField = false;
+            }
+        }
+        return checkAllField;
     }
 
     private DataValueModel tranformDataSetTableModelToDataValueModel(DataSetTableModel dataSetTableModel){
@@ -299,6 +317,10 @@ public class DataValuePresenter implements DataValueContract.Presenter{
         return catOptionsCombo;
     }
 
+    @Override
+    public void addCells(List<List<FieldViewModel>> cells){
+        this.cells.addAll(cells);
+    }
 
     @Override
     public void setCurrentNumTables(int numTables) {

@@ -57,18 +57,6 @@ public class PeriodDialogInputPeriod extends PeriodDialog {
             if(isAllowed) break;
         }
 
-     /*   do{
-            for(DateRangeInputPeriodModel inputPeriodModel: inputPeriod){
-                if(getCurrentDate().after(inputPeriodModel.initialPeriodDate()) && getCurrentDate().before(inputPeriodModel.endPeriodDate()))
-                    isAllowed = true;
-                else if(isPrevious) previousPeriod();
-                else if(isNext) nextPeriod();
-                else previousPeriod();
-
-                checkConstraintDates();
-            }
-        }while (!isAllowed);*/
-
         checkNextPeriod();
 
         binding.selectedPeriod.setText(DateUtils.getInstance().getPeriodUIString(getPeriod(),getCurrentDate(), Locale.getDefault()));
@@ -90,6 +78,8 @@ public class PeriodDialogInputPeriod extends PeriodDialog {
                         previousPeriod();
                 }while (!isPreviousAllowed);
                 setCurrentDate(current);
+                if(isPreviousAllowed)
+                    break;
             }
 
             checkConstraintDates();
@@ -118,6 +108,8 @@ public class PeriodDialogInputPeriod extends PeriodDialog {
                         nextPeriod();
                 }while (!isNextAllowed);
                 setCurrentDate(current);
+                if(isNextAllowed)
+                    break;
             }
             checkConstraintDates();
             if(inputPeriod.size() != 0 && !isNextAllowed) {
