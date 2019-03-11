@@ -205,7 +205,7 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
 
                 if (model != null)
                     fieldViewModels.put(showWarning.field(),
-                            model.withWarning(showWarning.content()));
+                            model.withWarning(showWarning.content()+ruleEffect.data()));
                 else
                     Timber.d("Field with uid %s is missing", showWarning.field());
 
@@ -215,7 +215,7 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
 
                 if (model != null)
                     fieldViewModels.put(showError.field(),
-                            model.withError(showError.content()));
+                            model.withError(showError.content()+ruleEffect.data()));
 
             } else if (ruleAction instanceof RuleActionHideField) {
                 RuleActionHideField hideField = (RuleActionHideField) ruleAction;
