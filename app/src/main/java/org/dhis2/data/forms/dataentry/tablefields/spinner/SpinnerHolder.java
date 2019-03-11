@@ -8,12 +8,14 @@ import androidx.appcompat.widget.PopupMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 
 import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
+import org.dhis2.databinding.CustomTextViewCellBinding;
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
@@ -32,24 +34,16 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
 
     private final CompositeDisposable disposable;
     private final FlowableProcessor<RowAction> processor;
-    private final ImageView iconView;
-    private final TextInputEditText editText;
-    private final TextInputLayout inputLayout;
+    private final EditText editText;
 
-    /* @NonNull
-     private BehaviorProcessor<SpinnerViewModel> model;*/
+
     private SpinnerViewModel viewModel;
     List<OptionModel> options;
 
-    SpinnerHolder(ViewDataBinding mBinding, FlowableProcessor<RowAction> processor, boolean isBackgroundTransparent, String renderType) {
+    SpinnerHolder(CustomTextViewCellBinding mBinding, FlowableProcessor<RowAction> processor) {
         super(mBinding);
-        this.editText = mBinding.getRoot().findViewById(R.id.input_editText);
-        this.iconView = mBinding.getRoot().findViewById(R.id.renderImage);
-        this.inputLayout = mBinding.getRoot().findViewById(R.id.input_layout);
+        this.editText = mBinding.editTextCell;
         this.processor = processor;
-
-        if (renderType != null && !renderType.equals(ProgramStageSectionRenderingType.LISTING.name()))
-            iconView.setVisibility(View.VISIBLE);
 
         editText.setOnClickListener(this);
 
@@ -61,8 +55,6 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
 
         this.viewModel = viewModel;
         options = Bindings.setOptionSet(viewModel.optionSet());
-
-        Bindings.setObjectStyle(iconView, itemView, viewModel.uid());
 
         if (!viewModel.editable()) {
             editText.setEnabled(false);
@@ -78,21 +70,6 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
 
 
         editText.setText(viewModel.value()); //option code is already transformed to value in the fieldviewmodelfactory implementation
-
-
-        if (!isEmpty(viewModel.warning())) {
-            inputLayout.setError(viewModel.warning());
-        } else if (!isEmpty(viewModel.error())) {
-            inputLayout.setError(viewModel.error());
-        } else
-            inputLayout.setError(null);
-
-        if (inputLayout.getHint() == null || !inputLayout.getHint().toString().equals(viewModel.label())) {
-            label = new StringBuilder(viewModel.label());
-            if (viewModel.mandatory())
-                label.append("*");
-            inputLayout.setHint(label);
-        }
 
         descriptionText = viewModel.description();
     }

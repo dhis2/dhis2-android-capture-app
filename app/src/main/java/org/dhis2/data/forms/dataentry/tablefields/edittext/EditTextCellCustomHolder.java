@@ -1,6 +1,8 @@
 package org.dhis2.data.forms.dataentry.tablefields.edittext;
 
 import android.annotation.SuppressLint;
+
+import androidx.appcompat.widget.AppCompatEditText;
 import androidx.databinding.ObservableBoolean;
 import androidx.annotation.NonNull;
 import com.google.android.material.textfield.TextInputLayout;
@@ -11,8 +13,12 @@ import android.text.InputType;
 import android.text.TextUtils;
 import android.text.method.DigitsKeyListener;
 import android.util.Patterns;
+import android.view.KeyEvent;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
@@ -20,10 +26,12 @@ import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.databinding.CustomTextViewBinding;
+import org.dhis2.databinding.CustomTextViewCellBinding;
 import org.dhis2.utils.custom_views.TextInputAutoCompleteTextView;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
+import androidx.recyclerview.widget.RecyclerView;
 import io.reactivex.processors.FlowableProcessor;
 
 import static android.text.TextUtils.isEmpty;
@@ -34,35 +42,31 @@ import static java.lang.String.valueOf;
  * QUADRAM. Created by frodriguez on 18/01/2018..
  */
 
-final class EditTextCustomHolder extends FormViewHolder {
+final class EditTextCellCustomHolder extends FormViewHolder {
 
-    private final TextInputLayout inputLayout;
-    private TextInputAutoCompleteTextView editText;
-    private ImageView icon;
+    private EditText editText;
+    private RelativeLayout relativeLayout;
     private EditTextModel editTextModel;
     private boolean accessDataWrite;
 
     @SuppressLint("RxLeakedSubscription")
-    EditTextCustomHolder(CustomTextViewBinding binding, FlowableProcessor<RowAction> processor,
-                         String renderType, ObservableBoolean isEditable) {
+    EditTextCellCustomHolder(CustomTextViewCellBinding binding, FlowableProcessor<RowAction> processor,
+                             ObservableBoolean isEditable) {
         super(binding);
-        editText = binding.inputEditText;
-        icon = binding.renderImage;
-        inputLayout = binding.inputLayout;
+        editText = binding.editTextCell;
+        relativeLayout = binding.layout;
 
         accessDataWrite = isEditable.get();
 
-        if (renderType != null && !renderType.equals(ProgramStageSectionRenderingType.LISTING.name()))
-            icon.setVisibility(View.VISIBLE);
 
-        editText.setOnFocusChangeListener((v, hasFocus) -> {
+        /*editText.setOnFocusChangeListener((v, hasFocus) -> {
             if (!hasFocus && editTextModel != null && editTextModel.editable()) {
                 if (!isEmpty(editText.getText()) && validate())
                     processor.onNext(RowAction.create(editTextModel.uid(), editText.getText().toString(), editTextModel.dataElement(), editTextModel.listCategoryOption(), editTextModel.catCombo(), editTextModel.row(), editTextModel.column()));
                 else
                     processor.onNext(RowAction.create(editTextModel.uid(), null, editTextModel.dataElement(), editTextModel.listCategoryOption(),editTextModel.catCombo(),editTextModel.row(), editTextModel.column()));
             }
-        });
+        });*/
 
     }
 
@@ -73,16 +77,9 @@ final class EditTextCustomHolder extends FormViewHolder {
             editText.setBackgroundColor(ContextCompat.getColor(editText.getContext(), R.color.bg_black_e6e));
         } else if(accessDataWrite) {
             editText.setEnabled(true);
-            editText.setBackgroundColor(ContextCompat.getColor(editText.getContext(), R.color.white));
-        }else{
-            //TODO change to false enabled!!!
-            editText.setEnabled(false);
-            editText.setBackgroundColor(ContextCompat.getColor(editText.getContext(), R.color.bg_black_e6e));
         }
 
         this.editTextModel = (EditTextModel) model;
-
-        Bindings.setObjectStyle(icon, itemView, editTextModel.uid());
 
         editText.setText(editTextModel.value() == null ?
                 null : valueOf(editTextModel.value()));
@@ -90,26 +87,9 @@ final class EditTextCustomHolder extends FormViewHolder {
         if(value != null && !value.isEmpty())
             editText.setText(value);
 
-        if (!isEmpty(editTextModel.warning())) {
-            inputLayout.setError(editTextModel.warning());
-        } else if (!isEmpty(editTextModel.error())) {
-            inputLayout.setError(editTextModel.error());
-        } else
-            inputLayout.setError(null);
-
         editText.setSelection(editText.getText() == null ?
                 0 : editText.getText().length());
-        if (inputLayout.getHint() == null || !inputLayout.getHint().toString().equals(editTextModel.label())) {
-            label = new StringBuilder(editTextModel.label());
 
-            inputLayout.setHint(label);
-
-            if (label.length() > 16 || model.description() != null)
-                description.setVisibility(View.VISIBLE);
-            else
-                description.setVisibility(View.GONE);
-
-        }
         if (editTextModel.mandatory())
             label.append("*");
 
@@ -187,49 +167,49 @@ final class EditTextCustomHolder extends FormViewHolder {
                 if (Patterns.PHONE.matcher(editText.getText().toString()).matches())
                     return true;
                 else {
-                    inputLayout.setError(editText.getContext().getString(R.string.invalid_phone_number));
+                    editText.setError(editText.getContext().getString(R.string.invalid_phone_number));
                     return false;
                 }
             case EMAIL:
                 if (Patterns.EMAIL_ADDRESS.matcher(editText.getText().toString()).matches())
                     return true;
                 else {
-                    inputLayout.setError(editText.getContext().getString(R.string.invalid_email));
+                    editText.setError(editText.getContext().getString(R.string.invalid_email));
                     return false;
                 }
             case INTEGER_NEGATIVE:
                 if (Integer.valueOf(editText.getText().toString()) < 0)
                     return true;
                 else {
-                    inputLayout.setError(editText.getContext().getString(R.string.invalid_negative_number));
+                    editText.setError(editText.getContext().getString(R.string.invalid_negative_number));
                     return false;
                 }
             case INTEGER_ZERO_OR_POSITIVE:
                 if (Integer.valueOf(editText.getText().toString()) >= 0)
                     return true;
                 else {
-                    inputLayout.setError(editText.getContext().getString(R.string.invalid_possitive_zero));
+                    editText.setError(editText.getContext().getString(R.string.invalid_possitive_zero));
                     return false;
                 }
             case INTEGER_POSITIVE:
                 if (Integer.valueOf(editText.getText().toString()) > 0)
                     return true;
                 else {
-                    inputLayout.setError(editText.getContext().getString(R.string.invalid_possitive));
+                    editText.setError(editText.getContext().getString(R.string.invalid_possitive));
                     return false;
                 }
             case UNIT_INTERVAL:
                 if (Float.valueOf(editText.getText().toString()) >= 0 && Float.valueOf(editText.getText().toString()) <= 1)
                     return true;
                 else {
-                    inputLayout.setError(editText.getContext().getString(R.string.invalid_interval));
+                    editText.setError(editText.getContext().getString(R.string.invalid_interval));
                     return false;
                 }
             case PERCENTAGE:
                 if (Float.valueOf(editText.getText().toString()) >= 0 && Float.valueOf(editText.getText().toString()) <= 100)
                     return true;
                 else {
-                    inputLayout.setError(editText.getContext().getString(R.string.invalid_percentage));
+                    editText.setError(editText.getContext().getString(R.string.invalid_percentage));
                     return false;
                 }
             default:

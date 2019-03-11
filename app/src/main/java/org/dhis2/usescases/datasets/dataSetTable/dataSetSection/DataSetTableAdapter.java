@@ -24,14 +24,17 @@ import org.dhis2.data.forms.dataentry.tablefields.datetime.DateTimeRow;
 import org.dhis2.data.forms.dataentry.tablefields.datetime.DateTimeViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.edittext.EditTextModel;
 import org.dhis2.data.forms.dataentry.tablefields.edittext.EditTextRow;
-import org.dhis2.data.forms.dataentry.tablefields.file.FileRow;
+import org.dhis2.data.forms.dataentry.tablefields.file.FileCellRow;
 import org.dhis2.data.forms.dataentry.tablefields.file.FileViewModel;
+import org.dhis2.data.forms.dataentry.tablefields.image.ImageRow;
 import org.dhis2.data.forms.dataentry.tablefields.image.ImageViewModel;
+import org.dhis2.data.forms.dataentry.tablefields.orgUnit.OrgUnitRow;
 import org.dhis2.data.forms.dataentry.tablefields.orgUnit.OrgUnitViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.radiobutton.RadioButtonRow;
 import org.dhis2.data.forms.dataentry.tablefields.radiobutton.RadioButtonViewModel;
-import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerRow;
+import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerCellRow;
 import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel;
+import org.dhis2.data.forms.dataentry.tablefields.unsupported.UnsupportedRow;
 import org.dhis2.data.forms.dataentry.tablefields.unsupported.UnsupportedViewModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.common.ValueType;
@@ -42,7 +45,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.processors.FlowableProcessor;
-import io.reactivex.processors.PublishProcessor;
 
 /**
  * QUADRAM. Created by ppajuelo on 02/10/2018.
@@ -90,19 +92,19 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
     }
 
     public void initializeRows(Boolean accessDataWrite){
-        rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name(), new ObservableBoolean(accessDataWrite)));
-        rows.add(BUTTON, new FileRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name()));
-        rows.add(CHECKBOX, new RadioButtonRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name(), accessDataWrite));
-        rows.add(SPINNER, new SpinnerRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name(), accessDataWrite));
+        rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, new ObservableBoolean(accessDataWrite)));
+        rows.add(BUTTON, new FileCellRow(layoutInflater, processor));
+        rows.add(CHECKBOX, new RadioButtonRow(layoutInflater, processor, accessDataWrite));
+        rows.add(SPINNER, new SpinnerCellRow(layoutInflater, processor, accessDataWrite));
         rows.add(COORDINATES, new CoordinateRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name(), accessDataWrite));
-        rows.add(TIME, new DateTimeRow(layoutInflater, processor, TIME, true, ProgramStageSectionRenderingType.LISTING.name(), accessDataWrite));
-        rows.add(DATE, new DateTimeRow(layoutInflater, processor, DATE, true, ProgramStageSectionRenderingType.LISTING.name(), accessDataWrite));
-        rows.add(DATETIME, new DateTimeRow(layoutInflater, processor, DATETIME, true, ProgramStageSectionRenderingType.LISTING.name(), accessDataWrite));
+        rows.add(TIME, new DateTimeRow(layoutInflater, processor, TIME, true, accessDataWrite));
+        rows.add(DATE, new DateTimeRow(layoutInflater, processor, DATE, true, accessDataWrite));
+        rows.add(DATETIME, new DateTimeRow(layoutInflater, processor, DATETIME, true, accessDataWrite));
         rows.add(AGEVIEW, new AgeRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name(), accessDataWrite));
-        rows.add(YES_NO, new RadioButtonRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name(), accessDataWrite));
-        //rows.add(ORG_UNIT, new OrgUnitRow(fragmentManager, layoutInflater, processor, true, orgUnits, ProgramStageSectionRenderingType.LISTING.name()));
-        //rows.add(IMAGE, new ImageRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name()));
-        //rows.add(UNSUPPORTED, new UnsupportedRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name()));
+        rows.add(YES_NO, new RadioButtonRow(layoutInflater, processor, accessDataWrite));
+        rows.add(ORG_UNIT, new OrgUnitRow(null, layoutInflater, processor, true, null, ProgramStageSectionRenderingType.LISTING.name()));
+        rows.add(IMAGE, new ImageRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name()));
+        rows.add(UNSUPPORTED, new UnsupportedRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name()));
     }
 
     /**

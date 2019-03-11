@@ -18,9 +18,4 @@ public class FileHolder extends FormViewHolder {
     public void dispose() {
 
     }
-
-   /* @Override
-    public void bind(SearchTEContractsModule.Presenter presenter, TrackedEntityAttributeModel bindableOnject) {
-
-    }*/
 }
