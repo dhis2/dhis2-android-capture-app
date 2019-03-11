@@ -181,7 +181,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
         if(section.equals("NO_SECTION")) {
             if (numTables > 1) {
-                dataElements.put("Tablas", dataElements.remove("NO_SECTION"));
+                dataElements.put(getString(R.string.tab_tables), dataElements.remove("NO_SECTION"));
                 viewPagerAdapter.swapData(dataElements);
             } else
                 binding.tabLayout.setVisibility(View.GONE);
