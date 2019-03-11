@@ -16,47 +16,36 @@ import io.reactivex.processors.FlowableProcessor;
  * QUADRAM. Created by frodriguez on 1/24/2018.
  */
 
-public class RadioButtonRow implements Row<RadioButtonHolder, RadioButtonViewModel> {
+public class RadioButtonRow implements Row<RadioButtonCellHolder, RadioButtonViewModel> {
 
     private final LayoutInflater inflater;
-    private final boolean isBgTransparent;
 
     @NonNull
     private final FlowableProcessor<RowAction> processor;
-    private final String renderType;
     private boolean accessDataWrite;
-    public RadioButtonRow(LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor, boolean isBgTransparent) {
+
+    public RadioButtonRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor, boolean accessDataWrite) {
         this.inflater = layoutInflater;
         this.processor = processor;
-        this.isBgTransparent = isBgTransparent;
-        this.renderType = null;
-
-    }
-
-    public RadioButtonRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor, boolean isBgTransparent, String renderType, boolean accessDataWrite) {
-        this.inflater = layoutInflater;
-        this.processor = processor;
-        this.isBgTransparent = isBgTransparent;
-        this.renderType = renderType;
         this.accessDataWrite = accessDataWrite;
     }
 
     @NonNull
     @Override
-    public RadioButtonHolder onCreate(@NonNull ViewGroup parent) {
+    public RadioButtonCellHolder onCreate(@NonNull ViewGroup parent) {
         FormYesNoBinding binding = DataBindingUtil.inflate(inflater,
                 R.layout.form_yes_no, parent, false);
-        binding.customYesNo.setIsBgTransparent(isBgTransparent);
-        return new RadioButtonHolder(parent, binding, processor);
+        binding.customYesNo.setCellLayout();
+        return new RadioButtonCellHolder(binding, processor);
     }
 
     @Override
-    public void onBind(@NonNull RadioButtonHolder viewHolder, @NonNull RadioButtonViewModel viewModel, String value) {
+    public void onBind(@NonNull RadioButtonCellHolder viewHolder, @NonNull RadioButtonViewModel viewModel, String value) {
         viewHolder.update(viewModel, accessDataWrite);
     }
 
     @Override
-    public void deAttach(@NonNull RadioButtonHolder viewHolder) {
+    public void deAttach(@NonNull RadioButtonCellHolder viewHolder) {
         viewHolder.dispose();
     }
 

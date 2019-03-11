@@ -149,6 +149,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
+                if(viewPagerAdapter.getCurrentItem(binding.tabLayout.getSelectedTabPosition()).currentNumTables()>1)
                 if (tableSelectorVisible)
                     binding.selectorLayout.setVisibility(View.GONE);
                 else {

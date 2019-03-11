@@ -10,6 +10,7 @@ import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.Row;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.databinding.FormButtonBinding;
+import org.dhis2.databinding.FormButtonCellBinding;
 
 import io.reactivex.processors.FlowableProcessor;
 
@@ -17,38 +18,24 @@ import io.reactivex.processors.FlowableProcessor;
  * QUADRAM. Created by ppajuelo on 19/03/2018.
  */
 
-public class FileRow implements Row<FileHolder, FileViewModel> {
-    private final String renderType;
-    FormButtonBinding binding;
+public class FileCellRow implements Row<FileHolder, FileViewModel> {
+    FormButtonCellBinding binding;
     @NonNull
     private final LayoutInflater inflater;
     @NonNull
     private final FlowableProcessor<RowAction> processor;
-    private final boolean isBgTransparent;
 
-    public FileRow(@NonNull LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor, boolean isBgTransparent) {
+
+    public FileCellRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor) {
         this.inflater = layoutInflater;
         this.processor = processor;
-        this.isBgTransparent = isBgTransparent;
-        this.renderType = null;
-    }
-
-    public FileRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor, boolean isBgTransparent, String renderType) {
-        this.inflater = layoutInflater;
-        this.processor = processor;
-        this.isBgTransparent = isBgTransparent;
-        this.renderType = renderType;
     }
 
     @NonNull
     @Override
     public FileHolder onCreate(@NonNull ViewGroup parent) {
-        binding = DataBindingUtil.inflate(inflater, R.layout.form_button, parent, false);
-        if (isBgTransparent)
-            binding.formButton.setTextColor(ContextCompat.getColor(parent.getContext(), R.color.colorPrimary));
-        else
-            binding.formButton.setTextColor(ContextCompat.getColor(parent.getContext(), R.color.colorAccent));
-
+        binding = DataBindingUtil.inflate(inflater, R.layout.form_button_cell, parent, false);
+        binding.formButton.setTextColor(ContextCompat.getColor(parent.getContext(), R.color.colorPrimary));
         return new FileHolder(binding);
     }
 

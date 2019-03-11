@@ -23,6 +23,7 @@ public abstract class FormViewHolder extends AbstractViewHolder {
 
     public FormViewHolder(ViewDataBinding binding) {
         super(binding.getRoot());
+        label = new StringBuilder();
         this.binding = binding;
         this.description = binding.getRoot().findViewById(R.id.descriptionLabel);
         if (description != null) {

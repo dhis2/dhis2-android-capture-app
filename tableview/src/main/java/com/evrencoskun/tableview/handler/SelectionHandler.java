@@ -195,7 +195,7 @@ public class SelectionHandler {
     }
 
     private void unselectedCellView() {
-        int unSelectedColor = mTableView.getUnSelectedColor();
+        int unSelectedColor = mTableView.getHeadersColor();
 
         // Change background color of the row header which is located on Y Position of the cell
         // view.
@@ -360,7 +360,7 @@ public class SelectionHandler {
             viewHolder.setBackgroundColor(mTableView.getSelectedColor());
 
         } else {
-            viewHolder.setBackgroundColor(mTableView.getUnSelectedColor());
+            viewHolder.setBackgroundColor(mTableView.getHeadersColor());
         }
     }
 
@@ -373,7 +373,7 @@ public class SelectionHandler {
             viewHolder.setBackgroundColor(mTableView.getSelectedColor());
 
         } else {
-            viewHolder.setBackgroundColor(mTableView.getUnSelectedColor());
+            viewHolder.setBackgroundColor(mTableView.getHeadersColor());
         }
     }
 
