@@ -109,7 +109,9 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
         setTheme(prefs.getInt(Constants.PROGRAM_THEME, prefs.getInt(Constants.THEME, R.style.AppTheme)));
 
         Crashlytics.setString(Constants.SERVER, prefs.getString(Constants.SERVER, null));
-        Crashlytics.setString(Constants.USER,prefs.getString(Constants.USER, null));
+        String userName = prefs.getString(Constants.USER, null);
+        if(userName != null)
+            Crashlytics.setString(Constants.USER, userName);
         mFirebaseAnalytics.setUserId(prefs.getString(Constants.SERVER, null));
 
         super.onCreate(savedInstanceState);

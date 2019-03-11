@@ -416,5 +416,7 @@
     <string name="delete_local_data_error">Data could not be deleted. Please retry.</string>
     <string name="delete_local_data_done">Delete local data finished successfully.</string>
     <string name="org_unit_selection_warning">At least one organisation unit must be selected</string>
+    <string name="send_user_name_title">Send data</string>
+    <string name="send_user_name_mesage">Do you want to send your username?</string>
 
 </resources>
