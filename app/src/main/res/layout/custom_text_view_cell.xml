@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="isEditable"
+            type="androidx.databinding.ObservableBoolean" />
+
+    </data>
+
+    <RelativeLayout
+        android:id="@+id/layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <EditText
+            android:id="@+id/editTextCell"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:imeOptions="actionNext"
+            android:minHeight="70dp"
+            android:maxLines="1"
+            android:background="@null"
+            android:textAlignment="center"
+            android:textColor="@color/text_black_333"
+            android:textSize="15sp"
+            tools:text="hello" />
+    </RelativeLayout>
+
+
+</layout>

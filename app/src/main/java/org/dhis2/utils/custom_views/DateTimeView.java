@@ -5,6 +5,7 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
+import android.widget.EditText;
 
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -18,6 +19,7 @@ import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 
+import androidx.databinding.DataBindingUtil;
 import timber.log.Timber;
 
 /**
@@ -26,7 +28,7 @@ import timber.log.Timber;
 
 public class DateTimeView extends FieldLayout implements View.OnClickListener, View.OnFocusChangeListener {
 
-    private TextInputEditText editText;
+    private EditText editText;
     private DateTimeViewBinding binding;
 
     private Calendar selectedCalendar;
@@ -115,6 +117,17 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
         editText.setOnClickListener(this);
     }
 
+    public void setCellLayout(){
+        binding = DataBindingUtil.inflate(inflater, R.layout.custom_text_view_cell, this, true);
+
+        editText = findViewById(R.id.editTextCell);
+        selectedCalendar = Calendar.getInstance();
+        editText.setFocusable(false); //Makes editText not editable
+        editText.setClickable(true);//  but clickable
+        editText.setOnFocusChangeListener(this);
+        editText.setOnClickListener(this);
+    }
+
     @Override
     public void onFocusChange(View view, boolean hasFocus) {
         if (hasFocus)
@@ -174,7 +187,7 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
         dialog.show();
     }
 
-    public TextInputEditText getEditText() {
+    public EditText getEditText() {
         return editText;
     }
 

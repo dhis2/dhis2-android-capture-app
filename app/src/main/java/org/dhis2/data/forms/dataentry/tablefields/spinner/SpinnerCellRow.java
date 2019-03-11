@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.Row;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
+import org.dhis2.databinding.CustomTextViewCellBinding;
 
 import io.reactivex.processors.FlowableProcessor;
 
@@ -16,26 +17,16 @@ import io.reactivex.processors.FlowableProcessor;
  * QUADRAM. Created by frodriguez on 1/24/2018.
  */
 
-public class SpinnerRow implements Row<SpinnerHolder, SpinnerViewModel> {
+public class SpinnerCellRow implements Row<SpinnerHolder, SpinnerViewModel> {
 
 
     @NonNull
     private final FlowableProcessor<RowAction> processor;
-    private final boolean isBackgroundTransparent;
-    private final String renderType;
     private final LayoutInflater inflater;
     private boolean accessDataWrite;
-    public SpinnerRow(LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor, boolean isBackgroundTransparent) {
-        this.processor = processor;
-        this.isBackgroundTransparent = isBackgroundTransparent;
-        this.renderType = null;
-        this.inflater = layoutInflater;
-    }
 
-    public SpinnerRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor, boolean isBackgroundTransparent, String renderType, boolean accessDataWrite) {
+    public SpinnerCellRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor, boolean accessDataWrite) {
         this.processor = processor;
-        this.isBackgroundTransparent = isBackgroundTransparent;
-        this.renderType = renderType;
         this.inflater = layoutInflater;
         this.accessDataWrite = accessDataWrite;
     }
@@ -43,8 +34,8 @@ public class SpinnerRow implements Row<SpinnerHolder, SpinnerViewModel> {
     @NonNull
     @Override
     public SpinnerHolder onCreate(@NonNull ViewGroup parent) {
-        ViewDataBinding binding = DataBindingUtil.inflate(inflater, isBackgroundTransparent ? R.layout.form_spinner : R.layout.form_spinner_accent, parent, false);
-        return new SpinnerHolder(binding, processor, isBackgroundTransparent, renderType);
+        CustomTextViewCellBinding binding = DataBindingUtil.inflate(inflater,  R.layout.custom_text_view_cell , parent, false);
+        return new SpinnerHolder(binding, processor);
     }
 
     @Override

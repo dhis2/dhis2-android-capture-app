@@ -7,6 +7,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -29,6 +30,7 @@ import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableContract;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
+import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
@@ -137,6 +139,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
         }
 
         presenterFragment.setCurrentNumTables(dataTableModel.catCombos().size());
+        activity.updateTabLayout(section, dataTableModel.catCombos().size());
         adapter = new DataSetTableAdapter(getAbstracContext() , presenterFragment.getProcessor());
         presenterFragment.initializeProcessor(this);
         for(String catCombo: dataTableModel.catCombos()) {
@@ -152,9 +155,9 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
             adapter.setShowRowTotal(dataTableModel.section() == null? false :dataTableModel.section().showRowTotals());
             adapter.initializeRows(isEditable);
             TableView tableView = new TableView(getContext());
-            tableView.setBackgroundColor(getResources().getColor(R.color.white));
-            tableView.setUnSelectedColor(getResources().getColor(R.color.table_bg));
-            tableView.setSelectedColor(getResources().getColor(R.color.colorPrimaryLight));
+            tableView.setUnSelectedColor(getResources().getColor(R.color.white));
+            tableView.setHeadersColor(getResources().getColor(R.color.table_bg));
+            tableView.setSelectedColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY_LIGHT));
             tableView.setShadowColor(getResources().getColor(R.color.rfab__color_shadow));
             tableView.setRowHeaderWidth(350);
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
@@ -233,7 +236,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
 
             if (isNumber) {
                 if (adapter.getShowColumnTotal())
-                    setTotalColumn(listFields, cells, dataTableModel.rows(), row, column);
+                    setTotalColumn(listFields, cells, rows, row, column);
                 if (adapter.getShowRowTotal())
                     for (int i = 0; i < columnHeaderItems.size(); i++) {
                         if (i == columnHeaderItems.size() - 1)
@@ -380,6 +383,6 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
     }
 
     public int currentNumTables(){
-        return presenterFragment.getCurrentNumTables();
+        return presenterFragment!=null ? presenterFragment.getCurrentNumTables() : 0;
     }
 }

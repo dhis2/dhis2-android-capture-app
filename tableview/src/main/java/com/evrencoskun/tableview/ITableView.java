@@ -122,6 +122,8 @@ public interface ITableView {
 
     int getUnSelectedColor();
 
+    int getHeadersColor();
+
     int getSeparatorColor();
 
     void sortColumn(int columnPosition, SortState sortState);

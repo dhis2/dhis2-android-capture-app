@@ -104,6 +104,7 @@ public class TableView extends FrameLayout implements ITableView {
     private int mUnSelectedColor;
     private int mShadowColor;
     private int mSeparatorColor = -1;
+    private int mHeadersColor;
 
     private boolean mHasFixedWidth;
     private boolean mIgnoreSelectionColors;
@@ -144,6 +145,8 @@ public class TableView extends FrameLayout implements ITableView {
                 .table_view_default_unselected_background_color);
         mShadowColor = ContextCompat.getColor(getContext(), R.color
                 .table_view_default_shadow_background_color);
+        mHeadersColor = ContextCompat.getColor(getContext(), R.color
+                .table_view_default_unselected_background_color);
 
         if (attrs == null) {
             // That means TableView is created programmatically.
@@ -264,6 +267,7 @@ public class TableView extends FrameLayout implements ITableView {
         if (isShowHorizontalSeparators()) {
             // Add vertical item decoration to display column line
             recyclerView.addItemDecoration(getHorizontalItemDecoration());
+            recyclerView.addItemDecoration(getVerticalItemDecoration());
         }
 
         return recyclerView;
@@ -287,6 +291,7 @@ public class TableView extends FrameLayout implements ITableView {
             if (isShowVerticalSeparators()) {
                 // Add vertical item decoration to display row line
                 mRowHeaderRecyclerView.addItemDecoration(getVerticalItemDecoration());
+                mRowHeaderRecyclerView.addItemDecoration(getHorizontalItemDecoration());
             }
 
         }
@@ -313,6 +318,7 @@ public class TableView extends FrameLayout implements ITableView {
             if (isShowVerticalSeparators()) {
                 // Add vertical item decoration to display row line on center recycler view
                 mCellRecyclerView.addItemDecoration(getVerticalItemDecoration());
+                mCellRecyclerView.addItemDecoration(getHorizontalItemDecoration());
             }
         }
         return mCellRecyclerView;
@@ -659,15 +665,6 @@ public class TableView extends FrameLayout implements ITableView {
         return itemDecoration;
     }
 
-    /**
-     * This method helps to change default selected color programmatically.
-     *
-     * @param selectedColor It must be Color int.
-     */
-    public void setSelectedColor(@ColorInt int selectedColor) {
-        this.mSelectedColor = selectedColor;
-    }
-
     public void setHeaderCount(int headerCount){
         this.mHeaderCount = headerCount;
         clear();
@@ -681,6 +678,16 @@ public class TableView extends FrameLayout implements ITableView {
         mColumnHeaderLayoutManagers.clear();
         mTableAdapter.clear();
         removeAllViews();
+    }
+
+
+    /**
+     * This method helps to change default selected color programmatically.
+     *
+     * @param selectedColor It must be Color int.
+     */
+    public void setSelectedColor(@ColorInt int selectedColor) {
+        this.mSelectedColor = selectedColor;
     }
 
     @Override
@@ -713,6 +720,17 @@ public class TableView extends FrameLayout implements ITableView {
     int getUnSelectedColor() {
         return mUnSelectedColor;
     }
+
+    public void setHeadersColor(@ColorInt int mHeadersColor) {
+        this.mHeadersColor = mHeadersColor;
+    }
+
+    @Override
+    public @ColorInt
+    int getHeadersColor() {
+        return mHeadersColor;
+    }
+
 
     public void setShadowColor(@ColorInt int shadowColor) {
         this.mShadowColor = shadowColor;
