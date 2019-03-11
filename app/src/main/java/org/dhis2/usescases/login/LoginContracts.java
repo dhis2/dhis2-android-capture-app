@@ -55,6 +55,8 @@ public class LoginContracts {
         void switchPasswordVisibility();
 
         void setUrl(String url);
+
+        void showCrashlyticsDialog();
     }
 
     public interface Presenter {

@@ -148,7 +148,12 @@ public class LoginPresenter implements LoginContracts.Presenter {
     @Override
     public void onButtonClick() {
         view.hideKeyboard();
-        view.showLoginProgress(true);
+        SharedPreferences prefs = view.getAbstracContext().getSharedPreferences(
+                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
+        if (!prefs.getBoolean(Constants.USER_ASKED_CRASHLYTICS, false))
+            view.showCrashlyticsDialog();
+        else
+            view.showLoginProgress(true);
     }
 
     @Override
