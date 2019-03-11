@@ -123,12 +123,14 @@ public class DataValuePresenter implements DataValueContract.Presenter{
         boolean checkAllField = true;
         for(List<FieldViewModel> rowFields: cells){
             boolean hasValue = false;
-            for(FieldViewModel field: rowFields){
-                if(field.value() != null && !field.value().isEmpty())
+            for(FieldViewModel field: rowFields) {
+                if (field.value() != null && !field.value().isEmpty())
                     hasValue = true;
 
-                if(hasValue && (field.value() == null || field.value().isEmpty()))
+                if (hasValue && (field.value() == null || field.value().isEmpty())){
                     checkAllField = false;
+                    break;
+                }
             }
         }
         return checkAllField;
