@@ -28,6 +28,12 @@ public abstract class FileViewModel extends FieldViewModel {
                 allowFutureDate(), editable(), optionSet(), warning(), error(),description(),dataElement(),listCategoryOption(), storeBy(), row(), column(), categoryOptionCombo(), catCombo());
     }
 
+    @Override
+    public FieldViewModel setValue(String value) {
+        return new AutoValue_FileViewModel(uid(), label(), true, value, programStageSection(),
+                allowFutureDate(), editable(), optionSet(), warning(), error(),description(),dataElement(),listCategoryOption(), storeBy(), row(), column(), categoryOptionCombo(), catCombo());
+    }
+
     @NonNull
     @Override
     public FieldViewModel withError(@NonNull String error) {

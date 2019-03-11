@@ -1,7 +1,8 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection;
 
-import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
+import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel;
+import org.dhis2.data.forms.dataentry.tablefields.FieldViewModelFactoryImpl;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Sextet;
@@ -104,13 +105,18 @@ public class DataValuePresenter implements DataValueContract.Presenter{
     }
     @Override
     public void complete(){
-        if(checkAllFieldRequired())
+        if(((!dataTableModel.dataSet().fieldCombinationRequired()) || checkAllFieldRequired() && dataTableModel.dataSet().fieldCombinationRequired())
+            && checkMandatoryField())
             compositeDisposable.add(
                     repository.completeDataSet(orgUnitUid, periodId, attributeOptionCombo)
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe( completed -> view.onComplete(), Timber::e)
             );
+        else if(!checkMandatoryField())
+            view.showAlertDialog(view.getContext().getString(R.string.missing_mandatory_fields_title), view.getContext().getResources().getString(R.string.field_mandatory));
+        else
+            view.showAlertDialog(view.getContext().getString(R.string.missing_mandatory_fields_title), view.getContext().getResources().getString(R.string.field_required));
     }
 
     private boolean checkAllFieldRequired(){
@@ -126,6 +132,17 @@ public class DataValuePresenter implements DataValueContract.Presenter{
             }
         }
         return checkAllField;
+    }
+
+    private boolean checkMandatoryField() {
+        for (List<FieldViewModel> rowFields : cells) {
+            for (FieldViewModel field : rowFields) {
+                if (field.mandatory() && (field.value() == null || field.value().isEmpty())) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     private DataValueModel tranformDataSetTableModelToDataValueModel(DataSetTableModel dataSetTableModel){
@@ -161,36 +178,40 @@ public class DataValuePresenter implements DataValueContract.Presenter{
                 .flatMap(rowAction -> {
                     boolean exists = false;
                     dataValuesChanged.clear();
-                    if(rowAction.value() != null && !rowAction.value().isEmpty()) {
-                        DataSetTableModel dataSetTableModel = null;
-                        for (DataSetTableModel dataValue : dataTableModel.dataValues()) {
-                            if (dataValue.dataElement().equals(rowAction.dataElement()) &&
-                                    dataValue.listCategoryOption().containsAll(rowAction.listCategoryOption())) {
-                                dataSetTableModel = DataSetTableModel.create(dataValue.id(), dataValue.dataElement(),
-                                        dataValue.period(), dataValue.organisationUnit(),
-                                        dataValue.categoryOptionCombo(), dataValue.attributeOptionCombo(),
-                                        rowAction.value(), dataValue.storedBy(),
-                                        dataValue.catOption(), dataValue.listCategoryOption(),rowAction.catCombo());
-                                dataTableModel.dataValues().remove(dataValue);
-                                dataTableModel.dataValues().add(dataSetTableModel);
-                                exists = true;
-                                break;
-                            }
-                        }
-                        if (!exists && rowAction.value() != null) {
-                            String catOptionCombo = "";
-                            for (Map.Entry<String, List<String>> entry : dataTableModel.catOptionComboCatOption().entrySet()) {
-                                if (entry.getValue().containsAll(rowAction.listCategoryOption()))
-                                    catOptionCombo = entry.getKey();
-                            }
-                            dataSetTableModel = DataSetTableModel.create(Long.parseLong("0"), rowAction.dataElement(), periodId, orgUnitUid,
-                                    catOptionCombo, attributeOptionCombo, rowAction.value() != null ? rowAction.value() : "", "",
-                                    "", rowAction.listCategoryOption(), rowAction.catCombo());
+
+                    DataSetTableModel dataSetTableModel = null;
+                    for (DataSetTableModel dataValue : dataTableModel.dataValues()) {
+                        if (dataValue.dataElement().equals(rowAction.dataElement()) &&
+                                dataValue.listCategoryOption().containsAll(rowAction.listCategoryOption())) {
+                            dataSetTableModel = DataSetTableModel.create(dataValue.id(), dataValue.dataElement(),
+                                    dataValue.period(), dataValue.organisationUnit(),
+                                    dataValue.categoryOptionCombo(), dataValue.attributeOptionCombo(),
+                                    rowAction.value() == null? "": rowAction.value(), dataValue.storedBy(),
+                                    dataValue.catOption(), dataValue.listCategoryOption(),rowAction.catCombo());
+                            dataTableModel.dataValues().remove(dataValue);
                             dataTableModel.dataValues().add(dataSetTableModel);
+                            exists = true;
+                            setValueIntoFieldViewModel(rowAction.value(), rowAction.dataElement(), dataValue.categoryOptionCombo(), dataValue.listCategoryOption());
+                            dataSetSectionFragment.updateData(rowAction);
+                            repository.insertDataValue(tranformDataSetTableModelToDataValueModel(dataSetTableModel));
+                            break;
                         }
+                    }
+                    if (!exists && rowAction.value() != null && !rowAction.value().isEmpty()) {
+                        String catOptionCombo = "";
+                        for (Map.Entry<String, List<String>> entry : dataTableModel.catOptionComboCatOption().entrySet()) {
+                            if (entry.getValue().containsAll(rowAction.listCategoryOption()))
+                                catOptionCombo = entry.getKey();
+                        }
+                        dataSetTableModel = DataSetTableModel.create(Long.parseLong("0"), rowAction.dataElement(), periodId, orgUnitUid,
+                                catOptionCombo, attributeOptionCombo, rowAction.value() != null ? rowAction.value() : "", "",
+                                "", rowAction.listCategoryOption(), rowAction.catCombo());
+                        dataTableModel.dataValues().add(dataSetTableModel);
+                        setValueIntoFieldViewModel(rowAction.value(), rowAction.dataElement(), catOptionCombo, dataSetTableModel.listCategoryOption());
                         dataSetSectionFragment.updateData(rowAction);
                         return repository.insertDataValue(tranformDataSetTableModelToDataValueModel(dataSetTableModel));
                     }
+
                     return Flowable.just(0);
                 })
                 .subscribeOn(Schedulers.io())
@@ -199,6 +220,19 @@ public class DataValuePresenter implements DataValueContract.Presenter{
                     if(aLong.intValue() != 0)
                         view.showSnackBar();
                     }, Timber::e));
+    }
+
+    private void setValueIntoFieldViewModel(String value, String dateElement, String catOptionCombo, List<String> catOptions){
+        for(List<FieldViewModel> rowFields: cells){
+            for (int i = 0; i < rowFields.size(); i++) {
+                if (rowFields.get(i).dataElement().equals(dateElement) && (rowFields.get(i).categoryOptionCombo().equals(catOptionCombo) ||
+                        rowFields.get(i).listCategoryOption().containsAll(catOptions)  )) {
+                    FieldViewModel field = rowFields.get(i);
+                    rowFields.remove(i);
+                    rowFields.add(i == rowFields.size() ? i-1: i, field.setValue(value));
+                }
+            }
+        }
     }
 
     @Override

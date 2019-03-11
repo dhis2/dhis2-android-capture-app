@@ -380,4 +380,11 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
     public int currentNumTables(){
         return presenterFragment.getCurrentNumTables();
     }
+
+    @Override
+    public void showAlertDialog(String title, String message){
+        super.showInfoDialog(title, message);
+    }
+
+
 }

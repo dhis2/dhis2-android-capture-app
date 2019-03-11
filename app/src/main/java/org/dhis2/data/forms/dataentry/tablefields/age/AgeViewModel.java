@@ -33,6 +33,11 @@ public abstract class AgeViewModel extends FieldViewModel {
         return new AutoValue_AgeViewModel(uid(), label(), programStageSection(), allowFutureDate(), editable(), optionSet(), warning(), error(), description(), dataElement(),listCategoryOption(), storeBy(), row(), column(), categoryOptionCombo(), catCombo(), true, value());
     }
 
+    @Override
+    public FieldViewModel setValue(String value) {
+        return new AutoValue_AgeViewModel(uid(), label(), programStageSection(), allowFutureDate(), editable(), optionSet(), warning(), error(), description(), dataElement(),listCategoryOption(), storeBy(), row(), column(), categoryOptionCombo(), catCombo(), true, value);
+    }
+
     @NonNull
     @Override
     public FieldViewModel withError(@NonNull String error) {

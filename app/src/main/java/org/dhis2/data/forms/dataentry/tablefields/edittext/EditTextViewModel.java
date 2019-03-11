@@ -36,6 +36,12 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
                 value(), programStageSection(), null, true, null, description(), dataElement(),listCategoryOption(), storeBy(), row(), column(), categoryOptionCombo(),catCombo(),hint(), maxLines(), inputType(), valueType(), warning, error());
     }
 
+    @Override
+    public FieldViewModel setValue(String value) {
+        return new AutoValue_EditTextViewModel(uid(), label(), mandatory(),
+                value, programStageSection(), null, true, null, description(), dataElement(),listCategoryOption(), storeBy(), row(), column(), categoryOptionCombo(),catCombo(),hint(), maxLines(), inputType(), valueType(), warning(), error());
+    }
+
     @NonNull
     @Override
     public EditTextViewModel withError(@NonNull String error) {

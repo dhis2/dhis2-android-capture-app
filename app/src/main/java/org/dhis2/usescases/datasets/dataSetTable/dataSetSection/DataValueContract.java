@@ -1,5 +1,7 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection;
 
+import android.content.Context;
+
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.data.tuples.Pair;
@@ -21,7 +23,7 @@ import io.reactivex.processors.FlowableProcessor;
 
 public class DataValueContract {
 
-    public interface View {
+    public interface View extends AbstractActivityContracts.View{
         void showSnackBar();
 
         void onComplete();
@@ -31,6 +33,8 @@ public class DataValueContract {
         void setDataInputPeriod(DataInputPeriodModel dataInputPeriod);
 
         void goToTable(int numTable);
+
+        void showAlertDialog(String title, String message);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter{
