@@ -1,12 +1,8 @@
 package org.dhis2.utils;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.period.PeriodType;
-import org.hisp.dhis.android.core.program.ProgramModel;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -15,6 +11,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * QUADRAM. Created by ppajuelo on 16/01/2018.
@@ -975,7 +974,16 @@ public class DateUtils {
 
         Date date = calendar.getTime();
 
-        return completedDay != null &&
+        return completedDay != null && compExpDays > 0 &&
                 completedDay.getTime() + TimeUnit.DAYS.toMillis(compExpDays) < date.getTime();
+    }
+
+    public Boolean isEventExpired(Date eventDate, EventStatus status, int compExpDays, PeriodType programPeriodType, int expDays) {
+        if (status == EventStatus.COMPLETED)
+            return isEventExpired(null, eventDate, compExpDays);
+        else {
+            Date expDate = expDate(null, expDays, programPeriodType);
+            return expDate != null && expDate.before(getCalendar().getTime());
+        }
     }
 }

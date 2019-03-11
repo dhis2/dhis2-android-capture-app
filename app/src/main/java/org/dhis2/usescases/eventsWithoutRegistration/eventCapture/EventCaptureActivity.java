@@ -261,9 +261,9 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     @Override
     public void finishDataEntry() {
         Intent intent = new Intent();
-        intent.putExtra(Constants.EVENT_UID, getIntent().getStringExtra(Constants.EVENT_UID));
-        if(isEventCompleted)
-            setResult(RESULT_OK, intent);
+        if (isEventCompleted)
+            intent.putExtra(Constants.EVENT_UID, getIntent().getStringExtra(Constants.EVENT_UID));
+        setResult(RESULT_OK, intent);
         finish();
     }
 

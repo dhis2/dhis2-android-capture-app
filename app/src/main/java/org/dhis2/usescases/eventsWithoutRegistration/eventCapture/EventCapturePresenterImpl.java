@@ -368,7 +368,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                 if (formSectionViewModel.sectionUid().equals(currentSection.get()))
                     EventCaptureFormFragment.getInstance().setSectionProgress(
                             getFinalSections().indexOf(formSectionViewModel),
-                            sectionList.size() - sectionsToHide.size());
+                            getFinalSections().size());
     }
 
     @NonNull
@@ -394,7 +394,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private void changeSection() {
         List<FormSectionViewModel> finalSections = getFinalSections();
 
-        if (currentPosition < finalSections.size() - 2) {
+        if (currentPosition < finalSections.size() - 1) {
             currentSectionPosition.onNext(++currentPosition);
         } else {
             if (eventStatus != EventStatus.ACTIVE) {

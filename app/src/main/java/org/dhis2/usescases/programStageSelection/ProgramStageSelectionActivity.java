@@ -55,7 +55,8 @@ public class ProgramStageSelectionActivity extends ActivityGlobalAbstract implem
     public void onCreate(@Nullable Bundle savedInstanceState) {
         programId = getIntent().getStringExtra("PROGRAM_UID");
         enrollmenId = getIntent().getStringExtra("ENROLLMENT_UID");
-        ((App) getApplicationContext()).userComponent().plus(new ProgramStageSelectionModule(programId, enrollmenId)).inject(this);
+        String eventCreationType =  getIntent().getStringExtra(EVENT_CREATION_TYPE);
+        ((App) getApplicationContext()).userComponent().plus(new ProgramStageSelectionModule(programId, enrollmenId, eventCreationType)).inject(this);
         super.onCreate(savedInstanceState);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_program_stage_selection);
