@@ -59,14 +59,14 @@ final class EditTextCellCustomHolder extends FormViewHolder {
         accessDataWrite = isEditable.get();
 
 
-        /*editText.setOnFocusChangeListener((v, hasFocus) -> {
+        editText.setOnFocusChangeListener((v, hasFocus) -> {
             if (!hasFocus && editTextModel != null && editTextModel.editable()) {
                 if (!isEmpty(editText.getText()) && validate())
                     processor.onNext(RowAction.create(editTextModel.uid(), editText.getText().toString(), editTextModel.dataElement(), editTextModel.listCategoryOption(), editTextModel.catCombo(), editTextModel.row(), editTextModel.column()));
                 else
                     processor.onNext(RowAction.create(editTextModel.uid(), null, editTextModel.dataElement(), editTextModel.listCategoryOption(),editTextModel.catCombo(),editTextModel.row(), editTextModel.column()));
             }
-        });*/
+        });
 
     }
 

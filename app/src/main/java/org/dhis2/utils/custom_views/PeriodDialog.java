@@ -131,7 +131,7 @@ public class PeriodDialog extends DialogFragment {
         binding.selectedPeriod.setText(DateUtils.getInstance().getPeriodUIString(period, currentDate, Locale.getDefault()));
     }
 
-    private void checkConstraintDates() {
+    protected void checkConstraintDates() {
 
         if (minDate != null && minDate.equals(currentDate))
             binding.periodBefore.setEnabled(false);
@@ -156,5 +156,47 @@ public class PeriodDialog extends DialogFragment {
 
     public interface OnDateSet {
         void onDateSet(Date selectedDate);
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public Date getCurrentDate() {
+        return currentDate;
+    }
+
+    public PeriodType getPeriod() {
+        return period;
+    }
+
+    public Date getMinDate() {
+        return minDate;
+    }
+
+    public Date getMaxDate() {
+        return maxDate;
+    }
+
+    public DialogPeriodBinding getBinding() {
+        return binding;
+    }
+
+    public OnDateSet getPossitiveListener() {
+        return possitiveListener;
+    }
+
+    public View.OnClickListener getNegativeListener() {
+        return negativeListener;
+    }
+
+    protected void setCurrentDate(Date currentDate) {
+        this.currentDate = currentDate;
+    }
+
+    @Nullable
+    @Override
+    public Context getContext() {
+        return context;
     }
 }

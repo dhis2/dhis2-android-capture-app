@@ -58,7 +58,16 @@ public class DataSetInitialPresenter implements DataSetInitialContract.Presenter
 
     @Override
     public void onReportPeriodClick(PeriodType periodType) {
-        view.showPeriodSelector(periodType);
+        compositeDisposable.add(
+                dataSetInitialRepository.getDataInputPeriod()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(data -> {
+                            String a = "";
+                            view.showPeriodSelector(periodType, data);
+                        },
+                        Timber::e)
+        );
     }
 
     @Override

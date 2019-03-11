@@ -1,6 +1,8 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection;
 
-import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
+import android.content.Context;
+
+import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel;
@@ -21,7 +23,7 @@ import io.reactivex.processors.FlowableProcessor;
 
 public class DataValueContract {
 
-    public interface View {
+    public interface View extends AbstractActivityContracts.View{
         void showSnackBar();
 
         void onComplete();
@@ -31,12 +33,12 @@ public class DataValueContract {
         void setDataInputPeriod(DataInputPeriodModel dataInputPeriod);
 
         void goToTable(int numTable);
+
+        void showAlertDialog(String title, String message);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter{
         void init(View view, String orgUnitUid, String periodTypeName, String periodInitialDate, String catCombo, String section, String periodId);
-
-        void save();
 
         void complete();
 
@@ -53,5 +55,7 @@ public class DataValueContract {
         int getCurrentNumTables();
 
         FlowableProcessor<RowAction> getProcessor();
+
+        void addCells(List<List<FieldViewModel>> cells);
     }
 }

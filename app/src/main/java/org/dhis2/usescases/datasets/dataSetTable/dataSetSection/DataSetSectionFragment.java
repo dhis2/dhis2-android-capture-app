@@ -129,7 +129,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
     }
 
 
-    public void createTable(DataTableModel dataTableModel) {
+    void createTable(DataTableModel dataTableModel) {
         DataSetModel dataSet = dataTableModel.dataSet();
         boolean isEditable = false;
         if(dataSet.accessDataWrite() &&
@@ -248,15 +248,13 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
             }
 
             adapter.swap(listFields);
-            //if (!tableCreated)
-                adapter.setAllItems(
-                        dataTableModel.headers().get(catCombo),
-                        rows,
-                        cells, adapter.getShowRowTotal());
-            /*else
-                adapter.setCellItems(cells);
 
-            tableCreated = false;*/
+            adapter.setAllItems(
+                    dataTableModel.headers().get(catCombo),
+                    rows,
+                    cells, adapter.getShowRowTotal());
+
+            presenterFragment.addCells(listFields);
 
             if(!catCombo.equals(dataTableModel.catCombos().get(dataTableModel.catCombos().size()-1)))
                 adapter = new DataSetTableAdapter(getAbstracContext(), presenterFragment.getProcessor());
@@ -385,4 +383,11 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
     public int currentNumTables(){
         return presenterFragment!=null ? presenterFragment.getCurrentNumTables() : 0;
     }
+
+    @Override
+    public void showAlertDialog(String title, String message){
+        super.showInfoDialog(title, message);
+    }
+
+
 }

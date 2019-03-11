@@ -32,6 +32,11 @@ public abstract class SpinnerViewModel extends FieldViewModel {
         return new AutoValue_SpinnerViewModel(uid(),label(),true,value(),programStageSection(),allowFutureDate(),editable(),warning(),error(),description(),dataElement(),listCategoryOption(),storeBy(), row(), column(), categoryOptionCombo(),catCombo(), hint(),optionSet());
     }
 
+    @Override
+    public FieldViewModel setValue(String value) {
+        return new AutoValue_SpinnerViewModel(uid(),label(),true,value,programStageSection(),allowFutureDate(),editable(),warning(),error(),description(),dataElement(),listCategoryOption(),storeBy(), row(), column(), categoryOptionCombo(),catCombo(), hint(),optionSet());
+    }
+
     @NonNull
     @Override
     public FieldViewModel withError(@NonNull String error) {
