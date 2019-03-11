@@ -4,13 +4,14 @@ import android.widget.Button;
 
 import org.dhis2.data.forms.dataentry.tablefields.FormViewHolder;
 import org.dhis2.databinding.FormUnsupportedBinding;
+import org.dhis2.databinding.FormUnsupportedCellBinding;
 
 
 public class UnsupportedHolder extends FormViewHolder {
 
     private final Button button;
 
-    public UnsupportedHolder(FormUnsupportedBinding binding) {
+    public UnsupportedHolder(FormUnsupportedCellBinding binding) {
         super(binding);
         button = binding.formButton;
     }

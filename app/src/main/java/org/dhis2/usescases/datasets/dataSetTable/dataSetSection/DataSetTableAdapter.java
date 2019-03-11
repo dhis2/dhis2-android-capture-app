@@ -104,7 +104,7 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
         rows.add(YES_NO, new RadioButtonRow(layoutInflater, processor, accessDataWrite));
         rows.add(ORG_UNIT, new OrgUnitRow(null, layoutInflater, processor, true, null, ProgramStageSectionRenderingType.LISTING.name()));
         rows.add(IMAGE, new ImageRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name()));
-        rows.add(UNSUPPORTED, new UnsupportedRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name()));
+        rows.add(UNSUPPORTED, new UnsupportedRow(layoutInflater, processor));
     }
 
     /**
