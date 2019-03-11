@@ -26,6 +26,12 @@ public abstract class ImageViewModel extends FieldViewModel {
                 allowFutureDate(), editable(), optionSet(), warning(), error(),description(),dataElement(),listCategoryOption(), storeBy(), row(), column(), categoryOptionCombo(), catCombo());
     }
 
+    @Override
+    public FieldViewModel setValue(String value) {
+        return new AutoValue_ImageViewModel(uid(), label(), true, value, programStageSection(),
+                allowFutureDate(), editable(), optionSet(), warning(), error(),description(),dataElement(),listCategoryOption(), storeBy(), row(), column(), categoryOptionCombo(), catCombo());
+    }
+
     @NonNull
     @Override
     public FieldViewModel withError(@NonNull String error) {

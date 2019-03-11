@@ -133,6 +133,8 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
 
     @Override
     public void onReportPeriodClick() {
+
+        //Aqui meter los data input
         view.showPeriodSelector(PeriodType.valueOf(periodTypeName));
 
     }

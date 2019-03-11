@@ -18,7 +18,7 @@ import java.util.Map;
 import io.reactivex.Flowable;
 
 public interface DataValueRepository {
-    Flowable<Long> insertDataValue(List<DataValueModel> dataValues);
+    Flowable<Long> insertDataValue(DataValueModel dataValues);
 
     Flowable<DataSetModel> getDataSet();
 

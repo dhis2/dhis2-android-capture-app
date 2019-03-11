@@ -61,7 +61,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
             "JOIN CategoryOptionComboCategoryOptionLink ON CategoryOptionComboCategoryOptionLink.categoryOptionCombo = DataValue.categoryOptionCombo " +
             "JOIN DataSetDataElementLink ON DataSetDataElementLink.dataElement = DataValue.dataElement " +
             "JOIN DataElement ON DataElement.uid = DataSetDataElementLink.dataElement " +
-            "JOIN Section ON Section.dataSet = DataSetDataElementLink.dataSet " +
+            "LEFT JOIN Section ON Section.dataSet = DataSetDataElementLink.dataSet " +
             "WHERE DataValue.organisationUnit = ? " +
             "AND DataValue.attributeOptionCombo = ? " +
             "AND DataSetDataElementLink.dataSet = ? " +
@@ -242,17 +242,15 @@ public class DataValueRepositoryImpl implements DataValueRepository {
                         .build()).toFlowable(BackpressureStrategy.LATEST);
     }
 
+    @Override
+    public Flowable<Long> insertDataValue(DataValueModel dataValue){
 
-    public Flowable<Long> insertDataValue(List<DataValueModel> dataValues){
-        Long id = 0L;
-        for(DataValueModel dataValueModel: dataValues) {
-            String where = DataValueModel.Columns.DATA_ELEMENT+ " = '"+ dataValueModel.dataElement() +"' AND "+ DataValueModel.Columns.PERIOD + " = '"+ dataValueModel.period() +
-                    "' AND "+  DataValueModel.Columns.ATTRIBUTE_OPTION_COMBO+ " = '"+ dataValueModel.attributeOptionCombo() +
-                    "' AND "+ DataValueModel.Columns.CATEGORY_OPTION_COMBO + " = '"+ dataValueModel.categoryOptionCombo()+"'";
-            briteDatabase.delete(DataValueModel.TABLE, where);
-            id = briteDatabase.insert(DataValueModel.TABLE, dataValueModel.toContentValues());
-        }
-        return Flowable.just(id);
+        String where = DataValueModel.Columns.DATA_ELEMENT+ " = '"+ dataValue.dataElement() +"' AND "+ DataValueModel.Columns.PERIOD + " = '"+ dataValue.period() +
+                "' AND "+  DataValueModel.Columns.ATTRIBUTE_OPTION_COMBO+ " = '"+ dataValue.attributeOptionCombo() +
+                "' AND "+ DataValueModel.Columns.CATEGORY_OPTION_COMBO + " = '"+ dataValue.categoryOptionCombo()+"'";
+        briteDatabase.delete(DataValueModel.TABLE, where);
+
+        return Flowable.just(briteDatabase.insert(DataValueModel.TABLE, dataValue.toContentValues()));
     }
 
     @Override

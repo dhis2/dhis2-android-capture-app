@@ -33,6 +33,12 @@ public abstract class DateTimeViewModel extends FieldViewModel {
                 allowFutureDate(),editable(),optionSet(),warning(),error(),description(), dataElement(),listCategoryOption(), storeBy(), row(), column(), categoryOptionCombo(),catCombo(), valueType());
     }
 
+    @Override
+    public FieldViewModel setValue(String value) {
+        return new AutoValue_DateTimeViewModel(uid(),label(),true,value,programStageSection(),
+                allowFutureDate(),editable(),optionSet(),warning(),error(),description(), dataElement(),listCategoryOption(), storeBy(), row(), column(), categoryOptionCombo(),catCombo(), valueType());
+    }
+
     @NonNull
     @Override
     public FieldViewModel withError(@NonNull String error) {

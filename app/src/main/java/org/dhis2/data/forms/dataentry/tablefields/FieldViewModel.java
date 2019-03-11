@@ -41,6 +41,8 @@ public abstract class FieldViewModel {
 
     public abstract FieldViewModel setMandatory();
 
+    public abstract FieldViewModel setValue(String value);
+
     @NonNull
     public abstract FieldViewModel withWarning(@NonNull String warning);
 
