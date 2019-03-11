@@ -66,6 +66,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     private OrganisationUnitModel selectedOrgUnit;
     private Date selectedPeriod;
     private HashMap<String, CategoryOptionModel> selectedCatOptions;
+    private Map<String, List<DataElementModel>> dataElements;
     View selectedView;
 
     @Inject
@@ -170,13 +171,24 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
                 tableSelectorVisible = !tableSelectorVisible;
             }
         });
-
-        if (dataElements.size() > 1)
-            dataElements.remove("NO_SECTION");
-        else
-            binding.tabLayout.setVisibility(View.GONE);
-
+        this.dataElements = dataElements;
+        if(dataElements.containsKey("NO_SECTION") && dataElements.size() > 1)
+                dataElements.remove("NO_SECTION");
         viewPagerAdapter.swapData(dataElements);
+    }
+
+    public void updateTabLayout(String section, int numTables){
+
+        if(section.equals("NO_SECTION")) {
+            if (numTables > 1) {
+                dataElements.put("Tablas", dataElements.remove("NO_SECTION"));
+                viewPagerAdapter.swapData(dataElements);
+            } else
+                binding.tabLayout.setVisibility(View.GONE);
+        }else {
+            if (numTables > 1)
+                viewPagerAdapter.swapData(dataElements);
+        }
     }
 
     @Override

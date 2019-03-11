@@ -65,7 +65,7 @@ public final class DataSetSectionAdapter extends FragmentStatePagerAdapter {
     public CharSequence getPageTitle(int position) {
         SpannableString sb = new SpannableString(sectionArrays.get(position) + "  ");
 
-        if(((DataSetSectionFragment)getItem(position)).currentNumTables()>1) {
+        if(!fragments.isEmpty() && fragments.get(position).currentNumTables()>1) {
             Drawable image = context.getResources().getDrawable(R.drawable.ic_arrow_drop_down_black_24dp);
             image.setBounds(0, 0, image.getIntrinsicWidth(), image.getIntrinsicHeight());
             ImageSpan imageSpan = new ImageSpan(image, ImageSpan.ALIGN_BOTTOM);

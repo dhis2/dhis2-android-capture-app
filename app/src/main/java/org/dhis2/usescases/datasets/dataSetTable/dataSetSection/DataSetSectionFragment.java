@@ -139,6 +139,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
         }
 
         presenterFragment.setCurrentNumTables(dataTableModel.catCombos().size());
+        activity.updateTabLayout(section, dataTableModel.catCombos().size());
         adapter = new DataSetTableAdapter(getAbstracContext() , presenterFragment.getProcessor());
         presenterFragment.initializeProcessor(this);
         for(String catCombo: dataTableModel.catCombos()) {
