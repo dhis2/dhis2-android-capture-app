@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import androidx.annotation.NonNull;
-import timber.log.Timber;
 
 /**
  * QUADRAM. Created by ppajuelo on 13/06/2018.
@@ -101,8 +100,6 @@ public class RulesUtilsProviderImpl implements RulesUtilsProvider {
 
         if (model != null)
             fieldViewModels.put(showWarning.field(), model.withWarning(showWarning.content() + data));
-        else
-            Timber.d("Field with uid %s is missing", showWarning.field());
 
     }
 
@@ -113,8 +110,6 @@ public class RulesUtilsProviderImpl implements RulesUtilsProvider {
 
         if (model != null)
             fieldViewModels.put(showError.field(), model.withError(showError.content()));
-        else
-            Timber.d("Field with uid %s is missing", showError.field());
 
         rulesActionCallbacks.setShowError(showError, model);
     }

@@ -1,6 +1,5 @@
 package org.dhis2.data.forms;
 
-import androidx.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.squareup.sqlbrite2.BriteDatabase;
@@ -16,6 +15,7 @@ import org.hisp.dhis.rules.models.RuleAction;
 import org.hisp.dhis.rules.models.RuleActionErrorOnCompletion;
 import org.hisp.dhis.rules.models.RuleActionHideField;
 import org.hisp.dhis.rules.models.RuleActionHideSection;
+import org.hisp.dhis.rules.models.RuleActionSetMandatoryField;
 import org.hisp.dhis.rules.models.RuleActionShowError;
 import org.hisp.dhis.rules.models.RuleActionWarningOnCompletion;
 import org.hisp.dhis.rules.models.RuleEffect;
@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import androidx.annotation.NonNull;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -225,6 +226,11 @@ class FormPresenterImpl implements FormPresenter {
             } else if (ruleAction instanceof RuleActionHideSection) {
                 RuleActionHideSection hideSection = (RuleActionHideSection) ruleAction;
                 fieldViewModels.remove(hideSection.programStageSection());
+            } else if (ruleAction instanceof RuleActionSetMandatoryField) {
+                RuleActionSetMandatoryField mandatoryField = (RuleActionSetMandatoryField) ruleAction;
+                FieldViewModel model = fieldViewModels.get(mandatoryField.field());
+                if (model != null)
+                    fieldViewModels.put(mandatoryField.field(), model.setMandatory());
             }
         }
     }

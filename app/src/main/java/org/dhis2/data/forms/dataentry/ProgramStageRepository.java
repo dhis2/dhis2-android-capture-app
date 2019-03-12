@@ -142,6 +142,11 @@ final class ProgramStageRepository implements DataEntryRepository {
                 .map(this::checkRenderType);
     }
 
+    @Override
+    public List<FieldViewModel> fieldList() {
+        return null;
+    }
+
     private List<FieldViewModel> checkRenderType(List<FieldViewModel> fieldViewModels) {
 
         ArrayList<FieldViewModel> renderList = new ArrayList<>();

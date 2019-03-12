@@ -1,6 +1,7 @@
 package org.dhis2.utils;
 
 import org.dhis2.R;
+import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.period.PeriodType;
 import org.junit.Assert;
 import org.junit.Test;
@@ -12,6 +13,7 @@ import java.util.Date;
 import java.util.Locale;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class DateUtilsTest {
 
@@ -638,5 +640,57 @@ public class DateUtilsTest {
         assertEquals("Apr 2018 - Mar 2019", DateUtils.getInstance().getPeriodUIString(PeriodType.FinancialApril, testDate, Locale.ENGLISH));
         assertEquals("Jul 2018 - Jun 2019", DateUtils.getInstance().getPeriodUIString(PeriodType.FinancialJuly, testDate, Locale.ENGLISH));
         assertEquals("Oct 2018 - Sep 2019", DateUtils.getInstance().getPeriodUIString(PeriodType.FinancialOct, testDate, Locale.ENGLISH));
+    }
+
+    @Test
+    public void active_event_NcD_NPT_NeD_is_not_expired() throws ParseException {
+
+        Calendar calendar = DateUtils.getInstance().getCalendar();
+        calendar.setTime(DateUtils.uiDateFormat().parse("2019-03-01"));
+
+        Date eventDate = DateUtils.uiDateFormat().parse("2019-03-01");
+
+        assertTrue(!DateUtils.getInstance().isEventExpired(eventDate, EventStatus.ACTIVE, 0,null,0));
+
+    }
+
+    @Test
+    public void completed_event_NcD_NPT_NeD_is_not_expired() throws ParseException {
+
+        Date eventDate = DateUtils.uiDateFormat().parse("2019-03-01");
+
+        assertTrue(!DateUtils.getInstance().isEventExpired(eventDate, EventStatus.COMPLETED, 0,null,0));
+
+    }
+
+    @Test
+    public void active_event_NcD_Monthly_0orNull_is_not_expired() throws ParseException {
+
+        Date eventDate = DateUtils.uiDateFormat().parse("2019-03-01");
+
+        assertTrue(!DateUtils.getInstance().isEventExpired(eventDate, EventStatus.ACTIVE, 0,PeriodType.Monthly,0));
+
+    }
+
+
+    @Test
+    public void active_event_NcD_Monthly_1_is_not_expired() throws ParseException {
+
+        Calendar calendar = DateUtils.getInstance().getCalendar();
+        Date currentDate = calendar.getTime();
+        calendar.add(Calendar.DAY_OF_YEAR,1);
+        Date eventDate = calendar.getTime();
+
+        assertTrue(!DateUtils.getInstance().isEventExpired(eventDate, EventStatus.ACTIVE, 0,PeriodType.Monthly,1));
+
+    }
+
+    @Test
+    public void active_event_NcD_Monthly_1_is_expired() throws ParseException {
+
+        Date eventDate = DateUtils.uiDateFormat().parse("2019-02-28");
+
+        assertTrue(DateUtils.getInstance().isEventExpired(eventDate, EventStatus.ACTIVE, 0,PeriodType.Monthly,1));
+
     }
 }
