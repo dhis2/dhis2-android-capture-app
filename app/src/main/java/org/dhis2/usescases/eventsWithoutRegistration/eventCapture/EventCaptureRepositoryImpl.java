@@ -178,6 +178,25 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     }
 
     @Override
+    public boolean isEnrollmentCancelled() {
+        Boolean isEnrollmentCancelled = false;
+        Cursor enrollmentCursor = null;
+        try {
+            enrollmentCursor = briteDatabase.query("SELECT Enrollment.* FROM Enrollment JOIN Event ON Event.enrollment = Enrollment.uid WHERE Event.uid = ?", eventUid);
+            if (enrollmentCursor != null) {
+                if (enrollmentCursor.moveToFirst()) {
+                    EnrollmentModel enrollment = EnrollmentModel.create(enrollmentCursor);
+                    isEnrollmentCancelled = enrollment.enrollmentStatus() == EnrollmentStatus.CANCELLED;
+                }
+            }
+        } finally {
+            if (enrollmentCursor != null)
+                enrollmentCursor.close();
+        }
+        return isEnrollmentCancelled;
+    }
+
+    @Override
     public Flowable<String> programStageName() {
         return briteDatabase.createQuery(ProgramStageModel.TABLE,
                 "SELECT ProgramStage.* FROM ProgramStage " +
