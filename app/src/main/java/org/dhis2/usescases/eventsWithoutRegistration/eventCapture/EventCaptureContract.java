@@ -144,6 +144,8 @@ public class EventCaptureContract {
         boolean getAccessDataWrite();
 
         void setLastUpdated(String lastUpdatedUid);
+
+        boolean isEnrollmentCancelled();
     }
 
 }
