@@ -9,41 +9,26 @@ import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.Row;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.databinding.FormUnsupportedBinding;
+import org.dhis2.databinding.FormUnsupportedCellBinding;
 
 import io.reactivex.processors.FlowableProcessor;
 
 public class UnsupportedRow implements Row<UnsupportedHolder, UnsupportedViewModel> {
-    private final String renderType;
-    FormUnsupportedBinding binding;
+    FormUnsupportedCellBinding binding;
     @NonNull
     private final LayoutInflater inflater;
     @NonNull
     private final FlowableProcessor<RowAction> processor;
-    private final boolean isBgTransparent;
 
-    public UnsupportedRow(@NonNull LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor, boolean isBgTransparent) {
+    public UnsupportedRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor) {
         this.inflater = layoutInflater;
         this.processor = processor;
-        this.isBgTransparent = isBgTransparent;
-        this.renderType = null;
-    }
-
-    public UnsupportedRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor, boolean isBgTransparent, String renderType) {
-        this.inflater = layoutInflater;
-        this.processor = processor;
-        this.isBgTransparent = isBgTransparent;
-        this.renderType = renderType;
     }
 
     @NonNull
     @Override
     public UnsupportedHolder onCreate(@NonNull ViewGroup parent) {
-        binding = DataBindingUtil.inflate(inflater, R.layout.form_unsupported, parent, false);
-       /* if (isBgTransparent)
-            binding.formButton.setTextColor(ContextCompat.getColor(parent.getContext(), R.color.gray_b2b));
-        else
-            binding.formButton.setTextColor(ContextCompat.getColor(parent.getContext(), R.color.gray_b2b));*/
-
+        binding = DataBindingUtil.inflate(inflater, R.layout.form_unsupported_cell, parent, false);
         return new UnsupportedHolder(binding);
     }
 
