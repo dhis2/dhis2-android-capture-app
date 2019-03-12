@@ -71,7 +71,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
     private String dataSetUid;
 
     private PeriodModel periodModel;
-    private DataInputPeriodModel dataInputPeriodModel;
+    private List<DataInputPeriodModel> dataInputPeriodModel;
     @Inject
     DataValueContract.Presenter presenterFragment;
 
@@ -134,7 +134,8 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
         boolean isEditable = false;
         if(dataSet.accessDataWrite() &&
                 !isExpired(dataTableModel.dataSet()) &&
-                (dataInputPeriodModel == null || DateUtils.getInstance().isInsideInputPeriod(dataInputPeriodModel)) ){
+                (presenterFragment.checkHasInputPeriod() == null || (presenterFragment.checkHasInputPeriod() != null &&
+                        DateUtils.getInstance().isInsideInputPeriod(presenterFragment.checkHasInputPeriod()))) ){
             isEditable = true;
         }
 
@@ -165,10 +166,8 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
 
             layoutParams.setMargins(0, 0, 0, 40);
 
-
             binding.tableLayout.addView(tableView, layoutParams);
-            /*binding.tableView.setAdapter(adapter);
-            binding.tableView.setEnabled(false);*/
+
             tableView.setAdapter(adapter);
             tableView.setHeaderCount(columnHeaderItems.size());
             for (DataElementModel de : dataTableModel.rows()) {
@@ -369,7 +368,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
     }
 
     @Override
-    public void setDataInputPeriod(DataInputPeriodModel dataInputPeriod) {
+    public void setDataInputPeriod(List<DataInputPeriodModel> dataInputPeriod) {
         this.dataInputPeriodModel = dataInputPeriod;
     }
 

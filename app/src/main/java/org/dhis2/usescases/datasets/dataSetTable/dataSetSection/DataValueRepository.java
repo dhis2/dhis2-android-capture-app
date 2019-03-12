@@ -42,7 +42,7 @@ public interface DataValueRepository {
 
     Flowable<PeriodModel> getPeriod(String periodId);
 
-    Flowable<DataInputPeriodModel> getDataInputPeriod(String periodId);
+    Flowable<List<DataInputPeriodModel>> getDataInputPeriod();
 
     Flowable<Boolean> completeDataSet(String orgUnitUid, String periodInitialDate, String catCombo);
 }

@@ -30,7 +30,7 @@ public class DataValueContract {
 
         void setPeriod(PeriodModel periodModel);
 
-        void setDataInputPeriod(DataInputPeriodModel dataInputPeriod);
+        void setDataInputPeriod(List<DataInputPeriodModel> dataInputPeriod);
 
         void goToTable(int numTable);
 
@@ -57,5 +57,7 @@ public class DataValueContract {
         FlowableProcessor<RowAction> getProcessor();
 
         void addCells(List<List<FieldViewModel>> cells);
+
+        DataInputPeriodModel checkHasInputPeriod();
     }
 }

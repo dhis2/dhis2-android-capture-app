@@ -985,6 +985,15 @@ public class DateUtils {
     }
 
     public Boolean isInsideInputPeriod(DataInputPeriodModel dataInputPeriodModel){
+        if(dataInputPeriodModel.openingDate() == null && dataInputPeriodModel.closingDate() != null)
+            return Calendar.getInstance().getTime().getTime() < dataInputPeriodModel.closingDate().getTime();
+
+        if(dataInputPeriodModel.openingDate() != null && dataInputPeriodModel.closingDate() == null)
+            return dataInputPeriodModel.openingDate().getTime() < Calendar.getInstance().getTime().getTime();
+
+        if(dataInputPeriodModel.openingDate() == null && dataInputPeriodModel.closingDate() == null)
+            return true;
+
         return dataInputPeriodModel.openingDate().getTime() < Calendar.getInstance().getTime().getTime()
             && Calendar.getInstance().getTime().getTime() < dataInputPeriodModel.closingDate().getTime();
     }

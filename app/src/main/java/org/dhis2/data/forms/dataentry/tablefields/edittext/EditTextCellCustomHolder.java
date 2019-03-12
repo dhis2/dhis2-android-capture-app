@@ -77,6 +77,9 @@ final class EditTextCellCustomHolder extends FormViewHolder {
             editText.setBackgroundColor(ContextCompat.getColor(editText.getContext(), R.color.bg_black_e6e));
         } else if(accessDataWrite) {
             editText.setEnabled(true);
+        }else{
+            editText.setEnabled(false);
+            editText.setBackgroundColor(ContextCompat.getColor(editText.getContext(), R.color.bg_black_e6e));
         }
 
         this.editTextModel = (EditTextModel) model;
