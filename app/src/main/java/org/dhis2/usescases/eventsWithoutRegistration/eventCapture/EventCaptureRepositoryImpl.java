@@ -29,10 +29,12 @@ import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.program.ProgramRuleAction;
 import org.hisp.dhis.android.core.program.ProgramRuleActionType;
 import org.hisp.dhis.android.core.program.ProgramRuleModel;
 import org.hisp.dhis.android.core.program.ProgramRuleVariableModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
+import org.hisp.dhis.android.core.program.ProgramStageSectionDeviceRendering;
 import org.hisp.dhis.android.core.program.ProgramStageSectionModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
@@ -144,7 +146,6 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     private final String eventUid;
     private final FormRepository formRepository;
     private final D2 d2;
-    private ProgramStageSectionRenderingType renderingType;
     private boolean accessDataWrite;
     private String lastUpdatedUid;
 
@@ -233,15 +234,6 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     @Override
     public Flowable<List<FieldViewModel>> list(String sectionUid) {
 
-        Cursor cursor = briteDatabase.query(SECTION_RENDERING_TYPE, sectionUid == null ? "" : sectionUid);
-        if (cursor != null && cursor.moveToFirst()) {
-            renderingType = cursor.getString(0) != null ?
-                    ProgramStageSectionRenderingType.valueOf(cursor.getString(0)) :
-                    ProgramStageSectionRenderingType.LISTING;
-            cursor.close();
-        } else
-            renderingType = ProgramStageSectionRenderingType.LISTING;
-
         accessDataWrite = getAccessDataWrite();
 
         return briteDatabase
@@ -252,18 +244,12 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     }
 
     private ProgramStageSectionRenderingType renderingType(String sectionUid) {
-        ProgramStageSectionRenderingType renderingType = ProgramStageSectionRenderingType.LISTING;
-        Cursor cursor = briteDatabase.query(SECTION_RENDERING_TYPE, sectionUid == null ? "" : sectionUid);
-        if (cursor != null) {
-            if (cursor.moveToFirst())
-                renderingType = cursor.getString(0) != null ?
-                        ProgramStageSectionRenderingType.valueOf(cursor.getString(0)) :
-                        ProgramStageSectionRenderingType.LISTING;
-            cursor.close();
-        }
-
-        if (cursor != null && !cursor.isClosed())
-            cursor.close();
+        ProgramStageSectionRenderingType renderingType;
+        ProgramStageSectionDeviceRendering stageSectionRendering = d2.programModule().programStageSections.uid(sectionUid).get().renderType().mobile();
+        if (stageSectionRendering != null)
+            renderingType = stageSectionRendering.type();
+        else
+            renderingType = ProgramStageSectionRenderingType.LISTING;
 
         return renderingType;
     }
@@ -273,7 +259,8 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         ArrayList<FieldViewModel> renderList = new ArrayList<>();
 
         for (FieldViewModel fieldViewModel : fieldViewModels) {
-            renderingType = renderingType(fieldViewModel.programStageSection());
+
+            ProgramStageSectionRenderingType renderingType = renderingType(fieldViewModel.programStageSection());
             if (!isEmpty(fieldViewModel.optionSet()) && renderingType != ProgramStageSectionRenderingType.LISTING) {
                 Cursor cursor = briteDatabase.query(OPTIONS, fieldViewModel.optionSet() == null ? "" : fieldViewModel.optionSet());
                 if (cursor != null && cursor.moveToFirst()) {
@@ -381,12 +368,18 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     @NonNull
     private FieldViewModel transform(@NonNull Cursor cursor) {
         String uid = cursor.getString(0);
+        String displayName = cursor.getString(1);
+        String valueTypeName = cursor.getString(2);
+        boolean mandatory = cursor.getInt(3) == 1;
+        String optionSet = cursor.getString(4);
         String dataValue = cursor.getString(5);
         String optionCodeName = cursor.getString(6);
+        String programStageSection = cursor.getString(7);
+        boolean allowFurureDates = cursor.getInt(8) == 1;
         EventStatus eventStatus = EventStatus.valueOf(cursor.getString(9));
         String formName = cursor.getString(10);
         String description = cursor.getString(11);
-        String optionSet = cursor.getString(4);
+
         if (!isEmpty(optionCodeName)) {
             dataValue = optionCodeName;
         }
@@ -423,10 +416,13 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 objStyleCursor.close();
         }
 
-        return fieldFactory.create(uid, formName == null ? cursor.getString(1) : formName,
-                ValueType.valueOf(cursor.getString(2)), cursor.getInt(3) == 1,
-                optionSet, dataValue, cursor.getString(7), cursor.getInt(8) == 1,
-                isEnrollmentOpen() && eventStatus == EventStatus.ACTIVE && accessDataWrite, null, description, fieldRendering, optionCount, objectStyle);
+        ProgramStageSectionRenderingType renderingType = renderingType(programStageSection);
+
+        return fieldFactory.create(uid, formName == null ? displayName : formName,
+                ValueType.valueOf(valueTypeName), mandatory, optionSet, dataValue,
+                programStageSection, allowFurureDates,
+                isEnrollmentOpen() && eventStatus == EventStatus.ACTIVE && accessDataWrite,
+                renderingType, description, fieldRendering, optionCount, objectStyle);
     }
 
     @NonNull
@@ -476,10 +472,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     private Flowable<List<Rule>> getRulesFor(String lastUpdatedElement) {
         AtomicReference<String> selectedProgramUid = new AtomicReference<>("");
-        return briteDatabase.createQuery(ProgramStageModel.TABLE,
-                "SELECT Event.* FROM Event " +
-                        "WHERE Event.uid = ? LIMIT 1", eventUid)
-                .mapToOne(cursor -> EventModel.create(cursor).program())
+        return Observable.just(d2.eventModule().events.uid(eventUid).get().program())
                 .flatMap(programUid -> {
                             selectedProgramUid.set(programUid);
                             return briteDatabase.createQuery(ProgramRuleVariableModel.TABLE,
@@ -536,12 +529,12 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                         ruleMap.put(rule.name(), rule);
 
                     Cursor hideRulesCursor = briteDatabase.query("SELECT ProgramRule.* FROM ProgramRule " +
-                            "JOIN ProgramRuleAction ON ProgramRuleAction.programRule = ProgramRule.uid " +
-                            "WHERE ProgramRule.program = ? " +
-                            "AND ProgramRuleAction.programRuleActionType IN (?,?,?,?,?)",
+                                    "JOIN ProgramRuleAction ON ProgramRuleAction.programRule = ProgramRule.uid " +
+                                    "WHERE ProgramRule.program = ? " +
+                                    "AND ProgramRuleAction.programRuleActionType IN (?,?,?,?,?)",
                             selectedProgramUid.get(),
                             ProgramRuleActionType.HIDEFIELD.name(), ProgramRuleActionType.HIDESECTION.name(),
-                            ProgramRuleActionType.ASSIGN.name(),ProgramRuleActionType.SHOWERROR.name(),
+                            ProgramRuleActionType.ASSIGN.name(), ProgramRuleActionType.SHOWERROR.name(),
                             ProgramRuleActionType.SHOWWARNING.name());
                     if (hideRulesCursor != null) {
                         if (hideRulesCursor.moveToFirst()) {
@@ -553,33 +546,20 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                         }
                         hideRulesCursor.close();
                     }
-                    List<Rule> finalRules = new ArrayList<>(ruleMap.values());
-                    return finalRules;
+                    return (List<Rule>) new ArrayList<>(ruleMap.values());
                 }).toFlowable(BackpressureStrategy.LATEST);
     }
 
     private List<RuleAction> getRuleActionsFor(String programRuleUid) {
         List<RuleAction> ruleActions = new ArrayList<>();
-        Cursor actionsCursor = briteDatabase.query("SELECT " +
-                "ProgramRuleAction.programRule, " +
-                "ProgramRuleAction.programStage, " +
-                "ProgramRuleAction.programStageSection, " +
-                "ProgramRuleAction.programRuleActionType, " +
-                "ProgramRuleAction.programIndicator, " +
-                "ProgramRuleAction.trackedEntityAttribute, " +
-                "ProgramRuleAction.dataElement, " +
-                "ProgramRuleAction.location, " +
-                "ProgramRuleAction.content, " +
-                "ProgramRuleAction.data " +
-                "FROM ProgramRuleAction WHERE programRule = ?", programRuleUid);
-        if (actionsCursor != null) {
-            if (actionsCursor.moveToFirst()) {
-                for (int i = 0; i < actionsCursor.getCount(); i++) {
-                    ruleActions.add(RulesRepository.create(actionsCursor));
-                    actionsCursor.moveToNext();
-                }
-            }
-            actionsCursor.close();
+        List<ProgramRuleAction> ruleActionsModule = d2.programModule().programRules.uid(programRuleUid).getWithAllChildren().programRuleActions();
+        for (ProgramRuleAction ruleAction : ruleActionsModule) {
+            ruleActions.add(RulesRepository.create(ruleAction.programRuleActionType(),
+                    ruleAction.programStage() != null ? ruleAction.programStage().uid() : null,
+                    ruleAction.programStageSection() != null ? ruleAction.programStageSection().uid() : null,
+                    ruleAction.trackedEntityAttribute() != null ? ruleAction.trackedEntityAttribute().uid() : null,
+                    ruleAction.dataElement() != null ? ruleAction.dataElement().uid() : null,
+                    ruleAction.location(), ruleAction.content(), ruleAction.data()));
         }
 
         return ruleActions;
@@ -677,14 +657,12 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     @Override
     public Observable<String> programStage() {
-        return briteDatabase.createQuery(EventModel.TABLE, "SELECT * FROM Event WHERE Event.uid = ?", eventUid)
-                .mapToOne(EventModel::create)
-                .map(EventModel::programStage);
+        return Observable.defer(() -> Observable.just(d2.eventModule().events.uid(eventUid).get().programStage()));
     }
 
     @Override
     public boolean getAccessDataWrite() {
-        boolean canWrite = true;
+        boolean canWrite;
         canWrite =
                 d2.programModule().programs.uid(
                         d2.eventModule().events.uid(eventUid).get().program()

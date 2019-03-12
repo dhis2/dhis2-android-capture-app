@@ -150,21 +150,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                         )
         );
 
-        Flowable<List<FieldViewModel>> fieldsFlowable = Flowable.zip(
-                eventCaptureRepository.list(),
-                eventCaptureRepository.calculate().subscribeOn(Schedulers.computation()),
-                (a, b) -> this.applyEffects("FROM LIST", a, b))
-                .map(fields -> {
-                    emptyMandatoryFields = new HashMap<>();
-                    for (FieldViewModel fieldViewModel : fields) {
-                        if (fieldViewModel.mandatory() && isEmpty(fieldViewModel.value()))
-                            emptyMandatoryFields.put(fieldViewModel.uid(), fieldViewModel);
-                    }
-                    return fields;
-                });
-
         compositeDisposable.add(
-                fieldsFlowable
+                getFieldFlowable(null)
                         .map(fields -> {
                             HashMap<String, List<FieldViewModel>> fieldMap = new HashMap<>();
 
@@ -211,7 +198,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
         compositeDisposable.add(
                 sectionProcessor
-                        .flatMap(section -> fieldsFlowable
+                        .flatMap(section -> getFieldFlowable(section)
                                 .map(fields -> {
                                     HashMap<String, List<FieldViewModel>> fieldMap = new HashMap<>();
                                     for (FieldViewModel fieldViewModel : fields) {
@@ -230,6 +217,36 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                 },
                                 Timber::e
                         ));
+    }
+
+    private Flowable<List<FieldViewModel>> getFieldFlowable(@Nullable String sectionUid) {
+        if (isEmpty(sectionUid)) {
+            return Flowable.zip(
+                    eventCaptureRepository.list(),
+                    eventCaptureRepository.calculate().subscribeOn(Schedulers.computation()),
+                    this::applyEffects)
+                    .map(fields -> {
+                        emptyMandatoryFields = new HashMap<>();
+                        for (FieldViewModel fieldViewModel : fields) {
+                            if (fieldViewModel.mandatory() && isEmpty(fieldViewModel.value()))
+                                emptyMandatoryFields.put(fieldViewModel.uid(), fieldViewModel);
+                        }
+                        return fields;
+                    });
+        } else {
+            return Flowable.zip(
+                    eventCaptureRepository.list(sectionUid),
+                    eventCaptureRepository.calculate().subscribeOn(Schedulers.computation()),
+                    this::applyEffects)
+                    .map(fields -> {
+                        emptyMandatoryFields = new HashMap<>();
+                        for (FieldViewModel fieldViewModel : fields) {
+                            if (fieldViewModel.mandatory() && isEmpty(fieldViewModel.value()))
+                                emptyMandatoryFields.put(fieldViewModel.uid(), fieldViewModel);
+                        }
+                        return fields;
+                    });
+        }
     }
 
     private void checkExpiration() {
@@ -340,7 +357,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
     @NonNull
     private List<FieldViewModel> applyEffects(
-            String whereDoIComeFrom,
             @NonNull List<FieldViewModel> viewModels,
             @NonNull Result<RuleEffect> calcResult) {
 

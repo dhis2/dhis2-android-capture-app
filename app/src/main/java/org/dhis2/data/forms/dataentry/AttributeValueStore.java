@@ -91,7 +91,7 @@ public final class AttributeValueStore implements DataEntryStore {
             valueType type = getValueType(uid);
             return Flowable.just(Pair.create(currentValue(uid, type), type));
         })
-                .filter(currentValueAndType -> !Objects.equals(currentValueAndType.val0(), value))
+                .filter(currentValueAndType -> currentValueAndType.val1() == valueType.ATTR && !Objects.equals(currentValueAndType.val0(), value == null ? "" : value))
                 .flatMap(currentValueAndType -> {
                     if (checkUnique(uid, value)) {
                         if (value == null)
@@ -163,7 +163,7 @@ public final class AttributeValueStore implements DataEntryStore {
         if (valueType == ATTR)
             cursor = briteDatabase.query("SELECT TrackedEntityAttributeValue.value FROM TrackedEntityAttributeValue " +
                     "JOIN Enrollment ON Enrollment.trackedEntityInstance = TrackedEntityAttributeValue.trackedEntityInstance " +
-                    "WHERE TrackedEntityAttributeValue.trackedEntityAttribute = ? AND Enrollment.trackedEntityInstance = ?", uid, enrollment);
+                    "WHERE TrackedEntityAttributeValue.trackedEntityAttribute = ? AND Enrollment.uid = ?", uid, enrollment);
         else
             cursor = briteDatabase.query("SELECT TrackedEntityDataValue.value FROM TrackedEntityDataValue " +
                     "JOIN Event ON Event.uid = TrackedEntityDataValue.event " +

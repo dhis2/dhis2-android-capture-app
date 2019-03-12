@@ -16,6 +16,8 @@ public interface DataEntryRepository {
     @NonNull
     Observable<List<FieldViewModel>> list();
 
+    List<FieldViewModel> fieldList();
+
     Observable<List<OrganisationUnitModel>> getOrgUnits();
 
     void assign(String field, String content);
