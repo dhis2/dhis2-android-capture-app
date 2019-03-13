@@ -47,7 +47,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
-import me.toptas.fancyshowcase.AnimationListener;
 import me.toptas.fancyshowcase.DismissListener;
 import me.toptas.fancyshowcase.FancyShowCaseView;
 import me.toptas.fancyshowcase.FocusShape;
@@ -103,7 +102,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         super.onAttach(context);
         this.context = context;
         ((Components) context.getApplicationContext()).userComponent()
-                .plus(new SyncManagerModule(this.getContext())).inject(this);
+                .plus(new SyncManagerModule()).inject(this);
     }
 
     @Override

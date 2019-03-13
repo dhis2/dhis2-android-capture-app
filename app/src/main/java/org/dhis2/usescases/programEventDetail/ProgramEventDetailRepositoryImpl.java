@@ -9,13 +9,16 @@ import org.dhis2.data.tuples.Pair;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.Period;
 import org.dhis2.utils.ValueUtils;
+import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
+import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
+import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
@@ -28,7 +31,6 @@ import androidx.annotation.NonNull;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
-import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -53,9 +55,11 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
 
 
     private final BriteDatabase briteDatabase;
+    D2 d2;
 
-    ProgramEventDetailRepositoryImpl(BriteDatabase briteDatabase) {
+    ProgramEventDetailRepositoryImpl(BriteDatabase briteDatabase, D2 d2) {
         this.briteDatabase = briteDatabase;
+        this.d2 = d2;
     }
 
     @NonNull
@@ -183,8 +187,12 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
 
     private String getAttributeOptionCombo(String categoryOptionComboId) {
         String catOptionCombName = "";
+        CategoryOptionCombo categoryOptionCombo;
         if (!isEmpty(categoryOptionComboId)) {
-            Cursor cursor = briteDatabase.query(
+            categoryOptionCombo = d2.categoryModule().categoryOptionCombos.uid(categoryOptionComboId).getWithAllChildren();
+            if (!Boolean.TRUE.equals(categoryOptionCombo.categoryCombo().isDefault()))
+                catOptionCombName = categoryOptionCombo.displayName();
+        /*    Cursor cursor = briteDatabase.query(
                     "SELECT CategoryOptionCombo.*, CategoryCombo.isDefault FROM CategoryOptionCombo " +
                             "JOIN CategoryCombo ON CategoryCombo.uid = CategoryOptionCombo.categoryCombo " +
                             "WHERE CategoryOptionCombo.uid = ?", categoryOptionComboId);
@@ -199,13 +207,21 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
             } finally {
                 if (cursor != null)
                     cursor.close();
-            }
+            }*/
         }
         return catOptionCombName;
     }
 
     private boolean isExpired(EventModel eventModel) {
-        boolean hasExpired = false;
+        Program program = d2.programModule().programs.uid(eventModel.program()).get();
+        return DateUtils.getInstance().isEventExpired(eventModel.eventDate(),
+                eventModel.completedDate(),
+                eventModel.status(),
+                program.completeEventsExpiryDays(),
+                program.expiryPeriodType(),
+                program.expiryDays());
+
+      /*  boolean hasExpired = false;
         Cursor programCursor = briteDatabase.query("SELECT * FROM Program WHERE uid = ?", eventModel.program());
         if (programCursor != null) {
             if (programCursor.moveToFirst()) {
@@ -217,7 +233,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
             }
             programCursor.close();
         }
-        return hasExpired;
+        return hasExpired;*/
     }
 
     private String getOrgUnitName(String orgUnitUid) {
