@@ -45,19 +45,16 @@ import static java.lang.String.valueOf;
 final class EditTextCellCustomHolder extends FormViewHolder {
 
     private EditText editText;
-    private RelativeLayout relativeLayout;
     private EditTextModel editTextModel;
     private boolean accessDataWrite;
-
+    private CustomTextViewCellBinding customBinding;
     @SuppressLint("RxLeakedSubscription")
     EditTextCellCustomHolder(CustomTextViewCellBinding binding, FlowableProcessor<RowAction> processor,
                              ObservableBoolean isEditable) {
         super(binding);
         editText = binding.editTextCell;
-        relativeLayout = binding.layout;
-
         accessDataWrite = isEditable.get();
-
+        customBinding = binding;
 
         editText.setOnFocusChangeListener((v, hasFocus) -> {
             if (!hasFocus && editTextModel != null && editTextModel.editable()) {
@@ -94,7 +91,9 @@ final class EditTextCellCustomHolder extends FormViewHolder {
                 0 : editText.getText().length());
 
         if (editTextModel.mandatory())
-            label.append("*");
+            customBinding.icMandatory.setVisibility(View.VISIBLE);
+        else
+            customBinding.icMandatory.setVisibility(View.INVISIBLE);
 
         descriptionText = editTextModel.description();
         binding.executePendingBindings();
