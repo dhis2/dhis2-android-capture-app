@@ -53,19 +53,16 @@ import static java.lang.String.valueOf;
 final class EditTextCellCustomHolder extends FormViewHolder {
 
     private EditText editText;
-    private RelativeLayout relativeLayout;
     private EditTextModel editTextModel;
     private boolean accessDataWrite;
-
+    private CustomTextViewCellBinding customBinding;
     @SuppressLint("RxLeakedSubscription")
     EditTextCellCustomHolder(CustomTextViewCellBinding binding, FlowableProcessor<RowAction> processor,
                              ObservableBoolean isEditable, TableView tableView) {
         super(binding);
         editText = binding.editTextCell;
-        relativeLayout = binding.layout;
-
         accessDataWrite = isEditable.get();
-
+        customBinding = binding;
 
         editText.setOnFocusChangeListener((v, hasFocus) -> {
             if(hasFocus) {
@@ -89,6 +86,9 @@ final class EditTextCellCustomHolder extends FormViewHolder {
             editText.setBackgroundColor(ContextCompat.getColor(editText.getContext(), R.color.bg_black_e6e));
         } else if(accessDataWrite) {
             editText.setEnabled(true);
+        }else{
+            editText.setEnabled(false);
+            editText.setBackgroundColor(ContextCompat.getColor(editText.getContext(), R.color.bg_black_e6e));
         }
 
         this.editTextModel = (EditTextModel) model;
@@ -103,7 +103,9 @@ final class EditTextCellCustomHolder extends FormViewHolder {
                 0 : editText.getText().length());
 
         if (editTextModel.mandatory())
-            label.append("*");
+            customBinding.icMandatory.setVisibility(View.VISIBLE);
+        else
+            customBinding.icMandatory.setVisibility(View.INVISIBLE);
 
         descriptionText = editTextModel.description();
         binding.executePendingBindings();

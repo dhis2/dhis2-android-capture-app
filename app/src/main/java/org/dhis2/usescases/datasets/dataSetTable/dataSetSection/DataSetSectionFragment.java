@@ -71,7 +71,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
     private String dataSetUid;
 
     private PeriodModel periodModel;
-    private DataInputPeriodModel dataInputPeriodModel;
+    private List<DataInputPeriodModel> dataInputPeriodModel;
     @Inject
     DataValueContract.Presenter presenterFragment;
 
@@ -134,7 +134,8 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
         boolean isEditable = false;
         if(dataSet.accessDataWrite() &&
                 !isExpired(dataTableModel.dataSet()) &&
-                (dataInputPeriodModel == null || DateUtils.getInstance().isInsideInputPeriod(dataInputPeriodModel)) ){
+                (presenterFragment.checkHasInputPeriod() == null || (presenterFragment.checkHasInputPeriod() != null &&
+                        DateUtils.getInstance().isInsideInputPeriod(presenterFragment.checkHasInputPeriod()))) ){
             isEditable = true;
         }
 
@@ -153,6 +154,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
             int row = 0, column = 0;
             adapter.setShowColumnTotal(dataTableModel.section() == null? false :dataTableModel.section().showColumnTotals());
             adapter.setShowRowTotal(dataTableModel.section() == null? false :dataTableModel.section().showRowTotals());
+            //adapter.initializeRows(isEditable);
             TableView tableView = new TableView(getContext());
             tableView.setUnSelectedColor(getResources().getColor(R.color.white));
             tableView.setHeadersColor(getResources().getColor(R.color.table_bg));
@@ -168,8 +170,6 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
             adapter.initializeRows(isEditable);
 
             binding.tableLayout.addView(tableView, layoutParams);
-            /*binding.tableView.setAdapter(adapter);
-            binding.tableView.setEnabled(false);*/
             tableView.setAdapter(adapter);
             tableView.setHeaderCount(columnHeaderItems.size());
             for (DataElementModel de : dataTableModel.rows()) {
@@ -370,7 +370,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
     }
 
     @Override
-    public void setDataInputPeriod(DataInputPeriodModel dataInputPeriod) {
+    public void setDataInputPeriod(List<DataInputPeriodModel> dataInputPeriod) {
         this.dataInputPeriodModel = dataInputPeriod;
     }
 

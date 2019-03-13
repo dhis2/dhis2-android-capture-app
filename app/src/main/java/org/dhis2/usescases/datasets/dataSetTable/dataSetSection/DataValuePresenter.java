@@ -12,6 +12,7 @@ import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
+import org.hisp.dhis.android.core.dataset.DataInputPeriodModel;
 import org.hisp.dhis.android.core.datavalue.DataValueModel;
 
 import java.util.ArrayList;
@@ -51,6 +52,7 @@ public class DataValuePresenter implements DataValueContract.Presenter{
     private int currentNumTables;
 
     private List<List<FieldViewModel>> cells;
+    private List<DataInputPeriodModel> dataInputPeriodModel;
 
     @NonNull
     private FlowableProcessor<RowAction> processor;
@@ -88,7 +90,7 @@ public class DataValuePresenter implements DataValueContract.Presenter{
             compositeDisposable.add(
                     Flowable.zip(
                             repository.getPeriod(periodId),
-                            repository.getDataInputPeriod(periodId),
+                            repository.getDataInputPeriod(),
                             Pair::create
                     )
 
@@ -98,6 +100,7 @@ public class DataValuePresenter implements DataValueContract.Presenter{
                                     data ->{
                                         view.setPeriod(data.val0());
                                         view.setDataInputPeriod(data.val1());
+                                        dataInputPeriodModel = data.val1();
                                     }
                                     ,
                                     Timber::e)
@@ -231,7 +234,10 @@ public class DataValuePresenter implements DataValueContract.Presenter{
                         rowFields.get(i).listCategoryOption().containsAll(catOptions)  )) {
                     FieldViewModel field = rowFields.get(i);
                     rowFields.remove(i);
-                    rowFields.add(i == rowFields.size() ? i-1: i, field.setValue(value));
+                    if(rowFields.size() == 0)
+                        rowFields.add(i, field.setValue(value));
+                    else
+                        rowFields.add(i == rowFields.size() ? i-1: i, field.setValue(value));
                 }
             }
         }
@@ -351,6 +357,15 @@ public class DataValuePresenter implements DataValueContract.Presenter{
         }
 
         return catOptionsCombo;
+    }
+
+    public DataInputPeriodModel checkHasInputPeriod(){
+        DataInputPeriodModel inputPeriodModel = null;
+        for(DataInputPeriodModel inputPeriod :dataInputPeriodModel){
+            if(inputPeriod.period().equals(periodId))
+                inputPeriodModel = inputPeriod;
+        }
+        return inputPeriodModel;
     }
 
     @Override

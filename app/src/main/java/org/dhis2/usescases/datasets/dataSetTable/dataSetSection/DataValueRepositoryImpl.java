@@ -68,17 +68,18 @@ public class DataValueRepositoryImpl implements DataValueRepository {
             "AND DataValue.period = ? "
             /*"AND Section.name = ?"*/;
 
-    private final String CATEGORY_OPTION = "SELECT CategoryOption.*, Category.uid AS category, section.displayName as SectionName, CategoryCombo.uid as catCombo," +
-            "CategoryCategoryComboLink.sortOrder as sortOrder FROM CategoryOption " +
-            "JOIN CategoryCategoryOptionLink ON CategoryCategoryOptionLink.categoryOption = CategoryOption.uid " +
-            "JOIN Category ON CategoryCategoryOptionLink.category = Category.uid " +
-            "JOIN CategoryCategoryComboLink ON CategoryCategoryComboLink.category = Category.uid " +
-            "JOIN CategoryOptionComboCategoryOptionLink ON CategoryOptionComboCategoryOptionLink.categoryOption = CategoryOption.uid " +
-            "JOIN DataElement ON DataElement.categoryCombo = CategoryCategoryComboLink.categoryCombo " +
-            "JOIN DataSetDataElementLink ON DataSetDataElementLink.dataElement = DataElement.uid " +
+    private final String CATEGORY_OPTION = "SELECT CategoryOption.*, Category.uid AS category, section.displayName as SectionName, CategoryCombo.uid as catCombo,CategoryCategoryComboLink.sortOrder as sortOrder " +
+            "FROM DataSetDataElementLink " +
+            "JOIN DataElement ON DataElement.uid = DataSetDataElementLink.dataElement " +
             "JOIN CategoryCombo ON CategoryCombo.uid = DataElement.categoryCombo " +
-            "LEFT JOIN (SELECT section.displayName, section.uid, SectionDataElementLINK.dataElement as dataelement, Section.name FROM Section " +
-            "JOIN SectionDataElementLINK ON SectionDataElementLink.section = Section.uid) as section on section.dataelement = DataElement.uid " +
+            "JOIN CategoryCategoryComboLink ON CategoryCategoryComboLink.CategoryCombo = CategoryCombo.uid " +
+            "JOIN Category ON Category.uid = CategoryCategoryComboLink.category " +
+            "JOIN CategoryCategoryOptionLink ON CategoryCategoryOptionLink.category = Category.uid " +
+            "JOIN CategoryOption ON CategoryOption.uid = CategoryCategoryOptionLink.categoryOption " +
+            "LEFT JOIN ( " +
+            "SELECT Section.dataSet as sectionDataSet, section.displayName, Section.name, Section.uid, SectionDataElementLink.dataElement " +
+            "FROM Section JOIN SectionDataElementLink ON SectionDataElementLink.section = Section.uid ) " +
+            "AS section ON section.sectionDataSet = DataSetDataElementLink.dataSet " +
             "WHERE DataSetDataElementLink.dataSet = ? "
             /*"AND section.name = ? " +
             "GROUP BY CategoryOption.uid, section.uid ORDER BY section.uid, CategoryCategoryComboLink.sortOrder, CategoryCategoryOptionLink.sortOrder"*/;
@@ -135,7 +136,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
 
     private static final String SELECT_PERIOD = "SELECT * FROM Period WHERE periodId = ?";
 
-    private static final String SELECT_DATA_INPUT_PERIOD = "SELECT * FROM DataInputPeriod WHERE dataset = ? AND period = ?";
+    private static final String SELECT_DATA_INPUT_PERIOD = "SELECT * FROM DataInputPeriod WHERE dataset = ?";/* AND period = ?";*/
 
     public DataValueRepositoryImpl(BriteDatabase briteDatabase, String dataSetUid){
         this.briteDatabase = briteDatabase;
@@ -157,9 +158,9 @@ public class DataValueRepositoryImpl implements DataValueRepository {
     }
 
     @Override
-    public Flowable<DataInputPeriodModel> getDataInputPeriod(String periodId){
-        return briteDatabase.createQuery(DataInputPeriodModel.TABLE, SELECT_DATA_INPUT_PERIOD, dataSetUid, periodId)
-                .mapToOne(DataInputPeriodModel::create)
+    public Flowable<List<DataInputPeriodModel>> getDataInputPeriod(){
+        return briteDatabase.createQuery(DataInputPeriodModel.TABLE, SELECT_DATA_INPUT_PERIOD, dataSetUid/*, periodId*/)
+                .mapToList(DataInputPeriodModel::create)
                 .toFlowable(BackpressureStrategy.LATEST);
     }
 
@@ -281,14 +282,14 @@ public class DataValueRepositoryImpl implements DataValueRepository {
         if(!section.equals("NO_SECTION")){
             query = query + "AND section.name = '" + section +"' ";
         }
-        query = query + "GROUP BY CategoryOption.uid, section.uid ORDER BY section.uid, CategoryCategoryComboLink.sortOrder, CategoryCategoryOptionLink.sortOrder";
+        query = query + "GROUP BY  CategoryOption.uid,Category.uid, SectionName,catCombo, CategoryCategoryOptionLink.sortOrder " +
+                "ORDER BY section.uid, CategoryCategoryComboLink.sortOrder, CategoryCategoryOptionLink.sortOrder";
         return briteDatabase.createQuery(CategoryOptionModel.TABLE, query, dataSetUid)
                 .mapToList(cursor -> {
                     CategoryOptionModel catOption = CategoryOptionModel.create(cursor);
                     CategoryModel category = CategoryModel.builder().uid(cursor.getString(cursor.getColumnIndex("category"))).build();
                     String catCombo = cursor.getString(cursor.getColumnIndex("catCombo"));
-                    /*if (sectionName == null)
-                        sectionName = "NO_SECTION";*/
+
                     if (map.get(catCombo) == null) {
                         map.put(catCombo, new ArrayList<>());
                     }

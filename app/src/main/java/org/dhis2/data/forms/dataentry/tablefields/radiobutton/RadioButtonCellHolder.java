@@ -45,6 +45,10 @@ public class RadioButtonCellHolder extends FormViewHolder {
         descriptionText = viewModel.description();
         binding.setDescription(descriptionText);
         label = new StringBuilder(checkBoxViewModel.label());
+        binding.customYesNo.setValueType(checkBoxViewModel.valueType());
+        if (checkBoxViewModel.mandatory())
+            label.append("*");
+        binding.setLabel(label.toString());
         binding.setValueType(checkBoxViewModel.valueType());
         if (checkBoxViewModel.value() != null && Boolean.valueOf(checkBoxViewModel.value()))
             binding.customYesNo.getRadioGroup().check(R.id.yes);
@@ -71,7 +75,7 @@ public class RadioButtonCellHolder extends FormViewHolder {
                     rowAction = RowAction.create(checkBoxViewModel.uid(), null, checkBoxViewModel.dataElement(), checkBoxViewModel.listCategoryOption(),checkBoxViewModel.catCombo(), checkBoxViewModel.row(), checkBoxViewModel.column());
                     break;
             }
-            //processor.onNext(rowAction);
+            processor.onNext(rowAction);
         });
 
         clearButton.setOnClickListener(view -> {
