@@ -244,12 +244,12 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     }
 
     private ProgramStageSectionRenderingType renderingType(String sectionUid) {
-        ProgramStageSectionRenderingType renderingType;
-        ProgramStageSectionDeviceRendering stageSectionRendering = d2.programModule().programStageSections.uid(sectionUid).get().renderType().mobile();
-        if (stageSectionRendering != null)
-            renderingType = stageSectionRendering.type();
-        else
-            renderingType = ProgramStageSectionRenderingType.LISTING;
+        ProgramStageSectionRenderingType renderingType = ProgramStageSectionRenderingType.LISTING;
+        if (sectionUid != null) {
+            ProgramStageSectionDeviceRendering stageSectionRendering = d2.programModule().programStageSections.uid(sectionUid).get().renderType().mobile();
+            if (stageSectionRendering != null)
+                renderingType = stageSectionRendering.type();
+        }
 
         return renderingType;
     }

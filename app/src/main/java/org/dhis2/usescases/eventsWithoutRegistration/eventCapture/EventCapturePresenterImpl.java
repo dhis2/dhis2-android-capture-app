@@ -220,7 +220,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     }
 
     private Flowable<List<FieldViewModel>> getFieldFlowable(@Nullable String sectionUid) {
-        if (isEmpty(sectionUid)) {
+        if (isEmpty(sectionUid) || sectionUid.equals("NO_SECTION")) {
             return Flowable.zip(
                     eventCaptureRepository.list(),
                     eventCaptureRepository.calculate().subscribeOn(Schedulers.computation()),
