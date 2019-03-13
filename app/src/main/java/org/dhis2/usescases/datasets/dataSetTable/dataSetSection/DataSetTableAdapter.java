@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import com.evrencoskun.tableview.TableView;
 import com.evrencoskun.tableview.adapter.AbstractTableAdapter;
 import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder;
 
@@ -92,7 +93,7 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
     }
 
     public void initializeRows(Boolean accessDataWrite){
-        rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, new ObservableBoolean(accessDataWrite)));
+        rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, new ObservableBoolean(accessDataWrite), (TableView)getTableView()));
         rows.add(BUTTON, new FileCellRow(layoutInflater, processor));
         rows.add(CHECKBOX, new RadioButtonRow(layoutInflater, processor, accessDataWrite));
         rows.add(SPINNER, new SpinnerCellRow(layoutInflater, processor, accessDataWrite));
@@ -104,7 +105,7 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
         rows.add(YES_NO, new RadioButtonRow(layoutInflater, processor, accessDataWrite));
         rows.add(ORG_UNIT, new OrgUnitRow(null, layoutInflater, processor, true, null, ProgramStageSectionRenderingType.LISTING.name()));
         rows.add(IMAGE, new ImageRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name()));
-        rows.add(UNSUPPORTED, new UnsupportedRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name()));
+        rows.add(UNSUPPORTED, new UnsupportedRow(layoutInflater, processor));
     }
 
     /**

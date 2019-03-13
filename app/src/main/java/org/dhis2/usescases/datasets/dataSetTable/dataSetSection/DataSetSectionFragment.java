@@ -154,7 +154,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
             int row = 0, column = 0;
             adapter.setShowColumnTotal(dataTableModel.section() == null? false :dataTableModel.section().showColumnTotals());
             adapter.setShowRowTotal(dataTableModel.section() == null? false :dataTableModel.section().showRowTotals());
-            adapter.initializeRows(isEditable);
+            //adapter.initializeRows(isEditable);
             TableView tableView = new TableView(getContext());
             tableView.setUnSelectedColor(getResources().getColor(R.color.white));
             tableView.setHeadersColor(getResources().getColor(R.color.table_bg));
@@ -166,8 +166,10 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
 
             layoutParams.setMargins(0, 0, 0, 40);
 
-            binding.tableLayout.addView(tableView, layoutParams);
+            adapter.setTableView(tableView);
+            adapter.initializeRows(isEditable);
 
+            binding.tableLayout.addView(tableView, layoutParams);
             tableView.setAdapter(adapter);
             tableView.setHeaderCount(columnHeaderItems.size());
             for (DataElementModel de : dataTableModel.rows()) {
