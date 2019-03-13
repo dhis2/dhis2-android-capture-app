@@ -52,7 +52,7 @@ public class RadioButtonCellHolder extends FormViewHolder {
         binding.setValueType(checkBoxViewModel.valueType());
         if (checkBoxViewModel.value() != null && Boolean.valueOf(checkBoxViewModel.value()))
             binding.customYesNo.getRadioGroup().check(R.id.yes);
-        else if (checkBoxViewModel.value() != null)
+        else if (checkBoxViewModel.value() != null && !checkBoxViewModel.value().isEmpty())
             binding.customYesNo.getRadioGroup().check(R.id.no);
 
         if(!(accessDataWrite && checkBoxViewModel.editable())) {

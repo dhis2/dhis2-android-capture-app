@@ -101,18 +101,6 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_dataset_section, container, false);
 
-        /*adapter = new DataSetTableAdapter(getAbstracContext());
-
-        tableView = new TableView(getContext());
-        tableView.setBackgroundColor(getResources().getColor(R.color.white));
-        tableView.setUnSelectedColor(getResources().getColor(R.color.table_bg));
-        tableView.setSelectedColor(getResources().getColor(R.color.colorPrimaryLight));
-        tableView.setShadowColor(getResources().getColor(R.color.rfab__color_shadow));
-        tableView.setRowHeaderWidth(350);
-        binding.tableLayout.addView(tableView);
-        *//*binding.tableView.setAdapter(adapter);
-        binding.tableView.setEnabled(false);*//*
-        tableView.setAdapter(adapter);*/
         binding.setPresenter(presenterFragment);
         return binding.getRoot();
     }
@@ -125,7 +113,6 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
         presenterFragment.init(this, presenter.getOrgUnitUid(), presenter.getPeriodTypeName(),
                 presenter.getPeriodFinalDate(), presenter.getCatCombo(), section, presenter.getPeriodId());
         presenterFragment.getData(this, section);
-        /*presenterFragment.initializeProcessor(this);*/
     }
 
 
@@ -206,7 +193,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
                                 }
 
                                 fields.add(fieldFactory.create(dataValue.id().toString(), "", de.valueType(),
-                                        compulsory, "", dataValue.value(), section, true,
+                                        compulsory, de.optionSet(), dataValue.value(), section, true,
                                         editable, null, null, de.uid(), catOpts, "", row, column, dataValue.categoryOptionCombo(), dataValue.catCombo()));
                                 values.add(dataValue.value());
                                 exitsValue = true;
@@ -216,7 +203,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
                         if (!exitsValue) {
                             //If value type is null, it is due to is dataElement for Total row/column
                             fields.add(fieldFactory.create("", "", de.valueType(),
-                                    compulsory, "", "", section, true,
+                                    compulsory, de.optionSet(), "", section, true,
                                     editable, null, null, de.uid() == null ? "" : de.uid(), catOpts, "", row, column, ""/*SET CATEGORYOPTIONCOMBO*/, ""));
 
                             values.add("");
