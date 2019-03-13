@@ -10,6 +10,8 @@ import org.dhis2.data.tuples.Pair;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryModel;
+import org.hisp.dhis.android.core.category.CategoryOptionCombo;
+import org.hisp.dhis.android.core.category.CategoryOptionComboCategoryOptionLinkTableInfo;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
@@ -118,8 +120,17 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     private final String SELECT_CATEGORY_OPTION_COMBO = String.format("SELECT * FROM %s WHERE %s.%s = ",
             CategoryOptionComboModel.TABLE, CategoryOptionComboModel.TABLE, CategoryOptionComboModel.Columns.UID);
 
-    private final String SELECT_CATEGORY_OPTIONS_COMBO = String.format("SELECT * FROM %s WHERE %s.%s = ",
-            CategoryOptionComboModel.TABLE, CategoryOptionComboModel.TABLE, CategoryOptionComboModel.Columns.CATEGORY_COMBO);
+    private final String SELECT_CATEGORY_OPTIONS_COMBO = String.format("SELECT %s.* FROM %s " +
+                    "JOIN %s ON %s.%s = %s.%s " +
+                    "JOIN %s ON %s.%s = %s.%s " +
+                    "WHERE %s.%s AND %s.%s = ",
+            CategoryOptionComboModel.TABLE, CategoryOptionComboModel.TABLE,
+            CategoryOptionComboCategoryOptionLinkTableInfo.TABLE_INFO.name(),
+            CategoryOptionComboCategoryOptionLinkTableInfo.TABLE_INFO.name(), CategoryOptionComboCategoryOptionLinkTableInfo.Columns.CATEGORY_OPTION_COMBO,
+            CategoryOptionComboModel.TABLE, CategoryOptionComboModel.Columns.UID,
+            CategoryOptionModel.TABLE, CategoryOptionComboCategoryOptionLinkTableInfo.TABLE_INFO.name(), CategoryOptionComboCategoryOptionLinkTableInfo.Columns.CATEGORY_OPTION,
+            CategoryOptionModel.TABLE, CategoryOptionModel.Columns.UID,
+            CategoryOptionModel.TABLE, CategoryOptionModel.Columns.ACCESS_DATA_WRITE, CategoryOptionComboModel.TABLE, CategoryOptionComboModel.Columns.CATEGORY_COMBO);
 
     private final String SELECT_CATEGORY = "SELECT * FROM Category " +
             "JOIN CategoryCategoryComboLink ON CategoryCategoryComboLink.category = Category.uid " +
