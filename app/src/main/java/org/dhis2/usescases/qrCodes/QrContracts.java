@@ -24,5 +24,7 @@ public class QrContracts {
         void onPrevQr();
 
         void onNextQr();
+
+        void onDetach();
     }
 }

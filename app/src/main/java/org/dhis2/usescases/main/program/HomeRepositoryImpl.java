@@ -12,6 +12,7 @@ import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitProgramLinkModel;
+import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramType;
 import org.hisp.dhis.android.core.user.UserOrganisationUnitLinkModel;
@@ -124,7 +125,6 @@ class HomeRepositoryImpl implements HomeRepository {
                                     dateQuery.append("OR ");
                             }
                         }
-
 
                         String filter = "";
                         if (!dateQuery.toString().isEmpty())

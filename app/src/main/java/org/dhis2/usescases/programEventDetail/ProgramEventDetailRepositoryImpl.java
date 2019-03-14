@@ -190,24 +190,8 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
         CategoryOptionCombo categoryOptionCombo;
         if (!isEmpty(categoryOptionComboId)) {
             categoryOptionCombo = d2.categoryModule().categoryOptionCombos.uid(categoryOptionComboId).getWithAllChildren();
-            if (!Boolean.TRUE.equals(categoryOptionCombo.categoryCombo().isDefault()))
+            if (!d2.categoryModule().categoryCombos.uid(categoryOptionCombo.categoryCombo().uid()).get().isDefault())
                 catOptionCombName = categoryOptionCombo.displayName();
-        /*    Cursor cursor = briteDatabase.query(
-                    "SELECT CategoryOptionCombo.*, CategoryCombo.isDefault FROM CategoryOptionCombo " +
-                            "JOIN CategoryCombo ON CategoryCombo.uid = CategoryOptionCombo.categoryCombo " +
-                            "WHERE CategoryOptionCombo.uid = ?", categoryOptionComboId);
-            try {
-                cursor.moveToFirst();
-                boolean isDefault = cursor.getInt(cursor.getColumnIndex("isDefault")) == 1;
-                if (!isDefault) {
-                    catOptionCombName = CategoryOptionComboModel.create(cursor).displayName();
-                }
-            } catch (Exception e) {
-                Timber.e(e);
-            } finally {
-                if (cursor != null)
-                    cursor.close();
-            }*/
         }
         return catOptionCombName;
     }

@@ -206,7 +206,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                             fieldMap.put(fieldViewModel.programStageSection(), new ArrayList<>());
                                         fieldMap.get(fieldViewModel.programStageSection()).add(fieldViewModel);
                                     }
-                                    return fieldMap.get(section.equals("NO_SECTION") ? null : section);
+                                    List<FieldViewModel> fieldsToShow = fieldMap.get(section.equals("NO_SECTION") ? null : section);
+                                    return fieldsToShow != null ? fieldsToShow : new ArrayList<FieldViewModel>();
                                 }))
                         .observeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
