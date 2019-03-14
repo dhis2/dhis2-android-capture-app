@@ -19,6 +19,4 @@ public interface UserRepository {
     @NonNull
     Flowable<UserModel> me();
 
-    @NonNull
-    Observable<List<OrganisationUnitModel>> myOrgUnits();
 }

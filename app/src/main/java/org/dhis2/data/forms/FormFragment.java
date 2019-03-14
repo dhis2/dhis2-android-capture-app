@@ -442,14 +442,15 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case Constants.RQ_MAP_LOCATION_VIEW:
-                if (data.getStringExtra(MapSelectorActivity.LATITUDE) != null && data.getStringExtra(MapSelectorActivity.LONGITUDE) != null) {
+                if (data != null && data.getStringExtra(MapSelectorActivity.LATITUDE) != null && data.getStringExtra(MapSelectorActivity.LONGITUDE) != null) {
                     coordinatesView.updateLocation(Double.valueOf(data.getStringExtra(MapSelectorActivity.LATITUDE)), Double.valueOf(data.getStringExtra(MapSelectorActivity.LONGITUDE)));
                     publishCoordinatesChanged(Double.valueOf(data.getStringExtra(MapSelectorActivity.LATITUDE)), Double.valueOf(data.getStringExtra(MapSelectorActivity.LONGITUDE)));
                     this.coordinatesView = null;
                 }
                 break;
             case RQ_EVENT:
-                openDashboard(data.getStringExtra(Constants.EVENT_UID));
+                if (data != null)
+                    openDashboard(data.getStringExtra(Constants.EVENT_UID));
                 break;
         }
         super.onActivityResult(requestCode, resultCode, data);

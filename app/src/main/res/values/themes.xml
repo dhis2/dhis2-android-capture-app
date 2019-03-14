@@ -2,7 +2,7 @@
 <resources>
     <!--region BASE THEMES -->
 
-    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge"><!--parent="Theme.MaterialComponents.Light.NoActionBar"-->
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         parent
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
@@ -48,7 +48,10 @@
         <item name="period_time_button">@drawable/period_time_button_red</item>
         <item name="toast_bg">@drawable/toast_bg_red</item>
         <item name="android:windowBackground">@color/gray_f6f</item>
+    </style>
 
+    <style name="AppTheme.Launcher">
+        <item name="android:windowBackground">@drawable/splash_background</item>
     </style>
 
     <style name="GreenTheme" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">

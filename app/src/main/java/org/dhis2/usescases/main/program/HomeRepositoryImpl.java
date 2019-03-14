@@ -6,11 +6,13 @@ import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.Period;
+import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitProgramLinkModel;
+import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramType;
 import org.hisp.dhis.android.core.user.UserOrganisationUnitLinkModel;
@@ -80,17 +82,12 @@ class HomeRepositoryImpl implements HomeRepository {
                     "' AND UserOrganisationUnit.root = '1' " +
                     " ORDER BY " + OrganisationUnitModel.TABLE + "." + OrganisationUnitModel.Columns.DISPLAY_NAME + " ASC";
 
-    private final static String SELECT_ORG_UNITS_BY_PARENT =
-            "SELECT * FROM " + OrganisationUnitModel.TABLE + ", " + UserOrganisationUnitLinkModel.TABLE + " " +
-                    "WHERE " + OrganisationUnitModel.TABLE + "." + OrganisationUnitModel.Columns.UID + " = " + UserOrganisationUnitLinkModel.TABLE + "." + UserOrganisationUnitLinkModel.Columns.ORGANISATION_UNIT +
-                    " AND " + UserOrganisationUnitLinkModel.TABLE + "." + UserOrganisationUnitLinkModel.Columns.ORGANISATION_UNIT_SCOPE + " = '" + OrganisationUnitModel.Scope.SCOPE_DATA_CAPTURE +
-                    " AND " + OrganisationUnitModel.TABLE + "." + OrganisationUnitModel.Columns.PARENT + " = ? " +
-                    "' ORDER BY " + OrganisationUnitModel.TABLE + "." + OrganisationUnitModel.Columns.DISPLAY_NAME + " ASC";
-
     private final BriteDatabase briteDatabase;
+    private final D2 d2;
 
-    HomeRepositoryImpl(BriteDatabase briteDatabase) {
+    HomeRepositoryImpl(BriteDatabase briteDatabase,D2 d2) {
         this.briteDatabase = briteDatabase;
+        this.d2 = d2;
     }
 
 
@@ -98,8 +95,6 @@ class HomeRepositoryImpl implements HomeRepository {
     @Override
     public Flowable<List<ProgramViewModel>> programModels(List<Date> dates, Period period, String orgUnitsId, int orgUnitsSize) {
 
-        int orgUnits = orgUnitsId != null ? orgUnitsId.split(",").length : 0;
-        boolean filteringOrgs = orgUnitsId != null && orgUnitsSize != orgUnits;
         //QUERYING Program - orgUnit filter
         String orgQuery = "";
         if (!isEmpty(orgUnitsId))
@@ -130,7 +125,6 @@ class HomeRepositoryImpl implements HomeRepository {
                                     dateQuery.append("OR ");
                             }
                         }
-
 
                         String filter = "";
                         if (!dateQuery.toString().isEmpty())
@@ -183,13 +177,6 @@ class HomeRepositoryImpl implements HomeRepository {
                     models.add(programViewModel);
             return models;
         }
-    }
-
-    @NonNull
-    @Override
-    public Observable<Integer> numberOfUserOrgUnits() {
-        return briteDatabase.createQuery("sqlite_sequence", "SELECT seq FROM sqlite_sequence WHERE name = 'UserOrganisationUnit'")
-                .mapToOne(cursor -> cursor.getInt(0));
     }
 
     @NonNull

@@ -21,8 +21,14 @@ import androidx.annotation.Nullable;
 
 public class DateUtils {
 
+    private static DateUtils instance;
+    private Calendar currentDateCalendar;
+
     public static DateUtils getInstance() {
-        return new DateUtils();
+        if (instance == null)
+            instance = new DateUtils();
+
+        return instance;
     }
 
     public static final String DATABASE_FORMAT_EXPRESSION = "yyyy-MM-dd'T'HH:mm:ss.SSS";
@@ -191,12 +197,24 @@ public class DateUtils {
     }
 
     public Calendar getCalendar() {
+        if (currentDateCalendar != null)
+            return currentDateCalendar;
+
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY, 0);
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
         return calendar;
+    }
+
+    public void setCurrentDate(Date date) {
+        currentDateCalendar = getCalendar();
+        currentDateCalendar.setTime(date);
+        currentDateCalendar.set(Calendar.HOUR_OF_DAY, 0);
+        currentDateCalendar.set(Calendar.MINUTE, 0);
+        currentDateCalendar.set(Calendar.SECOND, 0);
+        currentDateCalendar.set(Calendar.MILLISECOND, 0);
     }
 
     /**********************
@@ -978,12 +996,31 @@ public class DateUtils {
                 completedDay.getTime() + TimeUnit.DAYS.toMillis(compExpDays) < date.getTime();
     }
 
-    public Boolean isEventExpired(Date eventDate, EventStatus status, int compExpDays, PeriodType programPeriodType, int expDays) {
-        if (status == EventStatus.COMPLETED)
-            return isEventExpired(null, eventDate, compExpDays);
-        else {
-            Date expDate = expDate(null, expDays, programPeriodType);
-            return expDate != null && expDate.before(getCalendar().getTime());
-        }
+    /**
+     * Check if an event is expired today.
+     *
+     * @param eventDate         Date of the event (Can be either eventDate or dueDate, but can not be null).
+     * @param completeDate      date that event was completed (can be null).
+     * @param status            status of event (ACTIVE,COMPLETED,SCHEDULE,OVERDUE,SKIPPED,VISITED).
+     * @param compExpDays       extra days to edit event when completed .
+     * @param programPeriodType period in which the event can be edited.
+     * @param expDays           extra days after period to edit event.
+     * @return true or false
+     */
+    public Boolean isEventExpired(Date eventDate, Date completeDate, EventStatus status, int compExpDays, PeriodType programPeriodType, int expDays) {
+        if (status == EventStatus.COMPLETED && completeDate == null)
+            throw new NullPointerException("completeDate can't be null if status of event is COMPLETED");
+
+        boolean expiredBecouseOfPeriod;
+        boolean expiredBecouseOfCompletion = false;
+
+        expiredBecouseOfCompletion = status == EventStatus.COMPLETED ?
+                isEventExpired(null, eventDate, compExpDays) : false;
+
+        Date expDate = expDate(null, expDays, programPeriodType);
+        expiredBecouseOfPeriod = expDate != null && expDate.before(getCalendar().getTime());
+
+        return expiredBecouseOfPeriod || expiredBecouseOfCompletion;
+
     }
 }
