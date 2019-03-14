@@ -1,7 +1,6 @@
 package org.dhis2.data.forms.dataentry;
 
 import android.database.Cursor;
-import androidx.annotation.NonNull;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
@@ -23,6 +22,7 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
+import androidx.annotation.NonNull;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 
@@ -126,10 +126,10 @@ public final class EventsRuleEngineRepository implements RuleEngineRepository {
     @Nonnull
     private String getOrgUnitCode(String orgUnitUid) {
         String ouCode = "";
-        Cursor cursor = briteDatabase.query("SELECT code FROM OrganisationUnit WHERE uid = ? LIMIT 1", orgUnitUid);
-        if (cursor != null && cursor.moveToFirst() && cursor.getString(0) != null) {
-            ouCode = cursor.getString(0);
-            cursor.close();
+        try (Cursor cursor = briteDatabase.query("SELECT code FROM OrganisationUnit WHERE uid = ? LIMIT 1", orgUnitUid)) {
+            if (cursor != null && cursor.moveToFirst() && cursor.getString(0) != null) {
+                ouCode = cursor.getString(0);
+            }
         }
         return ouCode;
     }
@@ -148,7 +148,7 @@ public final class EventsRuleEngineRepository implements RuleEngineRepository {
                     String optionName = cursor.getString(6);
                     if (!isEmpty(optionCode) && !isEmpty(optionName))
                         value = useCode ? optionCode : optionName; //If de has optionSet then check if value should be code or name for program rules
-                    return RuleDataValue.create(eventDate, programStage,dataElement, value);
+                    return RuleDataValue.create(eventDate, programStage, dataElement, value);
                 }).toFlowable(BackpressureStrategy.LATEST);
     }
 

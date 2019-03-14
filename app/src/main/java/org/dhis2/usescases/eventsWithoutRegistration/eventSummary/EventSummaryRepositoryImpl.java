@@ -3,8 +3,6 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventSummary;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
@@ -41,6 +39,8 @@ import java.util.Locale;
 
 import javax.annotation.Nonnull;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
@@ -206,14 +206,12 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
 
     @Override
     public boolean isEnrollmentOpen() {
-        Boolean isEnrollmentOpen = true;
-        Cursor enrollmentCursor = briteDatabase.query("SELECT Enrollment.* FROM Enrollment JOIN Event ON Event.enrollment = Enrollment.uid WHERE Event.uid = ?", eventUid);
-        if (enrollmentCursor != null) {
-            if (enrollmentCursor.moveToFirst()) {
+        boolean isEnrollmentOpen = true;
+        try (Cursor enrollmentCursor = briteDatabase.query("SELECT Enrollment.* FROM Enrollment JOIN Event ON Event.enrollment = Enrollment.uid WHERE Event.uid = ?", eventUid)) {
+            if (enrollmentCursor != null && enrollmentCursor.moveToFirst()) {
                 EnrollmentModel enrollment = EnrollmentModel.create(enrollmentCursor);
                 isEnrollmentOpen = enrollment.enrollmentStatus() == EnrollmentStatus.ACTIVE;
             }
-            enrollmentCursor.close();
         }
         return isEnrollmentOpen;
     }
@@ -267,38 +265,30 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
         }
 
         int optionCount = 0;
-        try{
-            Cursor countCursor = briteDatabase.query("SELECT COUNT (uid) FROM Option WHERE optionSet = ?", optionSet);
-            if(countCursor!=null){
-                if(countCursor.moveToFirst())
-                    optionCount = countCursor.getInt(0);
-                countCursor.close();
-            }
-        }catch (Exception e){
+        try (Cursor countCursor = briteDatabase.query("SELECT COUNT (uid) FROM Option WHERE optionSet = ?", optionSet)) {
+            if (countCursor != null && countCursor.moveToFirst())
+                optionCount = countCursor.getInt(0);
+        } catch (Exception e) {
             Timber.e(e);
         }
 
         ValueTypeDeviceRenderingModel fieldRendering = null;
-        Cursor rendering = briteDatabase.query("SELECT * FROM ValueTypeDeviceRendering WHERE uid = ?", uid);
-        if(rendering!=null && rendering.moveToFirst()){
-            fieldRendering = ValueTypeDeviceRenderingModel.create(rendering);
-            rendering.close();
+        try (Cursor rendering = briteDatabase.query("SELECT * FROM ValueTypeDeviceRendering WHERE uid = ?", uid)) {
+            if (rendering != null && rendering.moveToFirst()) {
+                fieldRendering = ValueTypeDeviceRenderingModel.create(rendering);
+            }
         }
 
         ObjectStyleModel objectStyle = ObjectStyleModel.builder().build();
-        Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", uid);
-        try {
-            if (objStyleCursor.moveToFirst())
+        try (Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", uid)) {
+            if (objStyleCursor != null && objStyleCursor.moveToFirst())
                 objectStyle = ObjectStyleModel.create(objStyleCursor);
-        } finally {
-            if (objStyleCursor != null)
-                objStyleCursor.close();
         }
 
         return fieldFactory.create(uid, formName == null ? cursor.getString(1) : formName,
                 ValueType.valueOf(cursor.getString(2)), cursor.getInt(3) == 1,
                 optionSet, dataValue, cursor.getString(7), cursor.getInt(8) == 1,
-                eventStatus == EventStatus.ACTIVE, null, description, fieldRendering,optionCount,objectStyle);
+                eventStatus == EventStatus.ACTIVE, null, description, fieldRendering, optionCount, objectStyle);
     }
 
     @NonNull
@@ -358,17 +348,17 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
                         "has not been successfully updated", event.uid()));
             }
 
-            Cursor programCursor = briteDatabase.query(PROGRAM_QUERY, eventUid == null ? "" : eventUid);
-            if (programCursor != null && cursor.moveToNext()) {
-                ProgramModel program = ProgramModel.create(programCursor);
-                programCursor.close();
-                ContentValues programValues = program.toContentValues();
-                values.put(ProgramModel.Columns.LAST_UPDATED, lastUpdated);
-                if (briteDatabase.update(ProgramModel.TABLE, programValues,
-                        ProgramModel.Columns.UID + " = ?", program.uid() == null ? "" : program.uid()) <= 0) {
+            try (Cursor programCursor = briteDatabase.query(PROGRAM_QUERY, eventUid == null ? "" : eventUid)) {
+                if (programCursor != null && cursor.moveToNext()) {
+                    ProgramModel program = ProgramModel.create(programCursor);
+                    ContentValues programValues = program.toContentValues();
+                    values.put(ProgramModel.Columns.LAST_UPDATED, lastUpdated);
+                    if (briteDatabase.update(ProgramModel.TABLE, programValues,
+                            ProgramModel.Columns.UID + " = ?", program.uid() == null ? "" : program.uid()) <= 0) {
 
-                    throw new IllegalStateException(String.format(Locale.US, "Program=[%s] " +
-                            "has not been successfully updated", event.uid()));
+                        throw new IllegalStateException(String.format(Locale.US, "Program=[%s] " +
+                                "has not been successfully updated", event.uid()));
+                    }
                 }
             }
             return Observable.just(event);
@@ -421,10 +411,10 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
     @Nonnull
     private String getOrgUnitCode(String orgUnitUid) {
         String ouCode = "";
-        Cursor cursor = briteDatabase.query("SELECT code FROM OrganisationUnit WHERE uid = ? LIMIT 1", orgUnitUid);
-        if (cursor != null && cursor.moveToFirst() && cursor.getString(0) != null) {
-            ouCode = cursor.getString(0);
-            cursor.close();
+        try (Cursor cursor = briteDatabase.query("SELECT code FROM OrganisationUnit WHERE uid = ? LIMIT 1", orgUnitUid)) {
+            if (cursor != null && cursor.moveToFirst() && cursor.getString(0) != null) {
+                ouCode = cursor.getString(0);
+            }
         }
         return ouCode;
     }
@@ -438,12 +428,12 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
                     String programStage = cursor.getString(1);
                     String dataElement = cursor.getString(2);
                     String value = cursor.getString(3) != null ? cursor.getString(3) : "";
-                    Boolean useCode = cursor.getInt(4) == 1;
+                    boolean useCode = cursor.getInt(4) == 1;
                     String optionCode = cursor.getString(5);
                     String optionName = cursor.getString(6);
                     if (!isEmpty(optionCode) && !isEmpty(optionName))
                         value = useCode ? optionCode : optionName; //If de has optionSet then check if value should be code or name for program rules
-                    return RuleDataValue.create(eventDate, programStage,dataElement,value);
+                    return RuleDataValue.create(eventDate, programStage, dataElement, value);
                 }).toFlowable(BackpressureStrategy.LATEST);
     }
 

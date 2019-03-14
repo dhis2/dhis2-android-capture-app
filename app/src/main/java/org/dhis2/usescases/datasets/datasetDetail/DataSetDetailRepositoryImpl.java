@@ -1,7 +1,6 @@
 package org.dhis2.usescases.datasets.datasetDetail;
 
 import android.database.Cursor;
-import androidx.annotation.NonNull;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
@@ -15,6 +14,7 @@ import org.hisp.dhis.android.core.period.PeriodType;
 import java.util.List;
 import java.util.Locale;
 
+import androidx.annotation.NonNull;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -76,56 +76,56 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
                     String periodName = "";
                     String catOptCombName = "";
                     State state = State.SYNCED;
-                    Cursor orgUnitCursor = briteDatabase.query("SELECT OrganisationUnit.displayName FROM OrganisationUnit WHERE uid = ?", organisationUnitUid);
-                    if (orgUnitCursor != null && orgUnitCursor.moveToFirst()) {
-                        orgUnitName = orgUnitCursor.getString(0);
-                        orgUnitCursor.close();
+                    try (Cursor orgUnitCursor = briteDatabase.query("SELECT OrganisationUnit.displayName FROM OrganisationUnit WHERE uid = ?", organisationUnitUid)) {
+                        if (orgUnitCursor != null && orgUnitCursor.moveToFirst()) {
+                            orgUnitName = orgUnitCursor.getString(0);
+                        }
                     }
 
-                    Cursor periodCursor = briteDatabase.query("SELECT Period.* FROM Period WHERE Period.periodId = ?", period);
-                    if (periodCursor != null && periodCursor.moveToFirst()) {
-                        PeriodModel periodModel = PeriodModel.create(periodCursor);
-                        periodName = DateUtils.getInstance().getPeriodUIString(periodModel.periodType(), periodModel.startDate(), Locale.getDefault());
-                        periodCursor.close();
+                    try (Cursor periodCursor = briteDatabase.query("SELECT Period.* FROM Period WHERE Period.periodId = ?", period)) {
+                        if (periodCursor != null && periodCursor.moveToFirst()) {
+                            PeriodModel periodModel = PeriodModel.create(periodCursor);
+                            periodName = DateUtils.getInstance().getPeriodUIString(periodModel.periodType(), periodModel.startDate(), Locale.getDefault());
+                        }
                     }
 
-                    Cursor catOptCombCursor = briteDatabase.query("SELECT CategoryOptionCombo.displayName FROM CategoryOptionCombo WHERE uid = ?", categoryOptionCombo);
-                    if (catOptCombCursor != null && catOptCombCursor.moveToFirst()) {
-                        catOptCombName = catOptCombCursor.getString(0);
-                        catOptCombCursor.close();
+                    try (Cursor catOptCombCursor = briteDatabase.query("SELECT CategoryOptionCombo.displayName FROM CategoryOptionCombo WHERE uid = ?", categoryOptionCombo)) {
+                        if (catOptCombCursor != null && catOptCombCursor.moveToFirst()) {
+                            catOptCombName = catOptCombCursor.getString(0);
+                        }
                     }
 
-                    Cursor stateCursor = briteDatabase.query("SELECT DataValue.state FROM DataValue " +
+                    try (Cursor stateCursor = briteDatabase.query("SELECT DataValue.state FROM DataValue " +
                                     "WHERE period = ? AND organisationUnit = ? AND attributeOptionCombo = ? " +
                                     "AND state != 'SYNCED'",
-                            period, organisationUnitUid, categoryOptionCombo);
-                    if (stateCursor != null && stateCursor.moveToFirst()) {
-                        State errorState = null;
-                        State toPost = null;
-                        State toUpdate = null;
-                        for (int i = 0; i < cursor.getCount(); i++) {
-                            State stateValue = State.valueOf(cursor.getString(0));
-                            switch (stateValue) {
-                                case ERROR:
-                                    errorState = State.ERROR;
-                                    break;
-                                case TO_POST:
-                                    toPost = State.TO_POST;
-                                    break;
-                                case TO_UPDATE:
-                                    toUpdate = State.TO_UPDATE;
-                                    break;
+                            period, organisationUnitUid, categoryOptionCombo)) {
+                        if (stateCursor != null && stateCursor.moveToFirst()) {
+                            State errorState = null;
+                            State toPost = null;
+                            State toUpdate = null;
+                            for (int i = 0; i < cursor.getCount(); i++) {
+                                State stateValue = State.valueOf(cursor.getString(0));
+                                switch (stateValue) {
+                                    case ERROR:
+                                        errorState = State.ERROR;
+                                        break;
+                                    case TO_POST:
+                                        toPost = State.TO_POST;
+                                        break;
+                                    case TO_UPDATE:
+                                        toUpdate = State.TO_UPDATE;
+                                        break;
+                                }
+                                cursor.moveToNext();
                             }
-                            cursor.moveToNext();
-                        }
-                        stateCursor.close();
 
-                        if (errorState != null)
-                            state = errorState;
-                        else if (toUpdate != null)
-                            state = toUpdate;
-                        else if (toPost != null)
-                            state = toPost;
+                            if (errorState != null)
+                                state = errorState;
+                            else if (toUpdate != null)
+                                state = toUpdate;
+                            else if (toPost != null)
+                                state = toPost;
+                        }
                     }
 
                     return DataSetDetailModel.create(organisationUnitUid, categoryOptionCombo, period, orgUnitName, catOptCombName, periodName, state);

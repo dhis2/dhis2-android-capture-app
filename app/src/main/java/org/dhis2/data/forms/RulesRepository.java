@@ -536,23 +536,23 @@ public final class RulesRepository {
                                             String programStageName = cursor.getString(6);
                                             RuleEvent.Status status = cursor.getString(2).equals("VISITED") ? RuleEvent.Status.ACTIVE : RuleEvent.Status.valueOf(cursor.getString(2)); //TODO: WHAT?
 
-                                            Cursor dataValueCursor = briteDatabase.query(QUERY_VALUES, eventUid);
-                                            if (dataValueCursor != null && dataValueCursor.moveToFirst()) {
-                                                for (int i = 0; i < dataValueCursor.getCount(); i++) {
-                                                    Date eventDateV = DateUtils.databaseDateFormat().parse(dataValueCursor.getString(0));
-                                                    String programStage = cursor.getString(1);
-                                                    String dataElement = cursor.getString(2);
-                                                    String value = cursor.getString(3) != null ? dataValueCursor.getString(3) : "";
-                                                    Boolean useCode = cursor.getInt(4) == 1;
-                                                    String optionCode = cursor.getString(5);
-                                                    String optionName = cursor.getString(6);
-                                                    if (!isEmpty(optionCode) && !isEmpty(optionName))
-                                                        value = useCode ? optionCode : optionName; //If de has optionSet then check if value should be code or name for program rules
-                                                    dataValues.add(RuleDataValue.create(eventDateV, programStage,
-                                                            dataElement, value));
-                                                    dataValueCursor.moveToNext();
+                                            try (Cursor dataValueCursor = briteDatabase.query(QUERY_VALUES, eventUid)) {
+                                                if (dataValueCursor != null && dataValueCursor.moveToFirst()) {
+                                                    for (int i = 0; i < dataValueCursor.getCount(); i++) {
+                                                        Date eventDateV = DateUtils.databaseDateFormat().parse(dataValueCursor.getString(0));
+                                                        String programStage = cursor.getString(1);
+                                                        String dataElement = cursor.getString(2);
+                                                        String value = cursor.getString(3) != null ? dataValueCursor.getString(3) : "";
+                                                        boolean useCode = cursor.getInt(4) == 1;
+                                                        String optionCode = cursor.getString(5);
+                                                        String optionName = cursor.getString(6);
+                                                        if (!isEmpty(optionCode) && !isEmpty(optionName))
+                                                            value = useCode ? optionCode : optionName; //If de has optionSet then check if value should be code or name for program rules
+                                                        dataValues.add(RuleDataValue.create(eventDateV, programStage,
+                                                                dataElement, value));
+                                                        dataValueCursor.moveToNext();
+                                                    }
                                                 }
-                                                dataValueCursor.close();
                                             }
 
                                             return RuleEvent.builder()
@@ -584,23 +584,23 @@ public final class RulesRepository {
                     String programStageName = cursor.getString(6);
                     RuleEvent.Status status = cursor.getString(2).equals("VISITED") ? RuleEvent.Status.ACTIVE : RuleEvent.Status.valueOf(cursor.getString(2)); //TODO: WHAT?
 
-                    Cursor dataValueCursor = briteDatabase.query(QUERY_VALUES, eventUid);
-                    if (dataValueCursor != null && dataValueCursor.moveToFirst()) {
-                        for (int i = 0; i < dataValueCursor.getCount(); i++) {
-                            Date eventDateV = DateUtils.databaseDateFormat().parse(dataValueCursor.getString(0));
-                            String programStage = cursor.getString(1);
-                            String dataElement = cursor.getString(2);
-                            String value = cursor.getString(3) != null ? dataValueCursor.getString(3) : "";
-                            Boolean useCode = cursor.getInt(4) == 1;
-                            String optionCode = cursor.getString(5);
-                            String optionName = cursor.getString(6);
-                            if (!isEmpty(optionCode) && !isEmpty(optionName))
-                                value = useCode ? optionCode : optionName; //If de has optionSet then check if value should be code or name for program rules
-                            dataValues.add(RuleDataValue.create(eventDateV, programStage,
-                                    dataElement, value));
-                            dataValueCursor.moveToNext();
+                    try (Cursor dataValueCursor = briteDatabase.query(QUERY_VALUES, eventUid)) {
+                        if (dataValueCursor != null && dataValueCursor.moveToFirst()) {
+                            for (int i = 0; i < dataValueCursor.getCount(); i++) {
+                                Date eventDateV = DateUtils.databaseDateFormat().parse(dataValueCursor.getString(0));
+                                String programStage = cursor.getString(1);
+                                String dataElement = cursor.getString(2);
+                                String value = cursor.getString(3) != null ? dataValueCursor.getString(3) : "";
+                                boolean useCode = cursor.getInt(4) == 1;
+                                String optionCode = cursor.getString(5);
+                                String optionName = cursor.getString(6);
+                                if (!isEmpty(optionCode) && !isEmpty(optionName))
+                                    value = useCode ? optionCode : optionName; //If de has optionSet then check if value should be code or name for program rules
+                                dataValues.add(RuleDataValue.create(eventDateV, programStage,
+                                        dataElement, value));
+                                dataValueCursor.moveToNext();
+                            }
                         }
-                        dataValueCursor.close();
                     }
 
                     return RuleEvent.builder()
@@ -650,10 +650,10 @@ public final class RulesRepository {
     @Nonnull
     private String getOrgUnitCode(String orgUnitUid) {
         String ouCode = "";
-        Cursor cursor = briteDatabase.query("SELECT code FROM OrganisationUnit WHERE uid = ? LIMIT 1", orgUnitUid);
-        if (cursor != null && cursor.moveToFirst() && cursor.getString(0) != null) {
-            ouCode = cursor.getString(0);
-            cursor.close();
+        try (Cursor cursor = briteDatabase.query("SELECT code FROM OrganisationUnit WHERE uid = ? LIMIT 1", orgUnitUid)) {
+            if (cursor != null && cursor.moveToFirst() && cursor.getString(0) != null) {
+                ouCode = cursor.getString(0);
+            }
         }
         return ouCode;
     }

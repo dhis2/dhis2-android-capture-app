@@ -213,13 +213,10 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
     @Override
     public ProgramModel getProgram(String programUid) {
         ProgramModel programModel = null;
-        Cursor programCursor = briteDatabase.query("SELECT * FROM Program WHERE uid = ? LIMIT 1", programUid);
-        if (programCursor != null) {
-            if (programCursor.moveToFirst())
+        try (Cursor programCursor = briteDatabase.query("SELECT * FROM Program WHERE uid = ? LIMIT 1", programUid)) {
+            if (programCursor != null && programCursor.moveToFirst())
                 programModel = ProgramModel.create(programCursor);
-            programCursor.close();
         }
         return programModel;
     }
-
 }

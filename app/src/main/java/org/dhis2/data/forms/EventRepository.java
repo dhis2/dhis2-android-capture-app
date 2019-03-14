@@ -428,21 +428,17 @@ public class EventRepository implements FormRepository {
         }
 
         int optionCount = 0;
-        try{
-            Cursor countCursor = briteDatabase.query("SELECT COUNT (uid) FROM Option WHERE optionSet = ?", optionSetUid);
-            if(countCursor!=null){
-                if(countCursor.moveToFirst())
-                    optionCount = countCursor.getInt(0);
-                countCursor.close();
-            }
-        }catch (Exception e){
+        try (Cursor countCursor = briteDatabase.query("SELECT COUNT (uid) FROM Option WHERE optionSet = ?", optionSetUid)) {
+            if (countCursor != null && countCursor.moveToFirst())
+                optionCount = countCursor.getInt(0);
+        } catch (Exception e) {
             Timber.e(e);
         }
         ValueTypeDeviceRenderingModel fieldRendering = null;
-        Cursor rendering = briteDatabase.query("SELECT * FROM ValueTypeDeviceRendering WHERE uid = ?", uid);
-        if (rendering != null && rendering.moveToFirst()) {
-            fieldRendering = ValueTypeDeviceRenderingModel.create(rendering);
-            rendering.close();
+        try (Cursor rendering = briteDatabase.query("SELECT * FROM ValueTypeDeviceRendering WHERE uid = ?", uid)) {
+            if (rendering != null && rendering.moveToFirst()) {
+                fieldRendering = ValueTypeDeviceRenderingModel.create(rendering);
+            }
         }
 
         FieldViewModelFactoryImpl fieldFactory = new FieldViewModelFactoryImpl(
@@ -456,17 +452,13 @@ public class EventRepository implements FormRepository {
                 "",
                 "");
         ObjectStyleModel objectStyle = ObjectStyleModel.builder().build();
-        Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", uid);
-        try {
-            if (objStyleCursor.moveToFirst())
+        try (Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", uid)) {
+            if (objStyleCursor != null && objStyleCursor.moveToFirst())
                 objectStyle = ObjectStyleModel.create(objStyleCursor);
-        } finally {
-            if (objStyleCursor != null)
-                objStyleCursor.close();
         }
         return fieldFactory.create(uid, isEmpty(formLabel) ? label : formLabel, valueType,
                 mandatory, optionSetUid, dataValue, section, allowFutureDates,
-                status == EventStatus.ACTIVE, null, description, fieldRendering, optionCount,objectStyle);
+                status == EventStatus.ACTIVE, null, description, fieldRendering, optionCount, objectStyle);
     }
 
     @NonNull

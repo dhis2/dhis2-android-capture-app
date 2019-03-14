@@ -13,7 +13,6 @@ import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
-import org.hisp.dhis.android.core.program.ProgramRuleVariableModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
@@ -175,23 +174,23 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
 
                     RuleEvent.Status status = RuleEvent.Status.valueOf(eventStatus);
 
-                    Cursor dataValueCursor = briteDatabase.query(QUERY_VALUES, eventUid == null ? "" : eventUid);
-                    if (dataValueCursor != null && dataValueCursor.moveToFirst()) {
-                        for (int i = 0; i < dataValueCursor.getCount(); i++) {
-                            Date eventDateV = DateUtils.databaseDateFormat().parse(cursor.getString(0));
-                            String programStage = cursor.getString(1);
-                            String dataElement = cursor.getString(2);
-                            String value = cursor.getString(3) != null ? cursor.getString(3) : "";
-                            Boolean useCode = cursor.getInt(4) == 1;
-                            String optionCode = cursor.getString(5);
-                            String optionName = cursor.getString(6);
-                            if (!isEmpty(optionCode) && !isEmpty(optionName))
-                                value = useCode ? optionCode : optionName; //If de has optionSet then check if value should be code or name for program rules
-                            dataValues.add(RuleDataValue.create(eventDateV, programStage,
-                                    dataElement, value));
-                            dataValueCursor.moveToNext();
+                    try (Cursor dataValueCursor = briteDatabase.query(QUERY_VALUES, eventUid == null ? "" : eventUid)) {
+                        if (dataValueCursor != null && dataValueCursor.moveToFirst()) {
+                            for (int i = 0; i < dataValueCursor.getCount(); i++) {
+                                Date eventDateV = DateUtils.databaseDateFormat().parse(cursor.getString(0));
+                                String programStage = cursor.getString(1);
+                                String dataElement = cursor.getString(2);
+                                String value = cursor.getString(3) != null ? cursor.getString(3) : "";
+                                boolean useCode = cursor.getInt(4) == 1;
+                                String optionCode = cursor.getString(5);
+                                String optionName = cursor.getString(6);
+                                if (!isEmpty(optionCode) && !isEmpty(optionName))
+                                    value = useCode ? optionCode : optionName; //If de has optionSet then check if value should be code or name for program rules
+                                dataValues.add(RuleDataValue.create(eventDateV, programStage,
+                                        dataElement, value));
+                                dataValueCursor.moveToNext();
+                            }
                         }
-                        dataValueCursor.close();
                     }
 
                     return RuleEvent.builder()
@@ -223,7 +222,7 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
                     String optionName = cursor.getString(6);
                     if (!isEmpty(optionCode) && !isEmpty(optionName))
                         value = useCode ? optionCode : optionName; //If de has optionSet then check if value should be code or name for program rules
-                    return RuleDataValue.create(eventDate, programStage,dataElement,value);
+                    return RuleDataValue.create(eventDate, programStage, dataElement, value);
                 }).toFlowable(BackpressureStrategy.LATEST);
     }
 
@@ -254,10 +253,10 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
     @Nonnull
     private String getOrgUnitCode(String orgUnitUid) {
         String ouCode = "";
-        Cursor cursor = briteDatabase.query("SELECT code FROM OrganisationUnit WHERE uid = ? LIMIT 1", orgUnitUid);
-        if (cursor != null && cursor.moveToFirst()) {
-            ouCode = cursor.getString(0);
-            cursor.close();
+        try (Cursor cursor = briteDatabase.query("SELECT code FROM OrganisationUnit WHERE uid = ? LIMIT 1", orgUnitUid)) {
+            if (cursor != null && cursor.moveToFirst()) {
+                ouCode = cursor.getString(0);
+            }
         }
 
         return ouCode;
@@ -317,12 +316,12 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
         List<Pair<ProgramStageModel, ObjectStyleModel>> finalList = new ArrayList<>();
         for (ProgramStageModel stageModel : programStageModels) {
             ObjectStyleModel objectStyleModel = null;
-            Cursor cursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ? LIMIT 1", stageModel.uid());
-            if (cursor != null) {
-                if (cursor.moveToFirst()) {
-                    objectStyleModel = ObjectStyleModel.create(cursor);
+            try (Cursor cursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ? LIMIT 1", stageModel.uid())) {
+                if (cursor != null) {
+                    if (cursor.moveToFirst()) {
+                        objectStyleModel = ObjectStyleModel.create(cursor);
+                    }
                 }
-                cursor.close();
             }
             if (objectStyleModel == null)
                 objectStyleModel = ObjectStyleModel.builder().build();
