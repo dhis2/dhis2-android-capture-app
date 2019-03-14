@@ -522,28 +522,31 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     }
 
     private void checkAction() {
-        CustomDialog dialog = new CustomDialog(
-                getContext(),
-                getString(R.string.warning_error_on_complete_title),
-                messageOnComplete,
-                getString(R.string.button_ok),
-                getString(R.string.cancel),
-                1001,
-                new DialogClickListener() {
-                    @Override
-                    public void onPositive() {
-                        if (canComplete)
-                            getActivity().finish();
-                    }
+        if (isAdded() && getActivity() != null) {
+            CustomDialog dialog = new CustomDialog(
+                    getActivity(),
+                    getString(R.string.warning_error_on_complete_title),
+                    messageOnComplete,
+                    getString(R.string.button_ok),
+                    getString(R.string.cancel),
+                    1001,
+                    new DialogClickListener() {
+                        @Override
+                        public void onPositive() {
+                            if (canComplete && isAdded() && getActivity() != null)
+                                getActivity().finish();
+                        }
 
-                    @Override
-                    public void onNegative() {
-                    }
-                });
-        if (!isEmpty(messageOnComplete))
-            dialog.show();
-        else
-            getActivity().finish();
+                        @Override
+                        public void onNegative() {
+                            // do nothing
+                        }
+                    });
+            if (!isEmpty(messageOnComplete))
+                dialog.show();
+            else
+                getActivity().finish();
+        }
     }
 
     @Override
