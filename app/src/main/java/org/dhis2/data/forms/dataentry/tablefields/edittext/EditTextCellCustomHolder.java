@@ -2,6 +2,7 @@ package org.dhis2.data.forms.dataentry.tablefields.edittext;
 
 import android.annotation.SuppressLint;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.AppCompatEditText;
 import androidx.databinding.ObservableBoolean;
 import androidx.annotation.NonNull;
@@ -17,6 +18,7 @@ import android.text.method.DigitsKeyListener;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -69,7 +71,7 @@ final class EditTextCellCustomHolder extends FormViewHolder {
                 tableView.scrollToColumnPosition(editTextModel.column(), 200);
                 tableView.setSelectedCell(editTextModel.column(), editTextModel.row());
             }
-            else if(editTextModel != null && editTextModel.editable()) {
+            else if(editTextModel != null && editTextModel.editable() && !editText.getText().toString().equals(editTextModel.value())) {
                 if (!isEmpty(editText.getText()) && validate())
                     processor.onNext(RowAction.create(editTextModel.uid(), editText.getText().toString(), editTextModel.dataElement(), editTextModel.listCategoryOption(), editTextModel.catCombo(), editTextModel.row(), editTextModel.column()));
                 else
@@ -81,17 +83,9 @@ final class EditTextCellCustomHolder extends FormViewHolder {
 
 
     public void update(@NonNull FieldViewModel model, String value) {
-        if (!model.editable()) {
-            editText.setEnabled(false);
-            editText.setBackgroundColor(ContextCompat.getColor(editText.getContext(), R.color.bg_black_e6e));
-        } else if(accessDataWrite) {
-            editText.setEnabled(true);
-        }else{
-            editText.setEnabled(false);
-            editText.setBackgroundColor(ContextCompat.getColor(editText.getContext(), R.color.bg_black_e6e));
-        }
 
         this.editTextModel = (EditTextModel) model;
+        setInputType(editTextModel.valueType());
 
         editText.setText(editTextModel.value() == null ?
                 null : valueOf(editTextModel.value()));
@@ -107,9 +101,20 @@ final class EditTextCellCustomHolder extends FormViewHolder {
         else
             customBinding.icMandatory.setVisibility(View.INVISIBLE);
 
-        descriptionText = editTextModel.description();
-        binding.executePendingBindings();
-        setInputType(editTextModel.valueType());
+        if (editTextModel.editable()) {
+            if(accessDataWrite) {
+                editText.setEnabled(true);
+                editText.setBackground(null);
+            }else{
+                editText.setEnabled(false);
+                editText.setBackgroundColor(ContextCompat.getColor(editText.getContext(), R.color.bg_black_e6e));
+            }
+        } else {
+            editText.setEnabled(false);
+            editText.setBackgroundColor(ContextCompat.getColor(editText.getContext(), R.color.bg_black_e6e));
+        }
+
+        customBinding.executePendingBindings();
     }
 
     private void setInputType(ValueType valueType) {
@@ -127,9 +132,16 @@ final class EditTextCellCustomHolder extends FormViewHolder {
                             InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
                     break;
                 case TEXT:
-                    editText.setInputType(InputType.TYPE_CLASS_TEXT);
-                    editText.setLines(1);
-                    editText.setEllipsize(TextUtils.TruncateAt.END);
+                    editText.setFocusable(false);
+                    editText.setOnClickListener(v -> {
+                        showEditDialog();
+                    });
+                    break;
+                case LONG_TEXT:
+                    editText.setFocusable(false);
+                    editText.setOnClickListener(v -> {
+                        showEditDialog();
+                    });
                     break;
                 case LETTER:
                     editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
@@ -172,6 +184,24 @@ final class EditTextCellCustomHolder extends FormViewHolder {
         else {
             editText.setInputType(0);
         }
+    }
+
+    private void showEditDialog() {
+
+        AlertDialog alertDialog = new AlertDialog.Builder(editText.getContext()).create();
+        final View msgView = LayoutInflater.from(editText.getContext()).inflate(R.layout.dialog_edittext, null);
+        EditText editDialog = msgView.findViewById(R.id.dialogBody);
+        editDialog.setText(editText.getText().toString());
+        editDialog.setSelection(editDialog.getText() == null ?
+                0 : editDialog.getText().length());
+        msgView.findViewById(R.id.dialogAccept).setOnClickListener(view -> {
+                    alertDialog.dismiss();
+                    editText.setText(editDialog.getText().toString());
+                });
+        msgView.findViewById(R.id.dialogCancel).setOnClickListener(view -> alertDialog.dismiss());
+        alertDialog.setView(msgView);
+
+        alertDialog.show();
     }
 
 
