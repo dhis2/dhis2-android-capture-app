@@ -55,12 +55,14 @@ final class EditTextCustomHolder extends FormViewHolder {
     List<String> autoCompleteValues;
     EditTextViewModel editTextModel;
     private Boolean isEditable;
+    private Boolean isSearchMode;
 
     @SuppressLint("RxLeakedSubscription")
     EditTextCustomHolder(ViewGroup parent, ViewDataBinding binding, FlowableProcessor<RowAction> processor,
-                         boolean isBgTransparent, String renderType, ObservableBoolean isEditable) {
+                         boolean isBgTransparent, String renderType, ObservableBoolean isEditable, Boolean isSearchMode) {
         super(binding);
         this.isEditable = isEditable.get();
+        this.isSearchMode = isSearchMode;
         editText = binding.getRoot().findViewById(R.id.input_editText);
         icon = binding.getRoot().findViewById(R.id.renderImage);
 
@@ -168,7 +170,7 @@ final class EditTextCustomHolder extends FormViewHolder {
 
     @NonNull
     private Boolean valueHasChanged() {
-        return !Preconditions.equals(isEmpty(editText.getText()) ? "" : editText.getText().toString(),
+        return isSearchMode || !Preconditions.equals(isEmpty(editText.getText()) ? "" : editText.getText().toString(),
                 editTextModel.value() == null ? "" : valueOf(editTextModel.value()));
     }
 
