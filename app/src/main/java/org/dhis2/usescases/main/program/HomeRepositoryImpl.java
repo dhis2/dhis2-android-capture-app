@@ -12,9 +12,7 @@ import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitProgramLinkModel;
-import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.program.ProgramType;
 import org.hisp.dhis.android.core.user.UserOrganisationUnitLinkModel;
 
 import java.util.ArrayList;
@@ -30,6 +28,8 @@ import io.reactivex.Flowable;
 import io.reactivex.Observable;
 
 import static android.text.TextUtils.isEmpty;
+import static org.hisp.dhis.android.core.program.ProgramType.WITHOUT_REGISTRATION;
+import static org.hisp.dhis.android.core.program.ProgramType.WITH_REGISTRATION;
 
 class HomeRepositoryImpl implements HomeRepository {
 
@@ -85,11 +85,10 @@ class HomeRepositoryImpl implements HomeRepository {
     private final BriteDatabase briteDatabase;
     private final D2 d2;
 
-    HomeRepositoryImpl(BriteDatabase briteDatabase,D2 d2) {
+    HomeRepositoryImpl(BriteDatabase briteDatabase, D2 d2) {
         this.briteDatabase = briteDatabase;
         this.d2 = d2;
     }
-
 
     @NonNull
     @Override
@@ -132,7 +131,7 @@ class HomeRepositoryImpl implements HomeRepository {
                         else if (!dateQuery.toString().isEmpty())
                             filter = dateQuery.toString() + " AND ";
 
-                        if (programType.equals(ProgramType.WITH_REGISTRATION.name())) {
+                        if (programType.equals(WITH_REGISTRATION.name())) {
                             queryFinal = String.format(SELECT_TEIS, filter);
                         } else {
                             queryFinal = String.format(SELECT_EVENTS, filter);
@@ -151,13 +150,13 @@ class HomeRepositoryImpl implements HomeRepository {
 
                     //QUERYING Tracker name
                     String typeName = "";
-                    if (programType.equals(ProgramType.WITH_REGISTRATION.name())) {
+                    if (programType.equals(WITH_REGISTRATION.name())) {
                         Cursor typeCursor = briteDatabase.query(TRACKED_ENTITY_TYPE_NAME, teiType);
                         if (typeCursor != null && typeCursor.moveToFirst()) {
                             typeName = typeCursor.getString(0);
                             typeCursor.close();
                         }
-                    } else if (programType.equals(ProgramType.WITHOUT_REGISTRATION.name())) {
+                    } else if (programType.equals(WITHOUT_REGISTRATION.name())) {
                         typeName = "Events";
                     } else {
                         typeName = "DataSets";
