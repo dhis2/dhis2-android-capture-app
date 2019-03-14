@@ -38,6 +38,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nullable;
@@ -70,6 +71,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private CompositeDisposable compositeDisposable;
     private TrackedEntityTypeModel trackedEntity;
     private HashMap<String, String> queryData;
+    private Map<String, String> queryDataEQ;
 
     private List<OrganisationUnitModel> orgUnits;
     private Integer currentPage;
@@ -80,6 +82,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         this.searchRepository = searchRepository;
         this.d2 = d2;
         queryData = new HashMap<>();
+        queryDataEQ = new HashMap<>();
     }
 
     //-----------------------------------
@@ -135,11 +138,15 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(data -> {
-                            HashMap<String, String> queryDataBU = new HashMap(queryData);
-                            if (!isEmpty(data.value()))
+                            Map<String, String> queryDataBU = new HashMap<>(queryData);
+                            if (!isEmpty(data.value())) {
                                 queryData.put(data.id(), data.value());
-                            else
+                                if (data.requiresExactMatch())
+                                    queryDataEQ.put(data.id(), data.value());
+                            } else {
                                 queryData.remove(data.id());
+                                queryDataEQ.remove(data.id());
+                            }
 
                             if (!queryData.equals(queryDataBU)) { //Only when queryData has changed
                                 view.clearData();
@@ -213,8 +220,13 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                     for (String key : queryData.keySet()) {
                                         if (key.equals(Constants.ENROLLMENT_DATE_UID))
                                             enrollementDate = DateUtils.uiDateFormat().parse(queryData.get(key));
-                                        else if (!key.equals(Constants.INCIDENT_DATE_UID)) //TODO: HOW TO INCLUDE INCIDENT DATE IN ONLINE SEARCH
-                                            filterList.add(key + ":LIKE:" + queryData.get(key));
+                                        else if (!key.equals(Constants.INCIDENT_DATE_UID)) { //TODO: HOW TO INCLUDE INCIDENT DATE IN ONLINE SEARCH
+                                            String value = queryData.get(key);
+                                            if(value.contains("_os_"))
+                                                value = value.split("_os_")[0];
+                                            String queryItem = String.format("%s:%s:%s", key, queryDataEQ.containsKey(key) ? "EQ" : "LIKE", value);
+                                            filterList.add(queryItem);
+                                        }
                                     }
                                 }
                                 List<String> orgUnitsUids = new ArrayList<>();

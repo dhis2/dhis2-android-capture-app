@@ -19,6 +19,7 @@ import com.airbnb.lottie.LottieDrawable;
 import org.dhis2.App;
 import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
+import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ActivitySynchronizationBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.main.MainActivity;
@@ -35,10 +36,6 @@ public class SyncActivity extends ActivityGlobalAbstract implements SyncContract
 
     @Inject
     SyncContracts.Presenter presenter;
-
-    enum SyncState {
-        METADATA, EVENTS, TEI, RESERVED_VALUES, AGGREGATES
-    }
 
     private BroadcastReceiver syncReceiver = new BroadcastReceiver() {
         @Override
@@ -67,6 +64,7 @@ public class SyncActivity extends ActivityGlobalAbstract implements SyncContract
         binding = DataBindingUtil.setContentView(this, R.layout.activity_synchronization);
         binding.setPresenter(presenter);
         presenter.init(this);
+        presenter.syncMeta(getSharedPreferences().getInt(Constants.TIME_META, Constants.TIME_DAILY), Constants.META);
     }
 
     @Override

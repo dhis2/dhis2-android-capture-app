@@ -200,6 +200,9 @@ public class SearchRepositoryImpl implements SearchRepository {
             String dataId = queryData.keySet().toArray()[i].toString();
             String dataValue = queryData.get(dataId);
 
+            if(dataValue.contains("_os_"))
+                dataValue = dataValue.split("_os_")[1];
+
             if (i > initialLoop)
                 attr.append(" INNER JOIN  ");
 
@@ -257,6 +260,8 @@ public class SearchRepositoryImpl implements SearchRepository {
         for (int i = initialLoop; i < queryData.keySet().size(); i++) {
             String dataId = queryData.keySet().toArray()[i].toString();
             String dataValue = queryData.get(dataId);
+            if(dataValue.contains("_os_"))
+                dataValue = dataValue.split("_os_")[1];
 
             if (i > initialLoop)
                 attr.append(" INNER JOIN  ");
@@ -319,11 +324,14 @@ public class SearchRepositoryImpl implements SearchRepository {
                 }
 
                 for (String key : queryData.keySet()) {
+                    String dataValue = queryData.get(key);
+                    if(dataValue.contains("_os_"))
+                        dataValue = dataValue.split("_os_")[1];
                     TrackedEntityAttributeValueModel attributeValueModel =
                             TrackedEntityAttributeValueModel.builder()
                                     .created(currentDate)
                                     .lastUpdated(currentDate)
-                                    .value(queryData.get(key))
+                                    .value(dataValue)
                                     .trackedEntityAttribute(key)
                                     .trackedEntityInstance(generatedUid)
                                     .build();

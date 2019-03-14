@@ -15,7 +15,15 @@ public abstract class RowAction {
     public abstract String value();
 
     @NonNull
+    public abstract Boolean requiresExactMatch();
+
+    @NonNull
     public static RowAction create(@NonNull String id, @Nullable String value) {
-        return new AutoValue_RowAction(id, value);
+        return new AutoValue_RowAction(id, value, false);
+    }
+
+    @NonNull
+    public static RowAction create(@NonNull String id, @Nullable String value, @NonNull Boolean requieresExactMatch) {
+        return new AutoValue_RowAction(id, value, requieresExactMatch);
     }
 }
