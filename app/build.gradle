@@ -156,7 +156,7 @@ sonarqube {
 dependencies {
 
     implementation project(":customFab")
-    implementation project(":dhis2-rule-engine")
+//    implementation project(":dhis2-rule-engine")
     implementation project(":viewpagerdotsindicator")
 
     //region SUPPORT LIBRARIES
@@ -180,7 +180,7 @@ dependencies {
          exclude group: "org.hisp.dhis", module: "core-rules"
      }*/
 
-//    implementation "org.hisp.dhis.rules:rule-engine:${libraries.ruleEngine}"
+    implementation "org.hisp.dhis.rules:rule-engine:${libraries.ruleEngine}"
     //endregion
 
     //region UI LIBRARIES
