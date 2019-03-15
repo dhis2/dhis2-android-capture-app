@@ -58,6 +58,10 @@ final class EditTextCellCustomHolder extends FormViewHolder {
     private EditTextModel editTextModel;
     private boolean accessDataWrite;
     private CustomTextViewCellBinding customBinding;
+
+    private TableView tableView;
+    FlowableProcessor<RowAction> processor;
+
     @SuppressLint("RxLeakedSubscription")
     EditTextCellCustomHolder(CustomTextViewCellBinding binding, FlowableProcessor<RowAction> processor,
                              ObservableBoolean isEditable, TableView tableView) {
@@ -65,20 +69,8 @@ final class EditTextCellCustomHolder extends FormViewHolder {
         editText = binding.editTextCell;
         accessDataWrite = isEditable.get();
         customBinding = binding;
-
-        editText.setOnFocusChangeListener((v, hasFocus) -> {
-            if(hasFocus) {
-                tableView.scrollToColumnPosition(editTextModel.column(), 200);
-                tableView.setSelectedCell(editTextModel.column(), editTextModel.row());
-            }
-            else if(editTextModel != null && editTextModel.editable() && !editText.getText().toString().equals(editTextModel.value())) {
-                if (!isEmpty(editText.getText()) && validate())
-                    processor.onNext(RowAction.create(editTextModel.uid(), editText.getText().toString(), editTextModel.dataElement(), editTextModel.listCategoryOption(), editTextModel.catCombo(), editTextModel.row(), editTextModel.column()));
-                else
-                    processor.onNext(RowAction.create(editTextModel.uid(), null, editTextModel.dataElement(), editTextModel.listCategoryOption(),editTextModel.catCombo(),editTextModel.row(), editTextModel.column()));
-            }
-        });
-
+        this.tableView = tableView;
+        this.processor = processor;
     }
 
 
@@ -89,12 +81,6 @@ final class EditTextCellCustomHolder extends FormViewHolder {
 
         editText.setText(editTextModel.value() == null ?
                 null : valueOf(editTextModel.value()));
-
-        if(value != null && !value.isEmpty())
-            editText.setText(value);
-
-        editText.setSelection(editText.getText() == null ?
-                0 : editText.getText().length());
 
         if (editTextModel.mandatory())
             customBinding.icMandatory.setVisibility(View.VISIBLE);
@@ -113,6 +99,19 @@ final class EditTextCellCustomHolder extends FormViewHolder {
             editText.setEnabled(false);
             editText.setBackgroundColor(ContextCompat.getColor(editText.getContext(), R.color.bg_black_e6e));
         }
+
+        editText.setOnFocusChangeListener((v, hasFocus) -> {
+            if(hasFocus) {
+                tableView.scrollToColumnPosition(editTextModel.column(), 200);
+                tableView.setSelectedCell(editTextModel.column(), editTextModel.row());
+            }
+            else if(editTextModel != null && editTextModel.editable() && !editText.getText().toString().equals(editTextModel.value())) {
+                if (!isEmpty(editText.getText()) && validate())
+                    processor.onNext(RowAction.create(editTextModel.uid(), editText.getText().toString(), editTextModel.dataElement(), editTextModel.listCategoryOption(), editTextModel.catCombo(), editTextModel.row(), editTextModel.column()));
+                else
+                    processor.onNext(RowAction.create(editTextModel.uid(), null, editTextModel.dataElement(), editTextModel.listCategoryOption(),editTextModel.catCombo(),editTextModel.row(), editTextModel.column()));
+            }
+        });
 
         customBinding.executePendingBindings();
     }
