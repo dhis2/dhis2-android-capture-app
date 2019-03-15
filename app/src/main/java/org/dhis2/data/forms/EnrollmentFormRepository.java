@@ -384,98 +384,96 @@ class EnrollmentFormRepository implements FormRepository {
         Date now = calNow.getTime();
 
 
-        Cursor cursor = briteDatabase.query(SELECT_AUTO_GENERATE_PROGRAM_STAGE, enrollmentUid == null ? "" : enrollmentUid);
+        try (Cursor cursor = briteDatabase.query(SELECT_AUTO_GENERATE_PROGRAM_STAGE, enrollmentUid == null ? "" : enrollmentUid)) {
 
-        if (cursor != null) {
-            cursor.moveToFirst();
-            for (int i = 0; i < cursor.getCount(); i++) {
+            if (cursor != null) {
+                cursor.moveToFirst();
+                for (int i = 0; i < cursor.getCount(); i++) {
 
 
-                String programStage = cursor.getString(0);
-                String program = cursor.getString(1);
-                String orgUnit = cursor.getString(2);
-                int minDaysFromStart = cursor.getInt(3);
-                String reportDateToUse = cursor.getString(4) != null ? cursor.getString(4) : "";
-                String incidentDateString = cursor.getString(5);
-                String reportDateString = cursor.getString(6);
-                Date incidentDate = null;
-                Date enrollmentDate = null;
-                PeriodType periodType = cursor.getString(7) != null ? PeriodType.valueOf(cursor.getString(7)) : null;
+                    String programStage = cursor.getString(0);
+                    String program = cursor.getString(1);
+                    String orgUnit = cursor.getString(2);
+                    int minDaysFromStart = cursor.getInt(3);
+                    String reportDateToUse = cursor.getString(4) != null ? cursor.getString(4) : "";
+                    String incidentDateString = cursor.getString(5);
+                    String reportDateString = cursor.getString(6);
+                    Date incidentDate = null;
+                    Date enrollmentDate = null;
+                    PeriodType periodType = cursor.getString(7) != null ? PeriodType.valueOf(cursor.getString(7)) : null;
 
-                if (incidentDateString != null)
-                    try {
-                        incidentDate = DateUtils.databaseDateFormat().parse(incidentDateString);
-                    } catch (Exception e) {
-                        Timber.e(e);
+                    if (incidentDateString != null)
+                        try {
+                            incidentDate = DateUtils.databaseDateFormat().parse(incidentDateString);
+                        } catch (Exception e) {
+                            Timber.e(e);
+                        }
+
+                    if (reportDateString != null)
+                        try {
+                            enrollmentDate = DateUtils.databaseDateFormat().parse(reportDateString);
+                        } catch (Exception e) {
+                            Timber.e(e);
+                        }
+
+                    Date eventDate;
+                    Calendar cal = DateUtils.getInstance().getCalendar();
+                    switch (reportDateToUse) {
+                        case Constants.ENROLLMENT_DATE:
+                            cal.setTime(enrollmentDate != null ? enrollmentDate : Calendar.getInstance().getTime());
+                            break;
+                        case Constants.INCIDENT_DATE:
+                            cal.setTime(incidentDate != null ? incidentDate : Calendar.getInstance().getTime());
+                            break;
+                        default:
+                            cal.setTime(Calendar.getInstance().getTime());
+                            break;
                     }
+                    cal.set(Calendar.HOUR_OF_DAY, 0);
+                    cal.set(Calendar.MINUTE, 0);
+                    cal.set(Calendar.SECOND, 0);
+                    cal.set(Calendar.MILLISECOND, 0);
+                    cal.add(Calendar.DATE, minDaysFromStart);
+                    eventDate = cal.getTime();
 
-                if (reportDateString != null)
-                    try {
-                        enrollmentDate = DateUtils.databaseDateFormat().parse(reportDateString);
-                    } catch (Exception e) {
-                        Timber.e(e);
-                    }
+                    if (periodType != null)
+                        eventDate = DateUtils.getInstance().getNextPeriod(periodType, eventDate, 0); //Sets eventDate to current Period date
 
-                Date eventDate;
-                Calendar cal = DateUtils.getInstance().getCalendar();
-                switch (reportDateToUse) {
-                    case Constants.ENROLLMENT_DATE:
-                        cal.setTime(enrollmentDate != null ? enrollmentDate : Calendar.getInstance().getTime());
-                        break;
-                    case Constants.INCIDENT_DATE:
-                        cal.setTime(incidentDate != null ? incidentDate : Calendar.getInstance().getTime());
-                        break;
-                    default:
-                        cal.setTime(Calendar.getInstance().getTime());
-                        break;
-                }
-                cal.set(Calendar.HOUR_OF_DAY, 0);
-                cal.set(Calendar.MINUTE, 0);
-                cal.set(Calendar.SECOND, 0);
-                cal.set(Calendar.MILLISECOND, 0);
-                cal.add(Calendar.DATE, minDaysFromStart);
-                eventDate = cal.getTime();
+                    Cursor eventCursor = briteDatabase.query(CHECK_STAGE_IS_NOT_CREATED, enrollmentUid, programStage);
 
-                if (periodType != null)
-                    eventDate = DateUtils.getInstance().getNextPeriod(periodType, eventDate, 0); //Sets eventDate to current Period date
+                    if (!eventCursor.moveToFirst()) {
 
-                Cursor eventCursor = briteDatabase.query(CHECK_STAGE_IS_NOT_CREATED, enrollmentUid, programStage);
-
-                if (!eventCursor.moveToFirst()) {
-
-                    EventModel.Builder eventBuilder = EventModel.builder()
-                            .uid(codeGenerator.generate())
-                            .created(Calendar.getInstance().getTime())
-                            .lastUpdated(Calendar.getInstance().getTime())
+                        EventModel.Builder eventBuilder = EventModel.builder()
+                                .uid(codeGenerator.generate())
+                                .created(Calendar.getInstance().getTime())
+                                .lastUpdated(Calendar.getInstance().getTime())
 //                            .eventDate(eventDate)
 //                            .dueDate(eventDate)
-                            .enrollment(enrollmentUid)
-                            .program(program)
-                            .programStage(programStage)
-                            .organisationUnit(orgUnit)
-                            .status(eventDate.after(now) ? EventStatus.SCHEDULE : EventStatus.ACTIVE)
-                            .state(State.TO_POST);
-                    if (eventDate.after(now)) //scheduling
-                        eventBuilder.dueDate(eventDate);
-                    else
-                        eventBuilder.eventDate(eventDate);
+                                .enrollment(enrollmentUid)
+                                .program(program)
+                                .programStage(programStage)
+                                .organisationUnit(orgUnit)
+                                .status(eventDate.after(now) ? EventStatus.SCHEDULE : EventStatus.ACTIVE)
+                                .state(State.TO_POST);
+                        if (eventDate.after(now)) //scheduling
+                            eventBuilder.dueDate(eventDate);
+                        else
+                            eventBuilder.eventDate(eventDate);
 
-                    EventModel event = eventBuilder.build();
+                        EventModel event = eventBuilder.build();
 
 
-                    if (briteDatabase.insert(EventModel.TABLE, event.toContentValues()) < 0) {
-                        throw new OnErrorNotImplementedException(new Throwable("Unable to store event:" + event));
-                    }
+                        if (briteDatabase.insert(EventModel.TABLE, event.toContentValues()) < 0) {
+                            throw new OnErrorNotImplementedException(new Throwable("Unable to store event:" + event));
+                        }
 
-                } else
-                    eventCursor.close();
+                    } else
+                        eventCursor.close();
 
-                cursor.moveToNext();
+                    cursor.moveToNext();
+                }
             }
-            cursor.close();
-
         }
-
         return Observable.just(enrollmentUid);
     }
 

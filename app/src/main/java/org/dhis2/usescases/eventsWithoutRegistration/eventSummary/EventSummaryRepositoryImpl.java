@@ -308,62 +308,63 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
     @Override
     public Observable<EventModel> changeStatus(String eventUid) {
         String lastUpdated = DateUtils.databaseDateFormat().format(DateUtils.getInstance().getToday());
-        Cursor cursor = briteDatabase.query(EVENT_QUERY, eventUid);
-        if (cursor != null && cursor.moveToNext()) {
+        try (Cursor cursor = briteDatabase.query(EVENT_QUERY, eventUid)) {
+            if (cursor != null && cursor.moveToNext()) {
 
-            EventModel event = EventModel.create(cursor);
-            cursor.close();
+                EventModel event = EventModel.create(cursor);
+                cursor.close();
 
-            ContentValues values = event.toContentValues();
-            switch (event.status()) {
-                case ACTIVE:
-                    values.put(EventModel.Columns.STATUS, EventStatus.COMPLETED.name());
-                    values.put(EventModel.Columns.COMPLETE_DATE, lastUpdated);
-                    break;
-                case SKIPPED:
-                    values.put(EventModel.Columns.STATUS, EventStatus.COMPLETED.name()); //TODO: Can this happen?
-                    values.put(EventModel.Columns.COMPLETE_DATE, lastUpdated);
-                    break;
-                case VISITED:
-                    values.put(EventModel.Columns.STATUS, EventStatus.COMPLETED.name()); //TODO: Can this happen?
-                    values.put(EventModel.Columns.COMPLETE_DATE, lastUpdated);
-                    break;
-                case SCHEDULE:
-                    values.put(EventModel.Columns.STATUS, EventStatus.COMPLETED.name()); //TODO: Can this happen?
-                    values.put(EventModel.Columns.COMPLETE_DATE, lastUpdated);
-                    break;
-                case COMPLETED:
-                    values.put(EventModel.Columns.STATUS, EventStatus.ACTIVE.name()); //TODO: This should check dates?
-                    break;
-            }
+                ContentValues values = event.toContentValues();
+                switch (event.status()) {
+                    case ACTIVE:
+                        values.put(EventModel.Columns.STATUS, EventStatus.COMPLETED.name());
+                        values.put(EventModel.Columns.COMPLETE_DATE, lastUpdated);
+                        break;
+                    case SKIPPED:
+                        values.put(EventModel.Columns.STATUS, EventStatus.COMPLETED.name()); //TODO: Can this happen?
+                        values.put(EventModel.Columns.COMPLETE_DATE, lastUpdated);
+                        break;
+                    case VISITED:
+                        values.put(EventModel.Columns.STATUS, EventStatus.COMPLETED.name()); //TODO: Can this happen?
+                        values.put(EventModel.Columns.COMPLETE_DATE, lastUpdated);
+                        break;
+                    case SCHEDULE:
+                        values.put(EventModel.Columns.STATUS, EventStatus.COMPLETED.name()); //TODO: Can this happen?
+                        values.put(EventModel.Columns.COMPLETE_DATE, lastUpdated);
+                        break;
+                    case COMPLETED:
+                        values.put(EventModel.Columns.STATUS, EventStatus.ACTIVE.name()); //TODO: This should check dates?
+                        break;
+                }
 
 
-            values.put(EventModel.Columns.STATE, State.TO_UPDATE.toString());
-            values.put(EventModel.Columns.LAST_UPDATED, lastUpdated);
+                values.put(EventModel.Columns.STATE, State.TO_UPDATE.toString());
+                values.put(EventModel.Columns.LAST_UPDATED, lastUpdated);
 
-            if (briteDatabase.update(EventModel.TABLE, values,
-                    EventModel.Columns.UID + " = ?", eventUid == null ? "" : eventUid) <= 0) {
+                if (briteDatabase.update(EventModel.TABLE, values,
+                        EventModel.Columns.UID + " = ?", eventUid == null ? "" : eventUid) <= 0) {
 
-                throw new IllegalStateException(String.format(Locale.US, "Event=[%s] " +
-                        "has not been successfully updated", event.uid()));
-            }
+                    throw new IllegalStateException(String.format(Locale.US, "Event=[%s] " +
+                            "has not been successfully updated", event.uid()));
+                }
 
-            try (Cursor programCursor = briteDatabase.query(PROGRAM_QUERY, eventUid == null ? "" : eventUid)) {
-                if (programCursor != null && cursor.moveToNext()) {
-                    ProgramModel program = ProgramModel.create(programCursor);
-                    ContentValues programValues = program.toContentValues();
-                    values.put(ProgramModel.Columns.LAST_UPDATED, lastUpdated);
-                    if (briteDatabase.update(ProgramModel.TABLE, programValues,
-                            ProgramModel.Columns.UID + " = ?", program.uid() == null ? "" : program.uid()) <= 0) {
+                try (Cursor programCursor = briteDatabase.query(PROGRAM_QUERY, eventUid == null ? "" : eventUid)) {
+                    if (programCursor != null && cursor.moveToNext()) {
+                        ProgramModel program = ProgramModel.create(programCursor);
+                        ContentValues programValues = program.toContentValues();
+                        values.put(ProgramModel.Columns.LAST_UPDATED, lastUpdated);
+                        if (briteDatabase.update(ProgramModel.TABLE, programValues,
+                                ProgramModel.Columns.UID + " = ?", program.uid() == null ? "" : program.uid()) <= 0) {
 
-                        throw new IllegalStateException(String.format(Locale.US, "Program=[%s] " +
-                                "has not been successfully updated", event.uid()));
+                            throw new IllegalStateException(String.format(Locale.US, "Program=[%s] " +
+                                    "has not been successfully updated", event.uid()));
+                        }
                     }
                 }
-            }
-            return Observable.just(event);
-        } else
-            return null;
+                return Observable.just(event);
+            } else
+                return null;
+        }
     }
 
     @Override
