@@ -156,6 +156,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
             adapter.setShowRowTotal(dataTableModel.section() == null? false :dataTableModel.section().showRowTotals());
             //adapter.initializeRows(isEditable);
             TableView tableView = new TableView(getContext());
+            tableView.setHasFixedWidth(true);
             tableView.setUnSelectedColor(getResources().getColor(R.color.white));
             tableView.setHeadersColor(getResources().getColor(R.color.table_bg));
             tableView.setSelectedColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY_LIGHT));
