@@ -35,8 +35,7 @@
             style="@style/ButtonRoundedGrey"
             android:layout_gravity="end|bottom"
             android:layout_margin="16dp"
-            android:text="@string/next"
-            app:elevation="@{8.0}" />
+            android:text="@string/next"/>
         <!--END OF SCROLLING VIEW-->
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/appbarlayout_data_entry"

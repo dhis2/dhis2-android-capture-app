@@ -552,7 +552,9 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                     ruleAction.programStageSection() != null ? ruleAction.programStageSection().uid() : null,
                     ruleAction.trackedEntityAttribute() != null ? ruleAction.trackedEntityAttribute().uid() : null,
                     ruleAction.dataElement() != null ? ruleAction.dataElement().uid() : null,
-                    ruleAction.location(), ruleAction.content(), ruleAction.data(), ruleAction.optionGroup().uid(), ruleAction.option().uid()));
+                    ruleAction.location(), ruleAction.content(), ruleAction.data(),
+                    ruleAction.option() != null ? ruleAction.option().uid() : null,
+                    ruleAction.optionGroup() != null ? ruleAction.optionGroup().uid() : null));
         }
         return ruleActions;
     }

@@ -61,7 +61,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private ObservableField<String> currentSection;
     private FlowableProcessor<Integer> currentSectionPosition;
     private List<FormSectionViewModel> sectionList;
-    private Map<String, Map<String, FieldViewModel>> emptyMandatoryFields;
+    private Map<String, FieldViewModel> emptyMandatoryFields;
     //Rules data
     private List<String> sectionsToHide;
     private List<String> optionsToHide = new ArrayList<>();
@@ -252,17 +252,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         }
     }
 
-    private List<FieldViewModel> updateMandatoryFields(List<FieldViewModel> fields) {
-        for (FieldViewModel fieldViewModel : fields) {
-            if (fieldViewModel.mandatory() && isEmpty(fieldViewModel.value())) {
-                if (!emptyMandatoryFields.containsKey(fieldViewModel.programStageSection()))
-                    emptyMandatoryFields.put(fieldViewModel.programStageSection(), new HashMap<>());
-                emptyMandatoryFields.get(fieldViewModel.programStageSection()).put(fieldViewModel.uid(), fieldViewModel);
-            }
-        }
-        return fields;
-    }
-
     private void checkExpiration() {
         compositeDisposable.add(
                 metadataRepository.isCompletedEventExpired(eventUid)
@@ -352,7 +341,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
             compositeDisposable.add(
                     EventCaptureFormFragment.getInstance().optionSetActions()
                             .flatMap(
-                                    data -> metadataRepository.searchOptions(data.val0(), data.val1(), data.val2()).toFlowable(BackpressureStrategy.LATEST)
+                                    data -> metadataRepository.searchOptions(data.val0(), data.val1(), data.val2(),optionsToHide,optionsGroupsToHide).toFlowable(BackpressureStrategy.LATEST)
                             )
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
