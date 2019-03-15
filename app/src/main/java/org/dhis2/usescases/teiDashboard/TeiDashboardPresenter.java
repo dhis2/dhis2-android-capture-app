@@ -13,6 +13,7 @@ import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
+import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.IndicatorsFragment;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.NotesFragment;
@@ -22,6 +23,8 @@ import org.dhis2.usescases.teiDashboard.eventDetail.EventDetailActivity;
 import org.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
 import org.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.EventCreationType;
+import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
@@ -156,7 +159,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                 dashboardRepository.getTEIEnrollmentEvents(programUid, teUid)
                         .map(eventModels -> {
                             for (EventModel eventModel : eventModels) {
-                                if (eventModel.status() == EventStatus.SCHEDULE && eventModel.dueDate() != null && eventModel.dueDate().before(Calendar.getInstance().getTime())) { //If a schedule event dueDate is before today the event is skipped
+                                if (eventModel.status() == EventStatus.SCHEDULE && eventModel.dueDate() != null && eventModel.dueDate().before(DateUtils.getInstance().getToday())) { //If a schedule event dueDate is before today the event is skipped
                                     dashboardRepository.updateState(eventModel, EventStatus.SKIPPED);
                                 }
                             }
@@ -289,19 +292,15 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     public void onEventSelected(String uid, View sharedView) {
         Fragment teiFragment = TEIDataFragment.getInstance();
         if (teiFragment != null && teiFragment.getContext() != null && teiFragment.isAdded()) {
-           /* Intent intent = new Intent(teiFragment.getContext(), EventDetailActivity.class);
-            Bundle extras = new Bundle();
-            extras.putString("EVENT_UID", uid);
-            extras.putString("TOOLBAR_TITLE", view.getToolbarTitle());
-            extras.putString("TEI_UID", teUid);
-            intent.putExtras(extras);
-            ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(view.getAbstractActivity(), sharedView, "shared_view");
-            teiFragment.startActivityForResult(intent, TEIDataFragment.getEventRequestCode(), options.toBundle());*/
-
-            Intent intent2 = new Intent(teiFragment.getContext(), EventCaptureActivity.class);
-            intent2.putExtras(EventCaptureActivity.getActivityBundle(uid, programUid));
-            intent2.putExtra(Constants.TRACKED_ENTITY_INSTANCE, teUid);
-            teiFragment.startActivityForResult(intent2, TEIDataFragment.getEventRequestCode(), null);
+            /*Intent intent = new Intent(teiFragment.getContext(), EventCaptureActivity.class);
+            intent.putExtras(EventCaptureActivity.getActivityBundle(uid, programUid));
+            intent.putExtra(Constants.TRACKED_ENTITY_INSTANCE, teUid);
+            teiFragment.startActivityForResult(intent, TEIDataFragment.getEventRequestCode(), null);  */
+            Intent intent = new Intent(teiFragment.getContext(), EventInitialActivity.class);
+            intent.putExtras(EventInitialActivity.getBundle(
+                    programUid,uid,EventCreationType.DEFAULT.name(),teUid,null,null,null,dashboardProgramModel.getCurrentEnrollment().uid(),0
+            ));
+            teiFragment.startActivityForResult(intent, TEIDataFragment.getEventRequestCode(), null);
         }
     }
 
@@ -577,13 +576,18 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     }
 
     public void getCatComboOptions(EventModel event) {
-        compositeDisposable.add(metadataRepository.getCategoryComboOptions(dashboardProgramModel.getCurrentProgram().categoryCombo())
+        compositeDisposable.add(
+                    Observable.zip(
+                            metadataRepository.getCategoryComboOptions(dashboardProgramModel.getCurrentProgram().categoryCombo()),
+                            metadataRepository.getCategoryFromCategoryCombo(dashboardProgramModel.getCurrentProgram().categoryCombo()),
+                            Pair::create
+                    )
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(categoryOptionComboModels -> {
+                .subscribe(pair -> {
                             for (ProgramStageModel programStage : dashboardProgramModel.getProgramStages()) {
                                 if (event.programStage().equals(programStage.uid()))
-                                    view.showCatComboDialog(event.uid(), programStage.displayName(), categoryOptionComboModels);
+                                    view.showCatComboDialog(event.uid(), pair.val1().displayName(), pair.val0(), programStage.displayName());
                             }
                         },
                         Timber::e));

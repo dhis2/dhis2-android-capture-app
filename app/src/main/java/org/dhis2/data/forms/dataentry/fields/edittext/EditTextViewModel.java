@@ -68,4 +68,12 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
                 description(), objectStyle(), hint(), maxLines(), InputType.TYPE_CLASS_TEXT, valueType(), warning(), error(),
                 fieldRendering());
     }
+
+    @NonNull
+    @Override
+    public FieldViewModel withEditMode(boolean isEditable) {
+        return new AutoValue_EditTextViewModel(uid(), label(), mandatory(),
+                value(), programStageSection(), null, isEditable, null,
+                description(), objectStyle(), hint(), maxLines(), InputType.TYPE_CLASS_TEXT, valueType(), warning(), error(),
+                fieldRendering());    }
 }

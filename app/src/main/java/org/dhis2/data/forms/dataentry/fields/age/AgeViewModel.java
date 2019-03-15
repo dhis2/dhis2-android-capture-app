@@ -49,4 +49,10 @@ public abstract class AgeViewModel extends FieldViewModel {
     public FieldViewModel withValue(String data) {
         return new AutoValue_AgeViewModel(uid(), label(), programStageSection(), allowFutureDate(), false, optionSet(), warning(), error(), description(), objectStyle(), mandatory(), data);
     }
+
+    @NonNull
+    @Override
+    public FieldViewModel withEditMode(boolean isEditable) {
+        return new AutoValue_AgeViewModel(uid(), label(), programStageSection(), allowFutureDate(), isEditable, optionSet(), warning(), error(), description(), objectStyle(), mandatory(), value());
+    }
 }

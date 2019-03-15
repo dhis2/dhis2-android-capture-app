@@ -303,4 +303,8 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
     public void switchFollowUp(boolean followUp) {
         this.followUp.set(followUp);
     }
+
+    public void displayGenerateEvent(String eventUid) {
+        presenter.displayGenerateEvent(this, eventUid);
+    }
 }

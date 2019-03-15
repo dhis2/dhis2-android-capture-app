@@ -1,5 +1,9 @@
 package org.dhis2.data.qr;
 
+import android.util.Base64;
+
+import java.io.UnsupportedEncodingException;
+
 /**
  * QUADRAM. Created by ppajuelo on 22/05/2018.
  */
@@ -28,7 +32,11 @@ public class QRjson {
         return type;
     }
 
-    public String getData() {
-        return data;
+    public String getData() throws UnsupportedEncodingException {
+        String info;
+        byte[] decodedBytes = Base64.decode(data, Base64.DEFAULT);
+        info = new String(decodedBytes, "UTF-8");
+
+        return info;
     }
 }

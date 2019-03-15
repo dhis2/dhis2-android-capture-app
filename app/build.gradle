@@ -108,6 +108,7 @@ android {
             dimension "default"
             versionCode versions.vCode
             versionName versions.vName
+            setProperty("archivesBaseName", "dhis2-v" + versionName)
         }
         psi {
             applicationId "org.dhis2.psi"
@@ -115,6 +116,7 @@ android {
             dimension "default"
             versionCode 2
             versionName "1.1.0"
+            setProperty("archivesBaseName", "PSI-v" + versionName)
         }
     }
 
@@ -254,7 +256,6 @@ dependencies {
 
     //FIREBASE
     implementation 'com.google.firebase:firebase-core:16.0.7'
-
 
     //Test
 

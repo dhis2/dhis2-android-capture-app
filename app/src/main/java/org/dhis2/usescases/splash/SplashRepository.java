@@ -7,10 +7,5 @@ import io.reactivex.Observable;
  */
 
 public interface SplashRepository {
-
     Observable<String> getIconForFlag();
-
-    Observable<Boolean> checkExpiredEvents();
-
-
 }

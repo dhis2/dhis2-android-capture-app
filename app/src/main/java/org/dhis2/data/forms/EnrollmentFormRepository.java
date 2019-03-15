@@ -92,7 +92,8 @@ class EnrollmentFormRepository implements FormRepository {
             "ProgramStage.reportDateToUse, " +
             "Enrollment.incidentDate, " +
             "Enrollment.enrollmentDate, " +
-            "ProgramStage.periodType \n" +
+            "ProgramStage.periodType, \n" +
+            "ProgramStage.generatedByEnrollmentDate \n" +
             "FROM Enrollment\n" +
             "  JOIN Program ON Enrollment.program = Program.uid\n" +
             "  JOIN ProgramStage ON Program.uid = ProgramStage.program \n" +
@@ -401,6 +402,7 @@ class EnrollmentFormRepository implements FormRepository {
                 Date incidentDate = null;
                 Date enrollmentDate = null;
                 PeriodType periodType = cursor.getString(7) != null ? PeriodType.valueOf(cursor.getString(7)) : null;
+                Boolean generatedByEnrollmentDate = cursor.getInt(8) == 1;
 
                 if (incidentDateString != null)
                     try {
@@ -429,6 +431,10 @@ class EnrollmentFormRepository implements FormRepository {
                         cal.setTime(Calendar.getInstance().getTime());
                         break;
                 }
+
+                if(!generatedByEnrollmentDate && incidentDate != null)
+                    cal.setTime(incidentDate);
+
                 cal.set(Calendar.HOUR_OF_DAY, 0);
                 cal.set(Calendar.MINUTE, 0);
                 cal.set(Calendar.SECOND, 0);
@@ -571,16 +577,17 @@ class EnrollmentFormRepository implements FormRepository {
         }
 
         int optionCount = 0;
-        try {
-            Cursor countCursor = briteDatabase.query("SELECT COUNT (uid) FROM Option WHERE optionSet = ?", optionSetUid);
-            if (countCursor != null) {
-                if (countCursor.moveToFirst())
-                    optionCount = countCursor.getInt(0);
-                countCursor.close();
+        if (optionSetUid != null)
+            try {
+                Cursor countCursor = briteDatabase.query("SELECT COUNT (uid) FROM Option WHERE optionSet = ?", optionSetUid);
+                if (countCursor != null) {
+                    if (countCursor.moveToFirst())
+                        optionCount = countCursor.getInt(0);
+                    countCursor.close();
+                }
+            } catch (Exception e) {
+                Timber.e(e);
             }
-        } catch (Exception e) {
-            Timber.e(e);
-        }
 
         ValueTypeDeviceRenderingModel fieldRendering = null;
         Cursor rendering = briteDatabase.query("SELECT ValueTypeDeviceRendering.* FROM ValueTypeDeviceRendering " +
@@ -627,9 +634,9 @@ class EnrollmentFormRepository implements FormRepository {
                                 .mapToList(ProgramStageModel::create).map(programstages -> Trio.create(programModel.useFirstStageDuringRegistration(), programstages, programModel.trackedEntityType())))
                 .map(data -> {
                     ProgramStageModel stageToOpen = null;
-                    if (data.val0()) {
+                    if (data.val0() && !data.val1().isEmpty()) {
                         stageToOpen = data.val1().get(0);
-                    } else {
+                    } else if(!data.val1().isEmpty()){
                         for (ProgramStageModel programStage : data.val1()) {
                             if (programStage.openAfterEnrollment() && stageToOpen == null)
                                 stageToOpen = programStage;
