@@ -26,6 +26,7 @@ public class SpinnerRow implements Row<SpinnerHolder, SpinnerViewModel> {
     private final boolean isBackgroundTransparent;
     private final String renderType;
     private final LayoutInflater inflater;
+    private boolean isSearchMode = false;
 
     public SpinnerRow(LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor, FlowableProcessor<Trio<String, String, Integer>> processorOptionSet, boolean isBackgroundTransparent) {
         this.processor = processor;
@@ -33,6 +34,7 @@ public class SpinnerRow implements Row<SpinnerHolder, SpinnerViewModel> {
         this.renderType = null;
         this.inflater = layoutInflater;
         this.processorOptionSet = processorOptionSet;
+        this.isSearchMode = true;
     }
 
     public SpinnerRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor,
@@ -48,7 +50,7 @@ public class SpinnerRow implements Row<SpinnerHolder, SpinnerViewModel> {
     @Override
     public SpinnerHolder onCreate(@NonNull ViewGroup parent) {
         ViewDataBinding binding = DataBindingUtil.inflate(inflater, isBackgroundTransparent ? R.layout.form_spinner : R.layout.form_spinner_accent, parent, false);
-        return new SpinnerHolder(binding, processor, processorOptionSet, renderType);
+        return new SpinnerHolder(binding, processor, processorOptionSet, renderType, isSearchMode);
     }
 
     @Override

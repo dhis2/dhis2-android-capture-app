@@ -3,7 +3,6 @@ package org.dhis2.data.forms.dataentry;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
-import androidx.annotation.NonNull;
 import android.util.Log;
 
 import com.squareup.sqlbrite2.BriteDatabase;
@@ -12,6 +11,7 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
+import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
@@ -19,9 +19,11 @@ import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import io.reactivex.Observable;
 import timber.log.Timber;
 
@@ -95,6 +97,24 @@ final class EnrollmentRepository implements DataEntryRepository {
                 .mapToList(this::transform);
     }
 
+    public List<FieldViewModel> fieldList() {
+        List<FieldViewModel> list = new ArrayList<>();
+        Cursor listCursor = briteDatabase.query(QUERY, enrollment);
+        try {
+            listCursor.moveToFirst();
+            do {
+                list.add(transform(listCursor));
+            } while (listCursor.moveToNext());
+
+        } finally {
+            if (listCursor != null)
+                listCursor.close();
+        }
+
+        return list;
+    }
+
+
     @Override
     public Observable<List<OrganisationUnitModel>> getOrgUnits() {
         return briteDatabase.createQuery(OrganisationUnitModel.TABLE, "SELECT * FROM " + OrganisationUnitModel.TABLE)
@@ -122,6 +142,19 @@ final class EnrollmentRepository implements DataEntryRepository {
             dataValue = optionCodeName;
         }
 
+        int optionCount = 0;
+        if (!isEmpty(optionSet))
+            try {
+                Cursor countCursor = briteDatabase.query("SELECT COUNT (uid) FROM Option WHERE optionSet = ?", optionSet);
+                if (countCursor != null) {
+                    if (countCursor.moveToFirst())
+                        optionCount = countCursor.getInt(0);
+                    countCursor.close();
+                }
+            } catch (Exception e) {
+                Timber.e(e);
+            }
+
         if (generated && dataValue == null) {
             try {
                 String teiUid = null;
@@ -133,13 +166,13 @@ final class EnrollmentRepository implements DataEntryRepository {
                     tei.close();
                 }
 
-                if (teiUid != null) { //checks if tei has been deleted
-                    dataValue = d2.popTrackedEntityAttributeReservedValue(uid, pattern == null || pattern.contains("OU") ? null : orgUnitUid);
+                if (teiUid != null) { //checks if tei has been deleted);
+                    dataValue = d2.trackedEntityModule().reservedValueManager.getValue(uid, pattern == null || pattern.contains("OU") ? null : orgUnitUid);
 
                     //Checks if ValueType is Numeric and that it start with a 0, then removes the 0
                     if (valueType == ValueType.NUMBER)
                         while (dataValue.startsWith("0")) {
-                            dataValue = d2.popTrackedEntityAttributeReservedValue(uid,  pattern == null || pattern.contains("OU") ? null : orgUnitUid);
+                            dataValue = d2.trackedEntityModule().reservedValueManager.getValue(uid, pattern == null || pattern.contains("OU") ? null : orgUnitUid);
                         }
 
                     String INSERT = "INSERT INTO TrackedEntityAttributeValue\n" +
@@ -163,15 +196,27 @@ final class EnrollmentRepository implements DataEntryRepository {
         }
 
         ValueTypeDeviceRenderingModel fieldRendering = null;
-        Cursor rendering = briteDatabase.query("SELECT * FROM ValueTypeDeviceRendering WHERE uid = ?", uid);
-        if (rendering != null && rendering.moveToFirst()) {
-            fieldRendering = ValueTypeDeviceRenderingModel.create(cursor);
+        Cursor rendering = briteDatabase.query("SELECT ValueTypeDeviceRendering.* FROM ValueTypeDeviceRendering " +
+                "JOIN ProgramTrackedEntityAttribute ON ProgramTrackedEntityAttribute.uid = ValueTypeDeviceRendering.uid WHERE ProgramTrackedEntityAttribute.trackedEntityAttribute = ?", uid);
+        if (rendering != null) {
+            if (rendering.moveToFirst())
+                fieldRendering = ValueTypeDeviceRenderingModel.create(rendering);
             rendering.close();
+        }
+
+        ObjectStyleModel objectStyle = ObjectStyleModel.builder().build();
+        Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", uid);
+        try {
+            if (objStyleCursor.moveToFirst())
+                objectStyle = ObjectStyleModel.create(objStyleCursor);
+        } finally {
+            if (objStyleCursor != null)
+                objStyleCursor.close();
         }
 
         return fieldFactory.create(uid,
                 label, valueType, mandatory, optionSet, dataValue, null, allowFutureDates,
-                !generated && enrollmentStatus == EnrollmentStatus.ACTIVE, null, description, fieldRendering);
+                !generated && enrollmentStatus == EnrollmentStatus.ACTIVE, null, description, fieldRendering, optionCount, objectStyle);
 
     }
 

@@ -47,9 +47,9 @@ public class ImageRow implements Row<ImageHolder, ImageViewModel> {
 
         Integer height = null;
         Integer parentHeight = parent.getMeasuredHeight() != 0 ? parent.getMeasuredHeight() : parent.getHeight();
-        if (renderType.equals(ProgramStageSectionRenderingType.SEQUENTIAL.name())) {
+        if (renderType!=null && renderType.equals(ProgramStageSectionRenderingType.SEQUENTIAL.name())) {
             height = parentHeight / (count > 2 ? 3 : count);
-        } else if (renderType.equals(ProgramStageSectionRenderingType.MATRIX.name())) {
+        } else if (renderType!=null && renderType.equals(ProgramStageSectionRenderingType.MATRIX.name())) {
             height = parentHeight / (count > 2 ? 2 : count);
         }
 

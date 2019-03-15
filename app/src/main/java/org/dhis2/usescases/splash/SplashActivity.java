@@ -1,6 +1,5 @@
 package org.dhis2.usescases.splash;
 
-import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.view.View;
 
@@ -13,6 +12,7 @@ import org.dhis2.usescases.general.ActivityGlobalAbstract;
 
 import javax.inject.Inject;
 
+import androidx.databinding.DataBindingUtil;
 import io.reactivex.functions.Consumer;
 
 public class SplashActivity extends ActivityGlobalAbstract implements SplashContracts.View {
@@ -24,10 +24,10 @@ public class SplashActivity extends ActivityGlobalAbstract implements SplashCont
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
         AppComponent appComponent = ((App) getApplicationContext()).appComponent();
         ServerComponent serverComponent = ((App) getApplicationContext()).serverComponent();
         appComponent.plus(new SplashModule(serverComponent)).inject(this);
+        super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_splash);
     }
 
@@ -35,7 +35,6 @@ public class SplashActivity extends ActivityGlobalAbstract implements SplashCont
     protected void onResume() {
         super.onResume();
         presenter.init(this);
-        presenter.isUserLoggedIn();
     }
 
     @Override
@@ -47,9 +46,12 @@ public class SplashActivity extends ActivityGlobalAbstract implements SplashCont
     @Override
     public Consumer<Integer> renderFlag() {
         return flag -> {
-            binding.flag.setImageResource(flag);
-            binding.logo.setVisibility(View.GONE);
-            binding.flag.setVisibility(View.VISIBLE);
+            if (flag != -1) {
+                binding.flag.setImageResource(flag);
+                binding.logo.setVisibility(View.GONE);
+                binding.flag.setVisibility(View.VISIBLE);
+            }
+            presenter.isUserLoggedIn();
         };
     }
 }

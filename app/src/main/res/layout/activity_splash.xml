@@ -16,8 +16,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:src="@drawable/sierra_leone"
-            android:visibility="gone" />
+            android:visibility="gone"
+            app:srcCompat="@drawable/sierra_leone" />
 
         <ImageView
             android:id="@+id/logo"

@@ -41,10 +41,10 @@ public class ImageHolder extends FormViewHolder {
                 String code = labelAndCode[1];
                 if (imageSelector.get().equals(label)) {
                     value = null;
-                    imageSelector.set("");
+                    currentSelector.set("");
                 } else {
                     value = code;
-                    imageSelector.set(code);
+                    currentSelector.set(label);
                 }
 
                 processor.onNext(RowAction.create(uids[0], value));
@@ -68,8 +68,8 @@ public class ImageHolder extends FormViewHolder {
         binding.setCurrentSelection(currentSelector);
 
         String[] uids = viewModel.uid().split("\\.");
-        Bindings.setObjectStyle(binding.icon, itemView, uids[1]);
-        Bindings.setObjectStyle(binding.label, itemView, uids[1]);
+        Bindings.setObjectStyle(binding.icon, itemView, viewModel.objectStyle());
+        Bindings.setObjectStyle(binding.label, itemView, viewModel.objectStyle());
 
         if (viewModel.value() != null && !viewModel.value().equals(currentSelector.get()))
             currentSelector.set(viewModel.value());

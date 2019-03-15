@@ -22,6 +22,7 @@ import org.dhis2.usescases.teiDashboard.eventDetail.EventDetailActivity;
 import org.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
 import org.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
@@ -108,8 +109,8 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
-                            (dashboardProgramModel) -> {
-                                this.dashboardProgramModel = dashboardProgramModel;
+                            dashboardModel -> {
+                                this.dashboardProgramModel = dashboardModel;
                                 this.programWritePermission = dashboardProgramModel.getCurrentProgram().accessDataWrite();
                                 this.teType = dashboardProgramModel.getTei().trackedEntityType();
                                 view.setData(dashboardProgramModel);
@@ -127,11 +128,16 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                     metadataRepository.getTeiActivePrograms(teUid),
                     metadataRepository.getTEIEnrollments(teUid),
                     DashboardProgramModel::new)
+                    .flatMap(dashboardProgramModel1 -> metadataRepository.getObjectStylesForPrograms(dashboardProgramModel1.getEnrollmentProgramModels())
+                    .map(stringObjectStyleMap -> {
+                        dashboardProgramModel1.setProgramsObjectStyles(stringObjectStyleMap);
+                        return dashboardProgramModel1;
+                    }))
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
-                            dashboardProgramModel -> {
-                                this.dashboardProgramModel = dashboardProgramModel;
+                            dashboardModel -> {
+                                this.dashboardProgramModel = dashboardModel;
                                 this.teType = dashboardProgramModel.getTei().trackedEntityType();
                                 view.setData(dashboardProgramModel);
                             },
@@ -151,7 +157,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                 dashboardRepository.getTEIEnrollmentEvents(programUid, teUid)
                         .map(eventModels -> {
                             for (EventModel eventModel : eventModels) {
-                                if (eventModel.status() == EventStatus.SCHEDULE && eventModel.dueDate() != null && eventModel.dueDate().before(Calendar.getInstance().getTime())) { //If a schedule event dueDate is before today the event is skipped
+                                if (eventModel.status() == EventStatus.SCHEDULE && eventModel.dueDate() != null && eventModel.dueDate().before(DateUtils.getInstance().getToday())) { //If a schedule event dueDate is before today the event is skipped
                                     dashboardRepository.updateState(eventModel, EventStatus.SKIPPED);
                                 }
                             }
@@ -440,11 +446,11 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                         Observable.fromIterable(indicators)
                                 .filter(indicator -> indicator.displayInForm())
                                 .map(indicator -> {
-                                    String indcatorValue = d2.evaluateProgramIndicator(
+                                    String indicatorValue = d2.programModule().programIndicatorEngine.getProgramIndicatorValue(
                                             dashboardProgramModel.getCurrentEnrollment().uid(),
                                             null,
                                             indicator.uid());
-                                    return Pair.create(indicator, indcatorValue == null ? "" : indcatorValue);
+                                    return Pair.create(indicator, indicatorValue == null ? "" : indicatorValue);
                                 })
                                 .filter(pair -> !pair.val1().isEmpty())
                                 .flatMap(pair -> dashboardRepository.getLegendColorForIndicator(pair.val0(), pair.val1()))
@@ -572,13 +578,18 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     }
 
     public void getCatComboOptions(EventModel event) {
-        compositeDisposable.add(metadataRepository.getCategoryComboOptions(dashboardProgramModel.getCurrentProgram().categoryCombo())
+        compositeDisposable.add(
+                    Observable.zip(
+                            metadataRepository.getCategoryComboOptions(dashboardProgramModel.getCurrentProgram().categoryCombo()),
+                            metadataRepository.getCategoryFromCategoryCombo(dashboardProgramModel.getCurrentProgram().categoryCombo()),
+                            Pair::create
+                    )
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(categoryOptionComboModels -> {
+                .subscribe(pair -> {
                             for (ProgramStageModel programStage : dashboardProgramModel.getProgramStages()) {
                                 if (event.programStage().equals(programStage.uid()))
-                                    view.showCatComboDialog(event.uid(), programStage.displayName(), categoryOptionComboModels);
+                                    view.showCatComboDialog(event.uid(), pair.val1().displayName(), pair.val0(), programStage.displayName());
                             }
                         },
                         Timber::e));

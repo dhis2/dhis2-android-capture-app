@@ -77,6 +77,7 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
         binding.sectionSelector.setIsLastPosition(isLastPosition);
         sectionSelectorAdapter = new SectionSelectorAdapter(activity.getPresenter());
         binding.sectionRecycler.setAdapter(sectionSelectorAdapter);
+        binding.progress.setVisibility(View.VISIBLE);
         this.flowableProcessor = PublishProcessor.create();
         this.flowableOptions = PublishProcessor.create();
 
@@ -94,14 +95,16 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
 
         });
 
+        activity.getPresenter().initCompletionPercentage(sectionSelectorAdapter.completionPercentage());
+//        activity.getPresenter().subscribeToSection();
+
         return binding.getRoot();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        activity.getPresenter().initCompletionPercentage(sectionSelectorAdapter.completionPercentage());
-        activity.getPresenter().subscribeToSection();
+
     }
 
     public void setSectionTitle(DataEntryArguments arguments, FormSectionViewModel formSectionViewModel) {
@@ -131,6 +134,9 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
 
     private void setUpRecyclerView(DataEntryArguments arguments) {
 
+        if(!binding.progress.isShown())
+            binding.progress.setVisibility(View.VISIBLE);
+
         dataEntryAdapter = new DataEntryAdapter(LayoutInflater.from(activity),
                 activity.getSupportFragmentManager(), arguments,
                 activity.getPresenter().getOrgUnits(),
@@ -153,7 +159,9 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
 
     @NonNull
     public void showFields(List<FieldViewModel> updates) {
-            if (currentSection.equals("NO_SECTION") ||
+        binding.progress.setVisibility(View.GONE);
+
+        if (currentSection.equals("NO_SECTION") ||
                     (!updates.isEmpty() && updates.get(0).programStageSection().equals(currentSection))) {
                 dataEntryAdapter.swap(updates);
                 int completedValues = 0;

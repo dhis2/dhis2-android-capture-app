@@ -1,15 +1,15 @@
 package org.dhis2.data.forms.dataentry;
 
-import androidx.annotation.NonNull;
-import android.util.Log;
-
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
+import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.schedulers.SchedulerProvider;
+import org.dhis2.data.tuples.Trio;
 import org.dhis2.utils.CodeGenerator;
 import org.dhis2.utils.Result;
+import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.rules.models.RuleAction;
@@ -30,13 +30,15 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
+import androidx.annotation.NonNull;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.processors.FlowableProcessor;
+import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
@@ -63,7 +65,9 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
     @NonNull
     private final CompositeDisposable disposable;
     private DataEntryView dataEntryView;
-    private HashMap<String, FieldViewModel> currentFieldViewModels;
+    private Map<String, FieldViewModel> currentFieldViewModels;
+    private FlowableProcessor<RowAction> assignProcessor;
+    private FlowableProcessor<Boolean> requestListProcessor;
 
     DataEntryPresenterImpl(@NonNull CodeGenerator codeGenerator,
                            @NonNull DataEntryStore dataEntryStore,
@@ -78,49 +82,74 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
         this.schedulerProvider = schedulerProvider;
         this.disposable = new CompositeDisposable();
         this.metadataRepository = metadataRepository;
+        this.currentFieldViewModels = new HashMap<>();
+        this.assignProcessor = PublishProcessor.create();
+        this.requestListProcessor = PublishProcessor.create();
     }
 
     @Override
     public void onAttach(@NonNull DataEntryView dataEntryView) {
         this.dataEntryView = dataEntryView;
-        Observable<List<FieldViewModel>> fieldsFlowable = dataEntryRepository.list();
-        Flowable<Result<RuleEffect>> ruleEffectFlowable = ruleEngineRepository.calculate()
-                .subscribeOn(schedulerProvider.computation()).onErrorReturn(throwable -> Result.failure(new Exception(throwable)));
+//        Observable<List<FieldViewModel>> fieldsFlowable = dataEntryRepository.list().doOnNext(data -> Timber.d("NEW LIST OF DATA WITH SIZE %s", data.size()));
+        Observable<List<FieldViewModel>> fieldsFlowable = Observable.defer(() -> Observable.just(dataEntryRepository.fieldList()).doOnNext(data -> Timber.d("NEW LIST OF DATA WITH SIZE %s", data.size())));
+        Flowable<Result<RuleEffect>> ruleEffectFlowable = ruleEngineRepository.calculate().doOnNext(data -> Timber.d("NEW RULE CALCULATION"))
+                .onErrorReturn(throwable -> Result.failure(new Exception(throwable)));
 
         // Combining results of two repositories into a single stream.
         Flowable<List<FieldViewModel>> viewModelsFlowable = Flowable.zip(
                 fieldsFlowable.toFlowable(BackpressureStrategy.LATEST), ruleEffectFlowable, this::applyEffects);
 
-        disposable.add(viewModelsFlowable
-                .subscribeOn(schedulerProvider.io())//check if computation does better than io
-                .observeOn(schedulerProvider.ui())
-                .subscribe(dataEntryView.showFields(),
-                        Timber::d
-                ));
+        disposable.add(
+                requestListProcessor
+                        .startWith(true)
+                        .flatMap(newRequest -> viewModelsFlowable)
+                        .subscribeOn(schedulerProvider.computation())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe(dataEntryView.showFields(),
+                                Timber::d
+                        ));
 
-        disposable.add(dataEntryView.rowActions().debounce(500, TimeUnit.MILLISECONDS) //TODO: Check debounce time
-                .subscribeOn(schedulerProvider.io())
+        disposable.add(dataEntryView.rowActions()
+                .subscribeOn(schedulerProvider.computation())
                 .observeOn(schedulerProvider.ui())
                 .switchMap(action ->
                         dataEntryStore.save(action.id(), action.value()).
                                 map(result -> {
                                     if (result == 5)
                                         dataEntryStore.save(action.id(), null);
-                                    return result;
+                                    return Trio.create(result, action.id(), action.value());
                                 })
-                ).subscribe(result -> {
-                            if (result == -5)
+                ).subscribe(resultUidValue -> {
+                            if (resultUidValue.val0() == -5)
                                 dataEntryView.showMessage(R.string.unique_warning);
-                            else
-                                Timber.d(result.toString());
+                            else {
+                                Timber.d("Value %s saved for uid %s", resultUidValue.val2(), resultUidValue.val1());
+                                requestListProcessor.onNext(true);
+                            }
                         },
                         Timber::d)
         );
 
         disposable.add(
+                assignProcessor
+                        .distinctUntilChanged()
+                        .flatMap(rowAction -> {
+                                    Timber.d("Assigned Value %s saved for field %s", rowAction.value(), rowAction.id());
+                                    return dataEntryStore.save(rowAction.id(), rowAction.value());
+                                }
+                        )
+                        .subscribeOn(schedulerProvider.computation())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe(
+                                a -> Timber.d("Value assigned saved with response %s", a),
+                                Timber::e
+                        )
+        );
+
+        disposable.add(
                 dataEntryView.optionSetActions()
                         .flatMap(
-                                data -> metadataRepository.searchOptions(data.val0(), data.val1(),data.val2()).toFlowable(BackpressureStrategy.LATEST)
+                                data -> metadataRepository.searchOptions(data.val0(), data.val1(), data.val2()).toFlowable(BackpressureStrategy.LATEST)
                         )
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
@@ -131,17 +160,7 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
     }
 
     private void save(String uid, String value) {
-        CompositeDisposable saveDisposable = new CompositeDisposable();
-        if (!uid.isEmpty())
-            saveDisposable.add(
-                    dataEntryStore.save(uid, value)
-                            .subscribeOn(Schedulers.computation())
-                            .observeOn(Schedulers.io())
-                            .subscribe(
-                                    data -> Log.d("SAVED_DATA", "DONE"),
-                                    Timber::e,
-                                    saveDisposable::clear
-                            ));
+        assignProcessor.onNext(RowAction.create(uid, value));
     }
 
     @Override
@@ -167,11 +186,11 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
         Map<String, FieldViewModel> fieldViewModels = toMap(viewModels);
         applyRuleEffects(fieldViewModels, calcResult);
 
-        if (this.currentFieldViewModels == null)
-            this.currentFieldViewModels = new HashMap<>();
-        this.currentFieldViewModels.putAll(fieldViewModels);
+        this.currentFieldViewModels.clear();
+        this.currentFieldViewModels = fieldViewModels;
 
         return new ArrayList<>(fieldViewModels.values());
+
     }
 
     @NonNull
@@ -193,9 +212,9 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
 
                 if (model != null)
                     fieldViewModels.put(showWarning.field(),
-                            model.withWarning(showWarning.content()));
+                            model.withWarning(showWarning.content() + ruleEffect.data()));
                 else
-                    Log.d("PR_FIELD_ERROR", String.format("Field with uid %s is missing", showWarning.field()));
+                    Timber.d("Field with uid %s is missing", showWarning.field());
 
             } else if (ruleAction instanceof RuleActionShowError) {
                 RuleActionShowError showError = (RuleActionShowError) ruleAction;
@@ -203,18 +222,18 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
 
                 if (model != null)
                     fieldViewModels.put(showError.field(),
-                            model.withError(showError.content()));
+                            model.withError(showError.content() + ruleEffect.data()));
 
             } else if (ruleAction instanceof RuleActionHideField) {
                 RuleActionHideField hideField = (RuleActionHideField) ruleAction;
                 fieldViewModels.remove(hideField.field());
-                dataEntryStore.save(hideField.field(), null);
+                save(hideField.field(), null);
             } else if (ruleAction instanceof RuleActionDisplayText) {
                 RuleActionDisplayText displayText = (RuleActionDisplayText) ruleAction;
                 String uid = displayText.content();
 
                 EditTextViewModel textViewModel = EditTextViewModel.create(uid,
-                        displayText.content(), false, ruleEffect.data(), "Information", 1, ValueType.TEXT, null, false, null, null);
+                        displayText.content(), false, ruleEffect.data(), "Information", 1, ValueType.TEXT, null, false, null, null, ObjectStyleModel.builder().build());
 
                 if (this.currentFieldViewModels == null ||
                         !this.currentFieldViewModels.containsKey(uid)) {
@@ -225,14 +244,6 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
                 } else {
 
                 }
-
-            /*} else if (ruleAction instanceof RuleActionDisplayKeyValuePair) { TODO: 18/10/2018 disabled for now
-                String uid = codeGenerator.generate();
-                RuleActionDisplayKeyValuePair displayKeyValuePair = (RuleActionDisplayKeyValuePair) ruleAction;
-                EditTextViewModel textViewModel = EditTextViewModel.create(uid,
-                        displayKeyValuePair.content(), false, ruleEffect.data(), "Information", 1, ValueType.TEXT, null, false, null);
-                fieldViewModels.put(uid, textViewModel);*/
-
             } else if (ruleAction instanceof RuleActionHideSection) {
                 RuleActionHideSection hideSection = (RuleActionHideSection) ruleAction;
                 dataEntryView.removeSection(hideSection.programStageSection());
@@ -251,7 +262,6 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
                     fieldViewModels.put(assign.field(), fieldViewModels.get(assign.field()).withValue(ruleEffect.data()));
 
                 }
-
 
             } else if (ruleAction instanceof RuleActionCreateEvent) {
                 RuleActionCreateEvent createEvent = (RuleActionCreateEvent) ruleAction;

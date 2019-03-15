@@ -1,31 +1,27 @@
 package org.dhis2.data.user;
 
-import androidx.annotation.NonNull;
-
 import com.squareup.sqlbrite2.BriteDatabase;
 
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
+import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.user.UserCredentialsModel;
 import org.hisp.dhis.android.core.user.UserModel;
 
-import java.util.List;
-
+import androidx.annotation.NonNull;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
-import io.reactivex.Observable;
 
 public class UserRepositoryImpl implements UserRepository {
     private static final String SELECT_USER = "SELECT * FROM " +
             UserModel.TABLE + " LIMIT 1";
     private static final String SELECT_USER_CREDENTIALS = "SELECT * FROM " +
             UserCredentialsModel.TABLE + " LIMIT 1";
-    private static final String SELECT_USER_ORG_UNITS = "SELECT * FROM " +
-            OrganisationUnitModel.TABLE;
 
     private final BriteDatabase briteDatabase;
+    private final D2 d2;
 
-    UserRepositoryImpl(@NonNull BriteDatabase briteDatabase) {
+    UserRepositoryImpl(@NonNull BriteDatabase briteDatabase, D2 d2) {
         this.briteDatabase = briteDatabase;
+        this.d2 = d2;
     }
 
     @NonNull
@@ -43,13 +39,5 @@ public class UserRepositoryImpl implements UserRepository {
         return briteDatabase
                 .createQuery(UserModel.TABLE, SELECT_USER)
                 .mapToOne(UserModel::create).toFlowable(BackpressureStrategy.BUFFER);
-    }
-
-    @NonNull
-    @Override
-    public Observable<List<OrganisationUnitModel>> myOrgUnits() {
-        return briteDatabase
-                .createQuery(OrganisationUnitModel.TABLE, SELECT_USER_ORG_UNITS)
-                .mapToList(OrganisationUnitModel::create);
     }
 }

@@ -3,8 +3,6 @@ package org.dhis2.data.forms.dataentry;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
@@ -23,9 +21,12 @@ import java.util.Objects;
 
 import javax.annotation.Nonnull;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 
+import static android.text.TextUtils.isEmpty;
 import static org.dhis2.data.forms.dataentry.DataEntryStore.valueType.ATTR;
 import static org.hisp.dhis.android.core.utils.StoreUtils.sqLiteBind;
 
@@ -90,7 +91,7 @@ public final class AttributeValueStore implements DataEntryStore {
             valueType type = getValueType(uid);
             return Flowable.just(Pair.create(currentValue(uid, type), type));
         })
-                .filter(currentValueAndType -> !Objects.equals(currentValueAndType.val0(), value))
+                .filter(currentValueAndType -> currentValueAndType.val1() == valueType.ATTR && !Objects.equals(currentValueAndType.val0(), value == null ? "" : value))
                 .flatMap(currentValueAndType -> {
                     if (checkUnique(uid, value)) {
                         if (value == null)
@@ -138,9 +139,11 @@ public final class AttributeValueStore implements DataEntryStore {
             }
             String eventUid = eventUid(attribute);
             // ToDo: write test cases for different events
-            return (long) briteDatabase.update(TrackedEntityDataValueModel.TABLE, dataValue,
-                    TrackedEntityDataValueModel.Columns.DATA_ELEMENT + " = ? AND " +
-                            TrackedEntityDataValueModel.Columns.EVENT + " = ?", attribute == null ? "" : attribute, eventUid == null ? "" : eventUid);
+            if (!isEmpty(eventUid))
+                return (long) briteDatabase.update(TrackedEntityDataValueModel.TABLE, dataValue,
+                        TrackedEntityDataValueModel.Columns.DATA_ELEMENT + " = ? AND " +
+                                TrackedEntityDataValueModel.Columns.EVENT + " = ?", attribute == null ? "" : attribute, eventUid == null ? "" : eventUid);
+            else return -1;
         }
     }
 
@@ -160,7 +163,7 @@ public final class AttributeValueStore implements DataEntryStore {
         if (valueType == ATTR)
             cursor = briteDatabase.query("SELECT TrackedEntityAttributeValue.value FROM TrackedEntityAttributeValue " +
                     "JOIN Enrollment ON Enrollment.trackedEntityInstance = TrackedEntityAttributeValue.trackedEntityInstance " +
-                    "WHERE TrackedEntityAttributeValue.trackedEntityAttribute = ? AND Enrollment.trackedEntityInstance = ?", uid, enrollment);
+                    "WHERE TrackedEntityAttributeValue.trackedEntityAttribute = ? AND Enrollment.uid = ?", uid, enrollment);
         else
             cursor = briteDatabase.query("SELECT TrackedEntityDataValue.value FROM TrackedEntityDataValue " +
                     "JOIN Event ON Event.uid = TrackedEntityDataValue.event " +
@@ -180,8 +183,9 @@ public final class AttributeValueStore implements DataEntryStore {
 
     private long insert(@NonNull String attribute, @NonNull String value, valueType valueType) {
         if (valueType == ATTR) {
-            String created = BaseIdentifiableObject.DATE_FORMAT
-                    .format(Calendar.getInstance().getTime());
+            Date date = Calendar.getInstance().getTime();
+            String created = BaseIdentifiableObject.DATE_FORMAT.format(date);
+/*
 
             sqLiteBind(insertStatement, 1, created == null ? "" : created);
             sqLiteBind(insertStatement, 2, created == null ? "" : created);
@@ -191,22 +195,48 @@ public final class AttributeValueStore implements DataEntryStore {
 
             long inserted = briteDatabase.executeInsert(
                     TrackedEntityAttributeValueModel.TABLE, insertStatement);
-            insertStatement.clearBindings();
+            insertStatement.clearBindings();*/
 
-            return inserted;
+            Cursor teiCursor = briteDatabase.query(SELECT_TEI, enrollment);
+            String teiUid = null;
+
+            try {
+                if (teiCursor.moveToFirst())
+                    teiUid = TrackedEntityInstanceModel.create(teiCursor).uid();
+            } finally {
+                if (teiCursor != null)
+                    teiCursor.close();
+            }
+
+            if (teiUid != null) {
+                TrackedEntityAttributeValueModel attributeValueModel =
+                        TrackedEntityAttributeValueModel.builder()
+                                .created(date)
+                                .lastUpdated(date)
+                                .trackedEntityAttribute(attribute)
+                                .trackedEntityInstance(teiUid)
+                                .value(value)
+                                .build();
+
+                return briteDatabase.insert(TrackedEntityAttributeValueModel.TABLE, attributeValueModel.toContentValues());
+            } else
+                return -1;
         } else {
             Date created = Calendar.getInstance().getTime();
             String eventUid = eventUid(attribute);
-            TrackedEntityDataValueModel dataValueModel =
-                    TrackedEntityDataValueModel.builder()
-                            .created(created)
-                            .lastUpdated(created)
-                            .dataElement(attribute)
-                            .event(eventUid)
-                            .value(value)
-                            .build();
-            return briteDatabase.insert(TrackedEntityDataValueModel.TABLE,
-                    dataValueModel.toContentValues());
+            if (!isEmpty(eventUid)) {
+                TrackedEntityDataValueModel dataValueModel =
+                        TrackedEntityDataValueModel.builder()
+                                .created(created)
+                                .lastUpdated(created)
+                                .dataElement(attribute)
+                                .event(eventUid)
+                                .value(value)
+                                .build();
+                return briteDatabase.insert(TrackedEntityDataValueModel.TABLE,
+                        dataValueModel.toContentValues());
+            } else
+                return -1;
         }
     }
 
@@ -221,10 +251,13 @@ public final class AttributeValueStore implements DataEntryStore {
             return deleted;
         } else {
             String eventUid = eventUid(attribute);
-            return (long) briteDatabase.delete(TrackedEntityDataValueModel.TABLE,
-                    TrackedEntityDataValueModel.Columns.DATA_ELEMENT + " = ? AND " +
-                            TrackedEntityDataValueModel.Columns.EVENT + " = ?",
-                    attribute == null ? "" : attribute, eventUid == null ? "" : eventUid);
+            if (!isEmpty(eventUid))
+                return (long) briteDatabase.delete(TrackedEntityDataValueModel.TABLE,
+                        TrackedEntityDataValueModel.Columns.DATA_ELEMENT + " = ? AND " +
+                                TrackedEntityDataValueModel.Columns.EVENT + " = ?",
+                        attribute == null ? "" : attribute, eventUid == null ? "" : eventUid);
+            else
+                return -1;
         }
 
     }
@@ -243,7 +276,7 @@ public final class AttributeValueStore implements DataEntryStore {
     }
 
     private boolean checkUnique(String attribute, String value) {
-        if(attribute!=null && value!=null) {
+        if (attribute != null && value != null) {
             Cursor uniqueCursor = briteDatabase.query("SELECT TrackedEntityAttributeValue.value FROM TrackedEntityAttributeValue" +
                     " JOIN TrackedEntityAttribute ON TrackedEntityAttribute.uid = TrackedEntityAttributeValue.trackedEntityAttribute" +
                     " WHERE TrackedEntityAttribute.uid = ? AND" +
@@ -257,7 +290,7 @@ public final class AttributeValueStore implements DataEntryStore {
                 uniqueCursor.close();
                 return !hasValue;
             }
-        }else
+        } else
             return true;
     }
 

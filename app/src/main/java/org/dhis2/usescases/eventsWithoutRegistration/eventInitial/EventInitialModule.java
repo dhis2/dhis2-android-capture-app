@@ -1,8 +1,8 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventInitial;
 
 import android.content.Context;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+
+import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.forms.EventRepository;
@@ -12,14 +12,11 @@ import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryRepository;
 import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryRepositoryImpl;
-import org.dhis2.usescases.programDetail.ProgramRepository;
-import org.dhis2.usescases.programDetail.ProgramRepositoryImpl;
 import org.dhis2.utils.CodeGenerator;
-import com.squareup.sqlbrite2.BriteDatabase;
-
-import org.hisp.dhis.android.core.data.database.DatabaseAdapter;
 import org.hisp.dhis.rules.RuleExpressionEvaluator;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import dagger.Module;
 import dagger.Provides;
 
@@ -77,11 +74,5 @@ public class EventInitialModule {
     @PerActivity
     EventInitialRepository eventDetailRepository(@NonNull CodeGenerator codeGenerator, BriteDatabase briteDatabase) {
         return new EventInitialRepositoryImpl(codeGenerator, briteDatabase, eventUid);
-    }
-
-    @Provides
-    @PerActivity
-    ProgramRepository homeRepository(BriteDatabase briteDatabase) {
-        return new ProgramRepositoryImpl(briteDatabase);
     }
 }

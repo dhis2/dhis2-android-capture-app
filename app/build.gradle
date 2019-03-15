@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.google.firebase.firebase-perf'
 apply plugin: 'kotlin-android'
 apply plugin: 'io.fabric'
 
@@ -107,6 +108,7 @@ android {
             dimension "default"
             versionCode versions.vCode
             versionName versions.vName
+            setProperty("archivesBaseName", "dhis2-v" + versionName)
         }
         psi {
             applicationId "org.dhis2.psi"
@@ -114,6 +116,7 @@ android {
             dimension "default"
             versionCode 2
             versionName "1.1.0"
+            setProperty("archivesBaseName", "PSI-v" + versionName)
         }
     }
 
@@ -254,7 +257,6 @@ dependencies {
     //FIREBASE
     implementation 'com.google.firebase:firebase-core:16.0.7'
 
-
     //Test
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -308,6 +310,9 @@ dependencies {
     implementation "com.github.pwittchen:rxbiometric:0.1.0"
 
     implementation "de.adorsys.android:securestoragelibrary:${libraries.latestSecureStorageVersion}"
+
+    implementation 'com.google.firebase:firebase-perf:16.2.3'
+
 }
 
 apply plugin: 'kotlin-kapt'

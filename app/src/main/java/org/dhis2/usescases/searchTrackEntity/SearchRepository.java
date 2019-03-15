@@ -8,6 +8,7 @@ import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
@@ -50,4 +51,6 @@ public interface SearchRepository {
     Flowable<List<SearchTeiModel>> transformIntoModel(List<SearchTeiModel> teiList, @Nullable ProgramModel selectedProgram);
 
     String getProgramColor(@NonNull String programUid);
+
+    Observable<List<TrackedEntityAttributeModel>> trackedEntityTypeAttributes();
 }

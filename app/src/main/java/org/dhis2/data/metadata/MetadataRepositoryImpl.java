@@ -2,55 +2,50 @@ package org.dhis2.data.metadata;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.util.Base64;
 
 import com.squareup.sqlbrite2.BriteDatabase;
-import com.squareup.sqlbrite2.SqlBrite.Query;
 
 import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
+import org.hisp.dhis.android.core.category.CategoryModel;
+import org.hisp.dhis.android.core.category.CategoryOptionCombo;
+import org.hisp.dhis.android.core.category.CategoryOptionComboCategoryOptionLinkTableInfo;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
-import org.hisp.dhis.android.core.common.State;
-import org.hisp.dhis.android.core.dataelement.DataElementModel;
-import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
-import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.maintenance.D2ErrorTableInfo;
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.option.OptionSetModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.program.ProgramStageDataElementModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
-import org.hisp.dhis.android.core.relationship.RelationshipTypeModel;
 import org.hisp.dhis.android.core.resource.ResourceModel;
 import org.hisp.dhis.android.core.settings.SystemSettingModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeModel;
 import org.hisp.dhis.android.core.user.AuthenticatedUserModel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -61,35 +56,10 @@ import static android.text.TextUtils.isEmpty;
 
 public class MetadataRepositoryImpl implements MetadataRepository {
 
-    private static final String SELECT_PROGRMAS_TO_ENROLL = String.format(
-            "SELECT * FROM %s WHERE %s.%s = ?",
-            ProgramModel.TABLE, ProgramModel.TABLE, ProgramModel.Columns.TRACKED_ENTITY_TYPE
-    );
-
     private static final String SELECT_TEI_ENROLLMENTS = String.format(
             "SELECT * FROM %s WHERE %s.%s =",
             EnrollmentModel.TABLE,
             EnrollmentModel.TABLE, EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE);
-
-    private static final String SELECT_ENROLLMENT_EVENTS = String.format(
-            "SELECT * FROM %s WHERE %s.%s != %s AND %s.%s = ? LIMIT 1",
-            EventModel.TABLE,
-            EventModel.TABLE,
-            EventModel.Columns.STATE,
-            State.TO_DELETE,
-            EventModel.TABLE,
-            EventModel.Columns.ENROLLMENT);
-
-    private static final String SELECT_ENROLLMENT_LAST_EVENT = String.format(
-            "SELECT %s.* FROM %s JOIN %s ON %s.%s = %s.%s WHERE %s.%s = ? ORDER BY %s.%s AND %s.%s != %s DESC LIMIT 1",
-            EventModel.TABLE, EventModel.TABLE, EnrollmentModel.TABLE, EnrollmentModel.TABLE, EnrollmentModel.Columns.UID, EventModel.TABLE, EventModel.Columns.ENROLLMENT,
-            EnrollmentModel.TABLE, EnrollmentModel.Columns.UID, EventModel.TABLE, EventModel.Columns.EVENT_DATE, EventModel.TABLE, EventModel.Columns.STATE, State.TO_DELETE
-    );
-
-    private Set<String> SELECT_ENROLLMENT_LAST_EVENT_TABLES = new HashSet<>(Arrays.asList(EventModel.TABLE, EnrollmentModel.TABLE));
-
-    private final String PROGRAM_LIST_QUERY = String.format("SELECT * FROM %s WHERE ",
-            ProgramModel.TABLE);
 
     private final String ACTIVE_TEI_PROGRAMS = String.format(
             " SELECT %s.* FROM %s " +
@@ -132,13 +102,6 @@ public class MetadataRepositoryImpl implements MetadataRepository {
 
     private Set<String> TEI_ORG_UNIT_TABLES = new HashSet<>(Arrays.asList(OrganisationUnitModel.TABLE, TrackedEntityInstanceModel.TABLE));
 
-    private final String ORG_UNIT_DATE_QUERY = String.format(
-            "SELECT * FROM %s " +
-                    "WHERE %s.%s < ? AND %s.%s > ?",
-            OrganisationUnitModel.TABLE,
-            OrganisationUnitModel.TABLE, OrganisationUnitModel.Columns.OPENING_DATE, OrganisationUnitModel.TABLE, OrganisationUnitModel.Columns.CLOSED_DATE
-    );
-
     private final String PROGRAM_TRACKED_ENTITY_ATTRIBUTES_QUERY = String.format("SELECT * FROM %s WHERE %s.%s = ",
             ProgramTrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.Columns.PROGRAM);
 
@@ -151,74 +114,33 @@ public class MetadataRepositoryImpl implements MetadataRepository {
             TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.Columns.DISPLAY_IN_LIST_NO_PROGRAM, TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.Columns.UID);
     private Set<String> PROGRAM_TRACKED_ENTITY_ATTRIBUTES_NO_PROGRAM_TABLES = new HashSet<>(Arrays.asList(TrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.TABLE));
 
-    private final String PROGRAM_TRACKED_ENTITY_ATTRIBUTES_VALUES_QUERY = String.format(
-            "SELECT %s.* FROM %s " +
-                    "JOIN %s ON %s.%s = %s.%s " +
-                    "WHERE %s.%s = ? AND %s.%s <> '0' ORDER BY %s.%s ASC",
-            TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.TABLE,
-            TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.Columns.UID, TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_ATTRIBUTE,
-            TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_INSTANCE,
-            TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.Columns.SORT_ORDER_IN_LIST_NO_PROGRAM,
-            TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.Columns.SORT_ORDER_IN_LIST_NO_PROGRAM
-    );
-    private final Set<String> ATTR_VALUE_TABLES = new HashSet<>(Arrays.asList(TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeModel.TABLE));
-
-    private final String PROGRAM_TRACKED_ENTITY_ATTRIBUTES_VALUES_PROGRAM_QUERY = String.format(
-            "SELECT %s.* FROM %s " +
-                    "JOIN %s ON %s.%s = %s.%s " +
-                    "WHERE %s.%s = ? AND %s.%s = ? AND " +
-                    "%s.%s = 1 " +
-                    "ORDER BY %s.%s ASC",
-            TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.TABLE,
-            ProgramTrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.Columns.TRACKED_ENTITY_ATTRIBUTE, TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_ATTRIBUTE,
-            ProgramTrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.Columns.PROGRAM,
-            TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_INSTANCE,
-            ProgramTrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.Columns.DISPLAY_IN_LIST,
-            ProgramTrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.Columns.SORT_ORDER);
-    private final Set<String> ATTR_PROGRAM_VALUE_TABLES = new HashSet<>(Arrays.asList(TrackedEntityAttributeValueModel.TABLE, ProgramTrackedEntityAttributeModel.TABLE));
-
-    private final String TE_ATTRIBUTE_QUERY = String.format(
-            "SELECT * FROM %s WHERE %s.%s = ? LIMIT 1",
-            TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.Columns.UID);
-
-    private final String RELATIONSHIP_TYPE_QUERY = String.format("SELECT %s.* FROM %s " +
-                    "JOIN %s ON %s.%s = %s.%s  " +
-                    "WHERE %s.%s = ",
-            RelationshipTypeModel.TABLE, RelationshipTypeModel.TABLE,
-            ProgramModel.TABLE, ProgramModel.TABLE, ProgramModel.Columns.RELATIONSHIP_TYPE, RelationshipTypeModel.TABLE, RelationshipTypeModel.Columns.UID,
-            ProgramModel.TABLE, ProgramModel.Columns.UID);
-
-    private Set<String> RELATIONSHIP_TYPE_TABLES = new HashSet<>(Arrays.asList(RelationshipTypeModel.TABLE, ProgramModel.TABLE));
-
-    private final String RELATIONSHIP_TYPE_LIST_QUERY = String.format("SELECT * FROM %s ",
-            RelationshipTypeModel.TABLE);
-
-    private final String DATA_ELEMENT_QUERY = String.format("SELECT * FROM %s WHERE %s.%s = ",
-            DataElementModel.TABLE, DataElementModel.TABLE, DataElementModel.Columns.UID);
-
-
     private final String SELECT_PROGRAM_STAGE = String.format("SELECT * FROM %s WHERE %s.%s = ",
             ProgramStageModel.TABLE, ProgramStageModel.TABLE, ProgramStageModel.Columns.UID);
-
-    private final String SELECT_CATEGORY_OPTION = String.format("SELECT * FROM %s WHERE %s.%s = ",
-            CategoryOptionModel.TABLE, CategoryOptionModel.TABLE, CategoryOptionModel.Columns.UID);
 
     private final String SELECT_CATEGORY_OPTION_COMBO = String.format("SELECT * FROM %s WHERE %s.%s = ",
             CategoryOptionComboModel.TABLE, CategoryOptionComboModel.TABLE, CategoryOptionComboModel.Columns.UID);
 
-    private final String SELECT_CATEGORY_OPTIONS_COMBO = String.format("SELECT * FROM %s WHERE %s.%s = ",
-            CategoryOptionComboModel.TABLE, CategoryOptionComboModel.TABLE, CategoryOptionComboModel.Columns.CATEGORY_COMBO);
+    private final String SELECT_CATEGORY_OPTIONS_COMBO = String.format("SELECT %s.* FROM %s " +
+                    "JOIN %s ON %s.%s = %s.%s " +
+                    "JOIN %s ON %s.%s = %s.%s " +
+                    "WHERE %s.%s AND %s.%s = ",
+            CategoryOptionComboModel.TABLE, CategoryOptionComboModel.TABLE,
+            CategoryOptionComboCategoryOptionLinkTableInfo.TABLE_INFO.name(),
+            CategoryOptionComboCategoryOptionLinkTableInfo.TABLE_INFO.name(), CategoryOptionComboCategoryOptionLinkTableInfo.Columns.CATEGORY_OPTION_COMBO,
+            CategoryOptionComboModel.TABLE, CategoryOptionComboModel.Columns.UID,
+            CategoryOptionModel.TABLE, CategoryOptionComboCategoryOptionLinkTableInfo.TABLE_INFO.name(), CategoryOptionComboCategoryOptionLinkTableInfo.Columns.CATEGORY_OPTION,
+            CategoryOptionModel.TABLE, CategoryOptionModel.Columns.UID,
+            CategoryOptionModel.TABLE, CategoryOptionModel.Columns.ACCESS_DATA_WRITE, CategoryOptionComboModel.TABLE, CategoryOptionComboModel.Columns.CATEGORY_COMBO);
 
+    private final String SELECT_CATEGORY = "SELECT * FROM Category " +
+            "JOIN CategoryCategoryComboLink ON CategoryCategoryComboLink.category = Category.uid " +
+            "WHERE CategoryCategoryComboLink.categoryCombo = ?";
 
     private final String SELECT_CATEGORY_COMBO = String.format("SELECT * FROM %s WHERE %s.%s = ",
             CategoryComboModel.TABLE, CategoryComboModel.TABLE, CategoryComboModel.Columns.UID);
 
-    private final String SELECT_DEFAULT_CAT_COMBO = String.format("SELECT %s FROM %s WHERE %s.%s = '1'",
+    private final String SELECT_DEFAULT_CAT_COMBO = String.format("SELECT %s FROM %s WHERE %s.%s = '1' LIMIT 1",
             CategoryComboModel.Columns.UID, CategoryComboModel.TABLE, CategoryComboModel.TABLE, CategoryComboModel.Columns.IS_DEFAULT);
-
-
-    private static final String RESOURCES_QUERY = String.format("SELECT * FROM %s WHERE %s.%s = ? LIMIT 1",
-            ResourceModel.TABLE, ResourceModel.TABLE, ResourceModel.Columns.RESOURCE_TYPE);
 
     private static final String EXPIRY_DATE_PERIOD_QUERY = String.format(
             "SELECT program.* FROM %s " +
@@ -228,16 +150,6 @@ public class MetadataRepositoryImpl implements MetadataRepository {
             ProgramModel.TABLE,
             EventModel.TABLE, ProgramModel.TABLE, ProgramModel.Columns.UID, EventModel.TABLE, EventModel.Columns.PROGRAM,
             EventModel.TABLE, EventModel.Columns.UID);
-
-    private final String RESERVED_UIDS = "SELECT DISTINCT\n" +
-            "ProgramTrackedEntityAttribute.trackedEntityAttribute,\n" +
-            "OrganisationUnitProgramLink.organisationUnit\n" +
-            "FROM ProgramTrackedEntityAttribute\n" +
-            "JOIN TrackedEntityAttribute ON TrackedEntityAttribute.uid = ProgramTrackedEntityAttribute.trackedEntityAttribute\n" +
-            "JOIN OrganisationUnitProgramLink ON OrganisationUnitProgramLink.program = ProgramTrackedEntityAttribute.program\n" +
-            "WHERE TrackedEntityAttribute.generated = ?";
-
-    private final String SELECT_OPTION_SET = "SELECT COUNT(Option.uid) FROM " + OptionModel.TABLE + " WHERE Option.optionSet = ?";
 
     private final BriteDatabase briteDatabase;
 
@@ -291,6 +203,12 @@ public class MetadataRepositoryImpl implements MetadataRepository {
         return briteDatabase
                 .createQuery(CategoryOptionModel.TABLE, SELECT_CATEGORY_OPTIONS_COMBO + "'" + id + "'")
                 .mapToList(CategoryOptionComboModel::create);
+    }
+
+    @Override
+    public Observable<CategoryModel> getCategoryFromCategoryCombo(String categoryComboId){
+        return briteDatabase.createQuery(CategoryModel.TABLE, SELECT_CATEGORY, categoryComboId)
+                .mapToOne(CategoryModel::create);
     }
 
     @Override
@@ -368,23 +286,26 @@ public class MetadataRepositoryImpl implements MetadataRepository {
                 cursor.moveToNext();
             }
             cursor.close();
-        }
+        }else if(cursor != null)
+            cursor.close();
         return options;
     }
 
     @Override
-    public int optionSetSize(String optionSetUid) {
-        Cursor cursor = briteDatabase.query(SELECT_OPTION_SET, optionSetUid == null ? "" : optionSetUid);
-        int numberOfOptions = 0;
-        try {
-            if (cursor.moveToFirst())
-                numberOfOptions = cursor.getInt(0);
-        } finally {
-            if (cursor != null)
-                cursor.close();
+    public Observable<Map<String, ObjectStyleModel>> getObjectStylesForPrograms(List<ProgramModel> enrollmentProgramModels) {
+        Map<String, ObjectStyleModel> objectStyleMap = new HashMap<>();
+        for (ProgramModel programModel : enrollmentProgramModels) {
+            ObjectStyleModel objectStyle = ObjectStyleModel.builder().build();
+            try (Cursor cursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ? LIMIT 1", programModel.uid())) {
+                if (cursor.moveToFirst())
+                    objectStyle = ObjectStyleModel.create(cursor);
+            } catch (Exception e) {
+                Timber.e(e);
+            }
+            objectStyleMap.put(programModel.uid(), objectStyle);
         }
 
-        return numberOfOptions;
+        return Observable.just(objectStyleMap);
     }
 
 
@@ -478,13 +399,16 @@ public class MetadataRepositoryImpl implements MetadataRepository {
         if (teiCursor != null && teiCursor.moveToFirst()) {
             currentTei = teiCursor.getInt(0);
             teiCursor.close();
-        }
+        }else if(teiCursor != null)
+            teiCursor.close();
 
         Cursor eventCursor = briteDatabase.query(EVENT_COUNT);
         if (eventCursor != null && eventCursor.moveToFirst()) {
             currentEvent = eventCursor.getInt(0);
             eventCursor.close();
         }
+        else if(eventCursor != null)
+            eventCursor.close();
 
         return Flowable.just(Pair.create(currentEvent, currentTei));
 
@@ -496,7 +420,6 @@ public class MetadataRepositoryImpl implements MetadataRepository {
         return briteDatabase.createQuery(AuthenticatedUserModel.TABLE, "SELECT SystemInfo.contextPath FROM SystemInfo LIMIT 1")
                 .mapToOne(cursor -> cursor.getString(0));
     }
-
 
 
     @Override

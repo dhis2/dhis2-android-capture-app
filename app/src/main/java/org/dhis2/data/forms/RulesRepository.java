@@ -418,6 +418,7 @@ public final class RulesRepository {
 
     @NonNull
     public static RuleAction create(@NonNull Cursor cursor) {
+        ProgramRuleActionType actionType = ProgramRuleActionType.valueOf(cursor.getString(3));
         String programStage = cursor.getString(1);
         String section = cursor.getString(2);
         String attribute = cursor.getString(5);
@@ -426,12 +427,20 @@ public final class RulesRepository {
         String content = cursor.getString(8);
         String data = cursor.getString(9);
 
+        return create(actionType, programStage, section, attribute, dataElement, location, content, data);
+
+    }
+
+    @NonNull
+    public static RuleAction create(ProgramRuleActionType actionType, String programStage, String section, String attribute,
+                                    String dataElement, String location, String content, String data) {
+
         if (dataElement == null && attribute == null) {
             dataElement = "";
             attribute = "";
         }
 
-        switch (ProgramRuleActionType.valueOf(cursor.getString(3))) {
+        switch (actionType) {
             case DISPLAYTEXT:
                 return createDisplayTextAction(content, data, location);
             case DISPLAYKEYVALUEPAIR:
@@ -442,7 +451,7 @@ public final class RulesRepository {
             case HIDESECTION:
                 return RuleActionHideSection.create(section);
             case ASSIGN:
-                return RuleActionAssign.create(content, data,
+                return RuleActionAssign.create(content, isEmpty(data) ? "" : data,
                         isEmpty(attribute) ? dataElement : attribute);
             case SHOWWARNING:
                 return RuleActionShowWarning.create(content, data,
@@ -467,7 +476,7 @@ public final class RulesRepository {
                 return RuleActionSetMandatoryField.create(isEmpty(attribute) ? dataElement : attribute);
             default:
                 throw new IllegalArgumentException(
-                        "Unsupported RuleActionType: " + cursor.getString(3));
+                        "Unsupported RuleActionType: " + actionType.name());
         }
     }
 

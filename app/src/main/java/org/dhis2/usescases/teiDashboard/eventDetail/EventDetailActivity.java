@@ -234,7 +234,7 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
         new CategoryComboDialog(getAbstracContext(), eventDetailModel.getCatComboName(), eventDetailModel.getOptionComboList(), 123, selectedOption -> {
             binding.categoryCombo.setText(selectedOption.displayName());
             presenter.changeCatOption(selectedOption);
-        }).show();
+        },  eventDetailModel.getProgramStage().displayName()).show();
     }
 
     @Override

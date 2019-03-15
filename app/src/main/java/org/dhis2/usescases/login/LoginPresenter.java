@@ -86,7 +86,12 @@ public class LoginPresenter implements LoginContracts.Presenter {
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(
-                                    systemInfo -> view.setUrl(systemInfo.contextPath()),
+                                    systemInfo -> {
+                                        if (systemInfo.contextPath() != null)
+                                            view.setUrl(systemInfo.contextPath());
+                                        else
+                                            view.setUrl(view.getContext().getString(R.string.login_https));
+                                    },
                                     Timber::e));
         } else
             view.setUrl(view.getContext().getString(R.string.login_https));
@@ -143,7 +148,12 @@ public class LoginPresenter implements LoginContracts.Presenter {
     @Override
     public void onButtonClick() {
         view.hideKeyboard();
-        view.showLoginProgress(true);
+        SharedPreferences prefs = view.getAbstracContext().getSharedPreferences(
+                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
+        if (!prefs.getBoolean(Constants.USER_ASKED_CRASHLYTICS, false))
+            view.showCrashlyticsDialog();
+        else
+            view.showLoginProgress(true);
     }
 
     @Override
@@ -164,6 +174,7 @@ public class LoginPresenter implements LoginContracts.Presenter {
                                 if (user == null)
                                     return Response.error(404, ResponseBody.create(MediaType.parse("text"), "NOT FOUND"));
                                 else {
+                                    prefs.edit().putString(Constants.USER, user.userCredentials().username());
                                     return Response.success(null);
                                 }
                             });
@@ -227,7 +238,7 @@ public class LoginPresenter implements LoginContracts.Presenter {
     public void logOut() {
         if (userManager != null)
             disposable.add(Observable.fromCallable(
-                    userManager.getD2().logout())
+                    userManager.getD2().userModule().logOut())
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
