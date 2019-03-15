@@ -8,6 +8,7 @@ import org.dhis2.data.service.SyncMetadataWorker;
 import java.util.concurrent.TimeUnit;
 
 import androidx.work.Constraints;
+import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.NetworkType;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.PeriodicWorkRequest;
@@ -44,7 +45,7 @@ public class SyncPresenter implements SyncContracts.Presenter {
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build());
         PeriodicWorkRequest request = syncDataBuilder.build();
-        WorkManager.getInstance().enqueue(request);
+        WorkManager.getInstance().enqueueUniquePeriodicWork(scheduleTag, ExistingPeriodicWorkPolicy.REPLACE, request);
     }
 
     @Override
@@ -56,7 +57,7 @@ public class SyncPresenter implements SyncContracts.Presenter {
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build());
         PeriodicWorkRequest request = syncDataBuilder.build();
-        WorkManager.getInstance().enqueue(request);
+        WorkManager.getInstance().enqueueUniquePeriodicWork(scheduleTag, ExistingPeriodicWorkPolicy.REPLACE, request);
     }
 
     public void getTheme() {

@@ -91,15 +91,19 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     @NonNull
     @Override
     public Observable<CategoryComboModel> catComboModel(String programUid) {
-        String catComboQuery = "SELECT * FROM CategoryCombo JOIN Program ON Program.categoryCombo = CategoryCombo.uid WHERE Program.uid = ?";
+        String catComboQuery = "SELECT CategoryCombo.* FROM CategoryCombo JOIN Program ON Program.categoryCombo = CategoryCombo.uid WHERE Program.uid = ?";
         return briteDatabase.createQuery(CategoryComboModel.TABLE, catComboQuery, programUid).mapToOne(CategoryComboModel::create);
     }
 
     @NonNull
     @Override
     public Observable<List<CategoryOptionComboModel>> catCombo(String programUid) {
-        String catComboQuery = "SELECT CategoryOptionCombo.* FROM CategoryOptionCombo JOIN CategoryCombo ON CategoryCombo.uid= CategoryOptionCombo.categoryCombo " +
-                "JOIN Program ON Program.categoryCombo = CategoryCombo.uid WHERE program.uid = ?";
+        String catComboQuery = "SELECT CategoryOptionCombo.* FROM CategoryOptionCombo " +
+                "JOIN CategoryCombo ON CategoryCombo.uid= CategoryOptionCombo.categoryCombo " +
+                "JOIN CategoryOptionComboCategoryOptionLink ON CategoryOptionComboCategoryOptionLink.categoryOptionCombo = CategoryOptionCombo.uid " +
+                "JOIN CategoryOption ON CategoryOptionComboCategoryOptionLink.CategoryOption = CategoryOption.uid " +
+                "JOIN Program ON Program.categoryCombo = CategoryCombo.uid " +
+                "WHERE categoryOption.accessDataWrite AND program.uid = ?";
         return briteDatabase.createQuery(CategoryOptionComboModel.TABLE, catComboQuery, programUid)
                 .mapToList(CategoryOptionComboModel::create);
     }
@@ -415,7 +419,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     @Override
     public boolean isEnrollmentOpen() {
         Boolean isEnrollmentOpen = true;
-        if (eventUid != null) {
+        if (!isEmpty(eventUid)) {
             Cursor enrollmentCursor = briteDatabase.query("SELECT Enrollment.* FROM Enrollment JOIN Event ON Event.enrollment = Enrollment.uid WHERE Event.uid = ?", eventUid);
             if (enrollmentCursor != null) {
                 if (enrollmentCursor.moveToFirst()) {

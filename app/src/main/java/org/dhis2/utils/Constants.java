@@ -69,6 +69,8 @@ public class Constants {
     public static final String SECURE_USER_NAME = "SECURE_USER_NAME";
     public static final String SECURE_PASS = "SECURE_PASS";
     public static final String SECURE_CREDENTIALS = "SECURE_CREDENTIALS";
+    public static final String USER = "USER";
+    public static final String USER_ASKED_CRASHLYTICS = "USER_ACCEPT_CRASHLYTICS";
 
     public static String LAST_DATA_SYNC = "last_data_sync";
     public static String LAST_DATA_SYNC_STATUS = "last_data_sync_status";
@@ -96,7 +98,9 @@ public class Constants {
     public static final String INCIDENT_DATE = "incidentDate";
 
     public static final String META = "METADATA";
+    public static final String META_NOW = "METADATA_NOW";
     public static final String DATA = "DATA";
+    public static final String DATA_NOW = "DATA_NOW";
     public static final String TIME_META = "timeMeta";
     public static final String TIME_DATA = "timeData";
 

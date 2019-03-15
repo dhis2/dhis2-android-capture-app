@@ -220,7 +220,10 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                         if (key.equals(Constants.ENROLLMENT_DATE_UID))
                                             enrollementDate = DateUtils.uiDateFormat().parse(queryData.get(key));
                                         else if (!key.equals(Constants.INCIDENT_DATE_UID)) { //TODO: HOW TO INCLUDE INCIDENT DATE IN ONLINE SEARCH
-                                            String queryItem = String.format("%s:%s:%s", key, queryDataEQ.containsKey(key) ? "EQ" : "LIKE", queryData.get(key));
+                                            String value = queryData.get(key);
+                                            if(value.contains("_os_"))
+                                                value = value.split("_os_")[0];
+                                            String queryItem = String.format("%s:%s:%s", key, queryDataEQ.containsKey(key) ? "EQ" : "LIKE", value);
                                             filterList.add(queryItem);
                                         }
                                     }
@@ -589,7 +592,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 data -> openDashboard(data.get(0).uid()),
-                                t -> Log.d("ONLINE_SEARCH", t.getMessage()))
+                                Timber::d)
         );
 
     }
@@ -609,7 +612,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                     else
                                         addRelationship(TEIuid, relationshipTypeUid, false);
                                 },
-                                t -> Log.d("ONLINE_SEARCH", t.getMessage()))
+                                Timber::d)
         );
     }
 

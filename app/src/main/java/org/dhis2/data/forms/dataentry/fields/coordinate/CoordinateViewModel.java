@@ -41,4 +41,10 @@ public abstract class CoordinateViewModel extends FieldViewModel {
     public FieldViewModel withValue(String data) {
         return new AutoValue_CoordinateViewModel(uid(), label(), mandatory(), data, programStageSection(), null, false, null, warning(), error(),description(), objectStyle());
     }
+
+    @NonNull
+    @Override
+    public FieldViewModel withEditMode(boolean isEditable) {
+        return new AutoValue_CoordinateViewModel(uid(), label(), mandatory(), value(), programStageSection(), null, isEditable, null, warning(), error(),description(), objectStyle());
+    }
 }

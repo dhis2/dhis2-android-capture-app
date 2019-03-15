@@ -21,10 +21,12 @@ public class ProgramStageSelectionModule {
 
     private final String programUid;
     private final String enrollmentUid;
+    private final String eventCreationType;
 
-    public ProgramStageSelectionModule(String programId, String enrollmenId) {
+    public ProgramStageSelectionModule(String programId, String enrollmenId, String eventCreationType) {
         this.programUid = programId;
         this.enrollmentUid = enrollmenId;
+        this.eventCreationType = eventCreationType;
     }
 
     @Provides
@@ -45,7 +47,7 @@ public class ProgramStageSelectionModule {
     ProgramStageSelectionRepository providesProgramStageSelectionRepository(@NonNull BriteDatabase briteDatabase,
                                                                             @NonNull RuleExpressionEvaluator evaluator,
                                                                             RulesRepository rulesRepository) {
-        return new ProgramStageSelectionRepositoryImpl(briteDatabase, evaluator, rulesRepository, programUid, enrollmentUid);
+        return new ProgramStageSelectionRepositoryImpl(briteDatabase, evaluator, rulesRepository, programUid, enrollmentUid,eventCreationType);
     }
 
     @Provides

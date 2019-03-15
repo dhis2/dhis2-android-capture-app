@@ -41,10 +41,10 @@ public class ImageHolder extends FormViewHolder {
                 String code = labelAndCode[1];
                 if (imageSelector.get().equals(label)) {
                     value = null;
-                    imageSelector.set("");
+                    currentSelector.set("");
                 } else {
                     value = code;
-                    imageSelector.set(code);
+                    currentSelector.set(label);
                 }
 
                 processor.onNext(RowAction.create(uids[0], value));

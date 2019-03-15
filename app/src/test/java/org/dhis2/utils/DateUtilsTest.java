@@ -1,6 +1,7 @@
 package org.dhis2.utils;
 
 import org.dhis2.R;
+import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.period.PeriodType;
 import org.junit.Assert;
 import org.junit.Test;
@@ -12,6 +13,7 @@ import java.util.Date;
 import java.util.Locale;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class DateUtilsTest {
 
@@ -22,7 +24,7 @@ public class DateUtilsTest {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
 
-        String date2String = "2018-12-08";
+        String date2String = "2018-12-09";
         Date date2 = DateUtils.uiDateFormat().parse(date2String);
         Calendar calendar2 = Calendar.getInstance();
         calendar2.setTime(date2);
@@ -638,5 +640,114 @@ public class DateUtilsTest {
         assertEquals("Apr 2018 - Mar 2019", DateUtils.getInstance().getPeriodUIString(PeriodType.FinancialApril, testDate, Locale.ENGLISH));
         assertEquals("Jul 2018 - Jun 2019", DateUtils.getInstance().getPeriodUIString(PeriodType.FinancialJuly, testDate, Locale.ENGLISH));
         assertEquals("Oct 2018 - Sep 2019", DateUtils.getInstance().getPeriodUIString(PeriodType.FinancialOct, testDate, Locale.ENGLISH));
+    }
+
+    private Date toDate(String date) throws ParseException {
+        return DateUtils.uiDateFormat().parse(date);
+    }
+
+    @Test
+    public void active_event_NcD_NPT_NeD_is_not_expired() throws ParseException {
+
+        Date currentDate = DateUtils.uiDateFormat().parse("2019-03-01");
+        DateUtils.getInstance().setCurrentDate(currentDate);
+
+        assertTrue(!DateUtils.getInstance().isEventExpired(toDate("2019-03-01"), null, EventStatus.ACTIVE, 0, null, 0));
+        assertTrue(!DateUtils.getInstance().isEventExpired(toDate("2019-03-02"), null, EventStatus.ACTIVE, 0, null, 0));
+        assertTrue(!DateUtils.getInstance().isEventExpired(toDate("2019-02-28"), null, EventStatus.ACTIVE, 0, null, 0));
+
+    }
+
+    @Test
+    public void active_event_NcD_Monthly_0_is_expired() throws ParseException {
+
+        Date currentDate = DateUtils.uiDateFormat().parse("2019-03-01");
+        DateUtils.getInstance().setCurrentDate(currentDate);
+
+        assertTrue(DateUtils.getInstance().isEventExpired(toDate("2019-02-28"), null, EventStatus.ACTIVE, 0, PeriodType.Monthly, 0));
+
+    }
+
+    @Test
+    public void active_event_NcD_Monthly_1_is_expired() throws ParseException {
+
+        Date currentDate = DateUtils.uiDateFormat().parse("2019-03-01");
+        DateUtils.getInstance().setCurrentDate(currentDate);
+
+        assertTrue(!DateUtils.getInstance().isEventExpired(toDate("2019-03-01"), null, EventStatus.ACTIVE, 0, PeriodType.Monthly, 1));
+        assertTrue(!DateUtils.getInstance().isEventExpired(toDate("2019-03-02"), null, EventStatus.ACTIVE, 0, PeriodType.Monthly, 1));
+        assertTrue(!DateUtils.getInstance().isEventExpired(toDate("2019-02-28"), null, EventStatus.ACTIVE, 0, PeriodType.Monthly, 1));
+
+        currentDate = DateUtils.uiDateFormat().parse("2019-03-02");
+        DateUtils.getInstance().setCurrentDate(currentDate);
+
+        assertTrue(DateUtils.getInstance().isEventExpired(toDate("2019-03-01"), null, EventStatus.ACTIVE, 0, null, 0));
+    }
+
+    @Test
+    public void complete_event_NcD_NPT_NeD_is_not_expired() throws ParseException {
+
+        Date currentDate = DateUtils.uiDateFormat().parse("2019-03-01");
+        DateUtils.getInstance().setCurrentDate(currentDate);
+
+        assertTrue(!DateUtils.getInstance().isEventExpired(toDate("2019-03-01"), null, EventStatus.COMPLETED, 0, null, 0));
+
+    }
+
+    @Test
+    public void complete_event_1_NPT_NeD_is_not_expired() throws ParseException {
+
+        Date currentDate = DateUtils.uiDateFormat().parse("2019-03-01");
+        DateUtils.getInstance().setCurrentDate(currentDate);
+
+        assertTrue(!DateUtils.getInstance().isEventExpired(toDate("2019-03-01"), null, EventStatus.COMPLETED, 0, null, 1));
+
+    }
+
+    @Test
+    public void complete_event_1_Monthly_0_is_expired() throws ParseException {
+
+        Date currentDate = DateUtils.uiDateFormat().parse("2019-03-01");
+        DateUtils.getInstance().setCurrentDate(currentDate);
+
+        assertTrue(DateUtils.getInstance().isEventExpired(toDate("2019-02-28"), toDate("2019-03-01"), EventStatus.COMPLETED, 1, PeriodType.Monthly, 0));
+
+    }
+
+    @Test
+    public void complete_event_1_Monthly_1_is_not_expired() throws ParseException {
+
+        Date currentDate = DateUtils.uiDateFormat().parse("2019-03-01");
+        DateUtils.getInstance().setCurrentDate(currentDate);
+
+        assertTrue(!DateUtils.getInstance().isEventExpired(toDate("2019-02-28"), toDate("2019-02-28"), EventStatus.COMPLETED, 1, PeriodType.Monthly, 1));
+
+    }
+
+    @Test
+    public void complete_event_1_NPT_NeD_is_expired() throws ParseException {
+
+        Date currentDate = DateUtils.uiDateFormat().parse("2019-03-02");
+        DateUtils.getInstance().setCurrentDate(currentDate);
+
+        assertTrue(DateUtils.getInstance().isEventExpired(toDate("2019-03-01"), toDate("2019-03-01"), EventStatus.COMPLETED, 1, null, 0));
+
+    }
+
+    @Test
+    public void complete_event_1_Monthly_1_is_expired() throws ParseException {
+
+        Date currentDate = DateUtils.uiDateFormat().parse("2019-03-02");
+        DateUtils.getInstance().setCurrentDate(currentDate);
+
+        assertTrue(DateUtils.getInstance().isEventExpired(toDate("2019-02-28"), toDate("2019-03-01"), EventStatus.COMPLETED, 1, null, 0));
+
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void complete_event_with_null_complete_date_throws_error() throws ParseException {
+
+        DateUtils.getInstance().isEventExpired(toDate("2019-02-28"), null, EventStatus.COMPLETED, 1, null, 0);
+
     }
 }

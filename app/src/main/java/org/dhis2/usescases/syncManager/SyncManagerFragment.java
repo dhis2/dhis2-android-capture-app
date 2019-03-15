@@ -102,7 +102,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         super.onAttach(context);
         this.context = context;
         ((Components) context.getApplicationContext()).userComponent()
-                .plus(new SyncManagerModule(this.getContext())).inject(this);
+                .plus(new SyncManagerModule()).inject(this);
     }
 
     @Override
@@ -359,11 +359,25 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                     .title(getString(R.string.tuto_settings_1))
                     .closeOnTouch(true)
                     .focusShape(FocusShape.ROUNDED_RECTANGLE)
+                    .build();
+
+            FancyShowCaseView tuto2 = new FancyShowCaseView.Builder(getAbstractActivity())
+                    .focusOn(getAbstractActivity().findViewById(R.id.metadataPeriods))
+                    .title(getString(R.string.tuto_settings_2))
+                    .focusShape(FocusShape.ROUNDED_RECTANGLE)
+                    .closeOnTouch(true)
+                    .build();
+
+            FancyShowCaseView tuto3 = new FancyShowCaseView.Builder(getAbstractActivity())
+                    .focusOn(getAbstractActivity().findViewById(R.id.capacityLayout))
+                    .title(getString(R.string.tuto_settings_3))
+                    .focusShape(FocusShape.ROUNDED_RECTANGLE)
+                    .closeOnTouch(true)
                     .dismissListener(new DismissListener() {
                         @Override
                         public void onDismiss(String id) {
                             if (scrollView != null) {
-                                scrollView.scrollTo((int) getAbstractActivity().findViewById(R.id.metadataPeriods).getX(), (int) getAbstractActivity().findViewById(R.id.metadataPeriods).getY());
+                                scrollView.scrollTo((int) getAbstractActivity().findViewById(R.id.reservedValue).getX(), (int) getAbstractActivity().findViewById(R.id.reservedValue).getY());
                             }
                         }
 
@@ -373,20 +387,29 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                         }
                     })
                     .build();
-            FancyShowCaseView tuto2 = new FancyShowCaseView.Builder(getAbstractActivity())
-                    .focusOn(getAbstractActivity().findViewById(R.id.metadataPeriods))
-                    .title(getString(R.string.tuto_settings_2))
-                    .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                    .closeOnTouch(true)
-                    .build();
-            FancyShowCaseView tuto3 = new FancyShowCaseView.Builder(getAbstractActivity())
-                    .focusOn(getAbstractActivity().findViewById(R.id.capacityLayout))
-                    .title(getString(R.string.tuto_settings_3))
+
+            FancyShowCaseView tuto4 = new FancyShowCaseView.Builder(getAbstractActivity())
+                    .focusOn(getAbstractActivity().findViewById(R.id.reservedValue))
+                    .title(getString(R.string.tuto_settings_reserved))
                     .focusShape(FocusShape.ROUNDED_RECTANGLE)
                     .closeOnTouch(true)
                     .build();
 
-            FancyShowCaseView tuto4 = new FancyShowCaseView.Builder(getAbstractActivity())
+            FancyShowCaseView tuto5 = new FancyShowCaseView.Builder(getAbstractActivity())
+                    .focusOn(getAbstractActivity().findViewById(R.id.buttonSyncError))
+                    .title(getString(R.string.tuto_settings_errors))
+                    .focusShape(FocusShape.ROUNDED_RECTANGLE)
+                    .closeOnTouch(true)
+                    .build();
+
+            FancyShowCaseView tuto6 = new FancyShowCaseView.Builder(getAbstractActivity())
+                    .focusOn(getAbstractActivity().findViewById(R.id.buttonDeleteLocalData))
+                    .title(getString(R.string.tuto_settings_reset))
+                    .focusShape(FocusShape.ROUNDED_RECTANGLE)
+                    .closeOnTouch(true)
+                    .build();
+
+            FancyShowCaseView tuto7 = new FancyShowCaseView.Builder(getAbstractActivity())
                     .focusOn(getAbstractActivity().findViewById(R.id.wipeData))
                     .title(getString(R.string.tuto_settings_4))
                     .closeOnTouch(true)
@@ -399,6 +422,9 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
             steps.add(tuto2);
             steps.add(tuto3);
             steps.add(tuto4);
+            steps.add(tuto5);
+            steps.add(tuto6);
+            steps.add(tuto7);
 
             HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
 

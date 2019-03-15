@@ -45,4 +45,10 @@ public abstract class OrgUnitViewModel extends FieldViewModel {
         return new AutoValue_OrgUnitViewModel(uid(),label(),mandatory(),data,programStageSection(),
                 allowFutureDate(),false,optionSet(),warning(),error(),description(), objectStyle());
     }
+
+    @NonNull
+    @Override
+    public FieldViewModel withEditMode(boolean isEditable) {
+        return new AutoValue_OrgUnitViewModel(uid(),label(),mandatory(),value(),programStageSection(),
+                allowFutureDate(),isEditable,optionSet(),warning(),error(),description(), objectStyle());    }
 }

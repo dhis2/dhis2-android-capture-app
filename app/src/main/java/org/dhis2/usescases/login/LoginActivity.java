@@ -9,6 +9,7 @@ import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 
 import com.andrognito.pinlockview.PinLockListener;
+import com.crashlytics.android.Crashlytics;
 
 import org.dhis2.App;
 import org.dhis2.R;
@@ -226,6 +227,25 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
             binding.credentialLayout.setVisibility(View.VISIBLE);
             binding.progressLayout.setVisibility(View.GONE);
         }
+    }
+
+    @Override
+    public void showCrashlyticsDialog() {
+        showInfoDialog(getString(R.string.send_user_name_title), getString(R.string.send_user_name_mesage),
+                new OnDialogClickListener() {
+                    @Override
+                    public void onPossitiveClick(AlertDialog alertDialog) {
+                        getSharedPreferences().edit().putBoolean(Constants.USER_ASKED_CRASHLYTICS, true).apply();
+                        getSharedPreferences().edit().putString(Constants.USER, binding.userName.getEditText().getText().toString()).apply();
+                        showLoginProgress(true);
+                    }
+
+                    @Override
+                    public void onNegativeClick(AlertDialog alertDialog) {
+                        getSharedPreferences().edit().putBoolean(Constants.USER_ASKED_CRASHLYTICS, true).apply();
+                        showLoginProgress(true);
+                    }
+                }).show();
     }
 
     @Override

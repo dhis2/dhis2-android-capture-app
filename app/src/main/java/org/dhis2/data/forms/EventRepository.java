@@ -137,7 +137,8 @@ public class EventRepository implements FormRepository {
             "        ProgramStageSectionDataElementLink.sortOrder AS sectionOrder\n" +
             "      FROM ProgramStageDataElement\n" +
             "        INNER JOIN DataElement ON DataElement.uid = ProgramStageDataElement.dataElement\n" +
-            "        LEFT JOIN ProgramStageSectionDataElementLink ON ProgramStageSectionDataElementLink.dataElement = ProgramStageDataElement.dataElement\n" +
+            "        LEFT JOIN ProgramStageSection ON ProgramStageSection.programStage = ProgramStageDataElement.programStage\n" +
+            "        LEFT JOIN ProgramStageSectionDataElementLink ON ProgramStageSectionDataElementLink.programStageSection = ProgramStageSection.uid AND ProgramStageSectionDataElementLink.dataElement = DataElement.uid\n" +
             "    ) AS Field ON (Field.stage = Event.programStage)\n" +
             "  LEFT OUTER JOIN TrackedEntityDataValue AS Value ON (\n" +
             "    Value.event = Event.uid AND Value.dataElement = Field.id\n" +

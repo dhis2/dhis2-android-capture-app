@@ -15,6 +15,7 @@ import org.hisp.dhis.rules.models.RuleAction;
 import org.hisp.dhis.rules.models.RuleActionErrorOnCompletion;
 import org.hisp.dhis.rules.models.RuleActionHideField;
 import org.hisp.dhis.rules.models.RuleActionHideSection;
+import org.hisp.dhis.rules.models.RuleActionSetMandatoryField;
 import org.hisp.dhis.rules.models.RuleActionShowError;
 import org.hisp.dhis.rules.models.RuleActionWarningOnCompletion;
 import org.hisp.dhis.rules.models.RuleEffect;
@@ -117,7 +118,6 @@ class FormPresenterImpl implements FormPresenter {
                     .subscribe(program -> view.initReportDatePicker(program.selectEnrollmentDatesInFuture(), program.selectIncidentDatesInFuture()),
                             Timber::e)
             );
-
         } else {
             view.hideDates();
             compositeDisposable.add(formRepository.getProgramCategoryCombo()
@@ -232,6 +232,11 @@ class FormPresenterImpl implements FormPresenter {
             } else if (ruleAction instanceof RuleActionHideSection) {
                 RuleActionHideSection hideSection = (RuleActionHideSection) ruleAction;
                 fieldViewModels.remove(hideSection.programStageSection());
+            } else if (ruleAction instanceof RuleActionSetMandatoryField) {
+                RuleActionSetMandatoryField mandatoryField = (RuleActionSetMandatoryField) ruleAction;
+                FieldViewModel model = fieldViewModels.get(mandatoryField.field());
+                if (model != null)
+                    fieldViewModels.put(mandatoryField.field(), model.setMandatory());
             }
         }
     }
