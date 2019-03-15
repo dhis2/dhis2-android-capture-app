@@ -447,13 +447,13 @@ public final class RulesRepository {
         String option = cursor.getString(10);
         String optionGroup = cursor.getString(11);
 
-        return create(actionType, programStage, section, attribute, dataElement, location, content, data);
+        return create(actionType, programStage, section, attribute, dataElement, location, content, data, option, optionGroup);
 
     }
 
     @NonNull
     public static RuleAction create(ProgramRuleActionType actionType, String programStage, String section, String attribute,
-                                    String dataElement, String location, String content, String data) {
+                                    String dataElement, String location, String content, String data, String option, String optionGroup) {
 
         if (dataElement == null && attribute == null) {
             dataElement = "";
