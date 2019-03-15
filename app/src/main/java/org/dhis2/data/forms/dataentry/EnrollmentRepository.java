@@ -19,6 +19,7 @@ import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -95,6 +96,24 @@ final class EnrollmentRepository implements DataEntryRepository {
                 .createQuery(TrackedEntityAttributeValueModel.TABLE, QUERY, enrollment == null ? "" : enrollment)
                 .mapToList(this::transform);
     }
+
+    public List<FieldViewModel> fieldList() {
+        List<FieldViewModel> list = new ArrayList<>();
+        Cursor listCursor = briteDatabase.query(QUERY, enrollment);
+        try {
+            listCursor.moveToFirst();
+            do {
+                list.add(transform(listCursor));
+            } while (listCursor.moveToNext());
+
+        } finally {
+            if (listCursor != null)
+                listCursor.close();
+        }
+
+        return list;
+    }
+
 
     @Override
     public Observable<List<OrganisationUnitModel>> getOrgUnits() {

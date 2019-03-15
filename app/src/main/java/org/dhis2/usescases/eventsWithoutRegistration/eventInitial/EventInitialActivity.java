@@ -128,6 +128,22 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     private String getTrackedEntityInstance;
     private Boolean accessData;
 
+    public static Bundle getBundle(String programUid, String eventUid, String eventCreationType,
+                                   String teiUid, PeriodType eventPeriodType, String orgUnit, String stageUid,
+                                   String enrollmentUid, int eventScheduleInterval) {
+        Bundle bundle = new Bundle();
+        bundle.putString(Constants.PROGRAM_UID, programUid);
+        bundle.putString(Constants.EVENT_UID, eventUid);
+        bundle.putString(Constants.EVENT_CREATION_TYPE, eventCreationType);
+        bundle.putString(Constants.TRACKED_ENTITY_INSTANCE, teiUid);
+        bundle.putString(Constants.ENROLLMENT_UID, enrollmentUid);
+        bundle.putString(Constants.ORG_UNIT, orgUnit);
+        bundle.putSerializable(Constants.EVENT_PERIOD_TYPE, eventPeriodType);
+        bundle.putString(Constants.PROGRAM_STAGE_UID, stageUid);
+        bundle.putInt(Constants.EVENT_SCHEDULE_INTERVAL, eventScheduleInterval);
+        return bundle;
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         setScreenName(this.getLocalClassName());
@@ -598,6 +614,20 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         else
             binding.dateLayout.setHint(getString(R.string.event_date));
 
+        if (eventCreationType == EventCreationType.SCHEDULE && programStage.hideDueDate()) {
+            binding.dateLayout.setVisibility(View.GONE);
+
+            Calendar now = DateUtils.getInstance().getCalendar();
+            if (periodType == null) {
+                now.add(Calendar.DAY_OF_YEAR, getIntent().getIntExtra(Constants.EVENT_SCHEDULE_INTERVAL, 0));
+                selectedDate = DateUtils.getInstance().getNextPeriod(null, now.getTime(), 0);
+                selectedDateString = DateUtils.uiDateFormat().format(selectedDate);
+            } else {
+                now.setTime(DateUtils.getInstance().getNextPeriod(periodType, now.getTime(), eventCreationType != EventCreationType.SCHEDULE ? 0 : 1));
+                selectedDate = now.getTime();
+                selectedDateString = DateUtils.getInstance().getPeriodUIString(periodType, selectedDate, Locale.getDefault());
+            }
+        }
         presenter.getStageObjectStyle(programStageModel.uid());
     }
 

@@ -137,7 +137,8 @@ public class EventRepository implements FormRepository {
             "        ProgramStageSectionDataElementLink.sortOrder AS sectionOrder\n" +
             "      FROM ProgramStageDataElement\n" +
             "        INNER JOIN DataElement ON DataElement.uid = ProgramStageDataElement.dataElement\n" +
-            "        LEFT JOIN ProgramStageSectionDataElementLink ON ProgramStageSectionDataElementLink.dataElement = ProgramStageDataElement.dataElement\n" +
+            "        LEFT JOIN ProgramStageSection ON ProgramStageSection.programStage = ProgramStageDataElement.programStage\n" +
+            "        LEFT JOIN ProgramStageSectionDataElementLink ON ProgramStageSectionDataElementLink.programStageSection = ProgramStageSection.uid AND ProgramStageSectionDataElementLink.dataElement = DataElement.uid\n" +
             "    ) AS Field ON (Field.stage = Event.programStage)\n" +
             "  LEFT OUTER JOIN TrackedEntityDataValue AS Value ON (\n" +
             "    Value.event = Event.uid AND Value.dataElement = Field.id\n" +
@@ -428,17 +429,21 @@ public class EventRepository implements FormRepository {
         }
 
         int optionCount = 0;
-        try (Cursor countCursor = briteDatabase.query("SELECT COUNT (uid) FROM Option WHERE optionSet = ?", optionSetUid)) {
-            if (countCursor != null && countCursor.moveToFirst())
-                optionCount = countCursor.getInt(0);
+        try {
+            Cursor countCursor = briteDatabase.query("SELECT COUNT (uid) FROM Option WHERE optionSet = ?", optionSetUid);
+            if (countCursor != null) {
+                if (countCursor.moveToFirst())
+                    optionCount = countCursor.getInt(0);
+                countCursor.close();
+            }
         } catch (Exception e) {
             Timber.e(e);
         }
         ValueTypeDeviceRenderingModel fieldRendering = null;
-        try (Cursor rendering = briteDatabase.query("SELECT * FROM ValueTypeDeviceRendering WHERE uid = ?", uid)) {
-            if (rendering != null && rendering.moveToFirst()) {
-                fieldRendering = ValueTypeDeviceRenderingModel.create(rendering);
-            }
+        Cursor rendering = briteDatabase.query("SELECT * FROM ValueTypeDeviceRendering WHERE uid = ?", uid);
+        if (rendering != null && rendering.moveToFirst()) {
+            fieldRendering = ValueTypeDeviceRenderingModel.create(rendering);
+            rendering.close();
         }
 
         FieldViewModelFactoryImpl fieldFactory = new FieldViewModelFactoryImpl(
@@ -452,9 +457,13 @@ public class EventRepository implements FormRepository {
                 "",
                 "");
         ObjectStyleModel objectStyle = ObjectStyleModel.builder().build();
-        try (Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", uid)) {
-            if (objStyleCursor != null && objStyleCursor.moveToFirst())
+        Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", uid);
+        try {
+            if (objStyleCursor.moveToFirst())
                 objectStyle = ObjectStyleModel.create(objStyleCursor);
+        } finally {
+            if (objStyleCursor != null)
+                objStyleCursor.close();
         }
         return fieldFactory.create(uid, isEmpty(formLabel) ? label : formLabel, valueType,
                 mandatory, optionSetUid, dataValue, section, allowFutureDates,

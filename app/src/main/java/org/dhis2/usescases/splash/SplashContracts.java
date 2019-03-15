@@ -27,13 +27,4 @@ public class SplashContracts {
         @UiThread
         void navigateToHomeView();
     }
-
-    interface Interactor {
-
-    }
-
-    interface Router {
-
-    }
-
 }

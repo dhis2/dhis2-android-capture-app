@@ -1,9 +1,8 @@
 package org.dhis2.data.qr;
 
 import android.graphics.Bitmap;
+import android.util.Base64;
 
-import org.dhis2.usescases.qrCodes.QrViewModel;
-import org.dhis2.utils.DateUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.zxing.BarcodeFormat;
@@ -13,12 +12,15 @@ import com.google.zxing.common.BitMatrix;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import org.dhis2.usescases.qrCodes.QrViewModel;
+import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -95,12 +97,6 @@ public class QRCodeGenerator implements QRInterface {
                         })
 
 
-                      /*  .flatMap(data -> briteDatabase.createQuery(RelationshipModel.TABLE, TEI_RELATIONSHIPS, teiUid, teiUid)
-                                .mapToList(RelationshipModel::create))*/
-                       /* .flatMap(data->Observable.just(d2.relationshipModule().relationship.getRelationshipsByTEI(teiUid)))
-                        .map(data -> bitmaps.add(new QrViewModel(RELATIONSHIP_JSON, gson.toJson(data))))*/
-
-
                         .flatMap(data -> briteDatabase.createQuery(EnrollmentModel.TABLE, TEI_ENROLLMENTS, teiUid == null ? "" : teiUid)
                                 .mapToList(EnrollmentModel::create))
                         .map(data -> {
@@ -131,36 +127,33 @@ public class QRCodeGenerator implements QRInterface {
                         )
                         .flatMap(data ->
                                 Observable.fromIterable(data)
-                                    .flatMap(event -> {
-                                        bitmaps.add(new QrViewModel(EVENTS_JSON, gson.toJson(event)));
-                                        return briteDatabase.createQuery(TrackedEntityDataValueModel.TABLE, TEI_DATA, event.uid() == null ? "" : event.uid())
-                                                        .mapToList(TrackedEntityDataValueModel::create)
-                                                        .map(dataValueList -> {
-                                                            ArrayList<TrackedEntityDataValueModel> arrayListAux = new ArrayList<>();
-                                                            // DIVIDE ATTR QR GENERATION -> 1 QR PER 2 ATTR
-                                                            int count = 0;
-                                                            for (int i = 0; i < dataValueList.size(); i++) {
-                                                                arrayListAux.add(dataValueList.get(i));
-                                                                if (count == 1){
-                                                                    count = 0;
-                                                                    bitmaps.add(new QrViewModel(DATA_JSON, gson.toJson(arrayListAux)));
-                                                                    arrayListAux.clear();
+                                        .flatMap(event -> {
+                                                    bitmaps.add(new QrViewModel(EVENTS_JSON, gson.toJson(event)));
+                                                    return briteDatabase.createQuery(TrackedEntityDataValueModel.TABLE, TEI_DATA, event.uid() == null ? "" : event.uid())
+                                                            .mapToList(TrackedEntityDataValueModel::create)
+                                                            .map(dataValueList -> {
+                                                                ArrayList<TrackedEntityDataValueModel> arrayListAux = new ArrayList<>();
+                                                                // DIVIDE ATTR QR GENERATION -> 1 QR PER 2 ATTR
+                                                                int count = 0;
+                                                                for (int i = 0; i < dataValueList.size(); i++) {
+                                                                    arrayListAux.add(dataValueList.get(i));
+                                                                    if (count == 1) {
+                                                                        count = 0;
+                                                                        bitmaps.add(new QrViewModel(DATA_JSON, gson.toJson(arrayListAux)));
+                                                                        arrayListAux.clear();
+                                                                    } else if (i == dataValueList.size() - 1) {
+                                                                        bitmaps.add(new QrViewModel(DATA_JSON, gson.toJson(arrayListAux)));
+                                                                    } else {
+                                                                        count++;
+                                                                    }
                                                                 }
-                                                                else if (i == dataValueList.size()-1){
-                                                                    bitmaps.add(new QrViewModel(DATA_JSON, gson.toJson(arrayListAux)));
-                                                                }
-                                                                else {
-                                                                    count++;
-                                                                }
-                                                            }
-                                                            return true;
-                                                        });
-                                            }
-                                    )
+                                                                return true;
+                                                            });
+                                                }
+                                        )
                         )
                         .map(data -> bitmaps);
     }
-
 
 
     @Override
@@ -182,15 +175,13 @@ public class QRCodeGenerator implements QRInterface {
                             int count = 0;
                             for (int i = 0; i < data.size(); i++) {
                                 arrayListAux.add(data.get(i));
-                                if (count == 1){
+                                if (count == 1) {
                                     count = 0;
                                     bitmaps.add(new QrViewModel(DATA_JSON_WO_REGISTRATION, gson.toJson(arrayListAux)));
                                     arrayListAux.clear();
-                                }
-                                else if (i == data.size()-1){
+                                } else if (i == data.size() - 1) {
                                     bitmaps.add(new QrViewModel(DATA_JSON_WO_REGISTRATION, gson.toJson(arrayListAux)));
-                                }
-                                else {
+                                } else {
                                     count++;
                                 }
                             }
@@ -200,11 +191,21 @@ public class QRCodeGenerator implements QRInterface {
     }
 
     public static Bitmap transform(String type, String info) {
+        byte[] data;
+        String encoded;
+        try {
+            data = info.getBytes("UTF-8");
+            encoded = Base64.encodeToString(data, Base64.DEFAULT);
+        } catch (UnsupportedEncodingException e) {
+            Timber.e(e);
+            encoded = e.getLocalizedMessage();
+        }
+
         MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
         Bitmap bitmap = null;
         Gson gson = new GsonBuilder().setDateFormat(DateUtils.DATABASE_FORMAT_EXPRESSION).create();
         try {
-            BitMatrix bitMatrix = multiFormatWriter.encode(gson.toJson(new QRjson(type, info)), BarcodeFormat.QR_CODE, 1000, 1000);
+            BitMatrix bitMatrix = multiFormatWriter.encode(gson.toJson(new QRjson(type, encoded)), BarcodeFormat.QR_CODE, 1000, 1000);
             BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
             bitmap = barcodeEncoder.createBitmap(bitMatrix);
         } catch (WriterException e) {

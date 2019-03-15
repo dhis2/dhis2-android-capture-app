@@ -46,6 +46,7 @@
                         android:onClick="@{()->presenter.onTimeButtonClick()}"
                         android:padding="7dp"
                         app:srcCompat="@drawable/ic_view_none"
+                        android:tint="@color/colorGreyDefault"
                         tools:ignore="ContentDescription" />
 
                     <TextView

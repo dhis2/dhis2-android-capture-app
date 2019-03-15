@@ -4,11 +4,7 @@ package org.dhis2.usescases.splash;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
-import org.dhis2.Bindings.Bindings;
-import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.server.UserManager;
 import org.dhis2.usescases.login.LoginActivity;
 import org.dhis2.usescases.main.MainActivity;
@@ -18,10 +14,14 @@ import org.dhis2.utils.SyncUtils;
 
 import java.util.concurrent.TimeUnit;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
+
+import static android.text.TextUtils.isEmpty;
 
 public class SplashPresenter implements SplashContracts.Presenter {
 
@@ -31,7 +31,7 @@ public class SplashPresenter implements SplashContracts.Presenter {
     @NonNull
     private final CompositeDisposable compositeDisposable;
 
-    SplashPresenter(@Nullable UserManager userManager, MetadataRepository metadataRepository, SplashRepository splashRepository) {
+    SplashPresenter(@Nullable UserManager userManager, SplashRepository splashRepository) {
         this.userManager = userManager;
         this.compositeDisposable = new CompositeDisposable();
         this.splashRespository = splashRepository;
@@ -47,10 +47,16 @@ public class SplashPresenter implements SplashContracts.Presenter {
         this.view = view;
 
         compositeDisposable.add(splashRespository.getIconForFlag()
+                .delay(2, TimeUnit.SECONDS, Schedulers.io())
                 .map(flagName -> {
-                    Resources resources = view.getAbstracContext().getResources();
-                    return resources.getIdentifier(flagName, "drawable", view.getAbstracContext().getPackageName());
+                    if (!isEmpty(flagName)) {
+                        Resources resources = view.getAbstracContext().getResources();
+                        return resources.getIdentifier(flagName, "drawable", view.getAbstracContext().getPackageName());
+                    } else
+                        return -1;
                 })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         view.renderFlag(),
                         Timber::d
@@ -65,28 +71,25 @@ public class SplashPresenter implements SplashContracts.Presenter {
             return;
         }
 
-        if (SyncUtils.isSyncRunning()){
+        if (SyncUtils.isSyncRunning()) {
 
             view.startActivity(SyncActivity.class, null, true, true, null);
 
-        }else {
+        } else {
 
-            compositeDisposable.add(
-                    splashRespository.checkExpiredEvents()
-                            .subscribeOn(Schedulers.computation())
-                            .flatMap(data -> userManager.isUserLoggedIn())
-                            .delay(2000, TimeUnit.MILLISECONDS, Schedulers.io())
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(isUserLoggedIn -> {
-                                SharedPreferences prefs = view.getAbstracContext().getSharedPreferences(
-                                        Constants.SHARE_PREFS, Context.MODE_PRIVATE);
-                                if (isUserLoggedIn && !prefs.getBoolean("SessionLocked", false)) {
-                                    navigateToHomeView();
-                                } else {
-                                    navigateToLoginView();
-                                }
-                            }, Timber::e));
+            compositeDisposable.add(userManager.isUserLoggedIn()
+                    .delay(2000, TimeUnit.MILLISECONDS, Schedulers.io())
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(isUserLoggedIn -> {
+                        SharedPreferences prefs = view.getAbstracContext().getSharedPreferences(
+                                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
+                        if (isUserLoggedIn && !prefs.getBoolean("SessionLocked", false)) {
+                            navigateToHomeView();
+                        } else {
+                            navigateToLoginView();
+                        }
+                    }, Timber::e));
         }
     }
 

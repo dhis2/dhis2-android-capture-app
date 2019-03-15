@@ -52,4 +52,10 @@ public abstract class SpinnerViewModel extends FieldViewModel {
     public FieldViewModel withValue(String data) {
         return new AutoValue_SpinnerViewModel(uid(), label(), mandatory(), data, programStageSection(), allowFutureDate(), false, warning(), error(), description(),objectStyle(), hint(), optionSet(), numberOfOptions());
     }
+
+    @NonNull
+    @Override
+    public FieldViewModel withEditMode(boolean isEditable) {
+        return new AutoValue_SpinnerViewModel(uid(), label(), mandatory(), value(), programStageSection(), allowFutureDate(), isEditable, warning(), error(), description(),objectStyle(), hint(), optionSet(), numberOfOptions());
+    }
 }

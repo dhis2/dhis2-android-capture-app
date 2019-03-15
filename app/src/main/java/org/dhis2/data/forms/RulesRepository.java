@@ -436,6 +436,7 @@ public final class RulesRepository {
 
     @NonNull
     public static RuleAction create(@NonNull Cursor cursor) {
+        ProgramRuleActionType actionType = ProgramRuleActionType.valueOf(cursor.getString(3));
         String programStage = cursor.getString(1);
         String section = cursor.getString(2);
         String attribute = cursor.getString(5);
@@ -446,12 +447,20 @@ public final class RulesRepository {
         String option = cursor.getString(10);
         String optionGroup = cursor.getString(11);
 
+        return create(actionType, programStage, section, attribute, dataElement, location, content, data, optionGroup, option);
+
+    }
+
+    @NonNull
+    public static RuleAction create(ProgramRuleActionType actionType, String programStage, String section, String attribute,
+                                    String dataElement, String location, String content, String data, String optionGroup, String option) {
+
         if (dataElement == null && attribute == null) {
             dataElement = "";
             attribute = "";
         }
 
-        switch (ProgramRuleActionType.valueOf(cursor.getString(3))) {
+        switch (actionType) {
             case DISPLAYTEXT:
                 return createDisplayTextAction(content, data, location);
             case DISPLAYKEYVALUEPAIR:
@@ -462,7 +471,7 @@ public final class RulesRepository {
             case HIDESECTION:
                 return RuleActionHideSection.create(section);
             case ASSIGN:
-                return RuleActionAssign.create(content, data,
+                return RuleActionAssign.create(content, isEmpty(data) ? "" : data,
                         isEmpty(attribute) ? dataElement : attribute);
             case SHOWWARNING:
                 return RuleActionShowWarning.create(content, data,
@@ -491,7 +500,7 @@ public final class RulesRepository {
                 return RuleActionHideOptionGroup.create(content, optionGroup);
             default:
                 throw new IllegalArgumentException(
-                        "Unsupported RuleActionType: " + cursor.getString(3));
+                        "Unsupported RuleActionType: " + actionType.name());
         }
     }
 
@@ -650,10 +659,10 @@ public final class RulesRepository {
     @Nonnull
     private String getOrgUnitCode(String orgUnitUid) {
         String ouCode = "";
-        try (Cursor cursor = briteDatabase.query("SELECT code FROM OrganisationUnit WHERE uid = ? LIMIT 1", orgUnitUid)) {
-            if (cursor != null && cursor.moveToFirst() && cursor.getString(0) != null) {
-                ouCode = cursor.getString(0);
-            }
+        Cursor cursor = briteDatabase.query("SELECT code FROM OrganisationUnit WHERE uid = ? LIMIT 1", orgUnitUid);
+        if (cursor != null && cursor.moveToFirst() && cursor.getString(0) != null) {
+            ouCode = cursor.getString(0);
+            cursor.close();
         }
         return ouCode;
     }
@@ -685,5 +694,4 @@ public final class RulesRepository {
                             incidentDate, enrollmentDate, status, orgUnit, ouCode, attributeValues, programName);
                 }).toFlowable(BackpressureStrategy.LATEST);
     }
-
 }

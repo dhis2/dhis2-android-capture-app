@@ -106,6 +106,8 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     private String teiUid;
     private Date openingDate;
     private Date closingDate;
+    private boolean mandatoryDelete = true;
+    private Context context;
 
 
     public FormFragment() {
@@ -243,6 +245,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        this.context = context;
         FormViewArguments arguments = Preconditions.isNull(getArguments()
                 .getParcelable(FORM_VIEW_ARGUMENTS), "formViewArguments == null");
 
@@ -255,6 +258,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
 
     @Override
     public void onDetach() {
+        context = null;
         super.onDetach();
     }
 
@@ -450,21 +454,26 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case Constants.RQ_MAP_LOCATION_VIEW:
-                coordinatesView.updateLocation(Double.valueOf(data.getStringExtra(MapSelectorActivity.LATITUDE)), Double.valueOf(data.getStringExtra(MapSelectorActivity.LONGITUDE)));
-                publishCoordinatesChanged(Double.valueOf(data.getStringExtra(MapSelectorActivity.LATITUDE)), Double.valueOf(data.getStringExtra(MapSelectorActivity.LONGITUDE)));
-                this.coordinatesView = null;
+                if (data != null && data.getStringExtra(MapSelectorActivity.LATITUDE) != null && data.getStringExtra(MapSelectorActivity.LONGITUDE) != null) {
+                    coordinatesView.updateLocation(Double.valueOf(data.getStringExtra(MapSelectorActivity.LATITUDE)), Double.valueOf(data.getStringExtra(MapSelectorActivity.LONGITUDE)));
+                    publishCoordinatesChanged(Double.valueOf(data.getStringExtra(MapSelectorActivity.LATITUDE)), Double.valueOf(data.getStringExtra(MapSelectorActivity.LONGITUDE)));
+                    this.coordinatesView = null;
+                }
                 break;
             case RQ_EVENT:
-                openDashboard();
+                if (data != null)
+                    openDashboard(data.getStringExtra(Constants.EVENT_UID));
                 break;
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    void openDashboard(){
+    private void openDashboard(@Nullable String eventUid) {
         Bundle bundle = new Bundle();
         bundle.putString("PROGRAM_UID", programUid);
         bundle.putString("TEI_UID", teiUid);
+        if (eventUid != null)
+            bundle.putString(Constants.EVENT_UID, eventUid);
         startActivity(TeiDashboardMobileActivity.class, bundle, false, false, null);
         getActivity().finish();
     }
@@ -506,12 +515,10 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
                     eventCreationIntent.putExtras(EventCaptureActivity.getActivityBundle(enrollmentTrio.val2(), enrollmentTrio.val1()));
                     eventCreationIntent.putExtra(Constants.TRACKED_ENTITY_INSTANCE, enrollmentTrio.val0());
                     startActivityForResult(eventCreationIntent, RQ_EVENT);
-                    /*FormViewArguments formViewArguments = FormViewArguments.createForEvent(enrollmentTrio.val2());
-                    startActivityForResult(FormActivity.create(getContext(), formViewArguments, isEnrollment), RQ_EVENT);*/
                 } else { //val0 is program uid, val1 is trackedEntityInstance, val2 is empty
                     this.programUid = enrollmentTrio.val1();
                     this.teiUid = enrollmentTrio.val0();
-                    openDashboard();
+                    openDashboard(null);
                 }
             } else {
                 checkAction();
@@ -522,9 +529,9 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     }
 
     private void checkAction() {
-        if (isAdded() && getActivity() != null) {
+        if (context != null) {
             CustomDialog dialog = new CustomDialog(
-                    getActivity(),
+                    getContext(),
                     getString(R.string.warning_error_on_complete_title),
                     messageOnComplete,
                     getString(R.string.button_ok),
@@ -533,13 +540,12 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
                     new DialogClickListener() {
                         @Override
                         public void onPositive() {
-                            if (canComplete && isAdded() && getActivity() != null)
+                            if (canComplete)
                                 getActivity().finish();
                         }
 
                         @Override
                         public void onNegative() {
-                            // do nothing
                         }
                     });
             if (!isEmpty(messageOnComplete))
@@ -551,22 +557,32 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
 
     @Override
     public void showMandatoryFieldsDialog() {
+        String description;
+        String buttonAccept;
+        if (mandatoryDelete) {
+            description = isEnrollment ? getAbstracContext().getString(R.string.missing_mandatory_fields_text) :
+                    getAbstracContext().getString(R.string.missing_mandatory_fields_events);
+            buttonAccept = isEnrollment ? getAbstracContext().getString(R.string.missing_mandatory_fields_go_back) :
+                    getAbstracContext().getString(R.string.button_ok);
+        } else {
+            description = getAbstracContext().getString(R.string.missing_mandatory_fields_text_not_delete);
+            buttonAccept = getAbstracContext().getString(R.string.action_accept);
+        }
         new CustomDialog(
                 getAbstracContext(),
                 getAbstracContext().getString(R.string.missing_mandatory_fields_title),
-                isEnrollment ? getAbstracContext().getString(R.string.missing_mandatory_fields_text) :
-                        getAbstracContext().getString(R.string.missing_mandatory_fields_events),
-                isEnrollment ? getAbstracContext().getString(R.string.missing_mandatory_fields_go_back) :
-                        getAbstracContext().getString(R.string.button_ok),
+                description,
+                buttonAccept,
                 getAbstracContext().getString(R.string.cancel),
                 RC_GO_BACK,
                 new DialogClickListener() {
                     @Override
                     public void onPositive() {
-                        if (isEnrollment)
-                            deleteAllSavedDataAndGoBack();
-                        else
-                            getActivity().finish();
+                        if (mandatoryDelete)
+                            if (isEnrollment)
+                                deleteAllSavedDataAndGoBack();
+                            else
+                                getActivity().finish();
                     }
 
                     @Override
@@ -589,6 +605,11 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
 
     @Override
     public void onBackPressed() {
+        formPresenter.checkMandatoryFields();
+    }
+
+    public void onBackPressed(boolean delete) {
+        this.mandatoryDelete = delete;
         formPresenter.checkMandatoryFields();
     }
 

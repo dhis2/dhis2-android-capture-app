@@ -55,6 +55,12 @@ public class QrActivity extends ActivityGlobalAbstract implements QrContracts.Vi
     }
 
     @Override
+    protected void onStop() {
+        presenter.onDetach();
+        super.onStop();
+    }
+
+    @Override
     public void showQR(@NonNull List<QrViewModel> bitmaps) {
 
         qrAdapter.addItems(bitmaps);

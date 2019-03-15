@@ -99,7 +99,6 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
 
         supportStartPostponedEnterTransition();
 
-
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.dataFragment, FormFragment.newInstance(
                         FormViewArguments.createForEnrollment(program.getCurrentEnrollment().uid()), true,
@@ -128,7 +127,10 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
     @Override
     public void onBackPressed() {
         setResult(RESULT_OK);
-        super.onBackPressed();
+        if (getSupportFragmentManager().getFragments().get(0) instanceof FormFragment)
+            ((FormFragment) getSupportFragmentManager().getFragments().get(0)).onBackPressed(false);
+        else
+            super.onBackPressed();
     }
 
     @Override
