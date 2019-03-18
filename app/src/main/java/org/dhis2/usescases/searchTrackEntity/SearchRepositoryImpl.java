@@ -181,36 +181,34 @@ public class SearchRepositoryImpl implements SearchRepository {
         String incidentDateWHERE = null;
         if (queryData != null && !isEmpty(queryData.get(Constants.ENROLLMENT_DATE_UID))) {
             enrollmentDateWHERE = " Enrollment.enrollmentDate LIKE '" + queryData.get(Constants.ENROLLMENT_DATE_UID) + "%'";
+            queryData.remove(Constants.ENROLLMENT_DATE_UID);
         }
         if (queryData != null && !isEmpty(queryData.get(Constants.INCIDENT_DATE_UID))) {
             incidentDateWHERE = " Enrollment.incidentDate LIKE '" + queryData.get(Constants.INCIDENT_DATE_UID) + "%'";
+            queryData.remove(Constants.INCIDENT_DATE_UID);
         }
 
         String attrQuery = "(SELECT TrackedEntityAttributeValue.trackedEntityInstance FROM TrackedEntityAttributeValue WHERE " +
                 "TrackedEntityAttributeValue.trackedEntityAttribute = 'ATTR_ID' AND TrackedEntityAttributeValue.value LIKE 'ATTR_VALUE%') t";
         StringBuilder attr = new StringBuilder("");
-        int initialLoop = 0;
-        if (enrollmentDateWHERE != null)
-            initialLoop++;
-        if (incidentDateWHERE != null)
-            initialLoop++;
-        for (int i = 0; i + initialLoop < queryData.keySet().size(); i++) {
+
+        for (int i = 0; i < queryData.keySet().size(); i++) {
             String dataId = queryData.keySet().toArray()[i].toString();
             String dataValue = queryData.get(dataId);
 
             if (dataValue.contains("_os_"))
                 dataValue = dataValue.split("_os_")[1];
 
-            if (i >= initialLoop)
+            if (i > 0)
                 attr.append(" INNER JOIN  ");
 
             attr.append(attrQuery.replace("ATTR_ID", dataId).replace("ATTR_VALUE", dataValue));
             attr.append(i + 1);
-            if (i > initialLoop)
+            if (i > 0)
                 attr.append(" ON t" + (i) + ".trackedEntityInstance = t" + (i + 1) + ".trackedEntityInstance ");
         }
 
-        String search = String.format(SEARCH, queryData.size() - initialLoop == 0 ? "" : SEARCH_ATTR);
+        String search = String.format(SEARCH, queryData.size() == 0 ? "" : SEARCH_ATTR);
         search = search.replace("ATTR_QUERY", "SELECT t1.trackedEntityInstance FROM" + attr) + teiTypeWHERE + " AND " + teiRelationship;
         if (selectedProgram != null && !selectedProgram.uid().isEmpty()) {
             String programWHERE = "Enrollment.program = '" + selectedProgram.uid() + "'";
@@ -242,35 +240,33 @@ public class SearchRepositoryImpl implements SearchRepository {
         String incidentDateWHERE = null;
         if (queryData != null && !isEmpty(queryData.get(Constants.ENROLLMENT_DATE_UID))) {
             enrollmentDateWHERE = " Enrollment.enrollmentDate LIKE '" + queryData.get(Constants.ENROLLMENT_DATE_UID) + "%'";
+            queryData.remove(Constants.ENROLLMENT_DATE_UID);
         }
         if (queryData != null && !isEmpty(queryData.get(Constants.INCIDENT_DATE_UID))) {
             incidentDateWHERE = " Enrollment.incidentDate LIKE '" + queryData.get(Constants.INCIDENT_DATE_UID) + "%'";
+            queryData.remove(Constants.INCIDENT_DATE_UID);
         }
 
         String attrQuery = "(SELECT TrackedEntityAttributeValue.trackedEntityInstance FROM TrackedEntityAttributeValue WHERE " +
                 "TrackedEntityAttributeValue.trackedEntityAttribute = 'ATTR_ID' AND TrackedEntityAttributeValue.value LIKE 'ATTR_VALUE%') t";
         StringBuilder attr = new StringBuilder("");
-        int initialLoop = 0;
-        if (enrollmentDateWHERE != null)
-            initialLoop++;
-        if (incidentDateWHERE != null)
-            initialLoop++;
-        for (int i = 0; i + initialLoop < queryData.keySet().size(); i++) {
+
+        for (int i = 0; i < queryData.keySet().size(); i++) {
             String dataId = queryData.keySet().toArray()[i].toString();
             String dataValue = queryData.get(dataId);
             if (dataValue.contains("_os_"))
                 dataValue = dataValue.split("_os_")[1];
 
-            if (i >= initialLoop)
+            if (i > 0)
                 attr.append(" INNER JOIN  ");
 
             attr.append(attrQuery.replace("ATTR_ID", dataId).replace("ATTR_VALUE", dataValue));
             attr.append(i + 1);
-            if (i > initialLoop)
+            if (i > 0)
                 attr.append(" ON t" + (i) + ".trackedEntityInstance = t" + (i + 1) + ".trackedEntityInstance ");
         }
 
-        String search = String.format(SEARCH, queryData.size() - initialLoop == 0 ? "" : SEARCH_ATTR);
+        String search = String.format(SEARCH, queryData.size() == 0 ? "" : SEARCH_ATTR);
         if (listSize > 0)
             search = search.replace("ATTR_QUERY", "SELECT t1.trackedEntityInstance FROM" + attr) + teiTypeWHERE + " AND " + teiRelationship + " AND (TrackedEntityInstance.state = 'TO_POST' OR TrackedEntityInstance.state = 'TO_UPDATE')";
         else
