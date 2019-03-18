@@ -65,7 +65,7 @@ public class OrgUnitUtils {
             TreeNode treeNode = new TreeNode(orgs).setViewHolder(new OrgUnitHolder(context, isMultiSelection));
             treeNode.setSelectable(myOrgUnitUids.contains(orgs.uid()));
             sublist.add(treeNode);
-            Collections.sort(sublist, (org1, org2) -> ((OrganisationUnitModel)org1.getValue()).displayName().compareTo(((OrganisationUnitModel)org2.getValue()).displayName()));
+            Collections.sort(sublist, (org1, org2) -> ((OrganisationUnitModel) org1.getValue()).displayName().compareTo(((OrganisationUnitModel) org2.getValue()).displayName()));
             subLists.put(orgs.level(), sublist);
         }
 
@@ -89,7 +89,9 @@ public class OrgUnitUtils {
         }
 
         TreeNode root = TreeNode.root();
-        root.addChildren(subLists.get(1));
+        if (subLists.size() > 0 && subLists.get(1) != null) {
+            root.addChildren(subLists.get(1));
+        }
 
         return root;
     }

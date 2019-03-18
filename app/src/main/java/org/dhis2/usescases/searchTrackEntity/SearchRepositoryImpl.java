@@ -60,7 +60,9 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     private final String SEARCH =
             "SELECT TrackedEntityInstance.*" +
-                    " FROM ((" + TrackedEntityInstanceModel.TABLE + " JOIN " + EnrollmentModel.TABLE + " ON " + EnrollmentModel.TABLE + "." + EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE + " = " + TrackedEntityInstanceModel.TABLE + "." + TrackedEntityInstanceModel.Columns.UID + ")" +
+                    " FROM ((" + TrackedEntityInstanceModel.TABLE + " JOIN " + EnrollmentModel.TABLE + " ON " +
+                    EnrollmentModel.TABLE + "." + EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE + " = " +
+                    TrackedEntityInstanceModel.TABLE + "." + TrackedEntityInstanceModel.Columns.UID + ") " +
                     "%s)" +
                     " WHERE ";
     private final String SEARCH_ATTR = " JOIN (ATTR_QUERY) tabla ON tabla.trackedEntityInstance = TrackedEntityInstance.uid";
@@ -199,7 +201,7 @@ public class SearchRepositoryImpl implements SearchRepository {
             if (dataValue.contains("_os_"))
                 dataValue = dataValue.split("_os_")[1];
 
-            if (i > initialLoop)
+            if (i >= initialLoop)
                 attr.append(" INNER JOIN  ");
 
             attr.append(attrQuery.replace("ATTR_ID", dataId).replace("ATTR_VALUE", dataValue));

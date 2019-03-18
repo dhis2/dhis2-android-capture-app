@@ -1,7 +1,5 @@
 package org.dhis2.data.forms.dataentry.fields.datetime;
 
-import androidx.databinding.ViewDataBinding;
-
 import org.dhis2.BR;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
@@ -13,6 +11,7 @@ import org.hisp.dhis.android.core.common.ValueType;
 
 import java.util.Date;
 
+import androidx.databinding.ViewDataBinding;
 import io.reactivex.processors.FlowableProcessor;
 
 import static android.text.TextUtils.isEmpty;
@@ -118,10 +117,13 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
             }
         }
         RowAction rowAction = RowAction.create(dateTimeViewModel.uid(), date != null ? dateFormatted : null);
-        processor.onNext(rowAction);
+        if (processor != null) {
+            processor.onNext(rowAction);
+        }
 
-        if (currentPosition != null)
+        if (currentPosition != null) {
             currentPosition.onNext(getAdapterPosition());
+        }
 
     }
 

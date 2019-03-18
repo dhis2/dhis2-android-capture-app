@@ -350,90 +350,90 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
     @Override
     public void showTutorial() {
-        /*SharedPreferences prefs = getAbstracContext().getSharedPreferences(
-                Constants.SHARE_PREFS, Context.MODE_PRIVATE);*/
-        NestedScrollView scrollView = getAbstractActivity().findViewById(R.id.scrollView);
-        new Handler().postDelayed(() -> {
-            FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
-                    .focusOn(getAbstractActivity().findViewById(R.id.dataPeriods))
-                    .title(getString(R.string.tuto_settings_1))
-                    .closeOnTouch(true)
-                    .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                    .build();
+        if (isAdded() && getAbstractActivity() != null && getContext() != null) {
+            NestedScrollView scrollView = getAbstractActivity().findViewById(R.id.scrollView);
+            new Handler().postDelayed(() -> {
+                FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
+                        .focusOn(getAbstractActivity().findViewById(R.id.dataPeriods))
+                        .title(getString(R.string.tuto_settings_1))
+                        .closeOnTouch(true)
+                        .focusShape(FocusShape.ROUNDED_RECTANGLE)
+                        .build();
 
-            FancyShowCaseView tuto2 = new FancyShowCaseView.Builder(getAbstractActivity())
-                    .focusOn(getAbstractActivity().findViewById(R.id.metadataPeriods))
-                    .title(getString(R.string.tuto_settings_2))
-                    .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                    .closeOnTouch(true)
-                    .build();
+                FancyShowCaseView tuto2 = new FancyShowCaseView.Builder(getAbstractActivity())
+                        .focusOn(getAbstractActivity().findViewById(R.id.metadataPeriods))
+                        .title(getString(R.string.tuto_settings_2))
+                        .focusShape(FocusShape.ROUNDED_RECTANGLE)
+                        .closeOnTouch(true)
+                        .build();
 
-            FancyShowCaseView tuto3 = new FancyShowCaseView.Builder(getAbstractActivity())
-                    .focusOn(getAbstractActivity().findViewById(R.id.capacityLayout))
-                    .title(getString(R.string.tuto_settings_3))
-                    .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                    .closeOnTouch(true)
-                    .dismissListener(new DismissListener() {
-                        @Override
-                        public void onDismiss(String id) {
-                            if (scrollView != null) {
-                                scrollView.scrollTo((int) getAbstractActivity().findViewById(R.id.reservedValue).getX(), (int) getAbstractActivity().findViewById(R.id.reservedValue).getY());
+                FancyShowCaseView tuto3 = new FancyShowCaseView.Builder(getAbstractActivity())
+                        .focusOn(getAbstractActivity().findViewById(R.id.capacityLayout))
+                        .title(getString(R.string.tuto_settings_3))
+                        .focusShape(FocusShape.ROUNDED_RECTANGLE)
+                        .closeOnTouch(true)
+                        .dismissListener(new DismissListener() {
+                            @Override
+                            public void onDismiss(String id) {
+                                if (scrollView != null) {
+                                    scrollView.scrollTo((int) getAbstractActivity().findViewById(R.id.reservedValue).getX(), (int) getAbstractActivity().findViewById(R.id.reservedValue).getY());
+                                }
                             }
-                        }
 
-                        @Override
-                        public void onSkipped(String id) {
-                            // unused
-                        }
-                    })
-                    .build();
+                            @Override
+                            public void onSkipped(String id) {
+                                // unused
+                            }
+                        })
+                        .build();
 
-            FancyShowCaseView tuto4 = new FancyShowCaseView.Builder(getAbstractActivity())
-                    .focusOn(getAbstractActivity().findViewById(R.id.reservedValue))
-                    .title(getString(R.string.tuto_settings_reserved))
-                    .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                    .closeOnTouch(true)
-                    .build();
+                FancyShowCaseView tuto4 = new FancyShowCaseView.Builder(getAbstractActivity())
+                        .focusOn(getAbstractActivity().findViewById(R.id.reservedValue))
+                        .title(getString(R.string.tuto_settings_reserved))
+                        .focusShape(FocusShape.ROUNDED_RECTANGLE)
+                        .closeOnTouch(true)
+                        .build();
 
-            FancyShowCaseView tuto5 = new FancyShowCaseView.Builder(getAbstractActivity())
-                    .focusOn(getAbstractActivity().findViewById(R.id.buttonSyncError))
-                    .title(getString(R.string.tuto_settings_errors))
-                    .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                    .closeOnTouch(true)
-                    .build();
+                FancyShowCaseView tuto5 = new FancyShowCaseView.Builder(getAbstractActivity())
+                        .focusOn(getAbstractActivity().findViewById(R.id.buttonSyncError))
+                        .title(getString(R.string.tuto_settings_errors))
+                        .focusShape(FocusShape.ROUNDED_RECTANGLE)
+                        .closeOnTouch(true)
+                        .build();
 
-            FancyShowCaseView tuto6 = new FancyShowCaseView.Builder(getAbstractActivity())
-                    .focusOn(getAbstractActivity().findViewById(R.id.buttonDeleteLocalData))
-                    .title(getString(R.string.tuto_settings_reset))
-                    .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                    .closeOnTouch(true)
-                    .build();
+                FancyShowCaseView tuto6 = new FancyShowCaseView.Builder(getAbstractActivity())
+                        .focusOn(getAbstractActivity().findViewById(R.id.buttonDeleteLocalData))
+                        .title(getString(R.string.tuto_settings_reset))
+                        .focusShape(FocusShape.ROUNDED_RECTANGLE)
+                        .closeOnTouch(true)
+                        .build();
 
-            FancyShowCaseView tuto7 = new FancyShowCaseView.Builder(getAbstractActivity())
-                    .focusOn(getAbstractActivity().findViewById(R.id.wipeData))
-                    .title(getString(R.string.tuto_settings_4))
-                    .closeOnTouch(true)
-                    .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                    .build();
+                FancyShowCaseView tuto7 = new FancyShowCaseView.Builder(getAbstractActivity())
+                        .focusOn(getAbstractActivity().findViewById(R.id.wipeData))
+                        .title(getString(R.string.tuto_settings_4))
+                        .closeOnTouch(true)
+                        .focusShape(FocusShape.ROUNDED_RECTANGLE)
+                        .build();
 
 
-            ArrayList<FancyShowCaseView> steps = new ArrayList<>();
-            steps.add(tuto1);
-            steps.add(tuto2);
-            steps.add(tuto3);
-            steps.add(tuto4);
-            steps.add(tuto5);
-            steps.add(tuto6);
-            steps.add(tuto7);
+                ArrayList<FancyShowCaseView> steps = new ArrayList<>();
+                steps.add(tuto1);
+                steps.add(tuto2);
+                steps.add(tuto3);
+                steps.add(tuto4);
+                steps.add(tuto5);
+                steps.add(tuto6);
+                steps.add(tuto7);
 
-            HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
+                HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
 
-            if (!prefs.getBoolean("TUTO_SETTINGS_SHOWN", false) && !BuildConfig.DEBUG) {
-                HelpManager.getInstance().showHelp();
-                prefs.edit().putBoolean("TUTO_SETTINGS_SHOWN", true).apply();
-            }
+                if (prefs != null && !prefs.getBoolean("TUTO_SETTINGS_SHOWN", false) && !BuildConfig.DEBUG) {
+                    HelpManager.getInstance().showHelp();
+                    prefs.edit().putBoolean("TUTO_SETTINGS_SHOWN", true).apply();
+                }
 
-        }, 500);
+            }, 500);
+        }
     }
 
     @Override

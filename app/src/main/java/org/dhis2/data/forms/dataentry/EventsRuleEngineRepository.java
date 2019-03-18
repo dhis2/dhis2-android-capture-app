@@ -153,11 +153,7 @@ public final class EventsRuleEngineRepository implements RuleEngineRepository {
     }
 
     @NonNull
-    private static Date parseDate(@NonNull String date) {
-        try {
-            return BaseIdentifiableObject.DATE_FORMAT.parse(date);
-        } catch (ParseException parseException) {
-            throw new RuntimeException(parseException);
-        }
+    private static Date parseDate(@NonNull String date) throws ParseException {
+        return BaseIdentifiableObject.DATE_FORMAT.parse(date);
     }
 }
