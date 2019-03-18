@@ -13,6 +13,7 @@
     <string name="yes">yes</string>
     <string name="no">no</string>
     <string name="no_value">no value</string>
+    <string name="no_reserved_values">There are no more reserved values</string>
 
     <!-- SyncService strings: -->
     <string name="sync_now">Synchronise now</string>
