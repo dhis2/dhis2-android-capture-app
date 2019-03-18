@@ -249,13 +249,13 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
         if (binding.actionButton != null) {
             binding.actionButton.setOnClickListener(v -> {
-
+                String programStageModelUid = programStageModel == null ? "" : programStageModel.uid();
                 if (eventUid == null) { // This is a new Event
                     if (eventCreationType == EventCreationType.REFERAL && tempCreate.equals(PERMANENT)) {
                         presenter.createEventPermanent(
                                 enrollmentUid,
                                 getTrackedEntityInstance,
-                                programStageModel.uid(),
+                                programStageModelUid,
                                 selectedDate,
                                 selectedOrgUnit,
                                 null,
@@ -264,7 +264,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                     } else if (eventCreationType == EventCreationType.SCHEDULE) {
                         presenter.scheduleEvent(
                                 enrollmentUid,
-                                programStageModel.uid(),
+                                programStageModelUid,
                                 selectedDate,
                                 selectedOrgUnit,
                                 null,
@@ -273,7 +273,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                     } else {
                         presenter.createEvent(
                                 enrollmentUid,
-                                programStageModel.uid(),
+                                programStageModelUid,
                                 selectedDate,
                                 selectedOrgUnit,
                                 null,
@@ -283,7 +283,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                                 getTrackedEntityInstance);
                     }
                 } else {
-                    presenter.editEvent(getTrackedEntityInstance, programStageModel.uid(), eventUid, DateUtils.databaseDateFormat().format(selectedDate), selectedOrgUnit, null,
+                    presenter.editEvent(getTrackedEntityInstance, programStageModelUid, eventUid, DateUtils.databaseDateFormat().format(selectedDate), selectedOrgUnit, null,
                             catComboIsDefaultOrNull() ? null : selectedCatOptionCombo.uid(), selectedLat, selectedLon);
                     //TODO: WHERE TO UPDATE CHANGES IN DATE, ORGUNIT, CATCOMBO, COORDINATES
                     startFormActivity(eventUid);

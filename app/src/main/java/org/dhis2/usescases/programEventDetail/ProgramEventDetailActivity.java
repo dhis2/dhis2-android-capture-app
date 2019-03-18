@@ -498,7 +498,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void apply() {
-        if(treeView.getSelected().size() > 0) {
+        if (treeView.getSelected().size() > 0) {
             binding.drawerLayout.closeDrawers();
             binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
@@ -546,7 +546,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                     pageProcessor.onNext(0);
                     break;
             }
-        }else
+        } else
             displayMessage(getString(R.string.org_unit_selection_warning));
     }
 

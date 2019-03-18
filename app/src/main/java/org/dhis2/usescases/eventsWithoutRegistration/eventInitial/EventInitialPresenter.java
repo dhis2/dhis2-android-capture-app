@@ -11,7 +11,6 @@ import android.view.View;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 
-import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
@@ -400,7 +399,9 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     public void goToSummary() {
         Bundle bundle = new Bundle();
         bundle.putString("event_id", eventId);
-        bundle.putString("program_id", programModel.uid());
+        if (programModel != null) {
+            bundle.putString("program_id", programModel.uid());
+        }
         view.startActivity(EventSummaryActivity.class, bundle, false, false, null);
     }
 

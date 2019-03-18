@@ -270,11 +270,11 @@ public class Bindings {
 
     @BindingAdapter(value = {"eventColor", "eventProgramStage", "eventProgram"})
     public static void setEventColor(View view, EventModel event, ProgramStageModel programStage, ProgramModel program) {
-        if(event!=null) {
+        if (event != null) {
             int bgColor;
             if (DateUtils.getInstance().isEventExpired(null, event.completedDate(), program.completeEventsExpiryDays())) {
                 bgColor = R.drawable.item_event_dark_gray_ripple;
-            } else {
+            } else if (event.status() != null) {
                 switch (event.status()) {
                     case ACTIVE:
                         if (DateUtils.getInstance().hasExpired(event, program.expiryDays(), program.completeEventsExpiryDays(), programStage.periodType() != null ? programStage.periodType() : program.expiryPeriodType())) {
@@ -300,6 +300,8 @@ public class Bindings {
                         bgColor = R.drawable.item_event_red_ripple;
                         break;
                 }
+            } else {
+                bgColor = R.drawable.item_event_red_ripple;
             }
             view.setBackground(ContextCompat.getDrawable(view.getContext(), bgColor));
         }
