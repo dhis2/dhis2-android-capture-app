@@ -132,7 +132,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         new CustomDialog(
                 getAbstracContext(),
                 getString(R.string.missing_mandatory_fields_title),
-                String.format(getString(R.string.missing_mandatory_fields_events_2_0), getMandatoryFieldNames((ArrayList) emptyMandatoryFields.values())),
+                String.format(getString(R.string.missing_mandatory_fields_events_2_0), getMandatoryFieldNames(new ArrayList<>(emptyMandatoryFields.values()))),
                 getAbstracContext().getString(R.string.button_ok),
                 getString(R.string.check_mandatory_field),
                 Constants.RQ_MANDATORY_EVENTS,
