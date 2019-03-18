@@ -156,7 +156,7 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
                 message = getString(R.string.login_error_null_username);
                 break;
             case INVALID_DHIS_VERSION:
-                message = getString(R.string.login_error_dhis_version);
+                message = getString(R.string.login_error_dhis_version_v2);
                 break;
             case API_UNSUCCESSFUL_RESPONSE:
                 message = getString(R.string.login_error_unsuccessful_response);
