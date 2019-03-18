@@ -42,7 +42,7 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
 
     SpinnerHolder(CustomTextViewCellBinding mBinding, FlowableProcessor<RowAction> processor) {
         super(mBinding);
-        this.editText = mBinding.editTextCell;
+        this.editText = mBinding.inputEditText;
         this.processor = processor;
 
         editText.setOnClickListener(this);
@@ -83,8 +83,10 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
         String value = item.getTitle().toString();
         String code = null;
         for (OptionModel optionModel : options)
-            if(value.equals(optionModel.displayName()))
+            if(value.equals(optionModel.displayName())) {
                 code = optionModel.code();
+                editText.setText(code);
+            }
         processor.onNext(
                 RowAction.create(viewModel.uid(), code, viewModel.dataElement(), viewModel.listCategoryOption(), viewModel.catCombo(), viewModel.row(), viewModel.column())
         );

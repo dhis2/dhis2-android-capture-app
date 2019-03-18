@@ -66,7 +66,7 @@ final class EditTextCellCustomHolder extends FormViewHolder {
     EditTextCellCustomHolder(CustomTextViewCellBinding binding, FlowableProcessor<RowAction> processor,
                              ObservableBoolean isEditable, TableView tableView) {
         super(binding);
-        editText = binding.editTextCell;
+        editText = binding.inputEditText;
         accessDataWrite = isEditable.get();
         customBinding = binding;
         this.tableView = tableView;
@@ -79,30 +79,30 @@ final class EditTextCellCustomHolder extends FormViewHolder {
         this.editTextModel = (EditTextModel) model;
         setInputType(editTextModel.valueType());
 
-        editText.setText(editTextModel.value() == null ?
+        customBinding.inputEditText.setText(editTextModel.value() == null ?
                 null : valueOf(editTextModel.value()));
 
         if (editTextModel.mandatory())
             customBinding.icMandatory.setVisibility(View.VISIBLE);
         else
-            customBinding.icMandatory.setVisibility(View.INVISIBLE);
+            customBinding.icMandatory.setVisibility(View.GONE);
 
         if (editTextModel.editable()) {
             if(accessDataWrite) {
-                editText.setEnabled(true);
-                editText.setBackground(null);
+                customBinding.inputEditText.setEnabled(true);
+                customBinding.inputEditText.setBackground(null);
             }else{
-                editText.setEnabled(false);
-                editText.setBackgroundColor(ContextCompat.getColor(editText.getContext(), R.color.bg_black_e6e));
+                customBinding.inputEditText.setEnabled(false);
+                customBinding.inputEditText.setBackgroundColor(ContextCompat.getColor(editText.getContext(), R.color.bg_black_e6e));
             }
         } else {
-            editText.setEnabled(false);
-            editText.setBackgroundColor(ContextCompat.getColor(editText.getContext(), R.color.bg_black_e6e));
+            customBinding.inputEditText.setEnabled(false);
+            customBinding.inputEditText.setBackgroundColor(ContextCompat.getColor(editText.getContext(), R.color.bg_black_e6e));
         }
 
         editText.setOnFocusChangeListener((v, hasFocus) -> {
             if(hasFocus) {
-                tableView.scrollToColumnPosition(editTextModel.column(), 200);
+                //tableView.scrollToColumnPosition(editTextModel.column(), 200);
                 tableView.setSelectedCell(editTextModel.column(), editTextModel.row());
             }
             else if(editTextModel != null && editTextModel.editable() && !editText.getText().toString().equals(editTextModel.value())) {
@@ -194,9 +194,9 @@ final class EditTextCellCustomHolder extends FormViewHolder {
         editDialog.setSelection(editDialog.getText() == null ?
                 0 : editDialog.getText().length());
         msgView.findViewById(R.id.dialogAccept).setOnClickListener(view -> {
-                    alertDialog.dismiss();
-                    editText.setText(editDialog.getText().toString());
-                });
+            alertDialog.dismiss();
+            editText.setText(editDialog.getText().toString());
+        });
         msgView.findViewById(R.id.dialogCancel).setOnClickListener(view -> alertDialog.dismiss());
         alertDialog.setView(msgView);
 

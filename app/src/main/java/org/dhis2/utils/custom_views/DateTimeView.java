@@ -120,7 +120,7 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
     public void setCellLayout(){
         binding = DataBindingUtil.inflate(inflater, R.layout.custom_text_view_cell, this, true);
 
-        editText = findViewById(R.id.editTextCell);
+        editText = findViewById(R.id.input_editText);
         selectedCalendar = Calendar.getInstance();
         editText.setFocusable(false); //Makes editText not editable
         editText.setClickable(true);//  but clickable

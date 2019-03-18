@@ -71,7 +71,7 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
 
     public void setCellLayout(){
         binding = DataBindingUtil.inflate(inflater, R.layout.custom_text_view_cell, this, true);
-        editText = findViewById(R.id.editTextCell);
+        editText = findViewById(R.id.input_editText);
         editText.setFocusable(false); //Makes editText not editable
         editText.setClickable(true);//  but clickable
         editText.setOnFocusChangeListener(this::onFocusChanged);
