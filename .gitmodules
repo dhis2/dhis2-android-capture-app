@@ -1,0 +1,6 @@
+[submodule "dhis2-android-sdk"]
+	path = dhis2-android-sdk
+	url = git@github.com:dhis2/dhis2-android-sdk.git
+[submodule "dhis2-rule-engine"]
+	path = dhis2-rule-engine
+	url = https://github.com/Balcan/dhis2-rule-engine.git

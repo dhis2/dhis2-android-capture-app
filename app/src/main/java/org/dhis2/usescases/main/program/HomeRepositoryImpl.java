@@ -140,11 +140,12 @@ class HomeRepositoryImpl implements HomeRepository {
                         queryFinal = AGGREGATE_FROM_DATASET;
                     }
 
-                    Cursor countCursor = briteDatabase.query(queryFinal, uid);
                     int count = 0;
-                    if (countCursor != null && countCursor.moveToFirst()) {
-                        count = countCursor.getCount();
-                        countCursor.close();
+                    try (Cursor countCursor = briteDatabase.query(queryFinal, uid)) {
+                        if (countCursor != null && countCursor.moveToFirst()) {
+                            count = countCursor.getCount();
+                            countCursor.close();
+                        }
                     }
 
 

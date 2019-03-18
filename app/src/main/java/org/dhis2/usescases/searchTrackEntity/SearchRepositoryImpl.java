@@ -196,7 +196,7 @@ public class SearchRepositoryImpl implements SearchRepository {
             String dataId = queryData.keySet().toArray()[i].toString();
             String dataValue = queryData.get(dataId);
 
-            if(dataValue.contains("_os_"))
+            if (dataValue.contains("_os_"))
                 dataValue = dataValue.split("_os_")[1];
 
             if (i > initialLoop)
@@ -256,7 +256,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         for (int i = 0; i + initialLoop < queryData.keySet().size(); i++) {
             String dataId = queryData.keySet().toArray()[i].toString();
             String dataValue = queryData.get(dataId);
-            if(dataValue.contains("_os_"))
+            if (dataValue.contains("_os_"))
                 dataValue = dataValue.split("_os_")[1];
 
             if (i >= initialLoop)
@@ -321,7 +321,7 @@ public class SearchRepositoryImpl implements SearchRepository {
 
                 for (String key : queryData.keySet()) {
                     String dataValue = queryData.get(key);
-                    if(dataValue.contains("_os_"))
+                    if (dataValue.contains("_os_"))
                         dataValue = dataValue.split("_os_")[1];
                     TrackedEntityAttributeValueModel attributeValueModel =
                             TrackedEntityAttributeValueModel.builder()
@@ -511,10 +511,12 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     @Override
     public String getProgramColor(@NonNull String programUid) {
-        Cursor cursor = briteDatabase.query(PROGRAM_COLOR_QUERY, programUid);
-        if (cursor.moveToFirst()) {
-            return cursor.getString(0);
+        try (Cursor cursor = briteDatabase.query(PROGRAM_COLOR_QUERY, programUid)) {
+            if (cursor.moveToFirst()) {
+                return cursor.getString(0);
+            }
         }
+
         return null;
     }
 
