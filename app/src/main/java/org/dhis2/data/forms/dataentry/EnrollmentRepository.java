@@ -144,12 +144,9 @@ final class EnrollmentRepository implements DataEntryRepository {
 
         int optionCount = 0;
         if (!isEmpty(optionSet))
-            try {
-                Cursor countCursor = briteDatabase.query("SELECT COUNT (uid) FROM Option WHERE optionSet = ?", optionSet);
-                if (countCursor != null) {
-                    if (countCursor.moveToFirst())
-                        optionCount = countCursor.getInt(0);
-                    countCursor.close();
+            try (Cursor countCursor = briteDatabase.query("SELECT COUNT (uid) FROM Option WHERE optionSet = ?", optionSet)) {
+                if (countCursor != null && countCursor.moveToFirst()) {
+                    optionCount = countCursor.getInt(0);
                 }
             } catch (Exception e) {
                 Timber.e(e);
@@ -158,12 +155,12 @@ final class EnrollmentRepository implements DataEntryRepository {
         if (generated && dataValue == null) {
             try {
                 String teiUid = null;
-                Cursor tei = briteDatabase.query("SELECT TrackedEntityInstance.uid FROM TrackedEntityInstance " +
+                try (Cursor tei = briteDatabase.query("SELECT TrackedEntityInstance.uid FROM TrackedEntityInstance " +
                         "JOIN Enrollment ON Enrollment.trackedEntityInstance = TrackedEntityInstance.uid " +
-                        "WHERE Enrollment.uid = ?", enrollment == null ? "" : enrollment);
-                if (tei != null && tei.moveToFirst()) {
-                    teiUid = tei.getString(0);
-                    tei.close();
+                        "WHERE Enrollment.uid = ?", enrollment == null ? "" : enrollment)) {
+                    if (tei != null && tei.moveToFirst()) {
+                        teiUid = tei.getString(0);
+                    }
                 }
 
                 if (teiUid != null) { //checks if tei has been deleted);
@@ -196,22 +193,17 @@ final class EnrollmentRepository implements DataEntryRepository {
         }
 
         ValueTypeDeviceRenderingModel fieldRendering = null;
-        Cursor rendering = briteDatabase.query("SELECT ValueTypeDeviceRendering.* FROM ValueTypeDeviceRendering " +
-                "JOIN ProgramTrackedEntityAttribute ON ProgramTrackedEntityAttribute.uid = ValueTypeDeviceRendering.uid WHERE ProgramTrackedEntityAttribute.trackedEntityAttribute = ?", uid);
-        if (rendering != null) {
-            if (rendering.moveToFirst())
+        try (Cursor rendering = briteDatabase.query("SELECT ValueTypeDeviceRendering.* FROM ValueTypeDeviceRendering " +
+                "JOIN ProgramTrackedEntityAttribute ON ProgramTrackedEntityAttribute.uid = ValueTypeDeviceRendering.uid WHERE ProgramTrackedEntityAttribute.trackedEntityAttribute = ?", uid)) {
+            if (rendering != null && rendering.moveToFirst()) {
                 fieldRendering = ValueTypeDeviceRenderingModel.create(rendering);
-            rendering.close();
+            }
         }
 
         ObjectStyleModel objectStyle = ObjectStyleModel.builder().build();
-        Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", uid);
-        try {
-            if (objStyleCursor.moveToFirst())
+        try (Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", uid)) {
+            if (objStyleCursor != null && objStyleCursor.moveToFirst())
                 objectStyle = ObjectStyleModel.create(objStyleCursor);
-        } finally {
-            if (objStyleCursor != null)
-                objStyleCursor.close();
         }
 
         return fieldFactory.create(uid,

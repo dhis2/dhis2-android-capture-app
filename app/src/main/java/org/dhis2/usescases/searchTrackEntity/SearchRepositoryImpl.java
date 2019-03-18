@@ -196,7 +196,7 @@ public class SearchRepositoryImpl implements SearchRepository {
             String dataId = queryData.keySet().toArray()[i].toString();
             String dataValue = queryData.get(dataId);
 
-            if(dataValue.contains("_os_"))
+            if (dataValue.contains("_os_"))
                 dataValue = dataValue.split("_os_")[1];
 
             if (i > initialLoop)
@@ -256,7 +256,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         for (int i = 0; i + initialLoop < queryData.keySet().size(); i++) {
             String dataId = queryData.keySet().toArray()[i].toString();
             String dataValue = queryData.get(dataId);
-            if(dataValue.contains("_os_"))
+            if (dataValue.contains("_os_"))
                 dataValue = dataValue.split("_os_")[1];
 
             if (i >= initialLoop)
@@ -321,7 +321,7 @@ public class SearchRepositoryImpl implements SearchRepository {
 
                 for (String key : queryData.keySet()) {
                     String dataValue = queryData.get(key);
-                    if(dataValue.contains("_os_"))
+                    if (dataValue.contains("_os_"))
                         dataValue = dataValue.split("_os_")[1];
                     TrackedEntityAttributeValueModel attributeValueModel =
                             TrackedEntityAttributeValueModel.builder()
@@ -404,54 +404,47 @@ public class SearchRepositoryImpl implements SearchRepository {
         return Flowable.fromIterable(teiList)
                 .map(tei -> {
 
-                    Cursor teiCursor = briteDatabase.query("SELECT uid FROM TrackedEntityInstance WHERE uid = ?", tei.getTei().uid());
-                    if (teiCursor != null && teiCursor.moveToFirst()) {
-                        tei.setOnline(false);
-
-                        setEnrollmentInfo(tei);
-                        setAttributesInfo(tei, selectedProgram);
-                        setOverdueEvents(tei, selectedProgram);
-
-                        teiCursor.close();
+                    try (Cursor teiCursor = briteDatabase.query("SELECT uid FROM TrackedEntityInstance WHERE uid = ?", tei.getTei().uid())) {
+                        if (teiCursor != null && teiCursor.moveToFirst()) {
+                            tei.setOnline(false);
+                            setEnrollmentInfo(tei);
+                            setAttributesInfo(tei, selectedProgram);
+                            setOverdueEvents(tei, selectedProgram);
+                        }
                     }
-
-
                     return tei;
                 })
                 .toList().toFlowable();
     }
 
     private void setEnrollmentInfo(SearchTeiModel tei) {
-        Cursor enrollmentCursor;
-
-        enrollmentCursor = briteDatabase.query("SELECT * FROM Enrollment " +
+        try (Cursor enrollmentCursor = briteDatabase.query("SELECT * FROM Enrollment " +
                 "WHERE Enrollment.trackedEntityInstance = ? AND Enrollment.STATUS = 'ACTIVE' " +
-                "GROUP BY Enrollment.program", tei.getTei().uid());
+                "GROUP BY Enrollment.program", tei.getTei().uid())) {
 
-        if (enrollmentCursor != null) {
-            enrollmentCursor.moveToFirst();
-            for (int i = 0; i < enrollmentCursor.getCount(); i++) {
-                EnrollmentModel enrollment = EnrollmentModel.create(enrollmentCursor);
-                if (i == 0)
-                    tei.resetEnrollments();
-                tei.addEnrollment(EnrollmentModel.create(enrollmentCursor));
-                tei.addEnrollmentInfo(getProgramInfo(enrollment.program()));
-                enrollmentCursor.moveToNext();
+            if (enrollmentCursor != null) {
+                enrollmentCursor.moveToFirst();
+                for (int i = 0; i < enrollmentCursor.getCount(); i++) {
+                    EnrollmentModel enrollment = EnrollmentModel.create(enrollmentCursor);
+                    if (i == 0)
+                        tei.resetEnrollments();
+                    tei.addEnrollment(EnrollmentModel.create(enrollmentCursor));
+                    tei.addEnrollmentInfo(getProgramInfo(enrollment.program()));
+                    enrollmentCursor.moveToNext();
+                }
             }
-            enrollmentCursor.close();
-
         }
     }
 
     private Trio<String, String, String> getProgramInfo(String programUid) {
-        Cursor cursor = briteDatabase.query(PROGRAM_INFO, programUid);
-        if (cursor != null) {
-            cursor.moveToFirst();
-            String programName = cursor.getString(0);
-            String programColor = cursor.getString(1) != null ? cursor.getString(1) : "";
-            String programIcon = cursor.getString(2) != null ? cursor.getString(2) : "";
-            cursor.close();
-            return Trio.create(programName, programColor, programIcon);
+        try (Cursor cursor = briteDatabase.query(PROGRAM_INFO, programUid)) {
+            if (cursor != null) {
+                cursor.moveToFirst();
+                String programName = cursor.getString(0);
+                String programColor = cursor.getString(1) != null ? cursor.getString(1) : "";
+                String programIcon = cursor.getString(2) != null ? cursor.getString(2) : "";
+                return Trio.create(programName, programColor, programIcon);
+            }
         }
         return null;
     }

@@ -10,7 +10,6 @@ import org.dhis2.data.tuples.Pair;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryModel;
-import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionComboCategoryOptionLinkTableInfo;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
@@ -208,7 +207,7 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     }
 
     @Override
-    public Observable<CategoryModel> getCategoryFromCategoryCombo(String categoryComboId){
+    public Observable<CategoryModel> getCategoryFromCategoryCombo(String categoryComboId) {
         return briteDatabase.createQuery(CategoryModel.TABLE, SELECT_CATEGORY, categoryComboId)
                 .mapToOne(CategoryModel::create);
     }
@@ -279,18 +278,16 @@ public class MetadataRepositoryImpl implements MetadataRepository {
 
     @Override
     public List<OptionModel> optionSet(String optionSetId) {
-        String SELECT_OPTION_SET = "SELECT * FROM " + OptionModel.TABLE + " WHERE Option.optionSet = ?";
-        Cursor cursor = briteDatabase.query(SELECT_OPTION_SET, optionSetId == null ? "" : optionSetId);
         List<OptionModel> options = new ArrayList<>();
-        if (cursor != null && cursor.moveToFirst()) {
-            for (int i = 0; i < cursor.getCount(); i++) {
-                options.add(OptionModel.create(cursor));
-                cursor.moveToNext();
+        String SELECT_OPTION_SET = "SELECT * FROM " + OptionModel.TABLE + " WHERE Option.optionSet = ?";
+        try (Cursor cursor = briteDatabase.query(SELECT_OPTION_SET, optionSetId == null ? "" : optionSetId)) {
+            if (cursor != null && cursor.moveToFirst()) {
+                for (int i = 0; i < cursor.getCount(); i++) {
+                    options.add(OptionModel.create(cursor));
+                    cursor.moveToNext();
+                }
             }
-            cursor.close();
         }
-        if(cursor != null)
-            cursor.close();
         return options;
     }
 
@@ -398,25 +395,18 @@ public class MetadataRepositoryImpl implements MetadataRepository {
         int currentTei = 0;
         int currentEvent = 0;
 
-        Cursor teiCursor = briteDatabase.query(TEI_COUNT);
-        if (teiCursor != null && teiCursor.moveToFirst()) {
-            currentTei = teiCursor.getInt(0);
-            teiCursor.close();
-        }
-        if(teiCursor != null)
-            teiCursor.close();
-
-        Cursor eventCursor = briteDatabase.query(EVENT_COUNT);
-        if (eventCursor != null && eventCursor.moveToFirst()) {
-            currentEvent = eventCursor.getInt(0);
-            eventCursor.close();
+        try (Cursor teiCursor = briteDatabase.query(TEI_COUNT)) {
+            if (teiCursor != null && teiCursor.moveToFirst()) {
+                currentTei = teiCursor.getInt(0);
+            }
         }
 
-        if(eventCursor != null)
-            eventCursor.close();
-
+        try (Cursor eventCursor = briteDatabase.query(EVENT_COUNT)) {
+            if (eventCursor != null && eventCursor.moveToFirst()) {
+                currentEvent = eventCursor.getInt(0);
+            }
+        }
         return Flowable.just(Pair.create(currentEvent, currentTei));
-
     }
 
 
@@ -442,22 +432,22 @@ public class MetadataRepositoryImpl implements MetadataRepository {
         String optionGroupQuery = "SELECT Option.* FROM Option " +
                 "JOIN OptionGroupOptionLink ON OptionGroupOptionLink.option = Option.uid  " +
                 "AND Option.optionSet = ? " +
-                "AND OptionGroupOptionLink.optionGroup NOT IN ("+ formattedOptionGroupsToHide +") " +
+                "AND OptionGroupOptionLink.optionGroup NOT IN (" + formattedOptionGroupsToHide + ") " +
                 "ORDER BY  Option.sortOrder ASC";
 
         return briteDatabase.createQuery(OptionGroupOptionLinkTableInfo.TABLE_INFO.name(), optionGroupQuery, idOptionSet)
                 .mapToList(OptionModel::create)
-                .flatMap( list -> {
-                    if (list.isEmpty()){
+                .flatMap(list -> {
+                    if (list.isEmpty()) {
                         String optionQuery = !isEmpty(text) ?
                                 "select Option.* from OptionSet " +
                                         "JOIN Option ON Option.optionSet = OptionSet.uid " +
                                         "where OptionSet.uid = ? and Option.displayName like '%" + text + "%' " +
-                                        "AND Option.uid NOT IN ("+ formattedOptionsToHide +") " + pageQuery :
+                                        "AND Option.uid NOT IN (" + formattedOptionsToHide + ") " + pageQuery :
                                 "select Option.* from OptionSet " +
                                         "JOIN Option ON Option.optionSet = OptionSet.uid " +
                                         "where OptionSet.uid = ? " +
-                                        "AND Option.uid NOT IN ("+ formattedOptionsToHide +") " + pageQuery;
+                                        "AND Option.uid NOT IN (" + formattedOptionsToHide + ") " + pageQuery;
 
                         return briteDatabase.createQuery(OptionSetModel.TABLE, optionQuery, idOptionSet)
                                 .mapToList(OptionModel::create);
@@ -466,6 +456,4 @@ public class MetadataRepositoryImpl implements MetadataRepository {
                     }
                 });
     }
-
-
 }
