@@ -24,6 +24,8 @@ import androidx.annotation.NonNull;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 
+import static android.text.TextUtils.isEmpty;
+
 public final class EnrollmentRuleEngineRepository implements RuleEngineRepository {
     private static final String QUERY_ENROLLMENT = "SELECT\n" +
             "  Enrollment.uid,\n" +
@@ -113,8 +115,15 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
     private Flowable<List<RuleAttributeValue>> queryAttributeValues() {
         return briteDatabase.createQuery(Arrays.asList(EnrollmentModel.TABLE,
                 TrackedEntityAttributeValueModel.TABLE), QUERY_ATTRIBUTE_VALUES, enrollmentUid == null ? "" : enrollmentUid)
-                .mapToList(cursor -> RuleAttributeValue.create(
-                        cursor.getString(0), cursor.getString(1))
+                .mapToList(cursor -> {
+                            String value = cursor.getString(1);
+                            boolean useCode = cursor.getInt(2) == 1;
+                            String optionCode = cursor.getString(3);
+                            String optionName = cursor.getString(4);
+                            if (!isEmpty(optionCode) && !isEmpty(optionName))
+                                value = useCode ? optionCode : optionName;
+                            return RuleAttributeValue.create(cursor.getString(0), value);
+                        }
                 ).toFlowable(BackpressureStrategy.LATEST);
     }
 
