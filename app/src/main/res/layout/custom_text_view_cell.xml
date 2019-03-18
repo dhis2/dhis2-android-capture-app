@@ -20,8 +20,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minHeight="70dp"
-        android:padding="5dp">
+        android:minHeight="70dp">
 
 
         <LinearLayout
@@ -30,28 +29,29 @@
             android:layout_below="@id/renderImage"
             android:orientation="horizontal">
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/input_layout"
-                android:layout_width="0dp"
-                android:layout_weight="1"
+            <org.dhis2.utils.custom_views.TextInputAutoCompleteTextView
+                android:id="@+id/input_editText"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:theme="@style/loginInputText"
-                android:textColorHint="@color/text_black_808"
-                tools:hint="hint">
+                android:imeOptions="actionNext"
+                android:maxLines="1"
+                android:layout_weight="1"
+                android:textAlignment="textStart"
+                android:textColor="@color/text_black_333"
+                android:textSize="15sp"
+                android:minHeight="70dp"
+                tools:text="hello" />
 
-                <org.dhis2.utils.custom_views.TextInputAutoCompleteTextView
-                    android:id="@+id/input_editText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:imeOptions="actionNext"
-                    android:maxLines="1"
-                    android:textAlignment="textStart"
-                    android:textColor="@color/text_black_333"
-                    android:textSize="15sp"
-                    tools:text="hello" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
+            <ImageView
+                android:id="@+id/ic_mandatory"
+                android:layout_width="10dp"
+                android:layout_height="10dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="12dp"
+                android:src="@drawable/ic_mandatory"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
         </LinearLayout>
     </RelativeLayout>
 </layout>

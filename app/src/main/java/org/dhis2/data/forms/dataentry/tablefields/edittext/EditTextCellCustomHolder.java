@@ -79,25 +79,25 @@ final class EditTextCellCustomHolder extends FormViewHolder {
         this.editTextModel = (EditTextModel) model;
         setInputType(editTextModel.valueType());
 
-        editText.setText(editTextModel.value() == null ?
+        customBinding.inputEditText.setText(editTextModel.value() == null ?
                 null : valueOf(editTextModel.value()));
 
-       /* if (editTextModel.mandatory())
+        if (editTextModel.mandatory())
             customBinding.icMandatory.setVisibility(View.VISIBLE);
         else
-            customBinding.icMandatory.setVisibility(View.INVISIBLE);*/
+            customBinding.icMandatory.setVisibility(View.GONE);
 
         if (editTextModel.editable()) {
             if(accessDataWrite) {
-                editText.setEnabled(true);
-                editText.setBackground(null);
+                customBinding.inputEditText.setEnabled(true);
+                customBinding.inputEditText.setBackground(null);
             }else{
-                editText.setEnabled(false);
-                editText.setBackgroundColor(ContextCompat.getColor(editText.getContext(), R.color.bg_black_e6e));
+                customBinding.inputEditText.setEnabled(false);
+                customBinding.inputEditText.setBackgroundColor(ContextCompat.getColor(editText.getContext(), R.color.bg_black_e6e));
             }
         } else {
-            editText.setEnabled(false);
-            editText.setBackgroundColor(ContextCompat.getColor(editText.getContext(), R.color.bg_black_e6e));
+            customBinding.inputEditText.setEnabled(false);
+            customBinding.inputEditText.setBackgroundColor(ContextCompat.getColor(editText.getContext(), R.color.bg_black_e6e));
         }
 
         editText.setOnFocusChangeListener((v, hasFocus) -> {
