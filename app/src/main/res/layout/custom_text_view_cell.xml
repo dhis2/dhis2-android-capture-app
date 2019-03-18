@@ -8,45 +8,50 @@
         <import type="android.view.View" />
 
         <variable
+            name="renderType"
+            type="java.lang.String" />
+
+        <variable
             name="isEditable"
             type="androidx.databinding.ObservableBoolean" />
 
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/layout"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:minHeight="@dimen/default_cell_height">
+        android:layout_height="wrap_content"
+        android:minHeight="70dp"
+        android:padding="5dp">
 
-        <ImageView
-            android:id="@+id/ic_mandatory"
-            android:layout_width="10dp"
-            android:layout_height="10dp"
-            android:layout_marginTop="12dp"
-            android:layout_marginEnd="12dp"
-            android:src="@drawable/ic_mandatory"
-            android:visibility="invisible"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
 
-        <EditText
-            android:id="@+id/editTextCell"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@null"
-            android:imeOptions="actionNext"
-            android:maxLines="1"
-            android:textAlignment="center"
-            android:textColor="@color/text_black_333"
-            android:textSize="15sp"
-            android:minHeight="@dimen/default_cell_height"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="hello" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            android:layout_height="wrap_content"
+            android:layout_below="@id/renderImage"
+            android:orientation="horizontal">
 
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/input_layout"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:theme="@style/loginInputText"
+                android:textColorHint="@color/text_black_808"
+                tools:hint="hint">
 
+                <org.dhis2.utils.custom_views.TextInputAutoCompleteTextView
+                    android:id="@+id/input_editText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionNext"
+                    android:maxLines="1"
+                    android:textAlignment="textStart"
+                    android:textColor="@color/text_black_333"
+                    android:textSize="15sp"
+                    tools:text="hello" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+        </LinearLayout>
+    </RelativeLayout>
 </layout>
