@@ -7,5 +7,5 @@ import io.reactivex.Observable
  */
 
 interface SplashRepository {
-    val iconForFlag: Observable<String>
+    fun iconForFlag(): Observable<String>
 }

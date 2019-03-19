@@ -75,12 +75,15 @@ public class RadioButtonHolder extends FormViewHolder {
             RowAction rowAction;
             switch (checkedId) {
                 case R.id.yes:
+                    viewModel = (RadioButtonViewModel) checkBoxViewModel.withValue(String.valueOf(true));
                     rowAction = RowAction.create(checkBoxViewModel.uid(), String.valueOf(true));
                     break;
                 case R.id.no:
+                    viewModel = (RadioButtonViewModel) checkBoxViewModel.withValue(String.valueOf(false));
                     rowAction = RowAction.create(checkBoxViewModel.uid(), String.valueOf(false));
                     break;
                 default:
+                    viewModel = (RadioButtonViewModel) checkBoxViewModel.withValue(null);
                     rowAction = RowAction.create(checkBoxViewModel.uid(), null);
                     break;
             }

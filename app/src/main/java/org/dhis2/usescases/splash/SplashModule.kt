@@ -18,21 +18,17 @@ import dagger.Provides
 @Module
 class SplashModule internal constructor(serverComponent: ServerComponent?) {
 
-    private val userManager: UserManager?
-
-    init {
-        this.userManager = serverComponent?.userManager()
-    }
+    private val userManager: UserManager? = serverComponent?.userManager()
 
     @Provides
     @PerActivity
-    internal fun providePresenter(splashRepository: SplashRepository): SplashContracts.Presenter {
+    fun providePresenter(splashRepository: SplashRepository): SplashContracts.Presenter {
         return SplashPresenter(userManager, splashRepository)
     }
 
     @Provides
     @PerActivity
-    internal fun splashRepository(briteDatabase: BriteDatabase): SplashRepository {
+    fun provideSplashRepository(briteDatabase: BriteDatabase): SplashRepository {
         return SplashRepositoryImpl(briteDatabase)
     }
 

@@ -435,6 +435,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                                 })
                                 .map(Result::success)
                                 .onErrorReturn(error -> Result.failure(new Exception(error)))
+
                 );
     }
 
@@ -522,7 +523,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                     try (Cursor hideRulesCursor = briteDatabase.query("SELECT ProgramRule.* FROM ProgramRule " +
                                     "JOIN ProgramRuleAction ON ProgramRuleAction.programRule = ProgramRule.uid " +
                                     "WHERE ProgramRule.program = ? " +
-                                    "AND ProgramRuleAction.programRuleActionType IN (?,?,?,?,?)",
+                                    "AND ProgramRuleAction.programRuleActionType IN (?,?,?,?,?,?,?)",
                             selectedProgramUid.get(),
                             ProgramRuleActionType.HIDEFIELD.name(), ProgramRuleActionType.HIDESECTION.name(),
                             ProgramRuleActionType.ASSIGN.name(), ProgramRuleActionType.SHOWERROR.name(),
@@ -746,8 +747,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
             " WHERE Event.uid = ? AND value IS NOT NULL AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "';";
 
     @NonNull
-    private Flowable<List<RuleDataValue>> queryDataValues
-            (String eventUid) {
+    private Flowable<List<RuleDataValue>> queryDataValues(String eventUid) {
         return briteDatabase.createQuery(Arrays.asList(EventModel.TABLE,
                 TrackedEntityDataValueModel.TABLE), QUERY_VALUES, eventUid == null ? "" : eventUid)
                 .mapToList(cursor -> {

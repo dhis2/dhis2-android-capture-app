@@ -12,7 +12,6 @@ import org.dhis2.R;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.IndicatorsFragment;
@@ -23,8 +22,8 @@ import org.dhis2.usescases.teiDashboard.eventDetail.EventDetailActivity;
 import org.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
 import org.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.EventCreationType;
 import org.dhis2.utils.DateUtils;
+import org.dhis2.utils.EventCreationType;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
@@ -131,10 +130,10 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                     metadataRepository.getTEIEnrollments(teUid),
                     DashboardProgramModel::new)
                     .flatMap(dashboardProgramModel1 -> metadataRepository.getObjectStylesForPrograms(dashboardProgramModel1.getEnrollmentProgramModels())
-                    .map(stringObjectStyleMap -> {
-                        dashboardProgramModel1.setProgramsObjectStyles(stringObjectStyleMap);
-                        return dashboardProgramModel1;
-                    }))
+                            .map(stringObjectStyleMap -> {
+                                dashboardProgramModel1.setProgramsObjectStyles(stringObjectStyleMap);
+                                return dashboardProgramModel1;
+                            }))
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
@@ -298,7 +297,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
             teiFragment.startActivityForResult(intent, TEIDataFragment.getEventRequestCode(), null);  */
             Intent intent = new Intent(teiFragment.getContext(), EventInitialActivity.class);
             intent.putExtras(EventInitialActivity.getBundle(
-                    programUid,uid,EventCreationType.DEFAULT.name(),teUid,null,null,null,dashboardProgramModel.getCurrentEnrollment().uid(),0
+                    programUid, uid, EventCreationType.DEFAULT.name(), teUid, null, null, null, dashboardProgramModel.getCurrentEnrollment().uid(), 0
             ));
             teiFragment.startActivityForResult(intent, TEIDataFragment.getEventRequestCode(), null);
         }
@@ -370,7 +369,6 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         try {
             Relationship relationship = RelationshipHelper.teiToTeiRelationship(teUid, trackEntityInstance_A, relationshipType);
             d2.relationshipModule().relationships.add(relationship);
-//            dashboardRepository.updateTeiState(); SDK now updating TEI state
         } catch (D2Error e) {
             view.displayMessage(e.errorDescription());
         }
@@ -442,7 +440,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         compositeDisposable.add(dashboardRepository.getIndicators(programUid)
                 .map(indicators ->
                         Observable.fromIterable(indicators)
-                                .filter(indicator -> indicator.displayInForm())
+                                .filter(indicator -> indicator.displayInForm() != null && indicator.displayInForm())
                                 .map(indicator -> {
                                     String indicatorValue = d2.programModule().programIndicatorEngine.getProgramIndicatorValue(
                                             dashboardProgramModel.getCurrentEnrollment().uid(),
@@ -577,20 +575,20 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
     public void getCatComboOptions(EventModel event) {
         compositeDisposable.add(
-                    Observable.zip(
-                            metadataRepository.getCategoryComboOptions(dashboardProgramModel.getCurrentProgram().categoryCombo()),
-                            metadataRepository.getCategoryFromCategoryCombo(dashboardProgramModel.getCurrentProgram().categoryCombo()),
-                            Pair::create
-                    )
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(pair -> {
-                            for (ProgramStageModel programStage : dashboardProgramModel.getProgramStages()) {
-                                if (event.programStage().equals(programStage.uid()))
-                                    view.showCatComboDialog(event.uid(), pair.val1().displayName(), pair.val0(), programStage.displayName());
-                            }
-                        },
-                        Timber::e));
+                Observable.zip(
+                        metadataRepository.getCategoryComboOptions(dashboardProgramModel.getCurrentProgram().categoryCombo()),
+                        metadataRepository.getCategoryFromCategoryCombo(dashboardProgramModel.getCurrentProgram().categoryCombo()),
+                        Pair::create
+                )
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(pair -> {
+                                    for (ProgramStageModel programStage : dashboardProgramModel.getProgramStages()) {
+                                        if (event.programStage().equals(programStage.uid()))
+                                            view.showCatComboDialog(event.uid(), pair.val1().displayName(), pair.val0(), programStage.displayName());
+                                    }
+                                },
+                                Timber::e));
     }
 
     @Override

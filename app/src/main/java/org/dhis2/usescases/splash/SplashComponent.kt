@@ -6,7 +6,7 @@ import org.dhis2.data.dagger.PerActivity
 import dagger.Subcomponent
 
 @PerActivity
-@Subcomponent(modules = arrayOf(SplashModule::class))
+@Subcomponent(modules = [SplashModule::class])
 interface SplashComponent {
     fun inject(splashActivity: SplashActivity)
 }

@@ -2,25 +2,20 @@ package org.dhis2.usescases.splash
 
 import android.os.Bundle
 import android.view.View
-
+import androidx.databinding.DataBindingUtil
 import org.dhis2.App
-import org.dhis2.AppComponent
 import org.dhis2.R
-import org.dhis2.data.server.ServerComponent
 import org.dhis2.databinding.ActivitySplashBinding
 import org.dhis2.usescases.general.ActivityGlobalAbstract
-
 import javax.inject.Inject
-
-import androidx.databinding.DataBindingUtil
-import io.reactivex.functions.Consumer
 
 class SplashActivity : ActivityGlobalAbstract(), SplashContracts.View {
 
-    internal var binding: ActivitySplashBinding
+
+    lateinit var binding: ActivitySplashBinding
 
     @Inject
-    internal var presenter: SplashContracts.Presenter? = null
+    lateinit var presenter: SplashContracts.Presenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val appComponent = (applicationContext as App).appComponent()
@@ -32,22 +27,20 @@ class SplashActivity : ActivityGlobalAbstract(), SplashContracts.View {
 
     override fun onResume() {
         super.onResume()
-        presenter!!.init(this)
+        presenter.init(this)
     }
 
     override fun onPause() {
-        presenter!!.destroy()
+        presenter.destroy()
         super.onPause()
     }
 
-    override fun renderFlag(): Consumer<Int> {
-        return { flag ->
-            if (flag != -1) {
-                binding.flag.setImageResource(flag!!)
-                binding.logo.visibility = View.GONE
-                binding.flag.visibility = View.VISIBLE
-            }
-            presenter!!.isUserLoggedIn()
+    override fun renderFlag(resource: Int) {
+        if (resource != -1) {
+            binding.flag.setImageResource(resource)
+            binding.logo.visibility = View.GONE
+            binding.flag.visibility = View.VISIBLE
         }
+        presenter.isUserLoggedIn()
     }
 }
