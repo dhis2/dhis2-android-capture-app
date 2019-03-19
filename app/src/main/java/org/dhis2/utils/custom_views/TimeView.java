@@ -5,7 +5,6 @@ import android.content.Context;
 import android.text.format.DateFormat;
 import android.util.AttributeSet;
 import android.view.View;
-import android.widget.EditText;
 
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -20,7 +19,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-import androidx.appcompat.widget.AppCompatEditText;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
 import timber.log.Timber;
@@ -31,7 +29,8 @@ import timber.log.Timber;
 
 public class TimeView extends FieldLayout implements View.OnClickListener {
 
-    private EditText editText;
+    private TextInputEditText editText;
+    private TextInputLayout inputLayout;
     private ViewDataBinding binding;
 
     private OnDateSelected listener;
@@ -63,6 +62,7 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
     private void setLayout() {
         binding = DataBindingUtil.inflate(inflater, R.layout.time_view, this, true);
         editText = findViewById(R.id.inputEditText);
+        inputLayout = findViewById(R.id.inputLayout);
         editText.setFocusable(false); //Makes editText not editable
         editText.setClickable(true);//  but clickable
         editText.setOnFocusChangeListener(this::onFocusChanged);
@@ -111,7 +111,7 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
     }
 
     public void setWarningOrError(String msg) {
-        editText.setError(msg);
+        inputLayout.setError(msg);
     }
 
     public void setDateListener(OnDateSelected listener) {
@@ -155,7 +155,7 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
         dialog.show();
     }
 
-    public EditText getEditText() {
+    public TextInputEditText getEditText() {
         return editText;
     }
 

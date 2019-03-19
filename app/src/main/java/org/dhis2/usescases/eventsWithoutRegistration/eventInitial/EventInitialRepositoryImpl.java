@@ -91,15 +91,19 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     @NonNull
     @Override
     public Observable<CategoryComboModel> catComboModel(String programUid) {
-        String catComboQuery = "SELECT * FROM CategoryCombo JOIN Program ON Program.categoryCombo = CategoryCombo.uid WHERE Program.uid = ?";
+        String catComboQuery = "SELECT CategoryCombo.* FROM CategoryCombo JOIN Program ON Program.categoryCombo = CategoryCombo.uid WHERE Program.uid = ?";
         return briteDatabase.createQuery(CategoryComboModel.TABLE, catComboQuery, programUid).mapToOne(CategoryComboModel::create);
     }
 
     @NonNull
     @Override
     public Observable<List<CategoryOptionComboModel>> catCombo(String programUid) {
-        String catComboQuery = "SELECT CategoryOptionCombo.* FROM CategoryOptionCombo JOIN CategoryCombo ON CategoryCombo.uid= CategoryOptionCombo.categoryCombo " +
-                "JOIN Program ON Program.categoryCombo = CategoryCombo.uid WHERE program.uid = ?";
+        String catComboQuery = "SELECT CategoryOptionCombo.* FROM CategoryOptionCombo " +
+                "JOIN CategoryCombo ON CategoryCombo.uid= CategoryOptionCombo.categoryCombo " +
+                "JOIN CategoryOptionComboCategoryOptionLink ON CategoryOptionComboCategoryOptionLink.categoryOptionCombo = CategoryOptionCombo.uid " +
+                "JOIN CategoryOption ON CategoryOptionComboCategoryOptionLink.CategoryOption = CategoryOption.uid " +
+                "JOIN Program ON Program.categoryCombo = CategoryCombo.uid " +
+                "WHERE categoryOption.accessDataWrite AND program.uid = ?";
         return briteDatabase.createQuery(CategoryOptionComboModel.TABLE, catComboQuery, programUid)
                 .mapToList(CategoryOptionComboModel::create);
     }
@@ -141,10 +145,10 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
         String uid = codeGenerator.generate();
 
         if (categoryOptionComboUid != null) {
-            Cursor cursorCatOpt = briteDatabase.query(SELECT_CAT_OPTION_FROM_OPTION_COMBO, categoryOptionComboUid);
-            if (cursorCatOpt != null && cursorCatOpt.moveToFirst()) {
-                categoryOptionsUid = cursorCatOpt.getString(0);
-                cursorCatOpt.close();
+            try (Cursor cursorCatOpt = briteDatabase.query(SELECT_CAT_OPTION_FROM_OPTION_COMBO, categoryOptionComboUid)) {
+                if (cursorCatOpt != null && cursorCatOpt.moveToFirst()) {
+                    categoryOptionsUid = cursorCatOpt.getString(0);
+                }
             }
         }
 
@@ -387,70 +391,69 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     @Override
     public void deleteEvent(String eventId, String trackedEntityInstance) {
-        Cursor eventCursor = briteDatabase.query("SELECT Event.* FROM Event WHERE Event.uid = ?", eventId);
-        if (eventCursor != null && eventCursor.moveToNext()) {
-            EventModel eventModel = EventModel.create(eventCursor);
-            if (eventModel.state() == State.TO_POST) {
-                String DELETE_WHERE = String.format(
-                        "%s.%s = ?",
-                        EventModel.TABLE, EventModel.Columns.UID
-                );
-                briteDatabase.delete(EventModel.TABLE, DELETE_WHERE, eventId);
-            } else {
-                ContentValues contentValues = eventModel.toContentValues();
-                contentValues.put(EventModel.Columns.STATE, State.TO_DELETE.name());
-                briteDatabase.update(EventModel.TABLE, contentValues, EventModel.Columns.UID + " = ?", eventId);
+        try (Cursor eventCursor = briteDatabase.query("SELECT Event.* FROM Event WHERE Event.uid = ?", eventId)) {
+            if (eventCursor != null && eventCursor.moveToNext()) {
+                EventModel eventModel = EventModel.create(eventCursor);
+                if (eventModel.state() == State.TO_POST) {
+                    String DELETE_WHERE = String.format(
+                            "%s.%s = ?",
+                            EventModel.TABLE, EventModel.Columns.UID
+                    );
+                    briteDatabase.delete(EventModel.TABLE, DELETE_WHERE, eventId);
+                } else {
+                    ContentValues contentValues = eventModel.toContentValues();
+                    contentValues.put(EventModel.Columns.STATE, State.TO_DELETE.name());
+                    briteDatabase.update(EventModel.TABLE, contentValues, EventModel.Columns.UID + " = ?", eventId);
+                }
+
+                if (!isEmpty(eventModel.enrollment()))
+                    updateEnrollment(eventModel.enrollment());
+
+                if (trackedEntityInstance != null)
+                    updateTei(trackedEntityInstance);
             }
-
-            if (!isEmpty(eventModel.enrollment()))
-                updateEnrollment(eventModel.enrollment());
-
-            if (trackedEntityInstance != null)
-                updateTei(trackedEntityInstance);
-
-            eventCursor.close();
         }
     }
 
     @Override
     public boolean isEnrollmentOpen() {
-        Boolean isEnrollmentOpen = true;
-        Cursor enrollmentCursor = briteDatabase.query("SELECT Enrollment.* FROM Enrollment JOIN Event ON Event.enrollment = Enrollment.uid WHERE Event.uid = ?", eventUid);
-        if (enrollmentCursor != null) {
-            if (enrollmentCursor.moveToFirst()) {
-                EnrollmentModel enrollment = EnrollmentModel.create(enrollmentCursor);
-                isEnrollmentOpen = enrollment.enrollmentStatus() == EnrollmentStatus.ACTIVE;
+        boolean isEnrollmentOpen = true;
+        if (!isEmpty(eventUid)) {
+            try (Cursor enrollmentCursor = briteDatabase.query("SELECT Enrollment.* FROM Enrollment JOIN Event ON Event.enrollment = Enrollment.uid WHERE Event.uid = ?", eventUid)) {
+                if (enrollmentCursor != null && enrollmentCursor.moveToFirst()) {
+                    EnrollmentModel enrollment = EnrollmentModel.create(enrollmentCursor);
+                    isEnrollmentOpen = enrollment.enrollmentStatus() == EnrollmentStatus.ACTIVE;
+                }
             }
-            enrollmentCursor.close();
         }
         return isEnrollmentOpen;
     }
 
     private void updateEnrollment(String enrollmentUid) {
         String selectEnrollment = "SELECT * FROM Enrollment WHERE uid = ?";
-        Cursor enrollmentCursor = briteDatabase.query(selectEnrollment, enrollmentUid);
-        if (enrollmentCursor != null && enrollmentCursor.moveToFirst()) {
-            EnrollmentModel enrollment = EnrollmentModel.create(enrollmentCursor);
-            ContentValues cv = enrollment.toContentValues();
-            cv.put(EnrollmentModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
-            cv.put(EnrollmentModel.Columns.STATE,
-                    enrollment.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
-            briteDatabase.update(EnrollmentModel.TABLE, cv, "uid = ?", enrollmentUid);
-            enrollmentCursor.close();
+        try (Cursor enrollmentCursor = briteDatabase.query(selectEnrollment, enrollmentUid)) {
+            if (enrollmentCursor != null && enrollmentCursor.moveToFirst()) {
+                EnrollmentModel enrollment = EnrollmentModel.create(enrollmentCursor);
+                ContentValues cv = enrollment.toContentValues();
+                cv.put(EnrollmentModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
+                cv.put(EnrollmentModel.Columns.STATE,
+                        enrollment.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
+                briteDatabase.update(EnrollmentModel.TABLE, cv, "uid = ?", enrollmentUid);
+            }
         }
     }
 
     private void updateTei(String teiUid) {
         String selectTei = "SELECT * FROM TrackedEntityInstance WHERE uid = ?";
-        Cursor teiCursor = briteDatabase.query(selectTei, teiUid);
-        if (teiCursor != null && teiCursor.moveToFirst()) {
-            TrackedEntityInstanceModel teiModel = TrackedEntityInstanceModel.create(teiCursor);
-            ContentValues cv = teiModel.toContentValues();
-            cv.put(TrackedEntityInstanceModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
-            cv.put(TrackedEntityInstanceModel.Columns.STATE,
-                    teiModel.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
-            briteDatabase.update(TrackedEntityInstanceModel.TABLE, cv, "uid = ?", teiUid);
-            teiCursor.close();
+        try (Cursor teiCursor = briteDatabase.query(selectTei, teiUid)) {
+            if (teiCursor != null && teiCursor.moveToFirst()) {
+                TrackedEntityInstanceModel teiModel = TrackedEntityInstanceModel.create(teiCursor);
+                ContentValues cv = teiModel.toContentValues();
+                cv.put(TrackedEntityInstanceModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
+                cv.put(TrackedEntityInstanceModel.Columns.STATE,
+                        teiModel.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
+                briteDatabase.update(TrackedEntityInstanceModel.TABLE, cv, "uid = ?", teiUid);
+            }
         }
     }
 }

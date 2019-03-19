@@ -19,6 +19,7 @@ import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.DialogOptionSetBinding;
 import org.dhis2.utils.EndlessRecyclerViewScrollListener;
+import org.hisp.dhis.android.core.option.OptionModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +33,7 @@ import timber.log.Timber;
 
 public class OptionSetDialog extends DialogFragment {
 
-    static OptionSetDialog instace;
+    private static OptionSetDialog instace;
     private DialogOptionSetBinding binding;
     private CompositeDisposable disposable;
     //1st param is text to search, 2nd param is uid of optionSet,3rd param is page
@@ -53,6 +54,10 @@ public class OptionSetDialog extends DialogFragment {
         return instace;
     }
 
+    public static Boolean isCreated(){
+        return instace != null;
+    }
+
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Dialog dialog = super.onCreateDialog(savedInstanceState);
@@ -67,7 +72,7 @@ public class OptionSetDialog extends DialogFragment {
         binding = DataBindingUtil.inflate(inflater, R.layout.dialog_option_set, container, false);
 
 
-        binding.title.setText(optionSet.description());
+        binding.title.setText(optionSet.label());
         disposable = new CompositeDisposable();
 
         endlessScrollListener = new EndlessRecyclerViewScrollListener(binding.recycler.getLayoutManager(), 2, 0) {
@@ -112,7 +117,7 @@ public class OptionSetDialog extends DialogFragment {
         return this;
     }
 
-    public OptionSetDialog setOptions(List<String> options) {
+    public OptionSetDialog setOptions(List<OptionModel> options) {
         adapter.setOptions(options,endlessScrollListener.getCurrentPage());
         return this;
     }

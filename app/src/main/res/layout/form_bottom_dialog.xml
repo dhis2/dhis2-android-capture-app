@@ -72,18 +72,18 @@
                 android:text="@string/reschedule"
                 android:visibility="@{canWrite &amp;&amp; isEnrollmentOpen &amp;&amp;!hasExpired &amp;&amp;reschedule?View.VISIBLE:View.GONE}" />
 
-            <TextView
+          <!--  <TextView
                 android:id="@+id/completeAndAddNew"
                 style="@style/BottomDialogItem"
                 android:onClick="@{()->listener.onActionSelected(ActionType.COMPLETE_ADD_NEW)}"
                 android:text="@string/complete_add_new"
-                android:visibility="@{canWrite &amp;&amp; isEnrollmentOpen &amp;&amp;!hasExpired &amp;&amp;canComplete?View.VISIBLE:View.GONE}" />
+                android:visibility="@{canWrite &amp;&amp; isEnrollmentOpen &amp;&amp;!hasExpired &amp;&amp;canComplete?View.VISIBLE:View.GONE}" />-->
 
             <TextView
                 android:id="@+id/complete"
                 style="@style/BottomDialogItem"
                 android:onClick="@{()->listener.onActionSelected(ActionType.COMPLETE)}"
-                android:text="@string/complete"
+                android:text="@string/finish_and_complete"
                 android:visibility="@{canWrite &amp;&amp; isEnrollmentOpen &amp;&amp;!hasExpired &amp;&amp;canComplete?View.VISIBLE:View.GONE}" />
 
             <!--<TextView
@@ -92,12 +92,12 @@
                 android:onClick="@{()->listener.onActionSelected(ActionType.COMPLETE_LATER)}"
                 android:text="@string/complete_later"
                 android:visibility="@{canWrite &amp;&amp; isEnrollmentOpen &amp;&amp;canComplete?View.VISIBLE:View.GONE}" />-->
-            <TextView
+          <!--  <TextView
                 android:id="@+id/finishAndAddNew"
                 style="@style/BottomDialogItem"
                 android:onClick="@{()->listener.onActionSelected(ActionType.FINISH_ADD_NEW)}"
                 android:text="@string/finish_add_new"
-                android:visibility="@{canWrite &amp;&amp; isEnrollmentOpen &amp;&amp;!hasExpired ? View.VISIBLE:View.GONE}" />
+                android:visibility="@{canWrite &amp;&amp; isEnrollmentOpen &amp;&amp;!hasExpired ? View.VISIBLE:View.GONE}" />-->
 
             <TextView
                 android:id="@+id/finish"

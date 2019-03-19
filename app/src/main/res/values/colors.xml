@@ -346,6 +346,8 @@
     <color name="event_yellow_pressed">#b7ac89</color>
     <color name="event_gray">#f8f9f9</color>
     <color name="event_gray_pressed">#dcdede</color>
+    <color name="event_dark_gray">#a8707070</color>
+    <color name="event_dark_gray_pressed">#a84e4e4e</color>
 
     <color name="blue_4fa">#4fa8d1</color>
     <color name="blue_fab">#1D69A3</color>

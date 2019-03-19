@@ -25,12 +25,15 @@ public class FileRow implements Row<FileHolder, FileViewModel> {
     @NonNull
     private final FlowableProcessor<RowAction> processor;
     private final boolean isBgTransparent;
+    private boolean isSearchMode = false;
+
 
     public FileRow(@NonNull LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor, boolean isBgTransparent) {
         this.inflater = layoutInflater;
         this.processor = processor;
         this.isBgTransparent = isBgTransparent;
         this.renderType = null;
+        isSearchMode = true;
     }
 
     public FileRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor,

@@ -2,6 +2,7 @@ package org.dhis2.utils;
 
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
+import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.rules.models.RuleAction;
@@ -11,6 +12,8 @@ import org.hisp.dhis.rules.models.RuleActionDisplayKeyValuePair;
 import org.hisp.dhis.rules.models.RuleActionDisplayText;
 import org.hisp.dhis.rules.models.RuleActionErrorOnCompletion;
 import org.hisp.dhis.rules.models.RuleActionHideField;
+import org.hisp.dhis.rules.models.RuleActionHideOption;
+import org.hisp.dhis.rules.models.RuleActionHideOptionGroup;
 import org.hisp.dhis.rules.models.RuleActionHideProgramStage;
 import org.hisp.dhis.rules.models.RuleActionHideSection;
 import org.hisp.dhis.rules.models.RuleActionSetMandatoryField;
@@ -24,7 +27,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import androidx.annotation.NonNull;
-import timber.log.Timber;
 
 /**
  * QUADRAM. Created by ppajuelo on 13/06/2018.
@@ -73,6 +75,10 @@ public class RulesUtilsProviderImpl implements RulesUtilsProvider {
                 errorOnCompletion((RuleActionErrorOnCompletion) ruleAction, rulesActionCallbacks);
             else if (ruleAction instanceof RuleActionHideProgramStage)
                 hideProgramStage((RuleActionHideProgramStage) ruleAction, rulesActionCallbacks);
+            else if (ruleAction instanceof RuleActionHideOption)
+                hideOption((RuleActionHideOption) ruleAction, rulesActionCallbacks);
+            else if (ruleAction instanceof RuleActionHideOptionGroup)
+                hideOptionGroup((RuleActionHideOptionGroup) ruleAction, rulesActionCallbacks);
             else
                 rulesActionCallbacks.unsupportedRuleAction();
 
@@ -100,8 +106,6 @@ public class RulesUtilsProviderImpl implements RulesUtilsProvider {
 
         if (model != null)
             fieldViewModels.put(showWarning.field(), model.withWarning(showWarning.content() + data));
-        else
-            Timber.d("Field with uid %s is missing", showWarning.field());
 
     }
 
@@ -112,8 +116,6 @@ public class RulesUtilsProviderImpl implements RulesUtilsProvider {
 
         if (model != null)
             fieldViewModels.put(showError.field(), model.withError(showError.content()));
-        else
-            Timber.d("Field with uid %s is missing", showError.field());
 
         rulesActionCallbacks.setShowError(showError, model);
     }
@@ -131,7 +133,8 @@ public class RulesUtilsProviderImpl implements RulesUtilsProvider {
         String uid = displayText.content();
 
         EditTextViewModel textViewModel = EditTextViewModel.create(uid,
-                displayText.content(), false, ruleEffect.data(), "Information", 1, ValueType.TEXT, null, false, null, null);
+                displayText.content(), false, ruleEffect.data(), "Information", 1,
+                ValueType.TEXT, null, false, null, null, ObjectStyleModel.builder().build());
 
         if (this.currentFieldViewModels == null ||
                 !this.currentFieldViewModels.containsKey(uid)) {
@@ -152,8 +155,10 @@ public class RulesUtilsProviderImpl implements RulesUtilsProvider {
                              Map<String, FieldViewModel> fieldViewModels, RulesActionCallbacks rulesActionCallbacks) {
         rulesActionCallbacks.sethideSection(hideSection.programStageSection());
         for (FieldViewModel field : fieldViewModels.values()) {
-            if (Objects.equals(field.programStageSection(), hideSection.programStageSection()) && field.value() != null)
-                rulesActionCallbacks.save(field.uid(), null);
+            if (Objects.equals(field.programStageSection(), hideSection.programStageSection()) && field.value() != null) {
+                String uid = field.uid().contains(".") ? field.uid().split("\\.")[0] : field.uid();
+                rulesActionCallbacks.save(uid, null);
+            }
         }
     }
 
@@ -161,7 +166,7 @@ public class RulesUtilsProviderImpl implements RulesUtilsProvider {
                         Map<String, FieldViewModel> fieldViewModels, RulesActionCallbacks rulesActionCallbacks) {
 
         if (fieldViewModels.get(assign.field()) == null)
-            rulesActionCallbacks.save(assign.field(), ruleEffect.data());
+            rulesActionCallbacks.setCalculatedValue(assign.content(), ruleEffect.data());
         else {
             String value = fieldViewModels.get(assign.field()).value();
 
@@ -199,5 +204,15 @@ public class RulesUtilsProviderImpl implements RulesUtilsProvider {
 
     private void hideProgramStage(Map<String, ProgramStageModel> programStages, RuleActionHideProgramStage hideProgramStage) {
         programStages.remove(hideProgramStage.programStage());
+    }
+
+    private void hideOption(RuleActionHideOption hideOption,
+                            RulesActionCallbacks rulesActionCallbacks) {
+        rulesActionCallbacks.setOptionToHide(hideOption.field());
+    }
+
+    private void hideOptionGroup(RuleActionHideOptionGroup hideOptionGroup,
+                                 RulesActionCallbacks rulesActionCallbacks) {
+        rulesActionCallbacks.setOptionGroupToHide(hideOptionGroup.optionGroup());
     }
 }

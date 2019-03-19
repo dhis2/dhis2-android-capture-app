@@ -5,16 +5,12 @@ import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
 import android.text.TextUtils;
 import android.view.View;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 
-import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
@@ -46,6 +42,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -85,7 +84,6 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
         this.eventInitialRepository = eventInitialRepository;
         this.eventSummaryRepository = eventSummaryRepository;
         this.schedulerProvider = schedulerProvider;
-        Bindings.setMetadataRepository(metadataRepository);
     }
 
     @Override
@@ -138,10 +136,8 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
             );
 
         getOrgUnits(programId);
-        if (TextUtils.isEmpty(programStageId))
-            getProgramStages(programId);
-        else
-            getProgramStage(programStageId);
+
+        getProgramStages(programId, programStageId);
 
         if (eventId != null)
             getEventSections(eventId);
@@ -183,15 +179,6 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
                 ));
     }
 
-    private void getProgramStages(String programUid) {
-        compositeDisposable.add(eventInitialRepository.programStage(programUid)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        programStageModel -> view.setProgramStage(programStageModel),
-                        throwable -> view.showProgramStageSelection()
-                ));
-    }
 
     @Override
     public void getEventSections(@NonNull String eventId) {
@@ -229,8 +216,31 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     }
 
     @Override
+    public void getStageObjectStyle(String uid) {
+        compositeDisposable.add(metadataRepository.getObjectStyle(uid)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        objectStyleModel -> view.renderObjectStyle(objectStyleModel),
+                        Timber::e
+                )
+        );
+    }
+
+    @Override
     public void getProgramStage(String programStageUid) {
         compositeDisposable.add(eventInitialRepository.programStageWithId(programStageUid)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        programStageModel -> view.setProgramStage(programStageModel),
+                        throwable -> view.showProgramStageSelection()
+                ));
+    }
+
+    private void getProgramStages(String programUid, String programStageUid) {
+
+        compositeDisposable.add((TextUtils.isEmpty(programStageId) ? eventInitialRepository.programStage(programUid) : eventInitialRepository.programStageWithId(programStageUid))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -389,7 +399,9 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     public void goToSummary() {
         Bundle bundle = new Bundle();
         bundle.putString("event_id", eventId);
-        bundle.putString("program_id", programModel.uid());
+        if (programModel != null) {
+            bundle.putString("program_id", programModel.uid());
+        }
         view.startActivity(EventSummaryActivity.class, bundle, false, false, null);
     }
 

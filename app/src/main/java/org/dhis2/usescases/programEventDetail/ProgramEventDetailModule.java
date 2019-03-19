@@ -1,19 +1,17 @@
 package org.dhis2.usescases.programEventDetail;
 
-import androidx.annotation.NonNull;
+import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.metadata.MetadataRepository;
-import org.dhis2.usescases.programDetail.ProgramRepository;
-import org.dhis2.usescases.programDetail.ProgramRepositoryImpl;
-import com.squareup.sqlbrite2.BriteDatabase;
+import org.hisp.dhis.android.core.D2;
 
+import androidx.annotation.NonNull;
 import dagger.Module;
 import dagger.Provides;
 
 /**
  * Created by Cristian on 13/02/2018.
- *
  */
 @PerActivity
 @Module
@@ -30,7 +28,7 @@ public class ProgramEventDetailModule {
     @PerActivity
     ProgramEventDetailContract.Presenter providesPresenter(@NonNull ProgramEventDetailRepository programEventDetailRepository,
                                                            @NonNull MetadataRepository metadataRepository) {
-        return new ProgramEventDetailPresenter(programEventDetailRepository,metadataRepository);
+        return new ProgramEventDetailPresenter(programEventDetailRepository, metadataRepository);
     }
 
     @Provides
@@ -41,13 +39,7 @@ public class ProgramEventDetailModule {
 
     @Provides
     @PerActivity
-    ProgramEventDetailRepository eventDetailRepository(BriteDatabase briteDatabase) {
-        return new ProgramEventDetailRepositoryImpl(briteDatabase);
-    }
-
-    @Provides
-    @PerActivity
-    ProgramRepository homeRepository(BriteDatabase briteDatabase) {
-        return new ProgramRepositoryImpl(briteDatabase);
+    ProgramEventDetailRepository eventDetailRepository(BriteDatabase briteDatabase,D2 d2) {
+        return new ProgramEventDetailRepositoryImpl(briteDatabase,d2);
     }
 }

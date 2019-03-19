@@ -7,10 +7,13 @@ import android.os.Bundle;
 
 import org.dhis2.App;
 import org.dhis2.R;
+import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ActivityProgramStageSelectionBinding;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.Constants;
+import org.hisp.dhis.android.core.common.ObjectStyle;
+import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
@@ -52,7 +55,8 @@ public class ProgramStageSelectionActivity extends ActivityGlobalAbstract implem
     public void onCreate(@Nullable Bundle savedInstanceState) {
         programId = getIntent().getStringExtra("PROGRAM_UID");
         enrollmenId = getIntent().getStringExtra("ENROLLMENT_UID");
-        ((App) getApplicationContext()).userComponent().plus(new ProgramStageSelectionModule(programId, enrollmenId)).inject(this);
+        String eventCreationType =  getIntent().getStringExtra(EVENT_CREATION_TYPE);
+        ((App) getApplicationContext()).userComponent().plus(new ProgramStageSelectionModule(programId, enrollmenId, eventCreationType)).inject(this);
         super.onCreate(savedInstanceState);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_program_stage_selection);
@@ -77,7 +81,7 @@ public class ProgramStageSelectionActivity extends ActivityGlobalAbstract implem
     }
 
     @Override
-    public void setData(List<ProgramStageModel> programStageModels) {
+    public void setData(List<Pair<ProgramStageModel, ObjectStyleModel>> programStageModels) {
         if (programStageModels != null && !programStageModels.isEmpty()) {
             adapter.setProgramStageModels(programStageModels);
             adapter.notifyDataSetChanged();

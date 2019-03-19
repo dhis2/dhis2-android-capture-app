@@ -1,13 +1,11 @@
 package org.dhis2.data.forms.dataentry;
 
-import androidx.annotation.NonNull;
+import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.dagger.PerFragment;
 import org.dhis2.data.user.UserRepository;
-import com.squareup.sqlbrite2.BriteDatabase;
 
-
-
+import androidx.annotation.NonNull;
 import dagger.Module;
 import dagger.Provides;
 
@@ -28,13 +26,11 @@ public final class DataEntryStoreModule {
     @Provides
     @PerFragment
     DataEntryStore dataEntryRepository(@NonNull BriteDatabase briteDatabase,
-                                       @NonNull UserRepository userRepository/*, @NonNull CurrentDateProvider dateProvider*/) {
+                                       @NonNull UserRepository userRepository) {
         if (!isEmpty(arguments.event())) { // NOPMD
-            return new DataValueStore(briteDatabase,
-                    userRepository, /*dateProvider,*/ arguments.event());
+            return new DataValueStore(briteDatabase, userRepository, arguments.event());
         } else if (!isEmpty(arguments.enrollment())) { //NOPMD
-            return new AttributeValueStore(briteDatabase,
-                    /*dateProvider,*/ arguments.enrollment());
+            return new AttributeValueStore(briteDatabase, arguments.enrollment());
         } else {
             throw new IllegalArgumentException("Unsupported entity type");
         }

@@ -88,6 +88,7 @@ public final class EnrollmentStatusStore implements EnrollmentStatusEntryStore {
     public Flowable<Pair<Double, Double>> enrollmentCoordinates() {
         return briteDatabase.createQuery(EnrollmentModel.TABLE, "SELECT * FROM Enrollment WHERE uid = ? LIMIT 1", enrollment)
                 .mapToOne(EnrollmentModel::create)
+                .filter(enrollmentModel -> enrollmentModel.latitude() != null && enrollmentModel.longitude() != null)
                 .map(enrollmentModel ->
                         Pair.create(Double.valueOf(enrollmentModel.latitude()),
                                 Double.valueOf(enrollmentModel.longitude())))

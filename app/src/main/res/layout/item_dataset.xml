@@ -88,7 +88,6 @@
 
             tools:ignore="ContentDescription"
             tools:src="@drawable/ic_edit" />
-        <!--app:eventWithoutRegistrationStatusIcon='@{dataset}'-->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -98,6 +97,5 @@
             app:layout_constraintEnd_toStartOf="@id/status_icon"
             app:layout_constraintTop_toTopOf="@id/status_icon"
             tools:text="@string/event_open" />
-        <!--app:eventWithoutRegistrationStatusText='@{dataset}' va dentro-->
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -27,6 +27,7 @@
                 android:background="@color/colorGreyDefault"
                 android:gravity="center_vertical"
                 android:paddingStart="8dp"
+                android:paddingEnd="8dp"
                 android:textColor="?colorAccent"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"

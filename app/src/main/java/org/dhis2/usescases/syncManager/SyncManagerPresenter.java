@@ -16,9 +16,12 @@ import java.io.File;
 import java.util.concurrent.TimeUnit;
 
 import androidx.work.Constraints;
+import androidx.work.ExistingPeriodicWorkPolicy;
+import androidx.work.ExistingWorkPolicy;
 import androidx.work.NetworkType;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkContinuation;
 import androidx.work.WorkManager;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -65,6 +68,13 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
         );
     }
 
+    /**
+     * This method allows you to create a new periodic DATA sync work with an interval defined by
+     * {@code seconds}.
+     * All scheduled works will be cancelled in order to reschedule a new one.
+     * @param seconds period interval in seconds
+     * @param scheduleTag Name of the periodic work (DATA)
+     */
     @Override
     public void syncData(int seconds, String scheduleTag) {
         WorkManager.getInstance().cancelAllWorkByTag(scheduleTag);
@@ -74,9 +84,16 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build());
         PeriodicWorkRequest request = syncDataBuilder.build();
-        WorkManager.getInstance().enqueue(request);
+        WorkManager.getInstance().enqueueUniquePeriodicWork(scheduleTag, ExistingPeriodicWorkPolicy.REPLACE, request);
     }
 
+    /**
+     * This method allows you to create a new periodic METADATA sync work with an interval defined by
+     * {@code seconds}.
+     * All scheduled works will be cancelled in order to reschedule a new one.
+     * @param seconds period interval in seconds
+     * @param scheduleTag Name of the periodic work (META)
+     */
     @Override
     public void syncMeta(int seconds, String scheduleTag) {
         WorkManager.getInstance().cancelAllWorkByTag(scheduleTag);
@@ -86,30 +103,35 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build());
         PeriodicWorkRequest request = syncDataBuilder.build();
-        WorkManager.getInstance().enqueue(request);
+        WorkManager.getInstance().enqueueUniquePeriodicWork(scheduleTag, ExistingPeriodicWorkPolicy.REPLACE, request);
     }
 
+    /**
+     * This method allows you to run a DATA sync work.
+     */
     @Override
     public void syncData() {
-
         OneTimeWorkRequest.Builder syncDataBuilder = new OneTimeWorkRequest.Builder(SyncDataWorker.class);
-        syncDataBuilder.addTag(Constants.DATA);
+        syncDataBuilder.addTag(Constants.DATA_NOW);
         syncDataBuilder.setConstraints(new Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build());
         OneTimeWorkRequest request = syncDataBuilder.build();
-        WorkManager.getInstance().enqueue(request);
+        WorkManager.getInstance().beginUniqueWork(Constants.DATA_NOW, ExistingWorkPolicy.REPLACE, request).enqueue();
     }
 
+    /**
+     * This method allows you to run a METADATA sync work.
+     */
     @Override
     public void syncMeta() {
         OneTimeWorkRequest.Builder syncDataBuilder = new OneTimeWorkRequest.Builder(SyncMetadataWorker.class);
-        syncDataBuilder.addTag(Constants.META);
+        syncDataBuilder.addTag(Constants.META_NOW);
         syncDataBuilder.setConstraints(new Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build());
         OneTimeWorkRequest request = syncDataBuilder.build();
-        WorkManager.getInstance().enqueue(request);
+        WorkManager.getInstance().beginUniqueWork(Constants.META_NOW, ExistingWorkPolicy.REPLACE, request).enqueue();
     }
 
 
@@ -150,6 +172,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
     public void wipeDb() {
         try {
             WorkManager.getInstance().cancelAllWork();
+            WorkManager.getInstance().pruneWork();
             d2.wipeModule().wipeEverything();
             // clearing cache data
             deleteDir(view.getAbstracContext().getCacheDir());
@@ -163,12 +186,21 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
     }
 
     @Override
+    public void onDeleteLocalData() {
+        view.deleteLocalData();
+    }
+
+    @Override
     public void deleteLocalData() {
+        boolean error = false;
         try {
             d2.wipeModule().wipeData();
         } catch (D2Error e) {
             Timber.e(e);
+            error = true;
         }
+
+        view.showLocalDataDeleted(error);
     }
 
     @Override

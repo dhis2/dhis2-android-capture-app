@@ -27,22 +27,22 @@ final class SyncPresenterImpl implements SyncPresenter {
 
     @Override
     public void syncAndDownloadEvents(Context context) throws Exception {
-        d2.syncSingleEvents().call();
+        d2.eventModule().events.upload().call();
         SharedPreferences prefs = context.getSharedPreferences(
                 Constants.SHARE_PREFS, Context.MODE_PRIVATE);
         int eventLimit = prefs.getInt(Constants.EVENT_MAX, Constants.EVENT_MAX_DEFAULT);
         boolean limityByOU = prefs.getBoolean(Constants.LIMIT_BY_ORG_UNIT, false);
-        d2.downloadSingleEvents(eventLimit, limityByOU).call();
+        d2.eventModule().downloadSingleEvents(eventLimit, limityByOU).call();
     }
 
     @Override
     public void syncAndDownloadTeis(Context context) throws Exception {
-        d2.syncTrackedEntityInstances().call();
+        d2.trackedEntityModule().trackedEntityInstances.upload().call();
         SharedPreferences prefs = context.getSharedPreferences(
                 Constants.SHARE_PREFS, Context.MODE_PRIVATE);
         int teiLimit = prefs.getInt(Constants.TEI_MAX, Constants.TEI_MAX_DEFAULT);
         boolean limityByOU = prefs.getBoolean(Constants.LIMIT_BY_ORG_UNIT, false);
-        d2.downloadTrackedEntityInstances(teiLimit, limityByOU).call();
+        d2.trackedEntityModule().downloadTrackedEntityInstances(teiLimit, limityByOU).call();
     }
 
     @Override
@@ -58,6 +58,6 @@ final class SyncPresenterImpl implements SyncPresenter {
 
     @Override
     public void syncReservedValues() {
-        d2.syncTrackedEntityAttributeReservedValues(null, null, 100);
+        d2.trackedEntityModule().reservedValueManager.syncReservedValues(null, null, 100);
     }
 }

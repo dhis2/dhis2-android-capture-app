@@ -12,6 +12,7 @@ import org.hisp.dhis.rules.models.RuleActionShowError;
 
 public interface RulesActionCallbacks {
 
+    void setCalculatedValue(String calculatedValueVariable, String value);
 
     void setShowError(@NonNull RuleActionShowError showError, FieldViewModel model);
 
@@ -26,4 +27,8 @@ public interface RulesActionCallbacks {
     void setMessageOnComplete(String content, boolean canComplete);
 
     void setHideProgramStage(String programStageUid);
+
+    void setOptionToHide(String optionUid);
+
+    void setOptionGroupToHide(String optionGroupUid);
 }

@@ -1,7 +1,6 @@
 package org.dhis2.usescases.main.program;
 
 import android.content.Context;
-import androidx.core.content.ContextCompat;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,12 +8,14 @@ import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.dhis2.R;
 import com.unnamed.b.atv.model.TreeNode;
 
+import org.dhis2.R;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 
 import java.util.Locale;
+
+import androidx.core.content.ContextCompat;
 
 /**
  * QUADRAM. Created by ppajuelo on 19/10/2017.
@@ -85,9 +86,11 @@ public class OrgUnitHolder extends TreeNode.BaseNodeViewHolder<OrganisationUnitM
     }
 
     public void update() {
-        node.setSelected(!node.isSelected());
-        textView.setTextColor(node.isSelected() ? ContextCompat.getColor(context, R.color.colorPrimary) : ContextCompat.getColor(context, R.color.gray_444));
-        checkBox.setChecked(node.isSelected());
+        if (node != null) {
+            node.setSelected(!node.isSelected());
+            textView.setTextColor(node.isSelected() ? ContextCompat.getColor(context, R.color.colorPrimary) : ContextCompat.getColor(context, R.color.gray_444));
+            checkBox.setChecked(node.isSelected());
+        }
         setSelectedSizeText();
     }
 
@@ -103,20 +106,22 @@ public class OrgUnitHolder extends TreeNode.BaseNodeViewHolder<OrganisationUnitM
 
     private void setSelectedSizeText() {
         numberOfSelections = 0;
-        for (TreeNode n : node.getChildren()) {
-            if (n.getViewHolder() instanceof OrgUnitHolder) {
-                numberOfSelections += n.isSelected() ? 1 : 0;
-                numberOfSelections += ((OrgUnitHolder) n.getViewHolder()).numberOfSelections;
+        if (node != null) {
+            for (TreeNode n : node.getChildren()) {
+                if (n.getViewHolder() instanceof OrgUnitHolder) {
+                    numberOfSelections += n.isSelected() ? 1 : 0;
+                    numberOfSelections += ((OrgUnitHolder) n.getViewHolder()).numberOfSelections;
+                }
             }
-        }
-        if (numberOfSelections == 0)
-            textView.setText(value.displayName());
-        else
-            textView.setText(String.format(Locale.getDefault(), "%s (%d)", value.displayName(), numberOfSelections));
 
-        boolean shouldUpdateParent = numberOfSelections > 0 || node.isSelected();
-        if (node.getLevel() > 1 && node.getParent().getViewHolder() instanceof OrgUnitHolder) {
-            ((OrgUnitHolder) node.getParent().getViewHolder()).setSelectedSizeText();
+            if (numberOfSelections == 0)
+                textView.setText(value.displayName());
+            else
+                textView.setText(String.format(Locale.getDefault(), "%s (%d)", value.displayName(), numberOfSelections));
+
+            if (node.getLevel() > 1 && node.getParent().getViewHolder() instanceof OrgUnitHolder) {
+                ((OrgUnitHolder) node.getParent().getViewHolder()).setSelectedSizeText();
+            }
         }
     }
 }

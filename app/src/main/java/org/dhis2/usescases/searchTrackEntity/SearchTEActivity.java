@@ -48,6 +48,8 @@ import org.dhis2.utils.custom_views.OptionSetDialog;
 import org.dhis2.utils.EndlessRecyclerViewScrollListener;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.NetworkUtils;
+import org.dhis2.utils.custom_views.OptionSetPopUp;
+import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 
@@ -405,7 +407,10 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     }
 
     @Override
-    public void setListOptions(List<String> options) {
-        OptionSetDialog.newInstance().setOptions(options);
+    public void setListOptions(List<OptionModel> options) {
+        if (OptionSetDialog.isCreated())
+            OptionSetDialog.newInstance().setOptions(options);
+        else if (OptionSetPopUp.isCreated())
+            OptionSetPopUp.getInstance().setOptions(options);
     }
 }

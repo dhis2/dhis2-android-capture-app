@@ -65,7 +65,7 @@ public class OrgUnitCascadeDialog extends DialogFragment {
         this.paths = new HashMap<>();
         List<String> orgUnitsUid = new ArrayList<>();
 
-        if (orgUnits != null)
+        if (orgUnits != null) {
             for (OrganisationUnitModel orgUnit : orgUnits) { //Users OrgUnits
                 this.orgUnits.add(Quintet.create(orgUnit.uid(),
                         orgUnit.displayName(),
@@ -75,16 +75,17 @@ public class OrgUnitCascadeDialog extends DialogFragment {
                 orgUnitsUid.add(orgUnit.uid());
             }
 
-        for (OrganisationUnitModel orgUnit : orgUnits) { //Path OrgUnits
-            paths.put(orgUnit.uid(),orgUnit.path());
-            String[] uidPath = orgUnit.path().split("/");
-            String[] namePath = orgUnit.displayNamePath().split("/");
-            for (int i = 1; i < uidPath.length; i++) {
-                if (!uidPath[i].isEmpty() && !uidPath[i].equals(orgUnit.uid())) {
-                    Quintet<String, String, String, Integer, Boolean> quartet = Quintet.create(uidPath[i], namePath[i], i != 1 ? uidPath[i - 1] : "", i, false); //OrgUnit Uid, OrgUnit Name, Parent Uid, Level, CanBeSelected
-                    if (!orgUnitsUid.contains(quartet.val0())) {
-                        this.orgUnits.add(quartet);
-                        orgUnitsUid.add(quartet.val0());
+            for (OrganisationUnitModel orgUnit : orgUnits) { //Path OrgUnits
+                paths.put(orgUnit.uid(), orgUnit.path());
+                String[] uidPath = orgUnit.path().split("/");
+                String[] namePath = orgUnit.displayNamePath().split("/");
+                for (int i = 1; i < uidPath.length; i++) {
+                    if (!uidPath[i].isEmpty() && !uidPath[i].equals(orgUnit.uid())) {
+                        Quintet<String, String, String, Integer, Boolean> quartet = Quintet.create(uidPath[i], namePath[i], i != 1 ? uidPath[i - 1] : "", i, false); //OrgUnit Uid, OrgUnit Name, Parent Uid, Level, CanBeSelected
+                        if (!orgUnitsUid.contains(quartet.val0())) {
+                            this.orgUnits.add(quartet);
+                            orgUnitsUid.add(quartet.val0());
+                        }
                     }
                 }
             }
@@ -113,7 +114,7 @@ public class OrgUnitCascadeDialog extends DialogFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.dialog_cascade_orgunit, container, false);
-
+        binding.orgUnitEditText.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_search, 0, 0, 0);
         binding.orgUnitEditText.setHint(title);
         binding.acceptButton.setOnClickListener(view -> {
             if (binding.recycler.getAdapter() != null) {

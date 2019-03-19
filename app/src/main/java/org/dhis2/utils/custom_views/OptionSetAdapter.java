@@ -8,13 +8,14 @@ import android.view.ViewGroup;
 
 import org.dhis2.R;
 import org.dhis2.databinding.ItemOptionBinding;
+import org.hisp.dhis.android.core.option.OptionModel;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class OptionSetAdapter extends RecyclerView.Adapter<OptionSetViewHolder> {
 
-    private List<String> options;
+    private List<OptionModel> options;
     private OptionSetOnClickListener listener;
 
     public OptionSetAdapter(OptionSetOnClickListener listener) {
@@ -40,7 +41,7 @@ public class OptionSetAdapter extends RecyclerView.Adapter<OptionSetViewHolder> 
         return options.size();
     }
 
-    public void setOptions(List<String> options, int currentPage) {
+    public void setOptions(List<OptionModel> options, int currentPage) {
         if (currentPage == 0) {
             this.options = options;
             notifyDataSetChanged();

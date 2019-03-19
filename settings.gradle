@@ -1,1 +1,3 @@
-include ':app', ':customFab', ':dhis2-rule-engine', ':tableview', ':viewpagerdotsindicator'
+include ':app', ':customFab', ':dhis2-rule-engine',include ':app', ':customFab', ':dhis2-rule-engine', ':viewpagerdotsindicator', ':tableview'
+project(':dhis2-rule-engine').projectDir = new File(settingsDir, '../../dhis/dhis2-rule-engine')
+':viewpagerdotsindicator'
