@@ -1,27 +1,34 @@
 package org.dhis2.data.forms.dataentry.tablefields.spinner;
 
-import androidx.databinding.ViewDataBinding;
-import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
-import androidx.core.content.ContextCompat;
-import androidx.appcompat.widget.PopupMenu;
-import android.view.Menu;
+import android.content.Context;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.ImageView;
+
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 
 import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
-import org.dhis2.databinding.CustomTextViewCellBinding;
+import org.dhis2.data.tuples.Trio;
+import org.dhis2.utils.Constants;
+import org.dhis2.utils.custom_views.OptionSetCellDialog;
+import org.dhis2.utils.custom_views.OptionSetCellPopUp;
+import org.dhis2.utils.custom_views.OptionSetDialog;
+import org.dhis2.utils.custom_views.OptionSetOnClickListener;
+import org.dhis2.utils.custom_views.OptionSetPopUp;
+import org.dhis2.utils.custom_views.TextInputAutoCompleteTextView;
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
-import java.util.List;
+import java.util.Map;
 
-import io.reactivex.disposables.CompositeDisposable;
+import androidx.appcompat.widget.PopupMenu;
+import androidx.core.content.ContextCompat;
+import androidx.databinding.ViewDataBinding;
+import androidx.fragment.app.FragmentActivity;
 import io.reactivex.processors.FlowableProcessor;
 
 import static android.text.TextUtils.isEmpty;
@@ -30,31 +37,54 @@ import static android.text.TextUtils.isEmpty;
  * QUADRAM. Created by ppajuelo on 07/11/2017.
  */
 
-public class SpinnerHolder extends FormViewHolder implements View.OnClickListener, PopupMenu.OnMenuItemClickListener {
+public class SpinnerHolder extends FormViewHolder implements View.OnClickListener, PopupMenu.OnMenuItemClickListener, OptionSetOnClickListener {
 
-    private final CompositeDisposable disposable;
     private final FlowableProcessor<RowAction> processor;
-    private final EditText editText;
-
+    private final FlowableProcessor<Trio<String, String, Integer>> processorOptionSet;
+    private final ImageView iconView;
+    private final TextInputAutoCompleteTextView editText;
+    private final TextInputLayout inputLayout;
+    private final View descriptionLabel;
 
     private SpinnerViewModel viewModel;
-    List<OptionModel> options;
+    private int numberOfOptions = 0;
+    private Map<String, OptionModel> options;
 
-    SpinnerHolder(CustomTextViewCellBinding mBinding, FlowableProcessor<RowAction> processor) {
+    SpinnerHolder(ViewDataBinding mBinding, FlowableProcessor<RowAction> processor, FlowableProcessor<Trio<String, String, Integer>> processorOptionSet) {
         super(mBinding);
-        this.editText = mBinding.inputEditText;
+        this.editText = mBinding.getRoot().findViewById(R.id.input_editText);
+        this.iconView = mBinding.getRoot().findViewById(R.id.renderImage);
+        this.inputLayout = mBinding.getRoot().findViewById(R.id.input_layout);
+        this.descriptionLabel = mBinding.getRoot().findViewById(R.id.descriptionLabel);
         this.processor = processor;
+        this.processorOptionSet = processorOptionSet;
 
         editText.setOnClickListener(this);
 
-        this.disposable = new CompositeDisposable();
+        editText.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus)
+                editText.performClick();
+        });
+
 
     }
 
     public void update(SpinnerViewModel viewModel, boolean accessDataWrite) {
-
         this.viewModel = viewModel;
-        options = Bindings.setOptionSet(viewModel.optionSet());
+
+        /*numberOfOptions = viewModel.numberOfOptions();
+        Bindings.setObjectStyle(iconView, itemView, viewModel.objectStyle());*/
+        editText.setEnabled(viewModel.editable());
+        editText.setFocusable(false);
+        editText.setClickable(viewModel.editable());
+
+        editText.setText(viewModel.value()); //option code is already transformed to value in the fieldviewmodelfactory implementation
+
+        if (!isEmpty(viewModel.warning())) {
+            inputLayout.setError(viewModel.warning());
+        } else if (!isEmpty(viewModel.error())) {
+            inputLayout.setError(viewModel.error());
+        }
 
         if (!viewModel.editable()) {
             editText.setEnabled(false);
@@ -65,41 +95,79 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
         }else{
             editText.setEnabled(false);
         }
-        editText.setFocusable(false);
-        editText.setClickable(viewModel.editable());
 
-
-        editText.setText(viewModel.value()); //option code is already transformed to value in the fieldviewmodelfactory implementation
+        /*if (inputLayout.getHint() == null || !inputLayout.getHint().toString().equals(viewModel.label())) {
+            label = new StringBuilder(viewModel.label());
+            if (viewModel.mandatory())
+                label.append("*");
+            inputLayout.setHint(label);
+        }*/
 
         descriptionText = viewModel.description();
+
+        //descriptionLabel.setVisibility(label.length() > 16 || descriptionText != null ? View.VISIBLE : View.GONE);
+
     }
 
     public void dispose() {
-        disposable.clear();
-    }
-
-    @Override
-    public boolean onMenuItemClick(MenuItem item) {
-        String value = item.getTitle().toString();
-        String code = null;
-        for (OptionModel optionModel : options)
-            if(value.equals(optionModel.displayName())) {
-                code = optionModel.code();
-                editText.setText(code);
-            }
-        processor.onNext(
-                RowAction.create(viewModel.uid(), code, viewModel.dataElement(), viewModel.listCategoryOption(), viewModel.catCombo(), viewModel.row(), viewModel.column())
-        );
-        return false;
     }
 
     @Override
     public void onClick(View v) {
-        PopupMenu menu = new PopupMenu(itemView.getContext(), v);
-        menu.setOnMenuItemClickListener(this);
-//        menu.getMenu().add(Menu.NONE, Menu.NONE, 0, viewModel.label()); Don't show label
-        for (OptionModel optionModel : options)
-            menu.getMenu().add(Menu.NONE, Menu.NONE, options.indexOf(optionModel) + 1, optionModel.displayName());
-        menu.show();
+        //closeKeyboard(v);
+        if (numberOfOptions > itemView.getContext().getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE).getInt(Constants.OPTION_SET_DIALOG_THRESHOLD, 15)) {
+            OptionSetCellDialog dialog = OptionSetCellDialog.newInstance();
+            dialog
+                    .setProcessor(processorOptionSet)
+                    .setOptionSetUid(viewModel)
+                    .setOnClick(this)
+                    .setCancelListener(view -> dialog.dismiss())
+                    .setClearListener(view -> {
+                                processor.onNext(
+                                        RowAction.create(viewModel.uid(),viewModel.value(), viewModel.dataElement(),
+                                                viewModel.listCategoryOption(), viewModel.catCombo(), viewModel.row(), viewModel.column() ));
+                                viewModel.withValue(null);
+                                dialog.dismiss();
+                            }
+                    ).show(((FragmentActivity) binding.getRoot().getContext()).getSupportFragmentManager(), null);
+        } else {
+            OptionSetCellPopUp.getInstance()
+                    .setOptionSetUid(viewModel)
+                    .setProcessor(processorOptionSet)
+                    .setOnClick(this)
+                    .show(itemView.getContext(), v);
+        }
+    }
+
+    @Override
+    public void onSelectOption(OptionModel option) {
+        setValueOption(option.displayName(), option.code());
+        OptionSetDialog.newInstance().dismiss();
+    }
+
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        if (OptionSetCellPopUp.getInstance().getOptions() != null && item.getTitle() != null) {
+            OptionModel selectedOption = OptionSetCellPopUp.getInstance().getOptions().get(item.getTitle().toString());
+            if (selectedOption != null) {
+                setValueOption(selectedOption.displayName(), selectedOption.code());
+            }
+            OptionSetCellPopUp.getInstance().dismiss();
+        }
+        return false;
+    }
+
+    private void setValueOption(String optionDisplayName, String optionCode) {
+
+        editText.setText(optionDisplayName);
+        processor.onNext(
+                RowAction.create(viewModel.uid(),optionCode, viewModel.dataElement(),
+                        viewModel.listCategoryOption(), viewModel.catCombo(), viewModel.row(), viewModel.column())
+        );
+        //viewModel.withValue(isSearchMode ? optionDisplayName : optionCode);
+      /*  View nextView;
+        if ((nextView = editText.focusSearch(View.FOCUS_DOWN)) != null)
+            nextView.requestFocus();*/
     }
 }

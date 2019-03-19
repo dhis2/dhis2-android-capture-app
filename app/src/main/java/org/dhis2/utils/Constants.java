@@ -61,6 +61,7 @@ public class Constants {
     public static final String DATA_SET_SECTION = "DATA_SET_SECTION";
     public static final String PROGRAM_STAGE_UID = "PROGRAM_STAGE_UID";
     public static final String EXTRA_FROM_LOGIN = "EXTRA_FROM_LOGIN";
+    public static final String PREF_DEFAULT_CAT_OPTION_COMBO = "PREF_DEFAULT_CAT_OPTION_COMBO";
     public static final int RQ_MANDATORY_EVENTS = 2001;
     public static final String OPTION_SET_DIALOG_THRESHOLD = "optionSetDialogThredshold";
     public static final String URL_TEST_229 = "https://play.dhis2.org/android-previous1";

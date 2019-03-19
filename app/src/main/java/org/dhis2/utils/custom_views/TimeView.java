@@ -7,6 +7,7 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 
 import org.dhis2.BR;
 import org.dhis2.R;
@@ -29,7 +30,7 @@ import timber.log.Timber;
 
 public class TimeView extends FieldLayout implements View.OnClickListener {
 
-    private TextInputEditText editText;
+    private TextInputAutoCompleteTextView editText;
     private TextInputLayout inputLayout;
     private ViewDataBinding binding;
 
@@ -111,7 +112,8 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
     }
 
     public void setWarningOrError(String msg) {
-        inputLayout.setError(msg);
+        if(msg != null)
+            inputLayout.setError(msg);
     }
 
     public void setDateListener(OnDateSelected listener) {
@@ -155,7 +157,7 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
         dialog.show();
     }
 
-    public TextInputEditText getEditText() {
+    public TextInputAutoCompleteTextView getEditText() {
         return editText;
     }
 

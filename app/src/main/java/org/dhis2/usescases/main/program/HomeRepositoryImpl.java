@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import androidx.annotation.NonNull;
@@ -55,9 +56,10 @@ class HomeRepositoryImpl implements HomeRepository {
             "ObjectStyle.icon," +
             "Program.programType," +
             "Program.trackedEntityType," +
-            "Program.description " +
+            "Program.description," +
+            "'true' " +
             "FROM Program LEFT JOIN ObjectStyle ON ObjectStyle.uid = Program.uid " +
-            "JOIN OrganisationUnitProgramLink ON OrganisationUnitProgramLink.program = Program.uid %s GROUP BY Program.uid ORDER BY Program.displayName" +
+            "JOIN OrganisationUnitProgramLink ON OrganisationUnitProgramLink.program = Program.uid %s GROUP BY Program.uid " +
             "UNION " +
             "SELECT DataSet.uid, " +
             "DataSet.displayName, " +
@@ -68,7 +70,7 @@ class HomeRepositoryImpl implements HomeRepository {
             "DataSet.description, " +
             "DataSet.accessDataWrite " +
             "FROM DataSet " +
-            "JOIN DataSetOrganisationUnitLink ON DataSetOrganisationUnitLink.dataSet = DataSet.uid GROUP BY DataSet.uid";
+            "JOIN DataSetOrganisationUnitLink ON DataSetOrganisationUnitLink.dataSet = DataSet.uid GROUP BY DataSet.uid ORDER BY Program.displayName ";
 
     private final static String AGGREGATE_FROM_DATASET = "SELECT * FROM DataSetDataElementLink " +
             "WHERE dataSet = ? ";

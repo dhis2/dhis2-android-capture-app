@@ -5,12 +5,14 @@ import android.content.Context;
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.data.tuples.Pair;
+import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.hisp.dhis.android.core.category.CategoryModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.dataset.DataInputPeriodModel;
 import org.hisp.dhis.android.core.datavalue.DataValueModel;
+import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.period.PeriodModel;
 
 import java.util.List;
@@ -35,6 +37,8 @@ public class DataValueContract {
         void goToTable(int numTable);
 
         void showAlertDialog(String title, String message);
+
+        void setListOptions(List<OptionModel> options);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter{
@@ -55,6 +59,8 @@ public class DataValueContract {
         int getCurrentNumTables();
 
         FlowableProcessor<RowAction> getProcessor();
+
+        FlowableProcessor<Trio<String, String, Integer>> getProcessorOptionSet();
 
         void addCells(List<List<FieldViewModel>> cells);
 

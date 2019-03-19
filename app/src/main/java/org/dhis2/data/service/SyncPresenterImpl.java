@@ -19,13 +19,6 @@ final class SyncPresenterImpl implements SyncPresenter {
     }
 
     @Override
-    public void syncAggregateData() throws Exception {
-        Log.d("SYNC_AGGREGATE", "Sync up of aggregate values");
-        d2.syncAggregatedData().call();
-        d2.syncDataValues().call();
-    }
-
-    @Override
     public void syncAndDownloadEvents(Context context) throws Exception {
         d2.eventModule().events.upload().call();
         SharedPreferences prefs = context.getSharedPreferences(
@@ -47,8 +40,8 @@ final class SyncPresenterImpl implements SyncPresenter {
 
     @Override
     public void syncAndDownloadDataValues() throws Exception {
-        d2.syncDataValues().call();
-        d2.syncAggregatedData().call();
+        d2.dataValueModule().dataValues.upload().call();
+        d2.aggregatedModule().data().download().call();
     }
 
     @Override

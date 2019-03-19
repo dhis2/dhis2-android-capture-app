@@ -4,8 +4,10 @@ import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModelFactoryImpl;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
+import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Sextet;
+import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel;
 import org.hisp.dhis.android.core.category.CategoryModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
@@ -25,6 +27,7 @@ import java.util.Map;
 import javax.annotation.Nullable;
 
 import androidx.annotation.NonNull;
+import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -53,11 +56,13 @@ public class DataValuePresenter implements DataValueContract.Presenter{
 
     private List<List<FieldViewModel>> cells;
     private List<DataInputPeriodModel> dataInputPeriodModel;
-
+    private MetadataRepository metadataRepository;
     @NonNull
     private FlowableProcessor<RowAction> processor;
-    public DataValuePresenter(DataValueRepository repository){
+    private FlowableProcessor<Trio<String, String, Integer>> processorOptionSet;
+    public DataValuePresenter(DataValueRepository repository, MetadataRepository metadataRepository){
         this.repository = repository;
+        this.metadataRepository = metadataRepository;
     }
 
     @Override
@@ -65,6 +70,7 @@ public class DataValuePresenter implements DataValueContract.Presenter{
         compositeDisposable = new CompositeDisposable();
         this.view = view;
         processor = PublishProcessor.create();
+        processorOptionSet = PublishProcessor.create();
         dataValuesChanged = new ArrayList<>();
         cells = new ArrayList<>();
         this.orgUnitUid = orgUnitUid;
@@ -179,6 +185,18 @@ public class DataValuePresenter implements DataValueContract.Presenter{
 
     @Override
     public void initializeProcessor(@NonNull DataSetSectionFragment dataSetSectionFragment){
+
+        compositeDisposable.add(dataSetSectionFragment.optionSetActions()
+                .flatMap(
+                        data -> metadataRepository.searchOptions(data.val0(), data.val1(), data.val2(), new ArrayList<>(), new ArrayList<>()).toFlowable(BackpressureStrategy.LATEST)
+                )
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        view::setListOptions,
+                        Timber::e
+                ));
+
         compositeDisposable.add(dataSetSectionFragment.rowActions()
                 .flatMap(rowAction -> {
                     boolean exists = false;
@@ -387,5 +405,10 @@ public class DataValuePresenter implements DataValueContract.Presenter{
     @NonNull
     public FlowableProcessor<RowAction> getProcessor() {
         return processor;
+    }
+
+    @Override
+    public FlowableProcessor<Trio<String, String, Integer>> getProcessorOptionSet() {
+        return processorOptionSet;
     }
 }
