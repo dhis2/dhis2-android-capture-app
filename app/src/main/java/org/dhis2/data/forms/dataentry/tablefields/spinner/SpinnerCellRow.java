@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.Row;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
+import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.CustomTextViewCellBinding;
 
 import io.reactivex.processors.FlowableProcessor;
@@ -24,18 +25,19 @@ public class SpinnerCellRow implements Row<SpinnerHolder, SpinnerViewModel> {
     private final FlowableProcessor<RowAction> processor;
     private final LayoutInflater inflater;
     private boolean accessDataWrite;
-
-    public SpinnerCellRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor, boolean accessDataWrite) {
+    private FlowableProcessor<Trio<String, String, Integer>> processorOptionSet;
+    public SpinnerCellRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor, boolean accessDataWrite, FlowableProcessor<Trio<String, String, Integer>> processorOptionSet) {
         this.processor = processor;
         this.inflater = layoutInflater;
         this.accessDataWrite = accessDataWrite;
+        this.processorOptionSet = processorOptionSet;
     }
 
     @NonNull
     @Override
     public SpinnerHolder onCreate(@NonNull ViewGroup parent) {
         CustomTextViewCellBinding binding = DataBindingUtil.inflate(inflater,  R.layout.custom_text_view_cell , parent, false);
-        return new SpinnerHolder(binding, processor);
+        return new SpinnerHolder(binding, processor, processorOptionSet);
     }
 
     @Override

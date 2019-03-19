@@ -7,6 +7,7 @@ import org.dhis2.usescases.main.program.ProgramViewModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 
+import java.util.Date;
 import java.util.List;
 
 import io.reactivex.Observable;
@@ -30,9 +31,11 @@ public interface TeiProgramListRepository {
     Observable<List<ProgramModel>> alreadyEnrolledPrograms(String trackedEntityId);
 
     @NonNull
-    Observable<String> saveToEnroll(@NonNull String orgUnit, @NonNull String programUid, @NonNull String teiUid);
+    Observable<String> saveToEnroll(@NonNull String orgUnit, @NonNull String programUid, @NonNull String teiUid, Date enrollmentDate);
 
-    Observable<List<OrganisationUnitModel>> getOrgUnits();
+    Observable<List<OrganisationUnitModel>> getOrgUnits(String programUid);
 
     String getProgramColor(@NonNull String programUid);
+
+    ProgramModel getProgram(String programUid);
 }

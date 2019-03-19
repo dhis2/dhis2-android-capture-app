@@ -25,6 +25,7 @@ import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModelFactoryImpl;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
+import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.FragmentDatasetSectionBinding;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableContract;
@@ -33,12 +34,17 @@ import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
+import org.dhis2.utils.custom_views.OptionSetCellDialog;
+import org.dhis2.utils.custom_views.OptionSetCellPopUp;
+import org.dhis2.utils.custom_views.OptionSetDialog;
+import org.dhis2.utils.custom_views.OptionSetPopUp;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
 import org.hisp.dhis.android.core.dataset.DataInputPeriodModel;
 import org.hisp.dhis.android.core.dataset.DataSetModel;
 import org.hisp.dhis.android.core.dataset.SectionModel;
+import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.period.PeriodModel;
 
 import java.sql.Date;
@@ -52,7 +58,9 @@ import java.util.Objects;
 
 import javax.inject.Inject;
 
+import androidx.databinding.ViewDataBinding;
 import io.reactivex.Flowable;
+import io.reactivex.processors.FlowableProcessor;
 import timber.log.Timber;
 
 /**
@@ -128,7 +136,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
 
         presenterFragment.setCurrentNumTables(dataTableModel.catCombos().size());
         activity.updateTabLayout(section, dataTableModel.catCombos().size());
-        adapter = new DataSetTableAdapter(getAbstracContext() , presenterFragment.getProcessor());
+        adapter = new DataSetTableAdapter(getAbstracContext() , presenterFragment.getProcessor(), presenterFragment.getProcessorOptionSet());
         presenterFragment.initializeProcessor(this);
         for(String catCombo: dataTableModel.catCombos()) {
             List<List<CategoryOptionModel>> columnHeaderItems = dataTableModel.headers().get(catCombo);
@@ -246,7 +254,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
             presenterFragment.addCells(listFields);
 
             if(!catCombo.equals(dataTableModel.catCombos().get(dataTableModel.catCombos().size()-1)))
-                adapter = new DataSetTableAdapter(getAbstracContext(), presenterFragment.getProcessor());
+                adapter = new DataSetTableAdapter(getAbstracContext(), presenterFragment.getProcessor(),  presenterFragment.getProcessorOptionSet());
 
         }
 
@@ -321,6 +329,10 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
         return adapter.asFlowable();
     }
 
+    public FlowableProcessor<Trio<String, String, Integer>> optionSetActions(){
+        return adapter.asFlowableOptionSet();
+    }
+
     public void updateData(RowAction rowAction) {
         adapter.updateValue(rowAction);
     }
@@ -378,5 +390,12 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
         super.showInfoDialog(title, message);
     }
 
+    @Override
+    public void setListOptions(List<OptionModel> options) {
+        if (OptionSetCellDialog.isCreated())
+            OptionSetCellDialog.newInstance().setOptions(options);
+        else if (OptionSetCellPopUp.isCreated())
+            OptionSetCellPopUp.getInstance().setOptions(options);
+    }
 
 }

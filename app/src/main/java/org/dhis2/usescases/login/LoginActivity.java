@@ -9,6 +9,7 @@ import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 
 import com.andrognito.pinlockview.PinLockListener;
+import com.crashlytics.android.Crashlytics;
 
 import org.dhis2.App;
 import org.dhis2.R;
@@ -32,6 +33,7 @@ import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 import de.adorsys.android.securestoragelibrary.SecurePreferences;
 
+import static android.text.TextUtils.isEmpty;
 import static org.dhis2.utils.Constants.RQ_QR_SCANNER;
 
 
@@ -46,6 +48,7 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
     List<String> urls;
 
     private boolean isPinScreenVisible = false;
+    private String qrUrl;
 
 
     @Override
@@ -131,6 +134,11 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
         binding.userPassEdit.setSelection(binding.userPassEdit.getText().length());
     }
 
+    @Override
+    public void setUrl(String url) {
+        binding.serverUrlEdit.setText(!isEmpty(qrUrl) ? qrUrl : url);
+    }
+
 
     @Override
     public ActivityLoginBinding getBinding() {
@@ -148,7 +156,7 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
                 message = getString(R.string.login_error_null_username);
                 break;
             case INVALID_DHIS_VERSION:
-                message = getString(R.string.login_error_dhis_version);
+                message = getString(R.string.login_error_dhis_version_v2);
                 break;
             case API_UNSUCCESSFUL_RESPONSE:
                 message = getString(R.string.login_error_unsuccessful_response);
@@ -219,6 +227,25 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
             binding.credentialLayout.setVisibility(View.VISIBLE);
             binding.progressLayout.setVisibility(View.GONE);
         }
+    }
+
+    @Override
+    public void showCrashlyticsDialog() {
+        showInfoDialog(getString(R.string.send_user_name_title), getString(R.string.send_user_name_mesage),
+                new OnDialogClickListener() {
+                    @Override
+                    public void onPossitiveClick(AlertDialog alertDialog) {
+                        getSharedPreferences().edit().putBoolean(Constants.USER_ASKED_CRASHLYTICS, true).apply();
+                        getSharedPreferences().edit().putString(Constants.USER, binding.userName.getEditText().getText().toString()).apply();
+                        showLoginProgress(true);
+                    }
+
+                    @Override
+                    public void onNegativeClick(AlertDialog alertDialog) {
+                        getSharedPreferences().edit().putBoolean(Constants.USER_ASKED_CRASHLYTICS, true).apply();
+                        showLoginProgress(true);
+                    }
+                }).show();
     }
 
     @Override
@@ -336,7 +363,7 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == RQ_QR_SCANNER && resultCode == RESULT_OK) {
-            binding.serverUrlEdit.setText(data.getStringExtra(Constants.EXTRA_DATA));
+            qrUrl = data.getStringExtra(Constants.EXTRA_DATA);
         }
     }
 

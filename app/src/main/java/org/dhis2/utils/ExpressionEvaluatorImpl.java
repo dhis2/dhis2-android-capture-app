@@ -1,11 +1,9 @@
 package org.dhis2.utils;
 
-import androidx.annotation.NonNull;
-
 import org.apache.commons.jexl2.JexlEngine;
 import org.hisp.dhis.rules.RuleExpressionEvaluator;
 
-import javax.annotation.Nonnull;
+import androidx.annotation.NonNull;
 
 /**
  * QUADRAM. Created by ppajuelo on 19/09/2018.
@@ -13,23 +11,17 @@ import javax.annotation.Nonnull;
 
 public class ExpressionEvaluatorImpl implements RuleExpressionEvaluator {
 
-    private final JexlEngine JEXL;
+    private final JexlEngine jexl;
 
     public ExpressionEvaluatorImpl(@NonNull JexlEngine jexl) {
-
-        this.JEXL = jexl;
+        this.jexl = jexl;
     }
 
-    @Nonnull
+    @NonNull
     @Override
-    public String evaluate(@Nonnull String expression) {
-        if (expression == null) {
-            throw new NullPointerException("expression == null");
-        }
-
+    public String evaluate(@NonNull String expression) {
         try {
-            String result = JEXL.createExpression(expression).evaluate(null).toString();
-            return result;
+            return jexl.createExpression(expression).evaluate(null).toString();
         } catch (Exception e) {
             return expression;
         }

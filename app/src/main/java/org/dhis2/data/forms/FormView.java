@@ -14,6 +14,7 @@ import org.hisp.dhis.rules.models.RuleActionErrorOnCompletion;
 import org.hisp.dhis.rules.models.RuleActionShowError;
 import org.hisp.dhis.rules.models.RuleActionWarningOnCompletion;
 
+import java.util.Date;
 import java.util.List;
 
 import io.reactivex.Observable;
@@ -78,4 +79,6 @@ interface FormView {
     void showCatComboDialog(CategoryComboModel categoryComboModel, List<CategoryOptionComboModel> categoryOptionComboModels);
 
     Consumer<Boolean> renderCaptureCoordinates();
+
+    void setMinMaxDates(Date openingDate, Date closingDate);
 }

@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
-import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
 import org.dhis2.data.forms.FormActivity;
 import org.dhis2.data.forms.FormViewArguments;
@@ -17,9 +16,9 @@ import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.custom_views.OrgUnitDialog;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.NetworkUtils;
+import org.dhis2.utils.custom_views.OrgUnitDialog;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.data.api.OuMode;
 import org.hisp.dhis.android.core.maintenance.D2Error;
@@ -27,7 +26,6 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModelBuilder;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModelBuilder;
@@ -39,6 +37,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nullable;
@@ -71,17 +70,18 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private CompositeDisposable compositeDisposable;
     private TrackedEntityTypeModel trackedEntity;
     private HashMap<String, String> queryData;
+    private Map<String, String> queryDataEQ;
 
     private List<OrganisationUnitModel> orgUnits;
     private Integer currentPage;
     private Date selectedEnrollmentDate;
 
     public SearchTEPresenter(SearchRepository searchRepository, MetadataRepository metadataRepository, D2 d2) {
-        Bindings.setMetadataRepository(metadataRepository);
         this.metadataRepository = metadataRepository;
         this.searchRepository = searchRepository;
         this.d2 = d2;
         queryData = new HashMap<>();
+        queryDataEQ = new HashMap<>();
     }
 
     //-----------------------------------
@@ -137,11 +137,15 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(data -> {
-                            HashMap<String, String> queryDataBU = new HashMap(queryData);
-                            if (!isEmpty(data.value()))
+                            Map<String, String> queryDataBU = new HashMap<>(queryData);
+                            if (!isEmpty(data.value())) {
                                 queryData.put(data.id(), data.value());
-                            else
+                                if (data.requiresExactMatch())
+                                    queryDataEQ.put(data.id(), data.value());
+                            } else {
                                 queryData.remove(data.id());
+                                queryDataEQ.remove(data.id());
+                            }
 
                             if (!queryData.equals(queryDataBU)) { //Only when queryData has changed
                                 view.clearData();
@@ -158,7 +162,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         compositeDisposable.add(
                 view.optionSetActions()
                         .flatMap(
-                                data -> metadataRepository.searchOptions(data.val0(), data.val1(), data.val2()).toFlowable(BackpressureStrategy.LATEST)
+                                data -> metadataRepository.searchOptions(data.val0(), data.val1(), data.val2(), new ArrayList<>(), new ArrayList<>()).toFlowable(BackpressureStrategy.LATEST)
                         )
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
@@ -215,8 +219,13 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                     for (String key : queryData.keySet()) {
                                         if (key.equals(Constants.ENROLLMENT_DATE_UID))
                                             enrollementDate = DateUtils.uiDateFormat().parse(queryData.get(key));
-                                        else if (!key.equals(Constants.INCIDENT_DATE_UID)) //TODO: HOW TO INCLUDE INCIDENT DATE IN ONLINE SEARCH
-                                            filterList.add(key + ":LIKE:" + queryData.get(key));
+                                        else if (!key.equals(Constants.INCIDENT_DATE_UID)) { //TODO: HOW TO INCLUDE INCIDENT DATE IN ONLINE SEARCH
+                                            String value = queryData.get(key);
+                                            if(value.contains("_os_"))
+                                                value = value.split("_os_")[0];
+                                            String queryItem = String.format("%s:%s:%s", key, queryDataEQ.containsKey(key) ? "EQ" : "LIKE", value);
+                                            filterList.add(queryItem);
+                                        }
                                     }
                                 }
                                 List<String> orgUnitsUids = new ArrayList<>();
@@ -234,7 +243,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                         .orgUnitMode(OuMode.ACCESSIBLE)
                                         .build();
 
-                                return Flowable.defer(() -> Flowable.fromCallable(d2.queryTrackedEntityInstances(query)))
+                                return Flowable.defer(() -> Flowable.fromCallable(d2.trackedEntityModule().queryTrackedEntityInstances(query)))
                                         .observeOn(Schedulers.io())
                                         .subscribeOn(Schedulers.io())
                                         .doOnError(this::handleError)
@@ -248,9 +257,14 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                 for (TrackedEntityInstance tei : trackedEntityInstances) {
                                     if (view.fromRelationshipTEI() == null || !tei.uid().equals(view.fromRelationshipTEI())) { //If fetching for relationship, discard selected TEI
                                         List<TrackedEntityAttributeValueModel> attributeModels = new ArrayList<>();
-                                        TrackedEntityAttributeValueModelBuilder attrValueBuilder = new TrackedEntityAttributeValueModelBuilder(tei);
+                                        TrackedEntityAttributeValueModel.Builder attrValueBuilder = TrackedEntityAttributeValueModel.builder();
                                         for (TrackedEntityAttributeValue attrValue : tei.trackedEntityAttributeValues()) {
-                                            attributeModels.add(attrValueBuilder.buildModel(attrValue));
+                                            attrValueBuilder.value(attrValue.value())
+                                                    .created(attrValue.created())
+                                                    .lastUpdated(attrValue.lastUpdated())
+                                                    .trackedEntityAttribute(attrValue.trackedEntityAttribute())
+                                                    .trackedEntityInstance(tei.uid());
+                                            attributeModels.add(attrValueBuilder.build());
                                         }
                                         SearchTeiModel teiModel = new SearchTeiModel(teiBuilder.buildModel(tei), attributeModels);
                                         teiList.add(teiModel);
@@ -355,6 +369,12 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     private void getTrackedEntityAttributes() {
         compositeDisposable.add(searchRepository.programAttributes()
+                .flatMap(list -> {
+                    if (selectedProgram == null)
+                        return searchRepository.trackedEntityTypeAttributes();
+                    else
+                        return Observable.just(list);
+                })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -440,11 +460,29 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         orgUnitDialog.setTitle("Enrollment Org Unit")
                 .setPossitiveListener(v -> {
                     if (orgUnitDialog.getSelectedOrgUnit() != null)
-                        enrollInOrgUnit(orgUnitDialog.getSelectedOrgUnit(), programUid, uid, selectedEnrollmentDate);
+                        showEnrollmentDatePicker(orgUnitDialog.getSelectedOrgUnitModel(), programUid, uid);
                     orgUnitDialog.dismiss();
                 })
                 .setNegativeListener(v -> orgUnitDialog.dismiss());
 
+        compositeDisposable.add(getOrgUnits()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        allOrgUnits -> {
+                            if (orgUnits.size() > 1) {
+                                orgUnitDialog.setOrgUnits(orgUnits);
+                                if (!orgUnitDialog.isAdded())
+                                    orgUnitDialog.show(view.getAbstracContext().getSupportFragmentManager(), "OrgUnitEnrollment");
+                            } else if (orgUnits.size() == 1)
+                                enrollInOrgUnit(orgUnits.get(0).uid(), programUid, uid, selectedEnrollmentDate);
+                        },
+                        Timber::d
+                )
+        );
+    }
+
+    private void showEnrollmentDatePicker(OrganisationUnitModel selectedOrgUnitModel, String programUid, String uid) {
         Calendar c = Calendar.getInstance();
         int year = c.get(Calendar.YEAR);
         int month = c.get(Calendar.MONTH);
@@ -461,43 +499,29 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                     selectedCalendar.set(Calendar.SECOND, 0);
                     selectedCalendar.set(Calendar.MILLISECOND, 0);
                     selectedEnrollmentDate = selectedCalendar.getTime();
-                    String enrollmentDate = DateUtils.uiDateFormat().format(selectedEnrollmentDate);
 
-                    compositeDisposable.add(getOrgUnits()
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(
-                                    allOrgUnits -> {
-                                        ArrayList<OrganisationUnitModel> orgUnits = new ArrayList<>();
-                                        for (OrganisationUnitModel orgUnit : allOrgUnits) {
-                                            boolean afterOpening = false;
-                                            boolean beforeClosing = false;
-                                            if (orgUnit.openingDate() == null || !selectedEnrollmentDate.before(orgUnit.openingDate()))
-                                                afterOpening = true;
-                                            if (orgUnit.closedDate() == null || !selectedEnrollmentDate.after(orgUnit.closedDate()))
-                                                beforeClosing = true;
-                                            if (afterOpening && beforeClosing)
-                                                orgUnits.add(orgUnit);
-                                        }
-                                        if (orgUnits.size() > 1) {
-                                            orgUnitDialog.setOrgUnits(orgUnits);
-                                            if (!orgUnitDialog.isAdded())
-                                                orgUnitDialog.show(view.getAbstracContext().getSupportFragmentManager(), "OrgUnitEnrollment");
-                                        } else
-                                            enrollInOrgUnit(orgUnits.get(0).uid(), programUid, uid, selectedEnrollmentDate);
-                                    },
-                                    Timber::d
-                            )
-                    );
-
+                    enrollInOrgUnit(selectedOrgUnitModel.uid(), programUid, uid, selectedEnrollmentDate);
 
                 }),
                 year,
                 month,
                 day);
-        if (selectedProgram != null && !selectedProgram.selectEnrollmentDatesInFuture()) {
+
+        if (selectedOrgUnitModel.openingDate() != null)
+            dateDialog.getDatePicker().setMinDate(selectedOrgUnitModel.openingDate().getTime());
+
+        if (selectedOrgUnitModel.closedDate() == null && !selectedProgram.selectEnrollmentDatesInFuture()) {
             dateDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
+        } else if (selectedOrgUnitModel.closedDate() != null && !selectedProgram.selectEnrollmentDatesInFuture()) {
+            if (selectedOrgUnitModel.closedDate().before(new Date(System.currentTimeMillis()))) {
+                dateDialog.getDatePicker().setMaxDate(selectedOrgUnitModel.closedDate().getTime());
+            } else {
+                dateDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
+            }
+        } else if (selectedOrgUnitModel.closedDate() != null && selectedProgram.selectEnrollmentDatesInFuture()) {
+            dateDialog.getDatePicker().setMaxDate(selectedOrgUnitModel.closedDate().getTime());
         }
+
         dateDialog.setTitle(selectedProgram.enrollmentDateLabel());
         dateDialog.setButton(DialogInterface.BUTTON_NEGATIVE, view.getContext().getString(R.string.date_dialog_clear), (dialog, which) -> {
             dialog.dismiss();
@@ -563,12 +587,12 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         List<String> teiUids = new ArrayList<>();
         teiUids.add(teiUid);
         compositeDisposable.add(
-                Flowable.fromCallable(d2.downloadTrackedEntityInstancesByUid(teiUids))
+                Flowable.fromCallable(d2.trackedEntityModule().downloadTrackedEntityInstancesByUid(teiUids))
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 data -> openDashboard(data.get(0).uid()),
-                                t -> Log.d("ONLINE_SEARCH", t.getMessage()))
+                                Timber::d)
         );
 
     }
@@ -578,7 +602,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         List<String> teiUids = new ArrayList<>();
         teiUids.add(TEIuid);
         compositeDisposable.add(
-                Flowable.fromCallable(d2.downloadTrackedEntityInstancesByUid(teiUids))
+                Flowable.fromCallable(d2.trackedEntityModule().downloadTrackedEntityInstancesByUid(teiUids))
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
@@ -588,7 +612,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                     else
                                         addRelationship(TEIuid, relationshipTypeUid, false);
                                 },
-                                t -> Log.d("ONLINE_SEARCH", t.getMessage()))
+                                Timber::d)
         );
     }
 

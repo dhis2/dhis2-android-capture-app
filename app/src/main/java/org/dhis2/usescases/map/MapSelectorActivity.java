@@ -5,14 +5,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
 import android.widget.TextView;
 
-import org.dhis2.R;
-import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter;
-import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -22,10 +16,17 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 
+import org.dhis2.R;
+import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter;
+import org.dhis2.usescases.general.ActivityGlobalAbstract;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+
 
 /**
  * Created by Cristian on 15/03/2018.
- *
  */
 
 public class MapSelectorActivity extends ActivityGlobalAbstract implements OnMapReadyCallback {
@@ -52,11 +53,13 @@ public class MapSelectorActivity extends ActivityGlobalAbstract implements OnMap
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         findViewById(R.id.back).setOnClickListener(v -> finish());
         findViewById(R.id.fab).setOnClickListener(v -> {
-            Intent data = new Intent();
-            data.putExtra(LATITUDE, String.valueOf(mMap.getCameraPosition().target.latitude));
-            data.putExtra(LONGITUDE, String.valueOf(mMap.getCameraPosition().target.longitude));
-            setResult(RESULT_OK, data);
-            finish();
+            if (mMap != null) {
+                Intent data = new Intent();
+                data.putExtra(LATITUDE, String.valueOf(mMap.getCameraPosition().target.latitude));
+                data.putExtra(LONGITUDE, String.valueOf(mMap.getCameraPosition().target.longitude));
+                setResult(RESULT_OK, data);
+                finish();
+            }
         });
 
         latLon = findViewById(R.id.latlon);
@@ -72,7 +75,7 @@ public class MapSelectorActivity extends ActivityGlobalAbstract implements OnMap
         centerMapOnCurrentLocation();
     }
 
-    private void centerMapOnCurrentLocation(){
+    private void centerMapOnCurrentLocation() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // Should we show an explanation?
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_COARSE_LOCATION)) {
@@ -90,8 +93,7 @@ public class MapSelectorActivity extends ActivityGlobalAbstract implements OnMap
         }
 
         mFusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
-            if (location != null)
-            {
+            if (location != null) {
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 13));
 
                 CameraPosition cameraPosition = new CameraPosition.Builder()

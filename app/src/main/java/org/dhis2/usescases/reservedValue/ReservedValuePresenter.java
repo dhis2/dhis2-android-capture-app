@@ -47,7 +47,9 @@ public class ReservedValuePresenter implements ReservedValueContracts.Presenter 
     public void onClickRefill(ReservedValueModel reservedValue) {
         disposable.add(
                 Completable.fromAction(() ->
-                        d2.syncTrackedEntityAttributeReservedValues(reservedValue.uid(), reservedValue.orgUnitUid(), 100)
+                        d2.trackedEntityModule()
+                                .reservedValueManager
+                                .syncReservedValues(reservedValue.uid(), reservedValue.orgUnitUid(), 100)
                 ).subscribeOn(Schedulers.io())
                         .observeOn(Schedulers.io())
                         .subscribe(() -> updateProcessor.onNext(true), Timber::d)

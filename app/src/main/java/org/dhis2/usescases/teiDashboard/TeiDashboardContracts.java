@@ -47,7 +47,7 @@ public class TeiDashboardContracts {
 
         void restoreAdapter(String programUid);
 
-        void showCatComboDialog(String eventId, String programStage, List<CategoryOptionComboModel> catComboOptions);
+        void showCatComboDialog(String eventId, String programStage, List<CategoryOptionComboModel> catComboOptions, String title);
     }
 
     public interface Presenter {

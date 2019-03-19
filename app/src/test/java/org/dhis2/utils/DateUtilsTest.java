@@ -1,7 +1,6 @@
 package org.dhis2.utils;
 
 import org.dhis2.R;
-import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.period.PeriodType;
 import org.junit.Assert;
@@ -9,12 +8,12 @@ import org.junit.Test;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class DateUtilsTest {
 
@@ -113,9 +112,9 @@ public class DateUtilsTest {
         assertEquals("2018-07-28", DateUtils.uiDateFormat().format(minDateWeeklySaturday));
         assertEquals("2018-08-04", DateUtils.uiDateFormat().format(minDateWeeklySaturday2));
         assertEquals("2018-07-29", DateUtils.uiDateFormat().format(minDateWeeklySunday));
-        assertEquals("2018-08-05", DateUtils.uiDateFormat().format(minDateWeeklySunday2));
-        assertEquals("2018-07-16", DateUtils.uiDateFormat().format(minDateBiWeekly));
-        assertEquals("2018-06-18", DateUtils.uiDateFormat().format(minDateBiWeekly2));
+        assertEquals("2018-07-29", DateUtils.uiDateFormat().format(minDateWeeklySunday2));
+        assertEquals("2018-07-29", DateUtils.uiDateFormat().format(minDateBiWeekly));
+        assertEquals("2018-06-17", DateUtils.uiDateFormat().format(minDateBiWeekly2));
         assertEquals("2018-07-01", DateUtils.uiDateFormat().format(minDateMonthly));
         assertEquals("2018-06-01", DateUtils.uiDateFormat().format(minDateMonthly2));
         assertEquals("2018-07-01", DateUtils.uiDateFormat().format(minDateBiMonthly));
@@ -148,7 +147,7 @@ public class DateUtilsTest {
                 "2018-09-19",//WeeklyWednesday
                 "2018-09-20",//WeeklyThursday
                 "2018-09-22",//WeeklySaturday
-                "2018-09-23",//WeeklySunday
+                "2018-09-16",//WeeklySunday
                 "2018-09-24",//BiWeekly
                 "2018-10-01",//Monthly
                 "2018-11-01",//BiMonthly
@@ -244,8 +243,8 @@ public class DateUtilsTest {
         assertEquals(dates2[0], firstDayOfMonth);
         assertEquals(dates2[1], lastDayOfMonth);
 
-        String firstDayOfWeekString = "2018-12-03";
-        String lastDayOfWeekString = "2018-12-09";
+        String firstDayOfWeekString = "2018-12-02";
+        String lastDayOfWeekString = "2018-12-08";
         Date firstDayOfWeek = DateUtils.uiDateFormat().parse(firstDayOfWeekString);
         Date lastDayOfWeek = DateUtils.uiDateFormat().parse(lastDayOfWeekString);
 
@@ -303,15 +302,15 @@ public class DateUtilsTest {
 
     @Test
     public void testGetDifference() throws ParseException {
-        String startDateString = "2017-11-04";
-        String endDateString = "2018-12-05";
+        String startDateString = "2006-01-24";
+        String endDateString = "2019-01-23";
         Date startDate = DateUtils.uiDateFormat().parse(startDateString);
         Date endDate = DateUtils.uiDateFormat().parse(endDateString);
 
         int[] diff = DateUtils.getDifference(startDate, endDate);
-        assertEquals(1, diff[0]);
-        assertEquals(1, diff[1]);
-        assertEquals(1, diff[2]);
+        assertEquals(12, diff[0]);
+        assertEquals(11, diff[1]);
+        assertEquals(30, diff[2]);
     }
 
     @Test
@@ -396,14 +395,19 @@ public class DateUtilsTest {
         Calendar calendar3 = Calendar.getInstance();
         calendar3.setTime(date3);
 
-        String date4String = "2018-12-15";
+        String date4String = "2018-12-22";
         Date date4 = DateUtils.uiDateFormat().parse(date4String);
         Calendar calendar4 = Calendar.getInstance();
         calendar4.setTime(date4);
 
+        String date5String = "2018-12-15";
+        Date date5 = DateUtils.uiDateFormat().parse(date5String);
+        Calendar calendar5 = Calendar.getInstance();
+        calendar5.setTime(date5);
+
 
         assertEquals(calendar2.getTime(), DateUtils.getInstance().moveWeeklySaturday(calendar));
-        assertEquals(calendar4.getTime(), DateUtils.getInstance().moveWeeklySaturday(calendar2));
+        assertEquals(calendar5.getTime(), DateUtils.getInstance().moveWeeklySaturday(calendar2));
         assertEquals(calendar4.getTime(), DateUtils.getInstance().moveWeeklySaturday(calendar3));
     }
 
@@ -414,7 +418,7 @@ public class DateUtilsTest {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
 
-        String date2String = "2018-12-09";
+        String date2String = "2018-12-02";
         Date date2 = DateUtils.uiDateFormat().parse(date2String);
         Calendar calendar2 = Calendar.getInstance();
         calendar2.setTime(date2);
@@ -424,7 +428,7 @@ public class DateUtilsTest {
         Calendar calendar3 = Calendar.getInstance();
         calendar3.setTime(date3);
 
-        String date4String = "2018-12-16";
+        String date4String = "2018-12-09";
         Date date4 = DateUtils.uiDateFormat().parse(date4String);
         Calendar calendar4 = Calendar.getInstance();
         calendar4.setTime(date4);
@@ -442,7 +446,7 @@ public class DateUtilsTest {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
 
-        String date2String = "2018-12-17";
+        String date2String = "2018-12-16";
         Date date2 = DateUtils.uiDateFormat().parse(date2String);
         Calendar calendar2 = Calendar.getInstance();
         calendar2.setTime(date2);
@@ -616,144 +620,6 @@ public class DateUtilsTest {
     }
 
     @Test
-    public void testHasExpired() throws ParseException {
-        Date testDate = DateUtils.uiDateFormat().parse("2019-01-11");
-
-        EventModel completedEventModel1 = EventModel.builder()
-                .uid("test1")
-                .status(EventStatus.COMPLETED)
-                .eventDate(testDate)
-                .build();
-
-        EventModel completedEventModel11 = EventModel.builder()
-                .uid("test11")
-                .status(EventStatus.COMPLETED)
-                .dueDate(testDate)
-                .build();
-
-        assertEquals(false, DateUtils.getInstance().hasExpired(completedEventModel1, 0, 0, null));
-        assertEquals(false, DateUtils.getInstance().hasExpired(completedEventModel11, 0, 1, null));
-
-        EventModel completedEventModel2 = EventModel.builder()
-                .uid("test2")
-                .completedDate(testDate)
-                .build();
-
-        EventModel completedEventModel3 = EventModel.builder()
-                .uid("test3")
-                .dueDate(testDate)
-                .build();
-
-        assertEquals(false, DateUtils.getInstance().hasExpired(completedEventModel2, 0, 0, null));
-        assertEquals(false, DateUtils.getInstance().hasExpired(completedEventModel3, 1, 0, null));
-
-        assertEquals(false, DateUtils.getInstance().hasExpired(completedEventModel2, 0, 0, PeriodType.Daily));
-        assertEquals(false, DateUtils.getInstance().hasExpired(completedEventModel2, 0, 1, PeriodType.Daily));
-        assertEquals(false, DateUtils.getInstance().hasExpired(completedEventModel2, 1, 0, PeriodType.Daily));
-
-        assertEquals(false, DateUtils.getInstance().hasExpired(completedEventModel2, 0, 0, PeriodType.Weekly));
-        assertEquals(false, DateUtils.getInstance().hasExpired(completedEventModel2, 0, 1, PeriodType.Weekly));
-        assertEquals(false, DateUtils.getInstance().hasExpired(completedEventModel2, 1, 0, PeriodType.Weekly));
-
-        assertEquals(false, DateUtils.getInstance().hasExpired(completedEventModel2, 0, 0, PeriodType.WeeklyWednesday));
-        assertEquals(false, DateUtils.getInstance().hasExpired(completedEventModel2, 0, 1, PeriodType.WeeklyWednesday));
-        assertEquals(false, DateUtils.getInstance().hasExpired(completedEventModel2, 1, 0, PeriodType.WeeklyWednesday));
-
-        assertEquals(false, DateUtils.getInstance().hasExpired(completedEventModel2, 0, 0, PeriodType.WeeklyThursday));
-        assertEquals(false, DateUtils.getInstance().hasExpired(completedEventModel2, 0, 1, PeriodType.WeeklyThursday));
-        assertEquals(false, DateUtils.getInstance().hasExpired(completedEventModel2, 1, 0, PeriodType.WeeklyThursday));
-
-        assertEquals(false, DateUtils.getInstance().hasExpired(completedEventModel2, 0, 0, PeriodType.WeeklySaturday));
-        assertEquals(false, DateUtils.getInstance().hasExpired(completedEventModel2, 0, 1, PeriodType.WeeklySaturday));
-        assertEquals(false, DateUtils.getInstance().hasExpired(completedEventModel2, 1, 0, PeriodType.WeeklySaturday));
-
-        assertEquals(false, DateUtils.getInstance().hasExpired(completedEventModel2, 0, 0, PeriodType.WeeklySunday));
-        assertEquals(false, DateUtils.getInstance().hasExpired(completedEventModel2, 0, 1, PeriodType.WeeklySunday));
-        assertEquals(false, DateUtils.getInstance().hasExpired(completedEventModel2, 1, 0, PeriodType.WeeklySunday));
-
-        assertEquals(false, DateUtils.getInstance().hasExpired(completedEventModel2, 0, 0, PeriodType.BiWeekly));
-        assertEquals(false, DateUtils.getInstance().hasExpired(completedEventModel2, 0, 1, PeriodType.BiWeekly));
-        assertEquals(false, DateUtils.getInstance().hasExpired(completedEventModel2, 1, 0, PeriodType.BiWeekly));
-
-        assertEquals(false, DateUtils.getInstance().hasExpired(completedEventModel2, 0, 0, PeriodType.Monthly));
-        assertEquals(false, DateUtils.getInstance().hasExpired(completedEventModel2, 0, 1, PeriodType.Monthly));
-        assertEquals(false, DateUtils.getInstance().hasExpired(completedEventModel2, 1, 0, PeriodType.Monthly));
-
-        assertEquals(false, DateUtils.getInstance().hasExpired(completedEventModel2, 0, 0, PeriodType.BiMonthly));
-        assertEquals(false, DateUtils.getInstance().hasExpired(completedEventModel2, 0, 1, PeriodType.BiMonthly));
-        assertEquals(false, DateUtils.getInstance().hasExpired(completedEventModel2, 1, 0, PeriodType.BiMonthly));
-
-        assertEquals(false, DateUtils.getInstance().hasExpired(completedEventModel2, 0, 0, PeriodType.Quarterly));
-        assertEquals(false, DateUtils.getInstance().hasExpired(completedEventModel2, 0, 1, PeriodType.Quarterly));
-        assertEquals(false, DateUtils.getInstance().hasExpired(completedEventModel2, 1, 0, PeriodType.Quarterly));
-
-        assertEquals(false, DateUtils.getInstance().hasExpired(completedEventModel2, 0, 0, PeriodType.SixMonthly));
-        assertEquals(false, DateUtils.getInstance().hasExpired(completedEventModel2, 0, 1, PeriodType.SixMonthly));
-        assertEquals(false, DateUtils.getInstance().hasExpired(completedEventModel2, 1, 0, PeriodType.SixMonthly));
-
-        assertEquals(false, DateUtils.getInstance().hasExpired(completedEventModel2, 0, 0, PeriodType.SixMonthlyApril));
-        assertEquals(false, DateUtils.getInstance().hasExpired(completedEventModel2, 0, 1, PeriodType.SixMonthlyApril));
-        assertEquals(false, DateUtils.getInstance().hasExpired(completedEventModel2, 1, 0, PeriodType.SixMonthlyApril));
-
-        assertEquals(false, DateUtils.getInstance().hasExpired(completedEventModel2, 0, 0, PeriodType.Yearly));
-        assertEquals(false, DateUtils.getInstance().hasExpired(completedEventModel2, 0, 1, PeriodType.Yearly));
-        assertEquals(false, DateUtils.getInstance().hasExpired(completedEventModel2, 1, 0, PeriodType.Yearly));
-
-        assertEquals(false, DateUtils.getInstance().hasExpired(completedEventModel2, 0, 0, PeriodType.FinancialApril));
-        assertEquals(false, DateUtils.getInstance().hasExpired(completedEventModel2, 0, 1, PeriodType.FinancialApril));
-        assertEquals(false, DateUtils.getInstance().hasExpired(completedEventModel2, 1, 0, PeriodType.FinancialApril));
-
-        assertEquals(false, DateUtils.getInstance().hasExpired(completedEventModel2, 0, 0, PeriodType.FinancialJuly));
-        assertEquals(false, DateUtils.getInstance().hasExpired(completedEventModel2, 0, 1, PeriodType.FinancialJuly));
-        assertEquals(false, DateUtils.getInstance().hasExpired(completedEventModel2, 1, 0, PeriodType.FinancialJuly));
-
-        assertEquals(false, DateUtils.getInstance().hasExpired(completedEventModel2, 0, 0, PeriodType.FinancialOct));
-        assertEquals(false, DateUtils.getInstance().hasExpired(completedEventModel2, 0, 1, PeriodType.FinancialOct));
-        assertEquals(false, DateUtils.getInstance().hasExpired(completedEventModel2, 1, 0, PeriodType.FinancialOct));
-    }
-
-    @Test
-    public void testGetNewDate() throws ParseException {
-        Date testDate = DateUtils.uiDateFormat().parse("2019-01-11");
-        EventModel completedEventModel1 = EventModel.builder()
-                .uid("test1")
-                .status(EventStatus.COMPLETED)
-                .eventDate(testDate)
-                .build();
-        EventModel completedEventModel2 = EventModel.builder()
-                .uid("test2")
-                .completedDate(testDate)
-                .build();
-
-        EventModel completedEventModel3 = EventModel.builder()
-                .uid("test3")
-                .dueDate(testDate)
-                .build();
-
-        ArrayList<EventModel> eventModels = new ArrayList<>();
-        eventModels.add(completedEventModel1);
-        eventModels.add(completedEventModel2);
-        eventModels.add(completedEventModel3);
-
-        assertEquals("2019-01-13", DateUtils.uiDateFormat().format(DateUtils.getInstance().getNewDate(eventModels, PeriodType.Daily)));
-        assertEquals("2019-01-13", DateUtils.uiDateFormat().format(DateUtils.getInstance().getNewDate(eventModels, PeriodType.Weekly)));
-        assertEquals("2019-01-16", DateUtils.uiDateFormat().format(DateUtils.getInstance().getNewDate(eventModels, PeriodType.WeeklyWednesday)));
-        assertEquals("2019-01-17", DateUtils.uiDateFormat().format(DateUtils.getInstance().getNewDate(eventModels, PeriodType.WeeklyThursday)));
-        assertEquals("2019-01-12", DateUtils.uiDateFormat().format(DateUtils.getInstance().getNewDate(eventModels, PeriodType.WeeklySaturday)));
-        assertEquals("2019-01-13", DateUtils.uiDateFormat().format(DateUtils.getInstance().getNewDate(eventModels, PeriodType.WeeklySunday)));
-        assertEquals("2019-01-21", DateUtils.uiDateFormat().format(DateUtils.getInstance().getNewDate(eventModels, PeriodType.BiWeekly)));
-        assertEquals("2019-01-31", DateUtils.uiDateFormat().format(DateUtils.getInstance().getNewDate(eventModels, PeriodType.Monthly)));
-        assertEquals("2019-02-28", DateUtils.uiDateFormat().format(DateUtils.getInstance().getNewDate(eventModels, PeriodType.BiMonthly)));
-        assertEquals("2019-04-30", DateUtils.uiDateFormat().format(DateUtils.getInstance().getNewDate(eventModels, PeriodType.Quarterly)));
-        assertEquals("2019-06-30", DateUtils.uiDateFormat().format(DateUtils.getInstance().getNewDate(eventModels, PeriodType.SixMonthly)));
-        assertEquals("2019-01-01", DateUtils.uiDateFormat().format(DateUtils.getInstance().getNewDate(eventModels, PeriodType.SixMonthlyApril)));
-        assertEquals("2020-01-01", DateUtils.uiDateFormat().format(DateUtils.getInstance().getNewDate(eventModels, PeriodType.Yearly)));
-        assertEquals("2020-04-01", DateUtils.uiDateFormat().format(DateUtils.getInstance().getNewDate(eventModels, PeriodType.FinancialApril)));
-        assertEquals("2020-07-01", DateUtils.uiDateFormat().format(DateUtils.getInstance().getNewDate(eventModels, PeriodType.FinancialJuly)));
-        assertEquals("2020-10-01", DateUtils.uiDateFormat().format(DateUtils.getInstance().getNewDate(eventModels, PeriodType.FinancialOct)));
-    }
-
-    @Test
     public void testGetPeriodUIString() throws ParseException {
         Date testDate = DateUtils.uiDateFormat().parse("2019-01-11");
 
@@ -763,7 +629,7 @@ public class DateUtilsTest {
         assertEquals("2 2019", DateUtils.getInstance().getPeriodUIString(PeriodType.WeeklyWednesday, testDate, Locale.ENGLISH));
         assertEquals("2 2019", DateUtils.getInstance().getPeriodUIString(PeriodType.WeeklyThursday, testDate, Locale.ENGLISH));
         assertEquals("2 2019", DateUtils.getInstance().getPeriodUIString(PeriodType.WeeklySaturday, testDate, Locale.ENGLISH));
-        assertEquals("3 2019", DateUtils.getInstance().getPeriodUIString(PeriodType.WeeklySunday, testDate, Locale.ENGLISH));
+        assertEquals("2 2019", DateUtils.getInstance().getPeriodUIString(PeriodType.WeeklySunday, testDate, Locale.ENGLISH));
         assertEquals("2 2019 - 3 2019", DateUtils.getInstance().getPeriodUIString(PeriodType.BiWeekly, testDate, Locale.ENGLISH));
         assertEquals("Jan 2019", DateUtils.getInstance().getPeriodUIString(PeriodType.Monthly, testDate, Locale.ENGLISH));
         assertEquals("Jan 2019 - Feb 2019", DateUtils.getInstance().getPeriodUIString(PeriodType.BiMonthly, testDate, Locale.ENGLISH));
@@ -774,5 +640,114 @@ public class DateUtilsTest {
         assertEquals("Apr 2018 - Mar 2019", DateUtils.getInstance().getPeriodUIString(PeriodType.FinancialApril, testDate, Locale.ENGLISH));
         assertEquals("Jul 2018 - Jun 2019", DateUtils.getInstance().getPeriodUIString(PeriodType.FinancialJuly, testDate, Locale.ENGLISH));
         assertEquals("Oct 2018 - Sep 2019", DateUtils.getInstance().getPeriodUIString(PeriodType.FinancialOct, testDate, Locale.ENGLISH));
+    }
+
+    private Date toDate(String date) throws ParseException {
+        return DateUtils.uiDateFormat().parse(date);
+    }
+
+    @Test
+    public void active_event_NcD_NPT_NeD_is_not_expired() throws ParseException {
+
+        Date currentDate = DateUtils.uiDateFormat().parse("2019-03-01");
+        DateUtils.getInstance().setCurrentDate(currentDate);
+
+        assertTrue(!DateUtils.getInstance().isEventExpired(toDate("2019-03-01"), null, EventStatus.ACTIVE, 0, null, 0));
+        assertTrue(!DateUtils.getInstance().isEventExpired(toDate("2019-03-02"), null, EventStatus.ACTIVE, 0, null, 0));
+        assertTrue(!DateUtils.getInstance().isEventExpired(toDate("2019-02-28"), null, EventStatus.ACTIVE, 0, null, 0));
+
+    }
+
+    @Test
+    public void active_event_NcD_Monthly_0_is_expired() throws ParseException {
+
+        Date currentDate = DateUtils.uiDateFormat().parse("2019-03-01");
+        DateUtils.getInstance().setCurrentDate(currentDate);
+
+        assertTrue(DateUtils.getInstance().isEventExpired(toDate("2019-02-28"), null, EventStatus.ACTIVE, 0, PeriodType.Monthly, 0));
+
+    }
+
+    @Test
+    public void active_event_NcD_Monthly_1_is_expired() throws ParseException {
+
+        Date currentDate = DateUtils.uiDateFormat().parse("2019-03-01");
+        DateUtils.getInstance().setCurrentDate(currentDate);
+
+        assertTrue(!DateUtils.getInstance().isEventExpired(toDate("2019-03-01"), null, EventStatus.ACTIVE, 0, PeriodType.Monthly, 1));
+        assertTrue(!DateUtils.getInstance().isEventExpired(toDate("2019-03-02"), null, EventStatus.ACTIVE, 0, PeriodType.Monthly, 1));
+        assertTrue(!DateUtils.getInstance().isEventExpired(toDate("2019-02-28"), null, EventStatus.ACTIVE, 0, PeriodType.Monthly, 1));
+
+        currentDate = DateUtils.uiDateFormat().parse("2019-03-02");
+        DateUtils.getInstance().setCurrentDate(currentDate);
+
+        assertTrue(DateUtils.getInstance().isEventExpired(toDate("2019-03-01"), null, EventStatus.ACTIVE, 0, null, 0));
+    }
+
+    @Test
+    public void complete_event_NcD_NPT_NeD_is_not_expired() throws ParseException {
+
+        Date currentDate = DateUtils.uiDateFormat().parse("2019-03-01");
+        DateUtils.getInstance().setCurrentDate(currentDate);
+
+        assertTrue(!DateUtils.getInstance().isEventExpired(toDate("2019-03-01"), null, EventStatus.COMPLETED, 0, null, 0));
+
+    }
+
+    @Test
+    public void complete_event_1_NPT_NeD_is_not_expired() throws ParseException {
+
+        Date currentDate = DateUtils.uiDateFormat().parse("2019-03-01");
+        DateUtils.getInstance().setCurrentDate(currentDate);
+
+        assertTrue(!DateUtils.getInstance().isEventExpired(toDate("2019-03-01"), null, EventStatus.COMPLETED, 0, null, 1));
+
+    }
+
+    @Test
+    public void complete_event_1_Monthly_0_is_expired() throws ParseException {
+
+        Date currentDate = DateUtils.uiDateFormat().parse("2019-03-01");
+        DateUtils.getInstance().setCurrentDate(currentDate);
+
+        assertTrue(DateUtils.getInstance().isEventExpired(toDate("2019-02-28"), toDate("2019-03-01"), EventStatus.COMPLETED, 1, PeriodType.Monthly, 0));
+
+    }
+
+    @Test
+    public void complete_event_1_Monthly_1_is_not_expired() throws ParseException {
+
+        Date currentDate = DateUtils.uiDateFormat().parse("2019-03-01");
+        DateUtils.getInstance().setCurrentDate(currentDate);
+
+        assertTrue(!DateUtils.getInstance().isEventExpired(toDate("2019-02-28"), toDate("2019-02-28"), EventStatus.COMPLETED, 1, PeriodType.Monthly, 1));
+
+    }
+
+    @Test
+    public void complete_event_1_NPT_NeD_is_expired() throws ParseException {
+
+        Date currentDate = DateUtils.uiDateFormat().parse("2019-03-02");
+        DateUtils.getInstance().setCurrentDate(currentDate);
+
+        assertTrue(DateUtils.getInstance().isEventExpired(toDate("2019-03-01"), toDate("2019-03-01"), EventStatus.COMPLETED, 1, null, 0));
+
+    }
+
+    @Test
+    public void complete_event_1_Monthly_1_is_expired() throws ParseException {
+
+        Date currentDate = DateUtils.uiDateFormat().parse("2019-03-02");
+        DateUtils.getInstance().setCurrentDate(currentDate);
+
+        assertTrue(DateUtils.getInstance().isEventExpired(toDate("2019-02-28"), toDate("2019-03-01"), EventStatus.COMPLETED, 1, null, 0));
+
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void complete_event_with_null_complete_date_throws_error() throws ParseException {
+
+        DateUtils.getInstance().isEventExpired(toDate("2019-02-28"), null, EventStatus.COMPLETED, 1, null, 0);
+
     }
 }

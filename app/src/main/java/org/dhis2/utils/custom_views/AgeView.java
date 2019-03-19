@@ -7,6 +7,7 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 
 import org.dhis2.R;
 import org.dhis2.databinding.AgeCustomViewAccentBinding;
@@ -41,6 +42,7 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
     private OnAgeSet listener;
     private String label;
     private String description;
+    private TextInputLayout inputLayout;
 
     public AgeView(Context context) {
         super(context);
@@ -75,7 +77,7 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
     }
 
     public void setWarningOrError(String warningOrError) {
-        date.setError(warningOrError);
+        inputLayout.setError(warningOrError);
     }
 
     private void onFocusChanged(View view, boolean b) {
@@ -116,7 +118,7 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
             }
     }
 
-    private void handleSingleInputs() {
+    protected void handleSingleInputs() {
 
         Calendar calendar = Calendar.getInstance();
 
@@ -135,7 +137,7 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
         }
     }
 
-    private void handleDateInput(View view, int year1, int month1, int day1) {
+    protected void handleDateInput(View view, int year1, int month1, int day1) {
         selectedCalendar.set(Calendar.YEAR, year1);
         selectedCalendar.set(Calendar.MONTH, month1);
         selectedCalendar.set(Calendar.DAY_OF_MONTH, day1);
@@ -193,6 +195,7 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
         else
             binding = AgeCustomViewBinding.inflate(inflater, this, true);
 
+        inputLayout = findViewById(R.id.inputLayout);
         date = findViewById(R.id.date_picker);
         day = findViewById(R.id.input_days);
         month = findViewById(R.id.input_month);
@@ -205,11 +208,11 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
         date.setOnFocusChangeListener(this::onFocusChanged);
         date.setOnClickListener(this);
 
-        day.setFocusable(false);
+        day.setFocusable(true);
         day.setClickable(true);
-        month.setFocusable(false);
+        month.setFocusable(true);
         month.setClickable(true);
-        year.setFocusable(false);
+        year.setFocusable(true);
         year.setClickable(true);
 
         day.setFilters(new InputFilter[]{new InputFilter.LengthFilter(2)});

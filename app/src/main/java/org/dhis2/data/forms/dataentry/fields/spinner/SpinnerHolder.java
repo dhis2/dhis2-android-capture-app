@@ -1,7 +1,6 @@
 package org.dhis2.data.forms.dataentry.fields.spinner;
 
 import android.content.Context;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -17,15 +16,15 @@ import org.dhis2.data.tuples.Trio;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.custom_views.OptionSetDialog;
 import org.dhis2.utils.custom_views.OptionSetOnClickListener;
+import org.dhis2.utils.custom_views.OptionSetPopUp;
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
-import java.util.List;
+import java.util.Map;
 
 import androidx.appcompat.widget.PopupMenu;
 import androidx.databinding.ViewDataBinding;
 import androidx.fragment.app.FragmentActivity;
-import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.processors.FlowableProcessor;
 
 import static android.text.TextUtils.isEmpty;
@@ -36,19 +35,19 @@ import static android.text.TextUtils.isEmpty;
 
 public class SpinnerHolder extends FormViewHolder implements View.OnClickListener, PopupMenu.OnMenuItemClickListener, OptionSetOnClickListener {
 
-    private final CompositeDisposable disposable;
     private final FlowableProcessor<RowAction> processor;
     private final FlowableProcessor<Trio<String, String, Integer>> processorOptionSet;
     private final ImageView iconView;
     private final TextInputEditText editText;
     private final TextInputLayout inputLayout;
     private final View descriptionLabel;
+    private final boolean isSearchMode;
 
     private SpinnerViewModel viewModel;
     private int numberOfOptions = 0;
-    private List<OptionModel> options;
+    private Map<String, OptionModel> options;
 
-    SpinnerHolder(ViewDataBinding mBinding, FlowableProcessor<RowAction> processor, FlowableProcessor<Trio<String, String, Integer>> processorOptionSet, boolean isBackgroundTransparent, String renderType) {
+    SpinnerHolder(ViewDataBinding mBinding, FlowableProcessor<RowAction> processor, FlowableProcessor<Trio<String, String, Integer>> processorOptionSet, String renderType, boolean isSearchMode) {
         super(mBinding);
         this.editText = mBinding.getRoot().findViewById(R.id.input_editText);
         this.iconView = mBinding.getRoot().findViewById(R.id.renderImage);
@@ -56,6 +55,7 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
         this.descriptionLabel = mBinding.getRoot().findViewById(R.id.descriptionLabel);
         this.processor = processor;
         this.processorOptionSet = processorOptionSet;
+        this.isSearchMode = isSearchMode;
 
         if (renderType != null && !renderType.equals(ProgramStageSectionRenderingType.LISTING.name()))
             iconView.setVisibility(View.VISIBLE);
@@ -67,23 +67,19 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
                 editText.performClick();
         });
 
-        this.disposable = new CompositeDisposable();
 
     }
 
     public void update(SpinnerViewModel viewModel) {
         this.viewModel = viewModel;
 
-        numberOfOptions = Bindings.optionSetItemSize(viewModel.optionSet());
-        options = Bindings.setOptionSet(viewModel.optionSet());
-        Bindings.setObjectStyle(iconView, itemView, viewModel.uid());
+        numberOfOptions = viewModel.numberOfOptions();
+        Bindings.setObjectStyle(iconView, itemView, viewModel.objectStyle());
         editText.setEnabled(viewModel.editable());
         editText.setFocusable(false);
         editText.setClickable(viewModel.editable());
 
-
         editText.setText(viewModel.value()); //option code is already transformed to value in the fieldviewmodelfactory implementation
-
 
         if (!isEmpty(viewModel.warning())) {
             inputLayout.setError(viewModel.warning());
@@ -106,13 +102,6 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
     }
 
     public void dispose() {
-        disposable.clear();
-    }
-
-    @Override
-    public boolean onMenuItemClick(MenuItem item) {
-        setValueOption(item.getTitle().toString());
-        return false;
     }
 
     @Override
@@ -127,40 +116,46 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
                     .setCancelListener(view -> dialog.dismiss())
                     .setClearListener(view -> {
                                 processor.onNext(
-                                        RowAction.create(viewModel.uid(), ""));
-                               /* View nextView;
-                                if ((nextView = editText.focusSearch(View.FOCUS_DOWN)) != null)
-                                    nextView.requestFocus();*/
+                                        RowAction.create(viewModel.uid(), null));
+                                viewModel.withValue(null);
                                 dialog.dismiss();
                             }
                     ).show(((FragmentActivity) binding.getRoot().getContext()).getSupportFragmentManager(), null);
         } else {
-            PopupMenu menu = new PopupMenu(itemView.getContext(), v);
-            menu.setOnMenuItemClickListener(this);
-            for (OptionModel optionModel : options)
-                menu.getMenu().add(Menu.NONE, Menu.NONE, options.indexOf(optionModel) + 1, optionModel.displayName());
-            menu.show();
+            OptionSetPopUp.getInstance()
+                    .setOptionSetUid(viewModel)
+                    .setProcessor(processorOptionSet)
+                    .setOnClick(this)
+                    .show(itemView.getContext(), v);
         }
     }
 
     @Override
-    public void onSelectOption(String option) {
-        setValueOption(option);
+    public void onSelectOption(OptionModel option) {
+        setValueOption(option.displayName(), option.code());
         OptionSetDialog.newInstance().dismiss();
     }
 
-    private void setValueOption(String option) {
-        String code = null;
-        String displayName = null;
-        for (OptionModel optionModel : options)
-            if (option.equals(optionModel.displayName())) {
-                code = optionModel.code();
-                displayName = optionModel.displayName();
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        if (OptionSetPopUp.getInstance().getOptions() != null && item.getTitle() != null) {
+            OptionModel selectedOption = OptionSetPopUp.getInstance().getOptions().get(item.getTitle().toString());
+            if (selectedOption != null) {
+                setValueOption(selectedOption.displayName(), selectedOption.code());
             }
-        editText.setText(displayName);
+            OptionSetPopUp.getInstance().dismiss();
+        }
+        return false;
+    }
+
+    private void setValueOption(String optionDisplayName, String optionCode) {
+
+        editText.setText(optionDisplayName);
         processor.onNext(
-                RowAction.create(viewModel.uid(), code)
+                RowAction.create(viewModel.uid(), isSearchMode ? optionDisplayName + "_os_" + optionCode : optionCode, true)
         );
+        viewModel.withValue(isSearchMode ? optionDisplayName : optionCode);
       /*  View nextView;
         if ((nextView = editText.focusSearch(View.FOCUS_DOWN)) != null)
             nextView.requestFocus();*/

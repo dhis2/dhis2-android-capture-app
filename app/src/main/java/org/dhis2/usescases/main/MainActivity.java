@@ -3,14 +3,8 @@ package org.dhis2.usescases.main;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-
-import androidx.databinding.DataBindingUtil;
-import androidx.databinding.ObservableInt;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.core.content.res.ResourcesCompat;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -32,9 +26,15 @@ import org.dhis2.utils.Period;
 import org.hisp.dhis.android.core.maintenance.D2Error;
 
 import java.util.List;
+import java.util.Objects;
 
 import javax.inject.Inject;
 
+import androidx.annotation.NonNull;
+import androidx.core.content.res.ResourcesCompat;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ObservableInt;
+import androidx.fragment.app.Fragment;
 import io.reactivex.functions.Consumer;
 
 
@@ -56,7 +56,7 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        ((App) getApplicationContext()).userComponent().plus(new MainModule()).inject(this);
+        Objects.requireNonNull(((App) getApplicationContext()).userComponent()).plus(new MainModule()).inject(this);
 
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
@@ -83,7 +83,7 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
             }
         });
 
-        if(savedInstanceState != null) {
+        if (savedInstanceState != null) {
             int frag = savedInstanceState.getInt("Fragment");
             currentFragment.set(frag);
             binding.setCurrentFragment(currentFragment);
@@ -239,7 +239,7 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
         if (fragment != null) {
             currentFragment.set(id);
 
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment, tag).commit();
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment, tag).commitAllowingStateLoss();
             binding.title.setText(tag);
         }
         binding.drawerLayout.closeDrawers();
@@ -247,7 +247,8 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
 
     @Override
     public void showSyncErrors(List<D2Error> data) {
-        ErrorDialog.newInstace().setData(data).show(getSupportFragmentManager().beginTransaction(), "ErrorDialog");
+        if (!ErrorDialog.newInstace().isAdded())
+            ErrorDialog.newInstace().setData(data).show(getSupportFragmentManager().beginTransaction(), "ErrorDialog");
     }
 
     public void setTitle(String title) {
@@ -261,7 +262,7 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
 
     @Override
     public void showTutorial(boolean shaked) {
-        if(fragId == R.id.menu_home || fragId == R.id.sync_manager)
+        if (fragId == R.id.menu_home || fragId == R.id.sync_manager)
             super.showTutorial(shaked);
         else
             showToast(getString(R.string.no_intructions));

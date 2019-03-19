@@ -37,6 +37,7 @@ import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerCellRow;
 import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.unsupported.UnsupportedRow;
 import org.dhis2.data.forms.dataentry.tablefields.unsupported.UnsupportedViewModel;
+import org.dhis2.data.tuples.Trio;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
@@ -80,13 +81,14 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
 
     private Boolean showRowTotal = false;
     private Boolean showColumnTotal = false;
+    private final FlowableProcessor<Trio<String, String, Integer>> processorOptionSet;
 
 
-
-    public DataSetTableAdapter(Context context, FlowableProcessor<RowAction> processor) {
+    public DataSetTableAdapter(Context context, FlowableProcessor<RowAction> processor,FlowableProcessor<Trio<String, String, Integer>> processorOptionSet) {
         super(context);
         rows = new ArrayList<>();
         this.processor = processor;
+        this.processorOptionSet = processorOptionSet;
         //processor = PublishProcessor.create();
         layoutInflater = LayoutInflater.from(context);
         viewModels = new ArrayList<>();
@@ -96,7 +98,7 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
         rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, new ObservableBoolean(accessDataWrite), (TableView)getTableView()));
         rows.add(BUTTON, new FileCellRow(layoutInflater, processor));
         rows.add(CHECKBOX, new RadioButtonRow(layoutInflater, processor, accessDataWrite));
-        rows.add(SPINNER, new SpinnerCellRow(layoutInflater, processor, accessDataWrite));
+        rows.add(SPINNER, new SpinnerCellRow(layoutInflater, processor, accessDataWrite, processorOptionSet));
         rows.add(COORDINATES, new CoordinateRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name(), accessDataWrite));
         rows.add(TIME, new DateTimeRow(layoutInflater, processor, TIME, true, accessDataWrite));
         rows.add(DATE, new DateTimeRow(layoutInflater, processor, DATE, true, accessDataWrite));
@@ -290,6 +292,10 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
         return processor;
     }
 
+    public FlowableProcessor<Trio<String, String, Integer>> asFlowableOptionSet(){
+        return processorOptionSet;
+    }
+
     public void updateValue(RowAction rowAction) {
         if(showRowTotal || showColumnTotal){
             int oldValue = 0;
@@ -299,20 +305,20 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
             if(showRowTotal) {
                 int totalRow = Integer.parseInt(getCellItem(viewModels.get(0).size()-1,rowAction.rowPos()))
                         + (Integer.parseInt(rowAction.value()!= null? rowAction.value(): "0") - oldValue);
-                changeCellItem(viewModels.get(0).size() - 1, rowAction.rowPos(), totalRow + "");
+                changeCellItem(viewModels.get(0).size() - 1, rowAction.rowPos(), totalRow + "", showRowTotal);
             }
             if(showColumnTotal) {
                 int totalColumn = Integer.parseInt(getCellItem(rowAction.columnPos(),viewModels.size()-1))
                         + (Integer.parseInt(rowAction.value()!= null? rowAction.value(): "0") - oldValue);
-                changeCellItem(rowAction.columnPos(), viewModels.size() - 1, totalColumn + "");
+                changeCellItem(rowAction.columnPos(), viewModels.size() - 1, totalColumn + "", showColumnTotal);
             }
             if(showRowTotal && showColumnTotal){
                 int total = Integer.parseInt(getCellItem(viewModels.get(0).size()-1, viewModels.size()-1))
                         + (Integer.parseInt(rowAction.value()!= null? rowAction.value(): "0") - oldValue);
-                changeCellItem(viewModels.get(0).size()-1, viewModels.size()-1, total + "");
+                changeCellItem(viewModels.get(0).size()-1, viewModels.size()-1, total + "", true);
             }
         }
-        changeCellItem(rowAction.columnPos(),rowAction.rowPos(), rowAction.value()!= null? rowAction.value(): "");
+        changeCellItem(rowAction.columnPos(),rowAction.rowPos(), rowAction.value()!= null? rowAction.value(): "", false);
     }
 
     public void setShowRowTotal(Boolean showRowTotal) {

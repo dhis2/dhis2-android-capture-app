@@ -30,7 +30,7 @@ public class CategoryComboDialog extends AlertDialog {
     private AlertDialog dialog;
     private int requestCode;
     private OnCatOptionSelected listener;
-
+    private String title;
     public CategoryComboDialog(@NonNull Context context,
                                @NonNull CategoryComboModel categoryComboModel,
                                List<CategoryOptionComboModel> options,
@@ -46,13 +46,14 @@ public class CategoryComboDialog extends AlertDialog {
         setCancelable(false);
     }
 
-    public CategoryComboDialog(Context context, String catComboName, List<CategoryOptionComboModel> options, int requestCode, OnCatOptionSelected listener) {
+    public CategoryComboDialog(Context context, String catComboName, List<CategoryOptionComboModel> options, int requestCode, OnCatOptionSelected listener, String title) {
         super(context);
         this.context = context;
         this.catComboName = catComboName;
         this.options = options;
         this.requestCode = requestCode;
         this.listener = listener;
+        this.title = title;
 
         setCancelable(false);
     }
@@ -69,7 +70,7 @@ public class CategoryComboDialog extends AlertDialog {
         dialog = builder.create();
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-        binding.titleDialog.setText(catComboName);
+        binding.titleDialog.setText(title);
 
         CatComboAdapter2 adapter = new CatComboAdapter2(context,
                 R.layout.spinner_layout,

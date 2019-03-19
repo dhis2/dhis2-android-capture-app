@@ -87,7 +87,7 @@ public class TeiDashboardActivity extends ActivityGlobalAbstract implements TeiD
     }
 
     @Override
-    public void showCatComboDialog(String eventId, String programStage, List<CategoryOptionComboModel> catComboOptions) {
+    public void showCatComboDialog(String eventId, String programStage, List<CategoryOptionComboModel> catComboOptions, String title) {
 
     }
 }

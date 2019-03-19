@@ -46,6 +46,7 @@
                         android:onClick="@{()->presenter.onTimeButtonClick()}"
                         android:padding="7dp"
                         app:srcCompat="@drawable/ic_view_none"
+                        android:tint="@color/colorGreyDefault"
                         tools:ignore="ContentDescription" />
 
                     <TextView
@@ -174,7 +175,16 @@
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     app:layout_constraintBottom_toTopOf="@id/org_unit_apply"
-                    app:layout_constraintTop_toBottomOf="@+id/org_unit_all" />
+                    app:layout_constraintTop_toBottomOf="@+id/org_unit_all">
+
+                    <ProgressBar
+                        android:id="@+id/orgUnitProgress"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:layout_centerInParent="true"
+                        android:visibility="gone"
+                        app:progressColor="@{@color/colorPrimary}" />
+                </RelativeLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
         </com.google.android.material.navigation.NavigationView>
     </androidx.drawerlayout.widget.DrawerLayout>

@@ -13,5 +13,4 @@ interface SyncPresenter {
     void syncAndDownloadDataValues() throws Exception;
 
     void syncReservedValues();
-    void syncAggregateData() throws Exception ;
 }

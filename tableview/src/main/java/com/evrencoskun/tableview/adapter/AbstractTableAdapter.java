@@ -269,9 +269,10 @@ public abstract class AbstractTableAdapter<CH, RH, C> implements ITableAdapter {
         mRowHeaderRecyclerViewAdapter.changeItemRange(rowPositionStart, rowHeaderModelList);
     }
 
-    public void changeCellItem(int columnPosition, int rowPosition, C cellModel) {
+    public void changeCellItem(int columnPosition, int rowPosition, C cellModel, boolean isTotal) {
         List<C> cellItems = (List<C>) mCellRecyclerViewAdapter.getItem(rowPosition);
-        columnPosition = cellItems.size() -1 == columnPosition ? columnPosition +1 : columnPosition;
+        if(columnPosition != 0 && cellItems != null && !isTotal)
+            columnPosition = cellItems.size() -1 == columnPosition ? columnPosition +1 : columnPosition;
         if (cellItems != null && cellItems.size() > columnPosition) {
             // Update cell row items.
             cellItems.set(columnPosition, cellModel);

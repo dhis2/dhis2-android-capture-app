@@ -31,6 +31,7 @@ public class DateTimeRow implements Row<DateTimeHolder, DateTimeViewModel> {
     private final FlowableProcessor<Integer> currentPosition;
 
     private int viewType;
+    private boolean isSearchMode = false;
 
     public DateTimeRow(LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor, int viewType, boolean isBgTransparent) {
         this.processor = processor;
@@ -39,6 +40,7 @@ public class DateTimeRow implements Row<DateTimeHolder, DateTimeViewModel> {
         this.isBgTransparent = isBgTransparent;
         this.renderType = null;
         this.currentPosition = null;
+        this.isSearchMode = true;
     }
 
     public DateTimeRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor,
