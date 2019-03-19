@@ -2,11 +2,7 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments;
 
 import android.content.Context;
 import android.content.Intent;
-import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,6 +30,10 @@ import org.hisp.dhis.android.core.relationship.RelationshipTypeModel;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.databinding.DataBindingUtil;
 import io.reactivex.functions.Consumer;
 
 import static android.app.Activity.RESULT_OK;
@@ -98,7 +98,11 @@ public class RelationshipFragment extends FragmentGlobalAbstract {
     }
 
     public Consumer<List<Pair<Relationship, RelationshipType>>> setRelationships() {
-        return relationships -> relationshipAdapter.addItems(relationships);
+        return relationships -> {
+            if (relationshipAdapter != null) {
+                relationshipAdapter.addItems(relationships);
+            }
+        };
     }
 
     public Consumer<List<Trio<RelationshipTypeModel, String, Integer>>> setRelationshipTypes() {
@@ -125,13 +129,13 @@ public class RelationshipFragment extends FragmentGlobalAbstract {
             @Override
             public void onRFACItemLabelClick(int position, RFACLabelItem item) {
                 Pair<RelationshipTypeModel, String> pair = (Pair<RelationshipTypeModel, String>) item.getWrapper();
-                goToRelationShip(pair.val0(),pair.val1());
+                goToRelationShip(pair.val0(), pair.val1());
             }
 
             @Override
             public void onRFACItemIconClick(int position, RFACLabelItem item) {
                 Pair<RelationshipTypeModel, String> pair = (Pair<RelationshipTypeModel, String>) item.getWrapper();
-                goToRelationShip(pair.val0(),pair.val1());
+                goToRelationShip(pair.val0(), pair.val1());
             }
         });
         List<RFACLabelItem> items = new ArrayList<>();

@@ -60,7 +60,9 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     private final String SEARCH =
             "SELECT TrackedEntityInstance.*" +
-                    " FROM ((" + TrackedEntityInstanceModel.TABLE + " JOIN " + EnrollmentModel.TABLE + " ON " + EnrollmentModel.TABLE + "." + EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE + " = " + TrackedEntityInstanceModel.TABLE + "." + TrackedEntityInstanceModel.Columns.UID + ")" +
+                    " FROM ((" + TrackedEntityInstanceModel.TABLE + " JOIN " + EnrollmentModel.TABLE + " ON " +
+                    EnrollmentModel.TABLE + "." + EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE + " = " +
+                    TrackedEntityInstanceModel.TABLE + "." + TrackedEntityInstanceModel.Columns.UID + ") " +
                     "%s)" +
                     " WHERE ";
     private final String SEARCH_ATTR = " JOIN (ATTR_QUERY) tabla ON tabla.trackedEntityInstance = TrackedEntityInstance.uid";
@@ -179,36 +181,34 @@ public class SearchRepositoryImpl implements SearchRepository {
         String incidentDateWHERE = null;
         if (queryData != null && !isEmpty(queryData.get(Constants.ENROLLMENT_DATE_UID))) {
             enrollmentDateWHERE = " Enrollment.enrollmentDate LIKE '" + queryData.get(Constants.ENROLLMENT_DATE_UID) + "%'";
+            queryData.remove(Constants.ENROLLMENT_DATE_UID);
         }
         if (queryData != null && !isEmpty(queryData.get(Constants.INCIDENT_DATE_UID))) {
             incidentDateWHERE = " Enrollment.incidentDate LIKE '" + queryData.get(Constants.INCIDENT_DATE_UID) + "%'";
+            queryData.remove(Constants.INCIDENT_DATE_UID);
         }
 
         String attrQuery = "(SELECT TrackedEntityAttributeValue.trackedEntityInstance FROM TrackedEntityAttributeValue WHERE " +
                 "TrackedEntityAttributeValue.trackedEntityAttribute = 'ATTR_ID' AND TrackedEntityAttributeValue.value LIKE 'ATTR_VALUE%') t";
         StringBuilder attr = new StringBuilder("");
-        int initialLoop = 0;
-        if (enrollmentDateWHERE != null)
-            initialLoop++;
-        if (incidentDateWHERE != null)
-            initialLoop++;
-        for (int i = 0; i + initialLoop < queryData.keySet().size(); i++) {
+
+        for (int i = 0; i < queryData.keySet().size(); i++) {
             String dataId = queryData.keySet().toArray()[i].toString();
             String dataValue = queryData.get(dataId);
 
             if (dataValue.contains("_os_"))
                 dataValue = dataValue.split("_os_")[1];
 
-            if (i > initialLoop)
+            if (i > 0)
                 attr.append(" INNER JOIN  ");
 
             attr.append(attrQuery.replace("ATTR_ID", dataId).replace("ATTR_VALUE", dataValue));
             attr.append(i + 1);
-            if (i > initialLoop)
+            if (i > 0)
                 attr.append(" ON t" + (i) + ".trackedEntityInstance = t" + (i + 1) + ".trackedEntityInstance ");
         }
 
-        String search = String.format(SEARCH, queryData.size() - initialLoop == 0 ? "" : SEARCH_ATTR);
+        String search = String.format(SEARCH, queryData.size() == 0 ? "" : SEARCH_ATTR);
         search = search.replace("ATTR_QUERY", "SELECT t1.trackedEntityInstance FROM" + attr) + teiTypeWHERE + " AND " + teiRelationship;
         if (selectedProgram != null && !selectedProgram.uid().isEmpty()) {
             String programWHERE = "Enrollment.program = '" + selectedProgram.uid() + "'";
@@ -240,35 +240,33 @@ public class SearchRepositoryImpl implements SearchRepository {
         String incidentDateWHERE = null;
         if (queryData != null && !isEmpty(queryData.get(Constants.ENROLLMENT_DATE_UID))) {
             enrollmentDateWHERE = " Enrollment.enrollmentDate LIKE '" + queryData.get(Constants.ENROLLMENT_DATE_UID) + "%'";
+            queryData.remove(Constants.ENROLLMENT_DATE_UID);
         }
         if (queryData != null && !isEmpty(queryData.get(Constants.INCIDENT_DATE_UID))) {
             incidentDateWHERE = " Enrollment.incidentDate LIKE '" + queryData.get(Constants.INCIDENT_DATE_UID) + "%'";
+            queryData.remove(Constants.INCIDENT_DATE_UID);
         }
 
         String attrQuery = "(SELECT TrackedEntityAttributeValue.trackedEntityInstance FROM TrackedEntityAttributeValue WHERE " +
                 "TrackedEntityAttributeValue.trackedEntityAttribute = 'ATTR_ID' AND TrackedEntityAttributeValue.value LIKE 'ATTR_VALUE%') t";
         StringBuilder attr = new StringBuilder("");
-        int initialLoop = 0;
-        if (enrollmentDateWHERE != null)
-            initialLoop++;
-        if (incidentDateWHERE != null)
-            initialLoop++;
-        for (int i = 0; i + initialLoop < queryData.keySet().size(); i++) {
+
+        for (int i = 0; i < queryData.keySet().size(); i++) {
             String dataId = queryData.keySet().toArray()[i].toString();
             String dataValue = queryData.get(dataId);
             if (dataValue.contains("_os_"))
                 dataValue = dataValue.split("_os_")[1];
 
-            if (i >= initialLoop)
+            if (i > 0)
                 attr.append(" INNER JOIN  ");
 
             attr.append(attrQuery.replace("ATTR_ID", dataId).replace("ATTR_VALUE", dataValue));
             attr.append(i + 1);
-            if (i > initialLoop)
+            if (i > 0)
                 attr.append(" ON t" + (i) + ".trackedEntityInstance = t" + (i + 1) + ".trackedEntityInstance ");
         }
 
-        String search = String.format(SEARCH, queryData.size() - initialLoop == 0 ? "" : SEARCH_ATTR);
+        String search = String.format(SEARCH, queryData.size() == 0 ? "" : SEARCH_ATTR);
         if (listSize > 0)
             search = search.replace("ATTR_QUERY", "SELECT t1.trackedEntityInstance FROM" + attr) + teiTypeWHERE + " AND " + teiRelationship + " AND (TrackedEntityInstance.state = 'TO_POST' OR TrackedEntityInstance.state = 'TO_UPDATE')";
         else
@@ -404,54 +402,47 @@ public class SearchRepositoryImpl implements SearchRepository {
         return Flowable.fromIterable(teiList)
                 .map(tei -> {
 
-                    Cursor teiCursor = briteDatabase.query("SELECT uid FROM TrackedEntityInstance WHERE uid = ?", tei.getTei().uid());
-                    if (teiCursor != null && teiCursor.moveToFirst()) {
-                        tei.setOnline(false);
-
-                        setEnrollmentInfo(tei);
-                        setAttributesInfo(tei, selectedProgram);
-                        setOverdueEvents(tei, selectedProgram);
-
-                        teiCursor.close();
+                    try (Cursor teiCursor = briteDatabase.query("SELECT uid FROM TrackedEntityInstance WHERE uid = ?", tei.getTei().uid())) {
+                        if (teiCursor != null && teiCursor.moveToFirst()) {
+                            tei.setOnline(false);
+                            setEnrollmentInfo(tei);
+                            setAttributesInfo(tei, selectedProgram);
+                            setOverdueEvents(tei, selectedProgram);
+                        }
                     }
-
-
                     return tei;
                 })
                 .toList().toFlowable();
     }
 
     private void setEnrollmentInfo(SearchTeiModel tei) {
-        Cursor enrollmentCursor;
-
-        enrollmentCursor = briteDatabase.query("SELECT * FROM Enrollment " +
+        try (Cursor enrollmentCursor = briteDatabase.query("SELECT * FROM Enrollment " +
                 "WHERE Enrollment.trackedEntityInstance = ? AND Enrollment.STATUS = 'ACTIVE' " +
-                "GROUP BY Enrollment.program", tei.getTei().uid());
+                "GROUP BY Enrollment.program", tei.getTei().uid())) {
 
-        if (enrollmentCursor != null) {
-            enrollmentCursor.moveToFirst();
-            for (int i = 0; i < enrollmentCursor.getCount(); i++) {
-                EnrollmentModel enrollment = EnrollmentModel.create(enrollmentCursor);
-                if (i == 0)
-                    tei.resetEnrollments();
-                tei.addEnrollment(EnrollmentModel.create(enrollmentCursor));
-                tei.addEnrollmentInfo(getProgramInfo(enrollment.program()));
-                enrollmentCursor.moveToNext();
+            if (enrollmentCursor != null) {
+                enrollmentCursor.moveToFirst();
+                for (int i = 0; i < enrollmentCursor.getCount(); i++) {
+                    EnrollmentModel enrollment = EnrollmentModel.create(enrollmentCursor);
+                    if (i == 0)
+                        tei.resetEnrollments();
+                    tei.addEnrollment(EnrollmentModel.create(enrollmentCursor));
+                    tei.addEnrollmentInfo(getProgramInfo(enrollment.program()));
+                    enrollmentCursor.moveToNext();
+                }
             }
-            enrollmentCursor.close();
-
         }
     }
 
     private Trio<String, String, String> getProgramInfo(String programUid) {
-        Cursor cursor = briteDatabase.query(PROGRAM_INFO, programUid);
-        if (cursor != null) {
-            cursor.moveToFirst();
-            String programName = cursor.getString(0);
-            String programColor = cursor.getString(1) != null ? cursor.getString(1) : "";
-            String programIcon = cursor.getString(2) != null ? cursor.getString(2) : "";
-            cursor.close();
-            return Trio.create(programName, programColor, programIcon);
+        try (Cursor cursor = briteDatabase.query(PROGRAM_INFO, programUid)) {
+            if (cursor != null) {
+                cursor.moveToFirst();
+                String programName = cursor.getString(0);
+                String programColor = cursor.getString(1) != null ? cursor.getString(1) : "";
+                String programIcon = cursor.getString(2) != null ? cursor.getString(2) : "";
+                return Trio.create(programName, programColor, programIcon);
+            }
         }
         return null;
     }

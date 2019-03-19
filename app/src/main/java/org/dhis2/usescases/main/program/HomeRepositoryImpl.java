@@ -144,18 +144,16 @@ class HomeRepositoryImpl implements HomeRepository {
                     try (Cursor countCursor = briteDatabase.query(queryFinal, uid)) {
                         if (countCursor != null && countCursor.moveToFirst()) {
                             count = countCursor.getCount();
-                            countCursor.close();
                         }
                     }
-
 
                     //QUERYING Tracker name
                     String typeName = "";
                     if (programType.equals(WITH_REGISTRATION.name())) {
-                        Cursor typeCursor = briteDatabase.query(TRACKED_ENTITY_TYPE_NAME, teiType);
-                        if (typeCursor != null && typeCursor.moveToFirst()) {
-                            typeName = typeCursor.getString(0);
-                            typeCursor.close();
+                        try (Cursor typeCursor = briteDatabase.query(TRACKED_ENTITY_TYPE_NAME, teiType)) {
+                            if (typeCursor != null && typeCursor.moveToFirst()) {
+                                typeName = typeCursor.getString(0);
+                            }
                         }
                     } else if (programType.equals(WITHOUT_REGISTRATION.name())) {
                         typeName = "Events";

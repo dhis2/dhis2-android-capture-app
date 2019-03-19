@@ -281,7 +281,8 @@ final class EditTextCustomHolder extends FormViewHolder {
                     return false;
                 }
             case INTEGER_ZERO_OR_POSITIVE:
-                if (Integer.valueOf(editText.getText().toString()) >= 0)
+                if (editText.getText() != null &&
+                        Integer.valueOf(editText.getText().toString()) >= 0)
                     return true;
                 else {
                     inputLayout.setError(editText.getContext().getString(R.string.invalid_possitive_zero));

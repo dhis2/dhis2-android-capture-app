@@ -48,11 +48,17 @@ class DhisCustomLauncher : AppWidgetProvider() {
 
             val prefs = context.getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE)
             val widgetImage = prefs.getString("FLAG", null)
-            val icon = context.resources.getIdentifier(widgetImage, "drawable", context.packageName)
+            var icon = 0
+            if (widgetImage != null) {
+                icon = context.resources.getIdentifier(widgetImage, "drawable", context.packageName)
+            }
+
             // Construct the RemoteViews object
             val views = RemoteViews(context.packageName, R.layout.dhis_custom_launcher)
 
-            views.setImageViewResource(R.id.appwidget_image, icon)
+            if (icon != 0) {
+                views.setImageViewResource(R.id.appwidget_image, icon)
+            }
             views.setOnClickPendingIntent(R.id.appwidget_image, getPendingIntent(context))
             // Instruct the widget manager to update the widget
             appWidgetManager.updateAppWidget(appWidgetId, views)

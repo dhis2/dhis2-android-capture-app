@@ -13,6 +13,7 @@
     <string name="yes">yes</string>
     <string name="no">no</string>
     <string name="no_value">no value</string>
+    <string name="no_reserved_values">There are no more reserved values</string>
 
     <!-- SyncService strings: -->
     <string name="sync_now">Synchronise now</string>
@@ -299,6 +300,7 @@
     <string name="login_error_null_pass">Password is missing. Please fill this field.</string>
     <string name="login_error_null_username">Username is missing. Please fill this field.</string>
     <string name="login_error_dhis_version">This server is running a dhis version different than 2.29. Update your server version or use the testing environment to proceed.</string>
+    <string name="login_error_dhis_version_v2">This server is running a dhis version different than 2.29. Update your server version or use the testing environment to proceed.</string>
     <string name="login_error_unsuccessful_response">Something went wrong. Please check that server url, username and password are correct and try again.</string>
     <string name="login_error_error_response">The server could not complete this request.</string>
     <string name="login_error_default">There has been a problem while trying to log into the server.</string>

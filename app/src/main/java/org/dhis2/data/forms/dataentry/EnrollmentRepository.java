@@ -1,12 +1,14 @@
 package org.dhis2.data.forms.dataentry;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import org.hisp.dhis.android.core.D2;
@@ -78,14 +80,17 @@ final class EnrollmentRepository implements DataEntryRepository {
 
     @NonNull
     private final String enrollment;
+    private final Context context;
     private final D2 d2;
 
-    EnrollmentRepository(@NonNull BriteDatabase briteDatabase,
+    EnrollmentRepository(@NonNull Context context,
+                         @NonNull BriteDatabase briteDatabase,
                          @NonNull FieldViewModelFactory fieldFactory,
                          @NonNull String enrollment, D2 d2) {
         this.briteDatabase = briteDatabase;
         this.fieldFactory = fieldFactory;
         this.enrollment = enrollment;
+        this.context = context;
         this.d2 = d2;
     }
 
@@ -144,29 +149,29 @@ final class EnrollmentRepository implements DataEntryRepository {
 
         int optionCount = 0;
         if (!isEmpty(optionSet))
-            try {
-                Cursor countCursor = briteDatabase.query("SELECT COUNT (uid) FROM Option WHERE optionSet = ?", optionSet);
-                if (countCursor != null) {
-                    if (countCursor.moveToFirst())
-                        optionCount = countCursor.getInt(0);
-                    countCursor.close();
+            try (Cursor countCursor = briteDatabase.query("SELECT COUNT (uid) FROM Option WHERE optionSet = ?", optionSet)) {
+                if (countCursor != null && countCursor.moveToFirst()) {
+                    optionCount = countCursor.getInt(0);
                 }
             } catch (Exception e) {
                 Timber.e(e);
             }
 
+        String warning = null;
+
         if (generated && dataValue == null) {
             try {
                 String teiUid = null;
-                Cursor tei = briteDatabase.query("SELECT TrackedEntityInstance.uid FROM TrackedEntityInstance " +
+                try (Cursor tei = briteDatabase.query("SELECT TrackedEntityInstance.uid FROM TrackedEntityInstance " +
                         "JOIN Enrollment ON Enrollment.trackedEntityInstance = TrackedEntityInstance.uid " +
-                        "WHERE Enrollment.uid = ?", enrollment == null ? "" : enrollment);
-                if (tei != null && tei.moveToFirst()) {
-                    teiUid = tei.getString(0);
-                    tei.close();
+                        "WHERE Enrollment.uid = ?", enrollment)) {
+                    if (tei != null && tei.moveToFirst()) {
+                        teiUid = tei.getString(0);
+                    }
                 }
 
-                if (teiUid != null) { //checks if tei has been deleted);
+                //checks if tei has been deleted
+                if (teiUid != null) {
                     dataValue = d2.trackedEntityModule().reservedValueManager.getValue(uid, pattern == null || pattern.contains("OU") ? null : orgUnitUid);
 
                     //Checks if ValueType is Numeric and that it start with a 0, then removes the 0
@@ -192,32 +197,34 @@ final class EnrollmentRepository implements DataEntryRepository {
                 }
             } catch (D2Error e) {
                 Timber.e(e);
+                warning = context.getString(R.string.no_reserved_values);
             }
         }
 
         ValueTypeDeviceRenderingModel fieldRendering = null;
-        Cursor rendering = briteDatabase.query("SELECT ValueTypeDeviceRendering.* FROM ValueTypeDeviceRendering " +
-                "JOIN ProgramTrackedEntityAttribute ON ProgramTrackedEntityAttribute.uid = ValueTypeDeviceRendering.uid WHERE ProgramTrackedEntityAttribute.trackedEntityAttribute = ?", uid);
-        if (rendering != null) {
-            if (rendering.moveToFirst())
+        try (Cursor rendering = briteDatabase.query("SELECT ValueTypeDeviceRendering.* FROM ValueTypeDeviceRendering " +
+                "JOIN ProgramTrackedEntityAttribute ON ProgramTrackedEntityAttribute.uid = ValueTypeDeviceRendering.uid WHERE ProgramTrackedEntityAttribute.trackedEntityAttribute = ?", uid)) {
+            if (rendering != null && rendering.moveToFirst()) {
                 fieldRendering = ValueTypeDeviceRenderingModel.create(rendering);
-            rendering.close();
+            }
         }
 
         ObjectStyleModel objectStyle = ObjectStyleModel.builder().build();
-        Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", uid);
-        try {
-            if (objStyleCursor.moveToFirst())
+        try (Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", uid)) {
+            if (objStyleCursor != null && objStyleCursor.moveToFirst())
                 objectStyle = ObjectStyleModel.create(objStyleCursor);
-        } finally {
-            if (objStyleCursor != null)
-                objStyleCursor.close();
         }
 
-        return fieldFactory.create(uid,
-                label, valueType, mandatory, optionSet, dataValue, null, allowFutureDates,
-                !generated && enrollmentStatus == EnrollmentStatus.ACTIVE, null, description, fieldRendering, optionCount, objectStyle);
-
+        if (warning != null) {
+            return fieldFactory.create(uid,
+                    label, valueType, mandatory, optionSet, dataValue, null, allowFutureDates,
+                    false, null, description, fieldRendering, optionCount, objectStyle)
+                    .withWarning(warning);
+        } else {
+            return fieldFactory.create(uid,
+                    label, valueType, mandatory, optionSet, dataValue, null, allowFutureDates,
+                    !generated && enrollmentStatus == EnrollmentStatus.ACTIVE, null, description, fieldRendering, optionCount, objectStyle);
+        }
     }
 
     @Override

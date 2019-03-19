@@ -1,7 +1,8 @@
 package org.dhis2.data.forms.dataentry;
 
 import android.content.Context;
-import androidx.annotation.NonNull;
+
+import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.R;
 import org.dhis2.data.dagger.PerFragment;
@@ -11,10 +12,9 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.utils.CodeGenerator;
-import com.squareup.sqlbrite2.BriteDatabase;
-
 import org.hisp.dhis.android.core.D2;
 
+import androidx.annotation.NonNull;
 import dagger.Module;
 import dagger.Provides;
 
@@ -26,6 +26,9 @@ import static android.text.TextUtils.isEmpty;
 public class DataEntryModule {
 
     @NonNull
+    private final Context context;
+
+    @NonNull
     private final FieldViewModelFactory modelFactory;
 
     @NonNull
@@ -33,6 +36,7 @@ public class DataEntryModule {
 
     DataEntryModule(@NonNull Context context, @NonNull DataEntryArguments arguments) {
         this.arguments = arguments;
+        this.context = context;
         this.modelFactory = new FieldViewModelFactoryImpl(
                 context.getString(R.string.enter_text),
                 context.getString(R.string.enter_long_text),
@@ -80,7 +84,7 @@ public class DataEntryModule {
             return new ProgramStageRepository(briteDatabase, modelFactory,
                     arguments.event(), arguments.section());
         } else if (!isEmpty(arguments.enrollment())) { //NOPMD
-            return new EnrollmentRepository(briteDatabase, modelFactory, arguments.enrollment(), d2);
+            return new EnrollmentRepository(context, briteDatabase, modelFactory, arguments.enrollment(), d2);
         } else {
             throw new IllegalArgumentException("Unsupported entity type");
         }

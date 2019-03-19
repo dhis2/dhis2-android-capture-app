@@ -1,13 +1,12 @@
 package org.dhis2.usescases.datasets.datasetInitial;
 
-import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import com.google.android.material.textfield.TextInputEditText;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.View;
 import android.widget.PopupMenu;
+
+import com.google.android.material.textfield.TextInputEditText;
 
 import org.dhis2.App;
 import org.dhis2.R;
@@ -15,9 +14,9 @@ import org.dhis2.databinding.ActivityDatasetInitialBinding;
 import org.dhis2.databinding.ItemCategoryComboBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.custom_views.OrgUnitDialog;
 import org.dhis2.utils.custom_views.PeriodDialog;
-import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
@@ -30,6 +29,9 @@ import java.util.List;
 import java.util.Locale;
 
 import javax.inject.Inject;
+
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
 
 public class DataSetInitialActivity extends ActivityGlobalAbstract implements DataSetInitialContract.View {
 
@@ -107,7 +109,9 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
                     orgUnitDialog.dismiss();
                 })
                 .setNegativeListener(v -> orgUnitDialog.dismiss());
-        orgUnitDialog.show(getSupportFragmentManager(), OrgUnitDialog.class.getSimpleName());
+        if (!orgUnitDialog.isAdded()) {
+            orgUnitDialog.show(getSupportFragmentManager(), OrgUnitDialog.class.getSimpleName());
+        }
     }
 
     @Override

@@ -429,14 +429,14 @@ public class EventRepository implements FormRepository {
         }
 
         int optionCount = 0;
-        try{
+        try {
             Cursor countCursor = briteDatabase.query("SELECT COUNT (uid) FROM Option WHERE optionSet = ?", optionSetUid);
-            if(countCursor!=null){
-                if(countCursor.moveToFirst())
+            if (countCursor != null) {
+                if (countCursor.moveToFirst())
                     optionCount = countCursor.getInt(0);
                 countCursor.close();
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             Timber.e(e);
         }
         ValueTypeDeviceRenderingModel fieldRendering = null;
@@ -467,7 +467,7 @@ public class EventRepository implements FormRepository {
         }
         return fieldFactory.create(uid, isEmpty(formLabel) ? label : formLabel, valueType,
                 mandatory, optionSetUid, dataValue, section, allowFutureDates,
-                status == EventStatus.ACTIVE, null, description, fieldRendering, optionCount,objectStyle);
+                status == EventStatus.ACTIVE, null, description, fieldRendering, optionCount, objectStyle);
     }
 
     @NonNull

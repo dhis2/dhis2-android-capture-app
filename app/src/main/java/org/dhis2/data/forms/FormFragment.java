@@ -390,14 +390,14 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     public void initReportDatePicker(boolean reportAllowFutureDates, boolean incidentAllowFutureDates) {
         reportDate.setOnClickListener(v -> {
             DatePickerDialogFragment dialog = DatePickerDialogFragment.create(reportAllowFutureDates);
-            dialog.setOpeningClosingDates(openingDate,closingDate);
+            dialog.setOpeningClosingDates(openingDate, closingDate);
             dialog.show(getFragmentManager());
             dialog.setFormattedOnDateSetListener(publishReportDateChange());
         });
 
         incidentDate.setOnClickListener(v -> {
             DatePickerDialogFragment dialog = DatePickerDialogFragment.create(incidentAllowFutureDates);
-            dialog.setOpeningClosingDates(openingDate,closingDate);
+            dialog.setOpeningClosingDates(openingDate, closingDate);
             dialog.show(getFragmentManager());
             dialog.setFormattedOnDateSetListener(publishIncidentDateChange());
         });
@@ -405,7 +405,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
         reportDate.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
                 DatePickerDialogFragment dialog = DatePickerDialogFragment.create(reportAllowFutureDates);
-                dialog.setOpeningClosingDates(openingDate,closingDate);
+                dialog.setOpeningClosingDates(openingDate, closingDate);
                 dialog.show(getFragmentManager());
                 dialog.setFormattedOnDateSetListener(publishReportDateChange());
             }
@@ -414,7 +414,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
         incidentDate.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
                 DatePickerDialogFragment dialog = DatePickerDialogFragment.create(incidentAllowFutureDates);
-                dialog.setOpeningClosingDates(openingDate,closingDate);
+                dialog.setOpeningClosingDates(openingDate, closingDate);
                 dialog.show(getFragmentManager());
                 dialog.setFormattedOnDateSetListener(publishIncidentDateChange());
             }
@@ -463,6 +463,8 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
             case RQ_EVENT:
                 if (data != null)
                     openDashboard(data.getStringExtra(Constants.EVENT_UID));
+                break;
+            default:
                 break;
         }
         super.onActivityResult(requestCode, resultCode, data);
@@ -529,7 +531,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     }
 
     private void checkAction() {
-        if (context != null) {
+        if (isAdded() && getContext() != null) {
             CustomDialog dialog = new CustomDialog(
                     getContext(),
                     getString(R.string.warning_error_on_complete_title),
@@ -540,7 +542,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
                     new DialogClickListener() {
                         @Override
                         public void onPositive() {
-                            if (canComplete)
+                            if (canComplete && getActivity() != null && isAdded())
                                 getActivity().finish();
                         }
 
@@ -548,10 +550,11 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
                         public void onNegative() {
                         }
                     });
-            if (!isEmpty(messageOnComplete))
+            if (isAdded() && !isEmpty(messageOnComplete) && !dialog.isShowing())
                 dialog.show();
-            else
+            else if (isAdded() && getActivity() != null) {
                 getActivity().finish();
+            }
         }
     }
 

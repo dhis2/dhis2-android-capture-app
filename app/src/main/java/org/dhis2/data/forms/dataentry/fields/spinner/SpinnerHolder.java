@@ -139,9 +139,13 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
-        OptionModel selectedOption = OptionSetPopUp.getInstance().getOptions().get(item.getTitle().toString());
-        setValueOption(selectedOption.displayName(), selectedOption.code());
-        OptionSetPopUp.getInstance().dismiss();
+        if (OptionSetPopUp.getInstance().getOptions() != null && item.getTitle() != null) {
+            OptionModel selectedOption = OptionSetPopUp.getInstance().getOptions().get(item.getTitle().toString());
+            if (selectedOption != null) {
+                setValueOption(selectedOption.displayName(), selectedOption.code());
+            }
+            OptionSetPopUp.getInstance().dismiss();
+        }
         return false;
     }
 
@@ -149,7 +153,7 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
 
         editText.setText(optionDisplayName);
         processor.onNext(
-                RowAction.create(viewModel.uid(), isSearchMode ? optionDisplayName+"_os_"+optionCode : optionCode,true)
+                RowAction.create(viewModel.uid(), isSearchMode ? optionDisplayName + "_os_" + optionCode : optionCode, true)
         );
         viewModel.withValue(isSearchMode ? optionDisplayName : optionCode);
       /*  View nextView;

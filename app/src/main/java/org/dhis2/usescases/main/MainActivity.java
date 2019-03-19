@@ -239,7 +239,7 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
         if (fragment != null) {
             currentFragment.set(id);
 
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment, tag).commit();
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment, tag).commitAllowingStateLoss();
             binding.title.setText(tag);
         }
         binding.drawerLayout.closeDrawers();
