@@ -507,6 +507,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                 return cursor.getString(0);
             }
         }
+
         return null;
     }
 

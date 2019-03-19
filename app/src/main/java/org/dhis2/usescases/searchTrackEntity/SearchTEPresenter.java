@@ -28,7 +28,6 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModelBuilder;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeModel;
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQuery;
 
@@ -252,8 +251,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                             })
                             .map(trackedEntityInstances -> {
                                 List<SearchTeiModel> teiList = new ArrayList<>();
-                                TrackedEntityInstanceModelBuilder teiBuilder = new TrackedEntityInstanceModelBuilder();
-
                                 for (TrackedEntityInstance tei : trackedEntityInstances) {
                                     if (view.fromRelationshipTEI() == null || !tei.uid().equals(view.fromRelationshipTEI())) { //If fetching for relationship, discard selected TEI
                                         List<TrackedEntityAttributeValueModel> attributeModels = new ArrayList<>();
@@ -266,7 +263,20 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                                     .trackedEntityInstance(tei.uid());
                                             attributeModels.add(attrValueBuilder.build());
                                         }
-                                        SearchTeiModel teiModel = new SearchTeiModel(teiBuilder.buildModel(tei), attributeModels);
+                                        TrackedEntityInstanceModel model = TrackedEntityInstanceModel.builder()
+                                                .created(tei.created())
+                                                .id(tei.id())
+                                                .lastUpdated(tei.lastUpdated())
+                                                .state(tei.state())
+                                                .coordinates(tei.coordinates())
+                                                .createdAtClient(tei.createdAtClient())
+                                                .featureType(tei.featureType())
+                                                .lastUpdatedAtClient(tei.lastUpdatedAtClient())
+                                                .organisationUnit(tei.organisationUnit())
+                                                .uid(tei.uid())
+                                                .trackedEntityType(tei.trackedEntityType())
+                                                .build();
+                                        SearchTeiModel teiModel = new SearchTeiModel(model, attributeModels);
                                         teiList.add(teiModel);
                                     }
                                 }

@@ -56,8 +56,6 @@ import org.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailModule;
 import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListComponent;
 import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListModule;
 
-import javax.annotation.Nonnull;
-
 import androidx.annotation.NonNull;
 import dagger.Subcomponent;
 
@@ -133,10 +131,10 @@ public interface UserComponent {
     @NonNull
     ReservedValueComponent plus(ReservedValueModule reservedValueModule);
 
-    @Nonnull
+    @NonNull
     SyncDataWorkerComponent plus(SyncDataWorkerModule syncDataWorkerModule);
 
-    @Nonnull
+    @NonNull
     SyncMetadataWorkerComponent plus(SyncMetadataWorkerModule syncDataWorkerModule);
 
     @NonNull
