@@ -68,7 +68,7 @@ public abstract class AbstractTableAdapter<CH, RH, C> implements ITableAdapter {
         for(int i=0; i<mTableView.getHeaderCount(); i++){
             mColumnsHeaderItems.add(null);
             mColumnsHeaderRecyclerViewAdapters.add(new ColumnHeaderRecyclerViewAdapter(mContext,
-                    mColumnsHeaderItems.get(i), this));
+                    mColumnsHeaderItems.get(i), this, i == mTableView.getHeaderCount()-1? true: false));
         }
 
         // Create Row Header RecyclerView Adapter
@@ -271,6 +271,7 @@ public abstract class AbstractTableAdapter<CH, RH, C> implements ITableAdapter {
 
     public void changeCellItem(int columnPosition, int rowPosition, C cellModel) {
         List<C> cellItems = (List<C>) mCellRecyclerViewAdapter.getItem(rowPosition);
+        columnPosition = cellItems.size() -1 == columnPosition ? columnPosition +1 : columnPosition;
         if (cellItems != null && cellItems.size() > columnPosition) {
             // Update cell row items.
             cellItems.set(columnPosition, cellModel);

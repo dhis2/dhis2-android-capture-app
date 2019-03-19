@@ -40,12 +40,14 @@ public class ColumnHeaderRecyclerViewAdapter<CH> extends AbstractRecyclerViewAda
     private ITableAdapter mTableAdapter;
     private ITableView mTableView;
     private ColumnSortHelper mColumnSortHelper;
+    private boolean isLast;
 
     public ColumnHeaderRecyclerViewAdapter(Context context, List<CH> itemList, ITableAdapter
-            tableAdapter) {
+            tableAdapter, boolean isLast) {
         super(context, itemList);
         this.mTableAdapter = tableAdapter;
         this.mTableView = tableAdapter.getTableView();
+        this.isLast = isLast;
     }
 
     @Override
@@ -67,28 +69,30 @@ public class ColumnHeaderRecyclerViewAdapter<CH> extends AbstractRecyclerViewAda
     public void onViewAttachedToWindow(AbstractViewHolder viewHolder) {
         super.onViewAttachedToWindow(viewHolder);
 
-        SelectionState selectionState = mTableView.getSelectionHandler().getColumnSelectionState
-                (viewHolder.getAdapterPosition());
+        if(isLast) {
+            SelectionState selectionState = mTableView.getSelectionHandler().getColumnSelectionState
+                    (viewHolder.getAdapterPosition());
 
-        // Control to ignore selection color
-        if (!mTableView.isIgnoreSelectionColors()) {
+            // Control to ignore selection color
+            if (!mTableView.isIgnoreSelectionColors()) {
 
-            // Change background color of the view considering it's selected state
-            mTableView.getSelectionHandler().changeColumnBackgroundColorBySelectionStatus
-                    (viewHolder, selectionState);
-        }
+                // Change background color of the view considering it's selected state
+                mTableView.getSelectionHandler().changeColumnBackgroundColorBySelectionStatus
+                        (viewHolder, selectionState);
+            }
 
-        // Change selection status
-        viewHolder.setSelected(selectionState);
+            // Change selection status
+            viewHolder.setSelected(selectionState);
 
-        // Control whether the TableView is sortable or not.
-        if (mTableView.isSortable()) {
-            if (viewHolder instanceof AbstractSorterViewHolder) {
-                // Get its sorting state
-                SortState state = getColumnSortHelper().getSortingStatus(viewHolder
-                        .getAdapterPosition());
-                // Fire onSortingStatusChanged
-                ((AbstractSorterViewHolder) viewHolder).onSortingStatusChanged(state);
+            // Control whether the TableView is sortable or not.
+            if (mTableView.isSortable()) {
+                if (viewHolder instanceof AbstractSorterViewHolder) {
+                    // Get its sorting state
+                    SortState state = getColumnSortHelper().getSortingStatus(viewHolder
+                            .getAdapterPosition());
+                    // Fire onSortingStatusChanged
+                    ((AbstractSorterViewHolder) viewHolder).onSortingStatusChanged(state);
+                }
             }
         }
     }
