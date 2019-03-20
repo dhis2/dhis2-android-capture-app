@@ -11,7 +11,6 @@ import com.github.pwittchen.rxbiometric.library.validation.RxPreconditions;
 
 import org.dhis2.App;
 import org.dhis2.R;
-import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.server.ConfigurationRepository;
 import org.dhis2.data.server.UserManager;
 import org.dhis2.usescases.main.MainActivity;
@@ -39,21 +38,15 @@ import timber.log.Timber;
 public class LoginPresenter implements LoginContracts.Presenter {
 
     private final ConfigurationRepository configurationRepository;
-    private final MetadataRepository metadataRepository;
     private LoginContracts.View view;
 
     private UserManager userManager;
     private CompositeDisposable disposable;
 
-    private ObservableField<Boolean> isServerUrlSet = new ObservableField<>(false);
-    private ObservableField<Boolean> isUserNameSet = new ObservableField<>(false);
-    private ObservableField<Boolean> isUserPassSet = new ObservableField<>(false);
-    private boolean testingSet;
     private Boolean canHandleBiometrics;
 
-    LoginPresenter(ConfigurationRepository configurationRepository, MetadataRepository metadataRepository) {
+    LoginPresenter(ConfigurationRepository configurationRepository) {
         this.configurationRepository = configurationRepository;
-        this.metadataRepository = metadataRepository;
     }
 
     @Override
@@ -114,38 +107,6 @@ public class LoginPresenter implements LoginContracts.Presenter {
     }
 
     @Override
-    public void onServerChanged(CharSequence s, int start, int before, int count) {
-        testingSet = false;
-        isServerUrlSet.set(!view.getBinding().serverUrl.getEditText().getText().toString().isEmpty());
-        view.resetCredentials(false, true, true);
-
-        if (isServerUrlSet.get() && !testingSet &&
-                (view.getBinding().serverUrl.getEditText().getText().toString().equals(Constants.URL_TEST_229) ||
-                        view.getBinding().serverUrl.getEditText().getText().toString().equals(Constants.URL_TEST_230))) {
-            view.setTestingCredentials();
-        }
-
-        view.setLoginVisibility(isServerUrlSet.get() && isUserNameSet.get() && isUserPassSet.get());
-
-
-    }
-
-    @Override
-    public void onUserChanged(CharSequence s, int start, int before, int count) {
-        isUserNameSet.set(!view.getBinding().userName.getEditText().getText().toString().isEmpty());
-        view.resetCredentials(false, false, true);
-
-        view.setLoginVisibility(isServerUrlSet.get() && isUserNameSet.get() && isUserPassSet.get());
-
-    }
-
-    @Override
-    public void onPassChanged(CharSequence s, int start, int before, int count) {
-        isUserPassSet.set(!view.getBinding().userPass.getEditText().getText().toString().isEmpty());
-        view.setLoginVisibility(isServerUrlSet.get() && isUserNameSet.get() && isUserPassSet.get());
-    }
-
-    @Override
     public void onButtonClick() {
         view.hideKeyboard();
         SharedPreferences prefs = view.getAbstracContext().getSharedPreferences(
@@ -201,21 +162,6 @@ public class LoginPresenter implements LoginContracts.Presenter {
     @Override
     public void onVisibilityClick(View v) {
         view.switchPasswordVisibility();
-    }
-
-    @Override
-    public ObservableField<Boolean> isServerUrlSet() {
-        return isServerUrlSet;
-    }
-
-    @Override
-    public ObservableField<Boolean> isUserNameSet() {
-        return isUserNameSet;
-    }
-
-    @Override
-    public ObservableField<Boolean> isUserPassSet() {
-        return isServerUrlSet;
     }
 
     @Override

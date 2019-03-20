@@ -7,7 +7,6 @@ import org.hisp.dhis.android.core.maintenance.D2ErrorCode;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
-import androidx.databinding.ObservableField;
 import retrofit2.Response;
 
 public class LoginContracts {
@@ -40,10 +39,6 @@ public class LoginContracts {
 
         void setLoginVisibility(boolean isVisible);
 
-        void setTestingCredentials();
-
-        void resetCredentials(boolean resetServer, boolean resetUser, boolean resetPass);
-
         void showLoginProgress(boolean showLogin);
 
         void showBiometricButton();
@@ -62,12 +57,6 @@ public class LoginContracts {
     public interface Presenter {
         void init(View view);
 
-        void onServerChanged(CharSequence s, int start, int before, int count);
-
-        void onUserChanged(CharSequence s, int start, int before, int count);
-
-        void onPassChanged(CharSequence s, int start, int before, int count);
-
         void onButtonClick();
 
         void logIn(String serverUrl, String userName, String pass);
@@ -76,16 +65,9 @@ public class LoginContracts {
 
         void onVisibilityClick(android.view.View v);
 
-        ObservableField<Boolean> isServerUrlSet();
-
-        ObservableField<Boolean> isUserNameSet();
-
-        ObservableField<Boolean> isUserPassSet();
-
         void unlockSession(String pin);
 
         void onDestroy();
-
 
         void logOut();
 

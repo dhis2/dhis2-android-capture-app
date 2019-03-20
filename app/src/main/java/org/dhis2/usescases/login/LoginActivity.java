@@ -9,7 +9,6 @@ import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 
 import com.andrognito.pinlockview.PinLockListener;
-import com.crashlytics.android.Crashlytics;
 
 import org.dhis2.App;
 import org.dhis2.R;
@@ -31,6 +30,7 @@ import javax.inject.Inject;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.ViewModelProviders;
 import de.adorsys.android.securestoragelibrary.SecurePreferences;
 
 import static android.text.TextUtils.isEmpty;
@@ -49,6 +49,7 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
 
     private boolean isPinScreenVisible = false;
     private String qrUrl;
+    private LoginViewModel loginViewModel;
 
 
     @Override
@@ -62,9 +63,17 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
         loginComponent.inject(this);
 
         super.onCreate(savedInstanceState);
+        loginViewModel = ViewModelProviders.of(this).get(LoginViewModel.class);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login);
         binding.setPresenter(presenter);
+        binding.setLoginModel(loginViewModel);
 
+        loginViewModel.isDataComplete().observe(this, this::setLoginVisibility);
+        loginViewModel.isTestingEnvironment().observe(this, testingEnvironment -> {
+            binding.serverUrlEdit.setText(testingEnvironment.val0());
+            binding.userNameEdit.setText(testingEnvironment.val1());
+            binding.userPassEdit.setText(testingEnvironment.val2());
+        });
         setAutocompleteAdapters();
 
     }
@@ -191,22 +200,6 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
     @Override
     public void setLoginVisibility(boolean isVisible) {
         binding.login.setVisibility(isVisible ? View.VISIBLE : View.GONE);
-    }
-
-    @Override
-    public void setTestingCredentials() {
-        binding.userNameEdit.setText(Constants.USER_TEST_ANDROID);
-        binding.userPassEdit.setText(Constants.USER_TEST_ANDROID_PASS);
-    }
-
-    @Override
-    public void resetCredentials(boolean resetServer, boolean resetUser, boolean resetPass) {
-        if (resetServer)
-            binding.serverUrlEdit.setText(null);
-        if (resetUser)
-            binding.userNameEdit.setText(null);
-        if (resetPass)
-            binding.userPassEdit.setText(null);
     }
 
     @Override
