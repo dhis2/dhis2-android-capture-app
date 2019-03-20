@@ -79,8 +79,7 @@ final class EditTextCellCustomHolder extends FormViewHolder {
         this.editTextModel = (EditTextModel) model;
         setInputType(editTextModel.valueType());
 
-        customBinding.inputEditText.setText(editTextModel.value() == null ?
-                null : valueOf(editTextModel.value()));
+        customBinding.inputEditText.setText(value);
 
         if (editTextModel.mandatory())
             customBinding.icMandatory.setVisibility(View.VISIBLE);
