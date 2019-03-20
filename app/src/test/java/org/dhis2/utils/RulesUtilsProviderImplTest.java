@@ -86,6 +86,16 @@ public class RulesUtilsProviderImplTest {
         public void setHideProgramStage(String programStageUid) {
 
         }
+
+        @Override
+        public void setOptionToHide(String optionUid) {
+
+        }
+
+        @Override
+        public void setOptionGroupToHide(String optionGroupUid) {
+
+        }
     };
 
     private  void putFieldViewModel(){

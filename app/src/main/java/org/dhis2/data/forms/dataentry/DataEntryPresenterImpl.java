@@ -18,6 +18,8 @@ import org.hisp.dhis.rules.models.RuleActionCreateEvent;
 import org.hisp.dhis.rules.models.RuleActionDisplayText;
 import org.hisp.dhis.rules.models.RuleActionErrorOnCompletion;
 import org.hisp.dhis.rules.models.RuleActionHideField;
+import org.hisp.dhis.rules.models.RuleActionHideOption;
+import org.hisp.dhis.rules.models.RuleActionHideOptionGroup;
 import org.hisp.dhis.rules.models.RuleActionHideSection;
 import org.hisp.dhis.rules.models.RuleActionSetMandatoryField;
 import org.hisp.dhis.rules.models.RuleActionShowError;
@@ -65,6 +67,8 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
     @NonNull
     private final CompositeDisposable disposable;
     private DataEntryView dataEntryView;
+    private List<String> optionsToHide = new ArrayList<>();
+    private List<String> optionsGroupsToHide = new ArrayList<>();
     private Map<String, FieldViewModel> currentFieldViewModels;
     private FlowableProcessor<RowAction> assignProcessor;
     private FlowableProcessor<Boolean> requestListProcessor;
@@ -149,7 +153,7 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
         disposable.add(
                 dataEntryView.optionSetActions()
                         .flatMap(
-                                data -> metadataRepository.searchOptions(data.val0(), data.val1(), data.val2()).toFlowable(BackpressureStrategy.LATEST)
+                                data -> metadataRepository.searchOptions(data.val0(), data.val1(),data.val2(), optionsToHide, optionsGroupsToHide).toFlowable(BackpressureStrategy.LATEST)
                         )
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
@@ -182,6 +186,9 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
             calcResult.error().printStackTrace();
             return viewModels;
         }
+
+        optionsToHide.clear();
+        optionsGroupsToHide.clear();
 
         Map<String, FieldViewModel> fieldViewModels = toMap(viewModels);
         applyRuleEffects(fieldViewModels, calcResult);
@@ -277,6 +284,13 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
             } else if (ruleAction instanceof RuleActionErrorOnCompletion) {
                 RuleActionErrorOnCompletion errorOnCompletion = (RuleActionErrorOnCompletion) ruleAction;
                 dataEntryView.messageOnComplete(errorOnCompletion.content(), false);
+            } else if (ruleAction instanceof RuleActionHideOption) {
+                RuleActionHideOption hideOption = (RuleActionHideOption) ruleAction;
+                dataEntryStore.save(hideOption.field(), null);
+                optionsToHide.add(hideOption.field());
+            } else if (ruleAction instanceof RuleActionHideOptionGroup){
+                RuleActionHideOptionGroup hideOptionGroup = (RuleActionHideOptionGroup) ruleAction;
+                optionsGroupsToHide.add(hideOptionGroup.optionGroup());
             }
 
             dataEntryView.removeSection(null);

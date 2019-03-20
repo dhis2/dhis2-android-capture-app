@@ -16,7 +16,6 @@ import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 
 import java.util.Calendar;
-import java.util.Objects;
 
 import javax.inject.Inject;
 
@@ -56,33 +55,38 @@ public class SyncMetadataWorker extends Worker {
     @Override
     @AddTrace(name = "MetadataSyncTrace")
     public Result doWork() {
-        Objects.requireNonNull(((App) getApplicationContext()).userComponent()).plus(new SyncMetadataWorkerModule()).inject(this);
+        if (((App) getApplicationContext()).userComponent() != null) {
 
-        triggerNotification(SYNC_METADATA_ID,
-                getApplicationContext().getString(R.string.app_name),
-                getApplicationContext().getString(R.string.syncing_configuration));
-        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(new Intent("action_sync").putExtra("metaSyncInProgress", true));
+            ((App) getApplicationContext()).userComponent().plus(new SyncMetadataWorkerModule()).inject(this);
 
-        boolean isMetaOk = true;
+            triggerNotification(SYNC_METADATA_ID,
+                    getApplicationContext().getString(R.string.app_name),
+                    getApplicationContext().getString(R.string.syncing_configuration));
+            LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(new Intent("action_sync").putExtra("metaSyncInProgress", true));
 
-        try {
-            presenter.syncMetadata(getApplicationContext());
-        } catch (Exception e) {
-            Timber.e(e);
-            isMetaOk = false;
+            boolean isMetaOk = true;
+
+            try {
+                presenter.syncMetadata(getApplicationContext());
+            } catch (Exception e) {
+                Timber.e(e);
+                isMetaOk = false;
+            }
+
+            String lastDataSyncDate = DateUtils.dateTimeFormat().format(Calendar.getInstance().getTime());
+
+            SharedPreferences prefs = getApplicationContext().getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE);
+            prefs.edit().putString(Constants.LAST_META_SYNC, lastDataSyncDate).apply();
+            prefs.edit().putBoolean(Constants.LAST_META_SYNC_STATUS, isMetaOk).apply();
+
+            LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(new Intent("action_sync").putExtra("metaSyncInProgress", false));
+
+            cancelNotification();
+
+            return Result.SUCCESS;
+        } else {
+            return Result.FAILURE;
         }
-
-        String lastDataSyncDate = DateUtils.dateTimeFormat().format(Calendar.getInstance().getTime());
-
-        SharedPreferences prefs = getApplicationContext().getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE);
-        prefs.edit().putString(Constants.LAST_META_SYNC, lastDataSyncDate).apply();
-        prefs.edit().putBoolean(Constants.LAST_META_SYNC_STATUS, isMetaOk).apply();
-
-        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(new Intent("action_sync").putExtra("metaSyncInProgress", false));
-
-        cancelNotification();
-
-        return Result.SUCCESS;
     }
 
     private void triggerNotification(int id, String title, String content) {

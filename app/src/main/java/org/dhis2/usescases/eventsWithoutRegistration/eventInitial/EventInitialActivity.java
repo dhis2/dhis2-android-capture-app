@@ -128,6 +128,22 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     private String getTrackedEntityInstance;
     private Boolean accessData;
 
+    public static Bundle getBundle(String programUid, String eventUid, String eventCreationType,
+                                   String teiUid, PeriodType eventPeriodType, String orgUnit, String stageUid,
+                                   String enrollmentUid, int eventScheduleInterval) {
+        Bundle bundle = new Bundle();
+        bundle.putString(Constants.PROGRAM_UID, programUid);
+        bundle.putString(Constants.EVENT_UID, eventUid);
+        bundle.putString(Constants.EVENT_CREATION_TYPE, eventCreationType);
+        bundle.putString(Constants.TRACKED_ENTITY_INSTANCE, teiUid);
+        bundle.putString(Constants.ENROLLMENT_UID, enrollmentUid);
+        bundle.putString(Constants.ORG_UNIT, orgUnit);
+        bundle.putSerializable(Constants.EVENT_PERIOD_TYPE, eventPeriodType);
+        bundle.putString(Constants.PROGRAM_STAGE_UID, stageUid);
+        bundle.putInt(Constants.EVENT_SCHEDULE_INTERVAL, eventScheduleInterval);
+        return bundle;
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         setScreenName(this.getLocalClassName());
@@ -233,13 +249,13 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
         if (binding.actionButton != null) {
             binding.actionButton.setOnClickListener(v -> {
-
+                String programStageModelUid = programStageModel == null ? "" : programStageModel.uid();
                 if (eventUid == null) { // This is a new Event
                     if (eventCreationType == EventCreationType.REFERAL && tempCreate.equals(PERMANENT)) {
                         presenter.createEventPermanent(
                                 enrollmentUid,
                                 getTrackedEntityInstance,
-                                programStageModel.uid(),
+                                programStageModelUid,
                                 selectedDate,
                                 selectedOrgUnit,
                                 null,
@@ -248,7 +264,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                     } else if (eventCreationType == EventCreationType.SCHEDULE) {
                         presenter.scheduleEvent(
                                 enrollmentUid,
-                                programStageModel.uid(),
+                                programStageModelUid,
                                 selectedDate,
                                 selectedOrgUnit,
                                 null,
@@ -257,7 +273,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                     } else {
                         presenter.createEvent(
                                 enrollmentUid,
-                                programStageModel.uid(),
+                                programStageModelUid,
                                 selectedDate,
                                 selectedOrgUnit,
                                 null,
@@ -267,7 +283,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                                 getTrackedEntityInstance);
                     }
                 } else {
-                    presenter.editEvent(getTrackedEntityInstance, programStageModel.uid(), eventUid, DateUtils.databaseDateFormat().format(selectedDate), selectedOrgUnit, null,
+                    presenter.editEvent(getTrackedEntityInstance, programStageModelUid, eventUid, DateUtils.databaseDateFormat().format(selectedDate), selectedOrgUnit, null,
                             catComboIsDefaultOrNull() ? null : selectedCatOptionCombo.uid(), selectedLat, selectedLon);
                     //TODO: WHERE TO UPDATE CHANGES IN DATE, ORGUNIT, CATCOMBO, COORDINATES
                     startFormActivity(eventUid);
@@ -563,18 +579,11 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     }
 
     private void startFormActivity(String eventUid) {
-
-//        if (enrollmentUid == null)+
         Intent intent = new Intent(this, EventCaptureActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT);
         intent.putExtras(EventCaptureActivity.getActivityBundle(eventUid, programUid));
         startActivity(intent);
         finish();
-       /* else {
-            FormViewArguments formViewArguments = FormViewArguments.createForEvent(eventUid);
-            startActivity(FormActivity.create(getAbstractActivity(), formViewArguments, false));
-            finish();
-        }*/
     }
 
     @Override

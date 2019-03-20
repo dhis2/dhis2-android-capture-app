@@ -1,7 +1,6 @@
 package org.dhis2.data.forms.dataentry;
 
 import android.database.Cursor;
-import androidx.annotation.NonNull;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
@@ -21,8 +20,11 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
+import androidx.annotation.NonNull;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
+
+import static android.text.TextUtils.isEmpty;
 
 public final class EnrollmentRuleEngineRepository implements RuleEngineRepository {
     private static final String QUERY_ENROLLMENT = "SELECT\n" +
@@ -39,11 +41,15 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
 
     private static final String QUERY_ATTRIBUTE_VALUES = "SELECT\n" +
             "  Field.id,\n" +
-            "  Value.value\n" +
+            "  Value.value,\n" +
+            "  ProgramRuleVariable.useCodeForOptionSet,\n" +
+            "  Option.code,\n" +
+            "  Option.name\n" +
             "FROM (Enrollment INNER JOIN Program ON Program.uid = Enrollment.program)\n" +
             "  INNER JOIN (\n" +
             "      SELECT\n" +
             "        TrackedEntityAttribute.uid AS id,\n" +
+            "        TrackedEntityAttribute.optionSet AS optionSet,\n" +
             "        ProgramTrackedEntityAttribute.program AS program\n" +
             "      FROM ProgramTrackedEntityAttribute INNER JOIN TrackedEntityAttribute\n" +
             "          ON TrackedEntityAttribute.uid = ProgramTrackedEntityAttribute.trackedEntityAttribute\n" +
@@ -51,6 +57,8 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
             "  INNER JOIN TrackedEntityAttributeValue AS Value ON (\n" +
             "    Value.trackedEntityAttribute = Field.id\n" +
             "        AND Value.trackedEntityInstance = Enrollment.trackedEntityInstance)\n" +
+            "  LEFT JOIN ProgramRuleVariable ON ProgramRuleVariable.trackedEntityAttribute = Field.id " +
+            "  LEFT JOIN Option ON (Option.optionSet = Field.optionSet AND Option.code = Value.value) " +
             "WHERE Enrollment.uid = ? AND Value.value IS NOT NULL;";
 
     @NonNull
@@ -107,8 +115,15 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
     private Flowable<List<RuleAttributeValue>> queryAttributeValues() {
         return briteDatabase.createQuery(Arrays.asList(EnrollmentModel.TABLE,
                 TrackedEntityAttributeValueModel.TABLE), QUERY_ATTRIBUTE_VALUES, enrollmentUid == null ? "" : enrollmentUid)
-                .mapToList(cursor -> RuleAttributeValue.create(
-                        cursor.getString(0), cursor.getString(1))
+                .mapToList(cursor -> {
+                            String value = cursor.getString(1);
+                            boolean useCode = cursor.getInt(2) == 1;
+                            String optionCode = cursor.getString(3);
+                            String optionName = cursor.getString(4);
+                            if (!isEmpty(optionCode) && !isEmpty(optionName))
+                                value = useCode ? optionCode : optionName;
+                            return RuleAttributeValue.create(cursor.getString(0), value);
+                        }
                 ).toFlowable(BackpressureStrategy.LATEST);
     }
 
@@ -124,10 +139,10 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
     @Nonnull
     private String getOrgUnitCode(String orgUnitUid) {
         String ouCode = "";
-        Cursor cursor = briteDatabase.query("SELECT code FROM OrganisationUnit WHERE uid = ? LIMIT 1", orgUnitUid);
-        if (cursor != null && cursor.moveToFirst()) {
-            ouCode = cursor.getString(0);
-            cursor.close();
+        try (Cursor cursor = briteDatabase.query("SELECT code FROM OrganisationUnit WHERE uid = ? LIMIT 1", orgUnitUid)) {
+            if (cursor != null && cursor.moveToFirst()) {
+                ouCode = cursor.getString(0);
+            }
         }
 
         return ouCode;

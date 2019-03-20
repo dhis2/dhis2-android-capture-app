@@ -38,7 +38,7 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
     @Override
     public EditTextViewModel withWarning(@NonNull String warning) {
         return new AutoValue_EditTextViewModel(uid(), label(), mandatory(),
-                value(), programStageSection(), null, true, null,
+                value(), programStageSection(), null, editable(), null,
                 description(), objectStyle(), hint(), maxLines(), inputType(), valueType(), warning, error(), fieldRendering());
     }
 

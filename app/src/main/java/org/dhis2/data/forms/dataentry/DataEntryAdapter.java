@@ -1,14 +1,5 @@
 package org.dhis2.data.forms.dataentry;
 
-import androidx.databinding.ObservableBoolean;
-import androidx.databinding.ObservableField;
-import androidx.annotation.NonNull;
-import androidx.fragment.app.FragmentManager;
-import androidx.recyclerview.widget.DiffUtil;
-import androidx.recyclerview.widget.RecyclerView.Adapter;
-import androidx.recyclerview.widget.RecyclerView.ViewHolder;
-
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -42,9 +33,17 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.databinding.ObservableBoolean;
+import androidx.databinding.ObservableField;
+import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.RecyclerView.Adapter;
+import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 import io.reactivex.Observable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
+import timber.log.Timber;
 
 public final class DataEntryAdapter extends Adapter {
     private static final int EDITTEXT = 0;
@@ -208,11 +207,12 @@ public final class DataEntryAdapter extends Adapter {
         return processor;
     }
 
-    public FlowableProcessor<Trio<String, String, Integer>> asFlowableOption(){
+    public FlowableProcessor<Trio<String, String, Integer>> asFlowableOption() {
         return processorOptionSet;
     }
 
     public void swap(@NonNull List<FieldViewModel> updates) {
+        long currentTime = System.currentTimeMillis();
         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(
                 new DataEntryDiffCallback(viewModels, updates));
 
@@ -220,6 +220,7 @@ public final class DataEntryAdapter extends Adapter {
         viewModels.addAll(updates);
 
         diffResult.dispatchUpdatesTo(this);
+        Timber.d("ADAPTER SWAP TOOK %s ms", System.currentTimeMillis() - currentTime);
     }
 
     public boolean mandatoryOk() {

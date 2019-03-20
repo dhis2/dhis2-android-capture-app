@@ -41,6 +41,8 @@ import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 
+import static android.text.TextUtils.isEmpty;
+
 /**
  * QUADRAM. Created by ppajuelo on 02/11/2017.
  */
@@ -73,11 +75,15 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
 
     private static final String QUERY_ATTRIBUTE_VALUES = "SELECT\n" +
             "  Field.id,\n" +
-            "  Value.value\n" +
+            "  Value.value,\n" +
+            "  ProgramRuleVariable.useCodeForOptionSet,\n" +
+            "  Option.code,\n" +
+            "  Option.name\n" +
             "FROM (Enrollment INNER JOIN Program ON Program.uid = Enrollment.program)\n" +
             "  INNER JOIN (\n" +
             "      SELECT\n" +
             "        TrackedEntityAttribute.uid AS id,\n" +
+            "        TrackedEntityAttribute.optionSet AS optionSet,\n" +
             "        ProgramTrackedEntityAttribute.program AS program\n" +
             "      FROM ProgramTrackedEntityAttribute INNER JOIN TrackedEntityAttribute\n" +
             "          ON TrackedEntityAttribute.uid = ProgramTrackedEntityAttribute.trackedEntityAttribute\n" +
@@ -85,6 +91,8 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
             "  INNER JOIN TrackedEntityAttributeValue AS Value ON (\n" +
             "    Value.trackedEntityAttribute = Field.id\n" +
             "        AND Value.trackedEntityInstance = Enrollment.trackedEntityInstance)\n" +
+            "  LEFT JOIN ProgramRuleVariable ON ProgramRuleVariable.trackedEntityAttribute = Field.id " +
+            "  LEFT JOIN Option ON (Option.optionSet = Field.optionSet AND Option.code = Value.value) " +
             "WHERE Enrollment.uid = ? AND Value.value IS NOT NULL;";
 
     private static final String QUERY_EVENT = "SELECT Event.uid,\n" +
@@ -99,14 +107,29 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
             "WHERE Event.enrollment = ?\n" +
             " AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'";
 
-    private static final String QUERY_VALUES = "SELECT " +
+    /*private static final String QUERY_VALUES = "SELECT " +
             "  eventDate," +
             "  programStage," +
             "  dataElement," +
             "  value" +
             " FROM TrackedEntityDataValue " +
             "  INNER JOIN Event ON TrackedEntityDataValue.event = Event.uid " +
-            " WHERE event = ? AND value IS NOT NULL AND " + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'";
+            " WHERE event = ? AND value IS NOT NULL AND " + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'";*/
+
+    private static final String QUERY_VALUES = "SELECT " +
+            "  Event.eventDate," +
+            "  Event.programStage," +
+            "  TrackedEntityDataValue.dataElement," +
+            "  TrackedEntityDataValue.value," +
+            "  ProgramRuleVariable.useCodeForOptionSet," +
+            "  Option.code," +
+            "  Option.name" +
+            " FROM TrackedEntityDataValue " +
+            "  INNER JOIN Event ON TrackedEntityDataValue.event = Event.uid " +
+            "  INNER JOIN DataElement ON DataElement.uid = TrackedEntityDataValue.dataElement " +
+            "  LEFT JOIN ProgramRuleVariable ON ProgramRuleVariable.dataElement = DataElement.uid " +
+            "  LEFT JOIN Option ON (Option.optionSet = DataElement.optionSet AND Option.code = TrackedEntityDataValue.value) " +
+            " WHERE Event.uid = ? AND value IS NOT NULL AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "';";
 
     private final BriteDatabase briteDatabase;
     private final Flowable<RuleEngine> cachedRuleEngineFlowable;
@@ -155,16 +178,23 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
 
                     RuleEvent.Status status = RuleEvent.Status.valueOf(eventStatus);
 
-                    Cursor dataValueCursor = briteDatabase.query(QUERY_VALUES, eventUid == null ? "" : eventUid);
-                    if (dataValueCursor != null && dataValueCursor.moveToFirst()) {
-                        for (int i = 0; i < dataValueCursor.getCount(); i++) {
-                            Date eventDateV = DateUtils.databaseDateFormat().parse(dataValueCursor.getString(0));
-                            String value = cursor.getString(3) != null ? dataValueCursor.getString(3) : "";
-                            dataValues.add(RuleDataValue.create(eventDateV, dataValueCursor.getString(1),
-                                    dataValueCursor.getString(2), value));
-                            dataValueCursor.moveToNext();
+                    try (Cursor dataValueCursor = briteDatabase.query(QUERY_VALUES, eventUid == null ? "" : eventUid)) {
+                        if (dataValueCursor != null && dataValueCursor.moveToFirst()) {
+                            for (int i = 0; i < dataValueCursor.getCount(); i++) {
+                                Date eventDateV = DateUtils.databaseDateFormat().parse(cursor.getString(0));
+                                String programStage = cursor.getString(1);
+                                String dataElement = cursor.getString(2);
+                                String value = cursor.getString(3) != null ? cursor.getString(3) : "";
+                                Boolean useCode = cursor.getInt(4) == 1;
+                                String optionCode = cursor.getString(5);
+                                String optionName = cursor.getString(6);
+                                if (!isEmpty(optionCode) && !isEmpty(optionName))
+                                    value = useCode ? optionCode : optionName; //If de has optionSet then check if value should be code or name for program rules
+                                dataValues.add(RuleDataValue.create(eventDateV, programStage,
+                                        dataElement, value));
+                                dataValueCursor.moveToNext();
+                            }
                         }
-                        dataValueCursor.close();
                     }
 
                     return RuleEvent.builder()
@@ -188,9 +218,15 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
                 TrackedEntityDataValueModel.TABLE), QUERY_VALUES, eventUid == null ? "" : eventUid)
                 .mapToList(cursor -> {
                     Date eventDate = DateUtils.databaseDateFormat().parse(cursor.getString(0));
+                    String programStage = cursor.getString(1);
+                    String dataElement = cursor.getString(2);
                     String value = cursor.getString(3) != null ? cursor.getString(3) : "";
-                    return RuleDataValue.create(eventDate, cursor.getString(1),
-                            cursor.getString(2), value);
+                    Boolean useCode = cursor.getInt(4) == 1;
+                    String optionCode = cursor.getString(5);
+                    String optionName = cursor.getString(6);
+                    if (!isEmpty(optionCode) && !isEmpty(optionName))
+                        value = useCode ? optionCode : optionName; //If de has optionSet then check if value should be code or name for program rules
+                    return RuleDataValue.create(eventDate, programStage, dataElement, value);
                 }).toFlowable(BackpressureStrategy.LATEST);
     }
 
@@ -221,12 +257,11 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
     @Nonnull
     private String getOrgUnitCode(String orgUnitUid) {
         String ouCode = "";
-        Cursor cursor = briteDatabase.query("SELECT code FROM OrganisationUnit WHERE uid = ? LIMIT 1", orgUnitUid);
-        if (cursor != null && cursor.moveToFirst()) {
-            ouCode = cursor.getString(0);
-            cursor.close();
+        try (Cursor cursor = briteDatabase.query("SELECT code FROM OrganisationUnit WHERE uid = ? LIMIT 1", orgUnitUid)) {
+            if (cursor != null && cursor.moveToFirst()) {
+                ouCode = cursor.getString(0);
+            }
         }
-
         return ouCode;
     }
 
@@ -285,12 +320,10 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
         List<Pair<ProgramStageModel, ObjectStyleModel>> finalList = new ArrayList<>();
         for (ProgramStageModel stageModel : programStageModels) {
             ObjectStyleModel objectStyleModel = null;
-            Cursor cursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ? LIMIT 1", stageModel.uid());
-            if (cursor != null) {
-                if (cursor.moveToFirst()) {
+            try (Cursor cursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ? LIMIT 1", stageModel.uid())) {
+                if (cursor != null && cursor.moveToFirst()) {
                     objectStyleModel = ObjectStyleModel.create(cursor);
                 }
-                cursor.close();
             }
             if (objectStyleModel == null)
                 objectStyleModel = ObjectStyleModel.builder().build();
@@ -299,6 +332,4 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
 
         return finalList;
     }
-
-
 }

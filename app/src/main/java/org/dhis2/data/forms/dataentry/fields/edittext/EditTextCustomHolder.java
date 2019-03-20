@@ -52,8 +52,8 @@ final class EditTextCustomHolder extends FormViewHolder {
     private final TextInputLayout inputLayout;
     private TextInputAutoCompleteTextView editText;
     private ImageView icon;
-    List<String> autoCompleteValues;
-    EditTextViewModel editTextModel;
+    private List<String> autoCompleteValues;
+    private EditTextViewModel editTextModel;
     private Boolean isEditable;
     private Boolean isSearchMode;
 
@@ -76,8 +76,9 @@ final class EditTextCustomHolder extends FormViewHolder {
                     checkAutocompleteRendering();
                     processor.onNext(RowAction.create(editTextModel.uid(), editText.getText().toString()));
 
-                } else
+                } else {
                     processor.onNext(RowAction.create(editTextModel.uid(), null));
+                }
             }
         });
 
@@ -241,7 +242,7 @@ final class EditTextCustomHolder extends FormViewHolder {
         }
     }
 
-    public void saveListToPreference(String key, List<String> list) {
+    private void saveListToPreference(String key, List<String> list) {
         Gson gson = new Gson();
         String json = gson.toJson(list);
         editText.getContext().getSharedPreferences(Constants.SHARE_PREFS, MODE_PRIVATE).edit().putString(key, json).apply();
@@ -280,7 +281,8 @@ final class EditTextCustomHolder extends FormViewHolder {
                     return false;
                 }
             case INTEGER_ZERO_OR_POSITIVE:
-                if (Integer.valueOf(editText.getText().toString()) >= 0)
+                if (editText.getText() != null &&
+                        Integer.valueOf(editText.getText().toString()) >= 0)
                     return true;
                 else {
                     inputLayout.setError(editText.getContext().getString(R.string.invalid_possitive_zero));
@@ -314,6 +316,6 @@ final class EditTextCustomHolder extends FormViewHolder {
 
 
     public void dispose() {
-//        disposable.dispose();
+
     }
 }

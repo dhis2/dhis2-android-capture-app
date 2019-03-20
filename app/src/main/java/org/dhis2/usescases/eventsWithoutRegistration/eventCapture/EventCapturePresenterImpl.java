@@ -64,6 +64,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private Map<String, FieldViewModel> emptyMandatoryFields;
     //Rules data
     private List<String> sectionsToHide;
+    private List<String> optionsToHide = new ArrayList<>();
+    private List<String> optionsGroupsToHide = new ArrayList<>();
     private boolean canComplete;
     private String completeMessage;
     private Map<String, String> errors;
@@ -72,6 +74,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private boolean snackBarIsShowing;
     private final FlowableProcessor<String> sectionProcessor;
     private boolean isSubscribed;
+    private long ruleInitTime;
 
     public EventCapturePresenterImpl(String eventUid, EventCaptureContract.EventCaptureRepository eventCaptureRepository, MetadataRepository metadataRepository, RulesUtilsProvider rulesUtils, DataEntryStore dataEntryStore) {
         this.eventUid = eventUid;
@@ -185,7 +188,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
                             return eventSectionModels;
                         })
-                        .observeOn(Schedulers.io())
+                        .observeOn(Schedulers.computation())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(data -> {
                                     subscribeToSection();
@@ -209,7 +212,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                     List<FieldViewModel> fieldsToShow = fieldMap.get(section.equals("NO_SECTION") ? null : section);
                                     return fieldsToShow != null ? fieldsToShow : new ArrayList<FieldViewModel>();
                                 }))
-                        .observeOn(Schedulers.io())
+                        .observeOn(Schedulers.computation())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 updates -> {
@@ -223,7 +226,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private Flowable<List<FieldViewModel>> getFieldFlowable(@Nullable String sectionUid) {
         if (isEmpty(sectionUid) || sectionUid.equals("NO_SECTION")) {
             return Flowable.zip(
-                    eventCaptureRepository.list(),
+                    eventCaptureRepository.list().subscribeOn(Schedulers.computation()),
                     eventCaptureRepository.calculate().subscribeOn(Schedulers.computation()),
                     this::applyEffects)
                     .map(fields -> {
@@ -330,6 +333,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                     .observeOn(Schedulers.io())
                     .switchMap(action -> {
                                 eventCaptureRepository.setLastUpdated(action.id());
+                                ruleInitTime = System.currentTimeMillis();
                                 return dataEntryStore.save(action.id(), action.value());
                             }
                     ).subscribe(result -> Timber.d(result.toString()),
@@ -339,7 +343,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
             compositeDisposable.add(
                     EventCaptureFormFragment.getInstance().optionSetActions()
                             .flatMap(
-                                    data -> metadataRepository.searchOptions(data.val0(), data.val1(), data.val2()).toFlowable(BackpressureStrategy.LATEST)
+                                    data -> metadataRepository.searchOptions(data.val0(), data.val1(), data.val2(), optionsToHide, optionsGroupsToHide).toFlowable(BackpressureStrategy.LATEST)
                             )
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
@@ -360,6 +364,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private List<FieldViewModel> applyEffects(
             @NonNull List<FieldViewModel> viewModels,
             @NonNull Result<RuleEffect> calcResult) {
+        Timber.d("RULE EFFECTS INIT TOOK %s ms to execute", System.currentTimeMillis() - ruleInitTime);
+        long currentTime = System.currentTimeMillis();
 
         if (calcResult.error() != null) {
             calcResult.error().printStackTrace();
@@ -374,7 +380,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         Map<String, FieldViewModel> fieldViewModels = toMap(viewModels);
         rulesUtils.applyRuleEffects(fieldViewModels, calcResult, this);
 
-
+        Timber.d("RULE EFFECTS TOOK %s ms to execute", System.currentTimeMillis() - currentTime);
         return new ArrayList<>(fieldViewModels.values());
     }
 
@@ -439,7 +445,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private void setUpActionByStatus(EventStatus eventStatus) {
         switch (eventStatus) {
             case COMPLETED:
-                if (!hasExpired)
+                if (!hasExpired && !eventCaptureRepository.isEnrollmentCancelled())
                     view.attemptToReopen();
                 else
                     view.finishDataEntry();
@@ -667,6 +673,16 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     @Override
     public void setHideProgramStage(String programStageUid) {
         //do not apply
+    }
+
+    @Override
+    public void setOptionToHide(String optionUid) {
+        optionsToHide.add(optionUid);
+    }
+
+    @Override
+    public void setOptionGroupToHide(String optionGroupUid) {
+        optionsGroupsToHide.add(optionGroupUid);
     }
 
     //endregion

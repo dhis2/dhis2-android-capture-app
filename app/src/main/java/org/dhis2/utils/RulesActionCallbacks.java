@@ -27,4 +27,8 @@ public interface RulesActionCallbacks {
     void setMessageOnComplete(String content, boolean canComplete);
 
     void setHideProgramStage(String programStageUid);
+
+    void setOptionToHide(String optionUid);
+
+    void setOptionGroupToHide(String optionGroupUid);
 }
