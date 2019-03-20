@@ -324,10 +324,11 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     @Override
     public Observable<Trio<ProgramIndicatorModel, String, String>> getLegendColorForIndicator(ProgramIndicatorModel indicator, String value) {
         String piId = indicator != null && indicator.uid() != null ? indicator.uid() : "";
-        Cursor cursor = briteDatabase.query(SELECT_LEGEND, piId, value == null ? "" : value, value == null ? "" : value);
         String color = "";
-        if (cursor != null && cursor.moveToFirst() && cursor.getCount() > 0) {
-            color = cursor.getString(0);
+        try (Cursor cursor = briteDatabase.query(SELECT_LEGEND, piId, value == null ? "" : value, value == null ? "" : value)) {
+            if (cursor != null && cursor.moveToFirst() && cursor.getCount() > 0) {
+                color = cursor.getString(0);
+            }
         }
         return Observable.just(Trio.create(indicator, value, color));
     }
@@ -372,15 +373,16 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     @Override
     public void updateTeiState() {
         String GET_TEI = "SELECT * FROM TrackedEntityInstance WHERE uid = ? LIMIT 1";
-        Cursor teiCursor = briteDatabase.query(GET_TEI, teiUid);
-        if (teiCursor != null && teiCursor.moveToFirst()) {
-            TrackedEntityInstanceModel tei = TrackedEntityInstanceModel.create(teiCursor);
-            ContentValues contentValues = tei.toContentValues();
-            if (contentValues.get(TrackedEntityInstanceModel.Columns.STATE).equals(State.SYNCED.name())) {
-                contentValues.put(TrackedEntityInstanceModel.Columns.STATE, State.TO_UPDATE.name());
+        try (Cursor teiCursor = briteDatabase.query(GET_TEI, teiUid)) {
+            if (teiCursor != null && teiCursor.moveToFirst()) {
+                TrackedEntityInstanceModel tei = TrackedEntityInstanceModel.create(teiCursor);
+                ContentValues contentValues = tei.toContentValues();
+                if (contentValues.get(TrackedEntityInstanceModel.Columns.STATE).equals(State.SYNCED.name())) {
+                    contentValues.put(TrackedEntityInstanceModel.Columns.STATE, State.TO_UPDATE.name());
 
-                briteDatabase.update(TrackedEntityInstanceModel.TABLE, contentValues, "uid = ?", teiUid);
+                    briteDatabase.update(TrackedEntityInstanceModel.TABLE, contentValues, "uid = ?", teiUid);
 
+                }
             }
         }
     }
@@ -447,10 +449,12 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     public boolean setFollowUp(String enrollmentUid) {
 
         String enrollmentFollowUpQuery = "SELECT Enrollment.followup FROM Enrollment WHERE Enrollment.uid = ?";
-        Cursor cursor = briteDatabase.query(enrollmentFollowUpQuery, enrollmentUid);
         boolean followUp = false;
-        if (cursor != null && cursor.moveToFirst()) {
-            followUp = cursor.getInt(0) == 1;
+
+        try (Cursor cursor = briteDatabase.query(enrollmentFollowUpQuery, enrollmentUid)) {
+            if (cursor != null && cursor.moveToFirst()) {
+                followUp = cursor.getInt(0) == 1;
+            }
         }
 
         ContentValues contentValues = new ContentValues();

@@ -7,7 +7,7 @@ class SplashContracts {
 
     interface View : AbstractActivityContracts.View {
 
-        fun renderFlag(resource:Int)
+        fun renderFlag(flagName: String)
     }
 
     interface Presenter {
