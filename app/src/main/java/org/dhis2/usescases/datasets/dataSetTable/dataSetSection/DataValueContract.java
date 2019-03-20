@@ -11,7 +11,6 @@ import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.hisp.dhis.android.core.category.CategoryModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.dataset.DataInputPeriodModel;
-import org.hisp.dhis.android.core.datavalue.DataValueModel;
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.period.PeriodModel;
 
@@ -39,6 +38,10 @@ public class DataValueContract {
         void showAlertDialog(String title, String message);
 
         void setListOptions(List<OptionModel> options);
+
+        boolean isOpenOrReopen();
+
+        void setCompleteReopenText(Boolean isCompleted);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter{

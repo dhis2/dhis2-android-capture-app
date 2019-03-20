@@ -7,6 +7,7 @@ import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
 import org.hisp.dhis.android.core.dataset.DataInputPeriodModel;
+import org.hisp.dhis.android.core.dataset.DataSetCompleteRegistration;
 import org.hisp.dhis.android.core.dataset.DataSetModel;
 import org.hisp.dhis.android.core.dataset.SectionModel;
 import org.hisp.dhis.android.core.datavalue.DataValueModel;
@@ -45,4 +46,8 @@ public interface DataValueRepository {
     Flowable<List<DataInputPeriodModel>> getDataInputPeriod();
 
     Flowable<Boolean> completeDataSet(String orgUnitUid, String periodInitialDate, String catCombo);
+
+    Flowable<Boolean> reopenDataSet(String orgUnitUid, String periodInitialDate, String catCombo);
+
+    Flowable<Boolean> isCompleted(String orgUnitUid, String periodInitialDate, String catCombo);
 }

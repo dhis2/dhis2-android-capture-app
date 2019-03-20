@@ -99,12 +99,12 @@ final class EditTextCellCustomHolder extends FormViewHolder {
             customBinding.inputEditText.setBackgroundColor(ContextCompat.getColor(editText.getContext(), R.color.bg_black_e6e));
         }
 
-        editText.setOnFocusChangeListener((v, hasFocus) -> {
+        customBinding.inputEditText.setOnFocusChangeListener((v, hasFocus) -> {
             if(hasFocus) {
                 //tableView.scrollToColumnPosition(editTextModel.column(), 200);
                 tableView.setSelectedCell(editTextModel.column(), editTextModel.row());
             }
-            else if(editTextModel != null && editTextModel.editable() && !editText.getText().toString().equals(editTextModel.value())) {
+            if(editTextModel != null && editTextModel.editable() && !editText.getText().toString().equals(editTextModel.value())) {
                 if (!isEmpty(editText.getText()) && validate())
                     processor.onNext(RowAction.create(editTextModel.uid(), editText.getText().toString(), editTextModel.dataElement(), editTextModel.listCategoryOption(), editTextModel.catCombo(), editTextModel.row(), editTextModel.column()));
                 else

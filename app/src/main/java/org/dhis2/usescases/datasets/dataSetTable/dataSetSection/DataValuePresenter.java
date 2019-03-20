@@ -114,18 +114,34 @@ public class DataValuePresenter implements DataValueContract.Presenter{
     }
     @Override
     public void complete(){
-        if(((!dataTableModel.dataSet().fieldCombinationRequired()) || checkAllFieldRequired() && dataTableModel.dataSet().fieldCombinationRequired())
-            && checkMandatoryField())
+        if(view.isOpenOrReopen() && dataTableModel.dataSet().validCompleteOnly()) {
+            if (((!dataTableModel.dataSet().fieldCombinationRequired()) || checkAllFieldRequired() && dataTableModel.dataSet().fieldCombinationRequired())
+                    && checkMandatoryField())
+                compositeDisposable.add(
+                        repository.completeDataSet(orgUnitUid, periodId, attributeOptionCombo)
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(completed -> view.onComplete(), Timber::e)
+                );
+            else if (!checkMandatoryField())
+                view.showAlertDialog(view.getContext().getString(R.string.missing_mandatory_fields_title), view.getContext().getResources().getString(R.string.field_mandatory));
+            else
+                view.showAlertDialog(view.getContext().getString(R.string.missing_mandatory_fields_title), view.getContext().getResources().getString(R.string.field_required));
+        }else if (view.isOpenOrReopen()){
             compositeDisposable.add(
                     repository.completeDataSet(orgUnitUid, periodId, attributeOptionCombo)
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe( completed -> view.onComplete(), Timber::e)
-            );
-        else if(!checkMandatoryField())
-            view.showAlertDialog(view.getContext().getString(R.string.missing_mandatory_fields_title), view.getContext().getResources().getString(R.string.field_mandatory));
-        else
-            view.showAlertDialog(view.getContext().getString(R.string.missing_mandatory_fields_title), view.getContext().getResources().getString(R.string.field_required));
+                            .subscribe(completed -> view.onComplete(), Timber::e));
+        }else{
+            compositeDisposable.add(
+                    repository.reopenDataSet(orgUnitUid, periodId, attributeOptionCombo)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(reopen ->
+                                                view.setCompleteReopenText(!reopen),
+                                    Timber::e));
+        }
     }
 
     private boolean checkAllFieldRequired(){
@@ -263,7 +279,15 @@ public class DataValuePresenter implements DataValueContract.Presenter{
 
     @Override
     public void getData(@NonNull DataSetSectionFragment dataSetSectionFragment, @Nullable String section) {
-
+        compositeDisposable.add(
+                        repository.isCompleted(orgUnitUid, periodId,attributeOptionCombo )
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                data -> view.setCompleteReopenText(data),
+                                Timber::e
+                        )
+        );
         compositeDisposable.add(
                 repository.getCatOptionCombo()
                         .flatMap(data ->
@@ -280,11 +304,13 @@ public class DataValuePresenter implements DataValueContract.Presenter{
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 sextet -> {
-                                    dataTableModel = DataTableModel
-                                            .create(sextet.val4().id() == null? null: sextet.val4(), transformCategories(tableData.val1()),
-                                                    tableData.val0(), sextet.val0(), sextet.val2(), sextet.val3(), sextet.val5(), tableData.val1(), sextet.val1(), getCatCombos(tableData.val0()));
+                                    if(tableData!= null) {
+                                        dataTableModel = DataTableModel
+                                                .create(sextet.val4().id() == null ? null : sextet.val4(), transformCategories(tableData.val1()),
+                                                        tableData.val0(), sextet.val0(), sextet.val2(), sextet.val3(), sextet.val5(), tableData.val1(), sextet.val1(), getCatCombos(tableData.val0()));
 
-                                    dataSetSectionFragment.createTable(dataTableModel);
+                                        dataSetSectionFragment.createTable(dataTableModel);
+                                    }
                                 },
                                 Timber::e
                         )

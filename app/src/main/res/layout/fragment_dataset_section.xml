@@ -54,7 +54,6 @@
             android:layout_marginBottom="16dp"
             android:backgroundTint="?colorPrimary"
             android:onClick="@{()->presenter.complete()}"
-            android:text="@string/complete"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
