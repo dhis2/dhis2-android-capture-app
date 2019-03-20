@@ -297,7 +297,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
             teiFragment.startActivityForResult(intent, TEIDataFragment.getEventRequestCode(), null);  */
             Intent intent = new Intent(teiFragment.getContext(), EventInitialActivity.class);
             intent.putExtras(EventInitialActivity.getBundle(
-                    programUid, uid, EventCreationType.DEFAULT.name(), teUid, null, null, null, dashboardProgramModel.getCurrentEnrollment().uid(), 0
+                    programUid, uid, EventCreationType.DEFAULT.name(), teUid, null, null, null, dashboardProgramModel.getCurrentEnrollment().uid(), 0,  dashboardProgramModel.getCurrentEnrollment().enrollmentStatus()
             ));
             teiFragment.startActivityForResult(intent, TEIDataFragment.getEventRequestCode(), null);
         }

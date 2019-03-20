@@ -546,7 +546,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     private List<RuleAction> getRuleActionsFor(String
                                                        programRuleUid) {
         List<RuleAction> ruleActions = new ArrayList<>();
-        List<ProgramRuleAction> ruleActionsModule = d2.programModule().programRules.uid(programRuleUid).getWithAllChildren().programRuleActions();
+        List<ProgramRuleAction> ruleActionsModule = d2.programModule().programRules.uid(programRuleUid).withAllChildren().get().programRuleActions();
         for (ProgramRuleAction ruleAction : ruleActionsModule) {
             ruleActions.add(RulesRepository.create(ruleAction.programRuleActionType(),
                     ruleAction.programStage() != null ? ruleAction.programStage().uid() : null,
