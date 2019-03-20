@@ -2,6 +2,7 @@ package org.dhis2.utils;
 
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.period.DatePeriod;
 import org.hisp.dhis.android.core.period.PeriodType;
 
 import java.text.SimpleDateFormat;
@@ -1022,5 +1023,14 @@ public class DateUtils {
 
         return expiredBecouseOfPeriod || expiredBecouseOfCompletion;
 
+    }
+
+    public List<DatePeriod> getDatePeriodListFor(List<Date> selectedDates, Period period) {
+        List<DatePeriod> datePeriods = new ArrayList<>();
+        for (Date date : selectedDates) {
+            Date[] startEndDates = getDateFromDateAndPeriod(date, period);
+            datePeriods.add(DatePeriod.builder().startDate(startEndDates[0]).endDate(startEndDates[1]).build());
+        }
+        return datePeriods;
     }
 }

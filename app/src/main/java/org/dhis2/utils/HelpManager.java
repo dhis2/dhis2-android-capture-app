@@ -38,6 +38,6 @@ public class HelpManager {
     }
 
     public boolean isTutorialReadyForScreen(String screen) {
-        return this.screen.equals(screen) && help != null && !help.isEmpty();
+        return this.screen != null && this.screen.equals(screen) && help != null && !help.isEmpty();
     }
 }

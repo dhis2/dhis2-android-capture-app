@@ -6,9 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
-import android.content.res.TypedArray;
 import android.os.Bundle;
-import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +27,7 @@ import org.dhis2.usescases.login.LoginActivity;
 import org.dhis2.usescases.main.MainActivity;
 import org.dhis2.usescases.map.MapSelectorActivity;
 import org.dhis2.usescases.splash.SplashActivity;
+import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.OnDialogClickListener;
@@ -345,12 +344,13 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
     }
 
     protected int getPrimaryColor() {
-        TypedValue typedValue = new TypedValue();
-        TypedArray a = getContext().obtainStyledAttributes(typedValue.data, new int[]{R.attr.colorPrimary});
-        int color = a.getColor(0, 0);
-        a.recycle();
-        return color;
+        return ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY);
     }
+
+    protected int getAccentColor() {
+        return ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.ACCENT);
+    }
+
 
     public void setProgressBar(ContentLoadingProgressBar progressBar) {
         if (progressBar != null) {

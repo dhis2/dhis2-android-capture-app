@@ -2,7 +2,6 @@ package org.dhis2.usescases.splash
 
 
 import android.content.Context
-import android.text.TextUtils.isEmpty
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -15,7 +14,7 @@ import org.dhis2.utils.SyncUtils
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
-class SplashPresenter internal constructor(private val userManager: UserManager?, private val splashRespository: SplashRepository) : SplashContracts.Presenter {
+class SplashPresenter internal constructor(private val userManager: UserManager?) : SplashContracts.Presenter {
     private var view: SplashContracts.View? = null
     var compositeDisposable: CompositeDisposable = CompositeDisposable()
 
@@ -25,22 +24,7 @@ class SplashPresenter internal constructor(private val userManager: UserManager?
 
     override fun init(view: SplashContracts.View) {
         this.view = view
-
-        compositeDisposable.add(splashRespository.iconForFlag()
-                .delay(2, TimeUnit.SECONDS, Schedulers.io())
-                .map { flagName ->
-                    if (!isEmpty(flagName))
-                        view.abstracContext.resources.getIdentifier(flagName, "drawable", view.abstracContext.packageName)
-                    else
-                        -1
-                }
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        { view.renderFlag(it) },
-                        { Timber.d(it) }
-                )
-        )
+        isUserLoggedIn()
     }
 
     override fun isUserLoggedIn() {
