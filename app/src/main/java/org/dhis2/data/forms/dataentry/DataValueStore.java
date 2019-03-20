@@ -93,7 +93,7 @@ public final class DataValueStore implements DataEntryStore {
             // ToDo: write test cases for different events
             return (long) briteDatabase.update(TrackedEntityDataValueModel.TABLE, dataValue,
                     TrackedEntityDataValueModel.Columns.DATA_ELEMENT + " = ? AND " +
-                            TrackedEntityDataValueModel.Columns.EVENT + " = ?", uid == null ? "" : uid, eventUid == null ? "" : eventUid);
+                            TrackedEntityDataValueModel.Columns.EVENT + " = ?", uid, eventUid);
         } else {
             dataValue.put(TrackedEntityAttributeValueModel.Columns.LAST_UPDATED,
                     BaseIdentifiableObject.DATE_FORMAT.format(Calendar.getInstance().getTime()));
@@ -103,18 +103,14 @@ public final class DataValueStore implements DataEntryStore {
                 dataValue.put(TrackedEntityAttributeValueModel.Columns.VALUE, value);
             }
 
-            Cursor enrollmentCursor = briteDatabase.query(
+            String teiUid = "";
+            try (Cursor enrollmentCursor = briteDatabase.query(
                     "SELECT Enrollment.trackedEntityInstance FROM TrackedEntityAttributeValue " +
                             "JOIN Enrollment ON Enrollment.trackedEntityInstance = TrackedEntityAttributeValue.trackedEntityInstance " +
-                            "WHERE TrackedEntityAttributeValue.trackedEntityAttribute = ?", uid);
-            String teiUid = "";
-            try {
+                            "WHERE TrackedEntityAttributeValue.trackedEntityAttribute = ?", uid)) {
                 if (enrollmentCursor.moveToFirst()) {
                     teiUid = enrollmentCursor.getString(0);
                 }
-            } finally {
-                if (enrollmentCursor != null)
-                    enrollmentCursor.close();
             }
 
             return (long) briteDatabase.update(TrackedEntityAttributeValueModel.TABLE, dataValue,
@@ -210,20 +206,16 @@ public final class DataValueStore implements DataEntryStore {
             return (long) briteDatabase.delete(TrackedEntityDataValueModel.TABLE,
                     TrackedEntityDataValueModel.Columns.DATA_ELEMENT + " = ? AND " +
                             TrackedEntityDataValueModel.Columns.EVENT + " = ?",
-                    uid == null ? "" : uid, eventUid == null ? "" : eventUid);
+                    uid, eventUid);
         else {
-            Cursor enrollmentCursor = briteDatabase.query(
+            String teiUid = "";
+            try (Cursor enrollmentCursor = briteDatabase.query(
                     "SELECT Enrollment.trackedEntityInstance FROM TrackedEntityAttributeValue " +
                             "JOIN Enrollment ON Enrollment.trackedEntityInstance = TrackedEntityAttributeValue.trackedEntityInstance " +
-                            "WHERE TrackedEntityAttributeValue.trackedEntityAttribute = ?", uid);
-            String teiUid = "";
-            try {
+                            "WHERE TrackedEntityAttributeValue.trackedEntityAttribute = ?", uid)) {
                 if (enrollmentCursor.moveToFirst()) {
                     teiUid = enrollmentCursor.getString(0);
                 }
-            } finally {
-                if (enrollmentCursor != null)
-                    enrollmentCursor.close();
             }
 
             return (long) briteDatabase.delete(TrackedEntityAttributeValueModel.TABLE,
@@ -234,7 +226,7 @@ public final class DataValueStore implements DataEntryStore {
     }
 
     private Flowable<Long> updateEvent(long status) {
-        return briteDatabase.createQuery(EventModel.TABLE, SELECT_EVENT, eventUid == null ? "" : eventUid)
+        return briteDatabase.createQuery(EventModel.TABLE, SELECT_EVENT, eventUid)
                 .mapToOne(EventModel::create).take(1).toFlowable(BackpressureStrategy.LATEST)
                 .switchMap(eventModel -> {
                     if (State.SYNCED.equals(eventModel.state()) || State.TO_DELETE.equals(eventModel.state()) ||
@@ -244,7 +236,7 @@ public final class DataValueStore implements DataEntryStore {
                         values.put(EventModel.Columns.STATE, State.TO_UPDATE.toString());
 
                         if (briteDatabase.update(EventModel.TABLE, values,
-                                EventModel.Columns.UID + " = ?", eventUid == null ? "" : eventUid) <= 0) {
+                                EventModel.Columns.UID + " = ?", eventUid) <= 0) {
 
                             throw new IllegalStateException(String.format(Locale.US, "Event=[%s] " +
                                     "has not been successfully updated", eventUid));
@@ -252,15 +244,12 @@ public final class DataValueStore implements DataEntryStore {
                     }
 
                     if (eventModel.enrollment() != null) {
-                        Cursor teiCursor = briteDatabase.query("SELECT TrackedEntityInstance .* FROM TrackedEntityInstance " +
-                                "JOIN Enrollment ON Enrollment.trackedEntityInstance = TrackedEntityInstance.uid WHERE Enrollment.uid = ?", eventModel.enrollment());
                         TrackedEntityInstanceModel tei = null;
-                        try {
+                        try (Cursor teiCursor = briteDatabase.query("SELECT TrackedEntityInstance .* FROM TrackedEntityInstance " +
+                                "JOIN Enrollment ON Enrollment.trackedEntityInstance = TrackedEntityInstance.uid WHERE Enrollment.uid = ?", eventModel.enrollment())) {
                             if (teiCursor.moveToFirst())
                                 tei = TrackedEntityInstanceModel.create(teiCursor);
                         } finally {
-                            if (teiCursor != null)
-                                teiCursor.close();
                             if (tei != null) {
                                 ContentValues cv = tei.toContentValues();
                                 cv.put(TrackedEntityInstanceModel.Columns.STATE, tei.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());

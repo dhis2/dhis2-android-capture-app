@@ -44,8 +44,8 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     private final ProgramEventDetailRepository eventRepository;
     private final MetadataRepository metaRepository;
     private ProgramEventDetailContract.View view;
-    public ProgramModel program;
-    public String programId;
+    protected ProgramModel program;
+    protected String programId;
     private CompositeDisposable compositeDisposable;
     private CategoryOptionComboModel categoryOptionComboModel;
     private List<OrganisationUnitModel> orgUnits = new ArrayList<>();
@@ -192,8 +192,6 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
         bundle.putString(PROGRAM_UID, programId);
         bundle.putString(Constants.EVENT_UID, eventId);
         bundle.putString(ORG_UNIT, orgUnit);
-//        view.startActivity(EventInitialActivity.class, bundle, false, false, null);
-
         view.startActivity(EventCaptureActivity.class,
                 EventCaptureActivity.getActivityBundle(eventId, programId),
                 false, false, null

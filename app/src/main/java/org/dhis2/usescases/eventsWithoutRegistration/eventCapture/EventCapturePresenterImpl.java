@@ -223,7 +223,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     }
 
     private Flowable<List<FieldViewModel>> getFieldFlowable(@Nullable String sectionUid) {
-        if (isEmpty(sectionUid) || sectionUid.equals("NO_SECTION")) {
+        if (sectionUid == null || sectionUid.equals("NO_SECTION")) {
             return Flowable.zip(
                     eventCaptureRepository.list(),
                     eventCaptureRepository.calculate().subscribeOn(Schedulers.computation()),
@@ -258,7 +258,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                hasExpired -> this.hasExpired = hasExpired,
+                                hasExpiredResult -> this.hasExpired = hasExpiredResult,
                                 Timber::e
                         )
         );
@@ -341,7 +341,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
             compositeDisposable.add(
                     EventCaptureFormFragment.getInstance().optionSetActions()
                             .flatMap(
-                                    data -> metadataRepository.searchOptions(data.val0(), data.val1(), data.val2(),optionsToHide,optionsGroupsToHide).toFlowable(BackpressureStrategy.LATEST)
+                                    data -> metadataRepository.searchOptions(data.val0(), data.val1(), data.val2(), optionsToHide, optionsGroupsToHide).toFlowable(BackpressureStrategy.LATEST)
                             )
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
@@ -364,7 +364,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
             @NonNull Result<RuleEffect> calcResult) {
 
         if (calcResult.error() != null) {
-            calcResult.error().printStackTrace();
+            Timber.e(calcResult.error());
             return viewModels;
         }
 

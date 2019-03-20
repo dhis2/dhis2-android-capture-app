@@ -29,7 +29,7 @@ public class OrgUnitHolder extends TreeNode.BaseNodeViewHolder<OrganisationUnitM
     private CheckBox checkBox;
     private TreeNode node;
     private OrganisationUnitModel value;
-    public int numberOfSelections;
+    private int numberOfSelections;
 
     public OrgUnitHolder(Context context, Boolean isMultiSelection) {
         super(context);

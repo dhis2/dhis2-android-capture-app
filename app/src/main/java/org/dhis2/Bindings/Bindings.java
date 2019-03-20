@@ -122,9 +122,9 @@ public class Bindings {
     public static void setProgressColor(ProgressBar progressBar, int color) {
         TypedValue typedValue = new TypedValue();
         TypedArray a = progressBar.getContext().obtainStyledAttributes(typedValue.data, new int[]{R.attr.colorPrimary});
-        color = a.getColor(0, 0);
+        int color2 = a.getColor(0, 0);
         a.recycle();
-        progressBar.getIndeterminateDrawable().setColorFilter(color, PorterDuff.Mode.SRC_IN);
+        progressBar.getIndeterminateDrawable().setColorFilter(color2, PorterDuff.Mode.SRC_IN);
     }
 
     @BindingAdapter("enrolmentIcon")

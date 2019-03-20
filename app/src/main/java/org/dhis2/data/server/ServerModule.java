@@ -87,7 +87,7 @@ public class ServerModule {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             try {
 
-                SSLContext sc = SSLContext.getInstance("TLS"/*"TLSv1.2"*/);
+                SSLContext sc = SSLContext.getInstance("TLSv1.2");
                 sc.init(null, null, null);
 
                 TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(
