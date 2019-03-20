@@ -141,8 +141,14 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
                 if (NetworkUtils.isOnline(SearchTEActivity.this))
                     onlinePagerProcessor.onNext(page);
-                else
-                    offlinePagerProcessor.onNext(page);
+                else {
+                    if(program != null)
+                        if(program.maxTeiCountToReturn() != 0 && totalItemsCount >= program.maxTeiCountToReturn())
+                            offlinePagerProcessor.onNext(page);
+                    else
+                        if(totalItemsCount >= 20)
+                            offlinePagerProcessor.onNext(page);
+                }
             }
         };
         binding.scrollView.addOnScrollListener(endlessRecyclerViewScrollListener);

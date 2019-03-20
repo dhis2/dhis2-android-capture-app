@@ -71,6 +71,7 @@ public class Constants {
     public static final String SECURE_CREDENTIALS = "SECURE_CREDENTIALS";
     public static final String USER = "USER";
     public static final String USER_ASKED_CRASHLYTICS = "USER_ACCEPT_CRASHLYTICS";
+    public static final String ENROLLMENT_STATUS = "ENROLLMENT_STATUS";
 
     public static String LAST_DATA_SYNC = "last_data_sync";
     public static String LAST_DATA_SYNC_STATUS = "last_data_sync_status";

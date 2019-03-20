@@ -46,6 +46,7 @@ import org.dhis2.utils.custom_views.ProgressBarAnimation;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
+import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
@@ -127,10 +128,11 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     private ArrayList<String> sectionsToHide;
     private String getTrackedEntityInstance;
     private Boolean accessData;
+    private EnrollmentStatus enrollmentStatus;
 
     public static Bundle getBundle(String programUid, String eventUid, String eventCreationType,
                                    String teiUid, PeriodType eventPeriodType, String orgUnit, String stageUid,
-                                   String enrollmentUid, int eventScheduleInterval) {
+                                   String enrollmentUid, int eventScheduleInterval, EnrollmentStatus enrollmentStatus) {
         Bundle bundle = new Bundle();
         bundle.putString(Constants.PROGRAM_UID, programUid);
         bundle.putString(Constants.EVENT_UID, eventUid);
@@ -141,6 +143,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         bundle.putSerializable(Constants.EVENT_PERIOD_TYPE, eventPeriodType);
         bundle.putString(Constants.PROGRAM_STAGE_UID, stageUid);
         bundle.putInt(Constants.EVENT_SCHEDULE_INTERVAL, eventScheduleInterval);
+        bundle.putSerializable(Constants.ENROLLMENT_STATUS, enrollmentStatus);
         return bundle;
     }
 
@@ -159,6 +162,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         selectedOrgUnit = getIntent().getStringExtra(ORG_UNIT);
         periodType = (PeriodType) getIntent().getSerializableExtra(EVENT_PERIOD_TYPE);
         programStageUid = getIntent().getStringExtra(Constants.PROGRAM_STAGE_UID);
+        enrollmentStatus = (EnrollmentStatus) getIntent().getSerializableExtra(Constants.ENROLLMENT_STATUS);
 
         ((App) getApplicationContext()).userComponent().plus(new EventInitialModule(eventUid)).inject(this);
 
@@ -357,7 +361,11 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                 binding.actionButton.setVisibility(View.GONE);
 
         } else {
-            binding.actionButton.setVisibility(View.VISIBLE); //Show actionButton always for already created events
+            if(eventModel != null) {
+                if (eventModel.status() == EventStatus.OVERDUE && enrollmentStatus == EnrollmentStatus.CANCELLED)
+                    binding.actionButton.setVisibility(View.GONE);
+            } else
+                binding.actionButton.setVisibility(View.VISIBLE); //Show actionButton always for already created events
         }
     }
 
