@@ -168,7 +168,7 @@ public class RulesUtilsProviderImpl implements RulesUtilsProvider {
                 rulesActionCallbacks.save(assign.field(), ruleEffect.data());
             }
 
-            fieldViewModels.put(assign.field(), fieldViewModels.get(assign.field()).withValue(ruleEffect.data()));
+            fieldViewModels.put(assign.field(), fieldViewModels.get(assign.field()).withValue(ruleEffect.data())).withEditMode(false);
 
         }
     }

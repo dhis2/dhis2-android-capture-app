@@ -435,6 +435,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                                 })
                                 .map(Result::success)
                                 .onErrorReturn(error -> Result.failure(new Exception(error)))
+
                 );
     }
 
@@ -545,7 +546,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     private List<RuleAction> getRuleActionsFor(String
                                                        programRuleUid) {
         List<RuleAction> ruleActions = new ArrayList<>();
-        List<ProgramRuleAction> ruleActionsModule = d2.programModule().programRules.uid(programRuleUid).getWithAllChildren().programRuleActions();
+        List<ProgramRuleAction> ruleActionsModule = d2.programModule().programRules.uid(programRuleUid).withAllChildren().get().programRuleActions();
         for (ProgramRuleAction ruleAction : ruleActionsModule) {
             ruleActions.add(RulesRepository.create(ruleAction.programRuleActionType(),
                     ruleAction.programStage() != null ? ruleAction.programStage().uid() : null,
@@ -746,8 +747,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
             " WHERE Event.uid = ? AND value IS NOT NULL AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "';";
 
     @NonNull
-    private Flowable<List<RuleDataValue>> queryDataValues
-            (String eventUid) {
+    private Flowable<List<RuleDataValue>> queryDataValues(String eventUid) {
         return briteDatabase.createQuery(Arrays.asList(EventModel.TABLE,
                 TrackedEntityDataValueModel.TABLE), QUERY_VALUES, eventUid == null ? "" : eventUid)
                 .mapToList(cursor -> {

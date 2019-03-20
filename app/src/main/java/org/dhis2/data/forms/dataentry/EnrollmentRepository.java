@@ -103,16 +103,12 @@ final class EnrollmentRepository implements DataEntryRepository {
 
     public List<FieldViewModel> fieldList() {
         List<FieldViewModel> list = new ArrayList<>();
-        Cursor listCursor = briteDatabase.query(QUERY, enrollment);
-        try {
+        try (Cursor listCursor = briteDatabase.query(QUERY, enrollment)) {
             listCursor.moveToFirst();
             do {
                 list.add(transform(listCursor));
             } while (listCursor.moveToNext());
 
-        } finally {
-            if (listCursor != null)
-                listCursor.close();
         }
 
         return list;

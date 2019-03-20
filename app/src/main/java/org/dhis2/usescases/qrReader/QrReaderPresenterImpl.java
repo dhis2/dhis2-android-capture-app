@@ -114,14 +114,15 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
 
                     if (attrValue.has("dataElement") && attrValue.getString("dataElement") != null) {
                         // LOOK FOR dataElement ON LOCAL DATABASE.
-                        Cursor cursor = briteDatabase.query("SELECT * FROM " + DataElementModel.TABLE +
-                                " WHERE " + DataElementModel.Columns.UID + " = ?", attrValue.getString("dataElement"));
                         // IF FOUND, OPEN DASHBOARD
-                        if (cursor != null && cursor.moveToFirst() && cursor.getCount() > 0) {
-                            this.dataJson.add(attrValue);
-                            attributes.add(Trio.create(trackedEntityDataValueModelBuilder.build(), cursor.getString(cursor.getColumnIndex("formName")), true));
-                        } else {
-                            attributes.add(Trio.create(trackedEntityDataValueModelBuilder.build(), null, false));
+                        try (Cursor cursor = briteDatabase.query("SELECT * FROM " + DataElementModel.TABLE +
+                                " WHERE " + DataElementModel.Columns.UID + " = ?", attrValue.getString("dataElement"))) {
+                            if (cursor != null && cursor.moveToFirst() && cursor.getCount() > 0) {
+                                this.dataJson.add(attrValue);
+                                attributes.add(Trio.create(trackedEntityDataValueModelBuilder.build(), cursor.getString(cursor.getColumnIndex("formName")), true));
+                            } else {
+                                attributes.add(Trio.create(trackedEntityDataValueModelBuilder.build(), null, false));
+                            }
                         }
                     } else {
                         attributes.add(Trio.create(trackedEntityDataValueModelBuilder.build(), null, false));
@@ -170,14 +171,15 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
 
                 if (attrValue.has("dataElement") && attrValue.getString("dataElement") != null) {
                     // LOOK FOR dataElement ON LOCAL DATABASE.
-                    Cursor cursor = briteDatabase.query("SELECT * FROM " + DataElementModel.TABLE +
-                            " WHERE " + DataElementModel.Columns.UID + " = ?", attrValue.getString("dataElement"));
                     // IF FOUND, OPEN DASHBOARD
-                    if (cursor != null && cursor.moveToFirst() && cursor.getCount() > 0) {
-                        this.teiDataJson.add(attrValue);
-                        attributes.add(Trio.create(trackedEntityDataValueModelBuilder.build(), cursor.getString(cursor.getColumnIndex("formName")), true));
-                    } else {
-                        attributes.add(Trio.create(trackedEntityDataValueModelBuilder.build(), null, false));
+                    try (Cursor cursor = briteDatabase.query("SELECT * FROM " + DataElementModel.TABLE +
+                            " WHERE " + DataElementModel.Columns.UID + " = ?", attrValue.getString("dataElement"))) {
+                        if (cursor != null && cursor.moveToFirst() && cursor.getCount() > 0) {
+                            this.teiDataJson.add(attrValue);
+                            attributes.add(Trio.create(trackedEntityDataValueModelBuilder.build(), cursor.getString(cursor.getColumnIndex("formName")), true));
+                        } else {
+                            attributes.add(Trio.create(trackedEntityDataValueModelBuilder.build(), null, false));
+                        }
                     }
                 } else {
                     attributes.add(Trio.create(trackedEntityDataValueModelBuilder.build(), null, false));
@@ -682,14 +684,14 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
 
                 EventModel eventModel = eventModelBuilder.build();
 
-                Cursor cursor = briteDatabase.query("SELECT * FROM " + EventModel.TABLE +
-                        " WHERE " + EventModel.Columns.UID + " = ?", eventModel.uid());
-
-                if (cursor != null && cursor.moveToFirst() && cursor.getCount() > 0) {
-                    // EVENT ALREADY EXISTS IN THE DATABASE, JUST INSERT ATTRIBUTES
-                } else {
-                    long result = briteDatabase.insert(EventModel.TABLE, eventModel.toContentValues());
-                    Log.d("RESULT", "insert event " + result);
+                try (Cursor cursor = briteDatabase.query("SELECT * FROM " + EventModel.TABLE +
+                        " WHERE " + EventModel.Columns.UID + " = ?", eventModel.uid())) {
+                    if (cursor != null && cursor.moveToFirst() && cursor.getCount() > 0) {
+                        // EVENT ALREADY EXISTS IN THE DATABASE, JUST INSERT ATTRIBUTES
+                    } else {
+                        long result = briteDatabase.insert(EventModel.TABLE, eventModel.toContentValues());
+                        Log.d("RESULT", "insert event " + result);
+                    }
                 }
             } else {
                 view.showIdError();

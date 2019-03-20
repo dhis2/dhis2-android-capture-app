@@ -74,6 +74,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private boolean snackBarIsShowing;
     private final FlowableProcessor<String> sectionProcessor;
     private boolean isSubscribed;
+    private long ruleInitTime;
 
     public EventCapturePresenterImpl(String eventUid, EventCaptureContract.EventCaptureRepository eventCaptureRepository, MetadataRepository metadataRepository, RulesUtilsProvider rulesUtils, DataEntryStore dataEntryStore) {
         this.eventUid = eventUid;
@@ -187,7 +188,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
                             return eventSectionModels;
                         })
-                        .observeOn(Schedulers.io())
+                        .observeOn(Schedulers.computation())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(data -> {
                                     subscribeToSection();
@@ -215,7 +216,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                     List<FieldViewModel> fieldsToShow = fieldMap.get(section.equals("NO_SECTION") ? null : section);
                                     return fieldsToShow != null ? fieldsToShow : new ArrayList<FieldViewModel>();
                                 }))
-                        .observeOn(Schedulers.io())
+                        .observeOn(Schedulers.computation())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 updates -> {
@@ -229,7 +230,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private Flowable<List<FieldViewModel>> getFieldFlowable(@Nullable String sectionUid) {
         if (sectionUid == null || sectionUid.equals("NO_SECTION")) {
             return Flowable.zip(
-                    eventCaptureRepository.list(),
+                    eventCaptureRepository.list().subscribeOn(Schedulers.computation()),
                     eventCaptureRepository.calculate().subscribeOn(Schedulers.computation()),
                     this::applyEffects)
                     .map(fields -> {
@@ -336,6 +337,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                     .observeOn(Schedulers.io())
                     .switchMap(action -> {
                                 eventCaptureRepository.setLastUpdated(action.id());
+                                ruleInitTime = System.currentTimeMillis();
                                 return dataEntryStore.save(action.id(), action.value());
                             }
                     ).subscribe(result -> Timber.d(result.toString()),
@@ -366,6 +368,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private List<FieldViewModel> applyEffects(
             @NonNull List<FieldViewModel> viewModels,
             @NonNull Result<RuleEffect> calcResult) {
+        Timber.d("RULE EFFECTS INIT TOOK %s ms to execute", System.currentTimeMillis() - ruleInitTime);
+        long currentTime = System.currentTimeMillis();
 
         if (calcResult.error() != null) {
             Timber.e(calcResult.error());
@@ -380,7 +384,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         Map<String, FieldViewModel> fieldViewModels = toMap(viewModels);
         rulesUtils.applyRuleEffects(fieldViewModels, calcResult, this);
 
-
+        Timber.d("RULE EFFECTS TOOK %s ms to execute", System.currentTimeMillis() - currentTime);
         return new ArrayList<>(fieldViewModels.values());
     }
 

@@ -155,6 +155,7 @@ sonarqube {
 
 dependencies {
 
+    implementation project(":core")
     implementation project(":customFab")
     implementation project(":dhis2-rule-engine")
     implementation project(":viewpagerdotsindicator")
@@ -171,14 +172,9 @@ dependencies {
     //endregion
 
     //region DHIS2 LIBRARIES
-    implementation("org.hisp.dhis:android-core:${libraries.dhis2sdk}") {
+   /* implementation("org.hisp.dhis:android-core:${libraries.dhis2sdk}") {
         exclude group: "org.hisp.dhis", module: "core-rules"
-    }
-
-    /* implementation("org.hisp.dhis:android-rules:${libraries.dhis2sdk}") {
-         exclude group: "com.google.code.findbugs", module: "jsr305"
-         exclude group: "org.hisp.dhis", module: "core-rules"
-     }*/
+    }*/
 
     //implementation "org.hisp.dhis.rules:rule-engine:${libraries.ruleEngine}"
     //endregion
@@ -200,6 +196,8 @@ dependencies {
     implementation "io.reactivex.rxjava2:rxandroid:${libraries.rxandroid}"
     implementation "io.reactivex.rxjava2:rxjava:${libraries.rxjava}"
     implementation "com.github.akarnokd:rxjava2-interop:${libraries.rxjavainteroperop}"
+    implementation 'io.reactivex.rxjava2:rxkotlin:2.3.0'
+
     //rxbinding
     implementation "com.jakewharton.rxbinding2:rxbinding:${libraries.rxbindings}"
     implementation "com.jakewharton.rxbinding2:rxbinding-appcompat-v7:${libraries.rxbindings}"

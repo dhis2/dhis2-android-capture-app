@@ -114,5 +114,7 @@ public interface MetadataRepository {
 
     Observable<List<OptionModel>> searchOptions(String text, String idOptionSet, int page, List<String> optionsToHide, List<String> optionsGroupsToHide);
 
-    Observable<Map<String,ObjectStyleModel>> getObjectStylesForPrograms(List<ProgramModel> enrollmentProgramModels);
+    Observable<Map<String, ObjectStyleModel>> getObjectStylesForPrograms(List<ProgramModel> enrollmentProgramModels);
+
+    Flowable<ProgramStageModel> programStageForEvent(String eventId);
 }
