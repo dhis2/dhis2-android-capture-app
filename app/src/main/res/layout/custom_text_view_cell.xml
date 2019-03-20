@@ -20,7 +20,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minHeight="70dp">
+        android:minHeight="@dimen/default_cell_height">
 
 
         <LinearLayout
@@ -39,7 +39,7 @@
                 android:textAlignment="textStart"
                 android:textColor="@color/text_black_333"
                 android:textSize="15sp"
-                android:minHeight="70dp"
+                android:minHeight="@dimen/default_cell_height"
                 tools:text="hello" />
 
             <ImageView

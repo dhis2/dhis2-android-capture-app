@@ -127,9 +127,11 @@ public class SelectionHandler {
         this.mPreviousSelectedViewHolder = viewHolder;
 
         // Change color
-        mPreviousSelectedViewHolder.setBackgroundColor(mTableView.getSelectedColor());
+        if(mTableView != null && mPreviousSelectedViewHolder != null)
+            mPreviousSelectedViewHolder.setBackgroundColor(mTableView.getSelectedColor());
         // Change state
-        mPreviousSelectedViewHolder.setSelected(SelectionState.SELECTED);
+        if(mPreviousSelectedViewHolder != null)
+            mPreviousSelectedViewHolder.setSelected(SelectionState.SELECTED);
     }
 
 

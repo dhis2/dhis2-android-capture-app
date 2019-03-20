@@ -89,7 +89,7 @@ public class CellRecyclerViewAdapter<C> extends AbstractRecyclerViewAdapter<C> {
 
         // Create CellRow adapter
         recyclerView.setAdapter(new CellRowRecyclerViewAdapter(mContext, mTableView));
-
+        recyclerView.setNestedScrollingEnabled(false);
         // This is for testing purpose to find out which recyclerView is displayed.
         recyclerView.setId(mRecyclerViewId);
 
