@@ -6,17 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
-import android.content.res.TypedArray;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.app.ActivityOptionsCompat;
-import androidx.core.content.ContextCompat;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.core.widget.ContentLoadingProgressBar;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,17 +29,25 @@ import org.dhis2.usescases.map.MapSelectorActivity;
 import org.dhis2.usescases.splash.SplashActivity;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.custom_views.CoordinatesView;
-import org.dhis2.utils.custom_views.CustomDialog;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.OnDialogClickListener;
 import org.dhis2.utils.SyncUtils;
+import org.dhis2.utils.custom_views.CoordinatesView;
+import org.dhis2.utils.custom_views.CustomDialog;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityOptionsCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.widget.ContentLoadingProgressBar;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import rx.Observable;
 import rx.subjects.BehaviorSubject;
 
@@ -110,7 +108,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
 
         Crashlytics.setString(Constants.SERVER, prefs.getString(Constants.SERVER, null));
         String userName = prefs.getString(Constants.USER, null);
-        if(userName != null)
+        if (userName != null)
             Crashlytics.setString(Constants.USER, userName);
         mFirebaseAnalytics.setUserId(prefs.getString(Constants.SERVER, null));
 
@@ -350,12 +348,12 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
     }
 
     protected int getPrimaryColor() {
-        TypedValue typedValue = new TypedValue();
-        TypedArray a = getContext().obtainStyledAttributes(typedValue.data, new int[]{R.attr.colorPrimary});
-        int color = a.getColor(0, 0);
-        a.recycle();
-        return color;
+        return ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY);
     }
+    protected int getAccentColor() {
+        return ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.ACCENT);
+    }
+
 
     public void setProgressBar(ContentLoadingProgressBar progressBar) {
         if (progressBar != null) {

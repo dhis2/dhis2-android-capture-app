@@ -1,20 +1,18 @@
 package org.dhis2.usescases.splash
 
-import com.squareup.sqlbrite2.BriteDatabase
-import org.hisp.dhis.android.core.settings.SystemSettingModel
+import org.hisp.dhis.android.core.D2
 
 /**
  * QUADRAM. Created by ppajuelo on 16/05/2018.
  */
 
-class SplashRepositoryImpl internal constructor(private val briteDatabase: BriteDatabase) : SplashRepository {
+class SplashRepositoryImpl internal constructor(private val d2: D2?) : SplashRepository {
 
-    companion object {
+    override fun iconForFlag() =
+            if (d2 != null)
+                d2.systemSettingModule().systemSetting.flag().get().value() ?: ""
+            else
+                ""
 
-        const val FLAG_QUERY = "SELECT " + "SystemSetting.value FROM SystemSetting WHERE SystemSetting.key = 'flag' LIMIT 1"
-    }
-
-    override fun iconForFlag() = briteDatabase.createQuery(SystemSettingModel.TABLE, FLAG_QUERY)
-            .mapToOneOrDefault({ cursor -> cursor.getString(0) }, "")
 }
 
