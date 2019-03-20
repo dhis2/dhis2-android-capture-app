@@ -138,6 +138,9 @@ public class DataValueRepositoryImpl implements DataValueRepository {
 
     private static final String SELECT_DATA_INPUT_PERIOD = "SELECT * FROM DataInputPeriod WHERE dataset = ?";/* AND period = ?";*/
 
+    private static final String SELECT_COMPLETE_DATASET = "SELECT * FROM DataSetCompleteRegistration WHERE period = ? AND dataSet = ? AND attributeOptionCombo = ? and organisationUnit = ? " +
+            "AND state in ('TO_UPDATE', 'SYNCED')";
+
     public DataValueRepositoryImpl(BriteDatabase briteDatabase, String dataSetUid){
         this.briteDatabase = briteDatabase;
         this.dataSetUid = dataSetUid;
@@ -424,6 +427,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
                 .mapToOneOrDefault(SectionModel::create, SectionModel.builder().build()).toFlowable(BackpressureStrategy.LATEST);
     }
 
+    @Override
     public Flowable<Boolean> completeDataSet(String orgUnitUid, String periodInitialDate, String catCombo){
         boolean updateOrInserted;
         String where = "period = ? AND dataSet = ? AND attributeOptionCombo = ?";
@@ -450,5 +454,24 @@ public class DataValueRepositoryImpl implements DataValueRepository {
 
         return Flowable.just(updateOrInserted);
 
+    }
+
+    @Override
+    public Flowable<Boolean> reopenDataSet(String orgUnitUid, String periodInitialDate, String catCombo) {
+        String where = "period = ? AND dataSet = ? AND attributeOptionCombo = ? and organisationUnit = ? ";
+        String[] values = {periodInitialDate, dataSetUid, catCombo, orgUnitUid};
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(DataSetCompleteRegistration.Columns.STATE, State.TO_DELETE.name());
+        String completeDate = DateUtils.databaseDateFormat().format(DateUtils.getInstance().getToday());
+        contentValues.put("date", completeDate);
+
+        return Flowable.just(briteDatabase.update(DataSetCompleteRegistration.class.getSimpleName(), contentValues, where, values)>0);
+    }
+
+    @Override
+    public Flowable<Boolean> isCompleted(String orgUnitUid, String periodInitialDate, String catCombo) {
+        return briteDatabase.createQuery(DataSetCompleteRegistration.class.getSimpleName(), SELECT_COMPLETE_DATASET, periodInitialDate, dataSetUid, catCombo, orgUnitUid)
+                .mapToOneOrDefault(data -> true, false).toFlowable(BackpressureStrategy.LATEST);
     }
 }

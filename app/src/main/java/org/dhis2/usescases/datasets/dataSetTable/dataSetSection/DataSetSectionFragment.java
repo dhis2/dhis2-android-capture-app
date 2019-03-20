@@ -42,6 +42,7 @@ import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
 import org.hisp.dhis.android.core.dataset.DataInputPeriodModel;
+import org.hisp.dhis.android.core.dataset.DataSetCompleteRegistration;
 import org.hisp.dhis.android.core.dataset.DataSetModel;
 import org.hisp.dhis.android.core.dataset.SectionModel;
 import org.hisp.dhis.android.core.option.OptionModel;
@@ -345,6 +346,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
 
     @Override
     public void onComplete() {
+        binding.actionButton.setText(getString(R.string.re_open));
         activity.finish();
     }
 
@@ -398,4 +400,16 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
             OptionSetCellPopUp.getInstance().setOptions(options);
     }
 
+    @Override
+    public boolean isOpenOrReopen() {
+        return binding.actionButton.getText().equals(getString(R.string.complete));
+    }
+
+    @Override
+    public void setCompleteReopenText(Boolean isCompleted) {
+        if(!isCompleted)
+            binding.actionButton.setText(getString(R.string.complete));
+        else
+            binding.actionButton.setText(getString(R.string.re_open));
+    }
 }
