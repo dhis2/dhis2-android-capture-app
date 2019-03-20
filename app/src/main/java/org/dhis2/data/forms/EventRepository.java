@@ -308,13 +308,13 @@ public class EventRepository implements FormRepository {
         };
     }
 
-    @NonNull
+    @Nullable
     @Override
     public Observable<Trio<String, String, String>> useFirstStageDuringRegistration() {
         return Observable.just(null);
     }
 
-    @NonNull
+    @Nullable
     @Override
     public Observable<String> autoGenerateEvents(String enrollmentUid) {
         return null;

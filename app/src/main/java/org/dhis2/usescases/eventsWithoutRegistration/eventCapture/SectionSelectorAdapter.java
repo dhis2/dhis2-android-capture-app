@@ -71,6 +71,9 @@ public class SectionSelectorAdapter extends RecyclerView.Adapter<EventSectionHol
             wValues += (float) sectionModel.numberOfCompletedFields();
             totals += (float) sectionModel.numberOfTotalFields();
         }
+        if (totals == 0){
+            return  100;
+        }
         percentage = wValues / totals;
         return percentage;
     }

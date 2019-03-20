@@ -120,8 +120,8 @@ public final class AttributeValueStore implements DataEntryStore {
             sqLiteBind(updateStatement, 1, BaseIdentifiableObject.DATE_FORMAT
                     .format(Calendar.getInstance().getTime()));
             sqLiteBind(updateStatement, 2, value == null ? "" : value);
-            sqLiteBind(updateStatement, 3, enrollment == null ? "" : enrollment);
-            sqLiteBind(updateStatement, 4, attribute == null ? "" : attribute);
+            sqLiteBind(updateStatement, 3, enrollment);
+            sqLiteBind(updateStatement, 4, attribute);
 
             long updated = briteDatabase.executeUpdateDelete(
                     TrackedEntityAttributeValueModel.TABLE, updateStatement);
@@ -142,7 +142,7 @@ public final class AttributeValueStore implements DataEntryStore {
             if (!isEmpty(eventUid))
                 return (long) briteDatabase.update(TrackedEntityDataValueModel.TABLE, dataValue,
                         TrackedEntityDataValueModel.Columns.DATA_ELEMENT + " = ? AND " +
-                                TrackedEntityDataValueModel.Columns.EVENT + " = ?", attribute == null ? "" : attribute, eventUid == null ? "" : eventUid);
+                                TrackedEntityDataValueModel.Columns.EVENT + " = ?", attribute, eventUid);
             else return -1;
         }
     }
@@ -197,15 +197,11 @@ public final class AttributeValueStore implements DataEntryStore {
                     TrackedEntityAttributeValueModel.TABLE, insertStatement);
             insertStatement.clearBindings();*/
 
-            Cursor teiCursor = briteDatabase.query(SELECT_TEI, enrollment);
             String teiUid = null;
 
-            try {
+            try (Cursor teiCursor = briteDatabase.query(SELECT_TEI, enrollment)) {
                 if (teiCursor.moveToFirst())
                     teiUid = TrackedEntityInstanceModel.create(teiCursor).uid();
-            } finally {
-                if (teiCursor != null)
-                    teiCursor.close();
             }
 
             if (teiUid != null) {
@@ -242,8 +238,8 @@ public final class AttributeValueStore implements DataEntryStore {
 
     private long delete(@NonNull String attribute, valueType valueType) {
         if (valueType == ATTR) {
-            sqLiteBind(deleteStatement, 1, enrollment == null ? "" : enrollment);
-            sqLiteBind(deleteStatement, 2, attribute == null ? "" : attribute);
+            sqLiteBind(deleteStatement, 1, enrollment);
+            sqLiteBind(deleteStatement, 2, attribute);
 
             long deleted = briteDatabase.executeUpdateDelete(
                     TrackedEntityAttributeValueModel.TABLE, deleteStatement);
@@ -255,7 +251,7 @@ public final class AttributeValueStore implements DataEntryStore {
                 return (long) briteDatabase.delete(TrackedEntityDataValueModel.TABLE,
                         TrackedEntityDataValueModel.Columns.DATA_ELEMENT + " = ? AND " +
                                 TrackedEntityDataValueModel.Columns.EVENT + " = ?",
-                        attribute == null ? "" : attribute, eventUid == null ? "" : eventUid);
+                        attribute, eventUid);
             else
                 return -1;
         }
@@ -296,7 +292,7 @@ public final class AttributeValueStore implements DataEntryStore {
 
     @NonNull
     private Flowable<Long> updateEnrollment(long status) {
-        return briteDatabase.createQuery(TrackedEntityInstanceModel.TABLE, SELECT_TEI, enrollment == null ? "" : enrollment)
+        return briteDatabase.createQuery(TrackedEntityInstanceModel.TABLE, SELECT_TEI, enrollment)
                 .mapToOne(TrackedEntityInstanceModel::create).take(1).toFlowable(BackpressureStrategy.LATEST)
                 .switchMap(tei -> {
                     if (State.SYNCED.equals(tei.state()) || State.TO_DELETE.equals(tei.state()) ||

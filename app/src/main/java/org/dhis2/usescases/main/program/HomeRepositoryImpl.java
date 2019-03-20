@@ -128,8 +128,6 @@ class HomeRepositoryImpl implements HomeRepository {
                         String filter = "";
                         if (!dateQuery.toString().isEmpty())
                             filter = dateQuery.toString() + " AND ";
-                        else if (!dateQuery.toString().isEmpty())
-                            filter = dateQuery.toString() + " AND ";
 
                         if (programType.equals(WITH_REGISTRATION.name())) {
                             queryFinal = String.format(SELECT_TEIS, filter);

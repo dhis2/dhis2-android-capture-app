@@ -30,8 +30,8 @@ public class CustomTextView extends RelativeLayout implements TextWatcher {
 
     private static boolean isBgTransparent;
     private EditText editText;
-    public static String label;
-    public static ValueType valueType;
+    private static String label;
+    private static ValueType valueType;
     private static ViewDataBinding binding;
 
     private TextChangedListener listener;

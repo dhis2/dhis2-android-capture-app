@@ -299,6 +299,7 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
         binding.userNameEdit.setAdapter(userAdapter);
     }
 
+    @SuppressWarnings("squid:S2583")
     @Override
     public void saveUsersData() {
         if (urls != null && !urls.contains(binding.serverUrlEdit.getText().toString())) {
