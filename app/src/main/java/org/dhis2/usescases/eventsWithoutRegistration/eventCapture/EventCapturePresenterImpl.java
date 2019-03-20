@@ -209,6 +209,10 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                             fieldMap.put(fieldViewModel.programStageSection(), new ArrayList<>());
                                         fieldMap.get(fieldViewModel.programStageSection()).add(fieldViewModel);
                                     }
+                                    if(fieldMap.containsKey(null))
+                                        for(FieldViewModel fieldViewModel : fieldMap.get(null))
+                                            fieldMap.get(section).add(fieldViewModel);
+
                                     List<FieldViewModel> fieldsToShow = fieldMap.get(section.equals("NO_SECTION") ? null : section);
                                     return fieldsToShow != null ? fieldsToShow : new ArrayList<FieldViewModel>();
                                 }))
@@ -224,7 +228,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     }
 
     private Flowable<List<FieldViewModel>> getFieldFlowable(@Nullable String sectionUid) {
-        if (isEmpty(sectionUid) || sectionUid.equals("NO_SECTION")) {
+        if (sectionUid == null || sectionUid.equals("NO_SECTION")) {
             return Flowable.zip(
                     eventCaptureRepository.list().subscribeOn(Schedulers.computation()),
                     eventCaptureRepository.calculate().subscribeOn(Schedulers.computation()),
@@ -259,7 +263,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                hasExpired -> this.hasExpired = hasExpired,
+                                hasExpiredResult -> this.hasExpired = hasExpiredResult,
                                 Timber::e
                         )
         );
@@ -368,7 +372,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         long currentTime = System.currentTimeMillis();
 
         if (calcResult.error() != null) {
-            calcResult.error().printStackTrace();
+            Timber.e(calcResult.error());
             return viewModels;
         }
 

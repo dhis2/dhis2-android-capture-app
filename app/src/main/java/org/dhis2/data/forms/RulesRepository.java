@@ -247,26 +247,26 @@ public final class RulesRepository {
 
     @NonNull
     public Flowable<List<RuleVariable>> ruleVariables(@NonNull String programUid) {
-        return briteDatabase.createQuery(ProgramRuleVariableModel.TABLE, QUERY_VARIABLES, programUid == null ? "" : programUid)
+        return briteDatabase.createQuery(ProgramRuleVariableModel.TABLE, QUERY_VARIABLES, programUid)
                 .mapToList(RulesRepository::mapToRuleVariable).toFlowable(BackpressureStrategy.LATEST);
     }
 
     @NonNull
     public Flowable<List<RuleVariable>> ruleVariablesProgramStages(@NonNull String programUid) {
-        return briteDatabase.createQuery(ProgramRuleVariableModel.TABLE, QUERY_VARIABLES, programUid == null ? "" : programUid)
+        return briteDatabase.createQuery(ProgramRuleVariableModel.TABLE, QUERY_VARIABLES, programUid)
                 .mapToList(RulesRepository::mapToRuleVariableProgramStages).toFlowable(BackpressureStrategy.LATEST);
     }
 
     @NonNull
     private Flowable<List<Quartet<String, String, Integer, String>>> queryRules(
             @NonNull String programUid) {
-        return briteDatabase.createQuery(ProgramRuleModel.TABLE, QUERY_RULES, programUid == null ? "" : programUid)
+        return briteDatabase.createQuery(ProgramRuleModel.TABLE, QUERY_RULES, programUid)
                 .mapToList(RulesRepository::mapToQuartet).toFlowable(BackpressureStrategy.LATEST);
     }
 
     @NonNull
     private Flowable<List<Pair<String, RuleAction>>> queryRuleActionsList(@NonNull String programUid) {
-        return briteDatabase.createQuery(ProgramRuleActionModel.TABLE, QUERY_ACTIONS, programUid == null ? "" : programUid)
+        return briteDatabase.createQuery(ProgramRuleActionModel.TABLE, QUERY_ACTIONS, programUid)
                 .mapToList(RulesRepository::mapToActionPairs).toFlowable(BackpressureStrategy.LATEST);
     }
 
@@ -350,9 +350,9 @@ public final class RulesRepository {
             mimeType = convertType(elementType);
         }
 
-        if (mimeType == null)
-//            throw new IllegalArgumentException(String.format("No ValueType was supplied attributeType=%s, elementType=%s, mimeTye =%s", attributeType, elementType, mimeType));
+        if (mimeType == null) {
             mimeType = RuleValueType.TEXT;
+        }
 
         switch (ProgramRuleVariableSourceType.valueOf(sourceType)) {
             case TEI_ATTRIBUTE:
@@ -396,9 +396,9 @@ public final class RulesRepository {
             mimeType = convertType(elementType);
         }
 
-        if (mimeType == null)
-//            throw new IllegalArgumentException(String.format("No ValueType was supplied attributeType=%s, elementType=%s, mimeTye =%s", attributeType, elementType, mimeType));
+        if (mimeType == null) {
             mimeType = RuleValueType.TEXT;
+        }
 
         switch (ProgramRuleVariableSourceType.valueOf(sourceType)) {
             case TEI_ATTRIBUTE:
@@ -459,6 +459,8 @@ public final class RulesRepository {
             attribute = "";
         }
 
+        String field = dataElement == null ? "" : dataElement;
+
         switch (actionType) {
             case DISPLAYTEXT:
                 return createDisplayTextAction(content, data, location);
@@ -466,35 +468,37 @@ public final class RulesRepository {
                 return createDisplayKeyValuePairAction(content, data, location);
             case HIDEFIELD:
                 return RuleActionHideField.create(content,
-                        isEmpty(attribute) ? dataElement : attribute);
+                        isEmpty(attribute) ? field : attribute);
             case HIDESECTION:
                 return RuleActionHideSection.create(section);
             case ASSIGN:
                 return RuleActionAssign.create(content, isEmpty(data) ? "" : data,
-                        isEmpty(attribute) ? dataElement : attribute);
+                        isEmpty(attribute) ? field : attribute);
             case SHOWWARNING:
                 return RuleActionShowWarning.create(content, data,
-                        isEmpty(attribute) ? dataElement : attribute);
+                        isEmpty(attribute) ? field : attribute);
             case WARNINGONCOMPLETE:
-                return RuleActionWarningOnCompletion.create(content, data, isEmpty(attribute) ? dataElement : attribute);
+                return RuleActionWarningOnCompletion.create(content, data,
+                        isEmpty(attribute) ? field : attribute);
             case SHOWERROR:
                 return RuleActionShowError.create(content, data,
-                        isEmpty(attribute) ? dataElement : attribute);
+                        isEmpty(attribute) ? field : attribute);
             case ERRORONCOMPLETE:
                 if (content == null)
                     content = "";
                 if (data == null)
                     data = "";
 
-                return RuleActionErrorOnCompletion.create(content, data, isEmpty(attribute) ? dataElement : attribute);
+                return RuleActionErrorOnCompletion.create(content, data,
+                        isEmpty(attribute) ? field : attribute);
             case CREATEEVENT:
                 return RuleActionCreateEvent.create(content, data, programStage);
             case HIDEPROGRAMSTAGE:
                 return RuleActionHideProgramStage.create(programStage);
             case SETMANDATORYFIELD:
-                return RuleActionSetMandatoryField.create(isEmpty(attribute) ? dataElement : attribute);
+                return RuleActionSetMandatoryField.create(isEmpty(attribute) ? field : attribute);
             case HIDEOPTION:
-                return RuleActionHideOption.create(content, isEmpty(attribute) ? dataElement : attribute, option);
+                return RuleActionHideOption.create(content, isEmpty(attribute) ? field : attribute, option);
             case HIDEOPTIONGROUP:
                 return RuleActionHideOptionGroup.create(content, optionGroup);
             default:
@@ -542,7 +546,9 @@ public final class RulesRepository {
                                             String orgUnit = cursor.getString(5);
                                             String orgUnitCode = getOrgUnitCode(orgUnit);
                                             String programStageName = cursor.getString(6);
-                                            RuleEvent.Status status = cursor.getString(2).equals("VISITED") ? RuleEvent.Status.ACTIVE : RuleEvent.Status.valueOf(cursor.getString(2)); //TODO: WHAT?
+                                            RuleEvent.Status status = cursor.getString(2).equals(RuleEvent.Status.VISITED.toString()) ?
+                                                    RuleEvent.Status.ACTIVE :
+                                                    RuleEvent.Status.valueOf(cursor.getString(2)); //TODO: WHAT?
 
                                             try (Cursor dataValueCursor = briteDatabase.query(QUERY_VALUES, eventUid)) {
                                                 if (dataValueCursor != null && dataValueCursor.moveToFirst()) {
@@ -590,7 +596,7 @@ public final class RulesRepository {
                     String orgUnit = cursor.getString(5);
                     String orgUnitCode = getOrgUnitCode(orgUnit);
                     String programStageName = cursor.getString(6);
-                    RuleEvent.Status status = cursor.getString(2).equals("VISITED") ? RuleEvent.Status.ACTIVE : RuleEvent.Status.valueOf(cursor.getString(2)); //TODO: WHAT?
+                    RuleEvent.Status status = cursor.getString(2).equals(RuleEvent.Status.VISITED.toString())? RuleEvent.Status.ACTIVE : RuleEvent.Status.valueOf(cursor.getString(2)); //TODO: WHAT?
 
                     try (Cursor dataValueCursor = briteDatabase.query(QUERY_VALUES, eventUid)) {
                         if (dataValueCursor != null && dataValueCursor.moveToFirst()) {

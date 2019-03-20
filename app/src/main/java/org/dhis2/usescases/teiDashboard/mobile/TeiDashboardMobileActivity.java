@@ -52,7 +52,7 @@ import me.toptas.fancyshowcase.FocusShape;
 public class TeiDashboardMobileActivity extends TeiDashboardActivity implements TeiDashboardContracts.View {
 
     ActivityDashboardMobileBinding binding;
-    public FragmentStatePagerAdapter adapter;
+    protected FragmentStatePagerAdapter adapter;
     private int orientation;
     private boolean changingProgram;
 

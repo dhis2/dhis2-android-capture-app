@@ -4,7 +4,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
-import android.util.Log;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
@@ -198,6 +197,9 @@ final class EnrollmentRepository implements DataEntryRepository {
         }
 
         ValueTypeDeviceRenderingModel fieldRendering = null;
+        if (uid == null) {
+            uid = "";
+        }
         try (Cursor rendering = briteDatabase.query("SELECT ValueTypeDeviceRendering.* FROM ValueTypeDeviceRendering " +
                 "JOIN ProgramTrackedEntityAttribute ON ProgramTrackedEntityAttribute.uid = ValueTypeDeviceRendering.uid WHERE ProgramTrackedEntityAttribute.trackedEntityAttribute = ?", uid)) {
             if (rendering != null && rendering.moveToFirst()) {
@@ -231,8 +233,9 @@ final class EnrollmentRepository implements DataEntryRepository {
                 ContentValues contentValues = dataValue.toContentValues();
                 contentValues.put(TrackedEntityAttributeValueModel.Columns.VALUE, content);
                 int row = briteDatabase.update(TrackedEntityAttributeValueModel.TABLE, contentValues, "trackedEntityAttribute = ?", field == null ? "" : field);
-                if (row == -1)
-                    Log.d(this.getClass().getSimpleName(), String.format("Error updating field %s", field == null ? "" : field));
+                if (row == -1) {
+                    Timber.d("Error updating field %s", field == null ? "" : field);
+                }
             }
         }
     }

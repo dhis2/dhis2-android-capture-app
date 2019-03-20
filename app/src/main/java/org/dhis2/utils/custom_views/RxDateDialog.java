@@ -16,9 +16,6 @@ import io.reactivex.disposables.CompositeDisposable;
  */
 
 public class RxDateDialog {
-    public static int BUTTON_POSSITIVE = AlertDialog.BUTTON_POSITIVE;
-    public static int BUTTON_NEGATIVE = AlertDialog.BUTTON_NEGATIVE;
-
     private final ActionTrigger<DateDialog> actionTrigger = ActionTrigger.create();
     private final CompositeDisposable compositeSubscription = new CompositeDisposable();
     private final ActivityGlobalAbstract activity;

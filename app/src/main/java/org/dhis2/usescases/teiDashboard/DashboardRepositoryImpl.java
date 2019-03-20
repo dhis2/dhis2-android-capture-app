@@ -431,7 +431,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     @Override
     public Observable<List<TrackedEntityAttributeValueModel>> getTEIAttributeValues(String programUid, String teiUid) {
         if (programUid != null)
-            return briteDatabase.createQuery(ATTRIBUTE_VALUES_TABLE, ATTRIBUTE_VALUES_QUERY, programUid == null ? "" : programUid, teiUid == null ? "" : teiUid)
+            return briteDatabase.createQuery(ATTRIBUTE_VALUES_TABLE, ATTRIBUTE_VALUES_QUERY, programUid, teiUid == null ? "" : teiUid)
                     .mapToList(cursor -> ValueUtils.transform(briteDatabase, cursor));
         else
             return briteDatabase.createQuery(ATTRIBUTE_VALUES_TABLE, ATTRIBUTE_VALUES_NO_PROGRAM_QUERY, teiUid == null ? "" : teiUid)
@@ -534,15 +534,15 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                 String userName = cursor.getString(0);
 
                 cursor1.moveToFirst();
-                String enrollmentUid = cursor1.getString(0);
+                String enrollmentUidAux = cursor1.getString(0);
 
                 SQLiteStatement insetNoteStatement = briteDatabase.getWritableDatabase()
                         .compileStatement(INSERT_NOTE);
 
 
                 sqLiteBind(insetNoteStatement, 1, codeGenerator.generate()); //enrollment
-                sqLiteBind(insetNoteStatement, 2, enrollmentUid == null ? "" : enrollmentUid); //enrollment
-                sqLiteBind(insetNoteStatement, 3, stringBooleanPair.val0() == null ? "" : stringBooleanPair.val0()); //value
+                sqLiteBind(insetNoteStatement, 2, enrollmentUidAux == null ? "" : enrollmentUidAux); //enrollment
+                sqLiteBind(insetNoteStatement, 3, stringBooleanPair.val0()); //value
                 sqLiteBind(insetNoteStatement, 4, userName == null ? "" : userName); //storeBy
                 sqLiteBind(insetNoteStatement, 5, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime())); //storeDate
 

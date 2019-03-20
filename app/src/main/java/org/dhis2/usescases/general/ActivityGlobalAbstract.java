@@ -27,7 +27,6 @@ import org.dhis2.usescases.login.LoginActivity;
 import org.dhis2.usescases.main.MainActivity;
 import org.dhis2.usescases.map.MapSelectorActivity;
 import org.dhis2.usescases.splash.SplashActivity;
-import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.OnDialogClickListener;
@@ -50,6 +49,7 @@ import androidx.core.widget.ContentLoadingProgressBar;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import rx.Observable;
 import rx.subjects.BehaviorSubject;
+import timber.log.Timber;
 
 /**
  * QUADRAM. Created by Javi on 28/07/2017.
@@ -59,22 +59,20 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
 
     private BehaviorSubject<Status> lifeCycleObservable = BehaviorSubject.create();
     private CoordinatesView coordinatesView;
-    public ContentLoadingProgressBar progressBar;
-    private FirebaseAnalytics mFirebaseAnalytics;
+    private ContentLoadingProgressBar progressBar;
+
+    public ContentLoadingProgressBar getProgressBar() {
+        return progressBar;
+    }
 
     private BroadcastReceiver syncReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.getAction() != null && intent.getAction().equals("action_sync")) {
-                if (intent.getExtras() != null) {
-                    if (progressBar != null)
-                        if (SyncUtils.isSyncRunning() && progressBar.getVisibility() == View.GONE)
-                            progressBar.setVisibility(View.VISIBLE);
-                        else if (!SyncUtils.isSyncRunning())
-                            progressBar.setVisibility(View.GONE);
-                }
-
-            }
+            if (intent.getAction() != null && intent.getAction().equals("action_sync") && intent.getExtras() != null && progressBar != null)
+                if (SyncUtils.isSyncRunning() && progressBar.getVisibility() == View.GONE)
+                    progressBar.setVisibility(View.VISIBLE);
+                else if (!SyncUtils.isSyncRunning())
+                    progressBar.setVisibility(View.GONE);
         }
     };
 
@@ -92,7 +90,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+        FirebaseAnalytics mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         if (!getResources().getBoolean(R.bool.is_tablet))
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
@@ -166,7 +164,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Timber.e(e);
         }
         popupMenu.getMenuInflater().inflate(R.menu.home_menu, popupMenu.getMenu());
         popupMenu.setOnMenuItemClickListener(item -> {
@@ -293,7 +291,6 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
             //TITLE
             final View titleView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_title, null);
             ((TextView) titleView.findViewById(R.id.dialogTitle)).setText(title);
-            int colorPrimary = ColorUtils.getPrimaryColor(getActivity(), ColorUtils.ColorType.PRIMARY);
             alertDialog.setCustomTitle(titleView);
 
             //BODY
@@ -323,13 +320,11 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case Constants.RQ_MAP_LOCATION_VIEW:
-                if (coordinatesView != null && resultCode == RESULT_OK && data.getExtras() != null) {
-                    coordinatesView.updateLocation(Double.valueOf(data.getStringExtra(MapSelectorActivity.LATITUDE)), Double.valueOf(data.getStringExtra(MapSelectorActivity.LONGITUDE)));
-                }
-                this.coordinatesView = null;
-                break;
+        if (requestCode == Constants.RQ_MAP_LOCATION_VIEW) {
+            if (coordinatesView != null && resultCode == RESULT_OK && data.getExtras() != null) {
+                coordinatesView.updateLocation(Double.valueOf(data.getStringExtra(MapSelectorActivity.LATITUDE)), Double.valueOf(data.getStringExtra(MapSelectorActivity.LONGITUDE)));
+            }
+            this.coordinatesView = null;
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
@@ -350,6 +345,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
     protected int getPrimaryColor() {
         return ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY);
     }
+
     protected int getAccentColor() {
         return ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.ACCENT);
     }

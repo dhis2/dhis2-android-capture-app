@@ -242,7 +242,7 @@ public class MetadataRepositoryImpl implements MetadataRepository {
             return getTeiOrgUnit(teiUid);
         else
             return briteDatabase
-                    .createQuery(TEI_ORG_UNIT_TABLES, ENROLLMENT_ORG_UNIT_QUERY, teiUid == null ? "" : teiUid, programUid)
+                    .createQuery(TEI_ORG_UNIT_TABLES, ENROLLMENT_ORG_UNIT_QUERY, teiUid, programUid)
                     .mapToOne(OrganisationUnitModel::create);
     }
 

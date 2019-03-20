@@ -7,6 +7,8 @@ import android.widget.PopupMenu;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+import timber.log.Timber;
+
 /**
  * QUADRAM. Created by ppajuelo on 22/11/2018.
  */
@@ -28,7 +30,7 @@ public class Utils {
                     }
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                Timber.e(e);
             }
         popupMenu.getMenuInflater().inflate(menu, popupMenu.getMenu());
         popupMenu.setOnMenuItemClickListener(listener);
