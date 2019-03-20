@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
+import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.rules.models.RuleActionDisplayKeyValuePair;
 import org.hisp.dhis.rules.models.RuleActionDisplayText;
@@ -20,7 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-
+import static com.google.common.truth.Truth.assertThat;
 
 
 /**
@@ -101,7 +102,7 @@ public class RulesUtilsProviderImplTest {
     private  void putFieldViewModel(){
         testFieldViewModels.put(testUid, fieldFactory.create(testUid, "label",
                 ValueType.TEXT, false, "optionSet", "test", "section",
-                null, true, null, null, null,null,null));
+                null, true, null, null, null,1, ObjectStyleModel.builder().build()));
     }
 
     @Test
@@ -155,7 +156,7 @@ public class RulesUtilsProviderImplTest {
 
         ruleUtils.applyRuleEffects(testFieldViewModels, ruleEffect, actionCallbacks);
 
-//        assertThat(testFieldViewModels).doesNotContainKey(testUid);
+        assertThat(testFieldViewModels).doesNotContainKey(testUid);
 
     }
 
@@ -172,7 +173,7 @@ public class RulesUtilsProviderImplTest {
 
         ruleUtils.applyRuleEffects(testFieldViewModels, ruleEffect, actionCallbacks);
 
-//        assertThat(testFieldViewModels).containsKey("content");
+        assertThat(testFieldViewModels).containsKey("content");
     }
 
     /*@Test

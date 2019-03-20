@@ -522,7 +522,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                     try (Cursor hideRulesCursor = briteDatabase.query("SELECT ProgramRule.* FROM ProgramRule " +
                                     "JOIN ProgramRuleAction ON ProgramRuleAction.programRule = ProgramRule.uid " +
                                     "WHERE ProgramRule.program = ? " +
-                                    "AND ProgramRuleAction.programRuleActionType IN (?,?,?,?,?)",
+                                    "AND ProgramRuleAction.programRuleActionType IN (?,?,?,?,?,?,?)",
                             selectedProgramUid.get(),
                             ProgramRuleActionType.HIDEFIELD.name(), ProgramRuleActionType.HIDESECTION.name(),
                             ProgramRuleActionType.ASSIGN.name(), ProgramRuleActionType.SHOWERROR.name(),
