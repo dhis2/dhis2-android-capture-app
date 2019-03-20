@@ -16,9 +16,6 @@ import io.reactivex.disposables.CompositeDisposable;
 
 @PerActivity
 public class RxDialog {
-    public static int BUTTON_POSSITIVE = AlertDialog.BUTTON_POSITIVE;
-    public static int BUTTON_NEGATIVE = AlertDialog.BUTTON_NEGATIVE;
-
     private final ActionTrigger<Dialog> actionTrigger = ActionTrigger.create();
     private final CompositeDisposable compositeSubscription = new CompositeDisposable();
     private final Activity activity;

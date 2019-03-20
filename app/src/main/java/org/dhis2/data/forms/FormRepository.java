@@ -16,6 +16,7 @@ import java.util.Date;
 import java.util.List;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
@@ -53,10 +54,10 @@ public interface FormRepository {
     @NonNull
     Consumer<ReportStatus> storeReportStatus();
 
-    @NonNull
+    @Nullable
     Observable<Trio<String, String, String>> useFirstStageDuringRegistration();
 
-    @NonNull
+    @Nullable
     Observable<String> autoGenerateEvents(String enrollmentUid);
 
     @NonNull

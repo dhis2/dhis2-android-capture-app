@@ -17,11 +17,11 @@ public class CodeGeneratorImpl implements CodeGenerator {
     private static final int NUMBER_OF_CODEPOINTS = ALLOWED_CHARS.length();
     private static final int CODESIZE = 11;
 
+    private Random sr = new Random();
+
     @NonNull
     @Override
     public String generate() {
-        Random sr = new Random();
-
         char[] randomChars = new char[CODESIZE];
 
         // First char should be a letter

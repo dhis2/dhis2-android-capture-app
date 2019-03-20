@@ -361,7 +361,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                 binding.actionButton.setVisibility(View.GONE);
 
         } else {
-            if(eventModel != null) {
+            if (eventModel != null) {
                 if (eventModel.status() == EventStatus.OVERDUE && enrollmentStatus == EnrollmentStatus.CANCELLED)
                     binding.actionButton.setVisibility(View.GONE);
             } else
@@ -986,7 +986,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Timber.e(e);
         }
         popupMenu.getMenuInflater().inflate(R.menu.event_menu, popupMenu.getMenu());
         popupMenu.setOnMenuItemClickListener(item -> {
@@ -996,6 +996,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                     break;
                 case R.id.menu_delete:
                     confirmDeleteEvent();
+                    break;
+                default:
                     break;
             }
             return false;
