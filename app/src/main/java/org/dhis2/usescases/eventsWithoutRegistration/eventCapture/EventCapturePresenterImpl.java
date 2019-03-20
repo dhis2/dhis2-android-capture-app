@@ -209,7 +209,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                             fieldMap.put(fieldViewModel.programStageSection(), new ArrayList<>());
                                         fieldMap.get(fieldViewModel.programStageSection()).add(fieldViewModel);
                                     }
-                                    if(fieldMap.containsKey(null))
+                                    if(fieldMap.containsKey(null) && fieldMap.containsKey(section))
                                         for(FieldViewModel fieldViewModel : fieldMap.get(null))
                                             fieldMap.get(section).add(fieldViewModel);
 
