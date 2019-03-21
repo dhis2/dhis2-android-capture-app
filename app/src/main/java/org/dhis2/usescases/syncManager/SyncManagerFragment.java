@@ -29,6 +29,7 @@ import org.dhis2.utils.Constants;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.SyncUtils;
 import org.hisp.dhis.android.core.maintenance.D2Error;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -83,7 +84,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction() != null && intent.getAction().equals("action_sync")) {
-                if (SyncUtils.isSyncRunning() && getAbstractActivity().progressBar.getVisibility() == View.VISIBLE) {
+                if (SyncUtils.isSyncRunning() && getAbstractActivity().getProgressBar().getVisibility() == View.VISIBLE) {
                     binding.buttonSyncData.setEnabled(false);
                     binding.buttonSyncMeta.setEnabled(false);
                 } else {
@@ -98,7 +99,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     };
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NotNull Context context) {
         super.onAttach(context);
         this.context = context;
         ((Components) context.getApplicationContext()).userComponent()

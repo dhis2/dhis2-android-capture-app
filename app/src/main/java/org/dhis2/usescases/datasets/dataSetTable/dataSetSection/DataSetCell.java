@@ -10,7 +10,7 @@ import org.dhis2.databinding.ItemDatasetCellBinding;
 
 public class DataSetCell extends AbstractViewHolder {
 
-    public ItemDatasetCellBinding binding;
+    protected ItemDatasetCellBinding binding;
 
     DataSetCell(ItemDatasetCellBinding binding) {
         super(binding.getRoot());

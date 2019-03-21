@@ -7,8 +7,6 @@ public class SyncContracts {
 
     public interface View extends AbstractActivityContracts.View{
 
-        ActivitySynchronizationBinding getBinding();
-
         void saveTheme(Integer themeId);
 
         void saveFlag(String s);

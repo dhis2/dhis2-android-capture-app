@@ -63,7 +63,7 @@ public class ProgramStageSelectionPresenter implements ProgramStageSelectionCont
 
     private List<ProgramStageModel> applyEffects(List<ProgramStageModel> stageModels, Result<RuleEffect> calcResult) {
         if (calcResult.error() != null) {
-            calcResult.error().printStackTrace();
+            Timber.e(calcResult.error());
             return stageModels;
         }
 

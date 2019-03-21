@@ -11,7 +11,6 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.schedulers.SchedulerProvider;
-import org.dhis2.utils.CodeGenerator;
 import org.hisp.dhis.android.core.D2;
 
 import androidx.annotation.NonNull;
@@ -67,13 +66,12 @@ public class DataEntryModule {
     @Provides
     @PerFragment
     DataEntryPresenter dataEntryPresenter(
-            @NonNull CodeGenerator codeGenerator,
             @NonNull SchedulerProvider schedulerProvider,
             @NonNull DataEntryStore dataEntryStore,
             @NonNull DataEntryRepository dataEntryRepository,
             @NonNull RuleEngineRepository ruleEngineRepository,
             @NonNull MetadataRepository metadataRepository) {
-        return new DataEntryPresenterImpl(codeGenerator, dataEntryStore,
+        return new DataEntryPresenterImpl(dataEntryStore,
                 dataEntryRepository, ruleEngineRepository, schedulerProvider, metadataRepository);
     }
 

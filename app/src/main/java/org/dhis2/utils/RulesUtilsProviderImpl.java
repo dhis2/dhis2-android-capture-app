@@ -136,13 +136,7 @@ public class RulesUtilsProviderImpl implements RulesUtilsProvider {
                 displayText.content(), false, ruleEffect.data(), "Information", 1,
                 ValueType.TEXT, null, false, null, null, ObjectStyleModel.builder().build());
 
-        if (this.currentFieldViewModels == null ||
-                !this.currentFieldViewModels.containsKey(uid)) {
-            fieldViewModels.put(uid, textViewModel);
-        } else if (this.currentFieldViewModels.containsKey(uid) &&
-                !Objects.equals(currentFieldViewModels.get(uid).value(), textViewModel.value())) {
-            fieldViewModels.put(uid, textViewModel);
-        }
+        fieldViewModels.put(uid, textViewModel);
     }
 
     private void displayKeyValuePair(RuleActionDisplayKeyValuePair displayKeyValuePair,
@@ -174,7 +168,7 @@ public class RulesUtilsProviderImpl implements RulesUtilsProvider {
                 rulesActionCallbacks.save(assign.field(), ruleEffect.data());
             }
 
-            fieldViewModels.put(assign.field(), fieldViewModels.get(assign.field()).withValue(ruleEffect.data()));
+            fieldViewModels.put(assign.field(), fieldViewModels.get(assign.field()).withValue(ruleEffect.data())).withEditMode(false);
 
         }
     }

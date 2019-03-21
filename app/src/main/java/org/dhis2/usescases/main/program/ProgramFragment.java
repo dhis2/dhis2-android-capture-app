@@ -26,6 +26,7 @@ import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.Period;
 import org.dhis2.utils.custom_views.RxDateDialog;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
+import org.jetbrains.annotations.NotNull;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -62,7 +63,7 @@ import static org.dhis2.utils.Period.YEARLY;
 
 public class ProgramFragment extends FragmentGlobalAbstract implements ProgramContract.View, OrgUnitInterface {
 
-    public FragmentProgramBinding binding;
+    private FragmentProgramBinding binding;
     @Inject
     ProgramContract.Presenter presenter;
 
@@ -75,21 +76,25 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
     private ArrayList<Date> chosenDateWeek = new ArrayList<>();
     private ArrayList<Date> chosenDateMonth = new ArrayList<>();
     private ArrayList<Date> chosenDateYear = new ArrayList<>();
-    SimpleDateFormat monthFormat = new SimpleDateFormat("MMM-yyyy", Locale.getDefault());
-    SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy", Locale.getDefault());
+    private SimpleDateFormat monthFormat = new SimpleDateFormat("MMM-yyyy", Locale.getDefault());
+    private SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy", Locale.getDefault());
     private TreeNode treeNode;
     private Context context;
 
+    public FragmentProgramBinding getBinding() {
+        return binding;
+    }
     //-------------------------------------------
     //region LIFECYCLE
 
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NotNull Context context) {
         super.onAttach(context);
         this.context = context;
-        ((Components) getActivity().getApplicationContext()).userComponent()
-                .plus(new ProgramModule()).inject(this);
+        if (getActivity() != null)
+            ((Components) getActivity().getApplicationContext()).userComponent()
+                    .plus(new ProgramModule()).inject(this);
     }
 
     @Nullable
@@ -165,7 +170,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
 
                         }
                         binding.buttonPeriodText.setText(textToShow);
-                        getSelectedPrograms((ArrayList<Date>) selectedDates, currentPeriod, orgUnitFilter.toString());
+                        presenter.updateDateFilter(DateUtils.getInstance().getDatePeriodListFor(selectedDates, currentPeriod));
 
                     } else {
                         ArrayList<Date> date = new ArrayList<>();
@@ -189,8 +194,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                                 break;
                         }
                         binding.buttonPeriodText.setText(text);
-                        getSelectedPrograms(date, currentPeriod, orgUnitFilter.toString());
-
+                        presenter.updateDateFilter(DateUtils.getInstance().getDatePeriodListFor(selectedDates, currentPeriod));
                     }
                 }, Timber::d);
             } else if (currentPeriod == DAILY) {
@@ -200,9 +204,9 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                 pickerDialog = new DatePickerDialog(context, (datePicker, year, monthOfYear, dayOfMonth) -> {
                     calendar.set(year, monthOfYear, dayOfMonth);
                     Date[] dates = DateUtils.getInstance().getDateFromDateAndPeriod(calendar.getTime(), currentPeriod);
-                    ArrayList<Date> day = new ArrayList<>();
-                    day.add(dates[0]);
-                    getSelectedPrograms(day, currentPeriod, orgUnitFilter.toString());
+                    ArrayList<Date> selectedDates = new ArrayList<>();
+                    selectedDates.add(dates[0]);
+                    presenter.updateDateFilter(DateUtils.getInstance().getDatePeriodListFor(selectedDates, currentPeriod));
                     binding.buttonPeriodText.setText(DateUtils.getInstance().formatDate(dates[0]));
                     chosenDateDay = dates[0];
                 }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
@@ -213,6 +217,10 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
 
     public Period getCurrentPeriod() {
         return currentPeriod;
+    }
+
+    public boolean areFiltersApplied(){
+        return presenter.areFiltersApplied();
     }
 
     @Override
@@ -244,12 +252,14 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                     drawable = ContextCompat.getDrawable(context, R.drawable.ic_view_none);
                     break;
             }
-            ((ProgramModelAdapter) binding.programRecycler.getAdapter()).setCurrentPeriod(currentPeriod);
+            if (binding.programRecycler.getAdapter() != null) {
+                ((ProgramModelAdapter) binding.programRecycler.getAdapter()).setCurrentPeriod(currentPeriod);
+            }
             binding.buttonTime.setImageDrawable(drawable);
 
             switch (currentPeriod) {
                 case NONE:
-                    getSelectedPrograms(null, currentPeriod, orgUnitFilter.toString());
+                    presenter.updateDateFilter(new ArrayList<>());
                     textToShow = getString(R.string.period);
                     break;
                 case DAILY:
@@ -258,7 +268,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                     if (!datesD.isEmpty())
                         textToShow = DateUtils.getInstance().formatDate(datesD.get(0));
                     if (!datesD.isEmpty() && datesD.size() > 1) textToShow += "... ";
-                    getSelectedPrograms(datesD, currentPeriod, orgUnitFilter.toString());
+                    presenter.updateDateFilter(DateUtils.getInstance().getDatePeriodListFor(datesD, currentPeriod));
                     break;
                 case WEEKLY:
                     if (!chosenDateWeek.isEmpty()) {
@@ -268,7 +278,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                     }
                     if (!chosenDateWeek.isEmpty() && chosenDateWeek.size() > 1)
                         textToShow += "... ";
-                    getSelectedPrograms(chosenDateWeek, currentPeriod, orgUnitFilter.toString());
+                    presenter.updateDateFilter(DateUtils.getInstance().getDatePeriodListFor(chosenDateWeek, currentPeriod));
                     break;
                 case MONTHLY:
                     if (!chosenDateMonth.isEmpty()) {
@@ -277,24 +287,23 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                     }
                     if (!chosenDateMonth.isEmpty() && chosenDateMonth.size() > 1)
                         textToShow += "... ";
-                    getSelectedPrograms(chosenDateMonth, currentPeriod, orgUnitFilter.toString());
+                    presenter.updateDateFilter(DateUtils.getInstance().getDatePeriodListFor(chosenDateMonth, currentPeriod));
                     break;
                 case YEARLY:
                     if (!chosenDateYear.isEmpty())
                         textToShow = yearFormat.format(chosenDateYear.get(0));
                     if (!chosenDateYear.isEmpty() && chosenDateYear.size() > 1)
                         textToShow += "... ";
-                    getSelectedPrograms(chosenDateYear, currentPeriod, orgUnitFilter.toString());
+                    presenter.updateDateFilter(DateUtils.getInstance().getDatePeriodListFor(chosenDateYear, currentPeriod));
                     break;
             }
-
 
             binding.buttonPeriodText.setText(textToShow);
         }
     }
 
 
-    @Override
+   /* @Override
     public void getSelectedPrograms(ArrayList<Date> dates, Period period, String orgUnitQuery) {
         if (dates != null)
             if (orgUnitQuery.isEmpty())
@@ -303,7 +312,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                 presenter.getProgramsOrgUnit(dates, period, orgUnitQuery);
         else
             presenter.getAllPrograms(orgUnitQuery);
-    }
+    }*/
 
     @Override
     public Consumer<List<ProgramViewModel>> swapProgramModelData() {
@@ -363,9 +372,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
             treeView.setDefaultNodeClickListener((node, value) -> {
                 if (isAdded()) {
                     if (treeView != null) {
-                        if (treeView.getSelected().size() == 1 && !node.isSelected()) {
-                            binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
-                        } else if (treeView.getSelected().size() > 1) {
+                        if ((treeView.getSelected().size() == 1 && !node.isSelected()) || treeView.getSelected().size() > 1) {
                             binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
                         }
                     }
@@ -433,13 +440,18 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                 binding.drawerLayout.closeDrawers();
                 binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
-                orgUnitFilter = new StringBuilder();
+                /*orgUnitFilter = new StringBuilder();
                 for (int i = 0; i < treeView.getSelected().size(); i++) {
                     orgUnitFilter.append("'");
                     orgUnitFilter.append(((OrganisationUnitModel) treeView.getSelected().get(i).getValue()).uid());
                     orgUnitFilter.append("'");
                     if (i < treeView.getSelected().size() - 1)
                         orgUnitFilter.append(", ");
+                }*/
+
+                List<String> orgUnitsUids = new ArrayList<>();
+                for (TreeNode treeNode : treeView.getSelected()) {
+                    orgUnitsUids.add(((OrganisationUnitModel) treeNode.getValue()).uid());
                 }
 
                 if (treeView.getSelected().size() == 1) {
@@ -448,25 +460,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                     binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
                 }
 
-                switch (currentPeriod) {
-                    case NONE:
-                        getSelectedPrograms(null, currentPeriod, orgUnitFilter.toString());
-                        break;
-                    case DAILY:
-                        ArrayList<Date> datesD = new ArrayList<>();
-                        datesD.add(chosenDateDay);
-                        getSelectedPrograms(datesD, currentPeriod, orgUnitFilter.toString());
-                        break;
-                    case WEEKLY:
-                        getSelectedPrograms(chosenDateWeek, currentPeriod, orgUnitFilter.toString());
-                        break;
-                    case MONTHLY:
-                        getSelectedPrograms(chosenDateMonth, currentPeriod, orgUnitFilter.toString());
-                        break;
-                    case YEARLY:
-                        getSelectedPrograms(chosenDateYear, currentPeriod, orgUnitFilter.toString());
-                        break;
-                }
+                presenter.updateOrgUnitFilter(orgUnitsUids);
                 ((ProgramModelAdapter) binding.programRecycler.getAdapter()).setCurrentPeriod(currentPeriod);
             } else {
                 displayMessage(getString(R.string.org_unit_selection_warning));
@@ -532,11 +526,12 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                             .dismissListener(new DismissListener() {
                                 @Override
                                 public void onDismiss(String id) {
+                                    // do nothing
                                 }
 
                                 @Override
                                 public void onSkipped(String id) {
-
+                                    // do nothing
                                 }
                             })
                             .build();
@@ -553,7 +548,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                     HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
 
                     if (!prefs.getBoolean("TUTO_SHOWN", false) && !BuildConfig.DEBUG) {
-                        HelpManager.getInstance().showHelp();/* getAbstractActivity().fancyShowCaseQueue.show();*/
+                        HelpManager.getInstance().showHelp();
                         prefs.edit().putBoolean("TUTO_SHOWN", true).apply();
                     }
 

@@ -1,19 +1,16 @@
 package org.dhis2.utils.custom_views;
 
 import android.content.Context;
-import androidx.databinding.DataBindingUtil;
-import androidx.databinding.ViewDataBinding;
-import androidx.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 
-import org.dhis2.R;
-import org.dhis2.usescases.main.program.OrgUnitHolder;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
+import org.dhis2.R;
+import org.dhis2.usescases.main.program.OrgUnitHolder;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 
 import java.util.ArrayList;
@@ -21,6 +18,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ViewDataBinding;
 import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
 
@@ -79,13 +79,8 @@ public class OrgUnitButton extends RelativeLayout {
     }
 
     private void setLayout() {
-        if (isBgTransparent)
-            binding = DataBindingUtil.inflate(inflater, R.layout.form_org_unit, this, true);
-        else
-            binding = DataBindingUtil.inflate(inflater, R.layout.form_org_unit, this, true);
-
+        binding = DataBindingUtil.inflate(inflater, R.layout.form_org_unit, this, true);
         button = findViewById(R.id.button_org_unit);
-
     }
 
     public Observable<AndroidTreeView> renderTree(@NonNull List<OrganisationUnitModel> myOrgs) {
@@ -120,7 +115,7 @@ public class OrgUnitButton extends RelativeLayout {
         //Separamos las orunits en listas por nivel
         for (OrganisationUnitModel orgs : allOrgs) {
             ArrayList<TreeNode> sublist = subLists.get(orgs.level());
-            TreeNode treeNode = new TreeNode(orgs).setViewHolder(new OrgUnitHolder(getContext(),true));
+            TreeNode treeNode = new TreeNode(orgs).setViewHolder(new OrgUnitHolder(getContext(), true));
             treeNode.setSelectable(orgs.path() != null);
             sublist.add(treeNode);
             subLists.put(orgs.level(), sublist);
@@ -151,10 +146,7 @@ public class OrgUnitButton extends RelativeLayout {
         treeView.expandAll();
 
         treeView.setDefaultNodeClickListener((node, value) -> {
-            if (treeView.getSelected().size() == 1 && !node.isSelected()) {
-                ((OrgUnitHolder) node.getViewHolder()).update();
-                button.setText(String.format("(%s) Org Unit", treeView.getSelected().size()));
-            } else if (treeView.getSelected().size() > 1) {
+            if ((treeView.getSelected().size() == 1 && !node.isSelected()) || treeView.getSelected().size() > 1) {
                 ((OrgUnitHolder) node.getViewHolder()).update();
                 button.setText(String.format("(%s) Org Unit", treeView.getSelected().size()));
             }
@@ -163,5 +155,4 @@ public class OrgUnitButton extends RelativeLayout {
         button.setText(String.format("(%s) Org Unit", treeView.getSelected().size()));
         return treeView;
     }
-
 }

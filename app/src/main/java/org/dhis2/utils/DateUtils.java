@@ -3,6 +3,7 @@ package org.dhis2.utils;
 import org.hisp.dhis.android.core.dataset.DataInputPeriodModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.period.DatePeriod;
 import org.hisp.dhis.android.core.period.PeriodType;
 
 import java.text.SimpleDateFormat;
@@ -1025,6 +1026,7 @@ public class DateUtils {
 
     }
 
+
     public Boolean isDataSetExpired(int expiredDays, Date periodInitialDate){
         return Calendar.getInstance().getTime().getTime() > periodInitialDate.getTime() + TimeUnit.DAYS.toMillis(expiredDays);
     }
@@ -1063,5 +1065,14 @@ public class DateUtils {
                 break;
         }
         return formattedDate;
+    }
+
+    public List<DatePeriod> getDatePeriodListFor(List<Date> selectedDates, Period period) {
+        List<DatePeriod> datePeriods = new ArrayList<>();
+        for (Date date : selectedDates) {
+            Date[] startEndDates = getDateFromDateAndPeriod(date, period);
+            datePeriods.add(DatePeriod.builder().startDate(startEndDates[0]).endDate(startEndDates[1]).build());
+        }
+        return datePeriods;
     }
 }

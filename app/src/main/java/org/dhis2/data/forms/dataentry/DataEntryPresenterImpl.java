@@ -7,7 +7,6 @@ import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.tuples.Trio;
-import org.dhis2.utils.CodeGenerator;
 import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.ValueType;
@@ -48,9 +47,6 @@ import timber.log.Timber;
 final class DataEntryPresenterImpl implements DataEntryPresenter {
 
     @NonNull
-    private final CodeGenerator codeGenerator;
-
-    @NonNull
     private final DataEntryStore dataEntryStore;
 
     @NonNull
@@ -73,13 +69,11 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
     private FlowableProcessor<RowAction> assignProcessor;
     private FlowableProcessor<Boolean> requestListProcessor;
 
-    DataEntryPresenterImpl(@NonNull CodeGenerator codeGenerator,
-                           @NonNull DataEntryStore dataEntryStore,
+    DataEntryPresenterImpl(@NonNull DataEntryStore dataEntryStore,
                            @NonNull DataEntryRepository dataEntryRepository,
                            @NonNull RuleEngineRepository ruleEngineRepository,
                            @NonNull SchedulerProvider schedulerProvider,
                            @NonNull MetadataRepository metadataRepository) {
-        this.codeGenerator = codeGenerator;
         this.dataEntryStore = dataEntryStore;
         this.dataEntryRepository = dataEntryRepository;
         this.ruleEngineRepository = ruleEngineRepository;
@@ -94,7 +88,6 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
     @Override
     public void onAttach(@NonNull DataEntryView dataEntryView) {
         this.dataEntryView = dataEntryView;
-//        Observable<List<FieldViewModel>> fieldsFlowable = dataEntryRepository.list().doOnNext(data -> Timber.d("NEW LIST OF DATA WITH SIZE %s", data.size()));
         Observable<List<FieldViewModel>> fieldsFlowable = Observable.defer(() -> Observable.just(dataEntryRepository.fieldList()).doOnNext(data -> Timber.d("NEW LIST OF DATA WITH SIZE %s", data.size())));
         Flowable<Result<RuleEffect>> ruleEffectFlowable = ruleEngineRepository.calculate().doOnNext(data -> Timber.d("NEW RULE CALCULATION"))
                 .onErrorReturn(throwable -> Result.failure(new Exception(throwable)));
@@ -153,7 +146,7 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
         disposable.add(
                 dataEntryView.optionSetActions()
                         .flatMap(
-                                data -> metadataRepository.searchOptions(data.val0(), data.val1(),data.val2(), optionsToHide, optionsGroupsToHide).toFlowable(BackpressureStrategy.LATEST)
+                                data -> metadataRepository.searchOptions(data.val0(), data.val1(), data.val2(), optionsToHide, optionsGroupsToHide).toFlowable(BackpressureStrategy.LATEST)
                         )
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
@@ -183,7 +176,7 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
             @NonNull List<FieldViewModel> viewModels,
             @NonNull Result<RuleEffect> calcResult) {
         if (calcResult.error() != null) {
-            calcResult.error().printStackTrace();
+            Timber.e(calcResult.error());
             return viewModels;
         }
 
@@ -248,8 +241,6 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
                 } else if (this.currentFieldViewModels.containsKey(uid) &&
                         !currentFieldViewModels.get(uid).value().equals(textViewModel.value())) {
                     fieldViewModels.put(uid, textViewModel);
-                } else {
-
                 }
             } else if (ruleAction instanceof RuleActionHideSection) {
                 RuleActionHideSection hideSection = (RuleActionHideSection) ruleAction;
@@ -288,7 +279,7 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
                 RuleActionHideOption hideOption = (RuleActionHideOption) ruleAction;
                 dataEntryStore.save(hideOption.field(), null);
                 optionsToHide.add(hideOption.field());
-            } else if (ruleAction instanceof RuleActionHideOptionGroup){
+            } else if (ruleAction instanceof RuleActionHideOptionGroup) {
                 RuleActionHideOptionGroup hideOptionGroup = (RuleActionHideOptionGroup) ruleAction;
                 optionsGroupsToHide.add(hideOptionGroup.optionGroup());
             }

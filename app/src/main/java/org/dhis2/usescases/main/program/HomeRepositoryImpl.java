@@ -1,89 +1,27 @@
 package org.dhis2.usescases.main.program;
 
-import android.database.Cursor;
-
 import com.squareup.sqlbrite2.BriteDatabase;
 
-import org.dhis2.utils.DateUtils;
-import org.dhis2.utils.Period;
 import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.android.core.common.ObjectStyleModel;
-import org.hisp.dhis.android.core.common.State;
-import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.enrollment.Enrollment;
+import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
+import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitProgramLinkModel;
-import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.period.DatePeriod;
 import org.hisp.dhis.android.core.user.UserOrganisationUnitLinkModel;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
-import java.util.Set;
 
 import androidx.annotation.NonNull;
-import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 
-import static android.text.TextUtils.isEmpty;
 import static org.hisp.dhis.android.core.program.ProgramType.WITHOUT_REGISTRATION;
 import static org.hisp.dhis.android.core.program.ProgramType.WITH_REGISTRATION;
 
 class HomeRepositoryImpl implements HomeRepository {
 
-    private final static String SELECT_EVENTS = "SELECT Event.* FROM Event " +
-            "WHERE %s " +
-            "Event.program = ? " +
-            "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'";
-
-    private final static String SELECT_TEIS = "SELECT Event.* FROM Event " +
-            "JOIN Enrollment ON Enrollment.uid = Event.enrollment " +
-            "WHERE %s " +
-            "Event.program = ? " +
-            "AND Event.state != 'TO_DELETE' " +
-            "GROUP BY Enrollment.trackedEntityInstance";
-
-    private final static String TRACKED_ENTITY_TYPE_NAME = "SELECT TrackedEntityType.displayName FROM TrackedEntityType " +
-            "WHERE TrackedEntityType.uid = ? LIMIT 1";
-
-    private final static String PROGRAM_MODELS = "SELECT " +
-            "Program.uid, " +
-            "Program.displayName, " +
-            "ObjectStyle.color, " +
-            "ObjectStyle.icon," +
-            "Program.programType," +
-            "Program.trackedEntityType," +
-            "Program.description," +
-            "'true' " +
-            "FROM Program LEFT JOIN ObjectStyle ON ObjectStyle.uid = Program.uid " +
-            "JOIN OrganisationUnitProgramLink ON OrganisationUnitProgramLink.program = Program.uid %s GROUP BY Program.uid " +
-            "UNION " +
-            "SELECT DataSet.uid, " +
-            "DataSet.displayName, " +
-            "null, " +
-            "null, " +
-            "'', " +
-            "'', " +
-            "DataSet.description, " +
-            "DataSet.accessDataWrite " +
-            "FROM DataSet " +
-            "JOIN DataSetOrganisationUnitLink ON DataSetOrganisationUnitLink.dataSet = DataSet.uid GROUP BY DataSet.uid ORDER BY Program.displayName ";
-
-    private final static String AGGREGATE_FROM_DATASET = "SELECT * FROM DataSetDataElementLink " +
-            "WHERE dataSet = ? ";
-
-    private static final String[] TABLE_NAMES = new String[]{ProgramModel.TABLE, ObjectStyleModel.TABLE, OrganisationUnitProgramLinkModel.TABLE};
-    private static final Set<String> TABLE_SET = new HashSet<>(Arrays.asList(TABLE_NAMES));
-
-    private final static String SELECT_ORG_UNITS =
-            "SELECT * FROM " + OrganisationUnitModel.TABLE + ", " + UserOrganisationUnitLinkModel.TABLE + " " +
-                    "WHERE " + OrganisationUnitModel.TABLE + "." + OrganisationUnitModel.Columns.UID + " = " + UserOrganisationUnitLinkModel.TABLE + "." + UserOrganisationUnitLinkModel.Columns.ORGANISATION_UNIT +
-                    " AND " + UserOrganisationUnitLinkModel.TABLE + "." + UserOrganisationUnitLinkModel.Columns.ORGANISATION_UNIT_SCOPE + " = '" + OrganisationUnitModel.Scope.SCOPE_DATA_CAPTURE +
-                    "' AND UserOrganisationUnit.root = '1' " +
-                    " ORDER BY " + OrganisationUnitModel.TABLE + "." + OrganisationUnitModel.Columns.DISPLAY_NAME + " ASC";
 
     private final BriteDatabase briteDatabase;
     private final D2 d2;
@@ -95,89 +33,83 @@ class HomeRepositoryImpl implements HomeRepository {
 
     @NonNull
     @Override
-    public Flowable<List<ProgramViewModel>> programModels(List<Date> dates, Period period, String orgUnitsId, int orgUnitsSize) {
+    public Flowable<List<ProgramViewModel>> programModels(List<DatePeriod> dateFilter, List<String> orgUnitFilter) {
 
-        //QUERYING Program - orgUnit filter
-        String orgQuery = "";
-        if (!isEmpty(orgUnitsId))
-            orgQuery = String.format("WHERE OrganisationUnitProgramLink.organisationUnit IN (%s)", orgUnitsId);
+        return Flowable.just(d2.programModule().programs)
+                .flatMap(programRepo -> {
+                    if (orgUnitFilter != null && !orgUnitFilter.isEmpty())
+                        return Flowable.fromIterable(programRepo.byOrganisationUnitList(orgUnitFilter).withObjectStyle().withAllChildren().get());
+                    else
+                        return Flowable.fromIterable(programRepo.withObjectStyle().withAllChildren().get());
+                })
+                .map(program -> {
 
-        String programQuery = PROGRAM_MODELS.replace("%s", orgQuery);
-
-        return briteDatabase.createQuery(TABLE_SET, programQuery)
-                .mapToList(cursor -> {
-                    String uid = cursor.getString(0);
-                    String displayName = cursor.getString(1);
-                    String color = cursor.getString(2);
-                    String icon = cursor.getString(3);
-                    String programType = cursor.getString(4);
-                    String teiType = cursor.getString(5);
-                    String description = cursor.getString(6);
-                    String accessDataWrite = Objects.equals(cursor.getString(7), "1") ? "true" : "false";
-                    //QUERYING Program EVENTS - dates filter
-                    String queryFinal;
-                    if (!programType.isEmpty()) {
-                        StringBuilder dateQuery = new StringBuilder("");
-                        if (dates != null && !dates.isEmpty()) {
-                            String queryFormat = "(%s BETWEEN '%s' AND '%s') ";
-                            for (int i = 0; i < dates.size(); i++) {
-                                Date[] datesToQuery = DateUtils.getInstance().getDateFromDateAndPeriod(dates.get(i), period);
-                                dateQuery.append(String.format(queryFormat, "Event.eventDate", DateUtils.databaseDateFormat().format(datesToQuery[0]), DateUtils.databaseDateFormat().format(datesToQuery[1])));
-                                if (i < dates.size() - 1)
-                                    dateQuery.append("OR ");
-                            }
-                        }
-
-                        String filter = "";
-                        if (!dateQuery.toString().isEmpty())
-                            filter = dateQuery.toString() + " AND ";
-                        else if (!dateQuery.toString().isEmpty())
-                            filter = dateQuery.toString() + " AND ";
-
-                        if (programType.equals(WITH_REGISTRATION.name())) {
-                            queryFinal = String.format(SELECT_TEIS, filter);
-                        } else {
-                            queryFinal = String.format(SELECT_EVENTS, filter);
-                        }
-                    } else {
-                        queryFinal = AGGREGATE_FROM_DATASET;
-                    }
+                    String typeName;
+                    if (program.programType() == WITH_REGISTRATION) {
+                        typeName = program.trackedEntityType() != null ? program.trackedEntityType().displayName() : "TEI";
+                        if (typeName == null)
+                            typeName = d2.trackedEntityModule().trackedEntityTypes.uid(program.trackedEntityType().uid()).get().displayName();
+                    } else if (program.programType() == WITHOUT_REGISTRATION)
+                        typeName = "Events";
+                    else
+                        typeName = "DataSets";
 
                     int count = 0;
-                    try (Cursor countCursor = briteDatabase.query(queryFinal, uid)) {
-                        if (countCursor != null && countCursor.moveToFirst()) {
-                            count = countCursor.getCount();
-                        }
+                    if (program.programType() == WITHOUT_REGISTRATION)
+                        if (!dateFilter.isEmpty())
+                            count = d2.eventModule().events.byProgramUid().eq(program.uid()).byEventDate().inDatePeriods(dateFilter).get().size();
+                        else
+                            count = d2.eventModule().events.byProgramUid().eq(program.uid()).get().size();
+                    else {
+                        if (!dateFilter.isEmpty()) {
+                            count = getEnrollmentCount(d2.eventModule().events
+                                    .byEnrollmentUid().in(
+                                            getEnrollmentsForProgram(program.uid())
+                                    )
+                                    .byEventDate().inDatePeriods(dateFilter)
+                                    .get());
+                        } else
+                            count = getEnrollmentCount(d2.eventModule().events
+                                    .byEnrollmentUid().in(
+                                            getEnrollmentsForProgram(program.uid())
+                                    )
+                                    .get());
                     }
 
-                    //QUERYING Tracker name
-                    String typeName = "";
-                    if (programType.equals(WITH_REGISTRATION.name())) {
-                        try (Cursor typeCursor = briteDatabase.query(TRACKED_ENTITY_TYPE_NAME, teiType)) {
-                            if (typeCursor != null && typeCursor.moveToFirst()) {
-                                typeName = typeCursor.getString(0);
-                            }
-                        }
-                    } else if (programType.equals(WITHOUT_REGISTRATION.name())) {
-                        typeName = "Events";
-                    } else {
-                        typeName = "DataSets";
-                    }
-
-                    return ProgramViewModel.create(uid, displayName, color, icon, count, teiType, typeName, programType, description, true, Boolean.valueOf(accessDataWrite));
-                }).map(list -> checkCount(list, period)).toFlowable(BackpressureStrategy.LATEST);
+                    return ProgramViewModel.create(
+                            program.uid(),
+                            program.displayName(),
+                            program.style() != null ? program.style().color() : null,
+                            program.style() != null ? program.style().icon() : null,
+                            count,
+                            program.trackedEntityType() != null ? program.trackedEntityType().uid() : null,
+                            typeName,
+                            program.programType() != null ? program.programType().name() : null,
+                            program.displayDescription(),
+                            true,
+                            true
+                    );
+                }).toList().toFlowable();
     }
 
-    private List<ProgramViewModel> checkCount(List<ProgramViewModel> list, Period period) {
-        if (period == null)
-            return list;
-        else {
-            List<ProgramViewModel> models = new ArrayList<>();
-            for (ProgramViewModel programViewModel : list)
-                if (programViewModel.count() > 0)
-                    models.add(programViewModel);
-            return models;
-        }
+    private List<String> getEnrollmentsForProgram(String programUid) {
+        List<Enrollment> enrollments = d2.enrollmentModule().enrollments.byProgram().eq(programUid)
+                .byStatus().eq(EnrollmentStatus.ACTIVE)
+                .get();
+
+        List<String> enrollmentsUid = new ArrayList<>();
+        for (Enrollment enrollment : enrollments)
+            enrollmentsUid.add(enrollment.uid());
+        return enrollmentsUid;
+    }
+
+    private int getEnrollmentCount(List<Event> events) {
+        List<String> enrollmentsUid = new ArrayList<>();
+        for (Event event : events)
+            if (!enrollmentsUid.contains(event.enrollment()))
+                enrollmentsUid.add(event.enrollment());
+
+        return enrollmentsUid.size();
     }
 
     @NonNull
@@ -192,9 +124,16 @@ class HomeRepositoryImpl implements HomeRepository {
                 .mapToList(OrganisationUnitModel::create);
     }
 
+
     @NonNull
     @Override
     public Observable<List<OrganisationUnitModel>> orgUnits() {
+        String SELECT_ORG_UNITS =
+                "SELECT * FROM " + OrganisationUnitModel.TABLE + ", " + UserOrganisationUnitLinkModel.TABLE + " " +
+                        "WHERE " + OrganisationUnitModel.TABLE + "." + OrganisationUnitModel.Columns.UID + " = " + UserOrganisationUnitLinkModel.TABLE + "." + UserOrganisationUnitLinkModel.Columns.ORGANISATION_UNIT +
+                        " AND " + UserOrganisationUnitLinkModel.TABLE + "." + UserOrganisationUnitLinkModel.Columns.ORGANISATION_UNIT_SCOPE + " = '" + OrganisationUnitModel.Scope.SCOPE_DATA_CAPTURE +
+                        "' AND UserOrganisationUnit.root = '1' " +
+                        " ORDER BY " + OrganisationUnitModel.TABLE + "." + OrganisationUnitModel.Columns.DISPLAY_NAME + " ASC";
         return briteDatabase.createQuery(OrganisationUnitModel.TABLE, SELECT_ORG_UNITS)
                 .mapToList(OrganisationUnitModel::create);
     }

@@ -8,10 +8,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
-import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
-import androidx.core.content.ContextCompat;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import android.util.TypedValue;
 
 import com.airbnb.lottie.LottieDrawable;
@@ -19,7 +16,6 @@ import com.airbnb.lottie.LottieDrawable;
 import org.dhis2.App;
 import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
-import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ActivitySynchronizationBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.main.MainActivity;
@@ -28,6 +24,10 @@ import org.dhis2.utils.Constants;
 import org.dhis2.utils.SyncUtils;
 
 import javax.inject.Inject;
+
+import androidx.core.content.ContextCompat;
+import androidx.databinding.DataBindingUtil;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 
 public class SyncActivity extends ActivityGlobalAbstract implements SyncContracts.View {
@@ -68,11 +68,6 @@ public class SyncActivity extends ActivityGlobalAbstract implements SyncContract
     }
 
     @Override
-    public ActivitySynchronizationBinding getBinding() {
-        return binding;
-    }
-
-    @Override
     protected void onStart() {
         super.onStart();
         if (binding.lottieView != null) {
@@ -100,8 +95,8 @@ public class SyncActivity extends ActivityGlobalAbstract implements SyncContract
     }
 
     public void handleSyncStatus() {
-        if (SyncUtils.isSyncRunning(Constants.DATA)) {
 
+        if (SyncUtils.isSyncRunning(Constants.DATA)) {
             binding.metadataText.setText(getString(R.string.configuration_ready));
             Bindings.setDrawableEnd(binding.metadataText, ContextCompat.getDrawable(this, R.drawable.animator_done));
             presenter.getTheme();
@@ -109,8 +104,23 @@ public class SyncActivity extends ActivityGlobalAbstract implements SyncContract
             Bindings.setDrawableEnd(binding.eventsText, ContextCompat.getDrawable(this, R.drawable.animator_sync));
             binding.eventsText.setAlpha(1.0f);
 
-        } else if (!SyncUtils.isSyncRunning(Constants.META)) {
-            presenter.syncMeta(getSharedPreferences().getInt(Constants.TIME_META, Constants.TIME_DAILY), Constants.META);
+        }
+    }
+
+    public void handleEndSync(Intent intent) {
+        if (!intent.getBooleanExtra("metaSyncInProgress", true)) {
+
+            binding.metadataText.setText(getString(R.string.configuration_ready));
+            Bindings.setDrawableEnd(binding.metadataText, ContextCompat.getDrawable(this, R.drawable.animator_done));
+            presenter.getTheme();
+            presenter.syncData(getSharedPreferences().getInt(Constants.TIME_DATA, Constants.TIME_DAILY), Constants.DATA);
+
+        } else if (!intent.getBooleanExtra("dataSyncInProgress", true)) {
+
+            binding.eventsText.setText(getString(R.string.data_ready));
+            Bindings.setDrawableEnd(binding.eventsText, ContextCompat.getDrawable(this, R.drawable.animator_done));
+            presenter.syncReservedValues();
+            startMain();
         }
     }
 
@@ -134,23 +144,6 @@ public class SyncActivity extends ActivityGlobalAbstract implements SyncContract
             binding.eventsText.setText(getString(R.string.syncing_data));
             Bindings.setDrawableEnd(binding.eventsText, ContextCompat.getDrawable(this, R.drawable.animator_sync));
             binding.eventsText.setAlpha(1.0f);
-        }
-    }
-
-    public void handleEndSync(Intent intent) {
-        if (!intent.getBooleanExtra("metaSyncInProgress", true)) {
-
-            binding.metadataText.setText(getString(R.string.configuration_ready));
-            Bindings.setDrawableEnd(binding.metadataText, ContextCompat.getDrawable(this, R.drawable.animator_done));
-            presenter.getTheme();
-            presenter.syncData(getSharedPreferences().getInt(Constants.TIME_DATA, Constants.TIME_DAILY), Constants.DATA);
-
-        } else if (!intent.getBooleanExtra("dataSyncInProgress", true)) {
-
-            binding.eventsText.setText(getString(R.string.data_ready));
-            Bindings.setDrawableEnd(binding.eventsText, ContextCompat.getDrawable(this, R.drawable.animator_done));
-            presenter.syncReservedValues();
-            startMain();
         }
     }
 

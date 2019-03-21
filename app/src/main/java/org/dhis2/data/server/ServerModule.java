@@ -30,6 +30,7 @@ import dagger.Module;
 import dagger.Provides;
 import okhttp3.CipherSuite;
 import okhttp3.ConnectionSpec;
+import okhttp3.Dispatcher;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.TlsVersion;
@@ -70,6 +71,8 @@ public class ServerModule {
                 org.dhis2.BuildConfig.VERSION_NAME, //App version
                 Build.VERSION.SDK_INT //Android Version
         );
+        Dispatcher dispatcher=new Dispatcher();
+        dispatcher.setMaxRequests(5);
         OkHttpClient.Builder client = new OkHttpClient.Builder()
                 .addInterceptor(authenticator)
                 .addInterceptor(chain -> {
@@ -82,12 +85,13 @@ public class ServerModule {
                 .readTimeout(2, TimeUnit.MINUTES)
                 .connectTimeout(2, TimeUnit.MINUTES)
                 .writeTimeout(2, TimeUnit.MINUTES)
-                .addNetworkInterceptor(new StethoInterceptor());
+                .addNetworkInterceptor(new StethoInterceptor())
+                .dispatcher(dispatcher);
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             try {
 
-                SSLContext sc = SSLContext.getInstance("TLS"/*"TLSv1.2"*/);
+                SSLContext sc = SSLContext.getInstance("TLSv1.2");
                 sc.init(null, null, null);
 
                 TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(
@@ -122,7 +126,6 @@ public class ServerModule {
             }
 
         }
-
         return client.build();
     }
 

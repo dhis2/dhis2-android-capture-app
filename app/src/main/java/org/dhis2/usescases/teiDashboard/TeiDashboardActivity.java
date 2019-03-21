@@ -7,6 +7,7 @@ import androidx.fragment.app.FragmentStatePagerAdapter;
 import org.dhis2.App;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -21,10 +22,10 @@ public class TeiDashboardActivity extends ActivityGlobalAbstract implements TeiD
     @Inject
     public TeiDashboardContracts.Presenter presenter;
 
-    public DashboardProgramModel programModel;
+    protected DashboardProgramModel programModel;
 
-    public String teiUid;
-    public String programUid;
+    protected String teiUid;
+    protected String programUid;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -40,7 +41,7 @@ public class TeiDashboardActivity extends ActivityGlobalAbstract implements TeiD
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(@NotNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString("UID", teiUid);
         outState.putString("PROGRAM_ID", programUid);
@@ -88,6 +89,6 @@ public class TeiDashboardActivity extends ActivityGlobalAbstract implements TeiD
 
     @Override
     public void showCatComboDialog(String eventId, String programStage, List<CategoryOptionComboModel> catComboOptions, String title) {
-
+        // nothing
     }
 }
