@@ -176,7 +176,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
         String catOptionCombName = "";
         CategoryOptionCombo categoryOptionCombo;
         if (!isEmpty(categoryOptionComboId)) {
-            categoryOptionCombo = d2.categoryModule().categoryOptionCombos.uid(categoryOptionComboId).getWithAllChildren();
+            categoryOptionCombo = d2.categoryModule().categoryOptionCombos.uid(categoryOptionComboId).get();
             if (!d2.categoryModule().categoryCombos.uid(categoryOptionCombo.categoryCombo().uid()).get().isDefault())
                 catOptionCombName = categoryOptionCombo.displayName();
         }
