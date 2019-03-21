@@ -17,7 +17,6 @@ import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.maintenance.D2Error;
-import org.hisp.dhis.android.core.maintenance.D2ErrorTableInfo;
 import org.hisp.dhis.android.core.option.OptionGroupOptionLinkTableInfo;
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.option.OptionSetModel;
@@ -426,9 +425,19 @@ public class MetadataRepositoryImpl implements MetadataRepository {
 
 
     @Override
-    public Observable<List<D2Error>> getSyncErrors() {
-        return briteDatabase.createQuery(D2ErrorTableInfo.TABLE_INFO.name(), "SELECT * FROM D2Error ORDER BY created DESC")
-                .mapToList(D2Error::create);
+    public List<D2Error> getSyncErrors() {
+        List<D2Error> d2Errors = new ArrayList<>();
+        try (Cursor cursor = briteDatabase.query("SELECT * FROM D2Error ORDER BY created DESC LIMIT 20")) {
+            if (cursor != null && cursor.moveToFirst()) {
+                for (int i = 0; i < cursor.getCount(); i++) {
+                    d2Errors.add(D2Error.create(cursor));
+                    cursor.moveToNext();
+                }
+            }
+        } catch (Exception e) {
+            Timber.e(e);
+        }
+        return d2Errors;
     }
 
     @Override

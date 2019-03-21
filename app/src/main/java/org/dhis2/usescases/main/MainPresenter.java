@@ -100,15 +100,7 @@ final class MainPresenter implements MainContracts.Presenter {
 
     @Override
     public void getErrors() {
-        compositeDisposable.add(
-                metadataRepository.getSyncErrors()
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                data -> view.showSyncErrors(data),
-                                Timber::e
-                        )
-        );
+        view.showSyncErrors(metadataRepository.getSyncErrors());
     }
 
     @Override

@@ -6,7 +6,6 @@ import android.os.Bundle;
 
 import com.unnamed.b.atv.model.TreeNode;
 
-import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity;
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity;
@@ -20,6 +19,7 @@ import org.hisp.dhis.android.core.period.DatePeriod;
 import org.hisp.dhis.android.core.program.ProgramType;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -144,29 +144,6 @@ public class ProgramPresenter implements ProgramContract.Presenter {
 
         bundle.putString(idTag, programModel.id());
 
-        switch (currentPeriod) {
-            case NONE:
-                bundle.putInt("CURRENT_PERIOD", R.string.period);
-                bundle.putSerializable("CHOOSEN_DATE", null);
-                break;
-            case DAILY:
-                bundle.putInt("CURRENT_PERIOD", R.string.DAILY);
-                bundle.putSerializable("CHOOSEN_DATE", view.getChosenDateDay());
-                break;
-            case WEEKLY:
-                bundle.putInt("CURRENT_PERIOD", R.string.WEEKLY);
-                bundle.putSerializable("CHOOSEN_DATE", view.getChosenDateWeek());
-                break;
-            case MONTHLY:
-                bundle.putInt("CURRENT_PERIOD", R.string.MONTHLY);
-                bundle.putSerializable("CHOOSEN_DATE", view.getChosenDateMonth());
-                break;
-            case YEARLY:
-                bundle.putInt("CURRENT_PERIOD", R.string.YEARLY);
-                bundle.putSerializable("CHOOSEN_DATE", view.getChosenDateYear());
-                break;
-        }
-
         int programTheme = ColorUtils.getThemeFromColor(programModel.color());
         SharedPreferences prefs = view.getAbstracContext().getSharedPreferences(
                 Constants.SHARE_PREFS, Context.MODE_PRIVATE);
@@ -178,7 +155,25 @@ public class ProgramPresenter implements ProgramContract.Presenter {
         if (programModel.programType().equals(ProgramType.WITH_REGISTRATION.name())) {
             view.startActivity(SearchTEActivity.class, bundle, false, false, null);
         } else if (programModel.programType().equals(ProgramType.WITHOUT_REGISTRATION.name())) {
-            view.startActivity(ProgramEventDetailActivity.class, bundle, false, false, null);
+            ArrayList<Date> dates = new ArrayList<>();
+            switch (currentPeriod) {
+                case DAILY:
+                    dates.add(view.getChosenDateDay());
+                    break;
+                case WEEKLY:
+                    dates.addAll(view.getChosenDateWeek());
+                    break;
+                case MONTHLY:
+                    dates.addAll(view.getChosenDateMonth());
+                    break;
+                case YEARLY:
+                    dates.addAll(view.getChosenDateYear());
+                    break;
+            }
+
+            view.startActivity(ProgramEventDetailActivity.class,
+                    ProgramEventDetailActivity.getBundle(programModel.id(), currentPeriod.name(), dates),
+                    false, false, null);
         } else {
             view.startActivity(DataSetDetailActivity.class, bundle, false, false, null);
         }

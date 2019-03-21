@@ -92,16 +92,26 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     private static PublishProcessor<Integer> pageProcessor;
     private EndlessRecyclerViewScrollListener endlessScrollListener;
 
+    public static Bundle getBundle(String programUid, String period, ArrayList<Date> dates) {
+        Bundle bundle = new Bundle();
+        bundle.putString("PROGRAM_UID", programUid);
+        bundle.putString("CURRENT_PERIOD", period);
+        bundle.putSerializable("DATES", dates);
+        return bundle;
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         ((App) getApplicationContext()).userComponent().plus(new ProgramEventDetailModule()).inject(this);
-
         super.onCreate(savedInstanceState);
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_program_event_detail);
+
+        currentPeriod = Period.valueOf(getIntent().getStringExtra("CURRENT_PERIOD"));
 
         chosenDateWeek.add(new Date());
         chosenDateMonth.add(new Date());
         chosenDateYear.add(new Date());
+
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_program_event_detail);
 
         programId = getIntent().getStringExtra("PROGRAM_UID");
         binding.setPresenter(presenter);

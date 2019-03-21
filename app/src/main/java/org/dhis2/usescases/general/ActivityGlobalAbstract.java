@@ -104,7 +104,8 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
             prefs.edit().remove(Constants.PROGRAM_THEME).apply();
         }
 
-        setTheme(prefs.getInt(Constants.PROGRAM_THEME, prefs.getInt(Constants.THEME, R.style.AppTheme)));
+        if (!(this instanceof SplashActivity))
+            setTheme(prefs.getInt(Constants.PROGRAM_THEME, prefs.getInt(Constants.THEME, R.style.AppTheme)));
 
         Crashlytics.setString(Constants.SERVER, prefs.getString(Constants.SERVER, null));
         String userName = prefs.getString(Constants.USER, null);
@@ -350,6 +351,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
     protected int getPrimaryColor() {
         return ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY);
     }
+
     protected int getAccentColor() {
         return ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.ACCENT);
     }
