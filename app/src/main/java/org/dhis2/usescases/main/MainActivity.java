@@ -142,7 +142,7 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
 
     @Override
     public void showHideFilter() {
-        programFragment.binding.filterLayout.setVisibility(programFragment.binding.filterLayout.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
+        programFragment.getBinding().filterLayout.setVisibility(programFragment.getBinding().filterLayout.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
         checkFilterEnabled();
     }
 
