@@ -81,7 +81,10 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
 
             if (date == null)
                 try {
-                    date = DateUtils.databaseDateFormatNoMillis().parse(data);
+                    if(DateUtils.dateHasNoSeconds(data))
+                        date = DateUtils.databaseDateFormatNoSeconds().parse(data);
+                    else
+                        date = DateUtils.databaseDateFormatNoMillis().parse(data);
                 } catch (ParseException e) {
                     Timber.e(e);
                 }
