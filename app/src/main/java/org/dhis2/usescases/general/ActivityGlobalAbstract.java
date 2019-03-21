@@ -27,6 +27,7 @@ import org.dhis2.usescases.login.LoginActivity;
 import org.dhis2.usescases.main.MainActivity;
 import org.dhis2.usescases.map.MapSelectorActivity;
 import org.dhis2.usescases.splash.SplashActivity;
+import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.OnDialogClickListener;
