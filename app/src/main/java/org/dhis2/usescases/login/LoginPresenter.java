@@ -17,13 +17,11 @@ import org.dhis2.usescases.main.MainActivity;
 import org.dhis2.usescases.qrScanner.QRActivity;
 import org.dhis2.utils.Constants;
 import org.hisp.dhis.android.core.maintenance.D2Error;
+import org.hisp.dhis.android.core.maintenance.D2ErrorCode;
 import org.hisp.dhis.android.core.systeminfo.SystemInfo;
-
-import java.io.IOException;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
-import androidx.databinding.ObservableField;
 import de.adorsys.android.securestoragelibrary.SecurePreferences;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -68,7 +66,7 @@ public class LoginPresenter implements LoginContracts.Presenter {
                         if (isUserLoggedIn && !prefs.getBoolean("SessionLocked", false)) {
                             view.startActivity(MainActivity.class, null, true, true, null);
                         } else if (prefs.getBoolean("SessionLocked", false)) {
-                            view.getBinding().unlockLayout.setVisibility(View.VISIBLE);
+                            view.showUnlockButton();
                         }
 
                     }, Timber::e));
@@ -201,35 +199,20 @@ public class LoginPresenter implements LoginContracts.Presenter {
 
     @Override
     public void handleResponse(@NonNull Response userResponse) {
-        Timber.d("Authentication response url: %s", userResponse.raw().request().url().toString());
-        Timber.d("Authentication response code: %s", userResponse.code());
         view.showLoginProgress(false);
         if (userResponse.isSuccessful()) {
             ((App) view.getContext().getApplicationContext()).createUserComponent();
             view.saveUsersData();
         }
-
     }
 
     @Override
     public void handleError(@NonNull Throwable throwable) {
         Timber.e(throwable);
-        if (throwable instanceof IOException) {
-            view.renderInvalidServerUrlError();
-        } else if (throwable instanceof D2Error) {
-            D2Error d2CallException = (D2Error) throwable;
-            switch (d2CallException.errorCode()) {
-                case ALREADY_AUTHENTICATED:
-                    handleResponse(Response.success(null));
-                    break;
-                default:
-                    view.renderError(d2CallException.errorCode(), d2CallException.errorDescription());
-                    break;
-            }
-        } else {
-            view.renderUnexpectedError();
-        }
-
+        if (throwable instanceof D2Error && ((D2Error) throwable).errorCode() == D2ErrorCode.ALREADY_AUTHENTICATED)
+            handleResponse(Response.success(null));
+        else
+            view.renderError(throwable);
         view.showLoginProgress(false);
     }
 

@@ -19,6 +19,7 @@ import org.dhis2.usescases.sync.SyncActivity;
 import org.dhis2.utils.BiometricStorage;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.D2ErrorUtils;
 import org.dhis2.utils.NetworkUtils;
 import org.dhis2.utils.OnDialogClickListener;
 import org.hisp.dhis.android.core.maintenance.D2ErrorCode;
@@ -148,48 +149,14 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
         binding.serverUrlEdit.setText(!isEmpty(qrUrl) ? qrUrl : url);
     }
 
-
     @Override
-    public ActivityLoginBinding getBinding() {
-        return binding;
+    public void showUnlockButton() {
+        binding.unlockLayout.setVisibility(View.VISIBLE);
     }
 
     @Override
-    public void renderError(D2ErrorCode errorCode, String defaultMessage) {
-        String message;
-        switch (errorCode) {
-            case LOGIN_PASSWORD_NULL:
-                message = getString(R.string.login_error_null_pass);
-                break;
-            case LOGIN_USERNAME_NULL:
-                message = getString(R.string.login_error_null_username);
-                break;
-            case INVALID_DHIS_VERSION:
-                message = getString(R.string.login_error_dhis_version_v2);
-                break;
-            case API_UNSUCCESSFUL_RESPONSE:
-                message = getString(R.string.login_error_unsuccessful_response);
-                break;
-            case API_RESPONSE_PROCESS_ERROR:
-                message = getString(R.string.login_error_error_response);
-                break;
-            default:
-                message = String.format("%s\n%s", getString(R.string.login_error_default), defaultMessage);
-                break;
-        }
-
-        showInfoDialog(getString(R.string.login_error), message);
-
-    }
-
-    @Override
-    public void renderInvalidServerUrlError() {
-        binding.serverUrl.setError(getResources().getString(R.string.error_wrong_server_url));
-    }
-
-    @Override
-    public void renderUnexpectedError() {
-        displayMessage(getResources().getString(R.string.error_unexpected_error));
+    public void renderError(Throwable throwable) {
+        showInfoDialog(getString(R.string.login_error), D2ErrorUtils.getErrorMessage(this,throwable));
     }
 
     @Override
