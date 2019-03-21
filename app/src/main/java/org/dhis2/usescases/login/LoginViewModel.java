@@ -2,6 +2,11 @@ package org.dhis2.usescases.login;
 
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.TestingCredential;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -19,6 +24,7 @@ public class LoginViewModel extends ViewModel {
     private MutableLiveData<String> password = new MutableLiveData<>();
     private MutableLiveData<Boolean> isDataComplete = new MutableLiveData<>();
     private MutableLiveData<Trio<String, String, String>> isTestingEnvironment = new MutableLiveData<>();
+    private Map<String, TestingCredential> testingCredentials;
 
     public LiveData<Boolean> isDataComplete() {
         return isDataComplete;
@@ -65,6 +71,20 @@ public class LoginViewModel extends ViewModel {
             case Constants.URL_TEST_230:
                 isTestingEnvironment.setValue(Trio.create(serverUrl, "android", "Android123"));
                 break;
+            default:
+                if (testingCredentials.containsKey(serverUrl) && testingCredentials.get(serverUrl) != null)
+                    isTestingEnvironment.setValue(
+                            Trio.create(serverUrl,
+                                    testingCredentials.get(serverUrl).getUser_name(),
+                                    testingCredentials.get(serverUrl).getUser_pass()));
+                break;
+        }
+    }
+
+    public void setTestingCredentials(List<TestingCredential> testingCredentials) {
+        this.testingCredentials = new HashMap<>();
+        for (TestingCredential testingCredential : testingCredentials) {
+            this.testingCredentials.put(testingCredential.getServer_url(), testingCredential);
         }
     }
 }
