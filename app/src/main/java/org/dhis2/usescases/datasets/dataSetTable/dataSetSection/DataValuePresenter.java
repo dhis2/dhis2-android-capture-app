@@ -331,15 +331,18 @@ public class DataValuePresenter implements DataValueContract.Presenter{
         Map<String, List<List<CategoryOptionModel>>> mapTransform = new HashMap<>();
         for (Map.Entry<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>> entry : map.entrySet()) {
             mapTransform.put(entry.getKey(), new ArrayList<>());
-            int repeat = 0;
+            int repeat = 1;
+            int nextCategory = 0;
             for (List<Pair<CategoryOptionModel, CategoryModel>> list : map.get(entry.getKey())) {
-                repeat++;
                 List<CategoryOptionModel> catOptions = new ArrayList<>();
                 for (int x = 0; x < repeat; x++) {
                     for (Pair<CategoryOptionModel, CategoryModel> pair : list) {
                         catOptions.add(pair.val0());
+                        nextCategory++;
                     }
                 }
+                repeat = nextCategory;
+                nextCategory = 0;
                 mapTransform.get(entry.getKey()).add(catOptions);
             }
 

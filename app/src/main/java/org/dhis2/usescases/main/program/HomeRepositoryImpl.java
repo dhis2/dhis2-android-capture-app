@@ -33,6 +33,29 @@ class HomeRepositoryImpl implements HomeRepository {
 
     @NonNull
     @Override
+    public Flowable<List<ProgramViewModel>> aggregatesModels(List<DatePeriod> dateFilter, List<String> orgUnitFilter) {
+        return Flowable.just(d2.dataSetModule().dataSets)
+                .flatMap(programRepo -> Flowable.fromIterable(programRepo.withAllChildren().get()))
+                .map(dataSet -> {
+                    int count = d2.dataSetModule().dataSets.byCategoryComboUid().like(dataSet.categoryCombo().uid()).count();
+
+                    return ProgramViewModel.create(
+                        dataSet.uid(),
+                        dataSet.displayName(),
+                        dataSet.style() != null ? dataSet.style().color() : null,
+                        dataSet.style() != null ? dataSet.style().icon() : null,
+                            count,
+                        null,
+                        "DataSets",
+                        "",
+                        dataSet.displayDescription(),
+                        true,
+                        dataSet.access().data().write());}
+                ).toList().toFlowable();
+    }
+
+    @NonNull
+    @Override
     public Flowable<List<ProgramViewModel>> programModels(List<DatePeriod> dateFilter, List<String> orgUnitFilter) {
 
         return Flowable.just(d2.programModule().programs)

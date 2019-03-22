@@ -80,23 +80,23 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
                     Cursor orgUnitCursor = briteDatabase.query("SELECT OrganisationUnit.displayName FROM OrganisationUnit WHERE uid = ?", organisationUnitUid);
                     if (orgUnitCursor != null && orgUnitCursor.moveToFirst()) {
                         orgUnitName = orgUnitCursor.getString(0);
-                        orgUnitCursor.close();
-                    }
 
+                    }
+                    orgUnitCursor.close();
                     Cursor periodCursor = briteDatabase.query("SELECT Period.* FROM Period WHERE Period.periodId = ?", period);
                     if (periodCursor != null && periodCursor.moveToFirst()) {
                         PeriodModel periodModel = PeriodModel.create(periodCursor);
                         periodType = periodModel.periodType().name();
                         periodName = DateUtils.getInstance().getPeriodUIString(periodModel.periodType(), periodModel.startDate(), Locale.getDefault());
-                        periodCursor.close();
-                    }
 
+                    }
+                    periodCursor.close();
                     Cursor catOptCombCursor = briteDatabase.query("SELECT CategoryOptionCombo.displayName FROM CategoryOptionCombo WHERE uid = ?", categoryOptionCombo);
                     if (catOptCombCursor != null && catOptCombCursor.moveToFirst()) {
                         catOptCombName = catOptCombCursor.getString(0);
-                        catOptCombCursor.close();
-                    }
 
+                    }
+                    catOptCombCursor.close();
                     Cursor stateCursor = briteDatabase.query("SELECT DataValue.state FROM DataValue " +
                                     "WHERE period = ? AND organisationUnit = ? AND attributeOptionCombo = ? " +
                                     "AND state != 'SYNCED'",
@@ -129,6 +129,8 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
                         else if (toPost != null)
                             state = toPost;
                     }
+                    if(!stateCursor.isClosed())
+                        stateCursor.close();
 
                     return DataSetDetailModel.create(organisationUnitUid, categoryOptionCombo, period, orgUnitName, catOptCombName, periodName, state, periodType);
                 }).toFlowable(BackpressureStrategy.LATEST);

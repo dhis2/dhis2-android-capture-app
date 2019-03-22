@@ -55,7 +55,7 @@ import static java.lang.String.valueOf;
 
 final class EditTextCellCustomHolder extends FormViewHolder {
 
-    private TextInputAutoCompleteTextView editText;
+    private EditText editText;
     private EditTextModel editTextModel;
     private boolean accessDataWrite;
     private CustomTextViewCellBinding customBinding;
