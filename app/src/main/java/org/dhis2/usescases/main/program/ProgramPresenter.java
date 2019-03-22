@@ -214,24 +214,4 @@ public class ProgramPresenter implements ProgramContract.Presenter {
         view.showDescription(description);
     }
 
-    private String orgUnitQuery() {
-        StringBuilder orgUnitFilter = new StringBuilder();
-        for (int i = 0; i < myOrgs.size(); i++) {
-            orgUnitFilter.append("'");
-            orgUnitFilter.append(myOrgs.get(i).uid());
-            orgUnitFilter.append("'");
-            if (i < myOrgs.size() - 1)
-                orgUnitFilter.append(", ");
-        }
-        view.setOrgUnitFilter(orgUnitFilter);
-        return orgUnitFilter.toString();
-    }
-
-    private List<String> orgUnitFilter() {
-        List<String> orgUnitsUids = new ArrayList<>();
-        for (OrganisationUnitModel orgUnit : myOrgs) {
-            orgUnitsUids.add(orgUnit.uid());
-        }
-        return orgUnitsUids;
-    }
 }

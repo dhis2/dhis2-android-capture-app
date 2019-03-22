@@ -19,6 +19,7 @@ import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.option.OptionGroupOptionLinkTableInfo;
 import org.hisp.dhis.android.core.option.OptionModel;
+import org.hisp.dhis.android.core.option.OptionModuleWiper;
 import org.hisp.dhis.android.core.option.OptionSetModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -36,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -446,10 +448,10 @@ public class MetadataRepositoryImpl implements MetadataRepository {
         String formattedOptionsToHide = "'" + join("','", optionsToHide) + "'";
         String formattedOptionGroupsToHide = "'" + join("','", optionsGroupsToHide) + "'";
 
-        String optionGroupQuery = "SELECT Option.* FROM Option " +
-                "JOIN OptionGroupOptionLink ON OptionGroupOptionLink.option = Option.uid  " +
-                "AND Option.optionSet = ? " +
-                "AND OptionGroupOptionLink.optionGroup NOT IN (" + formattedOptionGroupsToHide + ") " +
+        String optionGroupQuery = "SELECT Option.*, OptionGroupOptionLink.optionGroup FROM Option " +
+                "LEFT JOIN OptionGroupOptionLink ON OptionGroupOptionLink.option = Option.uid  " +
+                "WHERE Option.optionSet = ? " +
+                "AND (OptionGroupOptionLink.optionGroup IS NULL OR OptionGroupOptionLink.optionGroup NOT IN (" + formattedOptionGroupsToHide + ")) " +
                 "ORDER BY  Option.sortOrder ASC";
 
         return briteDatabase.createQuery(OptionGroupOptionLinkTableInfo.TABLE_INFO.name(), optionGroupQuery, idOptionSet)
@@ -469,6 +471,12 @@ public class MetadataRepositoryImpl implements MetadataRepository {
                         return briteDatabase.createQuery(OptionSetModel.TABLE, optionQuery, idOptionSet)
                                 .mapToList(OptionModel::create);
                     } else {
+                        Iterator<OptionModel> iterator = list.iterator();
+                        while (iterator.hasNext()) {
+                            OptionModel option = iterator.next();
+                            if (optionsToHide.contains(option.uid()))
+                                iterator.remove();
+                        }
                         return Observable.just(list);
                     }
                 });

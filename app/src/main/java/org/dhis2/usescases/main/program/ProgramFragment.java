@@ -296,17 +296,6 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
     }
 
 
-   /* @Override
-    public void getSelectedPrograms(ArrayList<Date> dates, Period period, String orgUnitQuery) {
-        if (dates != null)
-            if (orgUnitQuery.isEmpty())
-                presenter.getProgramsWithDates(dates, period);
-            else
-                presenter.getProgramsOrgUnit(dates, period, orgUnitQuery);
-        else
-            presenter.getAllPrograms(orgUnitQuery);
-    }*/
-
     @Override
     public Consumer<List<ProgramViewModel>> swapProgramModelData() {
         return programs -> {
@@ -435,23 +424,12 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                 binding.drawerLayout.closeDrawers();
                 binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
-                /*orgUnitFilter = new StringBuilder();
-                for (int i = 0; i < treeView.getSelected().size(); i++) {
-                    orgUnitFilter.append("'");
-                    orgUnitFilter.append(((OrganisationUnitModel) treeView.getSelected().get(i).getValue()).uid());
-                    orgUnitFilter.append("'");
-                    if (i < treeView.getSelected().size() - 1)
-                        orgUnitFilter.append(", ");
-                }*/
-
                 List<String> orgUnitsUids = new ArrayList<>();
                 for (TreeNode treeNode : treeView.getSelected()) {
                     orgUnitsUids.add(((OrganisationUnitModel) treeNode.getValue()).uid());
                 }
 
-                if (treeView.getSelected().size() == 1) {
-                    binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
-                } else if (treeView.getSelected().size() > 1) {
+                if (treeView.getSelected().size() >= 1) {
                     binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
                 }
 
