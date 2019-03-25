@@ -18,6 +18,12 @@ import dagger.Provides;
 public class ProgramEventDetailModule {
 
 
+    private final String programUid;
+
+    public ProgramEventDetailModule(String programUid) {
+        this.programUid = programUid;
+    }
+
     @Provides
     @PerActivity
     ProgramEventDetailContract.View provideView(ProgramEventDetailActivity activity) {
@@ -26,9 +32,10 @@ public class ProgramEventDetailModule {
 
     @Provides
     @PerActivity
-    ProgramEventDetailContract.Presenter providesPresenter(@NonNull ProgramEventDetailRepository programEventDetailRepository,
+    ProgramEventDetailContract.Presenter providesPresenter(
+                                                           @NonNull ProgramEventDetailRepository programEventDetailRepository,
                                                            @NonNull MetadataRepository metadataRepository) {
-        return new ProgramEventDetailPresenter(programEventDetailRepository, metadataRepository);
+        return new ProgramEventDetailPresenter(programUid,programEventDetailRepository, metadataRepository);
     }
 
     @Provides
@@ -39,7 +46,7 @@ public class ProgramEventDetailModule {
 
     @Provides
     @PerActivity
-    ProgramEventDetailRepository eventDetailRepository(BriteDatabase briteDatabase,D2 d2) {
-        return new ProgramEventDetailRepositoryImpl(briteDatabase,d2);
+    ProgramEventDetailRepository eventDetailRepository(BriteDatabase briteDatabase, D2 d2) {
+        return new ProgramEventDetailRepositoryImpl(programUid,briteDatabase, d2);
     }
 }

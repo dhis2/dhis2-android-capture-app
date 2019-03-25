@@ -12,7 +12,9 @@ import javax.inject.Inject
 import javax.inject.Named
 
 class SplashActivity : ActivityGlobalAbstract(), SplashContracts.View {
-
+    companion object {
+        const val FLAG = "FLAG"
+    }
 
     lateinit var binding: ActivitySplashBinding
 
@@ -20,24 +22,23 @@ class SplashActivity : ActivityGlobalAbstract(), SplashContracts.View {
     lateinit var presenter: SplashContracts.Presenter
 
     @Inject
-    @field:Named("FLAG")
+    @field:Named(FLAG)
     lateinit var flag: String
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(R.style.SplashTheme)
         val appComponent = (applicationContext as App).appComponent()
         val serverComponent = (applicationContext as App).serverComponent()
         appComponent.plus(SplashModule(serverComponent)).inject(this)
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_splash)
         renderFlag(flag)
-
     }
 
     override fun onResume() {
         super.onResume()
         presenter.init(this)
-
     }
 
     override fun onPause() {
@@ -56,4 +57,6 @@ class SplashActivity : ActivityGlobalAbstract(), SplashContracts.View {
             binding.flag.visibility = View.VISIBLE
         }
     }
+
+
 }

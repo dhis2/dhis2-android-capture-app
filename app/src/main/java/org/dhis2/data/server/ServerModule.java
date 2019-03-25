@@ -80,6 +80,7 @@ public class ServerModule {
                     Request withUserAgent = originalRequest.newBuilder()
                             .header("User-Agent", userAgent)
                             .build();
+                    Timber.d(originalRequest.url().encodedPath());
                     return chain.proceed(withUserAgent);
                 })
                 .readTimeout(2, TimeUnit.MINUTES)

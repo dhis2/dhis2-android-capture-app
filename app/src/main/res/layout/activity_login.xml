@@ -11,6 +11,10 @@
             name="presenter"
             type="org.dhis2.usescases.login.LoginContracts.Presenter" />
 
+        <variable
+            name="loginModel"
+            type="org.dhis2.usescases.login.LoginViewModel"/>
+
     </data>
 
     <RelativeLayout
@@ -90,7 +94,7 @@
                         android:layout_height="50dp"
                         android:imeOptions="actionNext"
                         android:inputType="textUri"
-                        android:onTextChanged="@{presenter::onServerChanged}"
+                        android:onTextChanged="@{loginModel::onServerChanged}"
                         android:padding="5dp"
                         android:text="@string/login_https"
                         android:textColor="@color/text_black_333"
@@ -116,7 +120,7 @@
                         android:layout_height="match_parent"
                         android:imeOptions="actionNext"
                         android:inputType="textPersonName"
-                        android:onTextChanged="@{presenter::onUserChanged}"
+                        android:onTextChanged="@{loginModel::onUserChanged}"
                         android:textColor="@color/text_black_333"
                         android:textSize="17sp" />
 
@@ -143,7 +147,7 @@
                         android:layout_height="match_parent"
                         android:imeOptions="actionDone"
                         android:inputType="textPassword"
-                        android:onTextChanged="@{presenter::onPassChanged}"
+                        android:onTextChanged="@{loginModel::onPassChanged}"
                         android:textColor="@color/text_black_333"
                         android:textSize="17sp" />
 
@@ -197,7 +201,7 @@
                 style="@style/FullWidthButton"
                 android:onClick="@{()-> presenter.onButtonClick()}"
                 android:text="@string/log_in_button"
-                android:visibility="@{presenter.isServerUrlSet &amp;&amp; presenter.isUserNameSet &amp;&amp; presenter.isUserPassSet ?View.VISIBLE:View.GONE, default = gone}" />
+                />
 
             <LinearLayout
                 android:id="@+id/unlock_layout"

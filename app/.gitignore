@@ -1,2 +1,3 @@
 /build
 /dhis_keystore.jks
+/src/main/res/raw/testing_credentials.json
