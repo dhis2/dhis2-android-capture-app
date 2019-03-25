@@ -77,6 +77,11 @@ public class IndicatorsFragment extends FragmentGlobalAbstract {
         };
     }
 
+    public void addIndicator(Trio<ProgramIndicatorModel, String, String> indicator){
+
+        getActivity().runOnUiThread(() -> adapter.addIndicator(indicator));
+    }
+
     public static Fragment createInstance() {
         return instance = new IndicatorsFragment();
     }
