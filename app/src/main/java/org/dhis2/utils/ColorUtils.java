@@ -40,7 +40,7 @@ public class ColorUtils {
 
         int colorToReturn = Color.BLACK;
 
-        if (hexColor != null) {
+        if (!isEmpty(hexColor)) {
             if (hexColor.length() == 4) {//Color is formatted as #fff
                 char r = hexColor.charAt(1);
                 char g = hexColor.charAt(2);
