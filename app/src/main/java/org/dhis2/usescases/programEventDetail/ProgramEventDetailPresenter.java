@@ -6,6 +6,7 @@ import com.unnamed.b.atv.model.TreeNode;
 
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.tuples.Pair;
+import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.utils.Constants;
@@ -15,6 +16,7 @@ import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
+import org.hisp.dhis.android.core.period.DatePeriod;
 import org.hisp.dhis.android.core.program.ProgramModel;
 
 import java.util.ArrayList;
@@ -23,6 +25,7 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -50,6 +53,9 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     private CategoryOptionComboModel categoryOptionComboModel;
     private List<OrganisationUnitModel> orgUnits = new ArrayList<>();
     private FlowableProcessor<Pair<TreeNode, String>> parentOrgUnit;
+    private FlowableProcessor<Pair<List<DatePeriod>, List<String>>> programQueries;
+    private List<DatePeriod> currentDateFilter;
+    private List<String> currentOrgUnitFilter;
 
     //Search fields
     private CategoryComboModel mCatCombo;
@@ -58,19 +64,38 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     private Period currentPeriod;
 
     ProgramEventDetailPresenter(
-            @NonNull ProgramEventDetailRepository programEventDetailRepository,
+            @NonNull String programUid, @NonNull ProgramEventDetailRepository programEventDetailRepository,
             @NonNull MetadataRepository metadataRepository) {
         this.eventRepository = programEventDetailRepository;
         this.metaRepository = metadataRepository;
+        this.programId = programUid;
     }
 
     @Override
-    public void init(ProgramEventDetailContract.View mview, String programId, Period period) {
+    public void init(ProgramEventDetailContract.View mview, Period period) {
         view = mview;
         compositeDisposable = new CompositeDisposable();
-        this.programId = programId;
         this.currentPeriod = period;
+        this.currentOrgUnitFilter = new ArrayList<>();
+        this.currentDateFilter = new ArrayList<>();
+        programQueries = PublishProcessor.create();
         parentOrgUnit = PublishProcessor.create();
+
+        /*Flowable<Trio<List<DatePeriod>, List<String>, Integer>> queryFlowable = Flowable.zip(
+                view.currentPage(),
+                programQueries,
+                (page, pair) -> Trio.create(pair.val0(), pair.val1(), page)
+        );
+
+        compositeDisposable.add(
+                queryFlowable.startWith(Trio.create(currentDateFilter, currentOrgUnitFilter, 0))
+                        .flatMap(datePeriodOrgsPage -> eventRepository.filteredProgramEvents(datePeriodOrgsPage.val0(), datePeriodOrgsPage.val1(), datePeriodOrgsPage.val2()))
+                        .subscribeOn(Schedulers.computation())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                view::setData,
+                                throwable -> view.renderError(throwable.getMessage())
+                        ));*/
 
         compositeDisposable.add(metaRepository.getProgramWithId(programId)
                 .subscribeOn(Schedulers.io())
@@ -119,6 +144,18 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(catComboOptions -> view.setCatComboOptions(mCatCombo, catComboOptions), Timber::d)
         );
+    }
+
+    @Override
+    public void updateDateFilter(List<DatePeriod> datePeriodList) {
+        this.currentDateFilter = datePeriodList;
+        programQueries.onNext(Pair.create(currentDateFilter, currentOrgUnitFilter));
+    }
+
+    @Override
+    public void updateOrgUnitFilter(List<String> orgUnitList) {
+        this.currentOrgUnitFilter = orgUnitList;
+        programQueries.onNext(Pair.create(currentDateFilter, currentOrgUnitFilter));
     }
 
     @Override

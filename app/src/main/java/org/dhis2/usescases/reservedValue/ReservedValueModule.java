@@ -9,6 +9,7 @@ import org.hisp.dhis.android.core.D2;
 
 import dagger.Module;
 import dagger.Provides;
+
 @Module
 public class ReservedValueModule {
 
@@ -20,15 +21,19 @@ public class ReservedValueModule {
 
     @PerActivity
     @Provides
-    ReservedValueContracts.View provideView(ReservedValueActivity activity){return activity;}
-
-    @PerActivity
-    @Provides
-    ReservedValueContracts.Presenter providePresenter(ReservedValueRepository repository, D2 d2){
-        return new ReservedValuePresenter(repository,d2);
+    ReservedValueContracts.View provideView(ReservedValueActivity activity) {
+        return activity;
     }
 
     @PerActivity
     @Provides
-    ReservedValueRepository provideRepository(BriteDatabase briteDatabase){ return new ReservedValueRepositoryImpl(briteDatabase);}
+    ReservedValueContracts.Presenter providePresenter(ReservedValueRepository repository, D2 d2) {
+        return new ReservedValuePresenter(repository, d2);
+    }
+
+    @PerActivity
+    @Provides
+    ReservedValueRepository provideRepository(BriteDatabase briteDatabase, D2 d2) {
+        return new ReservedValueRepositoryImpl(briteDatabase, d2);
+    }
 }

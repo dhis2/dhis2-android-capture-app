@@ -27,6 +27,7 @@ class SplashActivity : ActivityGlobalAbstract(), SplashContracts.View {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(R.style.SplashTheme)
         val appComponent = (applicationContext as App).appComponent()
         val serverComponent = (applicationContext as App).serverComponent()
         appComponent.plus(SplashModule(serverComponent)).inject(this)

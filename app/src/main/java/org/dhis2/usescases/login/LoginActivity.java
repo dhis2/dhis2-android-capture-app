@@ -79,7 +79,7 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login);
         binding.setPresenter(presenter);
         binding.setLoginModel(loginViewModel);
-
+        setLoginVisibility(false);
         loginViewModel.isDataComplete().observe(this, this::setLoginVisibility);
         loginViewModel.isTestingEnvironment().observe(this, testingEnvironment -> {
             binding.serverUrlEdit.setText(testingEnvironment.val0());
@@ -105,7 +105,8 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
             } catch (Exception e) {
                 Timber.e(e);
             }
-            testingCredentials = new Gson().fromJson(writer.toString(), new TypeToken<List<TestingCredential>>(){}.getType());
+            testingCredentials = new Gson().fromJson(writer.toString(), new TypeToken<List<TestingCredential>>() {
+            }.getType());
             loginViewModel.setTestingCredentials(testingCredentials);
         }
     }
@@ -128,24 +129,6 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
     protected void onDestroy() {
         ((App) getApplicationContext()).releaseLoginComponent();
         super.onDestroy();
-    }
-
-    @Override
-    public void showBiometricButton() {
-        binding.biometricButton.setVisibility(View.VISIBLE);
-    }
-
-    @Override
-    public void checkSecuredCredentials() {
-        if (SecurePreferences.contains(Constants.SECURE_SERVER_URL) &&
-                SecurePreferences.contains(Constants.SECURE_USER_NAME) &&
-                SecurePreferences.contains(Constants.SECURE_PASS)) {
-            binding.serverUrlEdit.setText(SecurePreferences.getStringValue(Constants.SECURE_SERVER_URL, null));
-            binding.userNameEdit.setText(SecurePreferences.getStringValue(Constants.SECURE_USER_NAME, null));
-            binding.userPassEdit.setText(SecurePreferences.getStringValue(Constants.SECURE_PASS, null));
-            showLoginProgress(true);
-        } else
-            showInfoDialog(getString(R.string.biometrics_dialog_title), getString(R.string.biometrics_first_use_text));
     }
 
     @Override
@@ -280,8 +263,8 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
         if (!users.contains(Constants.USER_TEST_ANDROID))
             users.add(Constants.USER_TEST_ANDROID);
 
-        for(TestingCredential testingCredential : testingCredentials){
-            if(!urls.contains(testingCredential.getServer_url()))
+        for (TestingCredential testingCredential : testingCredentials) {
+            if (!urls.contains(testingCredential.getServer_url()))
                 urls.add(testingCredential.getServer_url());
         }
 
@@ -362,6 +345,26 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
             qrUrl = data.getStringExtra(Constants.EXTRA_DATA);
         }
     }
+
+    //region FingerPrint
+    @Override
+    public void showBiometricButton() {
+        binding.biometricButton.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void checkSecuredCredentials() {
+        if (SecurePreferences.contains(Constants.SECURE_SERVER_URL) &&
+                SecurePreferences.contains(Constants.SECURE_USER_NAME) &&
+                SecurePreferences.contains(Constants.SECURE_PASS)) {
+            binding.serverUrlEdit.setText(SecurePreferences.getStringValue(Constants.SECURE_SERVER_URL, null));
+            binding.userNameEdit.setText(SecurePreferences.getStringValue(Constants.SECURE_USER_NAME, null));
+            binding.userPassEdit.setText(SecurePreferences.getStringValue(Constants.SECURE_PASS, null));
+            showLoginProgress(true);
+        } else
+            showInfoDialog(getString(R.string.biometrics_dialog_title), getString(R.string.biometrics_first_use_text));
+    }
+    //endregion
 
 
 }

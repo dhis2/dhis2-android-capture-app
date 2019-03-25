@@ -16,6 +16,7 @@ import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ErrorDialogBinding;
 import org.hisp.dhis.android.core.maintenance.D2Error;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -37,23 +38,15 @@ import timber.log.Timber;
 
 public class ErrorDialog extends DialogFragment {
 
-    private static ErrorDialog instace;
     private String title;
-    private List<D2Error> data;
+    private List<D2Error> data = new ArrayList<>();
     private DividerItemDecoration divider;
-    public static String TAG = "FullScreenDialog";
+    public static String TAG = "ERROR_DIALOG";
     private String shareTitle;
     private String shareMessageTitle;
     private ObservableBoolean sharing = new ObservableBoolean(false);
     private CompositeDisposable disposable;
     private ObservableArrayList<D2Error> shareData;
-
-    public static ErrorDialog newInstace() {
-        if (instace == null) {
-            instace = new ErrorDialog();
-        }
-        return instace;
-    }
 
     public ErrorDialog setData(List<D2Error> data) {
         this.data = data;
@@ -143,7 +136,6 @@ public class ErrorDialog extends DialogFragment {
     @Override
     public void dismiss() {
         disposable.clear();
-        instace = null;
         super.dismiss();
     }
 

@@ -216,6 +216,12 @@ public class LoginPresenter implements LoginContracts.Presenter {
         view.showLoginProgress(false);
     }
 
+    //region FINGERPRINT
+    @Override
+    public Boolean canHandleBiometrics() {
+        return canHandleBiometrics;
+    }
+
     @Override
     public void onFingerprintClick() {
         disposable.add(
@@ -234,10 +240,8 @@ public class LoginPresenter implements LoginContracts.Presenter {
                                 error -> view.displayMessage("AUTH ERROR")));
     }
 
-    @Override
-    public Boolean canHandleBiometrics() {
-        return canHandleBiometrics;
-    }
+
+    //endregion
 
 
 }

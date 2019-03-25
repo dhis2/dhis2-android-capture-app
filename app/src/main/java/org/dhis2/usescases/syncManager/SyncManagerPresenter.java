@@ -21,7 +21,6 @@ import androidx.work.ExistingWorkPolicy;
 import androidx.work.NetworkType;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.PeriodicWorkRequest;
-import androidx.work.WorkContinuation;
 import androidx.work.WorkManager;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -72,7 +71,8 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
      * This method allows you to create a new periodic DATA sync work with an interval defined by
      * {@code seconds}.
      * All scheduled works will be cancelled in order to reschedule a new one.
-     * @param seconds period interval in seconds
+     *
+     * @param seconds     period interval in seconds
      * @param scheduleTag Name of the periodic work (DATA)
      */
     @Override
@@ -91,7 +91,8 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
      * This method allows you to create a new periodic METADATA sync work with an interval defined by
      * {@code seconds}.
      * All scheduled works will be cancelled in order to reschedule a new one.
-     * @param seconds period interval in seconds
+     *
+     * @param seconds     period interval in seconds
      * @param scheduleTag Name of the periodic work (META)
      */
     @Override
@@ -210,16 +211,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
 
     @Override
     public void checkSyncErrors() {
-        compositeDisposable.add(
-                metadataRepository.getSyncErrors()
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                data -> view.showSyncErrors(data),
-                                Timber::e
-
-                        )
-        );
+        view.showSyncErrors(metadataRepository.getSyncErrors());
     }
 
     @Override
