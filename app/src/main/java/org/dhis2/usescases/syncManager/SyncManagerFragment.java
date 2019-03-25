@@ -439,8 +439,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
     @Override
     public void showSyncErrors(List<D2Error> data) {
-        if (!ErrorDialog.newInstace().isAdded())
-            ErrorDialog.newInstace().setData(data).show(getChildFragmentManager().beginTransaction(), "ErrorDialog");
+        new ErrorDialog().setData(data).show(getChildFragmentManager().beginTransaction(), ErrorDialog.TAG);
     }
 
     @Override

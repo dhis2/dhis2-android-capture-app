@@ -227,8 +227,7 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
 
     @Override
     public void showSyncErrors(List<D2Error> data) {
-        if (!ErrorDialog.newInstace().isAdded())
-            ErrorDialog.newInstace().setData(data).show(getSupportFragmentManager().beginTransaction(), "ErrorDialog");
+        new ErrorDialog().setData(data).show(getSupportFragmentManager().beginTransaction(), ErrorDialog.TAG);
     }
 
     public void setTitle(String title) {

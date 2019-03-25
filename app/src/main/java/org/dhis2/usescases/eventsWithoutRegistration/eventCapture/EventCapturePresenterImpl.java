@@ -247,7 +247,11 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                     eventCaptureRepository.calculate().subscribeOn(Schedulers.computation()),
                     this::applyEffects)
                     .map(fields -> {
-                        emptyMandatoryFields = new HashMap<>();
+                        //Clear all sections fields from map
+                        for (Map.Entry<String, FieldViewModel> entry : emptyMandatoryFields.entrySet()) {
+                            if (entry.getValue().programStageSection().equals(sectionUid))
+                                emptyMandatoryFields.remove(entry.getKey());
+                        }
                         for (FieldViewModel fieldViewModel : fields) {
                             if (fieldViewModel.mandatory() && isEmpty(fieldViewModel.value()))
                                 emptyMandatoryFields.put(fieldViewModel.uid(), fieldViewModel);
@@ -377,6 +381,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         }
 
         //Reset effects
+        optionsToHide.clear();
+        optionsGroupsToHide.clear();
         sectionsToHide.clear();
         completeMessage = null;
         canComplete = true;
