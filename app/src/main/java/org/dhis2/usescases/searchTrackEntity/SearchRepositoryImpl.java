@@ -448,27 +448,36 @@ public class SearchRepositoryImpl implements SearchRepository {
     }
 
     private void setAttributesInfo(SearchTeiModel tei, ProgramModel selectedProgram) {
-        Cursor attributes;
         if (selectedProgram == null) {
             String id = tei != null && tei.getTei() != null && tei.getTei().uid() != null ? tei.getTei().uid() : "";
-            attributes = briteDatabase.query(PROGRAM_TRACKED_ENTITY_ATTRIBUTES_VALUES_QUERY,
-                    id);
+            try (Cursor attributes = briteDatabase.query(PROGRAM_TRACKED_ENTITY_ATTRIBUTES_VALUES_QUERY,
+                    id)) {
+                if (attributes != null) {
+                    attributes.moveToFirst();
+                    for (int i = 0; i < attributes.getCount(); i++) {
+                        if (tei != null)
+                            tei.addAttributeValues(ValueUtils.transform(briteDatabase, attributes));
+                        attributes.moveToNext();
+                    }
+                }
+            }
         } else {
             String teiId = tei != null && tei.getTei() != null && tei.getTei().uid() != null ? tei.getTei().uid() : "";
             String progId = selectedProgram.uid() != null ? selectedProgram.uid() : "";
-            attributes = briteDatabase.query(PROGRAM_TRACKED_ENTITY_ATTRIBUTES_VALUES_PROGRAM_QUERY,
+            try (Cursor attributes = briteDatabase.query(PROGRAM_TRACKED_ENTITY_ATTRIBUTES_VALUES_PROGRAM_QUERY,
                     progId,
-                    teiId);
-        }
-        if (attributes != null) {
-            attributes.moveToFirst();
-            for (int i = 0; i < attributes.getCount(); i++) {
-                if (tei != null)
-                    tei.addAttributeValues(ValueUtils.transform(briteDatabase, attributes));
-                attributes.moveToNext();
+                    teiId)) {
+                if (attributes != null) {
+                    attributes.moveToFirst();
+                    for (int i = 0; i < attributes.getCount(); i++) {
+                        if (tei != null)
+                            tei.addAttributeValues(ValueUtils.transform(briteDatabase, attributes));
+                        attributes.moveToNext();
+                    }
+                }
             }
-            attributes.close();
         }
+
     }
 
 
@@ -479,23 +488,24 @@ public class SearchRepositoryImpl implements SearchRepository {
                 "WHERE TrackedEntityInstance.uid = ? AND Event.status = ?";
 
         String overdueProgram = " AND Enrollment.program = ?";
-        Cursor hasOverdueCursor;
         if (selectedProgram == null) {
-            String teiId = tei != null && tei.getTei() != null && tei.getTei().uid() != null ? tei.getTei().uid() : "";
-            hasOverdueCursor = briteDatabase.query(overdueQuery,
-                    teiId, EventStatus.SKIPPED.name());
+            String teiId = tei.getTei() != null && tei.getTei().uid() != null ? tei.getTei().uid() : "";
+            try (Cursor hasOverdueCursor = briteDatabase.query(overdueQuery,
+                    teiId, EventStatus.SKIPPED.name())) {
+                if (hasOverdueCursor != null && hasOverdueCursor.moveToNext()) {
+                    tei.setHasOverdue(true);
+                }
+            }
         } else {
-            String teiId = tei != null && tei.getTei() != null && tei.getTei().uid() != null ? tei.getTei().uid() : "";
+            String teiId = tei.getTei() != null && tei.getTei().uid() != null ? tei.getTei().uid() : "";
             String progId = selectedProgram.uid() != null ? selectedProgram.uid() : "";
-            hasOverdueCursor = briteDatabase.query(overdueQuery + overdueProgram,
-                    teiId,
-                    EventStatus.SKIPPED.name(),
-                    progId);
-        }
-        if (hasOverdueCursor != null && hasOverdueCursor.moveToNext()) {
-            if (tei != null)
-                tei.setHasOverdue(true);
-            hasOverdueCursor.close();
+            try (Cursor hasOverdueCursor = briteDatabase.query(overdueQuery + overdueProgram, teiId,
+                    EventStatus.SKIPPED.name(), progId)) {
+                if (hasOverdueCursor != null && hasOverdueCursor.moveToNext()) {
+                    tei.setHasOverdue(true);
+                }
+
+            }
         }
     }
 
@@ -507,6 +517,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                 return cursor.getString(0);
             }
         }
+
         return null;
     }
 

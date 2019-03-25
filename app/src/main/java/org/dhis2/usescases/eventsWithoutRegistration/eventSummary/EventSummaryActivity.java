@@ -244,7 +244,7 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
             String completionText = completedSectionFields + "/" + totalSectionFields;
             ((TextView) sectionView.findViewById(R.id.section_percent)).setText(completionText);
             sectionView.findViewById(R.id.completed_progress)
-                    .setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT, totalSectionFields - completedSectionFields));
+                    .setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT, (float) totalSectionFields - (float) completedSectionFields));
             sectionView.findViewById(R.id.empty_progress)
                     .setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT, completedSectionFields));
 

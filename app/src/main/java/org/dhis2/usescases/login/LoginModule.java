@@ -1,9 +1,7 @@
 package org.dhis2.usescases.login;
 
 import org.dhis2.data.dagger.PerActivity;
-import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.server.ConfigurationRepository;
-import org.hisp.dhis.android.core.D2;
 
 import dagger.Module;
 import dagger.Provides;
@@ -18,9 +16,8 @@ public class LoginModule {
 
     @Provides
     @PerActivity
-    LoginContracts.Presenter providePresenter(ConfigurationRepository configurationRepository,
-                                              MetadataRepository metadataRepository) {
-        return new LoginPresenter(configurationRepository, metadataRepository);
+    LoginContracts.Presenter providePresenter(ConfigurationRepository configurationRepository) {
+        return new LoginPresenter(configurationRepository);
     }
 
 

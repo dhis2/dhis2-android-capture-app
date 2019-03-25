@@ -11,7 +11,6 @@ import com.github.pwittchen.rxbiometric.library.validation.RxPreconditions;
 
 import org.dhis2.App;
 import org.dhis2.R;
-import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.server.ConfigurationRepository;
 import org.dhis2.data.server.UserManager;
 import org.dhis2.usescases.main.MainActivity;
@@ -39,7 +38,6 @@ import timber.log.Timber;
 public class LoginPresenter implements LoginContracts.Presenter {
 
     private final ConfigurationRepository configurationRepository;
-    private final MetadataRepository metadataRepository;
     private LoginContracts.View view;
 
     private UserManager userManager;
@@ -48,14 +46,13 @@ public class LoginPresenter implements LoginContracts.Presenter {
     private ObservableField<Boolean> isServerUrlSet = new ObservableField<>(false);
     private ObservableField<Boolean> isUserNameSet = new ObservableField<>(false);
     private ObservableField<Boolean> isUserPassSet = new ObservableField<>(false);
-    private boolean testingSet;
     private Boolean canHandleBiometrics;
 
-    LoginPresenter(ConfigurationRepository configurationRepository, MetadataRepository metadataRepository) {
+    LoginPresenter(ConfigurationRepository configurationRepository) {
         this.configurationRepository = configurationRepository;
-        this.metadataRepository = metadataRepository;
     }
 
+    @SuppressWarnings("squid:S2583")
     @Override
     public void init(LoginContracts.View view) {
         this.view = view;
@@ -81,8 +78,8 @@ public class LoginPresenter implements LoginContracts.Presenter {
                     }, Timber::e));
 
             disposable.add(
-                    Observable.just(userManager.getD2().systemInfoModule().systemInfo.getWithAllChildren() != null ?
-                            userManager.getD2().systemInfoModule().systemInfo.getWithAllChildren() : SystemInfo.builder().build())
+                    Observable.just(userManager.getD2().systemInfoModule().systemInfo.get() != null ?
+                            userManager.getD2().systemInfoModule().systemInfo.get() : SystemInfo.builder().build())
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(
@@ -100,14 +97,14 @@ public class LoginPresenter implements LoginContracts.Presenter {
         if (false && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) //TODO: REMOVE FALSE WHEN GREEN LIGHT
             disposable.add(RxPreconditions
                     .hasBiometricSupport(view.getContext())
-                    .filter(canHandleBiometrics -> {
+                    .filter(canHandleBiometricsResult -> {
                         this.canHandleBiometrics = canHandleBiometrics;
                         return canHandleBiometrics && SecurePreferences.contains(Constants.SECURE_SERVER_URL);
                     })
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
-                            canHandleBiometrics -> view.showBiometricButton(),
+                            canHandleBiometricsResult2 -> view.showBiometricButton(),
                             Timber::e));
 
 
@@ -115,7 +112,7 @@ public class LoginPresenter implements LoginContracts.Presenter {
 
     @Override
     public void onServerChanged(CharSequence s, int start, int before, int count) {
-        testingSet = false;
+        boolean testingSet = false;
         isServerUrlSet.set(!view.getBinding().serverUrl.getEditText().getText().toString().isEmpty());
         view.resetCredentials(false, true, true);
 
@@ -165,12 +162,12 @@ public class LoginPresenter implements LoginContracts.Presenter {
         disposable.add(
                 configurationRepository.configure(baseUrl)
                         .map(config -> ((App) view.getAbstractActivity().getApplicationContext()).createServerComponent(config).userManager())
-                        .switchMap(userManager -> {
+                        .switchMap(userManagerResult -> {
                             SharedPreferences prefs = view.getAbstractActivity().getSharedPreferences(
                                     Constants.SHARE_PREFS, Context.MODE_PRIVATE);
                             prefs.edit().putString(Constants.SERVER, serverUrl).apply();
-                            this.userManager = userManager;
-                            return userManager.logIn(userName.trim(), pass).map(user -> {
+                            this.userManager = userManagerResult;
+                            return userManagerResult.logIn(userName.trim(), pass).map(user -> {
                                 if (user == null)
                                     return Response.error(404, ResponseBody.create(MediaType.parse("text"), "NOT FOUND"));
                                 else {

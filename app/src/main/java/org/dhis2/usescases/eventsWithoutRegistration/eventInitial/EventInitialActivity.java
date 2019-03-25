@@ -361,7 +361,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                 binding.actionButton.setVisibility(View.GONE);
 
         } else {
-            if(eventModel != null) {
+            if (eventModel != null) {
                 if (eventModel.status() == EventStatus.OVERDUE && enrollmentStatus == EnrollmentStatus.CANCELLED)
                     binding.actionButton.setVisibility(View.GONE);
             } else
@@ -587,18 +587,11 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     }
 
     private void startFormActivity(String eventUid) {
-
-//        if (enrollmentUid == null)+
         Intent intent = new Intent(this, EventCaptureActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT);
         intent.putExtras(EventCaptureActivity.getActivityBundle(eventUid, programUid));
         startActivity(intent);
         finish();
-       /* else {
-            FormViewArguments formViewArguments = FormViewArguments.createForEvent(eventUid);
-            startActivity(FormActivity.create(getAbstractActivity(), formViewArguments, false));
-            finish();
-        }*/
     }
 
     @Override
@@ -986,7 +979,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Timber.e(e);
         }
         popupMenu.getMenuInflater().inflate(R.menu.event_menu, popupMenu.getMenu());
         popupMenu.setOnMenuItemClickListener(item -> {
@@ -996,6 +989,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                     break;
                 case R.id.menu_delete:
                     confirmDeleteEvent();
+                    break;
+                default:
                     break;
             }
             return false;

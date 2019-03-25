@@ -8,6 +8,7 @@ import androidx.databinding.ObservableBoolean;
 import androidx.annotation.NonNull;
 
 import com.evrencoskun.tableview.TableView;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import androidx.core.content.ContextCompat;
 
@@ -71,6 +72,18 @@ final class EditTextCellCustomHolder extends FormViewHolder {
         customBinding = binding;
         this.tableView = tableView;
         this.processor = processor;
+
+        customBinding.inputEditText.setOnFocusChangeListener((v, hasFocus) -> {
+            if(hasFocus) {
+                //tableView.scrollToColumnPosition(editTextModel.column(), 200);
+                tableView.setSelectedCell(editTextModel.column(), editTextModel.row());
+            }
+            if(editTextModel != null && editTextModel.editable() && !editText.getText().toString().equals(editTextModel.value())) {
+                if (!isEmpty(editText.getText()) && validate())
+                    processor.onNext(RowAction.create(editTextModel.uid(), editText.getText().toString(), editTextModel.dataElement(), editTextModel.listCategoryOption(), editTextModel.catCombo(), editTextModel.row(), editTextModel.column()));
+
+            }
+        });
     }
 
 
@@ -98,19 +111,6 @@ final class EditTextCellCustomHolder extends FormViewHolder {
             customBinding.inputEditText.setEnabled(false);
             customBinding.inputEditText.setBackgroundColor(ContextCompat.getColor(editText.getContext(), R.color.bg_black_e6e));
         }
-
-        customBinding.inputEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            if(hasFocus) {
-                //tableView.scrollToColumnPosition(editTextModel.column(), 200);
-                tableView.setSelectedCell(editTextModel.column(), editTextModel.row());
-            }
-            if(editTextModel != null && editTextModel.editable() && !editText.getText().toString().equals(editTextModel.value())) {
-                if (!isEmpty(editText.getText()) && validate())
-                    processor.onNext(RowAction.create(editTextModel.uid(), editText.getText().toString(), editTextModel.dataElement(), editTextModel.listCategoryOption(), editTextModel.catCombo(), editTextModel.row(), editTextModel.column()));
-                else
-                    processor.onNext(RowAction.create(editTextModel.uid(), null, editTextModel.dataElement(), editTextModel.listCategoryOption(),editTextModel.catCombo(),editTextModel.row(), editTextModel.column()));
-            }
-        });
 
         customBinding.executePendingBindings();
     }
