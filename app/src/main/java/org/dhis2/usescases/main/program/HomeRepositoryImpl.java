@@ -3,14 +3,10 @@ package org.dhis2.usescases.main.program;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.android.core.enrollment.Enrollment;
-import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
-import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.period.DatePeriod;
 import org.hisp.dhis.android.core.user.UserOrganisationUnitLinkModel;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -57,23 +53,14 @@ class HomeRepositoryImpl implements HomeRepository {
                     int count = 0;
                     if (program.programType() == WITHOUT_REGISTRATION)
                         if (!dateFilter.isEmpty())
-                            count = d2.eventModule().events.byProgramUid().eq(program.uid()).byEventDate().inDatePeriods(dateFilter).get().size();
+                            count = d2.eventModule().events.byProgramUid().eq(program.uid()).byEventDate().inDatePeriods(dateFilter).count();
                         else
-                            count = d2.eventModule().events.byProgramUid().eq(program.uid()).get().size();
+                            count = d2.eventModule().events.byProgramUid().eq(program.uid()).count();
                     else {
                         if (!dateFilter.isEmpty()) {
-                            count = getEnrollmentCount(d2.eventModule().events
-                                    .byEnrollmentUid().in(
-                                            getEnrollmentsForProgram(program.uid())
-                                    )
-                                    .byEventDate().inDatePeriods(dateFilter)
-                                    .get());
+                            count = d2.eventModule().events.byProgramUid().eq(program.uid()).byEventDate().inDatePeriods(dateFilter).countTrackedEntityInstances();
                         } else
-                            count = getEnrollmentCount(d2.eventModule().events
-                                    .byEnrollmentUid().in(
-                                            getEnrollmentsForProgram(program.uid())
-                                    )
-                                    .get());
+                            count = d2.eventModule().events.byProgramUid().eq(program.uid()).countTrackedEntityInstances();
                     }
 
                     return ProgramViewModel.create(
@@ -90,26 +77,6 @@ class HomeRepositoryImpl implements HomeRepository {
                             true
                     );
                 }).toList().toFlowable();
-    }
-
-    private List<String> getEnrollmentsForProgram(String programUid) {
-        List<Enrollment> enrollments = d2.enrollmentModule().enrollments.byProgram().eq(programUid)
-                .byStatus().eq(EnrollmentStatus.ACTIVE)
-                .get();
-
-        List<String> enrollmentsUid = new ArrayList<>();
-        for (Enrollment enrollment : enrollments)
-            enrollmentsUid.add(enrollment.uid());
-        return enrollmentsUid;
-    }
-
-    private int getEnrollmentCount(List<Event> events) {
-        List<String> enrollmentsUid = new ArrayList<>();
-        for (Event event : events)
-            if (!enrollmentsUid.contains(event.enrollment()))
-                enrollmentsUid.add(event.enrollment());
-
-        return enrollmentsUid.size();
     }
 
     @NonNull
