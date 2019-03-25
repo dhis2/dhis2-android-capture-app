@@ -15,8 +15,8 @@ import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ErrorDialogBinding;
 import org.hisp.dhis.android.core.maintenance.D2Error;
-import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -38,22 +38,15 @@ import timber.log.Timber;
 
 public class ErrorDialog extends DialogFragment {
 
-    private static ErrorDialog instace;
     private String title;
-    private List<D2Error> data;
+    private List<D2Error> data = new ArrayList<>();
     private DividerItemDecoration divider;
+    public static String TAG = "ERROR_DIALOG";
     private String shareTitle;
     private String shareMessageTitle;
     private ObservableBoolean sharing = new ObservableBoolean(false);
     private CompositeDisposable disposable;
     private ObservableArrayList<D2Error> shareData;
-
-    public static ErrorDialog newInstace() {
-        if (instace == null) {
-            instace = new ErrorDialog();
-        }
-        return instace;
-    }
 
     public ErrorDialog setData(List<D2Error> data) {
         this.data = data;
@@ -61,7 +54,7 @@ public class ErrorDialog extends DialogFragment {
     }
 
     @Override
-    public void onAttach(@NotNull Context context) {
+    public void onAttach(Context context) {
         super.onAttach(context);
         this.title = context.getString(R.string.error_dialog_title);
         this.shareTitle = context.getString(R.string.share_with);
@@ -71,10 +64,15 @@ public class ErrorDialog extends DialogFragment {
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
     public void onStart() {
         super.onStart();
         Dialog dialog = getDialog();
-        if (dialog != null && dialog.getWindow() != null) {
+        if (dialog != null) {
             int width = ViewGroup.LayoutParams.MATCH_PARENT;
             int height = ViewGroup.LayoutParams.MATCH_PARENT;
             dialog.getWindow().setLayout(width, height);
@@ -85,10 +83,8 @@ public class ErrorDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Dialog dialog = super.onCreateDialog(savedInstanceState);
-        if (dialog.getWindow() != null) {
-            dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-        }
+        dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 
         return dialog;
     }
@@ -140,11 +136,7 @@ public class ErrorDialog extends DialogFragment {
     @Override
     public void dismiss() {
         disposable.clear();
-        dismissInstance();
         super.dismiss();
     }
 
-    private static void dismissInstance() {
-        instace = null;
-    }
 }

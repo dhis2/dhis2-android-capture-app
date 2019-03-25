@@ -112,7 +112,7 @@ public interface MetadataRepository {
 
     Observable<String> getServerUrl();
 
-    Observable<List<D2Error>> getSyncErrors();
+    List<D2Error> getSyncErrors();
 
     Observable<List<OptionModel>> searchOptions(String text, String idOptionSet, int page, List<String> optionsToHide, List<String> optionsGroupsToHide);
 

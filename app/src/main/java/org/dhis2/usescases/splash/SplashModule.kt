@@ -5,6 +5,7 @@ import dagger.Provides
 import org.dhis2.data.dagger.PerActivity
 import org.dhis2.data.server.ServerComponent
 import org.dhis2.data.server.UserManager
+import org.dhis2.usescases.splash.SplashActivity.Companion.FLAG
 import javax.inject.Named
 
 /**
@@ -24,11 +25,15 @@ class SplashModule internal constructor(serverComponent: ServerComponent?) {
 
     @Provides
     @PerActivity
-    @Named("FLAG")
+    @Named(FLAG)
     fun provideFlag(): String {
-        return if (userManager?.d2 != null)
-            userManager.d2.systemSettingModule().systemSetting.flag().get().value() ?: ""
-        else
+        return if (userManager?.d2 != null) {
+            val systemSetting = userManager.d2.systemSettingModule().systemSetting.flag().get()
+            if (systemSetting != null)
+                systemSetting.value() ?: ""
+            else
+                ""
+        } else
             ""
     }
 

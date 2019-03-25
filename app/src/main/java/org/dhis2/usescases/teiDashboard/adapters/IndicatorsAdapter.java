@@ -1,5 +1,6 @@
 package org.dhis2.usescases.teiDashboard.adapters;
 
+import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -45,5 +46,10 @@ public class IndicatorsAdapter extends RecyclerView.Adapter<IndicatorViewHolder>
     public void setIndicators(List<Trio<ProgramIndicatorModel, String, String>> indicators) {
         this.programIndicators = indicators;
         notifyDataSetChanged();
+    }
+
+    public void addIndicator(Trio<ProgramIndicatorModel, String, String> indicator){
+       programIndicators.add(indicator);
+       notifyItemInserted(programIndicators.size()-1);
     }
 }

@@ -29,8 +29,6 @@ public class TeiDashboardActivity extends ActivityGlobalAbstract implements TeiD
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        ((App) getApplicationContext()).userComponent().plus(new TeiDashboardModule()).inject(this);
-        super.onCreate(savedInstanceState);
         if(savedInstanceState != null) {
             teiUid = savedInstanceState.getString("UID");
             programUid = savedInstanceState.getString("PROGRAM_ID");
@@ -38,6 +36,9 @@ public class TeiDashboardActivity extends ActivityGlobalAbstract implements TeiD
             teiUid = getIntent().getStringExtra("TEI_UID");
             programUid = getIntent().getStringExtra("PROGRAM_UID");
         }
+        ((App) getApplicationContext()).userComponent().plus(new TeiDashboardModule(teiUid,programUid)).inject(this);
+        super.onCreate(savedInstanceState);
+
     }
 
     @Override

@@ -14,11 +14,16 @@ import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
+import org.hisp.dhis.android.core.dataelement.DataElement;
+import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
+import org.hisp.dhis.android.core.period.DatePeriod;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.program.ProgramStageDataElement;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -53,9 +58,11 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
 
 
     private final BriteDatabase briteDatabase;
-    D2 d2;
+    private final String programUid;
+    private D2 d2;
 
-    ProgramEventDetailRepositoryImpl(BriteDatabase briteDatabase, D2 d2) {
+    ProgramEventDetailRepositoryImpl(String programUid, BriteDatabase briteDatabase, D2 d2) {
+        this.programUid = programUid;
         this.briteDatabase = briteDatabase;
         this.d2 = d2;
     }
@@ -153,6 +160,48 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
         }
     }
 
+    @NonNull
+    @Override
+    public Flowable<List<ProgramEventViewModel>> filteredProgramEvents(List<DatePeriod> dateFilter, List<String> orgUnitFilter, int page) {
+        return Flowable.just(d2.eventModule().events.byProgramUid().eq(programUid))
+                .map(eventRepo -> {
+                    if (!dateFilter.isEmpty())
+                        eventRepo = eventRepo.byEventDate().inDatePeriods(dateFilter);
+                    if (!orgUnitFilter.isEmpty())
+                        eventRepo = eventRepo.byOrganisationUnitUid().in(orgUnitFilter);
+                    return transformIntoEventViewModel(eventRepo.withAllChildren().get());
+                });
+    }
+
+    private List<ProgramEventViewModel> transformIntoEventViewModel(List<Event> events) {
+
+        List<ProgramEventViewModel> eventList = new ArrayList<>();
+        for (Event event : events) {
+            String orgUnitName = getOrgUnitName(event.organisationUnit());
+            List<String> showInReportsDataElements = new ArrayList<>();
+            for (ProgramStageDataElement programStageDataElement : d2.programModule().programStages.uid(event.programStage()).withAllChildren().get().programStageDataElements()) {
+                if (programStageDataElement.displayInReports())
+                    showInReportsDataElements.add(programStageDataElement.dataElement().uid());
+            }
+            List<Pair<String, String>> data = getData(event.trackedEntityDataValues(), showInReportsDataElements);
+            boolean hasExpired = isExpired(event);
+            String attributeOptionCombo = d2.categoryModule().categoryOptionCombos.uid(event.attributeOptionCombo()).get().displayName();
+
+            eventList.add(
+                    ProgramEventViewModel.create(
+                            event.uid(),
+                            event.organisationUnit(),
+                            orgUnitName,
+                            event.eventDate(),
+                            event.state(),
+                            data,
+                            event.status(),
+                            hasExpired,
+                            attributeOptionCombo));
+        }
+        return eventList;
+    }
+
     private ProgramEventViewModel transformIntoEventViewModel(EventModel eventModel) {
 
         String orgUnitName = getOrgUnitName(eventModel.organisationUnit());
@@ -192,18 +241,17 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
                 program.expiryPeriodType(),
                 program.expiryDays());
 
-      /*  boolean hasExpired = false;
-        Cursor programCursor = briteDatabase.query("SELECT * FROM Program WHERE uid = ?", eventModel.program());
-        if (programCursor != null) {
-            if (programCursor.moveToFirst()) {
-                ProgramModel program = ProgramModel.create(programCursor);
-                if (eventModel.status() == EventStatus.ACTIVE)
-                    hasExpired = DateUtils.getInstance().hasExpired(eventModel, program.expiryDays(), program.completeEventsExpiryDays(), program.expiryPeriodType());
-                if (eventModel.status() == EventStatus.COMPLETED)
-                    hasExpired = DateUtils.getInstance().isEventExpired(null, eventModel.completedDate(), program.completeEventsExpiryDays());
-            }
-        }
-        return hasExpired;*/
+    }
+
+    private boolean isExpired(Event event) {
+        Program program = d2.programModule().programs.uid(event.program()).get();
+        return DateUtils.getInstance().isEventExpired(event.eventDate(),
+                event.completedDate(),
+                event.status(),
+                program.completeEventsExpiryDays(),
+                program.expiryPeriodType(),
+                program.expiryDays());
+
     }
 
     private String getOrgUnitName(String orgUnitUid) {
@@ -234,6 +282,27 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
                 }
             }
         }
+        return data;
+    }
+
+    private List<Pair<String, String>> getData(List<TrackedEntityDataValue> dataValueList, List<String> showInReportsDataElements) {
+        List<Pair<String, String>> data = new ArrayList<>();
+
+        for (TrackedEntityDataValue dataValue : dataValueList) {
+            DataElement de = d2.dataElementModule().dataElements.uid(dataValue.dataElement()).get();
+            if (de != null && showInReportsDataElements.contains(de.uid())) {
+                String displayName = !isEmpty(de.displayFormName()) ? de.displayFormName() : de.displayName();
+                String value = dataValue.value();
+                if (de.optionSet() != null)
+                    value = ValueUtils.optionSetCodeToDisplayName(briteDatabase, de.optionSet().uid(), value);
+                else if (de.valueType().equals(ValueType.ORGANISATION_UNIT))
+                    value = ValueUtils.orgUnitUidToDisplayName(briteDatabase, value);
+
+                //TODO: Would be good to check other value types to render value (coordinates)
+                data.add(Pair.create(displayName, value));
+            }
+        }
+
         return data;
     }
 

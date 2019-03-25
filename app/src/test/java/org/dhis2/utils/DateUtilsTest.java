@@ -287,6 +287,9 @@ public class DateUtilsTest {
 
         SimpleDateFormat databaseDateNoMillisFormat = new SimpleDateFormat(DateUtils.DATABASE_FORMAT_EXPRESSION_NO_MILLIS, Locale.US);
         assertEquals(databaseDateNoMillisFormat, DateUtils.databaseDateFormatNoMillis());
+
+        SimpleDateFormat databaseDateNoSecondsFormat = new SimpleDateFormat(DateUtils.DATABASE_FORMAT_EXPRESSION_NO_SECONDS, Locale.US);
+        assertEquals(databaseDateNoSecondsFormat, DateUtils.databaseDateFormatNoSeconds());
     }
 
     @Test
