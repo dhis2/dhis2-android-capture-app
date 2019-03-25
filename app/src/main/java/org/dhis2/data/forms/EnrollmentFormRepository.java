@@ -53,7 +53,7 @@ import static android.text.TextUtils.isEmpty;
 @SuppressWarnings({
         "PMD.AvoidDuplicateLiterals"
 })
-class EnrollmentFormRepository implements FormRepository {
+public class EnrollmentFormRepository implements FormRepository {
     private static final List<String> TITLE_TABLES = Arrays.asList(
             EnrollmentModel.TABLE, ProgramModel.TABLE);
 
@@ -203,7 +203,7 @@ class EnrollmentFormRepository implements FormRepository {
 
     private String programUid;
 
-    EnrollmentFormRepository(@NonNull BriteDatabase briteDatabase,
+    public EnrollmentFormRepository(@NonNull BriteDatabase briteDatabase,
                              @NonNull RuleExpressionEvaluator expressionEvaluator,
                              @NonNull RulesRepository rulesRepository,
                              @NonNull CodeGenerator codeGenerator,

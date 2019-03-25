@@ -9,6 +9,8 @@ import android.view.View;
 import android.widget.TextView;
 
 import org.dhis2.R;
+import org.dhis2.data.forms.FormRepository;
+import org.dhis2.data.forms.dataentry.RuleEngineRepository;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
@@ -24,12 +26,14 @@ import org.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.EventCreationType;
+import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.maintenance.D2Error;
+import org.hisp.dhis.android.core.program.ProgramIndicatorModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.relationship.Relationship;
@@ -40,10 +44,14 @@ import org.hisp.dhis.android.core.relationship.RelationshipModel;
 import org.hisp.dhis.android.core.relationship.RelationshipType;
 import org.hisp.dhis.android.core.relationship.RelationshipTypeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
+import org.hisp.dhis.rules.models.RuleAction;
+import org.hisp.dhis.rules.models.RuleActionDisplayKeyValuePair;
+import org.hisp.dhis.rules.models.RuleEffect;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
 
 import androidx.appcompat.widget.PopupMenu;
 import androidx.core.app.ActivityOptionsCompat;
@@ -65,6 +73,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     private final DashboardRepository dashboardRepository;
     private final MetadataRepository metadataRepository;
     private final D2 d2;
+    private final RuleEngineRepository ruleRepository;
     private TeiDashboardContracts.View view;
 
     private String teUid;
@@ -75,10 +84,11 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     private CompositeDisposable compositeDisposable;
     private DashboardProgramModel dashboardProgramModel;
 
-    TeiDashboardPresenter(D2 d2, DashboardRepository dashboardRepository, MetadataRepository metadataRepository) {
+    TeiDashboardPresenter(D2 d2, DashboardRepository dashboardRepository, MetadataRepository metadataRepository, RuleEngineRepository formRepository) {
         this.d2 = d2;
         this.dashboardRepository = dashboardRepository;
         this.metadataRepository = metadataRepository;
+        this.ruleRepository = formRepository;
         compositeDisposable = new CompositeDisposable();
     }
 
@@ -464,7 +474,32 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                         Timber::d
                 )
         );
+
+        compositeDisposable.add(ruleRepository.calculate()
+                .subscribe(
+                        calcResult -> applyRuleEffects(calcResult, indicatorsFragment),
+                        Timber::e
+                ));
     }
+
+    private void applyRuleEffects(Result<RuleEffect> calcResult, IndicatorsFragment indicatorsFragment) {
+
+        if (calcResult.error() != null) {
+            Timber.e(calcResult.error());
+            return ;
+        }
+
+        for (RuleEffect ruleEffect : calcResult.items()) {
+            RuleAction ruleAction = ruleEffect.ruleAction();
+            if (ruleAction instanceof RuleActionDisplayKeyValuePair) {
+                Trio<ProgramIndicatorModel, String, String> indicator = Trio.create(
+                        ProgramIndicatorModel.builder().displayName(((RuleActionDisplayKeyValuePair) ruleAction).content()).build(),
+                        ruleEffect.data(), "");
+                indicatorsFragment.addIndicator(indicator);
+            }
+        }
+    }
+
 
     @Override
     public void onDescriptionClick(String description) {
