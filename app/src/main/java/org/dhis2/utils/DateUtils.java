@@ -6,6 +6,7 @@ import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.period.DatePeriod;
 import org.hisp.dhis.android.core.period.PeriodType;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -13,6 +14,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
+
+import javax.annotation.Nonnull;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -35,6 +38,7 @@ public class DateUtils {
 
     public static final String DATABASE_FORMAT_EXPRESSION = "yyyy-MM-dd'T'HH:mm:ss.SSS";
     public static final String DATABASE_FORMAT_EXPRESSION_NO_MILLIS = "yyyy-MM-dd'T'HH:mm:ss";
+    public static final String DATABASE_FORMAT_EXPRESSION_NO_SECONDS = "yyyy-MM-dd'T'HH:mm";
     public static final String DATE_TIME_FORMAT_EXPRESSION = "yyyy-MM-dd HH:mm";
     public static final String DATE_FORMAT_EXPRESSION = "yyyy-MM-dd";
 
@@ -189,6 +193,21 @@ public class DateUtils {
     @NonNull
     public static SimpleDateFormat databaseDateFormatNoMillis() {
         return new SimpleDateFormat(DATABASE_FORMAT_EXPRESSION_NO_MILLIS, Locale.US);
+    }
+
+    @NonNull
+    public static SimpleDateFormat databaseDateFormatNoSeconds() {
+        return new SimpleDateFormat(DATABASE_FORMAT_EXPRESSION_NO_SECONDS, Locale.US);
+    }
+
+    @Nonnull
+    public static Boolean dateHasNoSeconds(String dateTime) {
+        try {
+            databaseDateFormatNoSeconds().parse(dateTime);
+            return true;
+        } catch (ParseException e){
+            return false;
+        }
     }
 
 
