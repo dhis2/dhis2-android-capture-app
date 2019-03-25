@@ -395,6 +395,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
             String iconName = objectStyleCurosr.getString(objectStyleCurosr.getColumnIndex("icon"));
             Resources resources = context.getResources();
             iconName = iconName.startsWith("ic_") ? iconName : "ic_" + iconName;
+            objectStyleCurosr.close();
             return resources.getIdentifier(iconName, "drawable", context.getPackageName());
         } else
             return R.drawable.ic_person;
