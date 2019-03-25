@@ -29,12 +29,11 @@ class SplashPresenter internal constructor(private val userManager: UserManager?
 
     override fun isUserLoggedIn() {
         if (userManager == null) {
-            navigateToLoginView()
+            navigateTo(LoginActivity::class.java)
             return
         }
 
         if (SyncUtils.isSyncRunning()) {
-
             view!!.startActivity(SyncActivity::class.java, null, true, true, null)
 
         } else {
@@ -48,9 +47,9 @@ class SplashPresenter internal constructor(private val userManager: UserManager?
                                 val prefs = view!!.abstracContext.getSharedPreferences(
                                         Constants.SHARE_PREFS, Context.MODE_PRIVATE)
                                 if (it!! && !prefs.getBoolean("SessionLocked", false)) {
-                                    navigateToHomeView()
+                                    navigateTo(MainActivity::class.java)
                                 } else {
-                                    navigateToLoginView()
+                                    navigateTo(LoginActivity::class.java)
                                 }
                             },
                             { Timber.d(it) }
@@ -59,12 +58,9 @@ class SplashPresenter internal constructor(private val userManager: UserManager?
         }
     }
 
-    override fun navigateToLoginView() {
-        view!!.startActivity(LoginActivity::class.java, null, true, true, null)
-    }
 
-    override fun navigateToHomeView() {
-        view!!.startActivity(MainActivity::class.java, null, true, true, null)
+    override fun navigateTo(data: Class<*>) {
+        view!!.startActivity(data, null, true, true, null)
     }
 
 }

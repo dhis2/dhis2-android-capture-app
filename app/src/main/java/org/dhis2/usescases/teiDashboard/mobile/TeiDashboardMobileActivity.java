@@ -170,7 +170,7 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
 
         setViewpagerAdapter();
 
-        TEIDataFragment.getInstance().setData(programModel);
+        //TEIDataFragment.getInstance().setData(programModel);
         Boolean enrollmentStatus = program.getCurrentEnrollment().enrollmentStatus() == EnrollmentStatus.ACTIVE;
         if(getIntent().getStringExtra(Constants.EVENT_UID) != null && enrollmentStatus)
             TEIDataFragment.getInstance().displayGenerateEvent(getIntent().getStringExtra(Constants.EVENT_UID));

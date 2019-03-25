@@ -19,9 +19,6 @@ class SplashContracts {
         fun isUserLoggedIn()
 
         @UiThread
-        fun navigateToLoginView()
-
-        @UiThread
-        fun navigateToHomeView()
+        fun navigateTo(data: Class<*>)
     }
 }
