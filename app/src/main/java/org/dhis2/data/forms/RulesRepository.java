@@ -294,25 +294,6 @@ public final class RulesRepository {
                 .mapToList(RulesRepository::mapToActionPairs).toFlowable(BackpressureStrategy.LATEST);
     }
 
-    @NonNull
-    private static List<Rule> mapActionsToRules(
-            @NonNull List<Quartet<String, String, Integer, String>> rawRules,
-            @NonNull Map<String, Collection<RuleAction>> ruleActions) {
-        List<Rule> rules = new ArrayList<>();
-
-        for (Quartet<String, String, Integer, String> rawRule : rawRules) {
-            Collection<RuleAction> actions = ruleActions.get(rawRule.val0());
-
-            if (actions == null) {
-                actions = new ArrayList<>();
-            }
-
-           /* rules.add(Rule.create(rawRule.val1(), rawRule.val2(),
-                    rawRule.val3(), new ArrayList<>(actions)));*/
-        }
-
-        return rules;
-    }
 
     @NonNull
     private static List<Rule> mapActionsToRulesNew(
@@ -328,9 +309,6 @@ public final class RulesRepository {
                     pairActions.add(pair.val1());
             }
 
-            /*if (actions == null) {
-                actions = new ArrayList<>();
-            }*/
             rules.add(Rule.create(rawRule.val1(), rawRule.val2(),
                     rawRule.val3(), new ArrayList<>(pairActions), rawRule.val0())); //TODO: Change val0 to Rule Name
         }
