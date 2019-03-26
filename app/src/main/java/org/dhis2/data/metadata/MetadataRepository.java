@@ -4,7 +4,6 @@ import org.dhis2.data.tuples.Pair;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
-import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.maintenance.D2Error;
@@ -24,7 +23,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
-import io.reactivex.ObservableSource;
 
 
 /**
@@ -112,9 +110,11 @@ public interface MetadataRepository {
 
     Observable<String> getServerUrl();
 
-    Observable<List<D2Error>> getSyncErrors();
+    List<D2Error> getSyncErrors();
 
-    Observable<List<OptionModel>> searchOptions(String text, String idOptionSet, int page);
+    Observable<List<OptionModel>> searchOptions(String text, String idOptionSet, int page, List<String> optionsToHide, List<String> optionsGroupsToHide);
 
-    Observable<Map<String,ObjectStyleModel>> getObjectStylesForPrograms(List<ProgramModel> enrollmentProgramModels);
+    Observable<Map<String, ObjectStyleModel>> getObjectStylesForPrograms(List<ProgramModel> enrollmentProgramModels);
+
+    Flowable<ProgramStageModel> programStageForEvent(String eventId);
 }

@@ -9,7 +9,8 @@ import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 
 import com.andrognito.pinlockview.PinLockListener;
-import com.crashlytics.android.Crashlytics;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import org.dhis2.App;
 import org.dhis2.R;
@@ -20,10 +21,18 @@ import org.dhis2.usescases.sync.SyncActivity;
 import org.dhis2.utils.BiometricStorage;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.D2ErrorUtils;
 import org.dhis2.utils.NetworkUtils;
 import org.dhis2.utils.OnDialogClickListener;
-import org.hisp.dhis.android.core.maintenance.D2ErrorCode;
+import org.dhis2.utils.TestingCredential;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -31,7 +40,9 @@ import javax.inject.Inject;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.ViewModelProviders;
 import de.adorsys.android.securestoragelibrary.SecurePreferences;
+import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
 import static org.dhis2.utils.Constants.RQ_QR_SCANNER;
@@ -49,6 +60,8 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
 
     private boolean isPinScreenVisible = false;
     private String qrUrl;
+    private LoginViewModel loginViewModel;
+    private List<TestingCredential> testingCredentials = new ArrayList<>();
 
 
     @Override
@@ -62,11 +75,40 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
         loginComponent.inject(this);
 
         super.onCreate(savedInstanceState);
+        loginViewModel = ViewModelProviders.of(this).get(LoginViewModel.class);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login);
         binding.setPresenter(presenter);
-
+        binding.setLoginModel(loginViewModel);
+        setLoginVisibility(false);
+        loginViewModel.isDataComplete().observe(this, this::setLoginVisibility);
+        loginViewModel.isTestingEnvironment().observe(this, testingEnvironment -> {
+            binding.serverUrlEdit.setText(testingEnvironment.val0());
+            binding.userNameEdit.setText(testingEnvironment.val1());
+            binding.userPassEdit.setText(testingEnvironment.val2());
+        });
+        setTestingCredentials();
         setAutocompleteAdapters();
 
+    }
+
+    private void setTestingCredentials() {
+        int testingCredentialsIdentifier = getResources().getIdentifier("testing_credentials", "raw", getPackageName());
+        if (testingCredentialsIdentifier != -1) {
+            Writer writer = new StringWriter();
+            char[] buffer = new char[1024];
+            try (InputStream is = getResources().openRawResource(testingCredentialsIdentifier)) {
+                Reader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+                int n;
+                while ((n = reader.read(buffer)) != -1) {
+                    writer.write(buffer, 0, n);
+                }
+            } catch (Exception e) {
+                Timber.e(e);
+            }
+            testingCredentials = new Gson().fromJson(writer.toString(), new TypeToken<List<TestingCredential>>() {
+            }.getType());
+            loginViewModel.setTestingCredentials(testingCredentials);
+        }
     }
 
 
@@ -87,24 +129,6 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
     protected void onDestroy() {
         ((App) getApplicationContext()).releaseLoginComponent();
         super.onDestroy();
-    }
-
-    @Override
-    public void showBiometricButton() {
-        binding.biometricButton.setVisibility(View.VISIBLE);
-    }
-
-    @Override
-    public void checkSecuredCredentials() {
-        if (SecurePreferences.contains(Constants.SECURE_SERVER_URL) &&
-                SecurePreferences.contains(Constants.SECURE_USER_NAME) &&
-                SecurePreferences.contains(Constants.SECURE_PASS)) {
-            binding.serverUrlEdit.setText(SecurePreferences.getStringValue(Constants.SECURE_SERVER_URL, null));
-            binding.userNameEdit.setText(SecurePreferences.getStringValue(Constants.SECURE_USER_NAME, null));
-            binding.userPassEdit.setText(SecurePreferences.getStringValue(Constants.SECURE_PASS, null));
-            showLoginProgress(true);
-        } else
-            showInfoDialog(getString(R.string.biometrics_dialog_title), getString(R.string.biometrics_first_use_text));
     }
 
     @Override
@@ -139,48 +163,14 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
         binding.serverUrlEdit.setText(!isEmpty(qrUrl) ? qrUrl : url);
     }
 
-
     @Override
-    public ActivityLoginBinding getBinding() {
-        return binding;
+    public void showUnlockButton() {
+        binding.unlockLayout.setVisibility(View.VISIBLE);
     }
 
     @Override
-    public void renderError(D2ErrorCode errorCode, String defaultMessage) {
-        String message;
-        switch (errorCode) {
-            case LOGIN_PASSWORD_NULL:
-                message = getString(R.string.login_error_null_pass);
-                break;
-            case LOGIN_USERNAME_NULL:
-                message = getString(R.string.login_error_null_username);
-                break;
-            case INVALID_DHIS_VERSION:
-                message = getString(R.string.login_error_dhis_version);
-                break;
-            case API_UNSUCCESSFUL_RESPONSE:
-                message = getString(R.string.login_error_unsuccessful_response);
-                break;
-            case API_RESPONSE_PROCESS_ERROR:
-                message = getString(R.string.login_error_error_response);
-                break;
-            default:
-                message = String.format("%s\n%s", getString(R.string.login_error_default), defaultMessage);
-                break;
-        }
-
-        showInfoDialog(getString(R.string.login_error), message);
-
-    }
-
-    @Override
-    public void renderInvalidServerUrlError() {
-        binding.serverUrl.setError(getResources().getString(R.string.error_wrong_server_url));
-    }
-
-    @Override
-    public void renderUnexpectedError() {
-        displayMessage(getResources().getString(R.string.error_unexpected_error));
+    public void renderError(Throwable throwable) {
+        showInfoDialog(getString(R.string.login_error), D2ErrorUtils.getErrorMessage(this, throwable));
     }
 
     @Override
@@ -191,22 +181,6 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
     @Override
     public void setLoginVisibility(boolean isVisible) {
         binding.login.setVisibility(isVisible ? View.VISIBLE : View.GONE);
-    }
-
-    @Override
-    public void setTestingCredentials() {
-        binding.userNameEdit.setText(Constants.USER_TEST_ANDROID);
-        binding.userPassEdit.setText(Constants.USER_TEST_ANDROID_PASS);
-    }
-
-    @Override
-    public void resetCredentials(boolean resetServer, boolean resetUser, boolean resetPass) {
-        if (resetServer)
-            binding.serverUrlEdit.setText(null);
-        if (resetUser)
-            binding.userNameEdit.setText(null);
-        if (resetPass)
-            binding.userPassEdit.setText(null);
     }
 
     @Override
@@ -289,6 +263,11 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
         if (!users.contains(Constants.USER_TEST_ANDROID))
             users.add(Constants.USER_TEST_ANDROID);
 
+        for (TestingCredential testingCredential : testingCredentials) {
+            if (!urls.contains(testingCredential.getServer_url()))
+                urls.add(testingCredential.getServer_url());
+        }
+
         saveListToPreference(Constants.PREFS_URLS, urls);
         saveListToPreference(Constants.PREFS_USERS, users);
 
@@ -366,6 +345,26 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
             qrUrl = data.getStringExtra(Constants.EXTRA_DATA);
         }
     }
+
+    //region FingerPrint
+    @Override
+    public void showBiometricButton() {
+        binding.biometricButton.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void checkSecuredCredentials() {
+        if (SecurePreferences.contains(Constants.SECURE_SERVER_URL) &&
+                SecurePreferences.contains(Constants.SECURE_USER_NAME) &&
+                SecurePreferences.contains(Constants.SECURE_PASS)) {
+            binding.serverUrlEdit.setText(SecurePreferences.getStringValue(Constants.SECURE_SERVER_URL, null));
+            binding.userNameEdit.setText(SecurePreferences.getStringValue(Constants.SECURE_USER_NAME, null));
+            binding.userPassEdit.setText(SecurePreferences.getStringValue(Constants.SECURE_PASS, null));
+            showLoginProgress(true);
+        } else
+            showInfoDialog(getString(R.string.biometrics_dialog_title), getString(R.string.biometrics_first_use_text));
+    }
+    //endregion
 
 
 }

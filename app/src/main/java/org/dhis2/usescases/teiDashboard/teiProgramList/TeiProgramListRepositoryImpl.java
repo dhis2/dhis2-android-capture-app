@@ -203,9 +203,10 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
 
     @Override
     public String getProgramColor(@NonNull String programUid) {
-        Cursor cursor = briteDatabase.query(PROGRAM_COLOR_QUERY, programUid);
-        if (cursor.moveToFirst()) {
-            return cursor.getString(0);
+        try (Cursor cursor = briteDatabase.query(PROGRAM_COLOR_QUERY, programUid)) {
+            if (cursor.moveToFirst()) {
+                return cursor.getString(0);
+            }
         }
         return null;
     }
@@ -213,13 +214,10 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
     @Override
     public ProgramModel getProgram(String programUid) {
         ProgramModel programModel = null;
-        Cursor programCursor = briteDatabase.query("SELECT * FROM Program WHERE uid = ? LIMIT 1", programUid);
-        if (programCursor != null) {
-            if (programCursor.moveToFirst())
+        try (Cursor programCursor = briteDatabase.query("SELECT * FROM Program WHERE uid = ? LIMIT 1", programUid)) {
+            if (programCursor != null && programCursor.moveToFirst())
                 programModel = ProgramModel.create(programCursor);
-            programCursor.close();
         }
         return programModel;
     }
-
 }

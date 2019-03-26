@@ -1,9 +1,9 @@
 package org.dhis2.data.forms.dataentry.fields;
 
+import com.google.auto.value.AutoValue;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import com.google.auto.value.AutoValue;
 
 @AutoValue
 public abstract class RowAction {

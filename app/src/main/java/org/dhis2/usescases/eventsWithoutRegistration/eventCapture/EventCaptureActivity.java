@@ -26,7 +26,9 @@ import org.dhis2.utils.custom_views.ProgressBarAnimation;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -129,10 +131,10 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     public void setMandatoryWarning(Map<String, FieldViewModel> emptyMandatoryFields) {
         new CustomDialog(
                 getAbstracContext(),
-                getAbstracContext().getString(R.string.missing_mandatory_fields_title),
-                getAbstracContext().getString(R.string.missing_mandatory_fields_events),
+                getString(R.string.missing_mandatory_fields_title),
+                String.format(getString(R.string.missing_mandatory_fields_events_2_0), getMandatoryFieldNames(new ArrayList<>(emptyMandatoryFields.values()))),
                 getAbstracContext().getString(R.string.button_ok),
-                "Check",
+                getString(R.string.check_mandatory_field),
                 Constants.RQ_MANDATORY_EVENTS,
                 new DialogClickListener() {
                     @Override
@@ -142,10 +144,22 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
                     @Override
                     public void onNegative() {
-                        presenter.goToSection(emptyMandatoryFields.get(emptyMandatoryFields.entrySet().iterator().next().getKey()).programStageSection());
+                        String sectionToGo = emptyMandatoryFields.values().iterator().next().programStageSection();
+                        presenter.goToSection(sectionToGo);
                     }
                 })
                 .show();
+    }
+
+    private String getMandatoryFieldNames(List<FieldViewModel> mandatoryValues) {
+        StringBuilder mandatoryFieldNames = new StringBuilder();
+        for (FieldViewModel fieldViewModel : mandatoryValues) {
+            mandatoryFieldNames.append(fieldViewModel.label());
+            if (mandatoryValues.indexOf(fieldViewModel) < mandatoryValues.size() - 1)
+                mandatoryFieldNames.append(", ");
+        }
+
+        return mandatoryFieldNames.toString();
     }
 
     @Override

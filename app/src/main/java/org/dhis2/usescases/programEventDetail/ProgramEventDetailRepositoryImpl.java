@@ -1,6 +1,5 @@
 package org.dhis2.usescases.programEventDetail;
 
-import android.content.ContentValues;
 import android.database.Cursor;
 
 import com.squareup.sqlbrite2.BriteDatabase;
@@ -15,12 +14,16 @@ import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
+import org.hisp.dhis.android.core.dataelement.DataElement;
+import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventModel;
-import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
+import org.hisp.dhis.android.core.period.DatePeriod;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.program.ProgramStageDataElement;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -55,9 +58,11 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
 
 
     private final BriteDatabase briteDatabase;
-    D2 d2;
+    private final String programUid;
+    private D2 d2;
 
-    ProgramEventDetailRepositoryImpl(BriteDatabase briteDatabase, D2 d2) {
+    ProgramEventDetailRepositoryImpl(String programUid, BriteDatabase briteDatabase, D2 d2) {
+        this.programUid = programUid;
         this.briteDatabase = briteDatabase;
         this.d2 = d2;
     }
@@ -150,20 +155,51 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
                     id))
                     .mapToList(cursor -> {
                         EventModel eventModel = EventModel.create(cursor);
-
-                        Cursor program = briteDatabase.query("SELECT * FROM Program WHERE uid = ?", programUid);
-                        if (program != null && program.moveToFirst()) {
-                            ProgramModel programModel = ProgramModel.create(program);
-                            if (DateUtils.getInstance().hasExpired(eventModel, programModel.expiryDays(), programModel.completeEventsExpiryDays(), programModel.expiryPeriodType())) {
-                                ContentValues contentValues = eventModel.toContentValues();
-                                contentValues.put(EventModel.Columns.STATUS, EventStatus.SKIPPED.toString());
-                                briteDatabase.update(EventModel.TABLE, contentValues, "uid = ?", eventModel.uid());
-                            }
-                            program.close();
-                        }
                         return transformIntoEventViewModel(eventModel);
                     }).toFlowable(BackpressureStrategy.LATEST);
         }
+    }
+
+    @NonNull
+    @Override
+    public Flowable<List<ProgramEventViewModel>> filteredProgramEvents(List<DatePeriod> dateFilter, List<String> orgUnitFilter, int page) {
+        return Flowable.just(d2.eventModule().events.byProgramUid().eq(programUid))
+                .map(eventRepo -> {
+                    if (!dateFilter.isEmpty())
+                        eventRepo = eventRepo.byEventDate().inDatePeriods(dateFilter);
+                    if (!orgUnitFilter.isEmpty())
+                        eventRepo = eventRepo.byOrganisationUnitUid().in(orgUnitFilter);
+                    return transformIntoEventViewModel(eventRepo.withAllChildren().get());
+                });
+    }
+
+    private List<ProgramEventViewModel> transformIntoEventViewModel(List<Event> events) {
+
+        List<ProgramEventViewModel> eventList = new ArrayList<>();
+        for (Event event : events) {
+            String orgUnitName = getOrgUnitName(event.organisationUnit());
+            List<String> showInReportsDataElements = new ArrayList<>();
+            for (ProgramStageDataElement programStageDataElement : d2.programModule().programStages.uid(event.programStage()).withAllChildren().get().programStageDataElements()) {
+                if (programStageDataElement.displayInReports())
+                    showInReportsDataElements.add(programStageDataElement.dataElement().uid());
+            }
+            List<Pair<String, String>> data = getData(event.trackedEntityDataValues(), showInReportsDataElements);
+            boolean hasExpired = isExpired(event);
+            String attributeOptionCombo = d2.categoryModule().categoryOptionCombos.uid(event.attributeOptionCombo()).get().displayName();
+
+            eventList.add(
+                    ProgramEventViewModel.create(
+                            event.uid(),
+                            event.organisationUnit(),
+                            orgUnitName,
+                            event.eventDate(),
+                            event.state(),
+                            data,
+                            event.status(),
+                            hasExpired,
+                            attributeOptionCombo));
+        }
+        return eventList;
     }
 
     private ProgramEventViewModel transformIntoEventViewModel(EventModel eventModel) {
@@ -189,7 +225,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
         String catOptionCombName = "";
         CategoryOptionCombo categoryOptionCombo;
         if (!isEmpty(categoryOptionComboId)) {
-            categoryOptionCombo = d2.categoryModule().categoryOptionCombos.uid(categoryOptionComboId).getWithAllChildren();
+            categoryOptionCombo = d2.categoryModule().categoryOptionCombos.uid(categoryOptionComboId).withAllChildren().get();
             if (!d2.categoryModule().categoryCombos.uid(categoryOptionCombo.categoryCombo().uid()).get().isDefault())
                 catOptionCombName = categoryOptionCombo.displayName();
         }
@@ -205,51 +241,68 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
                 program.expiryPeriodType(),
                 program.expiryDays());
 
-      /*  boolean hasExpired = false;
-        Cursor programCursor = briteDatabase.query("SELECT * FROM Program WHERE uid = ?", eventModel.program());
-        if (programCursor != null) {
-            if (programCursor.moveToFirst()) {
-                ProgramModel program = ProgramModel.create(programCursor);
-                if (eventModel.status() == EventStatus.ACTIVE)
-                    hasExpired = DateUtils.getInstance().hasExpired(eventModel, program.expiryDays(), program.completeEventsExpiryDays(), program.expiryPeriodType());
-                if (eventModel.status() == EventStatus.COMPLETED)
-                    hasExpired = DateUtils.getInstance().isEventExpired(null, eventModel.completedDate(), program.completeEventsExpiryDays());
-            }
-            programCursor.close();
-        }
-        return hasExpired;*/
+    }
+
+    private boolean isExpired(Event event) {
+        Program program = d2.programModule().programs.uid(event.program()).get();
+        return DateUtils.getInstance().isEventExpired(event.eventDate(),
+                event.completedDate(),
+                event.status(),
+                program.completeEventsExpiryDays(),
+                program.expiryPeriodType(),
+                program.expiryDays());
+
     }
 
     private String getOrgUnitName(String orgUnitUid) {
         String orgUrgUnitName = "";
-        Cursor orgUnitCursor = briteDatabase.query("SELECT displayName FROM OrganisationUnit WHERE uid = ?", orgUnitUid);
-        if (orgUnitCursor != null) {
-            if (orgUnitCursor.moveToFirst())
+        try (Cursor orgUnitCursor = briteDatabase.query("SELECT displayName FROM OrganisationUnit WHERE uid = ?", orgUnitUid)) {
+            if (orgUnitCursor != null && orgUnitCursor.moveToFirst())
                 orgUrgUnitName = orgUnitCursor.getString(0);
-            orgUnitCursor.close();
         }
         return orgUrgUnitName;
     }
 
     private List<Pair<String, String>> getData(String eventUid) {
         List<Pair<String, String>> data = new ArrayList<>();
-        Cursor cursor = briteDatabase.query(EVENT_DATA_VALUES, eventUid, eventUid);
-        if (cursor != null && cursor.moveToFirst()) {
-            for (int i = 0; i < cursor.getCount(); i++) {
-                String displayName = cursor.getString(cursor.getColumnIndex("displayName"));
-                String value = cursor.getString(cursor.getColumnIndex("value"));
-                if (cursor.getString(cursor.getColumnIndex("optionSet")) != null)
-                    value = ValueUtils.optionSetCodeToDisplayName(briteDatabase, cursor.getString(cursor.getColumnIndex("optionSet")), value);
-                else if (cursor.getString(cursor.getColumnIndex("valueType")).equals(ValueType.ORGANISATION_UNIT.name()))
+        try (Cursor cursor = briteDatabase.query(EVENT_DATA_VALUES, eventUid, eventUid)) {
+            if (cursor != null && cursor.moveToFirst()) {
+                for (int i = 0; i < cursor.getCount(); i++) {
+                    String displayName = cursor.getString(cursor.getColumnIndex("displayName"));
+                    String value = cursor.getString(cursor.getColumnIndex("value"));
+                    if (cursor.getString(cursor.getColumnIndex("optionSet")) != null)
+                        value = ValueUtils.optionSetCodeToDisplayName(briteDatabase, cursor.getString(cursor.getColumnIndex("optionSet")), value);
+                    else if (cursor.getString(cursor.getColumnIndex("valueType")).equals(ValueType.ORGANISATION_UNIT.name()))
+                        value = ValueUtils.orgUnitUidToDisplayName(briteDatabase, value);
+
+                    //TODO: Would be good to check other value types to render value (coordinates)
+
+                    data.add(Pair.create(displayName, value));
+                    cursor.moveToNext();
+                }
+            }
+        }
+        return data;
+    }
+
+    private List<Pair<String, String>> getData(List<TrackedEntityDataValue> dataValueList, List<String> showInReportsDataElements) {
+        List<Pair<String, String>> data = new ArrayList<>();
+
+        for (TrackedEntityDataValue dataValue : dataValueList) {
+            DataElement de = d2.dataElementModule().dataElements.uid(dataValue.dataElement()).get();
+            if (de != null && showInReportsDataElements.contains(de.uid())) {
+                String displayName = !isEmpty(de.displayFormName()) ? de.displayFormName() : de.displayName();
+                String value = dataValue.value();
+                if (de.optionSet() != null)
+                    value = ValueUtils.optionSetCodeToDisplayName(briteDatabase, de.optionSet().uid(), value);
+                else if (de.valueType().equals(ValueType.ORGANISATION_UNIT))
                     value = ValueUtils.orgUnitUidToDisplayName(briteDatabase, value);
 
                 //TODO: Would be good to check other value types to render value (coordinates)
-
                 data.add(Pair.create(displayName, value));
-                cursor.moveToNext();
             }
-            cursor.close();
         }
+
         return data;
     }
 
@@ -291,21 +344,20 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     public Observable<List<String>> eventDataValuesNew(EventModel eventModel) {
         List<String> values = new ArrayList<>();
         String id = eventModel == null || eventModel.uid() == null ? "" : eventModel.uid();
-        Cursor cursor = briteDatabase.query(EVENT_DATA_VALUES, id, id);
-        if (cursor != null && cursor.moveToFirst()) {
-            for (int i = 0; i < cursor.getCount(); i++) {
-                String value = cursor.getString(cursor.getColumnIndex("value"));
-                if (cursor.getString(cursor.getColumnIndex("optionSet")) != null)
-                    value = ValueUtils.optionSetCodeToDisplayName(briteDatabase, cursor.getString(cursor.getColumnIndex("optionSet")), value);
-                else if (cursor.getString(cursor.getColumnIndex("valueType")).equals(ValueType.ORGANISATION_UNIT.name()))
-                    value = ValueUtils.orgUnitUidToDisplayName(briteDatabase, value);
+        try (Cursor cursor = briteDatabase.query(EVENT_DATA_VALUES, id, id)) {
+            if (cursor != null && cursor.moveToFirst()) {
+                for (int i = 0; i < cursor.getCount(); i++) {
+                    String value = cursor.getString(cursor.getColumnIndex("value"));
+                    if (cursor.getString(cursor.getColumnIndex("optionSet")) != null)
+                        value = ValueUtils.optionSetCodeToDisplayName(briteDatabase, cursor.getString(cursor.getColumnIndex("optionSet")), value);
+                    else if (cursor.getString(cursor.getColumnIndex("valueType")).equals(ValueType.ORGANISATION_UNIT.name()))
+                        value = ValueUtils.orgUnitUidToDisplayName(briteDatabase, value);
 
-                values.add(value);
-                cursor.moveToNext();
+                    values.add(value);
+                    cursor.moveToNext();
+                }
             }
-            cursor.close();
         }
-
         return Observable.just(values);
     }
 

@@ -25,37 +25,37 @@ public class ValueUtils {
         int optionSetIndex = cursor.getColumnIndex("optionSet");
         if (cursor.getString(valueTypeIndex).equals(ValueType.ORGANISATION_UNIT.name())) {
             String orgUnitUid = cursor.getString(cursor.getColumnIndex("value"));
-            Cursor orgUnitCursor = briteDatabase.query("SELECT OrganisationUnit.displayName FROM OrganisationUnit WHERE OrganisationUnit.uid = ?", orgUnitUid);
-            if (orgUnitCursor != null && orgUnitCursor.moveToFirst()) {
-                String orgUnitName = orgUnitCursor.getString(0);
-                teAttrValue = TrackedEntityAttributeValueModel.builder()
-                        .trackedEntityInstance(teAttrValue.trackedEntityInstance())
-                        .lastUpdated(teAttrValue.lastUpdated())
-                        .created(teAttrValue.created())
-                        .trackedEntityAttribute(teAttrValue.trackedEntityAttribute())
-                        .value(orgUnitName)
-                        .build();
-                orgUnitCursor.close();
+            try (Cursor orgUnitCursor = briteDatabase.query("SELECT OrganisationUnit.displayName FROM OrganisationUnit WHERE OrganisationUnit.uid = ?", orgUnitUid)) {
+                if (orgUnitCursor != null && orgUnitCursor.moveToFirst()) {
+                    String orgUnitName = orgUnitCursor.getString(0);
+                    teAttrValue = TrackedEntityAttributeValueModel.builder()
+                            .trackedEntityInstance(teAttrValue.trackedEntityInstance())
+                            .lastUpdated(teAttrValue.lastUpdated())
+                            .created(teAttrValue.created())
+                            .trackedEntityAttribute(teAttrValue.trackedEntityAttribute())
+                            .value(orgUnitName)
+                            .build();
+                }
             }
         } else if (cursor.getString(optionSetIndex) != null) {
             String optionSet = cursor.getString(optionSetIndex);
             String optionCode = cursor.getString(cursor.getColumnIndex("value"));
-            Cursor optionsCursor = briteDatabase.query("SELECT * FROM Option WHERE optionSet = ?", optionSet);
-            if (optionsCursor != null && optionsCursor.moveToFirst()) {
-                for (int i = 0; i < optionsCursor.getCount(); i++) {
-                    OptionModel optionModel = OptionModel.create(optionsCursor);
-                    if (optionModel.code().equals(optionCode) || optionModel.name().equals(optionCode)) {
-                        teAttrValue = TrackedEntityAttributeValueModel.builder()
-                                .trackedEntityInstance(teAttrValue.trackedEntityInstance())
-                                .lastUpdated(teAttrValue.lastUpdated())
-                                .created(teAttrValue.created())
-                                .trackedEntityAttribute(teAttrValue.trackedEntityAttribute())
-                                .value(optionModel.displayName())
-                                .build();
+            try (Cursor optionsCursor = briteDatabase.query("SELECT * FROM Option WHERE optionSet = ?", optionSet)) {
+                if (optionsCursor != null && optionsCursor.moveToFirst()) {
+                    for (int i = 0; i < optionsCursor.getCount(); i++) {
+                        OptionModel optionModel = OptionModel.create(optionsCursor);
+                        if (optionModel.code().equals(optionCode) || optionModel.name().equals(optionCode)) {
+                            teAttrValue = TrackedEntityAttributeValueModel.builder()
+                                    .trackedEntityInstance(teAttrValue.trackedEntityInstance())
+                                    .lastUpdated(teAttrValue.lastUpdated())
+                                    .created(teAttrValue.created())
+                                    .trackedEntityAttribute(teAttrValue.trackedEntityAttribute())
+                                    .value(optionModel.displayName())
+                                    .build();
+                        }
+                        optionsCursor.moveToNext();
                     }
-                    optionsCursor.moveToNext();
                 }
-                optionsCursor.close();
             }
         }
         return teAttrValue;
@@ -63,21 +63,21 @@ public class ValueUtils {
 
     public static String optionSetCodeToDisplayName(BriteDatabase briteDatabase, String optionSet, String optionSetCode) {
         String displayName = optionSetCode;
-        Cursor optionsCursor = briteDatabase.query("SELECT * FROM Option WHERE optionSet = ? AND code = ? LIMIT 1", optionSet, optionSetCode);
-        if (optionsCursor != null && optionsCursor.moveToFirst()) {
-            OptionModel optionModel = OptionModel.create(optionsCursor);
-            displayName = optionModel.displayName();
-            optionsCursor.close();
+        try (Cursor optionsCursor = briteDatabase.query("SELECT * FROM Option WHERE optionSet = ? AND code = ? LIMIT 1", optionSet, optionSetCode)) {
+            if (optionsCursor != null && optionsCursor.moveToFirst()) {
+                OptionModel optionModel = OptionModel.create(optionsCursor);
+                displayName = optionModel.displayName();
+            }
         }
         return displayName;
     }
 
     public static String orgUnitUidToDisplayName(BriteDatabase briteDatabase, String value) {
         String displayName = value;
-        Cursor orgUnitCursor = briteDatabase.query("SELECT OrganisationUnit.displayName FROM OrganisationUnit WHERE OrganisationUnit.uid = ?", value);
-        if (orgUnitCursor != null && orgUnitCursor.moveToFirst()) {
-            displayName = orgUnitCursor.getString(0);
-            orgUnitCursor.close();
+        try (Cursor orgUnitCursor = briteDatabase.query("SELECT OrganisationUnit.displayName FROM OrganisationUnit WHERE OrganisationUnit.uid = ?", value)) {
+            if (orgUnitCursor != null && orgUnitCursor.moveToFirst()) {
+                displayName = orgUnitCursor.getString(0);
+            }
         }
         return displayName;
     }

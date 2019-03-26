@@ -91,11 +91,11 @@ public class OrgUnitHolder extends FormViewHolder {
             description.setVisibility(View.GONE);
 
         if (viewModel.warning() != null)
-            editText.setError(viewModel.warning());
+            inputLayout.setError(viewModel.warning());
         else if (viewModel.error() != null)
-            editText.setError(viewModel.error());
+            inputLayout.setError(viewModel.error());
         else
-            editText.setError(null);
+            inputLayout.setError(null);
 
         if (viewModel.value() != null) {
             editText.post(() -> editText.setText(getOrgUnitName(viewModel.value())));

@@ -130,6 +130,12 @@ class FormPresenterImpl implements FormPresenter {
                             Timber::e));
         }
 
+        compositeDisposable.add(formRepository.getOrgUnitDates()
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(orgUnit -> view.setMinMaxDates(orgUnit.openingDate(), orgUnit.closedDate()),
+                        Timber::e));
+
         //region SECTIONS
         Flowable<List<FormSectionViewModel>> sectionsFlowable = formRepository.sections();
         Flowable<Result<RuleEffect>> ruleEffectFlowable = ruleEngineRepository.calculate()

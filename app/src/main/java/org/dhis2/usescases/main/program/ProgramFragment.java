@@ -135,77 +135,78 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
     @SuppressLint({"CheckResult", "RxLeakedSubscription"})
     @Override
     public void showRageDatePicker() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setMinimalDaysInFirstWeek(7);
+        if (isAdded() && getContext() != null) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setMinimalDaysInFirstWeek(7);
 
-        String week = getString(R.string.week);
-        SimpleDateFormat weeklyFormat = new SimpleDateFormat("'" + week + "' w", Locale.getDefault());
+            String week = getString(R.string.week);
+            SimpleDateFormat weeklyFormat = new SimpleDateFormat("'" + week + "' w", Locale.getDefault());
 
-        if (currentPeriod != DAILY && currentPeriod != NONE) {
-            new RxDateDialog(getAbstractActivity(), currentPeriod).create().show().subscribe(selectedDates -> {
-                if (!selectedDates.isEmpty()) {
-                    String textToShow;
-                    if (currentPeriod == WEEKLY) {
-                        textToShow = weeklyFormat.format(selectedDates.get(0)) + ", " + yearFormat.format(selectedDates.get(0));
-                        chosenDateWeek = (ArrayList<Date>) selectedDates;
-                        if (selectedDates.size() > 1)
-                            textToShow += "... " /*+ weeklyFormat.format(selectedDates.get(1))*/;
-                    } else if (currentPeriod == MONTHLY) {
-                        String dateFormatted = monthFormat.format(selectedDates.get(0));
-                        textToShow = dateFormatted.substring(0, 1).toUpperCase() + dateFormatted.substring(1);
-                        chosenDateMonth = (ArrayList<Date>) selectedDates;
-                        if (selectedDates.size() > 1)
-                            textToShow += "... " /*+ monthFormat.format(selectedDates.get(1))*/;
+            if (currentPeriod != DAILY && currentPeriod != NONE) {
+                new RxDateDialog(getAbstractActivity(), currentPeriod).create().show().subscribe(selectedDates -> {
+                    if (!selectedDates.isEmpty()) {
+                        String textToShow;
+                        if (currentPeriod == WEEKLY) {
+                            textToShow = weeklyFormat.format(selectedDates.get(0)) + ", " + yearFormat.format(selectedDates.get(0));
+                            chosenDateWeek = (ArrayList<Date>) selectedDates;
+                            if (selectedDates.size() > 1)
+                                textToShow += "... " /*+ weeklyFormat.format(selectedDates.get(1))*/;
+                        } else if (currentPeriod == MONTHLY) {
+                            String dateFormatted = monthFormat.format(selectedDates.get(0));
+                            textToShow = dateFormatted.substring(0, 1).toUpperCase() + dateFormatted.substring(1);
+                            chosenDateMonth = (ArrayList<Date>) selectedDates;
+                            if (selectedDates.size() > 1)
+                                textToShow += "... " /*+ monthFormat.format(selectedDates.get(1))*/;
+                        } else {
+                            textToShow = yearFormat.format(selectedDates.get(0));
+                            chosenDateYear = (ArrayList<Date>) selectedDates;
+                            if (selectedDates.size() > 1)
+                                textToShow += "... " /*+ yearFormat.format(selectedDates.get(1))*/;
+
+                        }
+                        binding.buttonPeriodText.setText(textToShow);
+                        presenter.updateDateFilter(DateUtils.getInstance().getDatePeriodListFor(selectedDates, currentPeriod));
+
                     } else {
-                        textToShow = yearFormat.format(selectedDates.get(0));
-                        chosenDateYear = (ArrayList<Date>) selectedDates;
-                        if (selectedDates.size() > 1)
-                            textToShow += "... " /*+ yearFormat.format(selectedDates.get(1))*/;
+                        ArrayList<Date> date = new ArrayList<>();
+                        date.add(new Date());
 
+                        String text = "";
+
+                        switch (currentPeriod) {
+                            case WEEKLY:
+                                text = weeklyFormat.format(date.get(0)) + ", " + yearFormat.format(date.get(0));
+                                chosenDateWeek = date;
+                                break;
+                            case MONTHLY:
+                                String dateFormatted = monthFormat.format(date.get(0));
+                                text = dateFormatted.substring(0, 1).toUpperCase() + dateFormatted.substring(1);
+                                chosenDateMonth = date;
+                                break;
+                            case YEARLY:
+                                text = yearFormat.format(date.get(0));
+                                chosenDateYear = date;
+                                break;
+                        }
+                        binding.buttonPeriodText.setText(text);
+                        presenter.updateDateFilter(DateUtils.getInstance().getDatePeriodListFor(selectedDates, currentPeriod));
                     }
-                    binding.buttonPeriodText.setText(textToShow);
-                    getSelectedPrograms((ArrayList<Date>) selectedDates, currentPeriod, orgUnitFilter.toString());
-
-                } else {
-                    ArrayList<Date> date = new ArrayList<>();
-                    date.add(new Date());
-
-                    String text = "";
-
-                    switch (currentPeriod) {
-                        case WEEKLY:
-                            text = weeklyFormat.format(date.get(0)) + ", " + yearFormat.format(date.get(0));
-                            chosenDateWeek = date;
-                            break;
-                        case MONTHLY:
-                            String dateFormatted = monthFormat.format(date.get(0));
-                            text = dateFormatted.substring(0, 1).toUpperCase() + dateFormatted.substring(1);
-                            chosenDateMonth = date;
-                            break;
-                        case YEARLY:
-                            text = yearFormat.format(date.get(0));
-                            chosenDateYear = date;
-                            break;
-                    }
-                    binding.buttonPeriodText.setText(text);
-                    getSelectedPrograms(date, currentPeriod, orgUnitFilter.toString());
-
-                }
-            }, Timber::d);
-        } else if (currentPeriod == DAILY) {
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(chosenDateDay);
-            DatePickerDialog pickerDialog;
-            pickerDialog = new DatePickerDialog(context, (datePicker, year, monthOfYear, dayOfMonth) -> {
-                calendar.set(year, monthOfYear, dayOfMonth);
-                Date[] dates = DateUtils.getInstance().getDateFromDateAndPeriod(calendar.getTime(), currentPeriod);
-                ArrayList<Date> day = new ArrayList<>();
-                day.add(dates[0]);
-                getSelectedPrograms(day, currentPeriod, orgUnitFilter.toString());
-                binding.buttonPeriodText.setText(DateUtils.getInstance().formatDate(dates[0]));
-                chosenDateDay = dates[0];
-            }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
-            pickerDialog.show();
+                }, Timber::d);
+            } else if (currentPeriod == DAILY) {
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(chosenDateDay);
+                DatePickerDialog pickerDialog;
+                pickerDialog = new DatePickerDialog(context, (datePicker, year, monthOfYear, dayOfMonth) -> {
+                    calendar.set(year, monthOfYear, dayOfMonth);
+                    Date[] dates = DateUtils.getInstance().getDateFromDateAndPeriod(calendar.getTime(), currentPeriod);
+                    ArrayList<Date> selectedDates = new ArrayList<>();
+                    selectedDates.add(dates[0]);
+                    presenter.updateDateFilter(DateUtils.getInstance().getDatePeriodListFor(selectedDates, currentPeriod));
+                    binding.buttonPeriodText.setText(DateUtils.getInstance().formatDate(dates[0]));
+                    chosenDateDay = dates[0];
+                }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
+                pickerDialog.show();
+            }
         }
     }
 
@@ -213,90 +214,87 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
         return currentPeriod;
     }
 
+    public boolean areFiltersApplied(){
+        return presenter.areFiltersApplied();
+    }
+
     @Override
     public void showTimeUnitPicker() {
 
-        Drawable drawable = null;
-        String textToShow = "";
+        if (isAdded() && getContext() != null) {
+            Drawable drawable = null;
+            String textToShow = "";
 
-        switch (currentPeriod) {
-            case NONE:
-                currentPeriod = DAILY;
-                drawable = ContextCompat.getDrawable(context, R.drawable.ic_view_day);
-                break;
-            case DAILY:
-                currentPeriod = WEEKLY;
-                drawable = ContextCompat.getDrawable(context, R.drawable.ic_view_week);
-                break;
-            case WEEKLY:
-                currentPeriod = MONTHLY;
-                drawable = ContextCompat.getDrawable(context, R.drawable.ic_view_month);
-                break;
-            case MONTHLY:
-                currentPeriod = YEARLY;
-                drawable = ContextCompat.getDrawable(context, R.drawable.ic_view_year);
-                break;
-            case YEARLY:
-                currentPeriod = NONE;
-                drawable = ContextCompat.getDrawable(context, R.drawable.ic_view_none);
-                break;
+            switch (currentPeriod) {
+                case NONE:
+                    currentPeriod = DAILY;
+                    drawable = ContextCompat.getDrawable(context, R.drawable.ic_view_day);
+                    break;
+                case DAILY:
+                    currentPeriod = WEEKLY;
+                    drawable = ContextCompat.getDrawable(context, R.drawable.ic_view_week);
+                    break;
+                case WEEKLY:
+                    currentPeriod = MONTHLY;
+                    drawable = ContextCompat.getDrawable(context, R.drawable.ic_view_month);
+                    break;
+                case MONTHLY:
+                    currentPeriod = YEARLY;
+                    drawable = ContextCompat.getDrawable(context, R.drawable.ic_view_year);
+                    break;
+                case YEARLY:
+                    currentPeriod = NONE;
+                    drawable = ContextCompat.getDrawable(context, R.drawable.ic_view_none);
+                    break;
+            }
+            ((ProgramModelAdapter) binding.programRecycler.getAdapter()).setCurrentPeriod(currentPeriod);
+            binding.buttonTime.setImageDrawable(drawable);
+
+            switch (currentPeriod) {
+                case NONE:
+                    presenter.updateDateFilter(new ArrayList<>());
+                    textToShow = getString(R.string.period);
+                    break;
+                case DAILY:
+                    ArrayList<Date> datesD = new ArrayList<>();
+                    datesD.add(chosenDateDay);
+                    if (!datesD.isEmpty())
+                        textToShow = DateUtils.getInstance().formatDate(datesD.get(0));
+                    if (!datesD.isEmpty() && datesD.size() > 1) textToShow += "... ";
+                    presenter.updateDateFilter(DateUtils.getInstance().getDatePeriodListFor(datesD, currentPeriod));
+                    break;
+                case WEEKLY:
+                    if (!chosenDateWeek.isEmpty()) {
+                        String week = getString(R.string.week);
+                        SimpleDateFormat weeklyFormat = new SimpleDateFormat("'" + week + "' w", Locale.getDefault());
+                        textToShow = weeklyFormat.format(chosenDateWeek.get(0)) + ", " + yearFormat.format(chosenDateWeek.get(0));
+                    }
+                    if (!chosenDateWeek.isEmpty() && chosenDateWeek.size() > 1)
+                        textToShow += "... ";
+                    presenter.updateDateFilter(DateUtils.getInstance().getDatePeriodListFor(chosenDateWeek, currentPeriod));
+                    break;
+                case MONTHLY:
+                    if (!chosenDateMonth.isEmpty()) {
+                        String dateFormatted = monthFormat.format(chosenDateMonth.get(0));
+                        textToShow = dateFormatted.substring(0, 1).toUpperCase() + dateFormatted.substring(1);
+                    }
+                    if (!chosenDateMonth.isEmpty() && chosenDateMonth.size() > 1)
+                        textToShow += "... ";
+                    presenter.updateDateFilter(DateUtils.getInstance().getDatePeriodListFor(chosenDateMonth, currentPeriod));
+                    break;
+                case YEARLY:
+                    if (!chosenDateYear.isEmpty())
+                        textToShow = yearFormat.format(chosenDateYear.get(0));
+                    if (!chosenDateYear.isEmpty() && chosenDateYear.size() > 1)
+                        textToShow += "... ";
+                    presenter.updateDateFilter(DateUtils.getInstance().getDatePeriodListFor(chosenDateYear, currentPeriod));
+                    break;
+            }
+
+            binding.buttonPeriodText.setText(textToShow);
         }
-        ((ProgramModelAdapter) binding.programRecycler.getAdapter()).setCurrentPeriod(currentPeriod);
-        binding.buttonTime.setImageDrawable(drawable);
-
-        switch (currentPeriod) {
-            case NONE:
-                getSelectedPrograms(null, currentPeriod, orgUnitFilter.toString());
-                textToShow = getString(R.string.period);
-                break;
-            case DAILY:
-                ArrayList<Date> datesD = new ArrayList<>();
-                datesD.add(chosenDateDay);
-                if (!datesD.isEmpty())
-                    textToShow = DateUtils.getInstance().formatDate(datesD.get(0));
-                if (!datesD.isEmpty() && datesD.size() > 1) textToShow += "... ";
-                getSelectedPrograms(datesD, currentPeriod, orgUnitFilter.toString());
-                break;
-            case WEEKLY:
-                if (!chosenDateWeek.isEmpty()) {
-                    String week = getString(R.string.week);
-                    SimpleDateFormat weeklyFormat = new SimpleDateFormat("'" + week + "' w", Locale.getDefault());
-                    textToShow = weeklyFormat.format(chosenDateWeek.get(0)) + ", " + yearFormat.format(chosenDateWeek.get(0));
-                }
-                if (!chosenDateWeek.isEmpty() && chosenDateWeek.size() > 1) textToShow += "... ";
-                getSelectedPrograms(chosenDateWeek, currentPeriod, orgUnitFilter.toString());
-                break;
-            case MONTHLY:
-                if (!chosenDateMonth.isEmpty()) {
-                    String dateFormatted = monthFormat.format(chosenDateMonth.get(0));
-                    textToShow = dateFormatted.substring(0, 1).toUpperCase() + dateFormatted.substring(1);
-                }
-                if (!chosenDateMonth.isEmpty() && chosenDateMonth.size() > 1) textToShow += "... ";
-                getSelectedPrograms(chosenDateMonth, currentPeriod, orgUnitFilter.toString());
-                break;
-            case YEARLY:
-                if (!chosenDateYear.isEmpty())
-                    textToShow = yearFormat.format(chosenDateYear.get(0));
-                if (!chosenDateYear.isEmpty() && chosenDateYear.size() > 1) textToShow += "... ";
-                getSelectedPrograms(chosenDateYear, currentPeriod, orgUnitFilter.toString());
-                break;
-        }
-
-
-        binding.buttonPeriodText.setText(textToShow);
     }
 
-
-    @Override
-    public void getSelectedPrograms(ArrayList<Date> dates, Period period, String orgUnitQuery) {
-        if (dates != null)
-            if (orgUnitQuery.isEmpty())
-                presenter.getProgramsWithDates(dates, period);
-            else
-                presenter.getProgramsOrgUnit(dates, period, orgUnitQuery);
-        else
-            presenter.getAllPrograms(orgUnitQuery);
-    }
 
     @Override
     public Consumer<List<ProgramViewModel>> swapProgramModelData() {
@@ -311,7 +309,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
 
     @Override
     public void renderError(String message) {
-        if (getActivity() != null)
+        if (isAdded() && getActivity() != null)
             new AlertDialog.Builder(getActivity())
                     .setPositiveButton(android.R.string.ok, null)
                     .setTitle(getString(R.string.error))
@@ -321,55 +319,61 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
 
     @Override
     public void addTree(TreeNode treeNode) {
-        this.treeNode = treeNode;
-        binding.treeViewContainer.removeAllViews();
+        if (isAdded() && getContext() != null) {
+            this.treeNode = treeNode;
+            binding.treeViewContainer.removeAllViews();
 
-        binding.orgUnitAll.setOnClickListener(view -> {
-            if(treeView!=null) {
-                treeView.selectAll(false);
-                for (TreeNode node : treeView.getSelected()) {
-                    ((OrgUnitHolder) node.getViewHolder()).check();
+            binding.orgUnitAll.setOnClickListener(view -> {
+                if (treeView != null) {
+                    treeView.selectAll(false);
+                    for (TreeNode node : treeView.getSelected()) {
+                        ((OrgUnitHolder) node.getViewHolder()).check();
+                    }
                 }
-            }
-        });
+            });
 
-        binding.orgUnitUnselectAll.setOnClickListener(view -> {
-            if(treeView!=null) {
-                for (TreeNode node : treeView.getSelected()) {
-                    ((OrgUnitHolder) node.getViewHolder()).uncheck();
-                    ((OrgUnitHolder) node.getViewHolder()).update();
+            binding.orgUnitUnselectAll.setOnClickListener(view -> {
+                if (treeView != null) {
+                    for (TreeNode node : treeView.getSelected()) {
+                        ((OrgUnitHolder) node.getViewHolder()).uncheck();
+                        ((OrgUnitHolder) node.getViewHolder()).update();
+                    }
+                    treeView.deselectAll();
                 }
-                treeView.deselectAll();
-            }
-        });
-        treeView = new AndroidTreeView(context, treeNode);
+            });
+            treeView = new AndroidTreeView(context, treeNode);
 
-        treeView.setDefaultContainerStyle(R.style.TreeNodeStyle, false);
-        treeView.setSelectionModeEnabled(true);
-        treeView.setUseAutoToggle(false);
+            treeView.setDefaultContainerStyle(R.style.TreeNodeStyle, false);
+            treeView.setSelectionModeEnabled(true);
+            treeView.setUseAutoToggle(false);
 
-        binding.treeViewContainer.addView(treeView.getView());
-        if (presenter.getOrgUnits().size() < 25)
-            treeView.expandAll();
+            binding.treeViewContainer.addView(treeView.getView());
+            if (presenter.getOrgUnits().size() < 25)
+                treeView.expandAll();
 
-        treeView.setDefaultNodeClickListener((node, value) -> {
-            if (treeView.getSelected().size() == 1 && !node.isSelected()) {
-                binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
-            } else if (treeView.getSelected().size() > 1) {
-                binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
-            }
-            if (node.getChildren().isEmpty())
-                presenter.onExpandOrgUnitNode(node, ((OrganisationUnitModel) node.getValue()).uid());
-            else
-                node.setExpanded(node.isExpanded());
-        });
+            treeView.setDefaultNodeClickListener((node, value) -> {
+                if (isAdded()) {
+                    if (treeView != null) {
+                        if (treeView.getSelected().size() == 1 && !node.isSelected()) {
+                            binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
+                        } else if (treeView.getSelected().size() > 1) {
+                            binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
+                        }
+                    }
+                    if (node.getChildren().isEmpty())
+                        presenter.onExpandOrgUnitNode(node, ((OrganisationUnitModel) node.getValue()).uid());
+                    else
+                        node.setExpanded(node.isExpanded());
+                }
+            });
 
-        binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
+            binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
+        }
     }
 
 
     public boolean areAllOrgUnitsSelected() {
-        return treeNode != null && presenter.getOrgUnits().size() == treeView.getSelected().size();
+        return treeNode != null && treeView != null && presenter.getOrgUnits().size() == treeView.getSelected().size();
     }
 
     @Override
@@ -415,47 +419,26 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
 
     @Override
     public void apply() {
-        if (treeView.getSelected().size() > 0) {
-            binding.drawerLayout.closeDrawers();
-            binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+        if (isAdded() && getContext() != null) {
+            if (treeView != null && !treeView.getSelected().isEmpty()) {
+                binding.drawerLayout.closeDrawers();
+                binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
-            orgUnitFilter = new StringBuilder();
-            for (int i = 0; i < treeView.getSelected().size(); i++) {
-                orgUnitFilter.append("'");
-                orgUnitFilter.append(((OrganisationUnitModel) treeView.getSelected().get(i).getValue()).uid());
-                orgUnitFilter.append("'");
-                if (i < treeView.getSelected().size() - 1)
-                    orgUnitFilter.append(", ");
-            }
+                List<String> orgUnitsUids = new ArrayList<>();
+                for (TreeNode treeNode : treeView.getSelected()) {
+                    orgUnitsUids.add(((OrganisationUnitModel) treeNode.getValue()).uid());
+                }
 
-            if (treeView.getSelected().size() == 1) {
-                binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
-            } else if (treeView.getSelected().size() > 1) {
-                binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
-            }
+                if (treeView.getSelected().size() >= 1) {
+                    binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
+                }
 
-            switch (currentPeriod) {
-                case NONE:
-                    getSelectedPrograms(null, currentPeriod, orgUnitFilter.toString());
-                    break;
-                case DAILY:
-                    ArrayList<Date> datesD = new ArrayList<>();
-                    datesD.add(chosenDateDay);
-                    getSelectedPrograms(datesD, currentPeriod, orgUnitFilter.toString());
-                    break;
-                case WEEKLY:
-                    getSelectedPrograms(chosenDateWeek, currentPeriod, orgUnitFilter.toString());
-                    break;
-                case MONTHLY:
-                    getSelectedPrograms(chosenDateMonth, currentPeriod, orgUnitFilter.toString());
-                    break;
-                case YEARLY:
-                    getSelectedPrograms(chosenDateYear, currentPeriod, orgUnitFilter.toString());
-                    break;
+                presenter.updateOrgUnitFilter(orgUnitsUids);
+                ((ProgramModelAdapter) binding.programRecycler.getAdapter()).setCurrentPeriod(currentPeriod);
+            } else {
+                displayMessage(getString(R.string.org_unit_selection_warning));
             }
-            ((ProgramModelAdapter) binding.programRecycler.getAdapter()).setCurrentPeriod(currentPeriod);
-        } else
-            displayMessage(getString(R.string.org_unit_selection_warning));
+        }
     }
 
     @Override
@@ -464,7 +447,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                 Constants.SHARE_PREFS, Context.MODE_PRIVATE);
         try {
 
-            if (isAdded() && getAbstractActivity() != null) {
+            if (getContext() != null && isAdded() && getAbstractActivity() != null) {
                 new Handler().postDelayed(() -> {
                     FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
                             .title(getString(R.string.tuto_main_1))
@@ -482,13 +465,15 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                             .dismissListener(new DismissListener() {
                                 @Override
                                 public void onDismiss(String id) {
-                                    if (getAbstractActivity().findViewById(R.id.filter_layout).getVisibility() == View.GONE)
+                                    if (getAbstractActivity() != null &&
+                                            getAbstractActivity().findViewById(R.id.filter_layout) != null &&
+                                            getAbstractActivity().findViewById(R.id.filter_layout).getVisibility() == View.GONE)
                                         getAbstractActivity().findViewById(R.id.filter).performClick();
                                 }
 
                                 @Override
                                 public void onSkipped(String id) {
-
+                                    // do nothing
                                 }
                             })
                             .build();

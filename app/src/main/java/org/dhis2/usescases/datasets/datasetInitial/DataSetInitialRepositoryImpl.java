@@ -73,14 +73,14 @@ public class DataSetInitialRepositoryImpl implements DataSetInitialRepository {
     }
 
     private List<CategoryModel> getCategoryModels(String categoryComboUid) {
-        Cursor cursor = briteDatabase.query(GET_CATEGORIES, categoryComboUid);
         List<CategoryModel> categoryModelList = new ArrayList<>();
-        if (cursor != null && cursor.moveToFirst()) {
-            for (int i = 0; i < cursor.getCount(); i++) {
-                categoryModelList.add(CategoryModel.create(cursor));
-                cursor.moveToNext();
+        try (Cursor cursor = briteDatabase.query(GET_CATEGORIES, categoryComboUid)) {
+            if (cursor != null && cursor.moveToFirst()) {
+                for (int i = 0; i < cursor.getCount(); i++) {
+                    categoryModelList.add(CategoryModel.create(cursor));
+                    cursor.moveToNext();
+                }
             }
-            cursor.close();
         }
 
         return categoryModelList;

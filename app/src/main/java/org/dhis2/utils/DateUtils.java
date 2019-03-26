@@ -2,6 +2,7 @@ package org.dhis2.utils;
 
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.period.DatePeriod;
 import org.hisp.dhis.android.core.period.PeriodType;
 
 import java.text.SimpleDateFormat;
@@ -1009,7 +1010,8 @@ public class DateUtils {
      */
     public Boolean isEventExpired(Date eventDate, Date completeDate, EventStatus status, int compExpDays, PeriodType programPeriodType, int expDays) {
         if (status == EventStatus.COMPLETED && completeDate == null)
-            throw new NullPointerException("completeDate can't be null if status of event is COMPLETED");
+//            throw new NullPointerException("completeDate can't be null if status of event is COMPLETED");
+            return false;
 
         boolean expiredBecouseOfPeriod;
         boolean expiredBecouseOfCompletion = false;
@@ -1022,5 +1024,14 @@ public class DateUtils {
 
         return expiredBecouseOfPeriod || expiredBecouseOfCompletion;
 
+    }
+
+    public List<DatePeriod> getDatePeriodListFor(List<Date> selectedDates, Period period) {
+        List<DatePeriod> datePeriods = new ArrayList<>();
+        for (Date date : selectedDates) {
+            Date[] startEndDates = getDateFromDateAndPeriod(date, period);
+            datePeriods.add(DatePeriod.builder().startDate(startEndDates[0]).endDate(startEndDates[1]).build());
+        }
+        return datePeriods;
     }
 }

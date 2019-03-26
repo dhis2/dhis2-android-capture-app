@@ -10,7 +10,6 @@ import org.dhis2.data.tuples.Pair;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryModel;
-import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionComboCategoryOptionLinkTableInfo;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
@@ -18,12 +17,14 @@ import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.maintenance.D2Error;
-import org.hisp.dhis.android.core.maintenance.D2ErrorTableInfo;
+import org.hisp.dhis.android.core.option.OptionGroupOptionLinkTableInfo;
 import org.hisp.dhis.android.core.option.OptionModel;
+import org.hisp.dhis.android.core.option.OptionModuleWiper;
 import org.hisp.dhis.android.core.option.OptionSetModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
+import org.hisp.dhis.android.core.program.ProgramStageSectionModel;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.resource.ResourceModel;
 import org.hisp.dhis.android.core.settings.SystemSettingModel;
@@ -36,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -43,11 +45,13 @@ import java.util.Set;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
+import static android.text.TextUtils.join;
 
 
 /**
@@ -206,7 +210,7 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     }
 
     @Override
-    public Observable<CategoryModel> getCategoryFromCategoryCombo(String categoryComboId){
+    public Observable<CategoryModel> getCategoryFromCategoryCombo(String categoryComboId) {
         return briteDatabase.createQuery(CategoryModel.TABLE, SELECT_CATEGORY, categoryComboId)
                 .mapToOne(CategoryModel::create);
     }
@@ -277,17 +281,16 @@ public class MetadataRepositoryImpl implements MetadataRepository {
 
     @Override
     public List<OptionModel> optionSet(String optionSetId) {
-        String SELECT_OPTION_SET = "SELECT * FROM " + OptionModel.TABLE + " WHERE Option.optionSet = ?";
-        Cursor cursor = briteDatabase.query(SELECT_OPTION_SET, optionSetId == null ? "" : optionSetId);
         List<OptionModel> options = new ArrayList<>();
-        if (cursor != null && cursor.moveToFirst()) {
-            for (int i = 0; i < cursor.getCount(); i++) {
-                options.add(OptionModel.create(cursor));
-                cursor.moveToNext();
+        String SELECT_OPTION_SET = "SELECT * FROM " + OptionModel.TABLE + " WHERE Option.optionSet = ?";
+        try (Cursor cursor = briteDatabase.query(SELECT_OPTION_SET, optionSetId == null ? "" : optionSetId)) {
+            if (cursor != null && cursor.moveToFirst()) {
+                for (int i = 0; i < cursor.getCount(); i++) {
+                    options.add(OptionModel.create(cursor));
+                    cursor.moveToNext();
+                }
             }
-            cursor.close();
-        }else if(cursor != null)
-            cursor.close();
+        }
         return options;
     }
 
@@ -306,6 +309,12 @@ public class MetadataRepositoryImpl implements MetadataRepository {
         }
 
         return Observable.just(objectStyleMap);
+    }
+
+    @Override
+    public Flowable<ProgramStageModel> programStageForEvent(String eventId) {
+        return briteDatabase.createQuery(ProgramStageSectionModel.TABLE, "SELECT ProgramStage.* FROM ProgramStage JOIN Event ON Event.programStage = ProgramStage.uid WHERE Event.uid = ? LIMIT 1", eventId)
+                .mapToOne(ProgramStageModel::create).toFlowable(BackpressureStrategy.LATEST);
     }
 
 
@@ -395,23 +404,18 @@ public class MetadataRepositoryImpl implements MetadataRepository {
         int currentTei = 0;
         int currentEvent = 0;
 
-        Cursor teiCursor = briteDatabase.query(TEI_COUNT);
-        if (teiCursor != null && teiCursor.moveToFirst()) {
-            currentTei = teiCursor.getInt(0);
-            teiCursor.close();
-        }else if(teiCursor != null)
-            teiCursor.close();
-
-        Cursor eventCursor = briteDatabase.query(EVENT_COUNT);
-        if (eventCursor != null && eventCursor.moveToFirst()) {
-            currentEvent = eventCursor.getInt(0);
-            eventCursor.close();
+        try (Cursor teiCursor = briteDatabase.query(TEI_COUNT)) {
+            if (teiCursor != null && teiCursor.moveToFirst()) {
+                currentTei = teiCursor.getInt(0);
+            }
         }
-        else if(eventCursor != null)
-            eventCursor.close();
 
+        try (Cursor eventCursor = briteDatabase.query(EVENT_COUNT)) {
+            if (eventCursor != null && eventCursor.moveToFirst()) {
+                currentEvent = eventCursor.getInt(0);
+            }
+        }
         return Flowable.just(Pair.create(currentEvent, currentTei));
-
     }
 
 
@@ -423,27 +427,58 @@ public class MetadataRepositoryImpl implements MetadataRepository {
 
 
     @Override
-    public Observable<List<D2Error>> getSyncErrors() {
-        return briteDatabase.createQuery(D2ErrorTableInfo.TABLE_INFO.name(), "SELECT * FROM D2Error ORDER BY created DESC")
-                .mapToList(D2Error::create);
+    public List<D2Error> getSyncErrors() {
+        List<D2Error> d2Errors = new ArrayList<>();
+        try (Cursor cursor = briteDatabase.query("SELECT * FROM D2Error ORDER BY created DESC LIMIT 20")) {
+            if (cursor != null && cursor.moveToFirst()) {
+                for (int i = 0; i < cursor.getCount(); i++) {
+                    d2Errors.add(D2Error.create(cursor));
+                    cursor.moveToNext();
+                }
+            }
+        } catch (Exception e) {
+            Timber.e(e);
+        }
+        return d2Errors;
     }
 
     @Override
-    public Observable<List<OptionModel>> searchOptions(String text, String idOptionSet, int page) {
+    public Observable<List<OptionModel>> searchOptions(String text, String idOptionSet, int page, List<String> optionsToHide, List<String> optionsGroupsToHide) {
         String pageQuery = String.format(Locale.US, " LIMIT %d,%d", page * 15, 15);
+        String formattedOptionsToHide = "'" + join("','", optionsToHide) + "'";
+        String formattedOptionGroupsToHide = "'" + join("','", optionsGroupsToHide) + "'";
 
-        String optionQuery = !isEmpty(text) ?
-                "select Option.* from OptionSet " +
-                        "JOIN Option ON Option.optionSet = OptionSet.uid " +
-                        "where OptionSet.uid = ? and Option.displayName like '%" + text + "%' " + pageQuery :
-                "select Option.* from OptionSet " +
-                        "JOIN Option ON Option.optionSet = OptionSet.uid " +
-                        "where OptionSet.uid = ? " + pageQuery;
+        String optionGroupQuery = "SELECT Option.*, OptionGroupOptionLink.optionGroup FROM Option " +
+                "LEFT JOIN OptionGroupOptionLink ON OptionGroupOptionLink.option = Option.uid  " +
+                "WHERE Option.optionSet = ? " +
+                "AND (OptionGroupOptionLink.optionGroup IS NULL OR OptionGroupOptionLink.optionGroup NOT IN (" + formattedOptionGroupsToHide + ")) " +
+                "ORDER BY  Option.sortOrder ASC";
 
-        return briteDatabase.createQuery(OptionSetModel.TABLE, optionQuery, idOptionSet)
-                .mapToList(OptionModel::create);
+        return briteDatabase.createQuery(OptionGroupOptionLinkTableInfo.TABLE_INFO.name(), optionGroupQuery, idOptionSet)
+                .mapToList(OptionModel::create)
+                .flatMap(list -> {
+                    if (list.isEmpty()) {
+                        String optionQuery = !isEmpty(text) ?
+                                "select Option.* from OptionSet " +
+                                        "JOIN Option ON Option.optionSet = OptionSet.uid " +
+                                        "where OptionSet.uid = ? and Option.displayName like '%" + text + "%' " +
+                                        "AND Option.uid NOT IN (" + formattedOptionsToHide + ") " + pageQuery :
+                                "select Option.* from OptionSet " +
+                                        "JOIN Option ON Option.optionSet = OptionSet.uid " +
+                                        "where OptionSet.uid = ? " +
+                                        "AND Option.uid NOT IN (" + formattedOptionsToHide + ") " + pageQuery;
 
+                        return briteDatabase.createQuery(OptionSetModel.TABLE, optionQuery, idOptionSet)
+                                .mapToList(OptionModel::create);
+                    } else {
+                        Iterator<OptionModel> iterator = list.iterator();
+                        while (iterator.hasNext()) {
+                            OptionModel option = iterator.next();
+                            if (optionsToHide.contains(option.uid()))
+                                iterator.remove();
+                        }
+                        return Observable.just(list);
+                    }
+                });
     }
-
-
 }

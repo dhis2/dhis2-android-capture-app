@@ -11,20 +11,17 @@ import com.github.pwittchen.rxbiometric.library.validation.RxPreconditions;
 
 import org.dhis2.App;
 import org.dhis2.R;
-import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.server.ConfigurationRepository;
 import org.dhis2.data.server.UserManager;
 import org.dhis2.usescases.main.MainActivity;
 import org.dhis2.usescases.qrScanner.QRActivity;
 import org.dhis2.utils.Constants;
 import org.hisp.dhis.android.core.maintenance.D2Error;
+import org.hisp.dhis.android.core.maintenance.D2ErrorCode;
 import org.hisp.dhis.android.core.systeminfo.SystemInfo;
-
-import java.io.IOException;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
-import androidx.databinding.ObservableField;
 import de.adorsys.android.securestoragelibrary.SecurePreferences;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -39,21 +36,15 @@ import timber.log.Timber;
 public class LoginPresenter implements LoginContracts.Presenter {
 
     private final ConfigurationRepository configurationRepository;
-    private final MetadataRepository metadataRepository;
     private LoginContracts.View view;
 
     private UserManager userManager;
     private CompositeDisposable disposable;
 
-    private ObservableField<Boolean> isServerUrlSet = new ObservableField<>(false);
-    private ObservableField<Boolean> isUserNameSet = new ObservableField<>(false);
-    private ObservableField<Boolean> isUserPassSet = new ObservableField<>(false);
-    private boolean testingSet;
     private Boolean canHandleBiometrics;
 
-    LoginPresenter(ConfigurationRepository configurationRepository, MetadataRepository metadataRepository) {
+    LoginPresenter(ConfigurationRepository configurationRepository) {
         this.configurationRepository = configurationRepository;
-        this.metadataRepository = metadataRepository;
     }
 
     @Override
@@ -75,14 +66,14 @@ public class LoginPresenter implements LoginContracts.Presenter {
                         if (isUserLoggedIn && !prefs.getBoolean("SessionLocked", false)) {
                             view.startActivity(MainActivity.class, null, true, true, null);
                         } else if (prefs.getBoolean("SessionLocked", false)) {
-                            view.getBinding().unlockLayout.setVisibility(View.VISIBLE);
+                            view.showUnlockButton();
                         }
 
                     }, Timber::e));
 
             disposable.add(
-                    Observable.just(userManager.getD2().systemInfoModule().systemInfo.getWithAllChildren() != null ?
-                            userManager.getD2().systemInfoModule().systemInfo.getWithAllChildren() : SystemInfo.builder().build())
+                    Observable.just(userManager.getD2().systemInfoModule().systemInfo.get() != null ?
+                            userManager.getD2().systemInfoModule().systemInfo.get() : SystemInfo.builder().build())
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(
@@ -111,38 +102,6 @@ public class LoginPresenter implements LoginContracts.Presenter {
                             Timber::e));
 
 
-    }
-
-    @Override
-    public void onServerChanged(CharSequence s, int start, int before, int count) {
-        testingSet = false;
-        isServerUrlSet.set(!view.getBinding().serverUrl.getEditText().getText().toString().isEmpty());
-        view.resetCredentials(false, true, true);
-
-        if (isServerUrlSet.get() && !testingSet &&
-                (view.getBinding().serverUrl.getEditText().getText().toString().equals(Constants.URL_TEST_229) ||
-                        view.getBinding().serverUrl.getEditText().getText().toString().equals(Constants.URL_TEST_230))) {
-            view.setTestingCredentials();
-        }
-
-        view.setLoginVisibility(isServerUrlSet.get() && isUserNameSet.get() && isUserPassSet.get());
-
-
-    }
-
-    @Override
-    public void onUserChanged(CharSequence s, int start, int before, int count) {
-        isUserNameSet.set(!view.getBinding().userName.getEditText().getText().toString().isEmpty());
-        view.resetCredentials(false, false, true);
-
-        view.setLoginVisibility(isServerUrlSet.get() && isUserNameSet.get() && isUserPassSet.get());
-
-    }
-
-    @Override
-    public void onPassChanged(CharSequence s, int start, int before, int count) {
-        isUserPassSet.set(!view.getBinding().userPass.getEditText().getText().toString().isEmpty());
-        view.setLoginVisibility(isServerUrlSet.get() && isUserNameSet.get() && isUserPassSet.get());
     }
 
     @Override
@@ -204,21 +163,6 @@ public class LoginPresenter implements LoginContracts.Presenter {
     }
 
     @Override
-    public ObservableField<Boolean> isServerUrlSet() {
-        return isServerUrlSet;
-    }
-
-    @Override
-    public ObservableField<Boolean> isUserNameSet() {
-        return isUserNameSet;
-    }
-
-    @Override
-    public ObservableField<Boolean> isUserPassSet() {
-        return isServerUrlSet;
-    }
-
-    @Override
     public void unlockSession(String pin) {
         SharedPreferences prefs = view.getAbstracContext().getSharedPreferences(
                 Constants.SHARE_PREFS, Context.MODE_PRIVATE);
@@ -255,36 +199,27 @@ public class LoginPresenter implements LoginContracts.Presenter {
 
     @Override
     public void handleResponse(@NonNull Response userResponse) {
-        Timber.d("Authentication response url: %s", userResponse.raw().request().url().toString());
-        Timber.d("Authentication response code: %s", userResponse.code());
         view.showLoginProgress(false);
         if (userResponse.isSuccessful()) {
             ((App) view.getContext().getApplicationContext()).createUserComponent();
             view.saveUsersData();
         }
-
     }
 
     @Override
     public void handleError(@NonNull Throwable throwable) {
         Timber.e(throwable);
-        if (throwable instanceof IOException) {
-            view.renderInvalidServerUrlError();
-        } else if (throwable instanceof D2Error) {
-            D2Error d2CallException = (D2Error) throwable;
-            switch (d2CallException.errorCode()) {
-                case ALREADY_AUTHENTICATED:
-                    handleResponse(Response.success(null));
-                    break;
-                default:
-                    view.renderError(d2CallException.errorCode(), d2CallException.errorDescription());
-                    break;
-            }
-        } else {
-            view.renderUnexpectedError();
-        }
-
+        if (throwable instanceof D2Error && ((D2Error) throwable).errorCode() == D2ErrorCode.ALREADY_AUTHENTICATED)
+            handleResponse(Response.success(null));
+        else
+            view.renderError(throwable);
         view.showLoginProgress(false);
+    }
+
+    //region FINGERPRINT
+    @Override
+    public Boolean canHandleBiometrics() {
+        return canHandleBiometrics;
     }
 
     @Override
@@ -305,10 +240,8 @@ public class LoginPresenter implements LoginContracts.Presenter {
                                 error -> view.displayMessage("AUTH ERROR")));
     }
 
-    @Override
-    public Boolean canHandleBiometrics() {
-        return canHandleBiometrics;
-    }
+
+    //endregion
 
 
 }

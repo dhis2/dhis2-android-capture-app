@@ -7,6 +7,7 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 
 import org.dhis2.BR;
 import org.dhis2.R;
@@ -39,6 +40,7 @@ public class DateView extends FieldLayout implements View.OnClickListener {
     private boolean allowFutureDates;
     private String description;
     private Date date;
+    private TextInputLayout inputLayout;
 
     public DateView(Context context) {
         super(context);
@@ -70,6 +72,7 @@ public class DateView extends FieldLayout implements View.OnClickListener {
         else
             binding = DataBindingUtil.inflate(inflater, R.layout.date_time_view_accent, this, true);
 
+        inputLayout = findViewById(R.id.inputLayout);
         editText = findViewById(R.id.inputEditText);
         selectedCalendar = Calendar.getInstance();
         editText.setFocusable(false); //Makes editText not editable
@@ -125,7 +128,7 @@ public class DateView extends FieldLayout implements View.OnClickListener {
     }
 
     public void setWarningOrError(String msg) {
-        editText.setError(msg);
+        inputLayout.setError(msg);
     }
 
     public void setDateListener(OnDateSelected listener) {

@@ -2,6 +2,10 @@ package org.dhis2.usescases.main.program;
 
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+
+import com.bumptech.glide.Glide;
+
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -48,7 +52,6 @@ public class ProgramModelHolder extends RecyclerView.ViewHolder {
             Drawable iconImage = ContextCompat.getDrawable(binding.programImage.getContext(), R.drawable.ic_program_default);
             iconImage.mutate();
         }
-
         binding.programImage.setImageResource(icon);
         binding.programImage.setColorFilter(ColorUtils.getContrastColor(color));
 
