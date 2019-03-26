@@ -8,11 +8,15 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.TextView;
+import android.view.ViewGroup;
+import android.widget.PopupMenu;
 
+import com.google.android.flexbox.FlexboxLayout;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
@@ -24,7 +28,6 @@ import org.dhis2.databinding.ActivityProgramEventDetailBinding;
 import org.dhis2.databinding.CatCombFilterBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.main.program.OrgUnitHolder;
-import org.dhis2.utils.CategoryOptionAdapter;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.HelpManager;
@@ -390,33 +393,34 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         if (categories != null && !categories.isEmpty()) {
             for (Category category : categories) {
                 CatCombFilterBinding catCombFilterBinding = CatCombFilterBinding.inflate(LayoutInflater.from(this));
-                CategoryOptionAdapter adapter = new CategoryOptionAdapter(this,
-                        R.layout.spinner_layout,
-                        R.id.spinner_text,
-                        category.categoryOptions(),
-                        category.displayName(),
-                        R.color.white_faf);
-                catCombFilterBinding.catCombo.setAdapter(adapter);
-                catCombFilterBinding.catCombo.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                    @Override
-                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                        if (position == 0) {
-                            isFilteredByCatCombo = false;
-                            catCombFilter.remove(category.uid());
-                            presenter.updateCatOptCombFilter(new ArrayList<>(catCombFilter.values()));
-                        } else {
-                            isFilteredByCatCombo = true;
-                            catCombFilter.put(category.uid(), adapter.getItem(position - 1));
-                            presenter.updateCatOptCombFilter(new ArrayList<>(catCombFilter.values()));
-                        }
+                PopupMenu menu = new PopupMenu(catCombFilterBinding.catCombo.getContext(), catCombFilterBinding.catCombo, Gravity.BOTTOM);
+                menu.getMenu().add(Menu.NONE, Menu.NONE, 0, category.displayName());
+                for (CategoryOption catOption : category.categoryOptions())
+                    menu.getMenu().add(Menu.NONE, Menu.NONE, category.categoryOptions().indexOf(catOption) + 1, catOption.displayName());
+                catCombFilterBinding.catCombo.setOnClickListener(view -> menu.show());
+                menu.setOnMenuItemClickListener(item -> {
+                    int position = item.getOrder();
+                    if (position == 0) {
+                        catCombFilter.remove(category.uid());
+                        isFilteredByCatCombo = !catCombFilter.isEmpty();
+                        presenter.updateCatOptCombFilter(new ArrayList<>(catCombFilter.values()));
+                        catCombFilterBinding.catCombo.setText(category.displayName());
+                    } else {
+                        CategoryOption categoryOption = category.categoryOptions().get(position - 1);
+                        isFilteredByCatCombo = true;
+                        catCombFilter.put(category.uid(), categoryOption);
+                        presenter.updateCatOptCombFilter(new ArrayList<>(catCombFilter.values()));
+                        catCombFilterBinding.catCombo.setText(categoryOption.displayName());
                     }
-
-                    @Override
-                    public void onNothingSelected(AdapterView<?> parent) {
-
-                    }
+                    return false;
                 });
-                binding.filterLayout.addView(new TextView(this));
+
+                FlexboxLayout.LayoutParams lp = new FlexboxLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                        (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 40, getResources().getDisplayMetrics()));
+                lp.setFlexBasisPercent(50f);
+                catCombFilterBinding.getRoot().setLayoutParams(lp);
+                catCombFilterBinding.catCombo.setText(category.displayName());
+                binding.filterLayout.addView(catCombFilterBinding.getRoot());
 
             }
         } else
