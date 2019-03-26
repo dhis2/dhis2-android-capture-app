@@ -3,7 +3,6 @@ package org.dhis2.usescases.datasets.datasetInitial;
 import androidx.annotation.NonNull;
 
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
-import org.hisp.dhis.android.core.dataset.DataInputPeriodModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 
 import java.util.List;
@@ -24,4 +23,7 @@ public interface DataSetInitialRepository {
 
     @NonNull
     Flowable<List<DateRangeInputPeriodModel>> getDataInputPeriod();
+
+    @NonNull
+    Flowable<String> getCategoryOptionCombo(String catOptions, String catCombo);
 }

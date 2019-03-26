@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity;
 import org.dhis2.utils.DateUtils;
+import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.period.PeriodType;
 
 import java.util.Locale;
@@ -18,9 +19,11 @@ public class DataSetInitialPresenter implements DataSetInitialContract.Presenter
     private CompositeDisposable compositeDisposable;
     private DataSetInitialRepository dataSetInitialRepository;
     private DataSetInitialContract.View view;
-
-    public DataSetInitialPresenter(DataSetInitialRepository dataSetInitialRepository) {
+    private String catCombo;
+    private D2 d2;
+    public DataSetInitialPresenter(DataSetInitialRepository dataSetInitialRepository, D2 d2) {
         this.dataSetInitialRepository = dataSetInitialRepository;
+        this.d2 = d2;
     }
 
 
@@ -33,7 +36,10 @@ public class DataSetInitialPresenter implements DataSetInitialContract.Presenter
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                view::setData,
+                                dataSetInitialModel -> {
+                                        catCombo = dataSetInitialModel.categoryCombo();
+                                        view.setData(dataSetInitialModel);
+                                    },
                                 Timber::d
                         ));
     }
@@ -63,7 +69,6 @@ public class DataSetInitialPresenter implements DataSetInitialContract.Presenter
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(data -> {
-                            String a = "";
                             view.showPeriodSelector(periodType, data);
                         },
                         Timber::e)
@@ -85,16 +90,27 @@ public class DataSetInitialPresenter implements DataSetInitialContract.Presenter
 
     @Override
     public void onActionButtonClick() {
-        Bundle bundle = DataSetTableActivity.getBundle(
-                view.getDataSetUid(),
-                view.getSelectedOrgUnit().uid(),
-                view.getSelectedOrgUnit().name(),
-                view.getPeriodType(),
-                DateUtils.getInstance().getPeriodUIString(PeriodType.valueOf(view.getPeriodType()), view.getSelectedPeriod(), Locale.getDefault()),
-                DateUtils.getInstance().generateId(PeriodType.valueOf(view.getPeriodType()), view.getSelectedPeriod(), Locale.getDefault()),
-                view.getSelectedCatOptions()
+        compositeDisposable.add(
+                dataSetInitialRepository.getCategoryOptionCombo(view.getSelectedCatOptions(), catCombo)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(catOptCombo -> {
+                            Bundle bundle = DataSetTableActivity.getBundle(
+                                    view.getDataSetUid(),
+                                    view.getSelectedOrgUnit().uid(),
+                                    view.getSelectedOrgUnit().name(),
+                                    view.getPeriodType(),
+                                    DateUtils.getInstance().getPeriodUIString(PeriodType.valueOf(view.getPeriodType()), view.getSelectedPeriod(), Locale.getDefault()),
+                                    d2.periodModule().periodHelper.getPeriod(PeriodType.valueOf(view.getPeriodType()), view.getPeriodDate()).periodId(),
+                                    catOptCombo
+                            );
+
+                            view.startActivity(DataSetTableActivity.class, bundle, true, false, null);
+                        },
+                        Timber::e
+                )
         );
-        view.startActivity(DataSetTableActivity.class, bundle, true, false, null);
+
     }
 
 

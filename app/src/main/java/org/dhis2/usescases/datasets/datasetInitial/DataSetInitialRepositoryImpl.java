@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.hisp.dhis.android.core.category.CategoryModel;
+import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.dataset.DataInputPeriodModel;
 import org.hisp.dhis.android.core.dataset.DataSetModel;
@@ -45,6 +46,13 @@ public class DataSetInitialRepositoryImpl implements DataSetInitialRepository {
             "FROM DataInputPeriod " +
             "JOIN Period ON Period.periodId = DataInputPeriod.period " +
             "WHERE dataset = ? ORDER BY initialPeriodDate DESC";
+
+    private static final String GET_CAT_OPTION_COMBO = " SELECT CategoryOptionCombo.* " +
+            " FROM CategoryOptionCombo " +
+            " JOIN CategoryCategoryComboLink ON CategoryCategoryComboLink.categoryCombo = CategoryOptionCombo.categoryCombo " +
+            " JOIN CategoryCategoryOptionLink ON CategoryCategoryOptionLink.categoryOption = CategoryOptionComboCategoryOptionLink.categoryOption " +
+            " JOIN CategoryOptionComboCategoryOptionLink ON CategoryOptionComboCategoryOptionLink.categoryOptionCombo = CategoryOptionCombo.uid " +
+            " WHERE CategoryOptionCombo.categoryCombo = ? ";
 
     private final BriteDatabase briteDatabase;
     private final String dataSetUid;
@@ -112,5 +120,16 @@ public class DataSetInitialRepositoryImpl implements DataSetInitialRepository {
     public Observable<List<CategoryOptionModel>> catCombo(String categoryUid) {
         return briteDatabase.createQuery(CategoryOptionModel.TABLE, GET_CATEGORY_OPTION, categoryUid)
                 .mapToList(CategoryOptionModel::create);
+    }
+
+    @NonNull
+    @Override
+    public Flowable<String> getCategoryOptionCombo(String catOptions, String catCombo) {
+        String query = GET_CAT_OPTION_COMBO;
+        query = query + " AND CategoryOptionComboCategoryOptionLink.categoryOption IN (" + catOptions + ")";
+        return briteDatabase.createQuery(CategoryOptionComboModel.TABLE, query, catCombo)
+                .mapToOne(cursor ->
+                        cursor.getString(cursor.getColumnIndex("uid"))
+                ).toFlowable(BackpressureStrategy.LATEST);
     }
 }
