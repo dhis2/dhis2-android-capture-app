@@ -219,12 +219,14 @@ public class EnrollmentFormRepository implements FormRepository {
                         rulesRepository.rulesNew(program),
                         rulesRepository.ruleVariables(program),
                         rulesRepository.enrollmentEvents(enrollmentUid),
-                        (rules, variables, events) -> {
+                        rulesRepository.queryConstants(),
+                        (rules, variables, events, constants) -> {
                             RuleEngine.Builder builder = RuleEngineContext.builder(expressionEvaluator)
                                     .rules(rules)
                                     .ruleVariables(variables)
                                     .calculatedValueMap(new HashMap<>())
                                     .supplementaryData(new HashMap<>())
+                                    .constantsValue(constants)
                                     .build().toEngineBuilder();
                             builder.triggerEnvironment(TriggerEnvironment.ANDROIDCLIENT);
                             builder.events(events);
