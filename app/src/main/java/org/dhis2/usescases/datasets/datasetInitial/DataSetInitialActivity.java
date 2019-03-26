@@ -2,7 +2,6 @@ package org.dhis2.usescases.datasets.datasetInitial;
 
 import androidx.databinding.DataBindingUtil;
 
-import android.content.Context;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
 import com.google.android.material.textfield.TextInputEditText;
@@ -24,7 +23,6 @@ import org.dhis2.utils.custom_views.PeriodDialogInputPeriod;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
-import org.hisp.dhis.android.core.dataset.DataInputPeriodModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.period.PeriodType;
 
@@ -91,6 +89,8 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
                 });
                 binding.catComboContainer.addView(categoryComboBinding.getRoot());
             }
+        else
+            presenter.onCatOptionClick(dataSetInitialModel.categories().get(0).uid());
         checkActionVisivbility();
     }
 
@@ -136,21 +136,28 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
 
     @Override
     public void showCatComboSelector(String catOptionUid, List<CategoryOptionModel> data) {
-        PopupMenu menu = new PopupMenu(this, selectedView, Gravity.BOTTOM);
-//        menu.getMenu().add(Menu.NONE, Menu.NONE, 0, viewModel.label()); Don't show label
-        for (CategoryOptionModel optionModel : data)
-            menu.getMenu().add(Menu.NONE, Menu.NONE, data.indexOf(optionModel), optionModel.displayName());
-
-        menu.setOnDismissListener(menu1 -> selectedView = null);
-        menu.setOnMenuItemClickListener(item -> {
+        if(data.size() == 1 && data.get(0).name().equals("default")){
             if (selectedCatOptions == null)
                 selectedCatOptions = new HashMap<>();
-            selectedCatOptions.put(catOptionUid, data.get(item.getOrder()));
-            ((TextInputEditText) selectedView).setText(data.get(item.getOrder()).displayName());
-            checkActionVisivbility();
-            return false;
-        });
-        menu.show();
+            selectedCatOptions.put(catOptionUid, data.get(0));
+        }else {
+
+            PopupMenu menu = new PopupMenu(this, selectedView, Gravity.BOTTOM);
+//        menu.getMenu().add(Menu.NONE, Menu.NONE, 0, viewModel.label()); Don't show label
+            for (CategoryOptionModel optionModel : data)
+                menu.getMenu().add(Menu.NONE, Menu.NONE, data.indexOf(optionModel), optionModel.displayName());
+
+            menu.setOnDismissListener(menu1 -> selectedView = null);
+            menu.setOnMenuItemClickListener(item -> {
+                if (selectedCatOptions == null)
+                    selectedCatOptions = new HashMap<>();
+                selectedCatOptions.put(catOptionUid, data.get(item.getOrder()));
+                ((TextInputEditText) selectedView).setText(data.get(item.getOrder()).displayName());
+                checkActionVisivbility();
+                return false;
+            });
+            menu.show();
+        }
     }
 
     @Override
@@ -170,17 +177,15 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
 
     @Override
     public String getSelectedCatOptions() {
-        StringBuilder catComb = new StringBuilder("");
+        StringBuilder catComb = new StringBuilder("'");
         for (int i = 0; i < selectedCatOptions.keySet().size(); i++) {
             CategoryOptionModel catOpt = selectedCatOptions.get(selectedCatOptions.keySet().toArray()[i]);
-            if(catOpt.code().equals("default"))
-                catComb.append(getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE).getString(Constants.PREF_DEFAULT_CAT_OPTION_COMBO, ""));
-            else
-                catComb.append(catOpt.uid());
+            catComb.append(catOpt.uid());
+
             if (i < selectedCatOptions.values().size() - 1)
-                catComb.append(", ");
+                catComb.append("', '");
         }
-        return catComb.toString();
+        return catComb.append("'").toString();
     }
 
     @Override
@@ -201,5 +206,10 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
 
         binding.actionButton.setVisibility(visible ? View.VISIBLE : View.GONE);
 
+    }
+
+    @Override
+    public Date getPeriodDate() {
+        return selectedPeriod;
     }
 }

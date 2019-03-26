@@ -2,12 +2,10 @@ package org.dhis2.usescases.datasets.datasetInitial;
 
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
-import org.hisp.dhis.android.core.dataset.DataInputPeriodModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.period.PeriodType;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 public class DataSetInitialContract {
@@ -36,6 +34,8 @@ public class DataSetInitialContract {
         String getSelectedCatOptions();
 
         String getPeriodType();
+
+        Date getPeriodDate();
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
