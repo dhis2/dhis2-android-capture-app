@@ -68,5 +68,7 @@ public class DataValueContract {
         void addCells(List<List<FieldViewModel>> cells);
 
         DataInputPeriodModel checkHasInputPeriod();
+
+        List<DataInputPeriodModel> getDataInputPeriodModel();
     }
 }

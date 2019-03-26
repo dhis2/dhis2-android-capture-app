@@ -150,6 +150,7 @@ public class ProgramPresenter implements ProgramContract.Presenter {
             idTag = "PROGRAM_UID";
 
         bundle.putString(idTag, programModel.id());
+        bundle.putString(Constants.DATA_SET_NAME, programModel.title());
         bundle.putString(Constants.ACCESS_DATA, programModel.accessDataWrite().toString());
         int programTheme = ColorUtils.getThemeFromColor(programModel.color());
         SharedPreferences prefs = view.getAbstracContext().getSharedPreferences(

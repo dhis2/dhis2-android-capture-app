@@ -299,14 +299,15 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
     @Override
     public String getSelectedCatOptions() {
-        StringBuilder catComb = new StringBuilder("");
+        StringBuilder catComb = new StringBuilder("'");
         for (int i = 0; i < selectedCatOptions.keySet().size(); i++) {
             CategoryOptionModel catOpt = selectedCatOptions.get(selectedCatOptions.keySet().toArray()[i]);
             catComb.append(catOpt.uid());
+
             if (i < selectedCatOptions.values().size() - 1)
-                catComb.append(", ");
+                catComb.append("', '");
         }
-        return catComb.toString();
+        return catComb.append("'").toString();
     }
 
     @Override
@@ -324,7 +325,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     public void setCurrentNumTables(int numTables) {
         //Table Selector
         List<String> tables = new ArrayList<>();
-        for(int i =0; i< numTables ; i++){
+        for(int i =1; i<= numTables ; i++){
             tables.add("Table "+ i);
         }
         ((TableCheckboxAdapter)binding.tableRecycler.getAdapter()).swapData(tables);

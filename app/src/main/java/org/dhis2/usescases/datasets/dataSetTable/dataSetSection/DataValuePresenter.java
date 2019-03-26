@@ -440,4 +440,9 @@ public class DataValuePresenter implements DataValueContract.Presenter{
     public FlowableProcessor<Trio<String, String, Integer>> getProcessorOptionSet() {
         return processorOptionSet;
     }
+
+    public List<DataInputPeriodModel> getDataInputPeriodModel() {
+        return dataInputPeriodModel;
+    }
+
 }

@@ -78,7 +78,7 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
         binding.setDataSetModel(dataSetInitialModel);
         binding.catComboContainer.removeAllViews();
         selectedCatOptions = new HashMap<>();
-        if (!dataSetInitialModel.categoryCombo().equals(CategoryComboModel.DEFAULT_UID))
+        if (!dataSetInitialModel.categoryComboName().equals("default"))
             for (CategoryModel categoryModel : dataSetInitialModel.categories()) {
                 selectedCatOptions.put(categoryModel.uid(), null);
                 ItemCategoryComboBinding categoryComboBinding = ItemCategoryComboBinding.inflate(getLayoutInflater(), binding.catComboContainer, false);

@@ -130,7 +130,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
         boolean isEditable = false;
         if(dataSet.accessDataWrite() &&
                 !isExpired(dataTableModel.dataSet()) &&
-                (presenterFragment.checkHasInputPeriod() == null || (presenterFragment.checkHasInputPeriod() != null &&
+                (presenterFragment.getDataInputPeriodModel().size() == 0 || (presenterFragment.checkHasInputPeriod() != null &&
                         DateUtils.getInstance().isInsideInputPeriod(presenterFragment.checkHasInputPeriod()))) ){
             isEditable = true;
         }
