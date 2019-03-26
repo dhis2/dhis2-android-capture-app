@@ -192,18 +192,20 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
 
     @Override
     public List<CategoryOptionCombo> catOptionCombo(List<CategoryOption> selectedOptions) {
-        CategoryCombo catCombo = d2.programModule().programs.uid(programUid).withAllChildren().get().categoryCombo();
+        List<CategoryOptionCombo> categoryOptionComboList = d2.categoryModule().categoryOptionCombos.byCategoryComboUid().eq(
+                d2.programModule().programs.uid(programUid).get().categoryCombo().uid()
+        ).withAllChildren().get();
+
+
         List<CategoryOptionCombo> finalCatOptComb = new ArrayList<>();
-        if (catCombo != null) {
-            List<CategoryOptionCombo> categoryOptionComboList = catCombo.categoryOptionCombos();
-            if (categoryOptionComboList != null)
-                for (CategoryOptionCombo categoryOptionCombo : categoryOptionComboList) {
-                    for (CategoryOption catOpt : categoryOptionCombo.categoryOptions()) {
-                        if (selectedOptions.contains(catOpt) && !finalCatOptComb.contains(categoryOptionCombo))
-                            finalCatOptComb.add(categoryOptionCombo);
-                    }
+        if (categoryOptionComboList != null)
+            for (CategoryOptionCombo categoryOptionCombo : categoryOptionComboList) {
+                for (CategoryOption catOpt : categoryOptionCombo.categoryOptions()) {
+                    if (selectedOptions.contains(catOpt) && !finalCatOptComb.contains(categoryOptionCombo))
+                        finalCatOptComb.add(categoryOptionCombo);
                 }
-        }
+            }
+
         return finalCatOptComb;
 
     }

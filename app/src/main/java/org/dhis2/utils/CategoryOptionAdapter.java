@@ -10,6 +10,7 @@ import org.dhis2.R;
 import org.dhis2.databinding.SpinnerLayoutBinding;
 import org.hisp.dhis.android.core.category.CategoryOption;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.ColorRes;
@@ -22,7 +23,7 @@ import androidx.databinding.DataBindingUtil;
  * Created by ppajuelo on 12/02/2018.
  */
 
-public class CategoryOptionAdapter extends ArrayAdapter<CategoryOption> {
+public class CategoryOptionAdapter extends ArrayAdapter<String> {
 
     private List<CategoryOption> options;
     private String catName;
@@ -33,10 +34,18 @@ public class CategoryOptionAdapter extends ArrayAdapter<CategoryOption> {
                                  @NonNull List<CategoryOption> objects,
                                  String categoryName,
                                  @ColorRes int textColor) {
-        super(context, resource, textViewResourceId, objects);
+        super(context, resource, textViewResourceId, transformToStringArray(objects));
         this.options = objects;
         this.catName = categoryName;
         this.textColor = textColor;
+
+    }
+
+    private static List<String> transformToStringArray(List<CategoryOption> categoryOptions){
+        List<String> optionsByName = new ArrayList<>();
+        for (CategoryOption catOpt : categoryOptions)
+            optionsByName.add(catOpt.displayName());
+        return optionsByName;
     }
 
     @NonNull
@@ -68,4 +77,9 @@ public class CategoryOptionAdapter extends ArrayAdapter<CategoryOption> {
     public int getCount() {
         return super.getCount() + 1;
     }
+
+    public CategoryOption getSelectedOption(int position) {
+        return options.get(position);
+    }
+
 }
