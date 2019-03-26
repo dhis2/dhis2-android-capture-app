@@ -177,11 +177,13 @@ public class EventRepository implements FormRepository {
                         rulesRepository.ruleVariables(program),
                         rulesRepository.otherEvents(eventUid),
                         rulesRepository.enrollment(eventUid),
-                        (rules, variables, events, enrollment) -> {
+                        rulesRepository.queryConstants(),
+                        (rules, variables, events, enrollment, constants) -> {
 
                             RuleEngine.Builder builder = RuleEngineContext.builder(evaluator)
                                     .rules(rules)
                                     .ruleVariables(variables)
+                                    .constantsValue(constants)
                                     .calculatedValueMap(new HashMap<>())
                                     .supplementaryData(new HashMap<>())
                                     .build().toEngineBuilder();
