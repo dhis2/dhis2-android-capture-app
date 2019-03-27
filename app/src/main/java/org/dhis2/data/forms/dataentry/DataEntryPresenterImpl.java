@@ -109,13 +109,14 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
         disposable.add(dataEntryView.rowActions()
                 .subscribeOn(schedulerProvider.computation())
                 .observeOn(schedulerProvider.ui())
-                .switchMap(action ->
-                        dataEntryStore.save(action.id(), action.value()).
+                .switchMap(action ->{
+                        ruleEngineRepository.updateRuleAttributeMap(action.id(),action.value());
+                        return dataEntryStore.save(action.id(), action.value()).
                                 map(result -> {
                                     if (result == 5)
                                         dataEntryStore.save(action.id(), null);
                                     return Trio.create(result, action.id(), action.value());
-                                })
+                                });}
                 ).subscribe(resultUidValue -> {
                             if (resultUidValue.val0() == -5)
                                 dataEntryView.showMessage(R.string.unique_warning);
