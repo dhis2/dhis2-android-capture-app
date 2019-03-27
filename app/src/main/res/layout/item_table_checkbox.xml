@@ -15,21 +15,18 @@
         android:layout_height="wrap_content"
         android:buttonTint="?colorPrimary"
         android:background="@drawable/white_button_bg"
-        android:padding="8dp"
-        android:layout_marginEnd="8dp"
-        android:text="@{title}">
+        android:paddingTop="@dimen/padding_12"
+        android:paddingEnd="@dimen/padding_12"
+        android:paddingStart="8dp"
+        android:paddingBottom="@dimen/padding_12"
+        android:textColor="?colorPrimary"
+        android:layout_marginBottom="3dp"
+        android:layout_marginEnd="3dp"
+        android:button="@android:color/transparent"
+        android:textColorHint="?colorPrimary"
+        android:text="@{title}"
+        tools:text="Holaaaa">
 
     </RadioButton>
 
-   <!-- <CheckBox
-        android:id="@+id/checkbox"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:buttonTint="?colorPrimary"
-        android:text="@{title}"
-        tools:text="Table 1"
-        android:background="@drawable/white_button_bg"
-        android:padding="8dp"
-        android:layout_marginEnd="8dp"
-        tools:checked="true"/>-->
 </layout>

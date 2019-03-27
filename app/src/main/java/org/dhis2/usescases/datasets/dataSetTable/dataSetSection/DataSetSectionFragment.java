@@ -379,9 +379,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
 
     @Override
     public void goToTable(int numTable) {
-        int[] position = new int[2];
-        binding.tableLayout.getChildAt(numTable).getLocationOnScreen(position);
-        binding.scroll.scrollTo(0, position[1]);
+        binding.scroll.scrollTo(0, binding.tableLayout.getChildAt(numTable).getTop());
     }
 
     public int currentNumTables(){

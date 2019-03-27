@@ -1,5 +1,6 @@
 package org.dhis2.usescases.datasets.dataSetTable;
 
+
 import androidx.databinding.DataBindingUtil;
 
 import android.content.pm.ActivityInfo;
@@ -156,8 +157,8 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
                 else {
                     binding.selectorLayout.setVisibility(View.VISIBLE);
                     List<String> tables = new ArrayList<>();
-                    for(int i =0; i< viewPagerAdapter.getCurrentItem(binding.tabLayout.getSelectedTabPosition()).currentNumTables() ; i++){
-                        tables.add("Table "+ i);
+                    for(int i =1; i<= viewPagerAdapter.getCurrentItem(binding.tabLayout.getSelectedTabPosition()).currentNumTables() ; i++){
+                        tables.add(getResources().getString(R.string.table) + i);
                     }
                     FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(getContext());
                     layoutManager.setFlexDirection(FlexDirection.ROW);
@@ -326,7 +327,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
         //Table Selector
         List<String> tables = new ArrayList<>();
         for(int i =1; i<= numTables ; i++){
-            tables.add("Table "+ i);
+            tables.add(getResources().getString(R.string.table)+ i);
         }
         ((TableCheckboxAdapter)binding.tableRecycler.getAdapter()).swapData(tables);
     }
