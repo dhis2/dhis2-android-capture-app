@@ -317,7 +317,13 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     @Override
     public Flowable<String> catOption() {
         return Flowable.just(d2.eventModule().events.uid(eventUid).get())
-                .map(event -> d2.categoryModule().categoryOptionCombos.uid(event.attributeOptionCombo()).get().displayName());
+                .map(event -> d2.categoryModule().categoryOptionCombos.uid(event.attributeOptionCombo()))
+                .map(categoryOptionComboRepo -> {
+                    if (categoryOptionComboRepo.get() == null)
+                        return "";
+                    else
+                        return categoryOptionComboRepo.get().displayName();
+                });
     }
 
     @Override
