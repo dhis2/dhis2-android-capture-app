@@ -7,9 +7,12 @@ import com.squareup.sqlbrite2.BriteDatabase;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Quartet;
 import org.dhis2.utils.DateUtils;
+import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
+import org.hisp.dhis.android.core.constant.Constant;
+import org.hisp.dhis.android.core.constant.ConstantTableInfo;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -48,13 +51,16 @@ import org.hisp.dhis.rules.models.RuleVariableNewestEvent;
 import org.hisp.dhis.rules.models.RuleVariableNewestStageEvent;
 import org.hisp.dhis.rules.models.RuleVariablePreviousEvent;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.annotation.Nonnull;
 
@@ -68,6 +74,10 @@ import static android.text.TextUtils.isEmpty;
 
 @SuppressWarnings("PMD")
 public final class RulesRepository {
+    private static final String QUERY_CONSTANTS = "SELECT * " +
+            "FROM Constant";
+
+
     private static final String QUERY_RULES = "SELECT\n" +
             "  ProgramRule.uid, \n" +
             "  ProgramRule.programStage,\n" +
@@ -258,6 +268,20 @@ public final class RulesRepository {
     }
 
     @NonNull
+    public Flowable<Map<String, String>> queryConstants(){
+        return briteDatabase.createQuery(ConstantTableInfo.TABLE_INFO.name(), QUERY_CONSTANTS)
+                .mapToList(Constant::create)
+                .map(constants -> {
+                    Map<String, String> constantsMap = new HashMap<>();
+                    for (Constant constant : constants) {
+                        constantsMap.put(constant.uid(), Objects.requireNonNull(constant.value()).toString());
+                    }
+                    return constantsMap;
+                })
+                .toFlowable(BackpressureStrategy.LATEST);
+    }
+
+    @NonNull
     private Flowable<List<Quartet<String, String, Integer, String>>> queryRules(
             @NonNull String programUid) {
         return briteDatabase.createQuery(ProgramRuleModel.TABLE, QUERY_RULES, programUid)
@@ -398,6 +422,17 @@ public final class RulesRepository {
                 throw new IllegalArgumentException("Unsupported variable " +
                         "source type: " + sourceType);
         }
+    }
+
+    @NonNull
+    private static Map<String, String> mapToConstantsMap(@NonNull Cursor cursor){
+        String uid = cursor.getString(0);
+        String value = cursor.getString(1);
+
+        Map<String, String> constants = new HashMap<>();
+        if(cursor.moveToFirst())
+            constants.put(uid, value);
+        return constants;
     }
 
     @NonNull
