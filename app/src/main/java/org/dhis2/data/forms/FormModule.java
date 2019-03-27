@@ -6,6 +6,7 @@ import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.utils.CodeGenerator;
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.rules.RuleExpressionEvaluator;
 
 import dagger.Module;
@@ -27,8 +28,9 @@ public class FormModule {
     @PerForm
     FormPresenter formPresenter(@NonNull SchedulerProvider schedulerProvider,
                                 @NonNull BriteDatabase briteDatabase,
-                                @NonNull FormRepository formRepository) {
-        return new FormPresenterImpl(formViewArguments, schedulerProvider, briteDatabase, formRepository);
+                                @NonNull FormRepository formRepository,
+                                @NonNull D2 d2) {
+        return new FormPresenterImpl(formViewArguments, schedulerProvider, briteDatabase, formRepository, d2);
     }
 
     @Provides

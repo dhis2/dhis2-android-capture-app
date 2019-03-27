@@ -1,16 +1,17 @@
 package org.dhis2.usescases.programEventDetail;
 
-import org.dhis2.utils.Period;
-import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
-import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.category.Category;
+import org.hisp.dhis.android.core.category.CategoryOption;
+import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.period.DatePeriod;
+import org.hisp.dhis.android.core.program.Program;
 
-import java.util.Date;
 import java.util.List;
 
 import androidx.annotation.NonNull;
-import io.reactivex.Flowable;
+import androidx.lifecycle.LiveData;
+import androidx.paging.PagedList;
 import io.reactivex.Observable;
 
 /**
@@ -20,10 +21,13 @@ import io.reactivex.Observable;
 public interface ProgramEventDetailRepository {
 
     @NonNull
-    Flowable<List<ProgramEventViewModel>> filteredProgramEvents(String programUid, List<Date> dates, Period period, CategoryOptionComboModel categoryOptionComboModel, String orgUnitQuery, int page);
+    LiveData<PagedList<ProgramEventViewModel>> filteredProgramEvents(List<DatePeriod> dateFilter, List<String> orgUnitFilter, List<CategoryOptionCombo> catOptionComboUid);
 
     @NonNull
-    Flowable<List<ProgramEventViewModel>> filteredProgramEvents(List<DatePeriod> dateFilter, List<String> orgUnitFilter, int page);
+    Observable<Program> program();
+
+    @NonNull
+    Observable<List<Category>> catCombo();
 
     @NonNull
     Observable<List<OrganisationUnitModel>> orgUnits();
@@ -31,10 +35,8 @@ public interface ProgramEventDetailRepository {
     @NonNull
     Observable<List<OrganisationUnitModel>> orgUnits(String parentUid);
 
-    @NonNull
-    Observable<List<CategoryOptionComboModel>> catCombo(String programUid);
 
-    Observable<List<String>> eventDataValuesNew(EventModel eventModel);
+    boolean getAccessDataWrite();
 
-    Observable<Boolean> writePermission(String programId);
+    List<CategoryOptionCombo> catOptionCombo(List<CategoryOption> selectedOptions);
 }

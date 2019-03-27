@@ -344,7 +344,7 @@
     <string name="showHelp">Show help</string>
     <string name="tuto_settings_1">Synchronize your data…</string>
     <string name="tuto_settings_2">…your configuration…</string>
-    <string name="tuto_settings_3">…set your local storage capacity…</string>
+    <string name="tuto_settings_3">…set how many records to download from server…</string>
     <string name="tuto_settings_reserved">Check and manage how many reserved values are left</string>
     <string name="tuto_settings_errors">Check if a connection to the server failed</string>
     <string name="tuto_settings_reset">Free some disk space</string>
