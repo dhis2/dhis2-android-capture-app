@@ -1,5 +1,6 @@
 package org.dhis2.usescases.datasets.dataSetTable;
 
+
 import androidx.databinding.DataBindingUtil;
 
 import android.content.pm.ActivityInfo;
@@ -156,8 +157,8 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
                 else {
                     binding.selectorLayout.setVisibility(View.VISIBLE);
                     List<String> tables = new ArrayList<>();
-                    for(int i =0; i< viewPagerAdapter.getCurrentItem(binding.tabLayout.getSelectedTabPosition()).currentNumTables() ; i++){
-                        tables.add("Table "+ i);
+                    for(int i =1; i<= viewPagerAdapter.getCurrentItem(binding.tabLayout.getSelectedTabPosition()).currentNumTables() ; i++){
+                        tables.add(getResources().getString(R.string.table) + i);
                     }
                     FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(getContext());
                     layoutManager.setFlexDirection(FlexDirection.ROW);
@@ -299,14 +300,15 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
     @Override
     public String getSelectedCatOptions() {
-        StringBuilder catComb = new StringBuilder("");
+        StringBuilder catComb = new StringBuilder("'");
         for (int i = 0; i < selectedCatOptions.keySet().size(); i++) {
             CategoryOptionModel catOpt = selectedCatOptions.get(selectedCatOptions.keySet().toArray()[i]);
             catComb.append(catOpt.uid());
+
             if (i < selectedCatOptions.values().size() - 1)
-                catComb.append(", ");
+                catComb.append("', '");
         }
-        return catComb.toString();
+        return catComb.append("'").toString();
     }
 
     @Override
@@ -324,8 +326,8 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     public void setCurrentNumTables(int numTables) {
         //Table Selector
         List<String> tables = new ArrayList<>();
-        for(int i =0; i< numTables ; i++){
-            tables.add("Table "+ i);
+        for(int i =1; i<= numTables ; i++){
+            tables.add(getResources().getString(R.string.table)+ i);
         }
         ((TableCheckboxAdapter)binding.tableRecycler.getAdapter()).swapData(tables);
     }

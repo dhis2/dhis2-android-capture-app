@@ -1,6 +1,7 @@
 package org.dhis2.usescases.datasets.dataSetTable;
 
 
+import android.os.Build;
 import android.widget.RadioButton;
 
 import org.dhis2.R;
@@ -26,13 +27,22 @@ public class TableCheckboxViewHolder extends RecyclerView.ViewHolder{
         radio.setTextColor(binding.getRoot().getContext().getResources().getColor(R.color.white));
 */
         binding.setTitle(title);
-        if(position != selectedPosition)
+        if(position != selectedPosition) {
             binding.radioButton.setChecked(false);
+        }
+
         binding.radioButton.setOnCheckedChangeListener((checkButton, isChecked) ->{
             if(isChecked) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    binding.radioButton.setButtonDrawable(binding.getRoot().getContext().getResources().getDrawable(R.drawable.ic_check_circle_36, null));
+                }
                 presenter.onClickSelectTable(this.getAdapterPosition());
 
-            }
+            }else
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    binding.radioButton.setButtonDrawable(binding.getRoot().getContext().getResources().getDrawable(android.R.color.transparent, null));
+                }
+
         } );
 
         binding.executePendingBindings();
