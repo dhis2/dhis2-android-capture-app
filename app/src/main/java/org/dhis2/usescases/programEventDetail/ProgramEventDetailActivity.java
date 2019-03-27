@@ -418,14 +418,13 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                 FlexboxLayout.LayoutParams lp = new FlexboxLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                         (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 40, getResources().getDisplayMetrics()));
                 lp.setFlexBasisPercent(50f);
+                lp.setMargins(0, 10, 5, 0);
                 catCombFilterBinding.getRoot().setLayoutParams(lp);
                 catCombFilterBinding.catCombo.setText(category.displayName());
                 binding.filterLayout.addView(catCombFilterBinding.getRoot());
 
             }
-        } else
-            binding.catCombo.setVisibility(View.GONE);
-
+        }
     }
 
     @Override

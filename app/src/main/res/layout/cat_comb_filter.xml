@@ -7,8 +7,6 @@
         android:id="@+id/cat_combo"
         android:layout_width="wrap_content"
         android:layout_height="40dp"
-        android:layout_marginStart="5dp"
-        android:layout_marginTop="10dp"
         android:background="?attr/selector_button_round_20"
         android:dropDownWidth="match_parent"
         android:gravity="center_vertical|end"
@@ -16,6 +14,7 @@
         android:paddingEnd="15dp"
         android:textColor="?colorAccent"
         android:textSize="15sp"
+        app:drawableEndCompat="@drawable/ic_arrow_drop_down_black_24dp"
         app:layout_flexBasisPercent="50%"
         tools:text="displayName" />
 </layout>

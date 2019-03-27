@@ -51,13 +51,14 @@ public class DataEntryModule {
     @Provides
     @PerFragment
     RuleEngineRepository ruleEngineRepository(@NonNull BriteDatabase briteDatabase,
-                                              @NonNull FormRepository formRepository) {
+                                              @NonNull FormRepository formRepository,
+                                              @NonNull D2 d2) {
         if (!isEmpty(arguments.event())) { // NOPMD
             return new EventsRuleEngineRepository(briteDatabase,
                     formRepository, arguments.event());
         } else if (!isEmpty(arguments.enrollment())) { //NOPMD
             return new EnrollmentRuleEngineRepository(briteDatabase,
-                    formRepository, arguments.enrollment());
+                    formRepository, arguments.enrollment(),d2);
         } else {
             throw new IllegalArgumentException("Unsupported entity type");
         }
