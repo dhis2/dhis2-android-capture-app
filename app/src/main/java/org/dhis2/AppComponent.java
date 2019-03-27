@@ -42,6 +42,7 @@ public interface AppComponent {
         Builder qrModule(QRModule qrModule);
 
         AppComponent build();
+        //ter
     }
 
     //injection targets
