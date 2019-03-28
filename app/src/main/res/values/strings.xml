@@ -423,5 +423,6 @@
     <string name="send_user_name_title">Send data</string>
     <string name="send_user_name_mesage">In order to improve the app we would like your permission to collect your session details?</string>
     <string name="check_mandatory_field">Check fields</string>
+    <string name="error_no_network_during_sync">You lost your internet connection while performing your configuration sync. Please try again later</string>
 
 </resources>

@@ -348,6 +348,9 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         if (eventCreationType == EventCreationType.REFERAL) {
             activityTitle = program.displayName() + " - " + getString(R.string.referral);
         } else {
+            if(eventModel.enrollment() != null && !eventModel.enrollment().isEmpty())
+                binding.orgUnit.setEnabled(false);
+
             activityTitle = eventUid == null ? program.displayName() + " - " + getString(R.string.new_event) : program.displayName();
         }
         binding.setName(activityTitle);
