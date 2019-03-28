@@ -659,7 +659,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
     @Override
     public void unsupportedRuleAction() {
-        view.displayMessage(view.getContext().getString(R.string.unsupported_program_rule));
+//        view.displayMessage(view.getContext().getString(R.string.unsupported_program_rule));
+        Timber.d(view.getContext().getString(R.string.unsupported_program_rule));
     }
 
     @Override

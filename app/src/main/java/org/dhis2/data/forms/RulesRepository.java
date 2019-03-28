@@ -7,7 +7,6 @@ import com.squareup.sqlbrite2.BriteDatabase;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Quartet;
 import org.dhis2.utils.DateUtils;
-import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
@@ -51,11 +50,9 @@ import org.hisp.dhis.rules.models.RuleVariableNewestEvent;
 import org.hisp.dhis.rules.models.RuleVariableNewestStageEvent;
 import org.hisp.dhis.rules.models.RuleVariablePreviousEvent;
 
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -268,7 +265,7 @@ public final class RulesRepository {
     }
 
     @NonNull
-    public Flowable<Map<String, String>> queryConstants(){
+    public Flowable<Map<String, String>> queryConstants() {
         return briteDatabase.createQuery(ConstantTableInfo.TABLE_INFO.name(), QUERY_CONSTANTS)
                 .mapToList(Constant::create)
                 .map(constants -> {
@@ -425,12 +422,12 @@ public final class RulesRepository {
     }
 
     @NonNull
-    private static Map<String, String> mapToConstantsMap(@NonNull Cursor cursor){
+    private static Map<String, String> mapToConstantsMap(@NonNull Cursor cursor) {
         String uid = cursor.getString(0);
         String value = cursor.getString(1);
 
         Map<String, String> constants = new HashMap<>();
-        if(cursor.moveToFirst())
+        if (cursor.moveToFirst())
             constants.put(uid, value);
         return constants;
     }
@@ -515,8 +512,7 @@ public final class RulesRepository {
             case HIDEOPTIONGROUP:
                 return RuleActionHideOptionGroup.create(content, optionGroup);
             default:
-                throw new IllegalArgumentException(
-                        "Unsupported RuleActionType: " + actionType.name());
+                return RuleActionUnsupported.create("UNSUPPORTED RULE ACTION TYPE", actionType.name());
         }
     }
 
@@ -609,7 +605,7 @@ public final class RulesRepository {
                     String orgUnit = cursor.getString(5);
                     String orgUnitCode = getOrgUnitCode(orgUnit);
                     String programStageName = cursor.getString(6);
-                    RuleEvent.Status status = cursor.getString(2).equals(RuleEvent.Status.VISITED.toString())? RuleEvent.Status.ACTIVE : RuleEvent.Status.valueOf(cursor.getString(2)); //TODO: WHAT?
+                    RuleEvent.Status status = cursor.getString(2).equals(RuleEvent.Status.VISITED.toString()) ? RuleEvent.Status.ACTIVE : RuleEvent.Status.valueOf(cursor.getString(2)); //TODO: WHAT?
 
                     try (Cursor dataValueCursor = briteDatabase.query(QUERY_VALUES, eventUid)) {
                         if (dataValueCursor != null && dataValueCursor.moveToFirst()) {
