@@ -10,6 +10,7 @@ import org.dhis2.usescases.teiDashboard.dashboardfragments.IndicatorsFragment;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.NotesFragment;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.RelationshipFragment;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.TEIDataFragment;
+import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -47,7 +48,7 @@ public class TeiDashboardContracts {
 
         void restoreAdapter(String programUid);
 
-        void showCatComboDialog(String eventId, String programStage, List<CategoryOptionComboModel> catComboOptions, String title);
+        void showCatComboDialog(String eventId, CategoryCombo catCombo);
     }
 
     public interface Presenter {
@@ -127,7 +128,7 @@ public class TeiDashboardContracts {
 
         void getCatComboOptions(EventModel event);
 
-        void changeCatOption(String eventUid, CategoryOptionComboModel selectedOption);
+        void changeCatOption(String eventUid, String catOptComboUid);
 
         }
 }

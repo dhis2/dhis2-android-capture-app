@@ -9,9 +9,11 @@ import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.utils.CodeGenerator;
 import org.dhis2.utils.DateUtils;
-import org.hisp.dhis.android.core.category.CategoryComboModel;
-import org.hisp.dhis.android.core.category.CategoryOptionComboCategoryOptionLinkModel;
-import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
+import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.category.Category;
+import org.hisp.dhis.android.core.category.CategoryCombo;
+import org.hisp.dhis.android.core.category.CategoryOption;
+import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
@@ -24,13 +26,18 @@ import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import timber.log.Timber;
 
@@ -55,20 +62,16 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
             " date(" + OrganisationUnitModel.Columns.CLOSED_DATE + ") >= date(?)) " +
             "AND OrganisationUnitProgramLink .program = ?";
 
-    private static final String SELECT_CAT_OPTION_FROM_OPTION_COMBO = String.format(
-            "SELECT %s.%s FROM %s WHERE %s.%s = ?",
-            CategoryOptionComboCategoryOptionLinkModel.TABLE, CategoryOptionComboCategoryOptionLinkModel.Columns.CATEGORY_OPTION, CategoryOptionComboCategoryOptionLinkModel.TABLE,
-            CategoryOptionComboCategoryOptionLinkModel.TABLE, CategoryOptionComboCategoryOptionLinkModel.Columns.CATEGORY_OPTION_COMBO
-    );
-
     private final BriteDatabase briteDatabase;
     private final CodeGenerator codeGenerator;
     private final String eventUid;
+    private final D2 d2;
 
-    EventInitialRepositoryImpl(CodeGenerator codeGenerator, BriteDatabase briteDatabase, String eventUid) {
+    EventInitialRepositoryImpl(CodeGenerator codeGenerator, BriteDatabase briteDatabase, String eventUid, D2 d2) {
         this.briteDatabase = briteDatabase;
         this.codeGenerator = codeGenerator;
         this.eventUid = eventUid;
+        this.d2 = d2;
     }
 
 
@@ -90,22 +93,35 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     @NonNull
     @Override
-    public Observable<CategoryComboModel> catComboModel(String programUid) {
-        String catComboQuery = "SELECT CategoryCombo.* FROM CategoryCombo JOIN Program ON Program.categoryCombo = CategoryCombo.uid WHERE Program.uid = ?";
-        return briteDatabase.createQuery(CategoryComboModel.TABLE, catComboQuery, programUid).mapToOne(CategoryComboModel::create);
+    public Observable<CategoryCombo> catCombo(String programUid) {
+        return Observable.defer(() -> Observable.just(d2.categoryModule().categoryCombos.uid(d2.programModule().programs.uid(programUid).get().categoryCombo().uid()).withAllChildren().get()))
+                .map(categoryCombo -> {
+                    List<Category> fullCategories = new ArrayList<>();
+                    List<CategoryOptionCombo> fullOptionCombos = new ArrayList<>();
+                    for (Category category : categoryCombo.categories()) {
+                        fullCategories.add(d2.categoryModule().categories.uid(category.uid()).withAllChildren().get());
+                    }
+                    for (CategoryOptionCombo categoryOptionCombo : categoryCombo.categoryOptionCombos())
+                        fullOptionCombos.add(d2.categoryModule().categoryOptionCombos.uid(categoryOptionCombo.uid()).withAllChildren().get());
+                    return categoryCombo.toBuilder().categories(fullCategories).categoryOptionCombos(fullOptionCombos).build();
+                });
     }
 
-    @NonNull
     @Override
-    public Observable<List<CategoryOptionComboModel>> catCombo(String programUid) {
-        String catComboQuery = "SELECT CategoryOptionCombo.* FROM CategoryOptionCombo " +
-                "JOIN CategoryCombo ON CategoryCombo.uid= CategoryOptionCombo.categoryCombo " +
-                "JOIN CategoryOptionComboCategoryOptionLink ON CategoryOptionComboCategoryOptionLink.categoryOptionCombo = CategoryOptionCombo.uid " +
-                "JOIN CategoryOption ON CategoryOptionComboCategoryOptionLink.CategoryOption = CategoryOption.uid " +
-                "JOIN Program ON Program.categoryCombo = CategoryCombo.uid " +
-                "WHERE categoryOption.accessDataWrite AND program.uid = ?";
-        return briteDatabase.createQuery(CategoryOptionComboModel.TABLE, catComboQuery, programUid)
-                .mapToList(CategoryOptionComboModel::create);
+    public Flowable<Map<String, CategoryOption>> getOptionsFromCatOptionCombo(String eventId) {
+        return Flowable.just(d2.eventModule().events.uid(eventUid).get())
+                .flatMap(event -> Flowable.zip(catCombo(event.program()).toFlowable(BackpressureStrategy.LATEST),
+                        Flowable.just(d2.categoryModule().categoryOptionCombos.uid(event.attributeOptionCombo()).withAllChildren().get()),
+                        (categoryCombo, categoryOptionCombo) -> {
+                            List<CategoryOption> selectedCatOptions = categoryOptionCombo.categoryOptions();
+                            Map<String, CategoryOption> map = new HashMap<>();
+                            for (Category category : categoryCombo.categories()) {
+                                for (CategoryOption categoryOption : selectedCatOptions)
+                                    if (category.categoryOptions().contains(categoryOption))
+                                        map.put(category.uid(), categoryOption);
+                            }
+                            return map;
+                        }));
     }
 
     @NonNull
@@ -135,11 +151,6 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
         cal.set(Calendar.MINUTE, 0);
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
-
-        //If we are creating a new event, do not schedule it
-        /*if (date != null && date.after(createDate))
-            return scheduleEvent(enrollmentUid, trackedEntityInstanceUid, context, programUid, programStage,
-                    date, orgUnitUid, categoryOptionsUid, categoryOptionComboUid, latitude, longitude);*/
 
 
         String uid = codeGenerator.generate();
@@ -420,6 +431,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
         }
         return isEnrollmentOpen;
     }
+
 
     private void updateEnrollment(String enrollmentUid) {
         String selectEnrollment = "SELECT * FROM Enrollment WHERE uid = ?";
