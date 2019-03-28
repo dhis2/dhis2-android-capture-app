@@ -82,7 +82,8 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
             }
             List<Pair<String, String>> data = getData(event.trackedEntityDataValues(), showInReportsDataElements);
             boolean hasExpired = isExpired(event);
-            String attributeOptionCombo = d2.categoryModule().categoryOptionCombos.uid(event.attributeOptionCombo()).get().displayName();
+            CategoryOptionCombo catOptComb = d2.categoryModule().categoryOptionCombos.uid(event.attributeOptionCombo()).get();
+            String attributeOptionCombo = catOptComb != null ? catOptComb.displayName() : "";
 
             return ProgramEventViewModel.create(
                     event.uid(),
