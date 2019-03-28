@@ -151,14 +151,14 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
             adapter.setShowColumnTotal(dataTableModel.section() == null? false :dataTableModel.section().showColumnTotals());
             adapter.setShowRowTotal(dataTableModel.section() == null? false :dataTableModel.section().showRowTotals());
             //adapter.initializeRows(isEditable);
-            TableView tableView = new TableView(getContext());
+            TableView tableView = new TableView(getContext(),
+                    ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY));
             tableView.setHasFixedWidth(true);
             tableView.setUnSelectedColor(getResources().getColor(R.color.white));
             tableView.setHeadersColor(getResources().getColor(R.color.table_bg));
             tableView.setSelectedColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY_LIGHT));
             tableView.setShadowColor(getResources().getColor(R.color.rfab__color_shadow));
             tableView.setRowHeaderWidth(500);
-
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 

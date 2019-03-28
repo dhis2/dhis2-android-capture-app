@@ -113,8 +113,9 @@ public class TableView extends FrameLayout implements ITableView {
     private boolean mIsSortable;
     private int mHeaderCount = 1;
 
-    public TableView(@NonNull Context context) {
+    public TableView(@NonNull Context context, int mSeparatorColor) {
         super(context);
+        this.mSeparatorColor = mSeparatorColor;
         initialDefaultValues(null);
         initialize();
     }
