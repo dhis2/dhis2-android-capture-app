@@ -48,8 +48,8 @@ public class TeiDashboardModule {
 
     @Provides
     @PerActivity
-    DashboardRepository dashboardRepository(CodeGenerator codeGenerator, BriteDatabase briteDatabase) {
-        return new DashboardRepositoryImpl(codeGenerator, briteDatabase);
+    DashboardRepository dashboardRepository(CodeGenerator codeGenerator, BriteDatabase briteDatabase,D2 d2) {
+        return new DashboardRepositoryImpl(codeGenerator, briteDatabase,d2);
     }
 
     @Provides

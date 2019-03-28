@@ -48,7 +48,7 @@ public class EventInitialModule {
                                                      @NonNull MetadataRepository metadataRepository,
                                                      @NonNull SchedulerProvider schedulerProvider,
                                                      @NonNull D2 d2) {
-        return new EventInitialPresenter(eventSummaryRepository, eventInitialRepository, metadataRepository, schedulerProvider,d2);
+        return new EventInitialPresenter(eventSummaryRepository, eventInitialRepository, metadataRepository, schedulerProvider, d2);
     }
 
 
@@ -74,7 +74,7 @@ public class EventInitialModule {
 
     @Provides
     @PerActivity
-    EventInitialRepository eventDetailRepository(@NonNull CodeGenerator codeGenerator, BriteDatabase briteDatabase) {
-        return new EventInitialRepositoryImpl(codeGenerator, briteDatabase, eventUid);
+    EventInitialRepository eventDetailRepository(@NonNull CodeGenerator codeGenerator, BriteDatabase briteDatabase, D2 d2) {
+        return new EventInitialRepositoryImpl(codeGenerator, briteDatabase, eventUid, d2);
     }
 }
