@@ -48,7 +48,7 @@ public class SyncMetadataWorker extends Worker {
     @Override
     public void onStopped(boolean cancelled) {
         super.onStopped(cancelled);
-        Log.d(this.getClass().getSimpleName(), "Metadata process finished");
+        Timber.d("Metadata process finished");
     }
 
     @NonNull
