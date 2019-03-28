@@ -375,6 +375,9 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             }
 
             binding.date.setText(selectedDateString);
+        } else {
+            if(!isEmpty(eventModel.enrollment()))
+                binding.orgUnit.setEnabled(false);
         }
 
         binding.date.setOnClickListener(view -> {
