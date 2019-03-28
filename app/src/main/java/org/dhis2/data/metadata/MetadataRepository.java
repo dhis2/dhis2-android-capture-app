@@ -1,6 +1,7 @@
 package org.dhis2.data.metadata;
 
 import org.dhis2.data.tuples.Pair;
+import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
@@ -53,9 +54,11 @@ public interface MetadataRepository {
 
     Observable<List<CategoryOptionComboModel>> getCategoryComboOptions(String categoryComboId);
 
+    Observable<CategoryCombo> catComboForProgram(String programUid);
+
     Observable<CategoryModel> getCategoryFromCategoryCombo(String categoryComboId);
 
-    void saveCatOption(String eventUid, CategoryOptionComboModel selectedOption);
+    void saveCatOption(String eventUid, String catOptionComboUid);
 
     /*CATEGORY COMBO*/
 

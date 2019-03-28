@@ -551,24 +551,22 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     @Override
     public Observable<Boolean> deleteEvent() {
-        Cursor eventCursor = briteDatabase.query("SELECT Event.* FROM Event WHERE Event.uid = ?", eventUid);
-        long status = -1;
-        if (eventCursor != null && eventCursor.moveToNext()) {
-            EventModel eventModel = EventModel.create(eventCursor);
-            if (eventModel.state() == State.TO_POST) {
-                String DELETE_WHERE = String.format(
-                        "%s.%s = ?",
-                        EventModel.TABLE, EventModel.Columns.UID
-                );
-                status = briteDatabase.delete(EventModel.TABLE, DELETE_WHERE, eventUid);
-            } else {
-                ContentValues contentValues = eventModel.toContentValues();
-                contentValues.put(EventModel.Columns.STATE, State.TO_DELETE.name());
-                status = briteDatabase.update(EventModel.TABLE, contentValues, EventModel.Columns.UID + " = ?", eventUid);
-            }
-            if (status == 1 && eventModel.enrollment() != null)
-                updateEnrollment(eventModel.enrollment());
+        Event event = d2.eventModule().events.uid(eventUid).withAllChildren().get();
+        long status;
+        if (event.state() == State.TO_POST) {
+            String DELETE_WHERE = String.format(
+                    "%s.%s = ?",
+                    EventModel.TABLE, EventModel.Columns.UID
+            );
+            status = briteDatabase.delete(EventModel.TABLE, DELETE_WHERE, eventUid);
+        } else {
+            ContentValues contentValues = event.toContentValues();
+            contentValues.put(EventModel.Columns.STATE, State.TO_DELETE.name());
+            status = briteDatabase.update(EventModel.TABLE, contentValues, EventModel.Columns.UID + " = ?", eventUid);
         }
+        if (status == 1 && event.enrollment() != null)
+            updateEnrollment(event.enrollment());
+
         return Observable.just(status == 1);
     }
 

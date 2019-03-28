@@ -1,14 +1,15 @@
 package org.dhis2.usescases.teiDashboard.teiDataDetail;
 
-import androidx.annotation.NonNull;
+import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.usescases.teiDashboard.DashboardRepository;
 import org.dhis2.usescases.teiDashboard.DashboardRepositoryImpl;
 import org.dhis2.utils.CodeGenerator;
-import com.squareup.sqlbrite2.BriteDatabase;
+import org.hisp.dhis.android.core.D2;
 
+import androidx.annotation.NonNull;
 import dagger.Module;
 import dagger.Provides;
 
@@ -40,8 +41,8 @@ public class TeiDataDetailModule {
 
     @Provides
     @PerActivity
-    DashboardRepository dashboardRepository(CodeGenerator codeGenerator, BriteDatabase briteDatabase) {
-        return new DashboardRepositoryImpl(codeGenerator, briteDatabase);
+    DashboardRepository dashboardRepository(CodeGenerator codeGenerator, BriteDatabase briteDatabase, D2 d2) {
+        return new DashboardRepositoryImpl(codeGenerator, briteDatabase, d2);
     }
 
     @Provides

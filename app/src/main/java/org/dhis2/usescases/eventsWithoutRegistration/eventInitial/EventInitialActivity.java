@@ -11,11 +11,9 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.DatePicker;
 import android.widget.PopupMenu;
 
@@ -29,22 +27,24 @@ import org.dhis2.R;
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.databinding.ActivityEventInitialBinding;
+import org.dhis2.databinding.CategorySelectorBinding;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.map.MapSelectorActivity;
 import org.dhis2.usescases.qrCodes.eventsworegistration.QrEventsWORegistrationActivity;
-import org.dhis2.utils.CatComboAdapter2;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.EventCreationType;
 import org.dhis2.utils.HelpManager;
+import org.dhis2.utils.custom_views.CategoryOptionPopUp;
 import org.dhis2.utils.custom_views.CustomDialog;
 import org.dhis2.utils.custom_views.OrgUnitDialog;
 import org.dhis2.utils.custom_views.PeriodDialog;
 import org.dhis2.utils.custom_views.ProgressBarAnimation;
-import org.hisp.dhis.android.core.category.CategoryComboModel;
-import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
+import org.hisp.dhis.android.core.category.Category;
+import org.hisp.dhis.android.core.category.CategoryCombo;
+import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
@@ -60,9 +60,11 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -100,35 +102,37 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     private ActivityEventInitialBinding binding;
 
+    //Bundle variables
+    private String programUid;
+    private String eventUid;
+    private EventCreationType eventCreationType;
+    private String getTrackedEntityInstance;
+    private String enrollmentUid;
+    private String selectedOrgUnit;
+    private PeriodType periodType;
+    private String programStageUid;
+    private EnrollmentStatus enrollmentStatus;
+    private int eventScheduleInterval;
+
     private String selectedDateString;
     private Date selectedDate;
-    private String selectedOrgUnit;
     private Date selectedOrgUnitOpeningDate;
     private Date selectedOrgUnitClosedDate;
-    private CategoryOptionComboModel selectedCatOptionCombo;
-    private CategoryComboModel selectedCatCombo;
     private ProgramStageModel programStageModel;
-    private String selectedLat;
-    private String selectedLon;
-    private List<CategoryOptionComboModel> categoryOptionComboModels;
-    private String eventUid;
-    private String programUid;
-    private EventCreationType eventCreationType;
+
     private int totalFields;
     private int totalCompletedFields;
     private String tempCreate;
     private boolean fixedOrgUnit;
-    private String enrollmentUid;
-    private PeriodType periodType;
-    private String programStageUid;
+    private String catOptionComboUid;
+    private CategoryCombo catCombo;
+    private Map<String, CategoryOption> selectedCatOption;
     private OrgUnitDialog orgUnitDialog;
     private ProgramModel program;
     private String savedLat;
     private String savedLon;
     private ArrayList<String> sectionsToHide;
-    private String getTrackedEntityInstance;
     private Boolean accessData;
-    private EnrollmentStatus enrollmentStatus;
 
     public static Bundle getBundle(String programUid, String eventUid, String eventCreationType,
                                    String teiUid, PeriodType eventPeriodType, String orgUnit, String stageUid,
@@ -163,82 +167,15 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         periodType = (PeriodType) getIntent().getSerializableExtra(EVENT_PERIOD_TYPE);
         programStageUid = getIntent().getStringExtra(Constants.PROGRAM_STAGE_UID);
         enrollmentStatus = (EnrollmentStatus) getIntent().getSerializableExtra(Constants.ENROLLMENT_STATUS);
+        eventScheduleInterval = getIntent().getIntExtra(Constants.EVENT_SCHEDULE_INTERVAL, 0);
 
         ((App) getApplicationContext()).userComponent().plus(new EventInitialModule(eventUid)).inject(this);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_event_initial);
         binding.setPresenter(presenter);
+        this.selectedCatOption = new HashMap<>();
 
         setUpScrenByCreatinType(eventCreationType);
-
-
-        binding.date.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                //unused
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                selectedDateString = s.toString();
-                checkActionButtonVisibility();
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                //unused
-            }
-        });
-        binding.orgUnit.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                //unused
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                checkActionButtonVisibility();
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                //unused
-            }
-        });
-        binding.lat.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                //unused
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                selectedLat = s.toString();
-                checkActionButtonVisibility();
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                //unused
-            }
-        });
-        binding.lon.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                //unused
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                selectedLon = s.toString();
-                checkActionButtonVisibility();
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                //unused
-            }
-        });
 
         initProgressBar();
 
@@ -248,7 +185,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         } else {
             if (binding.actionButton != null)
                 binding.actionButton.setText(R.string.update);
-
         }
 
         if (binding.actionButton != null) {
@@ -263,8 +199,10 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                                 selectedDate,
                                 selectedOrgUnit,
                                 null,
-                                catComboIsDefaultOrNull() ? null : selectedCatOptionCombo.uid(),
-                                selectedLat, selectedLon);
+                                catComboIsDefaultOrNull() ? null : catOptionComboUid,
+                                isEmpty(binding.lat.getText()) ? null : binding.lat.getText().toString(),
+                                isEmpty(binding.lon.getText()) ? null : binding.lon.getText().toString()
+                        );
                     } else if (eventCreationType == EventCreationType.SCHEDULE) {
                         presenter.scheduleEvent(
                                 enrollmentUid,
@@ -272,8 +210,10 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                                 selectedDate,
                                 selectedOrgUnit,
                                 null,
-                                catComboIsDefaultOrNull() ? null : selectedCatOptionCombo.uid(),
-                                selectedLat, selectedLon);
+                                catComboIsDefaultOrNull() ? null : catOptionComboUid,
+                                isEmpty(binding.lat.getText()) ? null : binding.lat.getText().toString(),
+                                isEmpty(binding.lon.getText()) ? null : binding.lon.getText().toString()
+                        );
                     } else {
                         presenter.createEvent(
                                 enrollmentUid,
@@ -281,15 +221,17 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                                 selectedDate,
                                 selectedOrgUnit,
                                 null,
-                                catComboIsDefaultOrNull() ? null : selectedCatOptionCombo.uid(),
-                                selectedLat,
-                                selectedLon,
+                                catComboIsDefaultOrNull() ? null : catOptionComboUid,
+                                isEmpty(binding.lat.getText()) ? null : binding.lat.getText().toString(),
+                                isEmpty(binding.lon.getText()) ? null : binding.lon.getText().toString(),
                                 getTrackedEntityInstance);
                     }
                 } else {
                     presenter.editEvent(getTrackedEntityInstance, programStageModelUid, eventUid, DateUtils.databaseDateFormat().format(selectedDate), selectedOrgUnit, null,
-                            catComboIsDefaultOrNull() ? null : selectedCatOptionCombo.uid(), selectedLat, selectedLon);
-                    //TODO: WHERE TO UPDATE CHANGES IN DATE, ORGUNIT, CATCOMBO, COORDINATES
+                            catComboIsDefaultOrNull() ? null : catOptionComboUid,
+                            isEmpty(binding.lat.getText()) ? null : binding.lat.getText().toString(),
+                            isEmpty(binding.lon.getText()) ? null : binding.lon.getText().toString()
+                    );
                     startFormActivity(eventUid);
                 }
             });
@@ -352,7 +294,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         binding.progress.setText(text);
     }
 
-    private void checkActionButtonVisibility() {
+    @Override
+    public void checkActionButtonVisibility() {
 
         if (eventUid == null) {
             if (isFormCompleted())
@@ -375,7 +318,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             return isCompleted(selectedDateString) &&
                     isCompleted(selectedOrgUnit) &&
                     isSelectedDateBetweenOpeningAndClosedDates() &&
-                    selectedCatCombo != null && selectedCatOptionCombo != null &&
+                    catCombo != null && catCombo.categories() != null && selectedCatOption.size() == catCombo.categories().size() &&
                     ((eventCreationType != EventCreationType.REFERAL) || (eventCreationType == EventCreationType.REFERAL && tempCreate != null));
         else
             return isCompleted(selectedDateString) &&
@@ -387,8 +330,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     private boolean isSelectedDateBetweenOpeningAndClosedDates() {
         if (selectedDate == null)
             return false;
-        boolean isAfterOpening = selectedOrgUnitOpeningDate == null || (selectedOrgUnitOpeningDate != null && selectedDate.after(selectedOrgUnitOpeningDate));
-        boolean isBeforeClosed = selectedOrgUnitClosedDate == null || (selectedOrgUnitClosedDate != null && selectedDate.before(selectedOrgUnitClosedDate));
+        boolean isAfterOpening = selectedOrgUnitOpeningDate == null || selectedDate.after(selectedOrgUnitOpeningDate);
+        boolean isBeforeClosed = selectedOrgUnitClosedDate == null || selectedDate.before(selectedOrgUnitClosedDate);
         return isAfterOpening && isBeforeClosed;
 
     }
@@ -419,7 +362,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                 if (eventCreationType != EventCreationType.SCHEDULE)
                     selectedDate = now.getTime();
                 else {
-                    now.add(Calendar.DAY_OF_YEAR, getIntent().getIntExtra(Constants.EVENT_SCHEDULE_INTERVAL, 0));
+                    now.add(Calendar.DAY_OF_YEAR, eventScheduleInterval);
                     selectedDate = DateUtils.getInstance().getNextPeriod(null, now.getTime(), 1);
                 }
 
@@ -533,6 +476,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     public void setEvent(EventModel event) {
 
         binding.setEvent(event);
+        catOptionComboUid = event.attributeOptionCombo();
 
         if (event.eventDate() != null) {
             selectedDate = event.eventDate();
@@ -554,17 +498,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         }
 
         eventModel = event;
-    }
-
-    @Override
-    public void setCatOption(CategoryOptionComboModel categoryOptionComboModel) {
-        if (categoryOptionComboModels != null) {
-            for (int i = 0; i < categoryOptionComboModels.size(); i++) {
-                if (categoryOptionComboModels.get(i).uid().equals(categoryOptionComboModel.uid())) {
-                    binding.catCombo.setSelection(i + 1);
-                }
-            }
-        }
     }
 
     @Override
@@ -623,7 +556,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
             Calendar now = DateUtils.getInstance().getCalendar();
             if (periodType == null) {
-                now.add(Calendar.DAY_OF_YEAR, getIntent().getIntExtra(Constants.EVENT_SCHEDULE_INTERVAL, 0));
+                now.add(Calendar.DAY_OF_YEAR, eventScheduleInterval);
                 selectedDate = DateUtils.getInstance().getNextPeriod(null, now.getTime(), 0);
                 selectedDateString = DateUtils.uiDateFormat().format(selectedDate);
             } else {
@@ -636,59 +569,42 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     }
 
     @Override
-    public void setCatComboOptions(CategoryComboModel catCombo, List<CategoryOptionComboModel> catComboList) {
+    public void setCatComboOptions(CategoryCombo catCombo, Map<String, CategoryOption> stringCategoryOptionMap) {
 
         runOnUiThread(() -> {
+            this.catCombo = catCombo;
+            if (stringCategoryOptionMap != null)
+                selectedCatOption = stringCategoryOptionMap;
 
-            selectedCatCombo = catCombo;
+            binding.catComboLayout.removeAllViews();
 
-            if (catComboIsDefaultOrNull() || catComboList.isEmpty()) {
-                binding.catCombo.setVisibility(View.GONE);
-                binding.catComboLine.setVisibility(View.GONE);
-            } else {
+            if (!catCombo.isDefault() && catCombo.categories() != null)
+                for (Category category : catCombo.categories()) {
+                    CategorySelectorBinding catSelectorBinding = CategorySelectorBinding.inflate(LayoutInflater.from(this));
+                    catSelectorBinding.catCombLayout.setHint(category.displayName());
+                    catSelectorBinding.catCombo.setOnClickListener(
+                            view ->
+                                    CategoryOptionPopUp.getInstance()
+                                            .setCategory(category)
+                                            .setOnClick(item -> {
+                                                if (item != null)
+                                                    selectedCatOption.put(category.uid(), item);
+                                                else
+                                                    selectedCatOption.remove(category.uid());
+                                                catSelectorBinding.catCombo.setText(item != null ? item.displayName() : null);
+                                                if (selectedCatOption.size() == catCombo.categories().size()) {
+                                                    catOptionComboUid = presenter.getCatOptionCombo(catCombo.categoryOptionCombos(), new ArrayList<>(selectedCatOption.values()));
+                                                    checkActionButtonVisibility();
+                                                }
+                                            })
+                                            .show(this, catSelectorBinding.getRoot())
+                    );
 
-                if (!catComboList.isEmpty()) {
-                    selectedCatOptionCombo = catComboList.get(0);
+                    if (stringCategoryOptionMap != null && stringCategoryOptionMap.get(category.uid()) != null)
+                        catSelectorBinding.catCombo.setText(stringCategoryOptionMap.get(category.uid()).displayName());
+
+                    binding.catComboLayout.addView(catSelectorBinding.getRoot());
                 }
-                binding.catCombo.setVisibility(View.VISIBLE);
-                binding.catComboLine.setVisibility(View.VISIBLE);
-
-                categoryOptionComboModels = catComboList;
-
-                CatComboAdapter2 adapter = new CatComboAdapter2(EventInitialActivity.this,
-                        R.layout.spinner_layout,
-                        R.id.spinner_text,
-                        catComboList,
-                        catCombo.displayName() != null ? catCombo.displayName() : getString(R.string.category_option));
-
-                binding.catCombo.setAdapter(adapter);
-                binding.catCombo.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                    @Override
-                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                        if (catComboList.size() > position - 1 && position > 0)
-                            selectedCatOptionCombo = catComboList.get(position - 1);
-                        else
-                            selectedCatOptionCombo = null;
-                        checkActionButtonVisibility();
-                    }
-
-                    @Override
-                    public void onNothingSelected(AdapterView<?> parent) {
-                        //unused
-                    }
-                });
-
-
-                if (eventModel != null)
-                    presenter.getCatOption(eventModel.attributeOptionCombo());
-            }
-
-
-            if (periodType != null) {
-                binding.dateLayout.setHint(periodType.name());
-                presenter.getEvents(programUid, enrollmentUid, programStageUid, periodType);
-            }
-            checkActionButtonVisibility();
         });
     }
 
@@ -697,26 +613,16 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         Calendar calendar = Calendar.getInstance();
 
         if (eventCreationType == EventCreationType.SCHEDULE)
-            calendar.add(Calendar.DAY_OF_YEAR, getIntent().getIntExtra(Constants.EVENT_SCHEDULE_INTERVAL, 0));
+            calendar.add(Calendar.DAY_OF_YEAR, eventScheduleInterval);
 
         DatePickerDialog datePickerDialog = new DatePickerDialog(this, listener, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
 
-        // ONLY FUTURE DATES
-       /* if (eventCreationType == EventCreationType.SCHEDULE) {
-//            if (getIntent().getIntExtra(Constants.EVENT_SCHEDULE_INTERVAL, 0) > 0)
-            calendar.add(Calendar.DAY_OF_YEAR, getIntent().getIntExtra(Constants.EVENT_SCHEDULE_INTERVAL, 1));
-            datePickerDialog.getDatePicker().setMinDate(calendar.getTimeInMillis());
-        }*/
-        // ONLY PAST DATES AND TODAY
-//        else {
-        //If expiryPeriodType is not null set a minumn date
         if (program.expiryPeriodType() != null) {
             Date minDate = DateUtils.getInstance().expDate(null, program.expiryDays() == null ? 0 : program.expiryDays(), program.expiryPeriodType());
             datePickerDialog.getDatePicker().setMinDate(minDate.getTime());
         }
         if (eventCreationType != EventCreationType.SCHEDULE)
             datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis() - 1000);
-//        }
         datePickerDialog.show();
     }
 
@@ -767,7 +673,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     @NonNull
     @Override
     public Consumer<List<FieldViewModel>> showFields(String sectionUid) {
-        return fields -> swap(fields, sectionUid);
+        return this::swap;
     }
 
     @Override
@@ -775,7 +681,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         presenter.getProgramStage(programStageUid);
     }
 
-    void swap(@NonNull List<FieldViewModel> updates, String sectionUid) {
+    void swap(@NonNull List<FieldViewModel> updates) {
 
         List<FieldViewModel> realUpdates = new ArrayList<>();
         if (sectionsToHide != null && !sectionsToHide.isEmpty()) {
@@ -840,15 +746,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                 total++;
         }
         return total;
-    }
-
-    @Override
-    public void setReportDate(Date date) {
-        selectedDate = date;
-        selectedDateString = DateUtils.getInstance().getPeriodUIString(periodType, date, Locale.getDefault());
-        binding.date.setText(selectedDateString);
-        binding.executePendingBindings();
-        checkActionButtonVisibility();
     }
 
     @Override
@@ -918,7 +815,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     }
 
     private boolean catComboIsDefaultOrNull() {
-        return (selectedCatCombo == null || selectedCatCombo.isDefault() || CategoryComboModel.DEFAULT_UID.equals(selectedCatCombo.uid()));
+        return (catCombo == null || catCombo.isDefault());
     }
 
     @Override
