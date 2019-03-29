@@ -6,7 +6,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minHeight="39dp">
+        android:minHeight="@dimen/default_cell_height">
 
 
         <LinearLayout
@@ -17,7 +17,7 @@
 
             <TextView
                 android:id="@+id/title"
-                android:layout_width="60dp"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:maxLines="1"
                 android:gravity="center_vertical"
@@ -36,7 +36,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginEnd="8dp"
-                android:minHeight="@dimen/default_cell_height"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:srcCompat="@drawable/ic_menu_info"
                 app:tint="?colorPrimary" />
