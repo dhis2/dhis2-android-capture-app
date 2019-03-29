@@ -140,6 +140,8 @@ public class OrgUnitDialog extends DialogFragment {
     }
 
     public OrganisationUnitModel getSelectedOrgUnitModel() {
+        if(treeView.getSelected().size() == 0)
+            return null;
         return ((OrganisationUnitModel) treeView.getSelected().get(0).getValue());
     }
 
