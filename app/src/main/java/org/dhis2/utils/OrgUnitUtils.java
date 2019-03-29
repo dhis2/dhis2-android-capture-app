@@ -5,12 +5,14 @@ import android.content.Context;
 import com.unnamed.b.atv.model.TreeNode;
 
 import org.dhis2.usescases.main.program.OrgUnitHolder;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -27,6 +29,9 @@ public class OrgUnitUtils {
     public static TreeNode renderTree(Context context, @NonNull List<OrganisationUnitModel> myOrgs, Boolean isMultiSelection) {
 
         HashMap<Integer, ArrayList<TreeNode>> subLists = new HashMap<>();
+        Map<String,OrganisationUnitModel> myOrgUnitMap = new HashMap<>();
+        for(OrganisationUnitModel organisationUnit : myOrgs)
+            myOrgUnitMap.put(organisationUnit.uid(),organisationUnit);
 
         List<OrganisationUnitModel> allOrgs = new ArrayList<>();
         ArrayList<String> myOrgUnitUids = new ArrayList<>();
@@ -40,6 +45,8 @@ public class OrgUnitUtils {
             for (int i = myorg.level(); i > 0; i--) {
                 OrganisationUnitModel orgToAdd = OrganisationUnitModel.builder()
                         .uid(pathUid[i])
+                        .openingDate(myOrgUnitMap.get(pathUid[i])!=null?myOrgUnitMap.get(pathUid[i]).openingDate():null)
+                        .closedDate(myOrgUnitMap.get(pathUid[i])!=null?myOrgUnitMap.get(pathUid[i]).closedDate():null)
                         .level(i)
                         .parent(pathUid[i - 1])
                         .name(pathName[i])
