@@ -100,8 +100,10 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
         orgUnitDialog.setOrgUnits(data);
         orgUnitDialog.setTitle(getString(R.string.org_unit))
                 .setPossitiveListener(v -> {
-                    if (orgUnitDialog.getSelectedOrgUnit() != null) {
+                    if (orgUnitDialog.getSelectedOrgUnit() != null && !orgUnitDialog.getSelectedOrgUnit().isEmpty()) {
                         selectedOrgUnit = orgUnitDialog.getSelectedOrgUnitModel();
+                        if(selectedOrgUnit == null)
+                            orgUnitDialog.dismiss();
                         binding.dataSetOrgUnitEditText.setText(selectedOrgUnit.displayName());
                         binding.dataSetPeriodEditText.setText("");
                     }
