@@ -10,6 +10,8 @@ import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
+import org.hisp.dhis.android.core.constant.Constant;
+import org.hisp.dhis.android.core.constant.ConstantTableInfo;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -51,10 +53,11 @@ import org.hisp.dhis.rules.models.RuleVariablePreviousEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.annotation.Nonnull;
 
@@ -68,6 +71,10 @@ import static android.text.TextUtils.isEmpty;
 
 @SuppressWarnings("PMD")
 public final class RulesRepository {
+    private static final String QUERY_CONSTANTS = "SELECT * " +
+            "FROM Constant";
+
+
     private static final String QUERY_RULES = "SELECT\n" +
             "  ProgramRule.uid, \n" +
             "  ProgramRule.programStage,\n" +
@@ -258,6 +265,20 @@ public final class RulesRepository {
     }
 
     @NonNull
+    public Flowable<Map<String, String>> queryConstants() {
+        return briteDatabase.createQuery(ConstantTableInfo.TABLE_INFO.name(), QUERY_CONSTANTS)
+                .mapToList(Constant::create)
+                .map(constants -> {
+                    Map<String, String> constantsMap = new HashMap<>();
+                    for (Constant constant : constants) {
+                        constantsMap.put(constant.uid(), Objects.requireNonNull(constant.value()).toString());
+                    }
+                    return constantsMap;
+                })
+                .toFlowable(BackpressureStrategy.LATEST);
+    }
+
+    @NonNull
     private Flowable<List<Quartet<String, String, Integer, String>>> queryRules(
             @NonNull String programUid) {
         return briteDatabase.createQuery(ProgramRuleModel.TABLE, QUERY_RULES, programUid)
@@ -270,25 +291,6 @@ public final class RulesRepository {
                 .mapToList(RulesRepository::mapToActionPairs).toFlowable(BackpressureStrategy.LATEST);
     }
 
-    @NonNull
-    private static List<Rule> mapActionsToRules(
-            @NonNull List<Quartet<String, String, Integer, String>> rawRules,
-            @NonNull Map<String, Collection<RuleAction>> ruleActions) {
-        List<Rule> rules = new ArrayList<>();
-
-        for (Quartet<String, String, Integer, String> rawRule : rawRules) {
-            Collection<RuleAction> actions = ruleActions.get(rawRule.val0());
-
-            if (actions == null) {
-                actions = new ArrayList<>();
-            }
-
-           /* rules.add(Rule.create(rawRule.val1(), rawRule.val2(),
-                    rawRule.val3(), new ArrayList<>(actions)));*/
-        }
-
-        return rules;
-    }
 
     @NonNull
     private static List<Rule> mapActionsToRulesNew(
@@ -304,9 +306,6 @@ public final class RulesRepository {
                     pairActions.add(pair.val1());
             }
 
-            /*if (actions == null) {
-                actions = new ArrayList<>();
-            }*/
             rules.add(Rule.create(rawRule.val1(), rawRule.val2(),
                     rawRule.val3(), new ArrayList<>(pairActions), rawRule.val0())); //TODO: Change val0 to Rule Name
         }
@@ -423,6 +422,17 @@ public final class RulesRepository {
     }
 
     @NonNull
+    private static Map<String, String> mapToConstantsMap(@NonNull Cursor cursor) {
+        String uid = cursor.getString(0);
+        String value = cursor.getString(1);
+
+        Map<String, String> constants = new HashMap<>();
+        if (cursor.moveToFirst())
+            constants.put(uid, value);
+        return constants;
+    }
+
+    @NonNull
     private static RuleValueType convertType(@NonNull String type) {
         ValueType valueType = ValueType.valueOf(type);
         if (valueType.isInteger() || valueType.isNumeric()) {
@@ -502,8 +512,7 @@ public final class RulesRepository {
             case HIDEOPTIONGROUP:
                 return RuleActionHideOptionGroup.create(content, optionGroup);
             default:
-                throw new IllegalArgumentException(
-                        "Unsupported RuleActionType: " + actionType.name());
+                return RuleActionUnsupported.create("UNSUPPORTED RULE ACTION TYPE", actionType.name());
         }
     }
 
@@ -554,12 +563,12 @@ public final class RulesRepository {
                                                 if (dataValueCursor != null && dataValueCursor.moveToFirst()) {
                                                     for (int i = 0; i < dataValueCursor.getCount(); i++) {
                                                         Date eventDateV = DateUtils.databaseDateFormat().parse(dataValueCursor.getString(0));
-                                                        String programStage = cursor.getString(1);
-                                                        String dataElement = cursor.getString(2);
-                                                        String value = cursor.getString(3) != null ? dataValueCursor.getString(3) : "";
-                                                        boolean useCode = cursor.getInt(4) == 1;
-                                                        String optionCode = cursor.getString(5);
-                                                        String optionName = cursor.getString(6);
+                                                        String programStage = dataValueCursor.getString(1);
+                                                        String dataElement = dataValueCursor.getString(2);
+                                                        String value = dataValueCursor.getString(3) != null ? dataValueCursor.getString(3) : "";
+                                                        boolean useCode = dataValueCursor.getInt(4) == 1;
+                                                        String optionCode = dataValueCursor.getString(5);
+                                                        String optionName = dataValueCursor.getString(6);
                                                         if (!isEmpty(optionCode) && !isEmpty(optionName))
                                                             value = useCode ? optionCode : optionName; //If de has optionSet then check if value should be code or name for program rules
                                                         dataValues.add(RuleDataValue.create(eventDateV, programStage,
@@ -596,18 +605,18 @@ public final class RulesRepository {
                     String orgUnit = cursor.getString(5);
                     String orgUnitCode = getOrgUnitCode(orgUnit);
                     String programStageName = cursor.getString(6);
-                    RuleEvent.Status status = cursor.getString(2).equals(RuleEvent.Status.VISITED.toString())? RuleEvent.Status.ACTIVE : RuleEvent.Status.valueOf(cursor.getString(2)); //TODO: WHAT?
+                    RuleEvent.Status status = cursor.getString(2).equals(RuleEvent.Status.VISITED.toString()) ? RuleEvent.Status.ACTIVE : RuleEvent.Status.valueOf(cursor.getString(2)); //TODO: WHAT?
 
                     try (Cursor dataValueCursor = briteDatabase.query(QUERY_VALUES, eventUid)) {
                         if (dataValueCursor != null && dataValueCursor.moveToFirst()) {
                             for (int i = 0; i < dataValueCursor.getCount(); i++) {
                                 Date eventDateV = DateUtils.databaseDateFormat().parse(dataValueCursor.getString(0));
-                                String programStage = cursor.getString(1);
-                                String dataElement = cursor.getString(2);
-                                String value = cursor.getString(3) != null ? dataValueCursor.getString(3) : "";
-                                boolean useCode = cursor.getInt(4) == 1;
-                                String optionCode = cursor.getString(5);
-                                String optionName = cursor.getString(6);
+                                String programStage = dataValueCursor.getString(1);
+                                String dataElement = dataValueCursor.getString(2);
+                                String value = dataValueCursor.getString(3) != null ? dataValueCursor.getString(3) : "";
+                                boolean useCode = dataValueCursor.getInt(4) == 1;
+                                String optionCode = dataValueCursor.getString(5);
+                                String optionName = dataValueCursor.getString(6);
                                 if (!isEmpty(optionCode) && !isEmpty(optionName))
                                     value = useCode ? optionCode : optionName; //If de has optionSet then check if value should be code or name for program rules
                                 dataValues.add(RuleDataValue.create(eventDateV, programStage,

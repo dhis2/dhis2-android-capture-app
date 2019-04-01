@@ -212,6 +212,8 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
         OrgUnitDialog orgUnitDialog = OrgUnitDialog.getInstace().setMultiSelection(false);
         orgUnitDialog.setTitle("Event Org Unit")
                 .setPossitiveListener(v -> {
+                    if(orgUnitDialog.getSelectedOrgUnitModel() == null)
+                        orgUnitDialog.dismiss();
                     view.setSelectedOrgUnit(orgUnitDialog.getSelectedOrgUnitModel());
                     orgUnitDialog.dismiss();
                 })

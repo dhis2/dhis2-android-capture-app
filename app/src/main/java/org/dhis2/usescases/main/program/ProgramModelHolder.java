@@ -44,17 +44,19 @@ public class ProgramModelHolder extends RecyclerView.ViewHolder {
             icon = R.drawable.ic_program_default;
         }
 
+        Drawable iconImage = ContextCompat.getDrawable(binding.programImage.getContext(), R.drawable.ic_program_default);
         try {
-            Drawable iconImage = ContextCompat.getDrawable(binding.programImage.getContext(), icon);
-            iconImage.mutate();
+            iconImage = ContextCompat.getDrawable(binding.programImage.getContext(), icon);
         }catch (Exception e){
             Timber.log(1,e);
-            Drawable iconImage = ContextCompat.getDrawable(binding.programImage.getContext(), R.drawable.ic_program_default);
+        }
+
+        if (iconImage != null){
             iconImage.mutate();
         }
-        binding.programImage.setImageResource(icon);
-        binding.programImage.setColorFilter(ColorUtils.getContrastColor(color));
 
+        binding.programImage.setImageDrawable(iconImage);
+        binding.programImage.setColorFilter(ColorUtils.getContrastColor(color));
         binding.programImage.setBackgroundColor(color);
 
     }

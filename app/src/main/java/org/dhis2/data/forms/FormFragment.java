@@ -568,7 +568,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
             if (isAdded() && !isEmpty(messageOnComplete) && !dialog.isShowing())
                 dialog.show();
             else if (isAdded() && getActivity() != null) {
-                getActivity().finish();
+                getActivity().finish(); //TODO: ASK IF USER WANTS TO DELETE RECORD
             }
         }
     }

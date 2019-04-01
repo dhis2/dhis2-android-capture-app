@@ -46,6 +46,7 @@ import org.hisp.dhis.android.core.relationship.RelationshipTypeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.rules.models.RuleAction;
 import org.hisp.dhis.rules.models.RuleActionDisplayKeyValuePair;
+import org.hisp.dhis.rules.models.RuleActionDisplayText;
 import org.hisp.dhis.rules.models.RuleEffect;
 
 import java.util.ArrayList;
@@ -496,6 +497,11 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                         ProgramIndicatorModel.builder().displayName(((RuleActionDisplayKeyValuePair) ruleAction).content()).build(),
                         ruleEffect.data(), "");
                 indicatorsFragment.addIndicator(indicator);
+            }else if(ruleAction instanceof RuleActionDisplayText){
+                Trio<ProgramIndicatorModel, String, String> indicator = Trio.create(
+                        ProgramIndicatorModel.builder().displayName(((RuleActionDisplayText) ruleAction).content()).build(),
+                        ruleEffect.data(), "");
+                indicatorsFragment.addIndicator(indicator);
             }
         }
     }
@@ -610,6 +616,18 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
     public void getCatComboOptions(EventModel event) {
         compositeDisposable.add(
+                dashboardRepository.catComboForProgram(event.program())
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(catCombo -> {
+                                    for (ProgramStageModel programStage : dashboardProgramModel.getProgramStages()) {
+                                        if (event.programStage().equals(programStage.uid()))
+                                            view.showCatComboDialog(event.uid(),catCombo);
+                                    }
+                                },
+                                Timber::e));
+
+       /* compositeDisposable.add(
                 Observable.zip(
                         metadataRepository.getCategoryComboOptions(dashboardProgramModel.getCurrentProgram().categoryCombo()),
                         metadataRepository.getCategoryFromCategoryCombo(dashboardProgramModel.getCurrentProgram().categoryCombo()),
@@ -623,12 +641,12 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                                             view.showCatComboDialog(event.uid(), pair.val1().displayName(), pair.val0(), programStage.displayName());
                                     }
                                 },
-                                Timber::e));
+                                Timber::e));*/
     }
 
     @Override
-    public void changeCatOption(String eventUid, CategoryOptionComboModel selectedOption) {
-        metadataRepository.saveCatOption(eventUid, selectedOption);
+    public void changeCatOption(String eventUid, String catOptionComboUid) {
+        metadataRepository.saveCatOption(eventUid, catOptionComboUid);
     }
 
 }

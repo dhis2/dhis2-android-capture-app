@@ -35,6 +35,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/toolbar"
+            elevation="8dp"
             android:layout_width="match_parent"
             android:layout_height="?android:attr/actionBarSize"
             android:background="?colorPrimary"
@@ -224,13 +225,13 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:textColorHint="@color/text_black_808">
-                                <!--android:hint="@{programStage.executionDateLabel()!=null?programStage.executionDateLabel():@string/event_date}"-->
 
                                 <com.google.android.material.textfield.TextInputEditText
                                     android:id="@+id/date"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:focusable="false"
+                                    android:onTextChanged="@{presenter::onFieldChanged}"
                                     android:textSize="15sp" />
 
                             </com.google.android.material.textfield.TextInputLayout>
@@ -249,32 +250,16 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:focusable="false"
+                                android:onTextChanged="@{presenter::onFieldChanged}"
                                 android:textSize="15sp" />
 
                         </com.google.android.material.textfield.TextInputLayout>
 
-
-                        <Spinner
-                            android:id="@+id/cat_combo"
+                        <LinearLayout
+                            android:id="@+id/catComboLayout"
                             android:layout_width="match_parent"
-                            android:layout_height="40dp"
-                            android:layout_marginStart="5dp"
-                            android:layout_marginTop="16dp"
-                            android:maxLines="1"
-                            android:minHeight="40dp"
-                            android:textAlignment="textStart"
-                            android:textAllCaps="false"
-                            android:textColor="?colorPrimary"
-                            android:textSize="15sp" />
-
-                        <View
-                            android:id="@+id/cat_combo_line"
-                            android:layout_width="match_parent"
-                            android:layout_height="0.8dp"
-                            android:layout_marginStart="4dp"
-                            android:layout_marginEnd="4dp"
-                            android:background="@color/black_de0" />
-
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical" />
 
                         <LinearLayout
                             android:id="@+id/coordinates_layout"
@@ -330,6 +315,7 @@
                                     android:layout_height="wrap_content"
                                     android:focusable="false"
                                     android:inputType="numberDecimal"
+                                    android:onTextChanged="@{presenter::onFieldChanged}"
                                     android:text='@{event != null ? event.latitude() : ""}'
                                     android:textSize="15sp" />
 
@@ -349,6 +335,7 @@
                                     android:layout_height="wrap_content"
                                     android:focusable="false"
                                     android:inputType="numberDecimal"
+                                    android:onTextChanged="@{presenter::onFieldChanged}"
                                     android:text='@{event != null ? event.longitude() : ""}'
                                     android:textSize="15sp" />
 

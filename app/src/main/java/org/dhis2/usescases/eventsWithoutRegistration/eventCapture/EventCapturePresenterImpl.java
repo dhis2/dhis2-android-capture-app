@@ -209,8 +209,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                             fieldMap.put(fieldViewModel.programStageSection(), new ArrayList<>());
                                         fieldMap.get(fieldViewModel.programStageSection()).add(fieldViewModel);
                                     }
-                                    if(fieldMap.containsKey(null) && fieldMap.containsKey(section))
-                                        for(FieldViewModel fieldViewModel : fieldMap.get(null))
+                                    if (fieldMap.containsKey(null) && fieldMap.containsKey(section))
+                                        for (FieldViewModel fieldViewModel : fieldMap.get(null))
                                             fieldMap.get(section).add(fieldViewModel);
 
                                     List<FieldViewModel> fieldsToShow = fieldMap.get(section.equals("NO_SECTION") ? null : section);
@@ -248,10 +248,14 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                     this::applyEffects)
                     .map(fields -> {
                         //Clear all sections fields from map
+                        List<String> toRemoveKeys = new ArrayList<>();
                         for (Map.Entry<String, FieldViewModel> entry : emptyMandatoryFields.entrySet()) {
                             if (entry.getValue().programStageSection().equals(sectionUid))
-                                emptyMandatoryFields.remove(entry.getKey());
+                                toRemoveKeys.add(entry.getKey());
                         }
+                        for (String key : toRemoveKeys)
+                            emptyMandatoryFields.remove(key);
+
                         for (FieldViewModel fieldViewModel : fields) {
                             if (fieldViewModel.mandatory() && isEmpty(fieldViewModel.value()))
                                 emptyMandatoryFields.put(fieldViewModel.uid(), fieldViewModel);
@@ -655,7 +659,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
     @Override
     public void unsupportedRuleAction() {
-        view.displayMessage(view.getContext().getString(R.string.unsupported_program_rule));
+//        view.displayMessage(view.getContext().getString(R.string.unsupported_program_rule));
+        Timber.d(view.getContext().getString(R.string.unsupported_program_rule));
     }
 
     @Override
