@@ -6,33 +6,31 @@ import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.utils.DateUtils;
-import org.dhis2.utils.Period;
 import org.dhis2.utils.ValueUtils;
 import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.android.core.category.CategoryComboModel;
+import org.hisp.dhis.android.core.category.Category;
+import org.hisp.dhis.android.core.category.CategoryCombo;
+import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
-import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
-import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.dataelement.DataElement;
 import org.hisp.dhis.android.core.event.Event;
-import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.event.EventCollectionRepository;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.period.DatePeriod;
 import org.hisp.dhis.android.core.program.Program;
-import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageDataElement;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import androidx.annotation.NonNull;
-import io.reactivex.BackpressureStrategy;
-import io.reactivex.Flowable;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Transformations;
+import androidx.paging.DataSource;
+import androidx.paging.LivePagedListBuilder;
+import androidx.paging.PagedList;
 import io.reactivex.Observable;
 
 import static android.text.TextUtils.isEmpty;
@@ -42,20 +40,6 @@ import static android.text.TextUtils.isEmpty;
  */
 
 public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepository {
-
-    private final String EVENT_DATA_VALUES = "SELECT \n" +
-            " DataElement.uid, \n" +
-            " DataElement.displayName, \n" +
-            " DataElement.valueType,\n" +
-            " DataElement.optionSet, \n" +
-            " ProgramStageDataElement.displayInReports, \n" +
-            " TrackedEntityDataValue.value \n" +
-            " FROM TrackedEntityDataValue \n" +
-            " JOIN ProgramStageDataElement ON ProgramStageDataElement.dataElement = TrackedEntityDataValue.dataElement \n" +
-            " JOIN Event ON Event.programStage = ProgramStageDataElement.programStage \n" +
-            " JOIN DataElement ON DataElement.uid = TrackedEntityDataValue.dataElement \n" +
-            " WHERE TrackedEntityDataValue.event = ? AND Event.uid = ? AND ProgramStageDataElement.displayInReports = 1 ORDER BY sortOrder";
-
 
     private final BriteDatabase briteDatabase;
     private final String programUid;
@@ -68,115 +52,28 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     }
 
     @NonNull
-    private Flowable<List<ProgramEventViewModel>> programEvents(String programUid, List<Date> dates, Period period, String orgUnitQuery, int page) {
-        String pageQuery = String.format(Locale.US, " LIMIT %d,%d", page * 20, 20);
-
-        String orgQuery = "";
-        if (!isEmpty(orgUnitQuery))
-            orgQuery = String.format(" AND Event.organisationUnit IN (%s) ", orgUnitQuery);
-
-        if (dates != null) {
-            String SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES = "SELECT * FROM " + EventModel.TABLE + " WHERE " + EventModel.Columns.PROGRAM + "='%s' AND (%s) " +
-                    "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'" +
-                    orgQuery +
-                    " ORDER BY " + EventModel.TABLE + "." + EventModel.Columns.EVENT_DATE + " DESC, Event.lastUpdated DESC";
-
-            StringBuilder dateQuery = new StringBuilder();
-            String queryFormat = "(%s BETWEEN '%s' AND '%s') ";
-            for (int i = 0; i < dates.size(); i++) {
-                Date[] datesToQuery = DateUtils.getInstance().getDateFromDateAndPeriod(dates.get(i), period);
-                dateQuery.append(String.format(queryFormat, EventModel.Columns.EVENT_DATE, DateUtils.databaseDateFormat().format(datesToQuery[0]), DateUtils.databaseDateFormat().format(datesToQuery[1])));
-                if (i < dates.size() - 1)
-                    dateQuery.append("OR ");
-            }
-
-            return briteDatabase.createQuery(EventModel.TABLE, String.format(SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES + pageQuery,
-                    programUid == null ? "" : programUid,
-                    dateQuery))
-                    .mapToList(cursor -> transformIntoEventViewModel(EventModel.create(cursor))).toFlowable(BackpressureStrategy.LATEST);
-        } else {
-
-
-            String SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES = "SELECT * FROM " + EventModel.TABLE + " WHERE " + EventModel.Columns.PROGRAM + "='%s' " +
-                    "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'" +
-                    orgQuery +
-                    " ORDER BY " + EventModel.TABLE + "." + EventModel.Columns.EVENT_DATE + " DESC, Event.lastUpdated DESC";
-
-            return briteDatabase.createQuery(EventModel.TABLE, String.format(SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES + pageQuery, programUid == null ? "" : programUid))
-                    .mapToList(cursor -> {
-                        EventModel eventModel = EventModel.create(cursor);
-                        return transformIntoEventViewModel(eventModel);
-                    }).toFlowable(BackpressureStrategy.LATEST);
-        }
+    @Override
+    public LiveData<PagedList<ProgramEventViewModel>> filteredProgramEvents(List<DatePeriod> dateFilter, List<String> orgUnitFilter, List<CategoryOptionCombo> catOptCombList) {
+        EventCollectionRepository eventRepo = d2.eventModule().events.byProgramUid().eq(programUid);
+        if (!dateFilter.isEmpty())
+            eventRepo = eventRepo.byEventDate().inDatePeriods(dateFilter);
+        if (!orgUnitFilter.isEmpty())
+            eventRepo = eventRepo.byOrganisationUnitUid().in(orgUnitFilter);
+        if (!catOptCombList.isEmpty())
+            for (CategoryOptionCombo catOptComb : catOptCombList)
+                eventRepo = eventRepo.byAttributeOptionComboUid().eq(catOptComb.uid());
+        return Transformations.switchMap(eventRepo.withAllChildren().getPaged(20), this::transform);
     }
 
     @NonNull
     @Override
-    public Flowable<List<ProgramEventViewModel>> filteredProgramEvents(String programUid, List<Date> dates,
-                                                                       Period period,
-                                                                       CategoryOptionComboModel categoryOptionComboModel,
-                                                                       String orgUnitQuery,
-                                                                       int page) {
-        if (orgUnitQuery == null)
-            orgUnitQuery = "";
-        String pageQuery = String.format(Locale.US, " LIMIT %d,%d", page * 20, 20);
-
-        if (categoryOptionComboModel == null) {
-            return programEvents(programUid, dates, period, orgUnitQuery, page);
-        }
-        if (dates != null) {
-            String SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES_AND_CAT_COMBO = "SELECT * FROM " + EventModel.TABLE + " WHERE " + EventModel.Columns.PROGRAM + "='%s' AND " + EventModel.Columns.ATTRIBUTE_OPTION_COMBO + "='%s' AND (%s) " +
-                    "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'" +
-                    " AND " + EventModel.TABLE + "." + EventModel.Columns.ORGANISATION_UNIT + " IN (" + orgUnitQuery + ")";
-
-            StringBuilder dateQuery = new StringBuilder();
-            String queryFormat = "(%s BETWEEN '%s' AND '%s') ";
-            for (int i = 0; i < dates.size(); i++) {
-                Date[] datesToQuery = DateUtils.getInstance().getDateFromDateAndPeriod(dates.get(i), period);
-                dateQuery.append(String.format(queryFormat, EventModel.Columns.EVENT_DATE, DateUtils.getInstance().formatDate(datesToQuery[0]), DateUtils.getInstance().formatDate(datesToQuery[1])));
-                if (i < dates.size() - 1)
-                    dateQuery.append("OR ");
-            }
-
-            String id = categoryOptionComboModel.uid() == null ? "" : categoryOptionComboModel.uid();
-            return briteDatabase.createQuery(EventModel.TABLE, String.format(SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES_AND_CAT_COMBO + pageQuery,
-                    programUid == null ? "" : programUid,
-                    id,
-                    dateQuery))
-                    .mapToList(cursor -> transformIntoEventViewModel(EventModel.create(cursor))).toFlowable(BackpressureStrategy.LATEST);
-        } else {
-            String SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES_AND_CAT_COMBO = "SELECT * FROM " + EventModel.TABLE + " WHERE " + EventModel.Columns.PROGRAM + "='%s' AND " + EventModel.Columns.ATTRIBUTE_OPTION_COMBO + "='%s' " +
-                    "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'" +
-                    " AND " + EventModel.TABLE + "." + EventModel.Columns.ORGANISATION_UNIT + " IN (" + orgUnitQuery + ")";
-
-            String id = categoryOptionComboModel.uid() == null ? "" : categoryOptionComboModel.uid();
-            return briteDatabase.createQuery(EventModel.TABLE, String.format(SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES_AND_CAT_COMBO + pageQuery,
-                    programUid == null ? "" : programUid,
-                    id))
-                    .mapToList(cursor -> {
-                        EventModel eventModel = EventModel.create(cursor);
-                        return transformIntoEventViewModel(eventModel);
-                    }).toFlowable(BackpressureStrategy.LATEST);
-        }
+    public Observable<Program> program() {
+        return Observable.just(d2.programModule().programs.uid(programUid).withAllChildren().get());
     }
 
-    @NonNull
-    @Override
-    public Flowable<List<ProgramEventViewModel>> filteredProgramEvents(List<DatePeriod> dateFilter, List<String> orgUnitFilter, int page) {
-        return Flowable.just(d2.eventModule().events.byProgramUid().eq(programUid))
-                .map(eventRepo -> {
-                    if (!dateFilter.isEmpty())
-                        eventRepo = eventRepo.byEventDate().inDatePeriods(dateFilter);
-                    if (!orgUnitFilter.isEmpty())
-                        eventRepo = eventRepo.byOrganisationUnitUid().in(orgUnitFilter);
-                    return transformIntoEventViewModel(eventRepo.withAllChildren().get());
-                });
-    }
+    private LiveData<PagedList<ProgramEventViewModel>> transform(PagedList<Event> events) {
 
-    private List<ProgramEventViewModel> transformIntoEventViewModel(List<Event> events) {
-
-        List<ProgramEventViewModel> eventList = new ArrayList<>();
-        for (Event event : events) {
+        DataSource dataSource = events.getDataSource().map(event -> {
             String orgUnitName = getOrgUnitName(event.organisationUnit());
             List<String> showInReportsDataElements = new ArrayList<>();
             for (ProgramStageDataElement programStageDataElement : d2.programModule().programStages.uid(event.programStage()).withAllChildren().get().programStageDataElements()) {
@@ -185,62 +82,27 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
             }
             List<Pair<String, String>> data = getData(event.trackedEntityDataValues(), showInReportsDataElements);
             boolean hasExpired = isExpired(event);
-            String attributeOptionCombo = d2.categoryModule().categoryOptionCombos.uid(event.attributeOptionCombo()).get().displayName();
+            CategoryOptionCombo catOptComb = d2.categoryModule().categoryOptionCombos.uid(event.attributeOptionCombo()).get();
+            String attributeOptionCombo = catOptComb != null ? catOptComb.displayName() : "";
 
-            eventList.add(
-                    ProgramEventViewModel.create(
-                            event.uid(),
-                            event.organisationUnit(),
-                            orgUnitName,
-                            event.eventDate(),
-                            event.state(),
-                            data,
-                            event.status(),
-                            hasExpired,
-                            attributeOptionCombo));
-        }
-        return eventList;
-    }
+            return ProgramEventViewModel.create(
+                    event.uid(),
+                    event.organisationUnit(),
+                    orgUnitName,
+                    event.eventDate(),
+                    event.state(),
+                    data,
+                    event.status(),
+                    hasExpired,
+                    attributeOptionCombo);
+        });
 
-    private ProgramEventViewModel transformIntoEventViewModel(EventModel eventModel) {
-
-        String orgUnitName = getOrgUnitName(eventModel.organisationUnit());
-        List<Pair<String, String>> data = getData(eventModel.uid());
-        boolean hasExpired = isExpired(eventModel);
-        String attributeOptionCombo = getAttributeOptionCombo(eventModel.attributeOptionCombo());
-
-        return ProgramEventViewModel.create(
-                eventModel.uid(),
-                eventModel.organisationUnit(),
-                orgUnitName,
-                eventModel.eventDate(),
-                eventModel.state(),
-                data,
-                eventModel.status(),
-                hasExpired,
-                attributeOptionCombo);
-    }
-
-    private String getAttributeOptionCombo(String categoryOptionComboId) {
-        String catOptionCombName = "";
-        CategoryOptionCombo categoryOptionCombo;
-        if (!isEmpty(categoryOptionComboId)) {
-            categoryOptionCombo = d2.categoryModule().categoryOptionCombos.uid(categoryOptionComboId).withAllChildren().get();
-            if (!d2.categoryModule().categoryCombos.uid(categoryOptionCombo.categoryCombo().uid()).get().isDefault())
-                catOptionCombName = categoryOptionCombo.displayName();
-        }
-        return catOptionCombName;
-    }
-
-    private boolean isExpired(EventModel eventModel) {
-        Program program = d2.programModule().programs.uid(eventModel.program()).get();
-        return DateUtils.getInstance().isEventExpired(eventModel.eventDate(),
-                eventModel.completedDate(),
-                eventModel.status(),
-                program.completeEventsExpiryDays(),
-                program.expiryPeriodType(),
-                program.expiryDays());
-
+        return new LivePagedListBuilder(new DataSource.Factory() {
+            @Override
+            public DataSource create() {
+                return dataSource;
+            }
+        }, 20).build();
     }
 
     private boolean isExpired(Event event) {
@@ -263,45 +125,24 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
         return orgUrgUnitName;
     }
 
-    private List<Pair<String, String>> getData(String eventUid) {
-        List<Pair<String, String>> data = new ArrayList<>();
-        try (Cursor cursor = briteDatabase.query(EVENT_DATA_VALUES, eventUid, eventUid)) {
-            if (cursor != null && cursor.moveToFirst()) {
-                for (int i = 0; i < cursor.getCount(); i++) {
-                    String displayName = cursor.getString(cursor.getColumnIndex("displayName"));
-                    String value = cursor.getString(cursor.getColumnIndex("value"));
-                    if (cursor.getString(cursor.getColumnIndex("optionSet")) != null)
-                        value = ValueUtils.optionSetCodeToDisplayName(briteDatabase, cursor.getString(cursor.getColumnIndex("optionSet")), value);
-                    else if (cursor.getString(cursor.getColumnIndex("valueType")).equals(ValueType.ORGANISATION_UNIT.name()))
-                        value = ValueUtils.orgUnitUidToDisplayName(briteDatabase, value);
-
-                    //TODO: Would be good to check other value types to render value (coordinates)
-
-                    data.add(Pair.create(displayName, value));
-                    cursor.moveToNext();
-                }
-            }
-        }
-        return data;
-    }
-
     private List<Pair<String, String>> getData(List<TrackedEntityDataValue> dataValueList, List<String> showInReportsDataElements) {
         List<Pair<String, String>> data = new ArrayList<>();
 
-        for (TrackedEntityDataValue dataValue : dataValueList) {
-            DataElement de = d2.dataElementModule().dataElements.uid(dataValue.dataElement()).get();
-            if (de != null && showInReportsDataElements.contains(de.uid())) {
-                String displayName = !isEmpty(de.displayFormName()) ? de.displayFormName() : de.displayName();
-                String value = dataValue.value();
-                if (de.optionSet() != null)
-                    value = ValueUtils.optionSetCodeToDisplayName(briteDatabase, de.optionSet().uid(), value);
-                else if (de.valueType().equals(ValueType.ORGANISATION_UNIT))
-                    value = ValueUtils.orgUnitUidToDisplayName(briteDatabase, value);
+        if (dataValueList != null)
+            for (TrackedEntityDataValue dataValue : dataValueList) {
+                DataElement de = d2.dataElementModule().dataElements.uid(dataValue.dataElement()).get();
+                if (de != null && showInReportsDataElements.contains(de.uid())) {
+                    String displayName = !isEmpty(de.displayFormName()) ? de.displayFormName() : de.displayName();
+                    String value = dataValue.value();
+                    if (de.optionSet() != null)
+                        value = ValueUtils.optionSetCodeToDisplayName(briteDatabase, de.optionSet().uid(), value);
+                    else if (de.valueType().equals(ValueType.ORGANISATION_UNIT))
+                        value = ValueUtils.orgUnitUidToDisplayName(briteDatabase, value);
 
-                //TODO: Would be good to check other value types to render value (coordinates)
-                data.add(Pair.create(displayName, value));
+                    //TODO: Would be good to check other value types to render value (coordinates)
+                    data.add(Pair.create(displayName, value));
+                }
             }
-        }
 
         return data;
     }
@@ -331,44 +172,42 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
 
     @NonNull
     @Override
-    public Observable<List<CategoryOptionComboModel>> catCombo(String categoryComboUid) {
-        String id = categoryComboUid == null ? "" : categoryComboUid;
-        String SELECT_CATEGORY_COMBO = "SELECT " + CategoryOptionComboModel.TABLE + ".* FROM " + CategoryOptionComboModel.TABLE + " INNER JOIN " + CategoryComboModel.TABLE +
-                " ON " + CategoryOptionComboModel.TABLE + "." + CategoryOptionComboModel.Columns.CATEGORY_COMBO + " = " + CategoryComboModel.TABLE + "." + CategoryComboModel.Columns.UID
-                + " WHERE " + CategoryComboModel.TABLE + "." + CategoryComboModel.Columns.UID + " = '" + id + "'";
-        return briteDatabase.createQuery(CategoryOptionComboModel.TABLE, SELECT_CATEGORY_COMBO)
-                .mapToList(CategoryOptionComboModel::create);
+    public Observable<List<Category>> catCombo() {
+        Program program = d2.programModule().programs.uid(programUid).withAllChildren().get();
+        CategoryCombo categoryCombo = d2.categoryModule().categoryCombos.byUid().eq(program.categoryCombo().uid()).withAllChildren().one().get();
+        List<String> categoriesUids = new ArrayList<>();
+        for (Category category : categoryCombo.categories())
+            categoriesUids.add(category.uid());
+        List<Category> categories = d2.categoryModule().categories.byUid().in(categoriesUids).withAllChildren().get();
+        return Observable.just(categories);
     }
 
     @Override
-    public Observable<List<String>> eventDataValuesNew(EventModel eventModel) {
-        List<String> values = new ArrayList<>();
-        String id = eventModel == null || eventModel.uid() == null ? "" : eventModel.uid();
-        try (Cursor cursor = briteDatabase.query(EVENT_DATA_VALUES, id, id)) {
-            if (cursor != null && cursor.moveToFirst()) {
-                for (int i = 0; i < cursor.getCount(); i++) {
-                    String value = cursor.getString(cursor.getColumnIndex("value"));
-                    if (cursor.getString(cursor.getColumnIndex("optionSet")) != null)
-                        value = ValueUtils.optionSetCodeToDisplayName(briteDatabase, cursor.getString(cursor.getColumnIndex("optionSet")), value);
-                    else if (cursor.getString(cursor.getColumnIndex("valueType")).equals(ValueType.ORGANISATION_UNIT.name()))
-                        value = ValueUtils.orgUnitUidToDisplayName(briteDatabase, value);
+    public boolean getAccessDataWrite() {
+        boolean canWrite;
+        canWrite = d2.programModule().programs.uid(programUid).get().access().data().write();
+        if (canWrite)
+            canWrite = d2.programModule().programStages.byProgramUid().eq(programUid).one().get().access().data().write();
+        return canWrite;
+    }
 
-                    values.add(value);
-                    cursor.moveToNext();
+    @Override
+    public List<CategoryOptionCombo> catOptionCombo(List<CategoryOption> selectedOptions) {
+        List<CategoryOptionCombo> categoryOptionComboList = d2.categoryModule().categoryOptionCombos.byCategoryComboUid().eq(
+                d2.programModule().programs.uid(programUid).get().categoryCombo().uid()
+        ).withAllChildren().get();
+
+
+        List<CategoryOptionCombo> finalCatOptComb = new ArrayList<>();
+        if (categoryOptionComboList != null)
+            for (CategoryOptionCombo categoryOptionCombo : categoryOptionComboList) {
+                for (CategoryOption catOpt : categoryOptionCombo.categoryOptions()) {
+                    if (selectedOptions.contains(catOpt) && !finalCatOptComb.contains(categoryOptionCombo))
+                        finalCatOptComb.add(categoryOptionCombo);
                 }
             }
-        }
-        return Observable.just(values);
-    }
 
-    @Override
-    public Observable<Boolean> writePermission(String programId) {
-        String WRITE_PERMISSION = "SELECT ProgramStage.accessDataWrite FROM ProgramStage WHERE ProgramStage.program = ? LIMIT 1";
-        String PROGRAM_WRITE_PERMISSION = "SELECT Program.accessDataWrite FROM Program WHERE Program.uid = ? LIMIT 1";
-        return briteDatabase.createQuery(ProgramStageModel.TABLE, WRITE_PERMISSION, programId == null ? "" : programId)
-                .mapToOne(cursor -> cursor.getInt(0) == 1)
-                .flatMap(programStageAccessDataWrite ->
-                        briteDatabase.createQuery(ProgramModel.TABLE, PROGRAM_WRITE_PERMISSION, programId == null ? "" : programId)
-                                .mapToOne(cursor -> (cursor.getInt(0) == 1) && programStageAccessDataWrite));
+        return finalCatOptComb;
+
     }
 }

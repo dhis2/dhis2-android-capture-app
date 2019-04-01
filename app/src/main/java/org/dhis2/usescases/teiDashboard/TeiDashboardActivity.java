@@ -1,17 +1,16 @@
 package org.dhis2.usescases.teiDashboard;
 
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentStatePagerAdapter;
 
 import org.dhis2.App;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
-import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
+import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
-
 import javax.inject.Inject;
+
+import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentStatePagerAdapter;
 
 /**
  * QUADRAM. Created by ppajuelo on 26/04/2018.
@@ -29,14 +28,14 @@ public class TeiDashboardActivity extends ActivityGlobalAbstract implements TeiD
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        if(savedInstanceState != null) {
+        if (savedInstanceState != null) {
             teiUid = savedInstanceState.getString("UID");
             programUid = savedInstanceState.getString("PROGRAM_ID");
         } else {
             teiUid = getIntent().getStringExtra("TEI_UID");
             programUid = getIntent().getStringExtra("PROGRAM_UID");
         }
-        ((App) getApplicationContext()).userComponent().plus(new TeiDashboardModule(teiUid,programUid)).inject(this);
+        ((App) getApplicationContext()).userComponent().plus(new TeiDashboardModule(teiUid, programUid)).inject(this);
         super.onCreate(savedInstanceState);
 
     }
@@ -89,7 +88,8 @@ public class TeiDashboardActivity extends ActivityGlobalAbstract implements TeiD
     }
 
     @Override
-    public void showCatComboDialog(String eventId, String programStage, List<CategoryOptionComboModel> catComboOptions, String title) {
-        // nothing
+    public void showCatComboDialog(String eventId, CategoryCombo catCombo) {
+
     }
+
 }

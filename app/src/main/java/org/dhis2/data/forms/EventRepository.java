@@ -11,6 +11,7 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.utils.DateUtils;
+import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
@@ -20,7 +21,7 @@ import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionModel;
@@ -160,12 +161,15 @@ public class EventRepository implements FormRepository {
 
     @Nullable
     private final String eventUid;
+    private final D2 d2;
     private String programUid;
 
     public EventRepository(@NonNull BriteDatabase briteDatabase,
                            @NonNull RuleExpressionEvaluator evaluator,
                            @NonNull RulesRepository rulesRepository,
-                           @Nullable String eventUid) {
+                           @Nullable String eventUid,
+                           @NonNull D2 d2) {
+        this.d2 = d2;
         this.briteDatabase = briteDatabase;
         this.eventUid = eventUid;
 
@@ -177,11 +181,13 @@ public class EventRepository implements FormRepository {
                         rulesRepository.ruleVariables(program),
                         rulesRepository.otherEvents(eventUid),
                         rulesRepository.enrollment(eventUid),
-                        (rules, variables, events, enrollment) -> {
+                        rulesRepository.queryConstants(),
+                        (rules, variables, events, enrollment, constants) -> {
 
                             RuleEngine.Builder builder = RuleEngineContext.builder(evaluator)
                                     .rules(rules)
                                     .ruleVariables(variables)
+                                    .constantsValue(constants)
                                     .calculatedValueMap(new HashMap<>())
                                     .supplementaryData(new HashMap<>())
                                     .build().toEngineBuilder();
@@ -403,11 +409,9 @@ public class EventRepository implements FormRepository {
     }
 
     @Override
-    public Observable<OrganisationUnitModel> getOrgUnitDates() {
-        return briteDatabase.createQuery("SELECT * FROM OrganisationUnit " +
-                "JOIN Event ON Event.organisationUnit = OrganisationUnit.uid " +
-                "WHERE Event.uid = ?", eventUid)
-                .mapToOne(OrganisationUnitModel::create);
+    public Observable<OrganisationUnit> getOrgUnitDates() {
+        return Observable.defer(() -> Observable.just(d2.eventModule().events.uid(eventUid).get()))
+                .switchMap(event -> Observable.just(d2.organisationUnitModule().organisationUnits.uid(event.organisationUnit()).get()));
     }
 
     @NonNull

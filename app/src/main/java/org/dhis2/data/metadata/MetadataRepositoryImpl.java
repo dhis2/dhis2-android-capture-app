@@ -8,8 +8,12 @@ import com.squareup.sqlbrite2.BriteDatabase;
 import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.utils.DateUtils;
+import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.category.Category;
+import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryModel;
+import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionComboCategoryOptionLinkTableInfo;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
@@ -222,15 +226,20 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     }
 
     @Override
+    public Observable<CategoryCombo> catComboForProgram(String programUid) {
+        return null;
+    }
+
+    @Override
     public Observable<CategoryModel> getCategoryFromCategoryCombo(String categoryComboId) {
         return briteDatabase.createQuery(CategoryModel.TABLE, SELECT_CATEGORY, categoryComboId)
                 .mapToOne(CategoryModel::create);
     }
 
     @Override
-    public void saveCatOption(String eventUid, CategoryOptionComboModel selectedOption) {
+    public void saveCatOption(String eventUid, String catOptComboUid) {
         ContentValues event = new ContentValues();
-        event.put(EventModel.Columns.ATTRIBUTE_OPTION_COMBO, selectedOption.uid());
+        event.put(EventModel.Columns.ATTRIBUTE_OPTION_COMBO, catOptComboUid);
         briteDatabase.update(EventModel.TABLE, event, EventModel.Columns.UID + " = ?", eventUid == null ? "" : eventUid);
     }
 
@@ -464,7 +473,7 @@ public class MetadataRepositoryImpl implements MetadataRepository {
                 "LEFT JOIN OptionGroupOptionLink ON OptionGroupOptionLink.option = Option.uid  " +
                 "WHERE Option.optionSet = ? " +
                 "AND (OptionGroupOptionLink.optionGroup IS NULL OR OptionGroupOptionLink.optionGroup NOT IN (" + formattedOptionGroupsToHide + ")) " +
-                "ORDER BY  Option.sortOrder ASC";
+                "GROUP BY Option.uid ORDER BY  Option.sortOrder ASC";
 
         return briteDatabase.createQuery(OptionGroupOptionLinkTableInfo.TABLE_INFO.name(), optionGroupQuery, idOptionSet)
                 .mapToList(OptionModel::create)

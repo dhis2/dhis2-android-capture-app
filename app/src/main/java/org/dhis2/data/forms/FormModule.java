@@ -6,6 +6,7 @@ import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.utils.CodeGenerator;
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.rules.RuleExpressionEvaluator;
 
 import dagger.Module;
@@ -27,8 +28,9 @@ public class FormModule {
     @PerForm
     FormPresenter formPresenter(@NonNull SchedulerProvider schedulerProvider,
                                 @NonNull BriteDatabase briteDatabase,
-                                @NonNull FormRepository formRepository) {
-        return new FormPresenterImpl(formViewArguments, schedulerProvider, briteDatabase, formRepository);
+                                @NonNull FormRepository formRepository,
+                                @NonNull D2 d2) {
+        return new FormPresenterImpl(formViewArguments, schedulerProvider, briteDatabase, formRepository, d2);
     }
 
     @Provides
@@ -39,17 +41,18 @@ public class FormModule {
 
     @Provides
     @PerForm
-    FormRepository formRepository(@NonNull BriteDatabase briteDatabase,
+    FormRepository formRepository(@NonNull D2 d2,
+                                  @NonNull BriteDatabase briteDatabase,
                                   @NonNull RuleExpressionEvaluator evaluator,
                                   @NonNull RulesRepository rulesRepository,
                                   @NonNull CodeGenerator codeGenerator
             /*@NonNull CurrentDateProvider currentDateProvider*/) {
         if (formViewArguments.type().equals(FormViewArguments.Type.ENROLLMENT)) {
             return new EnrollmentFormRepository(briteDatabase, evaluator, rulesRepository,
-                    codeGenerator, formViewArguments.uid());
+                    codeGenerator, formViewArguments.uid(),d2);
         } else if (formViewArguments.type().equals(FormViewArguments.Type.EVENT)) {
             return new EventRepository(briteDatabase, evaluator,
-                    rulesRepository, formViewArguments.uid());
+                    rulesRepository, formViewArguments.uid(),d2);
         } else {
             throw new IllegalArgumentException("FormViewArguments of " +
                     "unexpected type: " + formViewArguments.type());
