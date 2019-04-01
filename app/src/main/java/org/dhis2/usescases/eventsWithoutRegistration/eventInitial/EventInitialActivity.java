@@ -199,7 +199,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                                 selectedDate,
                                 selectedOrgUnit,
                                 null,
-                                catComboIsDefaultOrNull() ? null : catOptionComboUid,
+                                catOptionComboUid,
                                 isEmpty(binding.lat.getText()) ? null : binding.lat.getText().toString(),
                                 isEmpty(binding.lon.getText()) ? null : binding.lon.getText().toString()
                         );
@@ -210,7 +210,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                                 selectedDate,
                                 selectedOrgUnit,
                                 null,
-                                catComboIsDefaultOrNull() ? null : catOptionComboUid,
+                                catOptionComboUid,
                                 isEmpty(binding.lat.getText()) ? null : binding.lat.getText().toString(),
                                 isEmpty(binding.lon.getText()) ? null : binding.lon.getText().toString()
                         );
@@ -221,14 +221,14 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                                 selectedDate,
                                 selectedOrgUnit,
                                 null,
-                                catComboIsDefaultOrNull() ? null : catOptionComboUid,
+                                catOptionComboUid,
                                 isEmpty(binding.lat.getText()) ? null : binding.lat.getText().toString(),
                                 isEmpty(binding.lon.getText()) ? null : binding.lon.getText().toString(),
                                 getTrackedEntityInstance);
                     }
                 } else {
                     presenter.editEvent(getTrackedEntityInstance, programStageModelUid, eventUid, DateUtils.databaseDateFormat().format(selectedDate), selectedOrgUnit, null,
-                            catComboIsDefaultOrNull() ? null : catOptionComboUid,
+                            catOptionComboUid,
                             isEmpty(binding.lat.getText()) ? null : binding.lat.getText().toString(),
                             isEmpty(binding.lon.getText()) ? null : binding.lon.getText().toString()
                     );
@@ -376,7 +376,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
             binding.date.setText(selectedDateString);
         } else {
-            if(!isEmpty(eventModel.enrollment()))
+            if (!isEmpty(eventModel.enrollment()))
                 binding.orgUnit.setEnabled(false);
         }
 
@@ -608,6 +608,9 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
                     binding.catComboLayout.addView(catSelectorBinding.getRoot());
                 }
+            else if (catCombo.isDefault())
+                catOptionComboUid = catCombo.categoryOptionCombos().get(0).uid();
+
         });
     }
 
@@ -615,10 +618,16 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     public void showDateDialog(DatePickerDialog.OnDateSetListener listener) {
         Calendar calendar = Calendar.getInstance();
 
+        if (selectedDate != null)
+            calendar.setTime(selectedDate);
+
         if (eventCreationType == EventCreationType.SCHEDULE)
             calendar.add(Calendar.DAY_OF_YEAR, eventScheduleInterval);
 
-        DatePickerDialog datePickerDialog = new DatePickerDialog(this, listener, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+        DatePickerDialog datePickerDialog = new DatePickerDialog(this, listener,
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH));
 
         if (program.expiryPeriodType() != null) {
             Date minDate = DateUtils.getInstance().expDate(null, program.expiryDays() == null ? 0 : program.expiryDays(), program.expiryPeriodType());
