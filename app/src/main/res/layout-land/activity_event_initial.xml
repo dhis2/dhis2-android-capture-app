@@ -323,8 +323,6 @@
                                     android:layout_height="wrap_content"
                                     android:inputType="numberDecimal"
                                     android:onTextChanged="@{presenter::onFieldChanged}"
-
-                                    android:text='@{event != null ? event.latitude() : ""}'
                                     android:textSize="15sp" />
 
                             </com.google.android.material.textfield.TextInputLayout>
@@ -343,9 +341,7 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:inputType="numberDecimal"
-
                                     android:onTextChanged="@{presenter::onFieldChanged}"
-                                    android:text='@{event != null ? event.longitude() : ""}'
                                     android:textSize="15sp" />
 
                             </com.google.android.material.textfield.TextInputLayout>

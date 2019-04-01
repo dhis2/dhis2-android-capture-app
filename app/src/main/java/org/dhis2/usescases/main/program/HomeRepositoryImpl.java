@@ -34,9 +34,9 @@ class HomeRepositoryImpl implements HomeRepository {
         return Flowable.just(d2.programModule().programs)
                 .flatMap(programRepo -> {
                     if (orgUnitFilter != null && !orgUnitFilter.isEmpty())
-                        return Flowable.fromIterable(programRepo.byOrganisationUnitList(orgUnitFilter).withObjectStyle().withAllChildren().get());
+                        return Flowable.fromIterable(programRepo.byOrganisationUnitList(orgUnitFilter).withStyle().withAllChildren().get());
                     else
-                        return Flowable.fromIterable(programRepo.withObjectStyle().withAllChildren().get());
+                        return Flowable.fromIterable(programRepo.withStyle().withAllChildren().get());
                 })
                 .map(program -> {
 
