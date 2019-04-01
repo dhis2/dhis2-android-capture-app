@@ -227,7 +227,10 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                                 getTrackedEntityInstance);
                     }
                 } else {
-                    presenter.editEvent(getTrackedEntityInstance, programStageModelUid, eventUid, DateUtils.databaseDateFormat().format(selectedDate), selectedOrgUnit, null,
+                    presenter.editEvent(getTrackedEntityInstance,
+                            programStageModelUid,
+                            eventUid,
+                            DateUtils.databaseDateFormat().format(selectedDate), selectedOrgUnit, null,
                             catOptionComboUid,
                             isEmpty(binding.lat.getText()) ? null : binding.lat.getText().toString(),
                             isEmpty(binding.lon.getText()) ? null : binding.lon.getText().toString()

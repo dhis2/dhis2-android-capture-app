@@ -332,7 +332,8 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
             hasChanged = true;
         if (!event.organisationUnit().equals(orgUnitUid))
             hasChanged = true;
-        if (!String.valueOf(event.coordinate().latitude()).equals(latitude) || !String.valueOf(event.coordinate().longitude()).equals(longitude))
+        if ((event.coordinate() == null && (!isEmpty(latitude) && !isEmpty(longitude))) ||
+                (event.coordinate() != null && (!String.valueOf(event.coordinate().latitude()).equals(latitude) || !String.valueOf(event.coordinate().longitude()).equals(longitude))))
             hasChanged = true;
         if (!event.attributeOptionCombo().equals(catOptionCombo))
             hasChanged = true;

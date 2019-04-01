@@ -24,6 +24,7 @@ import org.hisp.dhis.android.core.data.database.DbDateColumnAdapter;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.enrollment.note.NoteModel;
+import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.legendset.LegendModel;
@@ -201,7 +202,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
             LegendModel.TABLE, LegendModel.Columns.START_VALUE,
             LegendModel.TABLE, LegendModel.Columns.END_VALUE);
 
-    public DashboardRepositoryImpl(CodeGenerator codeGenerator, BriteDatabase briteDatabase,D2 d2) {
+    public DashboardRepositoryImpl(CodeGenerator codeGenerator, BriteDatabase briteDatabase, D2 d2) {
         this.briteDatabase = briteDatabase;
         this.codeGenerator = codeGenerator;
         this.d2 = d2;
@@ -449,6 +450,16 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                         fullOptionCombos.add(d2.categoryModule().categoryOptionCombos.uid(categoryOptionCombo.uid()).withAllChildren().get());
                     return categoryCombo.toBuilder().categories(fullCategories).categoryOptionCombos(fullOptionCombos).build();
                 });
+    }
+
+    @Override
+    public void setDefaultCatOptCombToEvent(String eventUid) {
+        Event event = d2.eventModule().events.uid(eventUid).get();
+        ContentValues cv = event.toContentValues();
+        List<CategoryCombo> categoryCombos = d2.categoryModule().categoryCombos.byIsDefault().isTrue().withAllChildren().get();
+        cv.put(EventModel.Columns.ATTRIBUTE_OPTION_COMBO, categoryCombos.get(0).categoryOptionCombos().get(0).uid());
+        cv.put(EventModel.Columns.STATE, event.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
+        briteDatabase.update("Event", cv, "Event.uid = ?", eventUid);
     }
 
     @Override
