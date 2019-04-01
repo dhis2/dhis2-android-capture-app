@@ -208,7 +208,8 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
                 if (hasCatComb && event.attributeOptionCombo() == null && !catComboShowed.contains(event)) {
                     presenter.getCatComboOptions(event);
                     catComboShowed.add(event);
-                }
+                }else if(!hasCatComb && event.attributeOptionCombo() == null)
+                    presenter.setDefaultCatOptCombToEvent(event.uid());
             }
         };
     }
