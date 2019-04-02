@@ -106,7 +106,7 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
                                 Timber::d
                         ));
 
-        disposable.add(dataEntryView.rowActions()
+        disposable.add(dataEntryView.rowActions().distinctUntilChanged()
                 .subscribeOn(schedulerProvider.computation())
                 .observeOn(schedulerProvider.ui())
                 .switchMap(action ->{

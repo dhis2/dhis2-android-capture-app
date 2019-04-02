@@ -8,8 +8,9 @@ import androidx.fragment.app.FragmentStatePagerAdapter;
 import org.dhis2.R;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.IndicatorsFragment;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.NotesFragment;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.RelationshipFragment;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipFragment;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.TEIDataFragment;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * QUADRAM. Created by ppajuelo on 29/11/2017.
@@ -28,6 +29,7 @@ public class DashboardPagerAdapter extends FragmentStatePagerAdapter {
         this.currentProgram = program;
     }
 
+    @NotNull
     @Override
     public Fragment getItem(int position) {
         switch (position) {

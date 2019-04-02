@@ -1,14 +1,16 @@
 package org.dhis2.usescases.teiDashboard.adapters;
 
 import android.content.Context;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentStatePagerAdapter;
 
 import org.dhis2.R;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.IndicatorsFragment;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.NotesFragment;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.RelationshipFragment;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipFragment;
+import org.jetbrains.annotations.NotNull;
+
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentStatePagerAdapter;
 
 /**
  * QUADRAM. Created by ppajuelo on 29/11/2017.
@@ -27,15 +29,16 @@ public class DashboardPagerTabletAdapter extends FragmentStatePagerAdapter {
         this.context = context;
     }
 
+    @NotNull
     @Override
     public Fragment getItem(int position) {
         switch (position) {
             default:
-                return IndicatorsFragment.getInstance();
+                return IndicatorsFragment.createInstance();
             case 1:
-                return RelationshipFragment.getInstance();
+                return RelationshipFragment.createInstance();
             case 2:
-                return NotesFragment.getInstance();
+                return NotesFragment.createInstance();
         }
     }
 
