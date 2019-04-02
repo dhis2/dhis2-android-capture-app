@@ -13,6 +13,7 @@ import org.dhis2.data.tuples.Trio;
 import org.dhis2.utils.CodeGenerator;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
+import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
@@ -23,6 +24,7 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -200,6 +202,7 @@ public class EnrollmentFormRepository implements FormRepository {
 
     @NonNull
     private final String enrollmentUid;
+    private final D2 d2;
 
     private String programUid;
 
@@ -207,7 +210,9 @@ public class EnrollmentFormRepository implements FormRepository {
                              @NonNull RuleExpressionEvaluator expressionEvaluator,
                              @NonNull RulesRepository rulesRepository,
                              @NonNull CodeGenerator codeGenerator,
-                             @NonNull String enrollmentUid) {
+                             @NonNull String enrollmentUid,
+                                    @NonNull D2 d2) {
+        this.d2 = d2;
         this.briteDatabase = briteDatabase;
         this.codeGenerator = codeGenerator;
         this.enrollmentUid = enrollmentUid;
@@ -552,11 +557,9 @@ public class EnrollmentFormRepository implements FormRepository {
     }
 
     @Override
-    public Observable<OrganisationUnitModel> getOrgUnitDates() {
-        return briteDatabase.createQuery("SELECT * FROM OrganisationUnit " +
-                "JOIN Enrollment ON Enrollment.organisationUnit = OrganisationUnit.uid " +
-                "WHERE Enrollment.uid = ?", enrollmentUid)
-                .mapToOne(OrganisationUnitModel::create);
+    public Observable<OrganisationUnit> getOrgUnitDates() {
+        return Observable.defer(()->Observable.just(d2.enrollmentModule().enrollments.uid(enrollmentUid).get()))
+                .switchMap(enrollment -> Observable.just(d2.organisationUnitModule().organisationUnits.uid(enrollment.organisationUnit()).get()));
     }
 
     @NonNull

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp">
+
+        <TextView
+            android:id="@+id/title_dialog"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="?colorPrimary"
+            android:gravity="center|start"
+            android:minHeight="50dp"
+            android:paddingStart="15dp"
+            android:paddingEnd="15dp"
+            android:textColor="?colorAccent"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Info" />
+
+        <LinearLayout
+            android:id="@+id/categoryLayout"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:orientation="vertical"
+            app:layout_constraintTop_toBottomOf="@id/title_dialog">
+            <!--<include layout="@layout/category_selector"/>-->
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!--<LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingBottom="5dp">
+
+        <LinearLayout
+            android:id="@+id/header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?colorPrimary">
+
+            <TextView
+                android:id="@+id/title_dialog"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_weight="1"
+                android:gravity="center|start"
+                android:minHeight="50dp"
+                android:padding="5dp"
+                android:textColor="?colorAccent"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                tools:text="Info" />
+        </LinearLayout>
+
+        <Spinner
+            android:id="@+id/cat_combo"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:maxLines="1"
+            android:minHeight="40dp"
+            android:textAlignment="textStart"
+            android:textAllCaps="false"
+            android:textColor="@color/colorGreyDefault"
+            android:textSize="15sp" />
+
+    </LinearLayout>-->
+
+</layout>

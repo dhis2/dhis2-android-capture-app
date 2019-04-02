@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 
 import org.dhis2.R;
@@ -220,7 +219,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                             enrollementDate = DateUtils.uiDateFormat().parse(queryData.get(key));
                                         else if (!key.equals(Constants.INCIDENT_DATE_UID)) { //TODO: HOW TO INCLUDE INCIDENT DATE IN ONLINE SEARCH
                                             String value = queryData.get(key);
-                                            if(value.contains("_os_"))
+                                            if (value.contains("_os_"))
                                                 value = value.split("_os_")[0];
                                             String queryItem = String.format("%s:%s:%s", key, queryDataEQ.containsKey(key) ? "EQ" : "LIKE", value);
                                             filterList.add(queryItem);
@@ -469,7 +468,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         OrgUnitDialog orgUnitDialog = OrgUnitDialog.getInstace().setMultiSelection(false);
         orgUnitDialog.setTitle("Enrollment Org Unit")
                 .setPossitiveListener(v -> {
-                    if (orgUnitDialog.getSelectedOrgUnit() != null)
+                    if (orgUnitDialog.getSelectedOrgUnit() != null && !orgUnitDialog.getSelectedOrgUnit().isEmpty())
                         showEnrollmentDatePicker(orgUnitDialog.getSelectedOrgUnitModel(), programUid, uid);
                     orgUnitDialog.dismiss();
                 })
@@ -480,12 +479,12 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         allOrgUnits -> {
-                            if (orgUnits.size() > 1) {
-                                orgUnitDialog.setOrgUnits(orgUnits);
+                            if (allOrgUnits.size() > 1) {
+                                orgUnitDialog.setOrgUnits(allOrgUnits);
                                 if (!orgUnitDialog.isAdded())
                                     orgUnitDialog.show(view.getAbstracContext().getSupportFragmentManager(), "OrgUnitEnrollment");
-                            } else if (orgUnits.size() == 1)
-                                enrollInOrgUnit(orgUnits.get(0).uid(), programUid, uid, selectedEnrollmentDate);
+                            } else if (allOrgUnits.size() == 1)
+                                showEnrollmentDatePicker(allOrgUnits.get(0), programUid, uid);
                         },
                         Timber::d
                 )

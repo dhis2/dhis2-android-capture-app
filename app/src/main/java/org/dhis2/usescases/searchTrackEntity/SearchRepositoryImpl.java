@@ -11,6 +11,7 @@ import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.utils.CodeGenerator;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.ValueUtils;
+import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.State;
@@ -127,12 +128,14 @@ public class SearchRepositoryImpl implements SearchRepository {
     private static final Set<String> TEI_TABLE_SET = new HashSet<>(Arrays.asList(TEI_TABLE_NAMES));
     private final CodeGenerator codeGenerator;
     private final String teiType;
+    private final D2 d2;
 
 
-    SearchRepositoryImpl(CodeGenerator codeGenerator, BriteDatabase briteDatabase, String teiType) {
+    SearchRepositoryImpl(CodeGenerator codeGenerator, BriteDatabase briteDatabase, String teiType, D2 d2) {
         this.codeGenerator = codeGenerator;
         this.briteDatabase = briteDatabase;
         this.teiType = teiType;
+        this.d2 = d2;
     }
 
 
@@ -402,8 +405,10 @@ public class SearchRepositoryImpl implements SearchRepository {
         return Flowable.fromIterable(teiList)
                 .map(tei -> {
 
-                    try (Cursor teiCursor = briteDatabase.query("SELECT uid FROM TrackedEntityInstance WHERE uid = ?", tei.getTei().uid())) {
+                    try (Cursor teiCursor = briteDatabase.query("SELECT TrackedEntityInstance.* FROM TrackedEntityInstance WHERE uid = ?", tei.getTei().uid())) {
                         if (teiCursor != null && teiCursor.moveToFirst()) {
+                            TrackedEntityInstanceModel localTei = TrackedEntityInstanceModel.create(teiCursor);
+                            tei.toLocalTei(localTei);
                             tei.setOnline(false);
                             setEnrollmentInfo(tei);
                             setAttributesInfo(tei, selectedProgram);

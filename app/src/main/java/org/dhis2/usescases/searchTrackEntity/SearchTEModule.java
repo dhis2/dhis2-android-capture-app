@@ -41,7 +41,8 @@ public class SearchTEModule {
     @Provides
     @PerActivity
     SearchRepository searchRepository(@NonNull CodeGenerator codeGenerator,
-                                      @NonNull BriteDatabase briteDatabase) {
-        return new SearchRepositoryImpl(codeGenerator, briteDatabase, teiType);
+                                      @NonNull BriteDatabase briteDatabase,
+                                      @NonNull D2 d2) {
+        return new SearchRepositoryImpl(codeGenerator, briteDatabase, teiType,d2);
     }
 }

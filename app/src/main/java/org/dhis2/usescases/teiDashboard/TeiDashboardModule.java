@@ -48,8 +48,8 @@ public class TeiDashboardModule {
 
     @Provides
     @PerActivity
-    DashboardRepository dashboardRepository(CodeGenerator codeGenerator, BriteDatabase briteDatabase) {
-        return new DashboardRepositoryImpl(codeGenerator, briteDatabase);
+    DashboardRepository dashboardRepository(CodeGenerator codeGenerator, BriteDatabase briteDatabase,D2 d2) {
+        return new DashboardRepositoryImpl(codeGenerator, briteDatabase,d2);
     }
 
     @Provides
@@ -69,7 +69,7 @@ public class TeiDashboardModule {
                 .byTrackedEntityInstance().eq(teiUid)
                 .byProgram().eq(programUid)
                 .one().get().uid();
-        return new EnrollmentFormRepository(briteDatabase, evaluator, rulesRepository, codeGenerator, uid);
+        return new EnrollmentFormRepository(briteDatabase, evaluator, rulesRepository, codeGenerator, uid,d2);
     }
 
     @Provides

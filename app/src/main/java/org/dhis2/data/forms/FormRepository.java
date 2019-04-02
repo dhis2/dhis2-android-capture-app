@@ -8,11 +8,9 @@ import org.dhis2.data.tuples.Trio;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.rules.RuleEngine;
 
-import java.util.Date;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -80,5 +78,5 @@ public interface FormRepository {
 
     Observable<Boolean> captureCoodinates();
 
-    Observable<OrganisationUnitModel> getOrgUnitDates();
+    Observable<OrganisationUnit> getOrgUnitDates();
 }
