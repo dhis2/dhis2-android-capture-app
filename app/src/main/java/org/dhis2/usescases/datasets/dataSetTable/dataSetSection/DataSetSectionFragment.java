@@ -348,7 +348,6 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
     @Override
     public void onComplete() {
         binding.actionButton.setText(getString(R.string.re_open));
-        activity.finish();
     }
 
     @Override
@@ -407,8 +406,8 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
     @Override
     public void setCompleteReopenText(Boolean isCompleted) {
         if(!isCompleted)
-            binding.actionButton.setText(getString(R.string.complete));
+            binding.actionButton.setText(activity.getString(R.string.complete));
         else
-            binding.actionButton.setText(getString(R.string.re_open));
+            binding.actionButton.setText(activity.getString(R.string.re_open));
     }
 }
