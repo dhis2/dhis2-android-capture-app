@@ -195,6 +195,14 @@ final class EditTextCellCustomHolder extends FormViewHolder {
         msgView.findViewById(R.id.dialogAccept).setOnClickListener(view -> {
             alertDialog.dismiss();
             editText.setText(editDialog.getText().toString());
+
+            tableView.setSelectedCell(editTextModel.column(), editTextModel.row());
+
+            if(editTextModel != null && editTextModel.editable() && !editText.getText().toString().equals(editTextModel.value())) {
+                if (!isEmpty(editText.getText()) && validate())
+                    processor.onNext(RowAction.create(editTextModel.uid(), editText.getText().toString(), editTextModel.dataElement(), editTextModel.listCategoryOption(), editTextModel.catCombo(), editTextModel.row(), editTextModel.column()));
+
+            }
         });
         msgView.findViewById(R.id.dialogCancel).setOnClickListener(view -> alertDialog.dismiss());
         alertDialog.setView(msgView);
