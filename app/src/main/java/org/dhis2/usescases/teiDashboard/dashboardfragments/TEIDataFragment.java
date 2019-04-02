@@ -123,6 +123,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
                     break;
             }
         });
+
         return binding.getRoot();
     }
 
@@ -131,9 +132,11 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
         super.onResume();
         presenter = ((TeiDashboardMobileActivity) getActivity()).getPresenter();
 
+        presenter.observeDashboardModel().observe(this, this::setData);
+
         binding.setPresenter(presenter);
 
-        setData(presenter.getDashBoardData());
+//        setData(presenter.getDashBoardData());
     }
 
     public void setData(DashboardProgramModel nprogram) {
@@ -142,7 +145,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
             SharedPreferences prefs = context.getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE);
             hasCatComb = !nprogram.getCurrentProgram().categoryCombo().equals(prefs.getString(Constants.DEFAULT_CAT_COMBO, ""));
             List<EventModel> events = new ArrayList<>();
-            adapter = new EventAdapter(presenter, nprogram.getProgramStages(), events, nprogram.getCurrentEnrollment(),nprogram.getCurrentProgram());
+            adapter = new EventAdapter(presenter, nprogram.getProgramStages(), events, nprogram.getCurrentEnrollment(), nprogram.getCurrentProgram());
             binding.teiRecycler.setLayoutManager(new LinearLayoutManager(getAbstracContext()));
             binding.teiRecycler.setAdapter(adapter);
             binding.setTrackEntity(nprogram.getTei());
@@ -208,7 +211,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
                 if (hasCatComb && event.attributeOptionCombo() == null && !catComboShowed.contains(event)) {
                     presenter.getCatComboOptions(event);
                     catComboShowed.add(event);
-                }else if(!hasCatComb && event.attributeOptionCombo() == null)
+                } else if (!hasCatComb && event.attributeOptionCombo() == null)
                     presenter.setDefaultCatOptCombToEvent(event.uid());
             }
         };
@@ -232,7 +235,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
         };
     }
 
-    private void showDialogCloseProgram(){
+    private void showDialogCloseProgram() {
         dialog = new CustomDialog(
                 getContext(),
                 getString(R.string.event_completed),

@@ -21,6 +21,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel
 import java.util.Calendar;
 import java.util.List;
 
+import androidx.lifecycle.LiveData;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 
@@ -52,6 +53,8 @@ public class TeiDashboardContracts {
     }
 
     public interface Presenter {
+        LiveData<DashboardProgramModel> observeDashboardModel();
+
         void init(View view, String uid, String programUid);
 
         void showDescription(String description);
