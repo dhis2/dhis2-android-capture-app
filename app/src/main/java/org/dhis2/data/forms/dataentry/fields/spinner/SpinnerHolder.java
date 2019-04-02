@@ -118,6 +118,7 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
                                 processor.onNext(
                                         RowAction.create(viewModel.uid(), null));
                                 viewModel.withValue(null);
+                                editText.setText(null);
                                 dialog.dismiss();
                             }
                     ).show(((FragmentActivity) binding.getRoot().getContext()).getSupportFragmentManager(), null);
