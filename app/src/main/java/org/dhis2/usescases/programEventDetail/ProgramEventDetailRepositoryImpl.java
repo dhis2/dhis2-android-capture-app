@@ -63,7 +63,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
         if (!catOptCombList.isEmpty())
             for (CategoryOptionCombo catOptComb : catOptCombList)
                 eventRepo = eventRepo.byAttributeOptionComboUid().eq(catOptComb.uid());
-        return Transformations.switchMap(eventRepo.withAllChildren().getPaged(20), this::transform);
+        return Transformations.switchMap(eventRepo.orderByEventDate(RepositoryScope.OrderByDirection.DESC).withAllChildren().getPaged(20), this::transform);
     }
 
     @NonNull
