@@ -36,7 +36,6 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
     private final EnrollmentStatusStore enrollmentStore;
     private TeiDataDetailContracts.View view;
     private FusedLocationProviderClient mFusedLocationClient;
-    private String enrollmentUid;
 
     TeiDataDetailPresenter(DashboardRepository dashboardRepository, MetadataRepository metadataRepository, EnrollmentStatusStore enrollmentStatusStore) {
         this.dashboardRepository = dashboardRepository;
@@ -48,7 +47,6 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
     @Override
     public void init(TeiDataDetailContracts.View view, String uid, String programUid, String enrollmentUid) {
         this.view = view;
-        this.enrollmentUid = enrollmentUid;
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(view.getContext());
 
         if (programUid != null) {
@@ -66,7 +64,7 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
                             view::setData,
-                            throwable -> Log.d("ERROR", throwable.getMessage()))
+                            Timber::d)
             );
 
             disposable.add(
@@ -75,7 +73,7 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(
                                     view.handleStatus(),
-                                    throwable -> Log.d("ERROR", throwable.getMessage()))
+                                    Timber::d)
 
             );
 
@@ -101,7 +99,7 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(view::setData,
-                            throwable -> Log.d("ERROR", throwable.getMessage()))
+                            Timber::d)
             );
         }
     }

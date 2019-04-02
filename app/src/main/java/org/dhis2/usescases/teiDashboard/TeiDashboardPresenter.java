@@ -9,7 +9,6 @@ import android.view.View;
 import android.widget.TextView;
 
 import org.dhis2.R;
-import org.dhis2.data.forms.FormRepository;
 import org.dhis2.data.forms.dataentry.RuleEngineRepository;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.tuples.Pair;
@@ -28,7 +27,6 @@ import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.EventCreationType;
 import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
@@ -52,11 +50,12 @@ import org.hisp.dhis.rules.models.RuleEffect;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Map;
 
 import androidx.appcompat.widget.PopupMenu;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
@@ -85,12 +84,19 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     private CompositeDisposable compositeDisposable;
     private DashboardProgramModel dashboardProgramModel;
 
+    private MutableLiveData<DashboardProgramModel> dashboardProgramModelLiveData = new MutableLiveData<>();
+
     TeiDashboardPresenter(D2 d2, DashboardRepository dashboardRepository, MetadataRepository metadataRepository, RuleEngineRepository formRepository) {
         this.d2 = d2;
         this.dashboardRepository = dashboardRepository;
         this.metadataRepository = metadataRepository;
         this.ruleRepository = formRepository;
         compositeDisposable = new CompositeDisposable();
+    }
+
+    @Override
+    public LiveData<DashboardProgramModel> observeDashboardModel(){
+        return dashboardProgramModelLiveData;
     }
 
     @Override
@@ -123,6 +129,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                     .subscribe(
                             dashboardModel -> {
                                 this.dashboardProgramModel = dashboardModel;
+                                this.dashboardProgramModelLiveData.setValue(dashboardModel);
                                 this.programWritePermission = dashboardProgramModel.getCurrentProgram().accessDataWrite();
                                 this.teType = dashboardProgramModel.getTei().trackedEntityType();
                                 view.setData(dashboardProgramModel);
@@ -302,13 +309,9 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     public void onEventSelected(String uid, View sharedView) {
         Fragment teiFragment = TEIDataFragment.getInstance();
         if (teiFragment != null && teiFragment.getContext() != null && teiFragment.isAdded()) {
-            /*Intent intent = new Intent(teiFragment.getContext(), EventCaptureActivity.class);
-            intent.putExtras(EventCaptureActivity.getActivityBundle(uid, programUid));
-            intent.putExtra(Constants.TRACKED_ENTITY_INSTANCE, teUid);
-            teiFragment.startActivityForResult(intent, TEIDataFragment.getEventRequestCode(), null);  */
             Intent intent = new Intent(teiFragment.getContext(), EventInitialActivity.class);
             intent.putExtras(EventInitialActivity.getBundle(
-                    programUid,uid,EventCreationType.DEFAULT.name(),teUid,null,null,null,dashboardProgramModel.getCurrentEnrollment().uid(),0, dashboardProgramModel.getCurrentEnrollment().enrollmentStatus()
+                    programUid, uid, EventCreationType.DEFAULT.name(), teUid, null, null, null, dashboardProgramModel.getCurrentEnrollment().uid(), 0, dashboardProgramModel.getCurrentEnrollment().enrollmentStatus()
             ));
             teiFragment.startActivityForResult(intent, TEIDataFragment.getEventRequestCode(), null);
         }
@@ -326,10 +329,6 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
             intent.putExtras(extras);
             ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(view.getAbstractActivity(), sharedView, "shared_view");
             teiFragment.startActivityForResult(intent, TEIDataFragment.getEventRequestCode(), options.toBundle());
-/*
-            Intent intent2 = new Intent(teiFragment.getContext(), EventCaptureActivity.class);
-            intent2.putExtras(EventCaptureActivity.getActivityBundle(uid, programUid));
-            teiFragment.startActivityForResult(intent2, TEIDataFragment.getEventRequestCode(), null);*/
         }
     }
 
@@ -487,7 +486,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
         if (calcResult.error() != null) {
             Timber.e(calcResult.error());
-            return ;
+            return;
         }
 
         for (RuleEffect ruleEffect : calcResult.items()) {
@@ -497,7 +496,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                         ProgramIndicatorModel.builder().displayName(((RuleActionDisplayKeyValuePair) ruleAction).content()).build(),
                         ruleEffect.data(), "");
                 indicatorsFragment.addIndicator(indicator);
-            }else if(ruleAction instanceof RuleActionDisplayText){
+            } else if (ruleAction instanceof RuleActionDisplayText) {
                 Trio<ProgramIndicatorModel, String, String> indicator = Trio.create(
                         ProgramIndicatorModel.builder().displayName(((RuleActionDisplayText) ruleAction).content()).build(),
                         ruleEffect.data(), "");
@@ -622,7 +621,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                         .subscribe(catCombo -> {
                                     for (ProgramStageModel programStage : dashboardProgramModel.getProgramStages()) {
                                         if (event.programStage().equals(programStage.uid()))
-                                            view.showCatComboDialog(event.uid(),catCombo);
+                                            view.showCatComboDialog(event.uid(), catCombo);
                                     }
                                 },
                                 Timber::e));

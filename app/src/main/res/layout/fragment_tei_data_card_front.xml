@@ -91,6 +91,45 @@
                 android:textStyle="bold" />
         </LinearLayout>
 
+        <LinearLayout
+            android:id="@+id/viewMore"
+            style="@style/ButtonRoundedGrey"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="2.5dp"
+            android:gravity="center"
+            android:onClick="@{() -> presenter.seeDetails(cardData, dashboardModel)}"
+            android:visibility="@{program == null ? View.INVISIBLE : View.VISIBLE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/guideline"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/divider">
+
+            <ImageView
+                android:id="@+id/viewMoreIcon"
+                android:layout_width="27dp"
+                android:layout_height="27dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_visibility"
+                app:tint="@color/white"
+                tools:ignore="ContentDescription" />
+
+            <TextView
+                android:id="@+id/view_tei"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:text="@string/see_details"
+                android:textColor="@color/white"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/viewMoreIcon"
+                app:layout_constraintTop_toTopOf="parent" />
+        </LinearLayout>
+
         <ImageView
             android:id="@+id/follow_up"
             android:layout_width="27dp"
@@ -106,7 +145,6 @@
             app:srcCompat="@drawable/ic_warning_white"
             tools:ignore="ContentDescription"
             tools:tint="@color/text_black_333" />
-
 
         <RelativeLayout
             android:id="@+id/program_lock_layout"
@@ -148,44 +186,51 @@
 
         </RelativeLayout>
 
-        <LinearLayout
-            android:id="@+id/viewMore"
-            style="@style/ButtonRoundedGrey"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/teiData"
             android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginStart="5dp"
-            android:layout_marginEnd="2.5dp"
-            android:gravity="center"
-            android:onClick="@{() -> presenter.seeDetails(cardData, dashboardModel)}"
-            android:visibility="@{program == null ? View.INVISIBLE : View.VISIBLE}"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/guideline"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/divider">
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            app:layout_constraintEnd_toStartOf="@id/program_lock_layout"
+            app:layout_constraintStart_toStartOf="parent">
 
             <ImageView
-                android:id="@+id/viewMoreIcon"
-                android:layout_width="27dp"
-                android:layout_height="27dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_visibility"
-                app:tint="@color/white"
+                android:id="@+id/tei_image"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:background="@drawable/photo_temp"
+                android:tint="@color/white"
+                app:layout_constraintStart_toStartOf="parent"
+                app:srcCompat="@drawable/ic_tei_default"
                 tools:ignore="ContentDescription" />
 
+
             <TextView
-                android:id="@+id/view_tei"
+                android:id="@+id/main_attributes"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="6dp"
-                android:text="@string/see_details"
-                android:textColor="@color/white"
-                android:textSize="13sp"
+                android:layout_marginStart="10dp"
+                android:text='@{dashboardModel.getTrackedEntityAttributeValueBySortOrder(1) +" "+ dashboardModel.getTrackedEntityAttributeValueBySortOrder(2)}'
+                android:textColor="@color/text_black_333"
+                android:textSize="16sp"
                 android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@id/viewMoreIcon"
-                app:layout_constraintTop_toTopOf="parent" />
-        </LinearLayout>
+                app:layout_constraintStart_toEndOf="@id/tei_image"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Sarah Thompson" />
+
+            <TextView
+                android:id="@+id/secundary_attribute"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:text='@{dashboardModel.getTrackedEntityAttributeValueBySortOrder(3)}'
+                android:textColor="@color/text_black_333"
+                android:textSize="14sp"
+                android:visibility="@{dashboardModel.trackedEntityAttributeValues.size()>2 ? View.VISIBLE : View.GONE}"
+                app:layout_constraintStart_toEndOf="@id/tei_image"
+                app:layout_constraintTop_toBottomOf="@id/main_attributes"
+                tools:text="26dp" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
 
         <com.google.android.flexbox.FlexboxLayout
@@ -199,50 +244,8 @@
             app:layout_constraintBottom_toTopOf="@id/viewMore"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toBottomOf="@id/teiData">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="5dp">
-
-                <ImageView
-                    android:id="@+id/tei_image"
-                    android:layout_width="56dp"
-                    android:layout_height="56dp"
-                    android:background="@drawable/photo_temp"
-                    android:tint="@color/white"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:srcCompat="@drawable/ic_tei_default"
-                    tools:ignore="ContentDescription" />
-
-
-                <TextView
-                    android:id="@+id/main_attributes"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:text='@{dashboardModel.getTrackedEntityAttributeValueBySortOrder(1) +" "+ dashboardModel.getTrackedEntityAttributeValueBySortOrder(2)}'
-                    android:textColor="@color/text_black_333"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    app:layout_constraintStart_toEndOf="@id/tei_image"
-                    app:layout_constraintTop_toTopOf="parent"
-                    tools:text="Sarah Thompson" />
-
-                <TextView
-                    android:id="@+id/secundary_attribute"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:text='@{dashboardModel.getTrackedEntityAttributeValueBySortOrder(3)}'
-                    android:textColor="@color/text_black_333"
-                    android:textSize="14sp"
-                    android:visibility="@{dashboardModel.trackedEntityAttributeValues.size()>2 ? View.VISIBLE : View.GONE}"
-                    app:layout_constraintStart_toEndOf="@id/tei_image"
-                    app:layout_constraintTop_toBottomOf="@id/main_attributes"
-                    tools:text="26dp" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
