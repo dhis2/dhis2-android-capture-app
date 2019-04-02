@@ -1,4 +1,4 @@
-package org.dhis2.usescases.teiDashboard.dashboardfragments;
+package org.dhis2.usescases.teiDashboard.dashboardfragments.relationships;
 
 import android.content.Context;
 import android.content.Intent;
@@ -45,9 +45,8 @@ import static android.app.Activity.RESULT_OK;
 public class RelationshipFragment extends FragmentGlobalAbstract {
 
     FragmentRelationshipsBinding binding;
-    TeiDashboardContracts.Presenter presenter;
+    private TeiDashboardContracts.Presenter presenter;
 
-    private DashboardProgramModel dashboardProgramModel;
     static RelationshipFragment instance;
     private RelationshipAdapter relationshipAdapter;
     private RapidFloatingActionHelper rfaHelper;
@@ -78,18 +77,11 @@ public class RelationshipFragment extends FragmentGlobalAbstract {
         binding.setPresenter(presenter);
         relationshipAdapter = new RelationshipAdapter(presenter);
         binding.relationshipRecycler.setAdapter(relationshipAdapter);
+        presenter.observeDashboardModel().observe(this, this::setData);
         return binding.getRoot();
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        setData(presenter.getDashBoardData());
-    }
-
     public void setData(DashboardProgramModel dashboardProgramModel) {
-        this.dashboardProgramModel = dashboardProgramModel;
-
         binding.executePendingBindings();
 
         presenter.subscribeToRelationships(this);

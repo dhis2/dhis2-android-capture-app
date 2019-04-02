@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import org.dhis2.App;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
+import org.dhis2.utils.Constants;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.jetbrains.annotations.NotNull;
 
@@ -29,8 +30,8 @@ public class TeiDashboardActivity extends ActivityGlobalAbstract implements TeiD
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         if (savedInstanceState != null) {
-            teiUid = savedInstanceState.getString("UID");
-            programUid = savedInstanceState.getString("PROGRAM_ID");
+            teiUid = savedInstanceState.getString(Constants.TRACKED_ENTITY_INSTANCE);
+            programUid = savedInstanceState.getString(Constants.PROGRAM_UID);
         } else {
             teiUid = getIntent().getStringExtra("TEI_UID");
             programUid = getIntent().getStringExtra("PROGRAM_UID");
@@ -40,12 +41,12 @@ public class TeiDashboardActivity extends ActivityGlobalAbstract implements TeiD
 
     }
 
-    @Override
+   /* @Override
     protected void onSaveInstanceState(@NotNull Bundle outState) {
-        super.onSaveInstanceState(outState);
         outState.putString("UID", teiUid);
         outState.putString("PROGRAM_ID", programUid);
-    }
+        super.onSaveInstanceState(outState);
+    }*/
 
     @Override
     public void init(String teUid, String programUid) {
