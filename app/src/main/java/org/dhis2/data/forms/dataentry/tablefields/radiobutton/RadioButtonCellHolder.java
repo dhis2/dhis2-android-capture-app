@@ -49,7 +49,7 @@ public class RadioButtonCellHolder extends FormViewHolder {
 
         this.viewModel = checkBoxViewModel;
 
-        if(checkBoxViewModel.value()!=null) {
+        if(checkBoxViewModel.value()!=null && !checkBoxViewModel.value().isEmpty()) {
             if (checkBoxViewModel.value().equals("true"))
                 textView.setText(context.getString(R.string.yes));
             else
