@@ -5,7 +5,6 @@ import androidx.annotation.NonNull;
 import com.google.auto.value.AutoValue;
 
 import org.hisp.dhis.android.core.common.State;
-import org.hisp.dhis.android.core.period.PeriodType;
 
 @AutoValue
 public abstract class DataSetDetailModel {

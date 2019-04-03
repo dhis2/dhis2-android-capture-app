@@ -26,43 +26,11 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
     private final String hintEnterText;
 
     @NonNull
-    private final String hintEnterLongText;
-
-    @NonNull
-    private final String hintEnterNumber;
-
-    @NonNull
-    private final String hintEnterInteger;
-
-    @NonNull
-    private final String hintEnterIntegerPositive;
-
-    @NonNull
-    private final String hintEnterIntegerNegative;
-
-    @NonNull
-    private final String hintEnterIntegerZeroOrPositive;
-
-    @NonNull
     private final String hintFilterOptions;
 
-    @NonNull
-    private final String hintChooseDate;
-
-    public FieldViewModelFactoryImpl(@NonNull String hintEnterText, @NonNull String hintEnterLongText,
-                                     @NonNull String hintEnterNumber, @NonNull String hintEnterInteger,
-                                     @NonNull String hintEnterIntegerPositive, @NonNull String hintEnterIntegerNegative,
-                                     @NonNull String hintEnterIntegerZeroOrPositive, @NonNull String filterOptions,
-                                     @NonNull String hintChooseDate) {
+    public FieldViewModelFactoryImpl(@NonNull String hintEnterText, @NonNull String filterOptions) {
         this.hintEnterText = hintEnterText;
-        this.hintEnterLongText = hintEnterLongText;
-        this.hintEnterNumber = hintEnterNumber;
-        this.hintEnterInteger = hintEnterInteger;
-        this.hintEnterIntegerPositive = hintEnterIntegerPositive;
-        this.hintEnterIntegerNegative = hintEnterIntegerNegative;
-        this.hintEnterIntegerZeroOrPositive = hintEnterIntegerZeroOrPositive;
         this.hintFilterOptions = filterOptions;
-        this.hintChooseDate = hintChooseDate;
     }
 
     @NonNull

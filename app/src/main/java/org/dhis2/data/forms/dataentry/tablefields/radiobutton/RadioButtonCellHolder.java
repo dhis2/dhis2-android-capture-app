@@ -2,7 +2,6 @@ package org.dhis2.data.forms.dataentry.tablefields.radiobutton;
 
 import androidx.core.content.ContextCompat;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.RadioGroup;
 
 import org.dhis2.R;
@@ -81,7 +80,6 @@ public class RadioButtonCellHolder extends FormViewHolder {
         clearButton.setOnClickListener(view -> {
             if (checkBoxViewModel.editable().booleanValue()) {
                 radioGroup.clearCheck();
-                //processor.onNext();
             }
         });
 

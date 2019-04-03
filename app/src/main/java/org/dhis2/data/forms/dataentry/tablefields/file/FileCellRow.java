@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.Row;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
-import org.dhis2.databinding.FormButtonBinding;
 import org.dhis2.databinding.FormButtonCellBinding;
 
 import io.reactivex.processors.FlowableProcessor;

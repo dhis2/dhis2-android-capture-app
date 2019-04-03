@@ -1,7 +1,6 @@
 package org.dhis2.data.forms.dataentry.tablefields;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 import android.view.ViewGroup;
 
 import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder;

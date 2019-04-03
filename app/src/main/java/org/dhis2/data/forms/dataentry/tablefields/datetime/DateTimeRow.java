@@ -23,7 +23,6 @@ public class DateTimeRow implements Row<DateTimeHolder, DateTimeViewModel> {
 
     private final int TIME = 5;
     private final int DATE = 6;
-    private final int DATETIME = 7;
     private final LayoutInflater inflater;
     private final FlowableProcessor<RowAction> processor;
     private final boolean isBgTransparent;

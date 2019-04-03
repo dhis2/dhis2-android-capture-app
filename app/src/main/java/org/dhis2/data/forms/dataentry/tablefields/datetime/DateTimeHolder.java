@@ -30,15 +30,12 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
 
     private final CompositeDisposable disposable;
     private final FlowableProcessor<RowAction> processor;
-    /* @NonNull
-     private BehaviorProcessor<DateTimeViewModel> model;*/
     private DateTimeViewModel dateTimeViewModel;
 
     DateTimeHolder(ViewDataBinding binding, FlowableProcessor<RowAction> processor) {
         super(binding);
         this.disposable = new CompositeDisposable();
         this.processor = processor;
-//        model = BehaviorProcessor.create();
 
         if (binding instanceof FormTimeTextBinding) {
             ((FormTimeTextBinding) binding).timeView.setDateListener(this);
@@ -57,7 +54,6 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
 
     public void update(DateTimeViewModel viewModel, boolean accessDataWrite, String value) {
         this.dateTimeViewModel = viewModel;
-//        model.onNext(viewModel);
         descriptionText = viewModel.description();
         label = new StringBuilder(dateTimeViewModel.label());
         if (dateTimeViewModel.mandatory())
