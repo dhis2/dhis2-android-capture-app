@@ -72,4 +72,6 @@ public interface DashboardRepository {
     Observable<List<Pair<RelationshipTypeModel,String>>> relationshipsForTeiType(String teType);
 
     Observable<CategoryCombo> catComboForProgram(String program);
+
+    void setDefaultCatOptCombToEvent(String eventUid);
 }

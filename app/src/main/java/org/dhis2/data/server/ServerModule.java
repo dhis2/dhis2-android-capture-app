@@ -107,10 +107,10 @@ public class ServerModule {
 
                 ConnectionSpec cs = new ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
                         .tlsVersions(TlsVersion.TLS_1_0, TlsVersion.TLS_1_1, TlsVersion.TLS_1_2)
-                        .cipherSuites(
+                        /*.cipherSuites(
                                 CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
                                 CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
-                                CipherSuite.TLS_DHE_RSA_WITH_AES_128_GCM_SHA256)
+                                CipherSuite.TLS_DHE_RSA_WITH_AES_128_GCM_SHA256)*/
                         .build();
 
                 List<ConnectionSpec> specs = new ArrayList<>();
@@ -119,7 +119,7 @@ public class ServerModule {
                 specs.add(ConnectionSpec.CLEARTEXT);
 
                 client
-                        .sslSocketFactory(new TLSSocketFactory(sc.getSocketFactory()), trustManager)
+                        .sslSocketFactory(new TLSSocketFactory(sc.getSocketFactory()),trustManager)
                         .connectionSpecs(specs);
 
             } catch (Exception e) {

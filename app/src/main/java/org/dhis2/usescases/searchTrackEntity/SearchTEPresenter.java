@@ -290,7 +290,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                 return searchTeiModels;
                             })
                             .flatMap(list -> {
-                                if (currentPage == 1)
+                                int minAttrToSearch = selectedProgram.minAttributesRequiredToSearch() != null ? selectedProgram.minAttributesRequiredToSearch() : 0;
+                                if (currentPage == 1 && (minAttrToSearch <= queryData.size()))
                                     return searchRepository.trackedEntityInstancesToUpdate(trackedEntity.uid(), selectedProgram, queryData, list.size())
                                             .map(trackedEntityInstanceModels -> {
                                                 List<SearchTeiModel> helperList = new ArrayList<>();

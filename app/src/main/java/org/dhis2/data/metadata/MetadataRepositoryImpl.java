@@ -8,12 +8,9 @@ import com.squareup.sqlbrite2.BriteDatabase;
 import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.utils.DateUtils;
-import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryModel;
-import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionComboCategoryOptionLinkTableInfo;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
@@ -21,10 +18,7 @@ import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.maintenance.D2Error;
-import org.hisp.dhis.android.core.option.OptionGroupOptionLinkTableInfo;
 import org.hisp.dhis.android.core.option.OptionModel;
-import org.hisp.dhis.android.core.option.OptionModuleWiper;
-import org.hisp.dhis.android.core.option.OptionSetModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
@@ -41,7 +35,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -469,7 +462,18 @@ public class MetadataRepositoryImpl implements MetadataRepository {
         String formattedOptionsToHide = "'" + join("','", optionsToHide) + "'";
         String formattedOptionGroupsToHide = "'" + join("','", optionsGroupsToHide) + "'";
 
-        String optionGroupQuery = "SELECT Option.*, OptionGroupOptionLink.optionGroup FROM Option " +
+        String options = "SELECT Option.*, OptionGroupOptionLink.optionGroup FROM Option " +
+                "LEFT JOIN OptionGroupOptionLink ON OptionGroupOptionLink.option = Option.uid " +
+                "WHERE Option.optionSet = ? " +
+                (!optionsGroupsToHide.isEmpty() ? "AND (OptionGroupOptionLink.optionGroup IS NULL OR OptionGroupOptionLink.optionGroup NOT IN (" + formattedOptionGroupsToHide + ")) " : "") +
+                (!optionsToHide.isEmpty() ? "AND Option.uid NOT IN (" + formattedOptionsToHide + ") " : "") +
+                (!isEmpty(text) ? "AND Option.displayName LIKE '%" + text + "%' " : "") +
+                pageQuery;
+
+        return briteDatabase.createQuery(OptionModel.TABLE, options, idOptionSet)
+                .mapToList(OptionModel::create);
+
+        /*String optionGroupQuery = "SELECT Option.*, OptionGroupOptionLink.optionGroup FROM Option " +
                 "LEFT JOIN OptionGroupOptionLink ON OptionGroupOptionLink.option = Option.uid  " +
                 "WHERE Option.optionSet = ? " +
                 "AND (OptionGroupOptionLink.optionGroup IS NULL OR OptionGroupOptionLink.optionGroup NOT IN (" + formattedOptionGroupsToHide + ")) " +
@@ -497,9 +501,11 @@ public class MetadataRepositoryImpl implements MetadataRepository {
                             OptionModel option = iterator.next();
                             if (optionsToHide.contains(option.uid()))
                                 iterator.remove();
+                            if (!option.displayName().contains(text))
+                                iterator.remove();
                         }
                         return Observable.just(list);
                     }
-                });
+                });*/
     }
 }

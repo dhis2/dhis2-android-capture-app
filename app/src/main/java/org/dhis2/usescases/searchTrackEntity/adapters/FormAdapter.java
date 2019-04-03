@@ -129,7 +129,7 @@ public class FormAdapter extends RecyclerView.Adapter {
             switch (holder.getItemViewType()) {
                 case EDITTEXT:
                     viewModel = EditTextViewModel.create(attr.uid(), label, false,
-                            queryData.get(attr.uid()), label, 1, attr.valueType(), null, !attr.generated(),
+                            queryData.get(attr.uid()), label, 1, attr.valueType(), null, true,
                             attr.displayDescription(), null, ObjectStyleModel.builder().build());
                     break;
                 case BUTTON:

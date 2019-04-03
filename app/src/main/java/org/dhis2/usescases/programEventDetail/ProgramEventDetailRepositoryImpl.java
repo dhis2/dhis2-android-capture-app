@@ -8,6 +8,7 @@ import org.dhis2.data.tuples.Pair;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.ValueUtils;
 import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
 import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
@@ -83,7 +84,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
             List<Pair<String, String>> data = getData(event.trackedEntityDataValues(), showInReportsDataElements);
             boolean hasExpired = isExpired(event);
             CategoryOptionCombo catOptComb = d2.categoryModule().categoryOptionCombos.uid(event.attributeOptionCombo()).get();
-            String attributeOptionCombo = catOptComb != null ? catOptComb.displayName() : "";
+            String attributeOptionCombo = catOptComb != null && !catOptComb.displayName().equals("default") ? catOptComb.displayName() : "";
 
             return ProgramEventViewModel.create(
                     event.uid(),
@@ -175,6 +176,8 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     public Observable<List<Category>> catCombo() {
         Program program = d2.programModule().programs.uid(programUid).withAllChildren().get();
         CategoryCombo categoryCombo = d2.categoryModule().categoryCombos.byUid().eq(program.categoryCombo().uid()).withAllChildren().one().get();
+        if (categoryCombo.isDefault())
+            return Observable.just(new ArrayList<>());
         List<String> categoriesUids = new ArrayList<>();
         for (Category category : categoryCombo.categories())
             categoriesUids.add(category.uid());
