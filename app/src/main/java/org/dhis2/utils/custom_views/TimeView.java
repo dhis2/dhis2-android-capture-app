@@ -5,6 +5,7 @@ import android.content.Context;
 import android.text.format.DateFormat;
 import android.util.AttributeSet;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.material.textfield.TextInputEditText;
@@ -115,6 +116,11 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
     public void setWarningOrError(String msg) {
         if(msg != null)
             inputLayout.setError(msg);
+    }
+
+    public void setMandatory(){
+        ImageView mandatory = binding.getRoot().findViewById(R.id.ic_mandatory);
+        mandatory.setVisibility(View.VISIBLE);
     }
 
     public void setDateListener(OnDateSelected listener) {

@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.material.textfield.TextInputEditText;
@@ -100,6 +101,11 @@ public class DateView extends FieldLayout implements View.OnClickListener {
         this.label = label;
         binding.setVariable(BR.label, label);
         binding.executePendingBindings();
+    }
+
+    public void setMandatory(){
+        ImageView mandatory = binding.getRoot().findViewById(R.id.ic_mandatory);
+        mandatory.setVisibility(View.VISIBLE);
     }
 
     public void setDescription(String description) {

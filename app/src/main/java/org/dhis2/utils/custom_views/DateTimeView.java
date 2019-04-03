@@ -5,6 +5,7 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.material.textfield.TextInputEditText;
@@ -140,6 +141,12 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
     public void setDateListener(OnDateSelected listener) {
         this.listener = listener;
     }
+
+    public void setMandatory(){
+        ImageView mandatory = binding.getRoot().findViewById(R.id.ic_mandatory);
+        mandatory.setVisibility(View.VISIBLE);
+    }
+
 
     @Override
     public void onClick(View view) {
