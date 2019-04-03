@@ -354,13 +354,6 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
     private FieldViewModelFactoryImpl createField() {
         return new FieldViewModelFactoryImpl(
                 "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
                 "");
     }
 

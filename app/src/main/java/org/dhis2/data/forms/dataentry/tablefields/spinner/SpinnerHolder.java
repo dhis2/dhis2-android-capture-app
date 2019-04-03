@@ -5,10 +5,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
-import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
@@ -18,12 +16,8 @@ import org.dhis2.utils.custom_views.OptionSetCellDialog;
 import org.dhis2.utils.custom_views.OptionSetCellPopUp;
 import org.dhis2.utils.custom_views.OptionSetDialog;
 import org.dhis2.utils.custom_views.OptionSetOnClickListener;
-import org.dhis2.utils.custom_views.OptionSetPopUp;
 import org.dhis2.utils.custom_views.TextInputAutoCompleteTextView;
 import org.hisp.dhis.android.core.option.OptionModel;
-import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
-
-import java.util.Map;
 
 import androidx.appcompat.widget.PopupMenu;
 import androidx.core.content.ContextCompat;

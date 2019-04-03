@@ -3,7 +3,6 @@ package org.dhis2.data.forms.dataentry.tablefields.unsupported;
 import android.widget.Button;
 
 import org.dhis2.data.forms.dataentry.tablefields.FormViewHolder;
-import org.dhis2.databinding.FormUnsupportedBinding;
 import org.dhis2.databinding.FormUnsupportedCellBinding;
 
 

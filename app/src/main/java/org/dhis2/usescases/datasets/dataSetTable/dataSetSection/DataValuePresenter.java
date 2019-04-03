@@ -357,13 +357,6 @@ public class DataValuePresenter implements DataValueContract.Presenter{
         for (DataSetTableModel datavalue : dataValues) {
             FieldViewModelFactoryImpl fieldFactory = new FieldViewModelFactoryImpl(
                     "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
                     "");
 
             /*listFields.add(fieldFactory.create(datavalue.id(), "", datavalue.,

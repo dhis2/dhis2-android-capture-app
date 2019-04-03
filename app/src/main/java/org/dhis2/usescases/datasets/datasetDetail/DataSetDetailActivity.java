@@ -243,17 +243,17 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
                                 textToShow = weeklyFormat.format(selectedDates.get(0)) + ", " + yearFormat.format(selectedDates.get(0));
                                 chosenDateWeek = (ArrayList<Date>) selectedDates;
                                 if (selectedDates.size() > 1)
-                                    textToShow += "... " /*+ weeklyFormat.format(selectedDates.get(1))*/;
+                                    textToShow += "... " ;
                             } else if (currentPeriod == MONTHLY) {
                                 textToShow = monthFormat.format(selectedDates.get(0));
                                 chosenDateMonth = (ArrayList<Date>) selectedDates;
                                 if (selectedDates.size() > 1)
-                                    textToShow += "... " /*+ monthFormat.format(selectedDates.get(1))*/;
+                                    textToShow += "... " ;
                             } else {
                                 textToShow = yearFormat.format(selectedDates.get(0));
                                 chosenDateYear = (ArrayList<Date>) selectedDates;
                                 if (selectedDates.size() > 1)
-                                    textToShow += "... " /*+ yearFormat.format(selectedDates.get(1))*/;
+                                    textToShow += "... " ;
 
                             }
                             binding.buttonPeriodText.setText(textToShow);

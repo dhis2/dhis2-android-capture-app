@@ -34,8 +34,6 @@ public class OrgUnitHolder extends FormViewHolder {
     private OrgUnitDialog orgUnitDialog;
     private CompositeDisposable compositeDisposable;
     private OrgUnitViewModel model;
-  /*  @NonNull
-    private BehaviorProcessor<OrgUnitViewModel> model;*/
 
     OrgUnitHolder(FragmentManager fm, ViewDataBinding binding, FlowableProcessor<RowAction> processor, Observable<List<OrganisationUnitModel>> orgUnits) {
         super(binding);

@@ -2,7 +2,6 @@ package org.dhis2.data.forms.dataentry.tablefields.image;
 
 import android.view.View;
 
-import org.dhis2.Bindings.Bindings;
 import org.dhis2.data.forms.dataentry.tablefields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.databinding.FormImageBinding;
@@ -26,7 +25,6 @@ public class ImageHolder extends FormViewHolder {
     private final FlowableProcessor<RowAction> processor;
     private final FormImageBinding binding;
     private boolean isEditable;
-    private String valuePendingUpdate;
 
     ImageViewModel model;
 
@@ -42,10 +40,7 @@ public class ImageHolder extends FormViewHolder {
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(selectedValue -> {
-                        /*if (selectedValue.equals(model.value()) || selectedValue.equals(valuePendingUpdate))
-                            binding.frame.setVisibility(View.VISIBLE);
-                        else
-                            binding.frame.setVisibility(View.GONE);*/
+
                     }, Timber::d));
 
         itemView.setOnClickListener(v -> {
@@ -54,14 +49,11 @@ public class ImageHolder extends FormViewHolder {
                 String value = null;
                 String[] uids = model.uid().split("\\.");
                 value = model.label();
-                valuePendingUpdate = value;
-               /* binding.frame.setVisibility(binding.frame.getVisibility() == View.GONE ? View.VISIBLE : View.GONE);
-                if(binding.frame.getVisibility()==View.VISIBLE) {*/
-                    if (imageSelector != null)
-                        imageSelector.onNext(value);
-                    processor.onNext(RowAction.create(uids[0], value, "", new ArrayList<>(),"", 0, 0));
-                /*}else
-                    processor.onNext(RowAction.create(uids[0], null));*/
+
+                if (imageSelector != null)
+                    imageSelector.onNext(value);
+                processor.onNext(RowAction.create(uids[0], value, "", new ArrayList<>(),"", 0, 0));
+
             }
         });
 
@@ -76,12 +68,6 @@ public class ImageHolder extends FormViewHolder {
         if (viewModel.mandatory())
             label.append("*");
         binding.setLabel(label.toString());
-        String[] uids = viewModel.uid().split("\\.");
-        //Bindings.setObjectStyle(binding.icon, itemView,viewModel.objectStyle());
-        /*if (viewModel.value() != null && viewModel.value().equals(viewModel.label()))
-            binding.frame.setVisibility(View.VISIBLE);
-        else
-            binding.frame.setVisibility(View.GONE);*/
 
         if (viewModel.warning() != null) {
             binding.errorMessage.setVisibility(View.VISIBLE);

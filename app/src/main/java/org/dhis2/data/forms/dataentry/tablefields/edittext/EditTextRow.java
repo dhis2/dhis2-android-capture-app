@@ -11,10 +11,7 @@ import com.evrencoskun.tableview.TableView;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.Row;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
-import org.dhis2.databinding.CustomTextViewBinding;
 import org.dhis2.databinding.CustomTextViewCellBinding;
-
-import java.util.List;
 
 import io.reactivex.processors.FlowableProcessor;
 
