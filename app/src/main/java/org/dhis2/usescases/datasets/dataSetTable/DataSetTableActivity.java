@@ -1,8 +1,6 @@
 package org.dhis2.usescases.datasets.dataSetTable;
 
 
-import androidx.databinding.DataBindingUtil;
-
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -15,9 +13,6 @@ import com.google.android.flexbox.FlexboxLayoutManager;
 import com.google.android.flexbox.JustifyContent;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.textfield.TextInputEditText;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.dhis2.App;
 import org.dhis2.R;
@@ -32,11 +27,10 @@ import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.custom_views.OrgUnitDialog;
 import org.dhis2.utils.custom_views.PeriodDialog;
-import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryModel;
+import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
-import org.hisp.dhis.android.core.dataset.DataSetModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.period.PeriodType;
 
@@ -49,6 +43,9 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
 import io.reactivex.Flowable;
 
 public class DataSetTableActivity extends ActivityGlobalAbstract implements DataSetTableContract.View {
@@ -66,7 +63,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
     private OrganisationUnitModel selectedOrgUnit;
     private Date selectedPeriod;
-    private HashMap<String, CategoryOptionModel> selectedCatOptions;
+    private HashMap<String, CategoryOption> selectedCatOptions;
     private Map<String, List<DataElementModel>> dataElements;
     View selectedView;
 
@@ -265,11 +262,11 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     }
 
     @Override
-    public void showCatComboSelector(String catOptionUid, List<CategoryOptionModel> data) {
+    public void showCatComboSelector(String catOptionUid, List<CategoryOption> data) {
         PopupMenu menu = new PopupMenu(this, selectedView, Gravity.BOTTOM);
 //        menu.getMenu().add(Menu.NONE, Menu.NONE, 0, viewModel.label()); Don't show label
-        for (CategoryOptionModel optionModel : data)
-            menu.getMenu().add(Menu.NONE, Menu.NONE, data.indexOf(optionModel), optionModel.displayName());
+        for (CategoryOption option : data)
+            menu.getMenu().add(Menu.NONE, Menu.NONE, data.indexOf(option), option.displayName());
 
         menu.setOnDismissListener(menu1 -> selectedView = null);
         menu.setOnMenuItemClickListener(item -> {
@@ -302,7 +299,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     public String getSelectedCatOptions() {
         StringBuilder catComb = new StringBuilder("'");
         for (int i = 0; i < selectedCatOptions.keySet().size(); i++) {
-            CategoryOptionModel catOpt = selectedCatOptions.get(selectedCatOptions.keySet().toArray()[i]);
+            CategoryOption catOpt = selectedCatOptions.get(selectedCatOptions.keySet().toArray()[i]);
             catComb.append(catOpt.uid());
 
             if (i < selectedCatOptions.values().size() - 1)
