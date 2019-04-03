@@ -17,8 +17,6 @@
 
 package com.evrencoskun.tableview;
 
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -38,6 +36,9 @@ import com.evrencoskun.tableview.sort.SortState;
 
 import java.util.List;
 
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+
 /**
  * Created by evrencoskun on 19/06/2017.
  */
@@ -51,7 +52,7 @@ public interface ITableView {
     boolean isIgnoreSelectionColors();
 
     boolean isShowHorizontalSeparators();
-    
+
     boolean isShowVerticalSeparators();
 
     boolean isSortable();
@@ -77,11 +78,11 @@ public interface ITableView {
     ITableViewListener getTableViewListener();
 
     SelectionHandler getSelectionHandler();
-    
+
     ColumnSortHandler getColumnSortHandler();
 
     DividerItemDecoration getHorizontalItemDecoration();
-    
+
     DividerItemDecoration getVerticalItemDecoration();
 
     SortState getSortingStatus(int column);
@@ -151,7 +152,7 @@ public interface ITableView {
      * @return The FilterHandler of the TableView.
      */
     FilterHandler getFilterHandler();
-    
+
     /**
      * Retrieves the ScrollHandler of the TableView.
      *
@@ -160,4 +161,7 @@ public interface ITableView {
     ScrollHandler getScrollHandler();
 
     int getHeaderCount();
+
+    List<CellRecyclerView> getBackupHeaders();
+
 }

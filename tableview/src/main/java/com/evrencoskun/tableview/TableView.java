@@ -22,15 +22,6 @@ import android.content.res.TypedArray;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Parcelable;
-import androidx.annotation.AttrRes;
-import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.util.AttributeSet;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -59,6 +50,15 @@ import com.evrencoskun.tableview.sort.SortState;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.annotation.AttrRes;
+import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * Created by evrencoskun on 11/06/2017.
@@ -113,6 +113,7 @@ public class TableView extends FrameLayout implements ITableView {
     private boolean mShowVerticalSeparators = true;
     private boolean mIsSortable;
     private int mHeaderCount = 1;
+    private List<CellRecyclerView> mBackupHeaders = new ArrayList<>();
 
     public TableView(@NonNull Context context, int mSeparatorColor) {
         super(context);
@@ -139,7 +140,7 @@ public class TableView extends FrameLayout implements ITableView {
         mRowHeaderWidth = (int) getResources().getDimension(R.dimen.default_row_header_width);
         mColumnHeaderHeight = (int) getResources().getDimension(R.dimen
                 .default_column_header_height);
-        mHeaderHeight = (int)getResources().getDimension(R.dimen.small_column_header_height);
+        mHeaderHeight = (int) getResources().getDimension(R.dimen.small_column_header_height);
         // Colors
         mSelectedColor = ContextCompat.getColor(getContext(), R.color
                 .table_view_default_selected_background_color);
@@ -186,14 +187,14 @@ public class TableView extends FrameLayout implements ITableView {
     private void initialize() {
 
         // Create Views
-        for(int i=0; i<mHeaderCount; i++){
+        for (int i = 0; i < mHeaderCount; i++) {
             mColumnHeaderRecyclerViews.add(createColumnHeaderRecyclerView(i));
         }
         mRowHeaderRecyclerView = createRowHeaderRecyclerView();
         mCellRecyclerView = createCellRecyclerView();
 
         // Add Views
-        for(int i=0; i<mHeaderCount; i++){
+        for (int i = 0; i < mHeaderCount; i++) {
             addView(mColumnHeaderRecyclerViews.get(i));
         }
         addView(mRowHeaderRecyclerView);
@@ -206,7 +207,8 @@ public class TableView extends FrameLayout implements ITableView {
         mPreferencesHandler = new PreferencesHandler(this);
         mColumnWidthHandler = new ColumnWidthHandler(this);
 
-        mColumnHeaderRecyclerView=mColumnHeaderRecyclerViews.get(0);
+        mColumnHeaderRecyclerView = mColumnHeaderRecyclerViews.get(0);
+        mBackupHeaders = createHeaderBackUps();
         initializeListeners();
     }
 
@@ -224,8 +226,9 @@ public class TableView extends FrameLayout implements ITableView {
         // It handles Horizontal scroll listener
         mHorizontalRecyclerViewListener = new HorizontalRecyclerViewListener(this);
         // Set scroll listener to be able to scroll all rows synchrony.
-        for(int i=0; i<mHeaderCount; i++){
+        for (int i = 0; i < mHeaderCount; i++) {
             mColumnHeaderRecyclerViews.get(i).addOnItemTouchListener(mHorizontalRecyclerViewListener);
+            mBackupHeaders.get(i).addOnItemTouchListener(mHorizontalRecyclerViewListener);
         }
 
 
@@ -247,11 +250,11 @@ public class TableView extends FrameLayout implements ITableView {
         // For some case, it is pretty necessary.
         TableViewLayoutChangeListener layoutChangeListener = new TableViewLayoutChangeListener
                 (this);
-        for(int i=0; i<mHeaderCount; i++){
+        for (int i = 0; i < mHeaderCount; i++) {
             mColumnHeaderRecyclerViews.get(i).addOnLayoutChangeListener(layoutChangeListener);
+            mBackupHeaders.get(i).addOnLayoutChangeListener(layoutChangeListener);
         }
         mCellRecyclerView.addOnLayoutChangeListener(layoutChangeListener);
-
     }
 
     protected CellRecyclerView createColumnHeaderRecyclerView(int header) {
@@ -263,7 +266,7 @@ public class TableView extends FrameLayout implements ITableView {
         // Set layout params
         LayoutParams layoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT, mHeaderHeight);
         layoutParams.leftMargin = mRowHeaderWidth;
-        layoutParams.topMargin = mHeaderHeight*header;
+        layoutParams.topMargin = mHeaderHeight * header;
         recyclerView.setLayoutParams(layoutParams);
 
         if (isShowHorizontalSeparators()) {
@@ -275,14 +278,41 @@ public class TableView extends FrameLayout implements ITableView {
         return recyclerView;
     }
 
+    public List<CellRecyclerView> createHeaderBackUps() {
+        List<CellRecyclerView> headerBackups = new ArrayList<>();
+
+        for (int i = 0; i < mColumnHeaderLayoutManagers.size(); i++) {
+            CellRecyclerView recyclerView = new CellRecyclerView(getContext());
+
+            // Set layout manager
+            recyclerView.setLayoutManager(new ColumnHeaderLayoutManager(getContext(), this));
+
+            // Set layout params
+            LayoutParams layoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT, mHeaderHeight);
+            layoutParams.leftMargin = mRowHeaderWidth;
+            layoutParams.topMargin = mHeaderHeight * i;
+            recyclerView.setLayoutParams(layoutParams);
+
+            if (isShowHorizontalSeparators()) {
+                // Add vertical item decoration to display column line
+                recyclerView.addItemDecoration(getHorizontalItemDecoration());
+                recyclerView.addItemDecoration(getVerticalItemDecoration());
+            }
+
+            recyclerView.setAdapter(mColumnHeaderRecyclerViews.get(i).getAdapter());
+            headerBackups.add(recyclerView);
+        }
+        return headerBackups;
+    }
+
     protected CellRecyclerView createRowHeaderRecyclerView() {
-        if(mRowHeaderRecyclerView==null) {
+        if (mRowHeaderRecyclerView == null) {
             mRowHeaderRecyclerView = new CellRecyclerView(getContext());
 
             // Set layout manager
             mRowHeaderRecyclerView.setLayoutManager(getRowHeaderLayoutManager());
 
-        }else {
+        } else {
 
             // Set layout params
             LayoutParams layoutParams = new LayoutParams(mRowHeaderWidth, LayoutParams.WRAP_CONTENT);
@@ -301,7 +331,7 @@ public class TableView extends FrameLayout implements ITableView {
     }
 
     protected CellRecyclerView createCellRecyclerView() {
-        if(mCellRecyclerView==null) {
+        if (mCellRecyclerView == null) {
             mCellRecyclerView = new CellRecyclerView(getContext());
 
             // Disable multitouch
@@ -309,7 +339,7 @@ public class TableView extends FrameLayout implements ITableView {
 
             // Set layout manager
             mCellRecyclerView.setLayoutManager(getCellLayoutManager());
-        }else {
+        } else {
             // Set layout params
             LayoutParams layoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams
                     .WRAP_CONTENT);
@@ -336,9 +366,14 @@ public class TableView extends FrameLayout implements ITableView {
             this.mTableAdapter.setTableView(this);
 
             // set adapters
-            for (int i = 0; i<mHeaderCount; i++){
+            for (int i = 0; i < mHeaderCount; i++) {
                 if (mColumnHeaderRecyclerViews.get(i) != null) {
                     mColumnHeaderRecyclerViews.get(i).setAdapter(mTableAdapter
+                            .getColumnHeaderRecyclerViewAdapter(i));
+                }
+
+                if (mBackupHeaders.get(i) != null) {
+                    mBackupHeaders.get(i).setAdapter(mTableAdapter
                             .getColumnHeaderRecyclerViewAdapter(i));
                 }
             }
@@ -541,6 +576,11 @@ public class TableView extends FrameLayout implements ITableView {
     }
 
     @Override
+    public List<CellRecyclerView> getBackupHeaders() {
+        return this.mBackupHeaders;
+    }
+
+    @Override
     public void showRow(int row) {
         mVisibilityHandler.showRow(row);
     }
@@ -668,7 +708,7 @@ public class TableView extends FrameLayout implements ITableView {
         return itemDecoration;
     }
 
-    public void setHeaderCount(int headerCount){
+    public void setHeaderCount(int headerCount) {
         this.mHeaderCount = headerCount;
         clear();
         initialize();
@@ -676,7 +716,7 @@ public class TableView extends FrameLayout implements ITableView {
         setAdapter(mTableAdapter);
     }
 
-    private void clear(){
+    private void clear() {
         mColumnHeaderRecyclerViews.clear();
         mColumnHeaderLayoutManagers.clear();
         mTableAdapter.clear();
