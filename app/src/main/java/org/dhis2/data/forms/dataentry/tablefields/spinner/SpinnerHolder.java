@@ -44,18 +44,15 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
     private final ImageView iconView;
     private final TextInputAutoCompleteTextView editText;
     private final TextInputLayout inputLayout;
-    private final View descriptionLabel;
 
     private SpinnerViewModel viewModel;
     private int numberOfOptions = 0;
-    private Map<String, OptionModel> options;
 
     SpinnerHolder(ViewDataBinding mBinding, FlowableProcessor<RowAction> processor, FlowableProcessor<Trio<String, String, Integer>> processorOptionSet) {
         super(mBinding);
         this.editText = mBinding.getRoot().findViewById(R.id.input_editText);
         this.iconView = mBinding.getRoot().findViewById(R.id.renderImage);
         this.inputLayout = mBinding.getRoot().findViewById(R.id.input_layout);
-        this.descriptionLabel = mBinding.getRoot().findViewById(R.id.descriptionLabel);
         this.processor = processor;
         this.processorOptionSet = processorOptionSet;
 
@@ -72,8 +69,6 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
     public void update(SpinnerViewModel viewModel, boolean accessDataWrite) {
         this.viewModel = viewModel;
 
-        /*numberOfOptions = viewModel.numberOfOptions();
-        Bindings.setObjectStyle(iconView, itemView, viewModel.objectStyle());*/
         editText.setEnabled(viewModel.editable());
         editText.setFocusable(false);
         editText.setClickable(viewModel.editable());
@@ -91,21 +86,12 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
             editText.setBackgroundColor(ContextCompat.getColor(editText.getContext(), R.color.bg_black_e6e));
         } else if(accessDataWrite) {
             editText.setEnabled(true);
-            editText.setBackgroundColor(ContextCompat.getColor(editText.getContext(), R.color.white));
+            editText.setBackground(null);
         }else{
             editText.setEnabled(false);
         }
 
-        /*if (inputLayout.getHint() == null || !inputLayout.getHint().toString().equals(viewModel.label())) {
-            label = new StringBuilder(viewModel.label());
-            if (viewModel.mandatory())
-                label.append("*");
-            inputLayout.setHint(label);
-        }*/
-
         descriptionText = viewModel.description();
-
-        //descriptionLabel.setVisibility(label.length() > 16 || descriptionText != null ? View.VISIBLE : View.GONE);
 
     }
 
@@ -114,7 +100,6 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
 
     @Override
     public void onClick(View v) {
-        //closeKeyboard(v);
         if (numberOfOptions > itemView.getContext().getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE).getInt(Constants.OPTION_SET_DIALOG_THRESHOLD, 15)) {
             OptionSetCellDialog dialog = OptionSetCellDialog.newInstance();
             dialog
@@ -165,9 +150,6 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
                 RowAction.create(viewModel.uid(),optionCode, viewModel.dataElement(),
                         viewModel.listCategoryOption(), viewModel.catCombo(), viewModel.row(), viewModel.column())
         );
-        //viewModel.withValue(isSearchMode ? optionDisplayName : optionCode);
-      /*  View nextView;
-        if ((nextView = editText.focusSearch(View.FOCUS_DOWN)) != null)
-            nextView.requestFocus();*/
+
     }
 }
