@@ -99,6 +99,7 @@ public class TableView extends FrameLayout implements ITableView {
 
     private int mRowHeaderWidth;
     private int mColumnHeaderHeight;
+    private int mHeaderHeight;
 
     private int mSelectedColor;
     private int mUnSelectedColor;
@@ -138,7 +139,7 @@ public class TableView extends FrameLayout implements ITableView {
         mRowHeaderWidth = (int) getResources().getDimension(R.dimen.default_row_header_width);
         mColumnHeaderHeight = (int) getResources().getDimension(R.dimen
                 .default_column_header_height);
-
+        mHeaderHeight = (int)getResources().getDimension(R.dimen.small_column_header_height);
         // Colors
         mSelectedColor = ContextCompat.getColor(getContext(), R.color
                 .table_view_default_selected_background_color);
@@ -260,9 +261,9 @@ public class TableView extends FrameLayout implements ITableView {
         recyclerView.setLayoutManager(getColumnHeaderLayoutManager(header));
 
         // Set layout params
-        LayoutParams layoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT, mColumnHeaderHeight);
+        LayoutParams layoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT, mHeaderHeight);
         layoutParams.leftMargin = mRowHeaderWidth;
-        layoutParams.topMargin = mColumnHeaderHeight*header;
+        layoutParams.topMargin = mHeaderHeight*header;
         recyclerView.setLayoutParams(layoutParams);
 
         if (isShowHorizontalSeparators()) {
@@ -285,7 +286,7 @@ public class TableView extends FrameLayout implements ITableView {
 
             // Set layout params
             LayoutParams layoutParams = new LayoutParams(mRowHeaderWidth, LayoutParams.WRAP_CONTENT);
-            layoutParams.topMargin = mColumnHeaderHeight * mHeaderCount;
+            layoutParams.topMargin = mHeaderHeight * mHeaderCount;
             mRowHeaderRecyclerView.setLayoutParams(layoutParams);
 
 
@@ -313,7 +314,7 @@ public class TableView extends FrameLayout implements ITableView {
             LayoutParams layoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams
                     .WRAP_CONTENT);
             layoutParams.leftMargin = mRowHeaderWidth;
-            layoutParams.topMargin = mColumnHeaderHeight * mHeaderCount;
+            layoutParams.topMargin = mHeaderHeight * mHeaderCount;
             mCellRecyclerView.setLayoutParams(layoutParams);
 
             if (isShowVerticalSeparators()) {
@@ -331,6 +332,7 @@ public class TableView extends FrameLayout implements ITableView {
             this.mTableAdapter = tableAdapter;
             this.mTableAdapter.setRowHeaderWidth(mRowHeaderWidth);
             this.mTableAdapter.setColumnHeaderHeight(mColumnHeaderHeight);
+            this.mTableAdapter.setHeaderHeight(mHeaderHeight);
             this.mTableAdapter.setTableView(this);
 
             // set adapters

@@ -1,52 +1,30 @@
 package org.dhis2.data.forms.dataentry.tablefields.edittext;
 
 import android.annotation.SuppressLint;
-
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.AppCompatEditText;
-import androidx.databinding.ObservableBoolean;
-import androidx.annotation.NonNull;
-
-import com.evrencoskun.tableview.TableView;
-import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
-import androidx.core.content.ContextCompat;
-
 import android.text.InputFilter;
 import android.text.InputType;
-import android.text.TextUtils;
 import android.text.method.DigitsKeyListener;
-import android.util.Log;
 import android.util.Patterns;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 
-import org.dhis2.Bindings.Bindings;
+import com.evrencoskun.tableview.TableView;
+
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
-import org.dhis2.databinding.CustomTextViewBinding;
 import org.dhis2.databinding.CustomTextViewCellBinding;
-import org.dhis2.utils.custom_views.TextInputAutoCompleteTextView;
 import org.hisp.dhis.android.core.common.ValueType;
-import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
-import java.util.List;
-
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
+import androidx.databinding.ObservableBoolean;
 import io.reactivex.processors.FlowableProcessor;
-import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
-import static java.lang.String.valueOf;
 
 
 /**
@@ -74,15 +52,13 @@ final class EditTextCellCustomHolder extends FormViewHolder {
         this.processor = processor;
 
         customBinding.inputEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            if(hasFocus) {
-                //tableView.scrollToColumnPosition(editTextModel.column(), 200);
-                tableView.setSelectedCell(editTextModel.column(), editTextModel.row());
-            }
-            if(editTextModel != null && editTextModel.editable() && !editText.getText().toString().equals(editTextModel.value())) {
+            if (editTextModel != null && editTextModel.editable() && !editText.getText().toString().equals(editTextModel.value())) {
                 if (!isEmpty(editText.getText()) && validate())
                     processor.onNext(RowAction.create(editTextModel.uid(), editText.getText().toString(), editTextModel.dataElement(), editTextModel.listCategoryOption(), editTextModel.catCombo(), editTextModel.row(), editTextModel.column()));
 
             }
+            if (!hasFocus)
+                closeKeyboard(editText);
         });
     }
 
@@ -100,10 +76,10 @@ final class EditTextCellCustomHolder extends FormViewHolder {
             customBinding.icMandatory.setVisibility(View.GONE);
 
         if (editTextModel.editable()) {
-            if(accessDataWrite) {
+            if (accessDataWrite) {
                 customBinding.inputEditText.setEnabled(true);
                 customBinding.inputEditText.setBackground(null);
-            }else{
+            } else {
                 customBinding.inputEditText.setEnabled(false);
                 customBinding.inputEditText.setBackgroundColor(ContextCompat.getColor(editText.getContext(), R.color.bg_black_e6e));
             }
@@ -270,5 +246,14 @@ final class EditTextCellCustomHolder extends FormViewHolder {
     @Override
     public void dispose() {
 
+    }
+
+    @Override
+    public void setSelected(SelectionState selectionState) {
+        super.setSelected(selectionState);
+        if (selectionState == SelectionState.SELECTED) {
+            editText.requestFocus();
+            openKeyboard(editText);
+        }
     }
 }

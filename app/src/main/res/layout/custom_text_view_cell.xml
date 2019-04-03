@@ -29,29 +29,31 @@
             android:layout_below="@id/renderImage"
             android:orientation="horizontal">
 
-            <org.dhis2.utils.custom_views.TextInputAutoCompleteTextView
-                android:id="@+id/input_editText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:imeOptions="actionNext"
-                android:maxLines="1"
-                android:layout_weight="1"
-                android:textAlignment="textStart"
-                android:textColor="@color/text_black_333"
-                android:textSize="15sp"
-                android:minHeight="@dimen/default_cell_height"
-                tools:text="hello" />
-
             <ImageView
                 android:id="@+id/ic_mandatory"
                 android:layout_width="10dp"
                 android:layout_height="10dp"
+                android:layout_marginStart="12dp"
                 android:layout_marginTop="12dp"
-                android:layout_marginEnd="12dp"
                 android:src="@drawable/ic_mandatory"
                 android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                tools:visibility="visible" />
+
+            <org.dhis2.utils.custom_views.TextInputAutoCompleteTextView
+                android:id="@+id/input_editText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:imeOptions="actionNext"
+                android:maxLines="1"
+                android:minHeight="@dimen/default_cell_height"
+                android:textAlignment="textEnd"
+                android:textColor="@color/text_black_333"
+                android:textSize="15sp"
+                tools:text="hello" />
+
         </LinearLayout>
     </RelativeLayout>
 </layout>

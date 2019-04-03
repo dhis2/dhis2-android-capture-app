@@ -1,26 +1,16 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection;
 
 import android.content.Context;
-
-import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import android.os.Parcelable;
-import android.util.AttributeSet;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
-import org.dhis2.App;
-
 import com.evrencoskun.tableview.TableView;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.common.collect.Table;
 
+import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModelFactoryImpl;
@@ -36,33 +26,30 @@ import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.custom_views.OptionSetCellDialog;
 import org.dhis2.utils.custom_views.OptionSetCellPopUp;
-import org.dhis2.utils.custom_views.OptionSetDialog;
-import org.dhis2.utils.custom_views.OptionSetPopUp;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
 import org.hisp.dhis.android.core.dataset.DataInputPeriodModel;
-import org.hisp.dhis.android.core.dataset.DataSetCompleteRegistration;
 import org.hisp.dhis.android.core.dataset.DataSetModel;
-import org.hisp.dhis.android.core.dataset.SectionModel;
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.period.PeriodModel;
 
-import java.sql.Date;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 import javax.inject.Inject;
 
-import androidx.databinding.ViewDataBinding;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
 import io.reactivex.Flowable;
 import io.reactivex.processors.FlowableProcessor;
 import timber.log.Timber;
+
+import static android.text.TextUtils.isEmpty;
 
 /**
  * QUADRAM. Created by ppajuelo on 02/10/2018.
@@ -85,6 +72,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
     DataValueContract.Presenter presenterFragment;
 
     private TableView tableView;
+
     @NonNull
     public static DataSetSectionFragment create(@NonNull String sectionUid, boolean accessDataWrite, String dataSetUid) {
         Bundle bundle = new Bundle();
@@ -128,18 +116,18 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
     void createTable(DataTableModel dataTableModel) {
         DataSetModel dataSet = dataTableModel.dataSet();
         boolean isEditable = false;
-        if(dataSet.accessDataWrite() &&
+        if (dataSet.accessDataWrite() &&
                 !isExpired(dataTableModel.dataSet()) &&
                 (presenterFragment.getDataInputPeriodModel().size() == 0 || (presenterFragment.checkHasInputPeriod() != null &&
-                        DateUtils.getInstance().isInsideInputPeriod(presenterFragment.checkHasInputPeriod()))) ){
+                        DateUtils.getInstance().isInsideInputPeriod(presenterFragment.checkHasInputPeriod())))) {
             isEditable = true;
         }
 
         presenterFragment.setCurrentNumTables(dataTableModel.catCombos().size());
         activity.updateTabLayout(section, dataTableModel.catCombos().size());
-        adapter = new DataSetTableAdapter(getAbstracContext() , presenterFragment.getProcessor(), presenterFragment.getProcessorOptionSet());
+        adapter = new DataSetTableAdapter(getAbstracContext(), presenterFragment.getProcessor(), presenterFragment.getProcessorOptionSet());
         presenterFragment.initializeProcessor(this);
-        for(String catCombo: dataTableModel.catCombos()) {
+        for (String catCombo : dataTableModel.catCombos()) {
             List<List<CategoryOptionModel>> columnHeaderItems = dataTableModel.headers().get(catCombo);
             ArrayList<List<String>> cells = new ArrayList<>();
             List<List<FieldViewModel>> listFields = new ArrayList<>();
@@ -148,8 +136,8 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
             int countColumn = 0;
             boolean isNumber = false;
             int row = 0, column = 0;
-            adapter.setShowColumnTotal(dataTableModel.section() == null? false :dataTableModel.section().showColumnTotals());
-            adapter.setShowRowTotal(dataTableModel.section() == null? false :dataTableModel.section().showRowTotals());
+            adapter.setShowColumnTotal(dataTableModel.section() == null ? false : dataTableModel.section().showColumnTotals());
+            adapter.setShowRowTotal(dataTableModel.section() == null ? false : dataTableModel.section().showRowTotals());
             //adapter.initializeRows(isEditable);
             TableView tableView = new TableView(getContext(),
                     ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY));
@@ -158,7 +146,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
             tableView.setHeadersColor(getResources().getColor(R.color.table_bg));
             tableView.setSelectedColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY_LIGHT));
             tableView.setShadowColor(getResources().getColor(R.color.rfab__color_shadow));
-            tableView.setRowHeaderWidth(500);
+            tableView.setRowHeaderWidth(300);
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 
@@ -171,13 +159,13 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
             tableView.setAdapter(adapter);
             tableView.setHeaderCount(columnHeaderItems.size());
             for (DataElementModel de : dataTableModel.rows()) {
-                if(de.categoryCombo().equals(catCombo))
+                if (de.categoryCombo().equals(catCombo))
                     rows.add(de);
 
                 ArrayList<String> values = new ArrayList<>();
                 ArrayList<FieldViewModel> fields = new ArrayList<>();
                 int totalRow = 0;
-                if(de.categoryCombo().equals(catCombo)) {
+                if (de.categoryCombo().equals(catCombo)) {
                     for (List<String> catOpts : listCatOptions) {
                         boolean exitsValue = false;
                         boolean compulsory = false;
@@ -255,12 +243,12 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
 
             presenterFragment.addCells(listFields);
 
-            if(!catCombo.equals(dataTableModel.catCombos().get(dataTableModel.catCombos().size()-1)))
-                adapter = new DataSetTableAdapter(getAbstracContext(), presenterFragment.getProcessor(),  presenterFragment.getProcessorOptionSet());
+            if (!catCombo.equals(dataTableModel.catCombos().get(dataTableModel.catCombos().size() - 1)))
+                adapter = new DataSetTableAdapter(getAbstracContext(), presenterFragment.getProcessor(), presenterFragment.getProcessorOptionSet());
 
         }
 
-        binding.scroll.scrollTo(0,1000);
+        binding.scroll.scrollTo(0, 1000);
     }
 
     private void setTotalColumn(List<List<FieldViewModel>> listFields, ArrayList<List<String>> cells,
@@ -274,16 +262,16 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
             if (data.displayName().equals(getContext().getString(R.string.total)))
                 existTotal = true;
 
-        if (existTotal){
-            listFields.remove(listFields.size()-1);
-            cells.remove(listFields.size()-1);
+        if (existTotal) {
+            listFields.remove(listFields.size() - 1);
+            cells.remove(listFields.size() - 1);
         }
 
 
         int[] totals = new int[cells.get(0).size()];
-        for(List<String> dataValues : cells){
-            for (int i=0; i< dataValues.size(); i++){
-                if(!dataValues.get(i).isEmpty())
+        for (List<String> dataValues : cells) {
+            for (int i = 0; i < dataValues.size(); i++) {
+                if (!dataValues.get(i).isEmpty())
                     totals[i] += Integer.parseInt(dataValues.get(i));
             }
         }
@@ -291,7 +279,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
         for (int column : totals) {
             fields.add(fieldFactory.create("", "", ValueType.INTEGER,
                     false, "", String.valueOf(column), section, true,
-                    false, null, null, "",new ArrayList<>(),"", row, columnPos, "", ""));
+                    false, null, null, "", new ArrayList<>(), "", row, columnPos, "", ""));
 
             values.add(String.valueOf(column));
         }
@@ -300,20 +288,20 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
         listFields.add(fields);
         cells.add(values);
 
-        if(!existTotal)
+        if (!existTotal)
             dataElements.add(DataElementModel.builder().displayName(getString(R.string.total)).valueType(ValueType.INTEGER).build());
     }
 
-    private void setTotalRow(int totalRow, ArrayList<FieldViewModel> fields, ArrayList<String> values, int row, int column){
+    private void setTotalRow(int totalRow, ArrayList<FieldViewModel> fields, ArrayList<String> values, int row, int column) {
         FieldViewModelFactoryImpl fieldFactory = createField();
         fields.add(fieldFactory.create("", "", ValueType.INTEGER,
                 false, "", String.valueOf(totalRow), section, true,
-                false, null, null, "",new ArrayList<>(),"", row, column, "", ""));
+                false, null, null, "", new ArrayList<>(), "", row, column, "", ""));
         values.add(String.valueOf(totalRow));
 
     }
 
-    private FieldViewModelFactoryImpl createField(){
+    private FieldViewModelFactoryImpl createField() {
         return new FieldViewModelFactoryImpl(
                 "",
                 "",
@@ -331,7 +319,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
         return adapter.asFlowable();
     }
 
-    public FlowableProcessor<Trio<String, String, Integer>> optionSetActions(){
+    public FlowableProcessor<Trio<String, String, Integer>> optionSetActions() {
         return adapter.asFlowableOptionSet();
     }
 
@@ -341,7 +329,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
 
     @Override
     public void showSnackBar() {
-        Snackbar mySnackbar = Snackbar.make(binding.getRoot(), R.string.datavalue_saved , Snackbar.LENGTH_SHORT);
+        Snackbar mySnackbar = Snackbar.make(binding.getRoot(), R.string.datavalue_saved, Snackbar.LENGTH_SHORT);
         mySnackbar.show();
     }
 
@@ -357,10 +345,10 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
 
     private Boolean isExpired(DataSetModel dataSet) {
 
-        if(0 == dataSet.expiryDays()){
+        if (0 == dataSet.expiryDays()) {
             return false;
         }
-        if(presenter.getPeriodFinalDate() != null) {
+        if (presenter.getPeriodFinalDate() != null) {
             try {
                 return DateUtils.getInstance().isDataSetExpired(dataSet.expiryDays(), DateUtils.databaseDateFormat().parse(presenter.getPeriodFinalDate()));
             } catch (ParseException e) {
@@ -381,12 +369,12 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
         binding.scroll.scrollTo(0, binding.tableLayout.getChildAt(numTable).getTop());
     }
 
-    public int currentNumTables(){
-        return presenterFragment!=null ? presenterFragment.getCurrentNumTables() : 0;
+    public int currentNumTables() {
+        return presenterFragment != null ? presenterFragment.getCurrentNumTables() : 0;
     }
 
     @Override
-    public void showAlertDialog(String title, String message){
+    public void showAlertDialog(String title, String message) {
         super.showInfoDialog(title, message);
     }
 
