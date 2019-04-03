@@ -21,11 +21,13 @@ public class DashboardPagerTabletAdapter extends FragmentStatePagerAdapter {
     private static final int MOVILE_DASHBOARD_SIZE = 3;
     private final Context context;
     private String currentProgram;
+    private String tei;
 
 
-    public DashboardPagerTabletAdapter(Context context, FragmentManager fm, String program) {
+    public DashboardPagerTabletAdapter(Context context, FragmentManager fm, String program, String tei) {
         super(fm);
         this.currentProgram = program;
+        this.tei = tei;
         this.context = context;
     }
 
@@ -34,7 +36,7 @@ public class DashboardPagerTabletAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             default:
-                return IndicatorsFragment.createInstance();
+                return IndicatorsFragment.createInstance(currentProgram, tei);
             case 1:
                 return RelationshipFragment.createInstance();
             case 2:

@@ -114,11 +114,11 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
     private void setViewpagerAdapter() {
         if (adapter == null) {
             if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-                adapter = new DashboardPagerAdapter(this, getSupportFragmentManager(), programUid);
+                adapter = new DashboardPagerAdapter(this, getSupportFragmentManager(), programUid, teiUid);
                 binding.teiPager.setAdapter(adapter);
                 binding.tabLayout.setVisibility(View.VISIBLE);
             } else {
-                adapter = new DashboardPagerTabletAdapter(this, getSupportFragmentManager(), programUid);
+                adapter = new DashboardPagerTabletAdapter(this, getSupportFragmentManager(), programUid, teiUid);
                 binding.teiPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
                     @Override
                     public void onPageScrolled(int i, float v, int i1) {

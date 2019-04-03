@@ -207,6 +207,7 @@ dependencies {
     implementation "com.google.dagger:dagger:${libraries.dagger}"
     implementation 'androidx.constraintlayout:constraintlayout:2.0.0-alpha3'
     kapt "com.google.dagger:dagger-compiler:${libraries.dagger}"
+    kapt "com.google.dagger:dagger-android-processor:${libraries.dagger}"
     //endregion
 
     //region GOOGLE AUTO VALUE

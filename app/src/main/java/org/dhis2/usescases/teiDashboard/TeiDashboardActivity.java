@@ -39,13 +39,6 @@ public class TeiDashboardActivity extends ActivityGlobalAbstract implements TeiD
         super.onCreate(savedInstanceState);
     }
 
-   /* @Override
-    protected void onSaveInstanceState(@NotNull Bundle outState) {
-        outState.putString("UID", teiUid);
-        outState.putString("PROGRAM_ID", programUid);
-        super.onSaveInstanceState(outState);
-    }*/
-
     @Override
     public void init(String teUid, String programUid) {
         // nothing

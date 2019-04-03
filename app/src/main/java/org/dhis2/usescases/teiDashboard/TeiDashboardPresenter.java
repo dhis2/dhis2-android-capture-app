@@ -15,7 +15,6 @@ import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.IndicatorsFragment;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.IndicatorsPresenter;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.notes.NotesFragment;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.notes.NotesPresenter;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipFragment;
@@ -61,7 +60,6 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
-import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
@@ -72,12 +70,11 @@ import timber.log.Timber;
  */
 
 public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter, TEIDataPresenter,
-        RelationshipPresenter, NotesPresenter, IndicatorsPresenter {
+        RelationshipPresenter, NotesPresenter {
 
     private final DashboardRepository dashboardRepository;
     private final MetadataRepository metadataRepository;
     private final D2 d2;
-    private final RuleEngineRepository ruleRepository;
     private TeiDashboardContracts.View view;
 
     private String teUid;
@@ -90,11 +87,10 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter, T
 
     private MutableLiveData<DashboardProgramModel> dashboardProgramModelLiveData = new MutableLiveData<>();
 
-    TeiDashboardPresenter(D2 d2, DashboardRepository dashboardRepository, MetadataRepository metadataRepository, RuleEngineRepository formRepository) {
+    TeiDashboardPresenter(D2 d2, DashboardRepository dashboardRepository, MetadataRepository metadataRepository) {
         this.d2 = d2;
         this.dashboardRepository = dashboardRepository;
         this.metadataRepository = metadataRepository;
-        this.ruleRepository = formRepository;
         compositeDisposable = new CompositeDisposable();
     }
 
@@ -447,39 +443,6 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter, T
                                 Timber::e
                         )
         );
-    }
-
-    @Override
-    public void subscribeToIndicators(IndicatorsFragment indicatorsFragment) {
-        compositeDisposable.add(dashboardRepository.getIndicators(programUid)
-                .map(indicators ->
-                        Observable.fromIterable(indicators)
-                                .filter(indicator -> indicator.displayInForm() != null && indicator.displayInForm())
-                                .map(indicator -> {
-                                    String indicatorValue = d2.programModule().programIndicatorEngine.getProgramIndicatorValue(
-                                            dashboardProgramModel.getCurrentEnrollment().uid(),
-                                            null,
-                                            indicator.uid());
-                                    return Pair.create(indicator, indicatorValue == null ? "" : indicatorValue);
-                                })
-                                .filter(pair -> !pair.val1().isEmpty())
-                                .flatMap(pair -> dashboardRepository.getLegendColorForIndicator(pair.val0(), pair.val1()))
-                                .toList()
-                )
-                .flatMap(Single::toFlowable)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        indicatorsFragment.swapIndicators(),
-                        Timber::d
-                )
-        );
-
-        compositeDisposable.add(ruleRepository.calculate()
-                .subscribe(
-                        calcResult -> applyRuleEffects(calcResult, indicatorsFragment),
-                        Timber::e
-                ));
     }
 
     private void applyRuleEffects(Result<RuleEffect> calcResult, IndicatorsFragment indicatorsFragment) {

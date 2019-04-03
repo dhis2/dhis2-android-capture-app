@@ -6,16 +6,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.dhis2.Components;
 import org.dhis2.R;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.FragmentIndicatorsBinding;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.usescases.teiDashboard.adapters.IndicatorsAdapter;
-import org.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
 import org.hisp.dhis.android.core.program.ProgramIndicatorModel;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+
+import javax.inject.Inject;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -33,18 +35,25 @@ public class IndicatorsFragment extends FragmentGlobalAbstract {
     private static IndicatorsFragment instance;
     private IndicatorsAdapter adapter;
 
+    private String programUid;
+    private String teiUid;
+
+//    @Inject
     private IndicatorsPresenter presenter;
 
-    static public IndicatorsFragment getInstance() {
-        if (instance == null)
-            instance = new IndicatorsFragment();
+    public static Fragment createInstance(String programUid, String teiUid) {
+        instance = new IndicatorsFragment();
+        instance.programUid = programUid;
+        instance.teiUid = teiUid;
+
         return instance;
     }
 
     @Override
     public void onAttach(@NotNull Context context) {
         super.onAttach(context);
-        presenter = (IndicatorsPresenter) ((TeiDashboardMobileActivity) context).getPresenter();
+        ((Components) context.getApplicationContext()).userComponent()
+                .plus(new IndicatorsModule(teiUid, programUid)).inject(this);
     }
 
     @Nullable
@@ -64,8 +73,12 @@ public class IndicatorsFragment extends FragmentGlobalAbstract {
 
     @Override
     public void onDestroy() {
-        instance = null;
+        destroyInstance();
         super.onDestroy();
+    }
+
+    private static void destroyInstance() {
+        instance = null;
     }
 
     public Consumer<List<Trio<ProgramIndicatorModel, String, String>>> swapIndicators() {
@@ -73,11 +86,8 @@ public class IndicatorsFragment extends FragmentGlobalAbstract {
     }
 
     public void addIndicator(Trio<ProgramIndicatorModel, String, String> indicator) {
-
-        getActivity().runOnUiThread(() -> adapter.addIndicator(indicator));
-    }
-
-    public static Fragment createInstance() {
-        return instance = new IndicatorsFragment();
+        if (getActivity() != null && isAdded()) {
+            getActivity().runOnUiThread(() -> adapter.addIndicator(indicator));
+        }
     }
 }
