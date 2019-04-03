@@ -1,22 +1,17 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection;
 
 import android.content.Context;
-
-import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
-import org.dhis2.App;
-
 import com.evrencoskun.tableview.TableView;
 import com.evrencoskun.tableview.adapter.recyclerview.CellRecyclerView;
 import com.google.android.material.snackbar.Snackbar;
+
+import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModelFactoryImpl;
@@ -46,7 +41,6 @@ import java.util.List;
 import java.util.Objects;
 
 import javax.inject.Inject;
-
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -155,7 +149,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
             tableView.setHeadersColor(getResources().getColor(R.color.table_bg));
             tableView.setSelectedColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY_LIGHT));
             tableView.setShadowColor(getResources().getColor(R.color.rfab__color_shadow));
-            tableView.setRowHeaderWidth(500);
+            tableView.setRowHeaderWidth(300);
 
             adapter.setTableView(tableView);
             adapter.initializeRows(isEditable);
@@ -266,8 +260,8 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
         binding.scroll.setOnScrollChangeListener((NestedScrollView.OnScrollChangeListener) (v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
             int position = -1;
             if (checkTableHeights())
-                for (int i = 0; i < ((LinearLayout) v.getChildAt(0)).getChildCount(); i++) {
-                    if (scrollY < ((LinearLayout) v.getChildAt(0)).getChildAt(i).getHeight())
+                for (int i = 0; i < heights.size(); i++) {
+                    if (scrollY < heights.get(i))
                         position = position == -1 ? i : position;
                 }
 
@@ -279,7 +273,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
     }
 
     private void loadHeader(int position) {
-        TableView tableView = (TableView) ((LinearLayout) binding.scroll.getChildAt(0)).getChildAt(position);
+        TableView tableView = (TableView) ((LinearLayout) binding.scroll.getChildAt(0)).getChildAt(position*2);
         if (tableView != null) {
             List<CellRecyclerView> rvs = tableView.getBackupHeaders();
             binding.headerContainer.removeAllViews();
@@ -293,8 +287,15 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
             heights = new ArrayList<>();
 
             for (int i = 0; i < ((LinearLayout) binding.scroll.getChildAt(0)).getChildCount(); i++) {
-                heights.add(i != 0 ? heights.get(i - 1) + ((LinearLayout) binding.scroll.getChildAt(0)).getChildAt(i).getHeight() :
-                        ((LinearLayout) binding.scroll.getChildAt(0)).getChildAt(i).getHeight());
+                View view = ((LinearLayout) binding.scroll.getChildAt(0)).getChildAt(i);
+                if (view instanceof TableView) {
+                    if (i == ((LinearLayout) binding.scroll.getChildAt(0)).getChildCount() - 1)
+                        heights.add(heights.get(heights.size() - 1) + view.getHeight());
+                    else {
+                        View separator = ((LinearLayout) binding.scroll.getChildAt(0)).getChildAt(i + 1);
+                        heights.add(i/2 != 0 ? heights.get(i/2 - 1) + view.getHeight() + separator.getHeight() : view.getHeight() + separator.getHeight());
+                    }
+                }
             }
 
         }
