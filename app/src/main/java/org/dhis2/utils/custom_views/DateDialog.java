@@ -14,9 +14,11 @@ import android.view.Window;
 import org.dhis2.R;
 import org.dhis2.databinding.DialogDateBinding;
 import org.dhis2.utils.Period;
+import org.hisp.dhis.android.core.period.PeriodType;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import io.reactivex.Single;
 import io.reactivex.SingleEmitter;
@@ -29,7 +31,7 @@ public class DateDialog extends DialogFragment {
 
     private static ActionTrigger<DateDialog> dialogActionTrigger;
     protected SingleEmitter<List<Date>> callback;
-
+    protected SingleEmitter<List<String>> callbackPeriod;
     private static DateDialog instace;
     private static Period period = Period.WEEKLY;
     private static DateAdapter adapter;
@@ -50,8 +52,18 @@ public class DateDialog extends DialogFragment {
         if (period != mPeriod || instace == null) {
             period = mPeriod;
             dialogActionTrigger = mActionTrigger;
+
             instace = new DateDialog();
             adapter = new DateAdapter(period);
+        }
+        return instace;
+    }
+
+    public static DateDialog newInstace(ActionTrigger<DateDialog> mActionTrigger, Map<String, String> mapPeriods) {
+        if (instace == null) {
+            dialogActionTrigger = mActionTrigger;
+            instace = new DateDialog();
+            adapter = new DateAdapter(mapPeriods);
         }
         return instace;
     }
@@ -102,8 +114,17 @@ public class DateDialog extends DialogFragment {
         return this;
     }
 
+    private DateDialog withEmitterSelectedPeriod(final SingleEmitter<List<String>> emitter) {
+        this.callbackPeriod = emitter;
+        return this;
+    }
+
     public Single<List<Date>> show() {
         return Single.create(emitter -> dialogActionTrigger.trigger(withEmitter(emitter)));
+    }
+
+    public Single<List<String>> showSelectedPeriod() {
+        return Single.create(emitter -> dialogActionTrigger.trigger(withEmitterSelectedPeriod(emitter)));
     }
 
     public List<Date> getFilters() {

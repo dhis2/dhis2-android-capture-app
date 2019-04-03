@@ -10,6 +10,7 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import io.reactivex.Flowable;
 
@@ -72,7 +73,8 @@ public class DataSetDetailContract {
 
         void getOrgUnits(Date date);
 
-        void getDataSetWithDates(List<Date> dates, Period period, String orgUnitQuery);
+        void getDataSetWithDates(List<String> periodIds, Period period, List<String> orgUnitQuery);
 
+        Map<String, String> getPeriodAvailableForFilter();
     }
 }

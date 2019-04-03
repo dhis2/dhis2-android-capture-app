@@ -6,10 +6,12 @@ import androidx.annotation.IntDef;
 
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity;
+import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel;
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialActivity;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.OrgUnitUtils;
 import org.dhis2.utils.Period;
+import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
@@ -18,7 +20,9 @@ import org.hisp.dhis.android.core.period.PeriodType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -43,6 +47,7 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
     private CategoryComboModel mCatCombo;
     private List<String> selectedOrgUnits;
     private PeriodType selectedPeriodType;
+    private Map<String, String> mapPeriodAvailable;
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({LastSearchType.DATES, LastSearchType.DATE_RANGES})
@@ -55,6 +60,7 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
         this.dataSetDetailRepository = dataSetDetailRepository;
         this.metadataRepository = metadataRepository;
         compositeDisposable = new CompositeDisposable();
+        mapPeriodAvailable = new HashMap<>();
     }
 
     @Override
@@ -69,6 +75,9 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 dataSetDetailModels -> {
+                                    for(DataSetDetailModel dataset: dataSetDetailModels)
+                                        mapPeriodAvailable.put(dataset.periodId(), dataset.namePeriod());
+
                                     view.setData(dataSetDetailModels);
                                     view.setWritePermission(view.accessDataWrite());
                                 },
@@ -110,12 +119,12 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
     @Override
     public void onCatComboSelected(CategoryOptionComboModel categoryOptionComboModel, String
             orgUnitQuery) {
-        updateFilters(categoryOptionComboModel, orgUnitQuery);
+        //updateFilters(categoryOptionComboModel, orgUnitQuery);
     }
 
     @Override
     public void clearCatComboFilters(String orgUnitQuery) {
-        updateFilters(null, orgUnitQuery);
+        //updateFilters(null, orgUnitQuery);
     }
 
     @Override
@@ -183,22 +192,20 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
                 getDataSets(this.fromDate, this.toDate, orgUnitQuery);
                 break;
             case LastSearchType.DATE_RANGES:
-                getDataSetWithDates(this.dates, this.period, orgUnitQuery);
+                //getDataSetWithDates(this.dates, this.period, orgUnitQuery);
                 break;
             default:
-                getDataSetWithDates(null, this.period, orgUnitQuery);
+                //getDataSetWithDates(null, this.period, orgUnitQuery);
                 break;
         }
     }
 
     @Override
-    public void getDataSetWithDates(List<Date> dates, Period period, String orgUnitQuery) {
-        this.dates = dates;
+    public void getDataSetWithDates(List<String> dates, Period period, List<String> orgUnitQuery) {
         this.period = period;
         lastSearchType = LastSearchType.DATE_RANGES;
-        //FIXME cuando haya datos para dataset hay que cambiarlo
         //ahora falla por que se va a hacer la select y no puede
-       /* compositeDisposable.add(dataSetDetailRepository.filteredDataSet(programId,"","", categoryOptionComboModel)
+        /*compositeDisposable.add(dataSetDetailRepository.filteredDataSet(programId,"","", categoryOptionComboModel)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -214,5 +221,10 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
     @Override
     public void displayMessage(String message) {
         view.displayMessage(message);
+    }
+
+    @Override
+    public Map<String, String> getPeriodAvailableForFilter() {
+        return mapPeriodAvailable;
     }
 }
