@@ -5,6 +5,7 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
+import android.widget.TextView;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -28,7 +29,7 @@ import timber.log.Timber;
 
 public class DateTimeView extends FieldLayout implements View.OnClickListener, View.OnFocusChangeListener {
 
-    private TextInputEditText editText;
+    private TextView editText;
     private TextInputLayout inputLayout;
     private DateTimeViewBinding binding;
 
@@ -120,9 +121,9 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
     }
 
     public void setCellLayout(){
-        binding = DataBindingUtil.inflate(inflater, R.layout.custom_text_view_cell, this, true);
+        binding = DataBindingUtil.inflate(inflater, R.layout.custom_cell_view, this, true);
 
-        editText = findViewById(R.id.input_editText);
+        editText = findViewById(R.id.inputEditText);
         selectedCalendar = Calendar.getInstance();
         editText.setFocusable(false); //Makes editText not editable
         editText.setClickable(true);//  but clickable
@@ -189,7 +190,7 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
         dialog.show();
     }
 
-    public TextInputEditText getEditText() {
+    public TextView getEditText() {
         return editText;
     }
 

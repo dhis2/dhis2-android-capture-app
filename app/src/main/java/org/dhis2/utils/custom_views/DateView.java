@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -28,7 +29,7 @@ import timber.log.Timber;
 
 public class DateView extends FieldLayout implements View.OnClickListener {
 
-    private EditText editText;
+    private TextView editText;
     private ViewDataBinding binding;
 
     private Calendar selectedCalendar;
@@ -80,9 +81,9 @@ public class DateView extends FieldLayout implements View.OnClickListener {
     }
 
     public void setCellLayout(){
-        binding = DataBindingUtil.inflate(inflater, R.layout.custom_text_view_cell, this, true);
+        binding = DataBindingUtil.inflate(inflater, R.layout.custom_cell_view, this, true);
 
-        editText = findViewById(R.id.input_editText);
+        editText = findViewById(R.id.inputEditText);
         selectedCalendar = Calendar.getInstance();
         editText.setFocusable(false); //Makes editText not editable
         editText.setClickable(true);//  but clickable
@@ -186,7 +187,7 @@ public class DateView extends FieldLayout implements View.OnClickListener {
         dateDialog.show();
     }
 
-    public EditText getEditText() {
+    public TextView getEditText() {
         return editText;
     }
 

@@ -151,4 +151,22 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
     public void dispose() {
         disposable.clear();
     }
+
+    @Override
+    public void setSelected(SelectionState selectionState) {
+        super.setSelected(selectionState);
+        if (selectionState == SelectionState.SELECTED) {
+            if (binding instanceof FormTimeTextBinding) {
+                ((FormTimeTextBinding) binding).timeView.performOnFocusAction();
+            }
+
+            if (binding instanceof FormDateTextBinding) {
+                ((FormDateTextBinding) binding).dateView.performOnFocusAction();
+            }
+
+            if (binding instanceof FormDateTimeTextBinding) {
+                ((FormDateTimeTextBinding) binding).dateTimeView.performOnFocusAction();
+            }
+        }
+    }
 }
