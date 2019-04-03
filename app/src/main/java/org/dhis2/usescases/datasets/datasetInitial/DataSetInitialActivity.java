@@ -1,14 +1,12 @@
 package org.dhis2.usescases.datasets.datasetInitial;
 
-import androidx.databinding.DataBindingUtil;
-
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import com.google.android.material.textfield.TextInputEditText;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.View;
 import android.widget.PopupMenu;
+
+import com.google.android.material.textfield.TextInputEditText;
 
 import org.dhis2.App;
 import org.dhis2.R;
@@ -16,11 +14,10 @@ import org.dhis2.databinding.ActivityDatasetInitialBinding;
 import org.dhis2.databinding.ItemCategoryComboBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.custom_views.OrgUnitDialog;
 import org.dhis2.utils.custom_views.PeriodDialog;
-import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.custom_views.PeriodDialogInputPeriod;
-import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
@@ -33,6 +30,9 @@ import java.util.List;
 import java.util.Locale;
 
 import javax.inject.Inject;
+
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
 
 public class DataSetInitialActivity extends ActivityGlobalAbstract implements DataSetInitialContract.View {
 
@@ -105,7 +105,7 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
                 .setPossitiveListener(v -> {
                     if (orgUnitDialog.getSelectedOrgUnit() != null && !orgUnitDialog.getSelectedOrgUnit().isEmpty()) {
                         selectedOrgUnit = orgUnitDialog.getSelectedOrgUnitModel();
-                        if(selectedOrgUnit == null)
+                        if (selectedOrgUnit == null)
                             orgUnitDialog.dismiss();
                         binding.dataSetOrgUnitEditText.setText(selectedOrgUnit.displayName());
                         binding.dataSetPeriodEditText.setText("");
@@ -124,7 +124,7 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
                 .setPeriod(periodType)
 //                .setMinDate() TODO: Depends on dataSet expiration settings and orgUnit Opening date
 //                .setMaxDate() TODO: Depends on dataSet open Future settings. Default: TODAY
-                .setMaxDate(DateUtils.getInstance().getCalendar().getTime())
+                .setMaxDate(DateUtils.getInstance().getNextPeriod(periodType, DateUtils.getInstance().getToday(), -1))
                 .setPossitiveListener(selectedDate -> {
                     Calendar calendar = Calendar.getInstance();
                     calendar.setTime(selectedDate);
@@ -138,11 +138,11 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
 
     @Override
     public void showCatComboSelector(String catOptionUid, List<CategoryOptionModel> data) {
-        if(data.size() == 1 && data.get(0).name().equals("default")){
+        if (data.size() == 1 && data.get(0).name().equals("default")) {
             if (selectedCatOptions == null)
                 selectedCatOptions = new HashMap<>();
             selectedCatOptions.put(catOptionUid, data.get(0));
-        }else {
+        } else {
 
             PopupMenu menu = new PopupMenu(this, selectedView, Gravity.BOTTOM);
 //        menu.getMenu().add(Menu.NONE, Menu.NONE, 0, viewModel.label()); Don't show label

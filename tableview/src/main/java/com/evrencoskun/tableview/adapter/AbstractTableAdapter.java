@@ -53,6 +53,7 @@ public abstract class AbstractTableAdapter<CH, RH, C> implements ITableAdapter {
     private ITableView mTableView;
     private List<AdapterDataSetChangedListener> dataSetChangedListeners;
     private boolean mHasTotal;
+    private int headerHeight;
 
     public AbstractTableAdapter(Context context) {
         mContext = context;
@@ -136,7 +137,7 @@ public abstract class AbstractTableAdapter<CH, RH, C> implements ITableAdapter {
             // Create corner view
             mCornerView = onCreateCornerView();
             mTableView.addView(mCornerView, new FrameLayout.LayoutParams(mRowHeaderWidth,
-                    mColumnHeaderHeight*columnHeaderItems.size()));
+                    headerHeight*columnHeaderItems.size()));
         } else if (mCornerView != null) {
 
             // Change corner view visibility
@@ -178,6 +179,10 @@ public abstract class AbstractTableAdapter<CH, RH, C> implements ITableAdapter {
 
     public void setColumnHeaderHeight(int columnHeaderHeight) {
         this.mColumnHeaderHeight = columnHeaderHeight;
+    }
+
+    public void setHeaderHeight(int headerHeight) {
+        this.headerHeight = headerHeight;
     }
 
     public CH getColumnHeaderItem(int position, int header) {
