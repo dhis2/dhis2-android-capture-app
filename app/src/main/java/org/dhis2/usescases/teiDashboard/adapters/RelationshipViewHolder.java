@@ -1,17 +1,15 @@
 package org.dhis2.usescases.teiDashboard.adapters;
 
-import androidx.recyclerview.widget.RecyclerView;
-
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ItemRelationshipBinding;
-import org.dhis2.usescases.teiDashboard.TeiDashboardContracts;
-
+import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipPresenter;
 import org.hisp.dhis.android.core.relationship.Relationship;
 import org.hisp.dhis.android.core.relationship.RelationshipType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 
 import java.util.List;
 
+import androidx.recyclerview.widget.RecyclerView;
 import io.reactivex.disposables.CompositeDisposable;
 import timber.log.Timber;
 
@@ -30,7 +28,7 @@ public class RelationshipViewHolder extends RecyclerView.ViewHolder {
         this.compositeDisposable = new CompositeDisposable();
     }
 
-    public void bind(TeiDashboardContracts.Presenter presenter, Pair<Relationship, RelationshipType> relationships) {
+    public void bind(RelationshipPresenter presenter, Pair<Relationship, RelationshipType> relationships) {
 
         Relationship relationship = relationships.val0();
         String relationshipTEIUid;
@@ -39,7 +37,7 @@ public class RelationshipViewHolder extends RecyclerView.ViewHolder {
         if (!presenter.getTeUid().equals(relationship.from().trackedEntityInstance().trackedEntityInstance())) {
             relationshipTEIUid = relationship.from().trackedEntityInstance().trackedEntityInstance();
             from = true;
-        }else {
+        } else {
             relationshipTEIUid = relationship.to().trackedEntityInstance().trackedEntityInstance();
             from = false;
         }
@@ -57,11 +55,9 @@ public class RelationshipViewHolder extends RecyclerView.ViewHolder {
 
         binding.setPresenter(presenter);
         binding.setRelationship(relationship);
-        String relationshipNameText = from?relationships.val1().aIsToB():relationships.val1().bIsToA();
-        binding.relationshipName.setText(relationshipNameText!=null?relationshipNameText:relationships.val1().displayName());
+        String relationshipNameText = from ? relationships.val1().aIsToB() : relationships.val1().bIsToA();
+        binding.relationshipName.setText(relationshipNameText != null ? relationshipNameText : relationships.val1().displayName());
         binding.executePendingBindings();
-
-//        presenter.subscribeToRelationshipLabel(relationship, binding.relationshipName);
     }
 
     private void setAttributes(List<TrackedEntityAttributeValueModel> trackedEntityAttributeValueModels) {

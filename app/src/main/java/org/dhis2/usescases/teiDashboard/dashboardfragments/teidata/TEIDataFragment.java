@@ -1,4 +1,4 @@
-package org.dhis2.usescases.teiDashboard.dashboardfragments;
+package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -14,7 +14,6 @@ import org.dhis2.databinding.FragmentTeiDataBinding;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionActivity;
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
-import org.dhis2.usescases.teiDashboard.TeiDashboardContracts;
 import org.dhis2.usescases.teiDashboard.adapters.DashboardProgramAdapter;
 import org.dhis2.usescases.teiDashboard.adapters.EventAdapter;
 import org.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
@@ -63,7 +62,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
     private FragmentTeiDataBinding binding;
 
     private static TEIDataFragment instance;
-    private TeiDashboardContracts.Presenter presenter;
+    private TEIDataPresenter presenter;
 
     private EventAdapter adapter;
     private CustomDialog dialog;
@@ -91,7 +90,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
     public void onAttach(Context context) {
         super.onAttach(context);
         this.context = context;
-        presenter = ((TeiDashboardMobileActivity) context).getPresenter();
+        presenter = (TEIDataPresenter) ((TeiDashboardMobileActivity) context).getPresenter();
     }
 
     @Override
@@ -130,7 +129,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
     @Override
     public void onResume() {
         super.onResume();
-        presenter = ((TeiDashboardMobileActivity) getActivity()).getPresenter();
+        presenter = (TEIDataPresenter) ((TeiDashboardMobileActivity) getActivity()).getPresenter();
 
         binding.setPresenter(presenter);
 

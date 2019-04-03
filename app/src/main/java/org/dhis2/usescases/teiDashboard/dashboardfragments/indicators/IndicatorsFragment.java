@@ -1,4 +1,4 @@
-package org.dhis2.usescases.teiDashboard.dashboardfragments;
+package org.dhis2.usescases.teiDashboard.dashboardfragments.indicators;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -10,7 +10,6 @@ import org.dhis2.R;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.FragmentIndicatorsBinding;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
-import org.dhis2.usescases.teiDashboard.TeiDashboardContracts;
 import org.dhis2.usescases.teiDashboard.adapters.IndicatorsAdapter;
 import org.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
 import org.hisp.dhis.android.core.program.ProgramIndicatorModel;
@@ -34,7 +33,7 @@ public class IndicatorsFragment extends FragmentGlobalAbstract {
     private static IndicatorsFragment instance;
     private IndicatorsAdapter adapter;
 
-    private TeiDashboardContracts.Presenter presenter;
+    private IndicatorsPresenter presenter;
 
     static public IndicatorsFragment getInstance() {
         if (instance == null)
@@ -45,7 +44,7 @@ public class IndicatorsFragment extends FragmentGlobalAbstract {
     @Override
     public void onAttach(@NotNull Context context) {
         super.onAttach(context);
-        presenter = ((TeiDashboardMobileActivity) context).getPresenter();
+        presenter = (IndicatorsPresenter) ((TeiDashboardMobileActivity) context).getPresenter();
     }
 
     @Nullable

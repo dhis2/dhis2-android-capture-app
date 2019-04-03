@@ -1,4 +1,4 @@
-package org.dhis2.usescases.teiDashboard.dashboardfragments;
+package org.dhis2.usescases.teiDashboard.dashboardfragments.notes;
 
 import android.content.Context;
 import androidx.databinding.DataBindingUtil;
@@ -32,7 +32,7 @@ public class NotesFragment extends FragmentGlobalAbstract {
     FragmentNotesBinding binding;
     static NotesFragment instance;
     private NotesAdapter noteAdapter;
-    TeiDashboardContracts.Presenter presenter;
+    NotesPresenter presenter;
     ActivityGlobalAbstract activity;
 
     static public NotesFragment getInstance() {
@@ -46,7 +46,7 @@ public class NotesFragment extends FragmentGlobalAbstract {
     public void onAttach(Context context) {
         super.onAttach(context);
         activity = (ActivityGlobalAbstract) context;
-        presenter = ((TeiDashboardMobileActivity) context).getPresenter();
+        presenter = (NotesPresenter) ((TeiDashboardMobileActivity) context).getPresenter();
     }
 
     @Nullable

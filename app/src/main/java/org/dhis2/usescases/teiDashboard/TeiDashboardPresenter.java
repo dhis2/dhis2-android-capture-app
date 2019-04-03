@@ -14,10 +14,14 @@ import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.IndicatorsFragment;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.NotesFragment;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.IndicatorsFragment;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.IndicatorsPresenter;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.notes.NotesFragment;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.notes.NotesPresenter;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipFragment;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.TEIDataFragment;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipPresenter;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataFragment;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataPresenter;
 import org.dhis2.usescases.teiDashboard.eventDetail.EventDetailActivity;
 import org.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
 import org.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity;
@@ -67,7 +71,8 @@ import timber.log.Timber;
  * QUADRAM. Created by ppajuelo on 30/11/2017.
  */
 
-public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
+public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter, TEIDataPresenter,
+        RelationshipPresenter, NotesPresenter, IndicatorsPresenter {
 
     private final DashboardRepository dashboardRepository;
     private final MetadataRepository metadataRepository;
@@ -94,7 +99,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     }
 
     @Override
-    public LiveData<DashboardProgramModel> observeDashboardModel(){
+    public LiveData<DashboardProgramModel> observeDashboardModel() {
         return dashboardProgramModelLiveData;
     }
 
@@ -647,5 +652,4 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     public void setDefaultCatOptCombToEvent(String eventUid) {
         dashboardRepository.setDefaultCatOptCombToEvent(eventUid);
     }
-
 }

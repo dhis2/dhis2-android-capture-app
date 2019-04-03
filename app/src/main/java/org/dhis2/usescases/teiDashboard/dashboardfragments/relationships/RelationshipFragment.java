@@ -18,7 +18,6 @@ import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.FragmentRelationshipsBinding;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
-import org.dhis2.usescases.teiDashboard.TeiDashboardContracts;
 import org.dhis2.usescases.teiDashboard.adapters.RelationshipAdapter;
 import org.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
 import org.dhis2.utils.ColorUtils;
@@ -45,7 +44,7 @@ import static android.app.Activity.RESULT_OK;
 public class RelationshipFragment extends FragmentGlobalAbstract {
 
     FragmentRelationshipsBinding binding;
-    private TeiDashboardContracts.Presenter presenter;
+    private RelationshipPresenter presenter;
 
     static RelationshipFragment instance;
     private RelationshipAdapter relationshipAdapter;
@@ -67,7 +66,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        presenter = ((TeiDashboardMobileActivity) context).getPresenter();
+        presenter = (RelationshipPresenter) ((TeiDashboardMobileActivity) context).getPresenter();
     }
 
     @Nullable

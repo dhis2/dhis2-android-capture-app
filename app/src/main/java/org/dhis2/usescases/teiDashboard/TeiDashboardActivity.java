@@ -6,7 +6,6 @@ import org.dhis2.App;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.Constants;
 import org.hisp.dhis.android.core.category.CategoryCombo;
-import org.jetbrains.annotations.NotNull;
 
 import javax.inject.Inject;
 
@@ -38,7 +37,6 @@ public class TeiDashboardActivity extends ActivityGlobalAbstract implements TeiD
         }
         ((App) getApplicationContext()).userComponent().plus(new TeiDashboardModule(teiUid, programUid)).inject(this);
         super.onCreate(savedInstanceState);
-
     }
 
    /* @Override
@@ -90,7 +88,6 @@ public class TeiDashboardActivity extends ActivityGlobalAbstract implements TeiD
 
     @Override
     public void showCatComboDialog(String eventId, CategoryCombo catCombo) {
-
+        // nothing
     }
-
 }

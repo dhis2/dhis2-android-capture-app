@@ -24,7 +24,7 @@ import org.dhis2.usescases.teiDashboard.TeiDashboardActivity;
 import org.dhis2.usescases.teiDashboard.TeiDashboardContracts;
 import org.dhis2.usescases.teiDashboard.adapters.DashboardPagerAdapter;
 import org.dhis2.usescases.teiDashboard.adapters.DashboardPagerTabletAdapter;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.TEIDataFragment;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataFragment;
 import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListActivity;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.HelpManager;
@@ -165,7 +165,7 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
 
         setViewpagerAdapter();
 
-        Boolean enrollmentStatus = program.getCurrentEnrollment()!=null && program.getCurrentEnrollment().enrollmentStatus() == EnrollmentStatus.ACTIVE;
+        Boolean enrollmentStatus = program.getCurrentEnrollment() != null && program.getCurrentEnrollment().enrollmentStatus() == EnrollmentStatus.ACTIVE;
         if (getIntent().getStringExtra(Constants.EVENT_UID) != null && enrollmentStatus)
             TEIDataFragment.getInstance().displayGenerateEvent(getIntent().getStringExtra(Constants.EVENT_UID));
 
