@@ -24,6 +24,7 @@ import org.dhis2.usescases.teiDashboard.TeiDashboardActivity;
 import org.dhis2.usescases.teiDashboard.TeiDashboardContracts;
 import org.dhis2.usescases.teiDashboard.adapters.DashboardPagerAdapter;
 import org.dhis2.usescases.teiDashboard.adapters.DashboardPagerTabletAdapter;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.IndicatorsPresenter;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataFragment;
 import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListActivity;
 import org.dhis2.utils.Constants;
@@ -236,6 +237,10 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
 
     public TeiDashboardContracts.Presenter getPresenter() {
         return presenter;
+    }
+
+    public IndicatorsPresenter getIndicatorsPresenter() {
+        return indicatorsPresenter;
     }
 
     @Override

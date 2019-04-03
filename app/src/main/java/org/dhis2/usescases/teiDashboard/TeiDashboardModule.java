@@ -9,7 +9,8 @@ import org.dhis2.data.forms.RulesRepository;
 import org.dhis2.data.forms.dataentry.EnrollmentRuleEngineRepository;
 import org.dhis2.data.forms.dataentry.RuleEngineRepository;
 import org.dhis2.data.metadata.MetadataRepository;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataPresenter;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.IndicatorsPresenter;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.IndicatorsPresenterImpl;
 import org.dhis2.utils.CodeGenerator;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.enrollment.EnrollmentCollectionRepository;
@@ -47,6 +48,15 @@ public class TeiDashboardModule {
     TeiDashboardContracts.Presenter providePresenter(D2 d2, DashboardRepository dashboardRepository,
                                                      MetadataRepository metadataRepository) {
         return new TeiDashboardPresenter(d2, dashboardRepository, metadataRepository);
+    }
+
+    @Provides
+    @PerActivity
+    IndicatorsPresenter providesIndicatorsPresenter(D2 d2, DashboardRepository dashboardRepository,
+                                                    MetadataRepository metadataRepository,
+                                                    RuleEngineRepository ruleRepository) {
+        return new IndicatorsPresenterImpl(d2, dashboardRepository, metadataRepository, ruleRepository,
+                programUid, teiUid);
     }
 
     @Provides
@@ -92,4 +102,5 @@ public class TeiDashboardModule {
         return new EnrollmentRuleEngineRepository(briteDatabase, formRepository, uid, d2);
 
     }
+
 }

@@ -6,23 +6,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.dhis2.Components;
 import org.dhis2.R;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.FragmentIndicatorsBinding;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.usescases.teiDashboard.adapters.IndicatorsAdapter;
+import org.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
 import org.hisp.dhis.android.core.program.ProgramIndicatorModel;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-import javax.inject.Inject;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
-import androidx.fragment.app.Fragment;
 import io.reactivex.functions.Consumer;
 
 
@@ -32,28 +29,28 @@ import io.reactivex.functions.Consumer;
 
 public class IndicatorsFragment extends FragmentGlobalAbstract {
 
-    private static IndicatorsFragment instance;
+    public static final String PROGRAM = "program";
+    public static final String TEI = "tei";
+
     private IndicatorsAdapter adapter;
 
-    private String programUid;
-    private String teiUid;
-
-//    @Inject
+    //    @Inject
     private IndicatorsPresenter presenter;
 
-    public static Fragment createInstance(String programUid, String teiUid) {
-        instance = new IndicatorsFragment();
-        instance.programUid = programUid;
-        instance.teiUid = teiUid;
-
-        return instance;
-    }
 
     @Override
     public void onAttach(@NotNull Context context) {
         super.onAttach(context);
-        ((Components) context.getApplicationContext()).userComponent()
-                .plus(new IndicatorsModule(teiUid, programUid)).inject(this);
+
+        presenter = ((TeiDashboardMobileActivity) context).getIndicatorsPresenter();
+
+//        if (getArguments() != null && ((Components) context.getApplicationContext()).userComponent() != null) {
+//            String programUid = getArguments().getString(PROGRAM);
+//            String teiUid = getArguments().getString(TEI);
+//
+//            ((Components) context.getApplicationContext()).userComponent()
+//                    .plus(new IndicatorsModule(teiUid, programUid)).inject(this);
+//        }
     }
 
     @Nullable
@@ -69,16 +66,6 @@ public class IndicatorsFragment extends FragmentGlobalAbstract {
     public void onResume() {
         super.onResume();
         presenter.subscribeToIndicators(this);
-    }
-
-    @Override
-    public void onDestroy() {
-        destroyInstance();
-        super.onDestroy();
-    }
-
-    private static void destroyInstance() {
-        instance = null;
     }
 
     public Consumer<List<Trio<ProgramIndicatorModel, String, String>>> swapIndicators() {
