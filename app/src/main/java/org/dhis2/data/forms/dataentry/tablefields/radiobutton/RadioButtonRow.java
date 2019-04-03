@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.Row;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
+import org.dhis2.databinding.CustomCellViewBinding;
 import org.dhis2.databinding.FormYesNoBinding;
 
 import io.reactivex.processors.FlowableProcessor;
@@ -33,10 +34,10 @@ public class RadioButtonRow implements Row<RadioButtonCellHolder, RadioButtonVie
     @NonNull
     @Override
     public RadioButtonCellHolder onCreate(@NonNull ViewGroup parent) {
-        FormYesNoBinding binding = DataBindingUtil.inflate(inflater,
-                R.layout.form_yes_no, parent, false);
-        binding.customYesNo.setCellLayout();
-        return new RadioButtonCellHolder(binding, processor);
+        CustomCellViewBinding binding = DataBindingUtil.inflate(inflater,
+                R.layout.custom_cell_view, parent, false);
+        //binding.customYesNo.setCellLayout();
+        return new RadioButtonCellHolder(binding, processor, inflater.getContext());
     }
 
     @Override
