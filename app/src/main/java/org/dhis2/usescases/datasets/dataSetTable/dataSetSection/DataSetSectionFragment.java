@@ -7,9 +7,6 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import android.os.Parcelable;
-import android.util.AttributeSet;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,9 +16,6 @@ import org.dhis2.App;
 
 import com.evrencoskun.tableview.TableView;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.common.collect.Table;
-
-import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModelFactoryImpl;
@@ -37,30 +31,21 @@ import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.custom_views.OptionSetCellDialog;
 import org.dhis2.utils.custom_views.OptionSetCellPopUp;
-import org.dhis2.utils.custom_views.OptionSetDialog;
-import org.dhis2.utils.custom_views.OptionSetPopUp;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
 import org.hisp.dhis.android.core.dataset.DataInputPeriodModel;
-import org.hisp.dhis.android.core.dataset.DataSetCompleteRegistration;
 import org.hisp.dhis.android.core.dataset.DataSetModel;
-import org.hisp.dhis.android.core.dataset.SectionModel;
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.period.PeriodModel;
 
-import java.sql.Date;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 import javax.inject.Inject;
 
-import androidx.databinding.ViewDataBinding;
 import io.reactivex.Flowable;
 import io.reactivex.processors.FlowableProcessor;
 import timber.log.Timber;
@@ -166,11 +151,13 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
 
             binding.tableLayout.addView(tableView);
 
-            View view = new View(getContext());
-            view.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 15));
-            view.setBackgroundColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY));
+            if (!dataTableModel.catCombos().get(dataTableModel.catCombos().size() - 1).equals(catCombo)) {
+                View view = new View(getContext());
+                view.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 15));
+                view.setBackgroundColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY));
 
-            binding.tableLayout.addView(view);
+                binding.tableLayout.addView(view);
+            }
             tableView.setAdapter(adapter);
             tableView.setHeaderCount(columnHeaderItems.size());
             for (DataElementModel de : dataTableModel.rows()) {
