@@ -1,17 +1,22 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection;
 
 import android.content.Context;
+
+import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import org.dhis2.App;
+
 import com.evrencoskun.tableview.TableView;
 import com.evrencoskun.tableview.adapter.recyclerview.CellRecyclerView;
 import com.google.android.material.snackbar.Snackbar;
-
-import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModelFactoryImpl;
@@ -41,6 +46,7 @@ import java.util.List;
 import java.util.Objects;
 
 import javax.inject.Inject;
+
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -72,6 +78,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
     DataValueContract.Presenter presenterFragment;
 
     private TableView tableView;
+
     private ArrayList<Integer> heights = new ArrayList<>();
     private MutableLiveData<Integer> currentTablePosition = new MutableLiveData<>();
 
@@ -148,16 +155,20 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
             tableView.setHeadersColor(getResources().getColor(R.color.table_bg));
             tableView.setSelectedColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY_LIGHT));
             tableView.setShadowColor(getResources().getColor(R.color.rfab__color_shadow));
-            tableView.setRowHeaderWidth(300);
-            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-
-            layoutParams.setMargins(0, 0, 0, 40);
+            tableView.setRowHeaderWidth(500);
 
             adapter.setTableView(tableView);
             adapter.initializeRows(isEditable);
 
-            binding.tableLayout.addView(tableView, layoutParams);
+            binding.tableLayout.addView(tableView);
+
+            if (!dataTableModel.catCombos().get(dataTableModel.catCombos().size() - 1).equals(catCombo)) {
+                View view = new View(getContext());
+                view.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 15));
+                view.setBackgroundColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY));
+
+                binding.tableLayout.addView(view);
+            }
             tableView.setAdapter(adapter);
             tableView.setHeaderCount(columnHeaderItems.size());
             for (DataElementModel de : dataTableModel.rows()) {
