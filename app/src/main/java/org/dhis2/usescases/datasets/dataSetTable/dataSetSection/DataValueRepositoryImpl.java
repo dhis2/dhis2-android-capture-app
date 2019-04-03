@@ -53,7 +53,8 @@ public class DataValueRepositoryImpl implements DataValueRepository {
             "   JOIN SectionDataElementLink ON SectionDataElementLink.section = Section.uid " +
             ") AS DataSetSection ON DataSetSection.sectionDataElement = DataElement.uid " +
             "JOIN DataSetDataElementLink ON DataSetDataElementLink.dataElement = DataElement.uid " +
-            "WHERE DataSetDataElementLink.dataSet = ? "
+            "WHERE DataSetDataElementLink.dataSet = ? " +
+            "AND DataElement.aggregationType IS NOT 'NONE'"
             /*"AND DataSetSection.name = ? " +
             "ORDER BY DataSetSection.sectionOrder,DataSetSection.sortOrder"*/;
 
@@ -65,7 +66,8 @@ public class DataValueRepositoryImpl implements DataValueRepository {
             "WHERE DataValue.organisationUnit = ? " +
             "AND DataValue.attributeOptionCombo = ? " +
             "AND DataSetDataElementLink.dataSet = ? " +
-            "AND DataValue.period = ? "
+            "AND DataValue.period = ? " +
+            "AND DataElement.aggregationType IS NOT 'NONE'"
             /*"AND Section.name = ?"*/;
 
     private final String CATEGORY_OPTION = "SELECT CategoryOption.*, Category.uid AS category, section.displayName as SectionName, CategoryCombo.uid as catCombo,CategoryCategoryComboLink.sortOrder as sortOrder " +
@@ -139,7 +141,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
     private static final String SELECT_DATA_INPUT_PERIOD = "SELECT * FROM DataInputPeriod WHERE dataset = ?";/* AND period = ?";*/
 
     private static final String SELECT_COMPLETE_DATASET = "SELECT * FROM DataSetCompleteRegistration WHERE period = ? AND dataSet = ? AND attributeOptionCombo = ? and organisationUnit = ? " +
-            "AND state in ('TO_UPDATE', 'SYNCED')";
+            "AND state in ('TO_UPDATE', 'SYNCED', 'TO_POST')";
 
     public DataValueRepositoryImpl(BriteDatabase briteDatabase, String dataSetUid){
         this.briteDatabase = briteDatabase;

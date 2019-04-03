@@ -41,6 +41,7 @@ final class SyncPresenterImpl implements SyncPresenter {
     @Override
     public void syncAndDownloadDataValues() throws Exception {
         d2.dataValueModule().dataValues.upload().call();
+        d2.dataSetModule().dataSetCompleteRegistrations.upload().call();
         d2.aggregatedModule().data().download().call();
     }
 

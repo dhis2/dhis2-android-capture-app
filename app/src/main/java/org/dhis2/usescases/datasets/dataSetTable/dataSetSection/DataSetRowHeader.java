@@ -12,6 +12,8 @@ import org.hisp.dhis.android.core.dataelement.DataElementModel;
 
 import java.util.Objects;
 
+import static android.text.TextUtils.isEmpty;
+
 /**
  * QUADRAM. Created by ppajuelo on 02/10/2018.
  */
@@ -26,7 +28,7 @@ public class DataSetRowHeader extends AbstractViewHolder {
     }
 
     public void bind(DataElementModel dataElement) {
-        binding.title.setText(dataElement.displayName());
+        binding.title.setText(!isEmpty(dataElement.displayFormName()) ? dataElement.displayFormName() : dataElement.displayName());
 
         if (dataElement.description() != null && !dataElement.description().equals("")) {
             binding.descriptionLabel.setVisibility(View.VISIBLE);
@@ -40,7 +42,7 @@ public class DataSetRowHeader extends AbstractViewHolder {
                             Constants.DESCRIPTION_DIALOG,
                             null
                     ).show());
-        }else
+        } else
             binding.descriptionLabel.setVisibility(View.GONE);
     }
 }

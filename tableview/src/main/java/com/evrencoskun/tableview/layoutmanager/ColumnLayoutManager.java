@@ -18,8 +18,12 @@
 package com.evrencoskun.tableview.layoutmanager;
 
 import android.content.Context;
+
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.graphics.Rect;
 import android.util.Log;
 import android.view.View;
 
@@ -232,5 +236,15 @@ public class ColumnLayoutManager extends LinearLayoutManager {
             index++;
         }
         return views;
+    }
+
+    @Override
+    public boolean requestChildRectangleOnScreen(@NonNull RecyclerView parent, @NonNull View child, @NonNull Rect rect, boolean immediate) {
+        return false;
+    }
+
+    @Override
+    public boolean requestChildRectangleOnScreen(@NonNull RecyclerView parent, @NonNull View child, @NonNull Rect rect, boolean immediate, boolean focusedChildVisible) {
+        return false;
     }
 }

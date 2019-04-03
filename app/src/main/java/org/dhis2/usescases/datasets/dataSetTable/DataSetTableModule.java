@@ -5,6 +5,7 @@ import com.squareup.sqlbrite2.BriteDatabase;
 import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialRepository;
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialRepositoryImpl;
+import org.hisp.dhis.android.core.D2;
 
 import dagger.Module;
 import dagger.Provides;
@@ -40,8 +41,8 @@ public class DataSetTableModule {
 
     @Provides
     @PerActivity
-    DataSetInitialRepository DataSetInitialRepository(BriteDatabase briteDatabase) {
-        return new DataSetInitialRepositoryImpl(briteDatabase, dataSetUid);
+    DataSetInitialRepository DataSetInitialRepository(BriteDatabase briteDatabase,D2 d2) {
+        return new DataSetInitialRepositoryImpl(d2,briteDatabase, dataSetUid);
     }
 
 }

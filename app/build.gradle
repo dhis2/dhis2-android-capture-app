@@ -299,7 +299,7 @@ dependencies {
     //Paperwork
     implementation "hu.supercluster:paperwork:${libraries.paperwork}"
 
-    implementation group: 'com.google.guava', name: 'guava', version: '24.1-jre'
+//    implementation group: 'com.google.guava', name: 'guava', version: '24.1-jre'
 
     implementation 'cat.ereza:customactivityoncrash:2.2.0'
 
