@@ -1,8 +1,5 @@
 package org.dhis2.usescases.datasets.dataSetTable;
 
-import android.content.ContentValues;
-import android.service.autofill.Dataset;
-
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.tuples.Pair;
@@ -10,17 +7,10 @@ import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.category.CategoryModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
-import org.hisp.dhis.android.core.common.BaseDataModel;
-import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
-import org.hisp.dhis.android.core.dataset.DataSet;
-import org.hisp.dhis.android.core.dataset.DataSetCompleteRegistration;
 import org.hisp.dhis.android.core.dataset.DataSetModel;
 import org.hisp.dhis.android.core.dataset.SectionGreyedFieldsLinkModel;
 import org.hisp.dhis.android.core.dataset.SectionModel;
-import org.hisp.dhis.android.core.datavalue.DataValueModel;
-import org.hisp.dhis.android.core.event.EventModel;
-import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.period.PeriodType;
 
 import java.util.ArrayList;
@@ -208,14 +198,14 @@ public class DataSetTableRepositoryImpl implements DataSetTableRepository {
                     if (map.get(sectionName) == null) {
                         map.put(sectionName, new ArrayList<>());
                     }
-                    if(map.get(sectionName).size() == 0){
+                    if (map.get(sectionName).size() == 0) {
                         List<Pair<CategoryOptionModel, CategoryModel>> list = new ArrayList<>();
                         list.add(Pair.create(catOption, category));
                         map.get(sectionName).add(list);
-                    }else {
+                    } else {
 
-                        if (map.get(sectionName).get(map.get(sectionName).size()-1).get(0).val1().uid().equals(cursor.getString(cursor.getColumnIndex("category")))) {
-                            map.get(sectionName).get(map.get(sectionName).size()-1).add(Pair.create(catOption, category));
+                        if (map.get(sectionName).get(map.get(sectionName).size() - 1).get(0).val1().uid().equals(cursor.getString(cursor.getColumnIndex("category")))) {
+                            map.get(sectionName).get(map.get(sectionName).size() - 1).add(Pair.create(catOption, category));
                         } else {
                             List<Pair<CategoryOptionModel, CategoryModel>> list = new ArrayList<>();
                             list.add(Pair.create(catOption, category));
@@ -234,57 +224,55 @@ public class DataSetTableRepositoryImpl implements DataSetTableRepository {
 
         Map<String, Map<String, List<String>>> mapData = new HashMap<>();
 
-        String query = SECTION_GREYED_FIELDS.replace("?", categoryOptionCombo.toString().substring(1, categoryOptionCombo.toString().length()-1));
+        String query = SECTION_GREYED_FIELDS.replace("?", categoryOptionCombo.toString().substring(1, categoryOptionCombo.toString().length() - 1));
         return briteDatabase.createQuery(SectionGreyedFieldsLinkModel.TABLE, query)
                 .mapToList(cursor -> {
-                    if(mapData.containsKey(cursor.getString(cursor.getColumnIndex("section")))) {
-                        if(mapData.get(cursor.getString(cursor.getColumnIndex("section"))).containsKey(cursor.getString(cursor.getColumnIndex("dataElement")))){
+                    if (mapData.containsKey(cursor.getString(cursor.getColumnIndex("section")))) {
+                        if (mapData.get(cursor.getString(cursor.getColumnIndex("section"))).containsKey(cursor.getString(cursor.getColumnIndex("dataElement")))) {
                             mapData.get(cursor.getString(cursor.getColumnIndex("section")))
                                     .get(cursor.getString(cursor.getColumnIndex("dataElement")))
                                     .add(cursor.getString(cursor.getColumnIndex("categoryOption")));
-                        }else{
-                            List<String> listCatOptions =  new ArrayList<>();
+                        } else {
+                            List<String> listCatOptions = new ArrayList<>();
                             listCatOptions.add(cursor.getString(cursor.getColumnIndex("categoryOption")));
 
                             mapData.get(cursor.getString(cursor.getColumnIndex("section")))
                                     .put(cursor.getString(cursor.getColumnIndex("dataElement")), listCatOptions);
                         }
-                    }
-                    else{
+                    } else {
                         List<String> listCatOptions = new ArrayList<>();
                         listCatOptions.add(cursor.getString(cursor.getColumnIndex("categoryOption")));
                         Map<String, List<String>> mapDataElement = new HashMap<>();
-                        mapDataElement.put(cursor.getString(cursor.getColumnIndex("dataElement")),listCatOptions);
+                        mapDataElement.put(cursor.getString(cursor.getColumnIndex("dataElement")), listCatOptions);
 
                         mapData.put(cursor.getString(cursor.getColumnIndex("section")), mapDataElement);
                     }
                     return mapData;
-                }).map(data->mapData).toFlowable(BackpressureStrategy.LATEST);
+                }).map(data -> mapData).toFlowable(BackpressureStrategy.LATEST);
     }
 
     @Override
     public Flowable<Map<String, List<String>>> getMandatoryDataElement(List<String> categoryOptionCombo) {
         Map<String, List<String>> mapData = new HashMap<>();
 
-        String query = GET_COMPULSORY_DATA_ELEMENT.replace("?", categoryOptionCombo.toString().substring(1, categoryOptionCombo.toString().length()-1));
+        String query = GET_COMPULSORY_DATA_ELEMENT.replace("?", categoryOptionCombo.toString().substring(1, categoryOptionCombo.toString().length() - 1));
         return briteDatabase.createQuery(SectionGreyedFieldsLinkModel.TABLE, query)
                 .mapToList(cursor -> {
-                    if(mapData.containsKey(cursor.getString(0))){
+                    if (mapData.containsKey(cursor.getString(0))) {
                         mapData.get(cursor.getString(0)).add(cursor.getString(1));
-                    }
-                    else{
+                    } else {
                         List<String> listCatOp = new ArrayList<>();
                         listCatOp.add(cursor.getString(1));
                         mapData.put(cursor.getString(0), listCatOp);
                     }
 
-                    return mapData ;
-                }).map(data->mapData).toFlowable(BackpressureStrategy.LATEST);
+                    return mapData;
+                }).map(data -> mapData).toFlowable(BackpressureStrategy.LATEST);
     }
 
     @Override
     public Flowable<List<SectionModel>> getSectionByDataSet() {
-       return briteDatabase.createQuery(SectionModel.TABLE, SECTION_TOTAL_ROW_COLUMN, dataSetUid)
-               .mapToList(SectionModel::create).toFlowable(BackpressureStrategy.LATEST);
+        return briteDatabase.createQuery(SectionModel.TABLE, SECTION_TOTAL_ROW_COLUMN, dataSetUid)
+                .mapToList(SectionModel::create).toFlowable(BackpressureStrategy.LATEST);
     }
 }

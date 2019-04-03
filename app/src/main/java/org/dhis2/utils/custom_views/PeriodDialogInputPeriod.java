@@ -119,6 +119,8 @@ public class PeriodDialogInputPeriod extends PeriodDialog {
             }
         });
 
+        checkConstraintDates();
+
         return binding.getRoot();
     }
 

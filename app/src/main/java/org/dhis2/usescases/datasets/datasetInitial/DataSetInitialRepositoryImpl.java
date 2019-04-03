@@ -1,10 +1,10 @@
 package org.dhis2.usescases.datasets.datasetInitial;
 
 import android.database.Cursor;
-import androidx.annotation.NonNull;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.category.CategoryModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
@@ -16,6 +16,7 @@ import org.hisp.dhis.android.core.period.PeriodType;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -56,14 +57,16 @@ public class DataSetInitialRepositoryImpl implements DataSetInitialRepository {
 
     private final BriteDatabase briteDatabase;
     private final String dataSetUid;
+    private final D2 d2;
 
-    public DataSetInitialRepositoryImpl(com.squareup.sqlbrite2.BriteDatabase briteDatabase, String dataSetUid) {
+    public DataSetInitialRepositoryImpl(D2 d2, BriteDatabase briteDatabase, String dataSetUid) {
+        this.d2 = d2;
         this.briteDatabase = briteDatabase;
         this.dataSetUid = dataSetUid;
     }
 
     @Override
-    public Flowable<List<DateRangeInputPeriodModel>> getDataInputPeriod(){
+    public Flowable<List<DateRangeInputPeriodModel>> getDataInputPeriod() {
         return briteDatabase.createQuery(DataInputPeriodModel.TABLE, GET_DATA_INPUT_PERIOD, dataSetUid)
                 .mapToList(DateRangeInputPeriodModel::fromCursor)
                 .toFlowable(BackpressureStrategy.LATEST);
