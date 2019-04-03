@@ -128,26 +128,31 @@
 
                         <TextView
                             android:id="@+id/main_attributes"
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="10dp"
+                            android:layout_marginEnd="8dp"
                             android:text='@{dashboardModel.getTrackedEntityAttributeValueBySortOrder(1) +" "+ dashboardModel.getTrackedEntityAttributeValueBySortOrder(2)}'
                             android:textColor="@color/gray_444"
                             android:textSize="16sp"
+                            app:layout_constraintEnd_toStartOf="@id/program_lock_text"
                             app:layout_constraintStart_toEndOf="@id/tei_image"
                             app:layout_constraintTop_toTopOf="parent"
                             tools:text="Sarah Thompson" />
 
                         <TextView
                             android:id="@+id/secundary_attribute"
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="10dp"
+                            android:layout_marginEnd="8dp"
                             android:text='@{dashboardModel.getTrackedEntityAttributeValueBySortOrder(3)}'
                             android:textColor="@color/gray_444"
                             android:textSize="14sp"
+                            app:layout_constraintEnd_toStartOf="@id/program_lock_text"
                             app:layout_constraintStart_toEndOf="@id/tei_image"
                             app:layout_constraintTop_toBottomOf="@id/main_attributes"
+
                             tools:text="26dp" />
 
                         <ImageView

@@ -389,7 +389,8 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void setCatComboOptions(List<Category> categories) {
-
+        if (binding.filterLayout.getChildCount() > 2)
+            binding.filterLayout.removeViews(2, binding.filterLayout.getChildCount() - 1);
         if (categories != null && !categories.isEmpty()) {
             for (Category category : categories) {
                 CatCombFilterBinding catCombFilterBinding = CatCombFilterBinding.inflate(LayoutInflater.from(this));
