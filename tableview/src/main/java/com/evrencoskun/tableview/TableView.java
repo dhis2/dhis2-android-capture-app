@@ -350,7 +350,6 @@ public class TableView extends FrameLayout implements ITableView {
             if (isShowVerticalSeparators()) {
                 // Add vertical item decoration to display row line on center recycler view
                 mCellRecyclerView.addItemDecoration(getVerticalItemDecoration());
-                mCellRecyclerView.addItemDecoration(getHorizontalItemDecoration());
             }
         }
         return mCellRecyclerView;
