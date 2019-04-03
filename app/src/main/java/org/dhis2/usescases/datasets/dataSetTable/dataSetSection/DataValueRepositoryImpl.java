@@ -139,7 +139,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
     private static final String SELECT_DATA_INPUT_PERIOD = "SELECT * FROM DataInputPeriod WHERE dataset = ?";/* AND period = ?";*/
 
     private static final String SELECT_COMPLETE_DATASET = "SELECT * FROM DataSetCompleteRegistration WHERE period = ? AND dataSet = ? AND attributeOptionCombo = ? and organisationUnit = ? " +
-            "AND state in ('TO_UPDATE', 'SYNCED')";
+            "AND state in ('TO_UPDATE', 'SYNCED', 'TO_POST')";
 
     public DataValueRepositoryImpl(BriteDatabase briteDatabase, String dataSetUid){
         this.briteDatabase = briteDatabase;

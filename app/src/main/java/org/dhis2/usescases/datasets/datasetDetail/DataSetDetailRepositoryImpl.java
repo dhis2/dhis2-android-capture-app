@@ -99,8 +99,13 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
                     catOptCombCursor.close();
                     Cursor stateCursor = briteDatabase.query("SELECT DataValue.state FROM DataValue " +
                                     "WHERE period = ? AND organisationUnit = ? AND attributeOptionCombo = ? " +
-                                    "AND state != 'SYNCED'",
-                            period, organisationUnitUid, categoryOptionCombo);
+                                    "AND state != 'SYNCED' " +
+                                    "UNION ALL " +
+                                    "select DataSetCompleteRegistration.State " +
+                                    "FROM DataSetCompleteRegistration " +
+                                    "WHERE period = ? AND organisationUnit = ? AND attributeOptionCombo = ? " +
+                                    "AND state != 'SYNCED' ",
+                            period, organisationUnitUid, categoryOptionCombo, period, organisationUnitUid, categoryOptionCombo);
                     if (stateCursor != null && stateCursor.moveToFirst()) {
                         State errorState = null;
                         State toPost = null;
@@ -114,7 +119,7 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
                                 case TO_POST:
                                     toPost = State.TO_POST;
                                     break;
-                                case TO_UPDATE:
+                                case TO_UPDATE: case TO_DELETE:
                                     toUpdate = State.TO_UPDATE;
                                     break;
                             }
