@@ -5,16 +5,15 @@ import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialModel;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.hisp.dhis.android.core.category.CategoryModel;
+import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
-import org.hisp.dhis.android.core.dataset.DataSetModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.period.PeriodType;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
 
 import io.reactivex.Flowable;
 
@@ -46,7 +45,7 @@ public class DataSetTableContract {
 
         String getOrgUnitName();
 
-        void showCatComboSelector(String catOptionUid, List<CategoryOptionModel> data);
+        void showCatComboSelector(String catOptionUid, List<CategoryOption> data);
 
         void setData(DataSetInitialModel dataSetInitialModel);
 
