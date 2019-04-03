@@ -1,5 +1,6 @@
 package org.dhis2.data.forms.dataentry.tablefields.datetime;
 
+
 import androidx.databinding.ViewDataBinding;
 import androidx.core.content.ContextCompat;
 
@@ -124,6 +125,15 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
         if (binding instanceof FormDateTimeTextBinding)
             ((FormDateTimeTextBinding) binding).dateTimeView.setEditable(accessDataWrite && viewModel.editable());
 
+        if(dateTimeViewModel.mandatory()) {
+            if (binding instanceof FormTimeTextBinding)
+                ((FormTimeTextBinding) binding).timeView.setMandatory();
+            if (binding instanceof FormDateTextBinding)
+                ((FormDateTextBinding) binding).dateView.setMandatory();
+            if (binding instanceof FormDateTimeTextBinding)
+                ((FormDateTimeTextBinding) binding).dateTimeView.setMandatory();
+        }
+
         binding.executePendingBindings();
     }
 
@@ -146,5 +156,23 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
     @Override
     public void dispose() {
         disposable.clear();
+    }
+
+    @Override
+    public void setSelected(SelectionState selectionState) {
+        super.setSelected(selectionState);
+        if (selectionState == SelectionState.SELECTED) {
+            if (binding instanceof FormTimeTextBinding) {
+                ((FormTimeTextBinding) binding).timeView.performOnFocusAction();
+            }
+
+            if (binding instanceof FormDateTextBinding) {
+                ((FormDateTextBinding) binding).dateView.performOnFocusAction();
+            }
+
+            if (binding instanceof FormDateTimeTextBinding) {
+                ((FormDateTimeTextBinding) binding).dateTimeView.performOnFocusAction();
+            }
+        }
     }
 }

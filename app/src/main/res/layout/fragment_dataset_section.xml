@@ -14,6 +14,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+
         <androidx.core.widget.NestedScrollView
             android:id="@+id/scroll"
             android:layout_width="match_parent"
@@ -28,21 +29,17 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical">
 
-                <!--<com.evrencoskun.tableview.TableView
-                    android:id="@+id/tableView"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:background="@color/white"
-                    app:unselected_color="@color/table_bg"
-                    app:selected_color="?colorPrimaryLight"
-                    app:shadow_color="@color/rfab__color_shadow"
-
-                    app:row_header_width="120dp" />-->
-
-
             </LinearLayout>
 
         </androidx.core.widget.NestedScrollView>
+
+
+        <FrameLayout
+            android:id="@+id/headerContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            app:layout_constraintTop_toTopOf="parent" />
 
 
         <Button
@@ -56,7 +53,6 @@
             android:onClick="@{()->presenter.complete()}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
-
 
 
         <!--<androidx.constraintlayout.widget.ConstraintLayout

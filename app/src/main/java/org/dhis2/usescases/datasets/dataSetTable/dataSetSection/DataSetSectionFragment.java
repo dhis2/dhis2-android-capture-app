@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import org.dhis2.App;
 
 import com.evrencoskun.tableview.TableView;
+import com.evrencoskun.tableview.adapter.recyclerview.CellRecyclerView;
 import com.google.android.material.snackbar.Snackbar;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel;
@@ -46,6 +47,12 @@ import java.util.Objects;
 
 import javax.inject.Inject;
 
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.widget.NestedScrollView;
+import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.MutableLiveData;
 import io.reactivex.Flowable;
 import io.reactivex.processors.FlowableProcessor;
 import timber.log.Timber;
@@ -71,6 +78,10 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
     DataValueContract.Presenter presenterFragment;
 
     private TableView tableView;
+
+    private ArrayList<Integer> heights = new ArrayList<>();
+    private MutableLiveData<Integer> currentTablePosition = new MutableLiveData<>();
+
     @NonNull
     public static DataSetSectionFragment create(@NonNull String sectionUid, boolean accessDataWrite, String dataSetUid) {
         Bundle bundle = new Bundle();
@@ -95,7 +106,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_dataset_section, container, false);
-
+        currentTablePosition.observe(this, this::loadHeader);
         binding.setPresenter(presenterFragment);
         return binding.getRoot();
     }
@@ -251,6 +262,43 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
         }
 
         binding.scroll.scrollTo(0, 1000);
+
+        binding.scroll.setOnScrollChangeListener((NestedScrollView.OnScrollChangeListener) (v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
+            int position = -1;
+            if (checkTableHeights())
+                for (int i = 0; i < ((LinearLayout) v.getChildAt(0)).getChildCount(); i++) {
+                    if (scrollY < ((LinearLayout) v.getChildAt(0)).getChildAt(i).getHeight())
+                        position = position == -1 ? i : position;
+                }
+
+            if (position != -1 && currentTablePosition.getValue() != position)
+                currentTablePosition.setValue(position);
+        });
+        currentTablePosition.setValue(0);
+
+    }
+
+    private void loadHeader(int position) {
+        TableView tableView = (TableView) ((LinearLayout) binding.scroll.getChildAt(0)).getChildAt(position);
+        if (tableView != null) {
+            List<CellRecyclerView> rvs = tableView.getBackupHeaders();
+            binding.headerContainer.removeAllViews();
+            for (CellRecyclerView crv : rvs)
+                binding.headerContainer.addView(crv);
+        }
+    }
+
+    private boolean checkTableHeights() {
+        if (heights.isEmpty()) {
+            heights = new ArrayList<>();
+
+            for (int i = 0; i < ((LinearLayout) binding.scroll.getChildAt(0)).getChildCount(); i++) {
+                heights.add(i != 0 ? heights.get(i - 1) + ((LinearLayout) binding.scroll.getChildAt(0)).getChildAt(i).getHeight() :
+                        ((LinearLayout) binding.scroll.getChildAt(0)).getChildAt(i).getHeight());
+            }
+
+        }
+        return !heights.isEmpty();
     }
 
     private void setTotalColumn(List<List<FieldViewModel>> listFields, ArrayList<List<String>> cells,
@@ -388,7 +436,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
 
     @Override
     public void setCompleteReopenText(Boolean isCompleted) {
-        if(!isCompleted)
+        if (!isCompleted)
             binding.actionButton.setText(activity.getString(R.string.complete));
         else
             binding.actionButton.setText(activity.getString(R.string.re_open));

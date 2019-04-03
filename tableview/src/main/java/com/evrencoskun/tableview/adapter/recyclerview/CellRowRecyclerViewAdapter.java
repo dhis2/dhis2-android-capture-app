@@ -87,7 +87,7 @@ public class CellRowRecyclerViewAdapter<C> extends AbstractRecyclerViewAdapter<C
         }
 
         // Change selection status
-        viewHolder.setSelected(selectionState);
+        //viewHolder.setSelected(selectionState);
     }
 
     @Override
