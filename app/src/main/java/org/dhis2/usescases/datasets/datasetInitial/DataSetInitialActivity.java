@@ -18,11 +18,12 @@ import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.custom_views.OrgUnitDialog;
 import org.dhis2.utils.custom_views.PeriodDialog;
 import org.dhis2.utils.custom_views.PeriodDialogInputPeriod;
-import org.hisp.dhis.android.core.category.CategoryModel;
+import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.period.PeriodType;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -79,18 +80,18 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
         binding.catComboContainer.removeAllViews();
         selectedCatOptions = new HashMap<>();
         if (!dataSetInitialModel.categoryComboName().equals("default"))
-            for (CategoryModel categoryModel : dataSetInitialModel.categories()) {
-                selectedCatOptions.put(categoryModel.uid(), null);
+            for (Category categories : dataSetInitialModel.getCategories()) {
+                selectedCatOptions.put(categories.uid(), null);
                 ItemCategoryComboBinding categoryComboBinding = ItemCategoryComboBinding.inflate(getLayoutInflater(), binding.catComboContainer, false);
-                categoryComboBinding.inputLayout.setHint(categoryModel.displayName());
+                categoryComboBinding.inputLayout.setHint(categories.displayName());
                 categoryComboBinding.inputEditText.setOnClickListener(view -> {
                     selectedView = view;
-                    presenter.onCatOptionClick(categoryModel.uid());
+                    presenter.onCatOptionClick(categories.uid());
                 });
                 binding.catComboContainer.addView(categoryComboBinding.getRoot());
             }
         else
-            presenter.onCatOptionClick(dataSetInitialModel.categories().get(0).uid());
+            presenter.onCatOptionClick(dataSetInitialModel.getCategories().get(0).uid());
         checkActionVisivbility();
     }
 
@@ -178,16 +179,13 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
     }
 
     @Override
-    public String getSelectedCatOptions() {
-        StringBuilder catComb = new StringBuilder("'");
+    public List<String> getSelectedCatOptions() {
+        List<String> selectedCatOption = new ArrayList<>();
         for (int i = 0; i < selectedCatOptions.keySet().size(); i++) {
             CategoryOption catOpt = selectedCatOptions.get(selectedCatOptions.keySet().toArray()[i]);
-            catComb.append(catOpt.uid());
-
-            if (i < selectedCatOptions.values().size() - 1)
-                catComb.append("', '");
+            selectedCatOption.add(catOpt.uid());
         }
-        return catComb.append("'").toString();
+        return selectedCatOption;
     }
 
     @Override

@@ -24,5 +24,5 @@ public interface DataSetInitialRepository {
     Flowable<List<DateRangeInputPeriodModel>> getDataInputPeriod();
 
     @NonNull
-    Flowable<String> getCategoryOptionCombo(String catOptions, String catCombo);
+    Flowable<String> getCategoryOptionCombo(List<String> catOptions, String catCombo);
 }

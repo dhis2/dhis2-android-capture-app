@@ -31,7 +31,7 @@ public class DataSetInitialContract {
         String getDataSetUid();
         OrganisationUnitModel getSelectedOrgUnit();
         Date getSelectedPeriod();
-        String getSelectedCatOptions();
+        List<String> getSelectedCatOptions();
 
         String getPeriodType();
 
