@@ -204,7 +204,7 @@ public class DateUtils {
         try {
             databaseDateFormatNoSeconds().parse(dateTime);
             return true;
-        } catch (ParseException e){
+        } catch (ParseException e) {
             return false;
         }
     }
@@ -1038,7 +1038,14 @@ public class DateUtils {
         expiredBecouseOfCompletion = status == EventStatus.COMPLETED ?
                 isEventExpired(null, eventDate, compExpDays) : false;
 
-        Date expDate = expDate(null, expDays, programPeriodType);
+        Date expDate = getNextPeriod(programPeriodType, eventDate, 1); //Initial date of next period
+        if (expDays > 0) {
+            Calendar calendar = getCalendar();
+            calendar.setTime(expDate);
+            calendar.add(Calendar.DAY_OF_YEAR, expDays);
+            expDate = calendar.getTime();
+        }
+
         expiredBecouseOfPeriod = expDate != null && expDate.before(getCalendar().getTime());
 
         return expiredBecouseOfPeriod || expiredBecouseOfCompletion;
