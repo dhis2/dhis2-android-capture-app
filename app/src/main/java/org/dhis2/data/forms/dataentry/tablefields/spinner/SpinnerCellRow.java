@@ -9,6 +9,7 @@ import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.Row;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.data.tuples.Trio;
+import org.dhis2.databinding.CustomCellViewBinding;
 import org.dhis2.databinding.CustomTextViewCellBinding;
 
 import io.reactivex.processors.FlowableProcessor;
@@ -35,7 +36,7 @@ public class SpinnerCellRow implements Row<SpinnerHolder, SpinnerViewModel> {
     @NonNull
     @Override
     public SpinnerHolder onCreate(@NonNull ViewGroup parent) {
-        CustomTextViewCellBinding binding = DataBindingUtil.inflate(inflater,  R.layout.custom_text_view_cell , parent, false);
+        CustomCellViewBinding binding = DataBindingUtil.inflate(inflater,  R.layout.custom_cell_view , parent, false);
         return new SpinnerHolder(binding, processor, processorOptionSet);
     }
 
