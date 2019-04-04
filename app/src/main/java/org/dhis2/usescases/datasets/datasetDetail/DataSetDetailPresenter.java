@@ -204,6 +204,7 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
     @Override
     public void getDataSetWithDates(List<String> selected, Period period, List<String> orgUnitQuery) {
         this.period = period;
+        this.selectedOrgUnits = orgUnitQuery;
         lastSearchType = LastSearchType.DATE_RANGES;
         selectedPeriods.clear();
         for(Map.Entry<String, String> entry : mapPeriodAvailable.entrySet())

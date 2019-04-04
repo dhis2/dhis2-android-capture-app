@@ -57,12 +57,15 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
         if (orgUnits != null && !orgUnits.isEmpty()) {
             StringBuilder orgUnitUids = new StringBuilder("");
             for (int i = 0; i < orgUnits.size(); i++) {
-                orgUnitUids.append(orgUnits.get(i));
+                orgUnitUids.append("'" + orgUnits.get(i));
                 if (i != orgUnits.size() - 1)
-                    orgUnitUids.append(",");
+                    orgUnitUids.append("',");
             }
 
-            orgUnitFilter = String.format(DATA_SETS_ORG_UNIT_FILTER, orgUnitFilter);
+            if(!orgUnitUids.equals(""))
+                orgUnitUids.append("'");
+
+            orgUnitFilter = String.format(DATA_SETS_ORG_UNIT_FILTER, orgUnitUids);
         }
 
         if(periodFilter != null && periodFilter.size() > 0){

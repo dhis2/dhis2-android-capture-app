@@ -28,6 +28,7 @@ import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.Period;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.period.PeriodType;
 
@@ -66,6 +67,8 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
     private TreeNode treeNode;
     private AndroidTreeView treeView;
     private boolean isFilteredByCatCombo = false;
+    private List<String> seletedPeriods = new ArrayList<>();
+    private List<String> selectedOrgUnit = new ArrayList<>();
     @Inject
     DataSetDetailContract.Presenter presenter;
 
@@ -158,8 +161,8 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
         calendar.setMinimalDaysInFirstWeek(7);
 
         new RxDateDialog(getAbstractActivity(), presenter.getPeriodAvailableForFilter(), true).create().showSelectedPeriod().subscribe(selectedPeriods -> {
-
-                    presenter.getDataSetWithDates(selectedPeriods, currentPeriod, new ArrayList<>());
+                    this.seletedPeriods = selectedPeriods;
+                    presenter.getDataSetWithDates(selectedPeriods, currentPeriod, selectedOrgUnit);
                     if(presenter.getFirstPeriodSelected().isEmpty())
                         binding.buttonPeriodText.setText(getString(R.string.period));
                     else
@@ -222,39 +225,18 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
     public void apply() {
         binding.drawerLayout.closeDrawers();
         orgUnitFilter = new StringBuilder();
+        List<String> selectOrgUnit = new ArrayList<>();
         for (int i = 0; i < treeView.getSelected().size(); i++) {
-            orgUnitFilter.append("'");
-            orgUnitFilter.append(((OrganisationUnitModel) treeView.getSelected().get(i).getValue()).uid());
-            orgUnitFilter.append("'");
+            /*orgUnitFilter.append("'");
+            orgUnitFilter.append(((OrganisationUnitModel) treeView.getSelected().get(i).getValue()).uid());*/
+            selectOrgUnit.add(((OrganisationUnitModel) treeView.getSelected().get(i).getValue()).uid());
+            /*orgUnitFilter.append("'");
             if (i < treeView.getSelected().size() - 1)
-                orgUnitFilter.append(", ");
+                orgUnitFilter.append(", ");*/
         }
+        this.selectedOrgUnit = selectOrgUnit;
 
-
-        switch (currentPeriod) {
-            case NONE:
-                // TODO
-                //presenter.getDataSetWithDates(null, currentPeriod, orgUnitFilter.toString());
-                break;
-            case DAILY:
-                ArrayList<Date> datesD = new ArrayList<>();
-                datesD.add(chosenDateDay);
-                // TODO
-                //presenter.getDataSetWithDates(datesD, currentPeriod, orgUnitFilter.toString());
-                break;
-            case WEEKLY:
-                // TODO
-                //presenter.getDataSetWithDates(chosenDateWeek, currentPeriod, orgUnitFilter.toString());
-                break;
-            case MONTHLY:
-                // TODO
-                //presenter.getDataSetWithDates(chosenDateMonth, currentPeriod, orgUnitFilter.toString());
-                break;
-            case YEARLY:
-                // TODO
-                //presenter.getDataSetWithDates(chosenDateYear, currentPeriod, orgUnitFilter.toString());
-                break;
-        }
+        presenter.getDataSetWithDates(this.seletedPeriods, currentPeriod, selectedOrgUnit);
     }
 
     @SuppressLint("RestrictedApi")
