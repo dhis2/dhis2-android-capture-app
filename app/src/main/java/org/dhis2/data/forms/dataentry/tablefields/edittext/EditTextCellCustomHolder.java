@@ -174,7 +174,7 @@ final class EditTextCellCustomHolder extends FormViewHolder {
 
             tableView.setSelectedCell(editTextModel.column(), editTextModel.row());
 
-            if(editTextModel != null && editTextModel.editable() && !editText.getText().toString().equals(editTextModel.value())) {
+            if (editTextModel != null && editTextModel.editable() && !editText.getText().toString().equals(editTextModel.value())) {
                 if (!isEmpty(editText.getText()) && validate())
                     processor.onNext(RowAction.create(editTextModel.uid(), editText.getText().toString(), editTextModel.dataElement(), editTextModel.listCategoryOption(), editTextModel.catCombo(), editTextModel.row(), editTextModel.column()));
 
@@ -253,7 +253,8 @@ final class EditTextCellCustomHolder extends FormViewHolder {
         super.setSelected(selectionState);
         if (selectionState == SelectionState.SELECTED) {
             editText.requestFocus();
-            openKeyboard(editText);
+            if (editTextModel.editable())
+                openKeyboard(editText);
         }
     }
 }

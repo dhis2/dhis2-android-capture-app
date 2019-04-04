@@ -290,7 +290,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
                 View view = ((LinearLayout) binding.scroll.getChildAt(0)).getChildAt(i);
                 if (view instanceof TableView) {
                     if (i == ((LinearLayout) binding.scroll.getChildAt(0)).getChildCount() - 1)
-                        heights.add(heights.get(heights.size() - 1) + view.getHeight());
+                        heights.add(i!=0?heights.get(heights.size() - 1) + view.getHeight():view.getHeight());
                     else {
                         View separator = ((LinearLayout) binding.scroll.getChildAt(0)).getChildAt(i + 1);
                         heights.add(i/2 != 0 ? heights.get(i/2 - 1) + view.getHeight() + separator.getHeight() : view.getHeight() + separator.getHeight());
