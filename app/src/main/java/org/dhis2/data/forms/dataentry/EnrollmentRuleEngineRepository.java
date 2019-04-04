@@ -287,10 +287,15 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
                         .switchMap(ruleEngine -> {
                             if (isEmpty(lastUpdatedAttr))
                                 return Flowable.fromCallable(ruleEngine.evaluate(enrollment));
-                            else if (attributeRules.get(lastUpdatedAttr) != null && !attributeRules.get(lastUpdatedAttr).isEmpty())
+                            else
+                                return Flowable.just(attributeRules.get(lastUpdatedAttr) != null ? attributeRules.get(lastUpdatedAttr) : new ArrayList<Rule>())
+                                        .filter(rules -> !rules.isEmpty())
+                                        .flatMap(rules -> Flowable.fromCallable(ruleEngine.evaluate(enrollment, rules)));
+                           /* else
+                            if (attributeRules.get(lastUpdatedAttr) != null && !attributeRules.get(lastUpdatedAttr).isEmpty())
                                 return Flowable.fromCallable(ruleEngine.evaluate(enrollment, getRulesFor(lastUpdatedAttr)));
                             else
-                                return Flowable.just(new ArrayList<RuleEffect>());
+                                return Flowable.just(new ArrayList<RuleEffect>());*/
                         })
                         .map(Result::success)
                         .onErrorReturn(error -> Result.failure(new Exception(error)))
