@@ -4,6 +4,7 @@ import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.dagger.PerFragment;
 import org.dhis2.data.metadata.MetadataRepository;
+import org.hisp.dhis.android.core.D2;
 
 import dagger.Module;
 import dagger.Provides;
@@ -31,7 +32,7 @@ public class DataValueModule {
 
     @Provides
     @PerFragment
-    DataValueRepository DataValueRepository(BriteDatabase briteDatabase) {
-        return new DataValueRepositoryImpl(briteDatabase, dataSetUid);
+    DataValueRepository DataValueRepository(D2 d2, BriteDatabase briteDatabase) {
+        return new DataValueRepositoryImpl(d2,briteDatabase, dataSetUid);
     }
 }
