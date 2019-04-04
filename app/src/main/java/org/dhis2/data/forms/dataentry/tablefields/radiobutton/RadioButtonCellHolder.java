@@ -1,14 +1,25 @@
 package org.dhis2.data.forms.dataentry.tablefields.radiobutton;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
+
+import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
+import org.dhis2.databinding.CustomCellViewBinding;
 import org.dhis2.databinding.FormYesNoBinding;
+import org.dhis2.utils.custom_views.YesNoView;
 
+import androidx.databinding.DataBindingUtil;
 import io.reactivex.processors.FlowableProcessor;
 
 
@@ -20,16 +31,15 @@ public class RadioButtonCellHolder extends FormViewHolder {
 
     private final FlowableProcessor<RowAction> processor;
 
-    final RadioGroup radioGroup;
-    final FormYesNoBinding binding;
-    private final View clearButton;
-
+    final CustomCellViewBinding binding;
+    TextView textView;
     RadioButtonViewModel viewModel;
+    Context context;
 
-    RadioButtonCellHolder(FormYesNoBinding binding, FlowableProcessor<RowAction> processor) {
+    RadioButtonCellHolder(CustomCellViewBinding binding, FlowableProcessor<RowAction> processor, Context context) {
         super(binding);
-        radioGroup = binding.customYesNo.getRadioGroup();
-        clearButton = binding.customYesNo.getClearButton();
+        this.context = context;
+        textView = binding.inputEditText;
         this.binding = binding;
         this.processor = processor;
     }
@@ -37,55 +47,79 @@ public class RadioButtonCellHolder extends FormViewHolder {
 
     public void update(RadioButtonViewModel checkBoxViewModel, boolean accessDataWrite) {
 
-
         this.viewModel = checkBoxViewModel;
 
-        radioGroup.setOnCheckedChangeListener(null);
-        descriptionText = viewModel.description();
-        binding.setDescription(descriptionText);
-        label = new StringBuilder(checkBoxViewModel.label());
-        binding.customYesNo.setValueType(checkBoxViewModel.valueType());
-        if (checkBoxViewModel.mandatory())
-            label.append("*");
-        binding.setLabel(label.toString());
-        binding.setValueType(checkBoxViewModel.valueType());
-        if (checkBoxViewModel.value() != null && Boolean.valueOf(checkBoxViewModel.value()))
-            binding.customYesNo.getRadioGroup().check(R.id.yes);
-        else if (checkBoxViewModel.value() != null && !checkBoxViewModel.value().isEmpty())
-            binding.customYesNo.getRadioGroup().check(R.id.no);
-
-        if(!(accessDataWrite && checkBoxViewModel.editable())) {
-            binding.customYesNo.setBackgroundColor(ContextCompat.getColor(binding.customYesNo.getContext(), R.color.bg_black_e6e));
-            for (int i = 0; i < radioGroup.getChildCount(); i++) {
-                radioGroup.getChildAt(i).setEnabled(false);
-            }
+        if(checkBoxViewModel.value()!=null && !checkBoxViewModel.value().isEmpty()) {
+            if (checkBoxViewModel.value().equals("true"))
+                textView.setText(context.getString(R.string.yes));
+            else
+                textView.setText(context.getString(R.string.no));
+        }else{
+            textView.setText(null);
         }
 
-        radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
-            RowAction rowAction;
-            switch (checkedId) {
-                case R.id.yes:
-                    rowAction = RowAction.create(checkBoxViewModel.uid(), String.valueOf(true), checkBoxViewModel.dataElement(), checkBoxViewModel.listCategoryOption(),checkBoxViewModel.catCombo(), checkBoxViewModel.row(), checkBoxViewModel.column());
-                    break;
-                case R.id.no:
-                    rowAction = RowAction.create(checkBoxViewModel.uid(), String.valueOf(false), checkBoxViewModel.dataElement(), checkBoxViewModel.listCategoryOption(),checkBoxViewModel.catCombo(), checkBoxViewModel.row(), checkBoxViewModel.column());
-                    break;
-                default:
-                    rowAction = RowAction.create(checkBoxViewModel.uid(), null, checkBoxViewModel.dataElement(), checkBoxViewModel.listCategoryOption(),checkBoxViewModel.catCombo(), checkBoxViewModel.row(), checkBoxViewModel.column());
-                    break;
-            }
-            processor.onNext(rowAction);
-        });
+        if(!(accessDataWrite && checkBoxViewModel.editable())) {
+            textView.setEnabled(false);
+            textView.setBackgroundColor(ContextCompat.getColor(context, R.color.bg_black_e6e));
+        }
 
-        clearButton.setOnClickListener(view -> {
-            if (checkBoxViewModel.editable().booleanValue()) {
-                radioGroup.clearCheck();
-            }
-        });
-
+        if(checkBoxViewModel.mandatory())
+            binding.icMandatory.setVisibility(View.VISIBLE);
 
     }
 
     public void dispose() {
     }
+
+    @Override
+    public void setSelected(SelectionState selectionState) {
+        super.setSelected(selectionState);
+        if (selectionState == SelectionState.SELECTED && textView.isEnabled()) {
+            showEditDialog();
+        }
+    }
+    private void showEditDialog() {
+
+        AlertDialog alertDialog = new AlertDialog.Builder(context).create();
+        View view = LayoutInflater.from(context).inflate(R.layout.form_yes_no, null);
+        YesNoView yesNoView = view.findViewById(R.id.customYesNo);
+        yesNoView.setCellLayout();
+        yesNoView.setValueType(viewModel.valueType());
+        RadioGroup radioGroup = view.findViewById(R.id.radiogroup);
+        ImageView clearButton = view.findViewById(R.id.clearSelection);
+
+        if (viewModel.value() != null && Boolean.valueOf(viewModel.value()))
+            radioGroup.check(R.id.yes);
+        else if (viewModel.value() != null && !viewModel.value().isEmpty())
+            radioGroup.check(R.id.no);
+
+        radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            RowAction rowAction;
+            switch (checkedId) {
+                case R.id.yes:
+                    rowAction = RowAction.create(viewModel.uid(), String.valueOf(true), viewModel.dataElement(), viewModel.listCategoryOption(),viewModel.catCombo(), viewModel.row(), viewModel.column());
+                    break;
+                case R.id.no:
+                    rowAction = RowAction.create(viewModel.uid(), String.valueOf(false), viewModel.dataElement(), viewModel.listCategoryOption(),viewModel.catCombo(), viewModel.row(), viewModel.column());
+                    break;
+                default:
+                    rowAction = RowAction.create(viewModel.uid(), null, viewModel.dataElement(), viewModel.listCategoryOption(),viewModel.catCombo(), viewModel.row(), viewModel.column());
+                    break;
+            }
+            processor.onNext(rowAction);
+            alertDialog.dismiss();
+        });
+
+        clearButton.setOnClickListener(view1 -> {
+            if (viewModel.editable().booleanValue()) {
+                radioGroup.clearCheck();
+                processor.onNext(RowAction.create(viewModel.uid(), null, viewModel.dataElement(), viewModel.listCategoryOption(),viewModel.catCombo(), viewModel.row(), viewModel.column()));
+                alertDialog.dismiss();
+            }
+        });
+        alertDialog.setView(view);
+
+        alertDialog.show();
+    }
+
 }

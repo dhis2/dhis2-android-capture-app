@@ -17,8 +17,6 @@
 
 package com.evrencoskun.tableview.listener.scroll;
 
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.MotionEvent;
 
@@ -26,6 +24,9 @@ import com.evrencoskun.tableview.ITableView;
 import com.evrencoskun.tableview.adapter.recyclerview.CellRecyclerView;
 
 import java.util.List;
+
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * Created by evrencoskun on 19/06/2017.
@@ -35,6 +36,7 @@ public class HorizontalRecyclerViewListener extends RecyclerView.OnScrollListene
         RecyclerView.OnItemTouchListener {
 
     private static final String LOG_TAG = HorizontalRecyclerViewListener.class.getSimpleName();
+    private final List<CellRecyclerView> mBackupHeaders;
 
     private List<CellRecyclerView> mColumnHeaderRecyclerViews;
     private RecyclerView.LayoutManager mCellLayoutManager;
@@ -55,6 +57,7 @@ public class HorizontalRecyclerViewListener extends RecyclerView.OnScrollListene
         this.mColumnHeaderRecyclerViews = tableView.getColumnHeaderRecyclerView();
         this.mCellLayoutManager = tableView.getCellRecyclerView().getLayoutManager();
         this.mVerticalRecyclerViewListener = tableView.getVerticalRecyclerViewListener();
+        this.mBackupHeaders = tableView.getBackupHeaders();
     }
 
     @Override
@@ -62,7 +65,7 @@ public class HorizontalRecyclerViewListener extends RecyclerView.OnScrollListene
 
         // Prevent multitouch, once we start to listen with a RV,
         // we ignore any other RV until the touch is released (UP)
-        if(mCurrentRVTouched != null && rv != mCurrentRVTouched) {
+        if (mCurrentRVTouched != null && rv != mCurrentRVTouched) {
             return true;
         }
 
@@ -169,14 +172,20 @@ public class HorizontalRecyclerViewListener extends RecyclerView.OnScrollListene
         // Column Header should be scrolled firstly. Because it is the compared recyclerView to
         // make column width fit.
 
-        if(mColumnHeaderRecyclerViews.contains(recyclerView)){
+        if (mColumnHeaderRecyclerViews.contains(recyclerView)) {
 
-            for (int i=0; i < mColumnHeaderRecyclerViews.size(); i++){
+            for (int i = 0; i < mColumnHeaderRecyclerViews.size(); i++) {
                 CellRecyclerView header = mColumnHeaderRecyclerViews.get(i);
                 if (header != recyclerView) {
                     // Scroll horizontally
                     header.scrollBy(dx, 0);
                 }
+            }
+
+            for (int i = 0; i < mBackupHeaders.size(); i++) {
+                CellRecyclerView header = mBackupHeaders.get(i);
+                // Scroll horizontally
+                header.scrollBy(dx, 0);
             }
 
             // Scroll each cell recyclerViews
@@ -185,9 +194,38 @@ public class HorizontalRecyclerViewListener extends RecyclerView.OnScrollListene
                 // Scroll horizontally
                 child.scrollBy(dx, 0);
             }
-        }else{
-            for (int i=0; i < mColumnHeaderRecyclerViews.size(); i++){
+        } else if (mBackupHeaders.contains(recyclerView)) {
+            for (int i = 0; i < mBackupHeaders.size(); i++) {
+                CellRecyclerView header = mBackupHeaders.get(i);
+                // Scroll horizontally
+                if (header != recyclerView) {
+                    // Scroll horizontally
+                    header.scrollBy(dx, 0);
+                }
+            }
+
+            for (int i = 0; i < mColumnHeaderRecyclerViews.size(); i++) {
                 CellRecyclerView header = mColumnHeaderRecyclerViews.get(i);
+                // Scroll horizontally
+                header.scrollBy(dx, 0);
+
+            }
+
+            // Scroll each cell recyclerViews
+            for (int i = 0; i < mCellLayoutManager.getChildCount(); i++) {
+                CellRecyclerView child = (CellRecyclerView) mCellLayoutManager.getChildAt(i);
+                // Scroll horizontally
+                child.scrollBy(dx, 0);
+            }
+        } else {
+            for (int i = 0; i < mColumnHeaderRecyclerViews.size(); i++) {
+                CellRecyclerView header = mColumnHeaderRecyclerViews.get(i);
+                // Scroll horizontally
+                header.scrollBy(dx, 0);
+            }
+
+            for (int i = 0; i < mBackupHeaders.size(); i++) {
+                CellRecyclerView header = mBackupHeaders.get(i);
                 // Scroll horizontally
                 header.scrollBy(dx, 0);
             }

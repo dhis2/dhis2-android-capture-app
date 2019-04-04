@@ -22,14 +22,14 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:minHeight="@dimen/default_cell_height"
+        android:layout_height="@dimen/default_cell_height"
         android:gravity="center">
 
         <RadioGroup
             android:id="@+id/radiogroup"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/clearSelection"
@@ -40,7 +40,7 @@
                 android:id="@+id/yes"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
+                android:layout_marginEnd="16dp"
                 android:checked="false"
                 android:text="@string/yes"
                 android:textColor="@color/text_black_333"
@@ -61,8 +61,10 @@
             android:id="@+id/clearSelection"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
             android:tint="@color/icon_color"
             app:layout_constraintBottom_toBottomOf="@+id/radiogroup"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/radiogroup"
             app:layout_constraintTop_toTopOf="@+id/radiogroup"
             app:srcCompat="@drawable/ic_clear" />

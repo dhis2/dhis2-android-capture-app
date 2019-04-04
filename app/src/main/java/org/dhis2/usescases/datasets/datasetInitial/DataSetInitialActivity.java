@@ -19,7 +19,7 @@ import org.dhis2.utils.custom_views.OrgUnitDialog;
 import org.dhis2.utils.custom_views.PeriodDialog;
 import org.dhis2.utils.custom_views.PeriodDialogInputPeriod;
 import org.hisp.dhis.android.core.category.CategoryModel;
-import org.hisp.dhis.android.core.category.CategoryOptionModel;
+import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.period.PeriodType;
 
@@ -41,7 +41,7 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
     @Inject
     DataSetInitialContract.Presenter presenter;
 
-    private HashMap<String, CategoryOptionModel> selectedCatOptions;
+    private HashMap<String, CategoryOption> selectedCatOptions;
     private OrganisationUnitModel selectedOrgUnit;
     private Date selectedPeriod;
     private String dataSetUid;
@@ -137,7 +137,7 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
     }
 
     @Override
-    public void showCatComboSelector(String catOptionUid, List<CategoryOptionModel> data) {
+    public void showCatComboSelector(String catOptionUid, List<CategoryOption> data) {
         if (data.size() == 1 && data.get(0).name().equals("default")) {
             if (selectedCatOptions == null)
                 selectedCatOptions = new HashMap<>();
@@ -146,8 +146,8 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
 
             PopupMenu menu = new PopupMenu(this, selectedView, Gravity.BOTTOM);
 //        menu.getMenu().add(Menu.NONE, Menu.NONE, 0, viewModel.label()); Don't show label
-            for (CategoryOptionModel optionModel : data)
-                menu.getMenu().add(Menu.NONE, Menu.NONE, data.indexOf(optionModel), optionModel.displayName());
+            for (CategoryOption option : data)
+                menu.getMenu().add(Menu.NONE, Menu.NONE, data.indexOf(option), option.displayName());
 
             menu.setOnDismissListener(menu1 -> selectedView = null);
             menu.setOnMenuItemClickListener(item -> {
@@ -181,7 +181,7 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
     public String getSelectedCatOptions() {
         StringBuilder catComb = new StringBuilder("'");
         for (int i = 0; i < selectedCatOptions.keySet().size(); i++) {
-            CategoryOptionModel catOpt = selectedCatOptions.get(selectedCatOptions.keySet().toArray()[i]);
+            CategoryOption catOpt = selectedCatOptions.get(selectedCatOptions.keySet().toArray()[i]);
             catComb.append(catOpt.uid());
 
             if (i < selectedCatOptions.values().size() - 1)
