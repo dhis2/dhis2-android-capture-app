@@ -29,28 +29,15 @@ import io.reactivex.functions.Consumer;
 
 public class IndicatorsFragment extends FragmentGlobalAbstract {
 
-    public static final String PROGRAM = "program";
-    public static final String TEI = "tei";
-
     private IndicatorsAdapter adapter;
 
-    //    @Inject
     private IndicatorsPresenter presenter;
 
 
     @Override
     public void onAttach(@NotNull Context context) {
         super.onAttach(context);
-
         presenter = ((TeiDashboardMobileActivity) context).getIndicatorsPresenter();
-
-//        if (getArguments() != null && ((Components) context.getApplicationContext()).userComponent() != null) {
-//            String programUid = getArguments().getString(PROGRAM);
-//            String teiUid = getArguments().getString(TEI);
-//
-//            ((Components) context.getApplicationContext()).userComponent()
-//                    .plus(new IndicatorsModule(teiUid, programUid)).inject(this);
-//        }
     }
 
     @Nullable

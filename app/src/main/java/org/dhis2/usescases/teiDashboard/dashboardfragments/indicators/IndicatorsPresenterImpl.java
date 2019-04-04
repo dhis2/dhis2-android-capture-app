@@ -53,7 +53,7 @@ public class IndicatorsPresenterImpl implements IndicatorsPresenter {
         getData();
     }
 
-    public void getData() {
+    private void getData() {
         if (programUid != null)
             compositeDisposable.add(Observable.zip(
                     metadataRepository.getTrackedEntityInstance(teiUid),

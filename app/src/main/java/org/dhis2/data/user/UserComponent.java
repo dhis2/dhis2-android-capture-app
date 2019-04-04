@@ -49,8 +49,6 @@ import org.dhis2.usescases.syncManager.SyncManagerComponent;
 import org.dhis2.usescases.syncManager.SyncManagerModule;
 import org.dhis2.usescases.teiDashboard.TeiDashboardComponent;
 import org.dhis2.usescases.teiDashboard.TeiDashboardModule;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.IndicatorsComponent;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.IndicatorsModule;
 import org.dhis2.usescases.teiDashboard.eventDetail.EventDetailComponent;
 import org.dhis2.usescases.teiDashboard.eventDetail.EventDetailModule;
 import org.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailComponent;
@@ -120,9 +118,6 @@ public interface UserComponent {
 
     @NonNull
     AboutComponent plus(AboutModule aboutModule);
-
-    @NonNull
-    IndicatorsComponent plus(IndicatorsModule indicatorModule);
 
     @NonNull
     DataSetDetailComponent plus(DataSetDetailModule dataSetDetailModel);

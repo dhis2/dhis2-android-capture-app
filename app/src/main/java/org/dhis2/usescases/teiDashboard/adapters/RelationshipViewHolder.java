@@ -34,7 +34,7 @@ public class RelationshipViewHolder extends RecyclerView.ViewHolder {
         String relationshipTEIUid;
         boolean from;
 
-        if (!presenter.getTeUid().equals(relationship.from().trackedEntityInstance().trackedEntityInstance())) {
+        if (!presenter.getTeiUid().equals(relationship.from().trackedEntityInstance().trackedEntityInstance())) {
             relationshipTEIUid = relationship.from().trackedEntityInstance().trackedEntityInstance();
             from = true;
         } else {

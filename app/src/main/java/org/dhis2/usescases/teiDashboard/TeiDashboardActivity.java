@@ -5,6 +5,8 @@ import android.os.Bundle;
 import org.dhis2.App;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.IndicatorsPresenter;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.notes.NotesPresenter;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipPresenter;
 import org.dhis2.utils.Constants;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 
@@ -19,11 +21,20 @@ import androidx.fragment.app.FragmentStatePagerAdapter;
 
 public class TeiDashboardActivity extends ActivityGlobalAbstract implements TeiDashboardContracts.View {
 
+    public static final String PROGRAM = "program";
+    public static final String TEI = "tei";
+
     @Inject
     public TeiDashboardContracts.Presenter presenter;
 
     @Inject
     public IndicatorsPresenter indicatorsPresenter;
+
+    @Inject
+    public NotesPresenter notesPresenter;
+
+    @Inject
+    public RelationshipPresenter relationshipPresenter;
 
     protected DashboardProgramModel programModel;
 

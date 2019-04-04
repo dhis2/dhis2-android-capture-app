@@ -10,9 +10,11 @@ import java.util.List;
 import androidx.lifecycle.LiveData;
 import io.reactivex.Observable;
 
-public interface RelationshipPresenter extends TeiDashboardContracts.Presenter {
+public interface RelationshipPresenter {
 
     LiveData<DashboardProgramModel> observeDashboardModel();
+
+    String getTeiUid();
 
     void subscribeToRelationships(RelationshipFragment relationshipFragment);
 
@@ -27,4 +29,6 @@ public interface RelationshipPresenter extends TeiDashboardContracts.Presenter {
     void openDashboard(String teiUid);
 
     void deleteRelationship(Relationship relationshipModel);
+
+    void init(TeiDashboardContracts.View view);
 }

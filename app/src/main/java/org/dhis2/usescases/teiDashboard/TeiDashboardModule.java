@@ -11,6 +11,10 @@ import org.dhis2.data.forms.dataentry.RuleEngineRepository;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.IndicatorsPresenter;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.IndicatorsPresenterImpl;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.notes.NotesPresenter;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.notes.NotesPresenterImpl;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipPresenter;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipPresenterImpl;
 import org.dhis2.utils.CodeGenerator;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.enrollment.EnrollmentCollectionRepository;
@@ -57,6 +61,20 @@ public class TeiDashboardModule {
                                                     RuleEngineRepository ruleRepository) {
         return new IndicatorsPresenterImpl(d2, dashboardRepository, metadataRepository, ruleRepository,
                 programUid, teiUid);
+    }
+
+    @Provides
+    @PerActivity
+    NotesPresenter providesNotesPresenter(DashboardRepository dashboardRepository,
+                                          MetadataRepository metadataRepository) {
+        return new NotesPresenterImpl(dashboardRepository, metadataRepository, programUid, teiUid);
+    }
+
+    @Provides
+    @PerActivity
+    RelationshipPresenter providesRelationshipPresenter(D2 d2, DashboardRepository dashboardRepository,
+                                                        MetadataRepository metadataRepository) {
+        return new RelationshipPresenterImpl(d2, dashboardRepository, metadataRepository, programUid, teiUid);
     }
 
     @Provides

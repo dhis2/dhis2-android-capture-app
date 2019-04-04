@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 
 import org.dhis2.R;
+import org.dhis2.usescases.teiDashboard.TeiDashboardActivity;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.IndicatorsFragment;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.notes.NotesFragment;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipFragment;
@@ -35,18 +36,16 @@ public class DashboardPagerTabletAdapter extends FragmentStatePagerAdapter {
     @NotNull
     @Override
     public Fragment getItem(int position) {
+        Bundle extras = new Bundle();
+        extras.putString(TeiDashboardActivity.PROGRAM, currentProgram);
+        extras.putString(TeiDashboardActivity.TEI, tei);
         switch (position) {
             case 1:
                 return RelationshipFragment.createInstance();
             case 2:
-                return NotesFragment.createInstance();
+                return new NotesFragment();
             default:
-                Bundle extras = new Bundle();
-                extras.putString(IndicatorsFragment.PROGRAM, currentProgram);
-                extras.putString(IndicatorsFragment.TEI, tei);
-                Fragment indicatorsFragment = new IndicatorsFragment();
-                indicatorsFragment.setArguments(extras);
-                return indicatorsFragment;
+                return new IndicatorsFragment();
         }
     }
 

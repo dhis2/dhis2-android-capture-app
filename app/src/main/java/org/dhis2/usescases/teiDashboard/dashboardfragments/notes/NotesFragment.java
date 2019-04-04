@@ -1,11 +1,7 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.notes;
 
 import android.content.Context;
-import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -15,13 +11,16 @@ import org.dhis2.R;
 import org.dhis2.databinding.FragmentNotesBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
-import org.dhis2.usescases.teiDashboard.TeiDashboardContracts;
 import org.dhis2.usescases.teiDashboard.adapters.NotesAdapter;
 import org.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
 import org.hisp.dhis.android.core.enrollment.note.NoteModel;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
 import io.reactivex.functions.Consumer;
 
 /**
@@ -29,24 +28,17 @@ import io.reactivex.functions.Consumer;
  */
 
 public class NotesFragment extends FragmentGlobalAbstract {
-    FragmentNotesBinding binding;
-    static NotesFragment instance;
+    private FragmentNotesBinding binding;
     private NotesAdapter noteAdapter;
-    NotesPresenter presenter;
-    ActivityGlobalAbstract activity;
+    private ActivityGlobalAbstract activity;
 
-    static public NotesFragment getInstance() {
-        if (instance == null)
-            instance = new NotesFragment();
-
-        return instance;
-    }
+    private NotesPresenter presenter;
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NotNull Context context) {
         super.onAttach(context);
         activity = (ActivityGlobalAbstract) context;
-        presenter = (NotesPresenter) ((TeiDashboardMobileActivity) context).getPresenter();
+        presenter = ((TeiDashboardMobileActivity) context).getNotesPresenter();
     }
 
     @Nullable
@@ -73,7 +65,7 @@ public class NotesFragment extends FragmentGlobalAbstract {
         return binding.getRoot();
     }
 
-    public void addNote(View view) {
+    private void addNote(View view) {
         if (presenter.hasProgramWritePermission()) {
             noteAdapter.addNote(binding.editNote.getText().toString());
             clearNote(view);
@@ -81,7 +73,7 @@ public class NotesFragment extends FragmentGlobalAbstract {
             activity.displayMessage(getString(R.string.search_access_error));
     }
 
-    public void clearNote(View view) {
+    private void clearNote(View view) {
         binding.editNote.getText().clear();
     }
 
@@ -89,10 +81,5 @@ public class NotesFragment extends FragmentGlobalAbstract {
         return noteModels -> {
             noteAdapter.setItems(noteModels);
         };
-    }
-
-
-    public static Fragment createInstance() {
-        return instance = new NotesFragment();
     }
 }

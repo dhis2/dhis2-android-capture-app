@@ -25,6 +25,7 @@ import org.dhis2.utils.Constants;
 import org.hisp.dhis.android.core.relationship.Relationship;
 import org.hisp.dhis.android.core.relationship.RelationshipType;
 import org.hisp.dhis.android.core.relationship.RelationshipTypeModel;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,15 +44,15 @@ import static android.app.Activity.RESULT_OK;
 
 public class RelationshipFragment extends FragmentGlobalAbstract {
 
-    FragmentRelationshipsBinding binding;
+    private FragmentRelationshipsBinding binding;
     private RelationshipPresenter presenter;
 
-    static RelationshipFragment instance;
+    private static RelationshipFragment instance;
     private RelationshipAdapter relationshipAdapter;
     private RapidFloatingActionHelper rfaHelper;
     private RelationshipTypeModel relationshipType;
 
-    static public RelationshipFragment getInstance() {
+    public static RelationshipFragment getInstance() {
         if (instance == null) {
             instance = new RelationshipFragment();
         }
@@ -59,14 +60,15 @@ public class RelationshipFragment extends FragmentGlobalAbstract {
     }
 
     public static RelationshipFragment createInstance() {
-        return instance = new RelationshipFragment();
+        instance = new RelationshipFragment();
+        return instance;
     }
 
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NotNull Context context) {
         super.onAttach(context);
-        presenter = (RelationshipPresenter) ((TeiDashboardMobileActivity) context).getPresenter();
+        presenter = ((TeiDashboardMobileActivity) context).getRelationshipsPresenter();
     }
 
     @Nullable
@@ -103,13 +105,9 @@ public class RelationshipFragment extends FragmentGlobalAbstract {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == Constants.REQ_ADD_RELATIONSHIP) {
-            if (resultCode == RESULT_OK) {
-                if (data != null) {
-                    String tei_a = data.getStringExtra("TEI_A_UID");
-                    presenter.addRelationship(tei_a, relationshipType.uid());
-                }
-            }
+        if (requestCode == Constants.REQ_ADD_RELATIONSHIP && resultCode == RESULT_OK && data != null) {
+            String teiA = data.getStringExtra("TEI_A_UID");
+            presenter.addRelationship(teiA, relationshipType.uid());
         }
     }
 
