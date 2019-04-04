@@ -157,7 +157,7 @@ public final class RulesRepository {
             "  ProgramStage.displayName\n" +
             "FROM Event\n" +
             "JOIN ProgramStage ON ProgramStage.uid = Event.programStage\n" +
-            "WHERE Event.program = ? AND Event.uid != ? AND Event.eventDate <= ? \n" +
+            "WHERE Event.program = ? AND Event.uid != ? AND (Event.eventDate < ? OR (Event.eventDate = ? AND Event.lastUpdated < ?))\n" +
             " AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "' ORDER BY Event.eventDate DESC,Event.lastUpdated DESC LIMIT 10";
 
     /**
@@ -172,7 +172,7 @@ public final class RulesRepository {
             "  ProgramStage.displayName\n" +
             "FROM Event\n" +
             "JOIN ProgramStage ON ProgramStage.uid = Event.programStage\n" +
-            "WHERE Event.enrollment = ? AND Event.uid != ? AND Event.eventDate <= ?\n" +
+            "WHERE Event.enrollment = ? AND Event.uid != ? AND (Event.eventDate < ? OR (Event.eventDate = ? AND Event.lastUpdated < ?))\n" +
             " AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "' ORDER BY Event.eventDate DESC,Event.lastUpdated DESC LIMIT 10";
 
     /**
@@ -241,6 +241,7 @@ public final class RulesRepository {
 
     @NonNull
     private final BriteDatabase briteDatabase;
+    private int count;
 
     public RulesRepository(@NonNull BriteDatabase briteDatabase) {
         this.briteDatabase = briteDatabase;
@@ -539,58 +540,71 @@ public final class RulesRepository {
     public Flowable<List<RuleEvent>> otherEvents(String eventUidToEvaluate) {
         return briteDatabase.createQuery(EventModel.TABLE, "SELECT * FROM Event WHERE Event.uid = ? LIMIT 1", eventUidToEvaluate == null ? "" : eventUidToEvaluate)
                 .mapToOne(EventModel::create)
-                .flatMap(eventModel ->
-                        briteDatabase.createQuery(ProgramModel.TABLE, "SELECT Program.* FROM Program JOIN Event ON Event.program = Program.uid WHERE Event.uid = ? LIMIT 1", eventUidToEvaluate == null ? "" : eventUidToEvaluate)
-                                .mapToOne(ProgramModel::create).flatMap(programModel ->
-                                briteDatabase.createQuery(EventModel.TABLE, eventModel.enrollment() == null ? QUERY_OTHER_EVENTS : QUERY_OTHER_EVENTS_ENROLLMENTS,
-                                        eventModel.enrollment() == null ? programModel.uid() : eventModel.enrollment(),
-                                        eventUidToEvaluate == null ? "" : eventUidToEvaluate,
-                                        DateUtils.databaseDateFormat().format(eventModel.eventDate()))
-                                        .mapToList(cursor -> {
-                                            List<RuleDataValue> dataValues = new ArrayList<>();
-                                            String eventUid = cursor.getString(0);
-                                            String programStageUid = cursor.getString(1);
-                                            Date eventDate = DateUtils.databaseDateFormat().parse(cursor.getString(3));
-                                            Date dueDate = cursor.isNull(4) ? eventDate : DateUtils.databaseDateFormat().parse(cursor.getString(4));
-                                            String orgUnit = cursor.getString(5);
-                                            String orgUnitCode = getOrgUnitCode(orgUnit);
-                                            String programStageName = cursor.getString(6);
-                                            RuleEvent.Status status = cursor.getString(2).equals(RuleEvent.Status.VISITED.toString()) ?
-                                                    RuleEvent.Status.ACTIVE :
-                                                    RuleEvent.Status.valueOf(cursor.getString(2)); //TODO: WHAT?
+                .flatMap(eventModel -> {
+                    count = 0;
+                    return briteDatabase.createQuery(ProgramModel.TABLE, "SELECT Program.* FROM Program JOIN Event ON Event.program = Program.uid WHERE Event.uid = ? LIMIT 1", eventUidToEvaluate == null ? "" : eventUidToEvaluate)
+                            .mapToOne(ProgramModel::create).flatMap(programModel ->
+                                    briteDatabase.createQuery(EventModel.TABLE, eventModel.enrollment() == null ? QUERY_OTHER_EVENTS : QUERY_OTHER_EVENTS_ENROLLMENTS,
+                                            eventModel.enrollment() == null ? programModel.uid() : eventModel.enrollment(),
+                                            eventUidToEvaluate == null ? "" : eventUidToEvaluate,
+                                            DateUtils.databaseDateFormat().format(eventModel.eventDate()),
+                                            DateUtils.databaseDateFormat().format(eventModel.eventDate()),
+                                            DateUtils.databaseDateFormat().format(eventModel.lastUpdated()))
+                                            .mapToList(cursor -> {
+                                                List<RuleDataValue> dataValues = new ArrayList<>();
+                                                String eventUid = cursor.getString(0);
+                                                String programStageUid = cursor.getString(1);
+                                                Date eventDate = DateUtils.databaseDateFormat().parse(cursor.getString(3));
+                                                Date dueDate = cursor.isNull(4) ? eventDate : DateUtils.databaseDateFormat().parse(cursor.getString(4));
+                                                String orgUnit = cursor.getString(5);
+                                                String orgUnitCode = getOrgUnitCode(orgUnit);
+                                                String programStageName = cursor.getString(6);
+                                                RuleEvent.Status status = cursor.getString(2).equals(RuleEvent.Status.VISITED.toString()) ?
+                                                        RuleEvent.Status.ACTIVE :
+                                                        RuleEvent.Status.valueOf(cursor.getString(2)); //TODO: WHAT?
 
-                                            try (Cursor dataValueCursor = briteDatabase.query(QUERY_VALUES, eventUid)) {
-                                                if (dataValueCursor != null && dataValueCursor.moveToFirst()) {
-                                                    for (int i = 0; i < dataValueCursor.getCount(); i++) {
-                                                        Date eventDateV = DateUtils.databaseDateFormat().parse(dataValueCursor.getString(0));
-                                                        String programStage = dataValueCursor.getString(1);
-                                                        String dataElement = dataValueCursor.getString(2);
-                                                        String value = dataValueCursor.getString(3) != null ? dataValueCursor.getString(3) : "";
-                                                        boolean useCode = dataValueCursor.getInt(4) == 1;
-                                                        String optionCode = dataValueCursor.getString(5);
-                                                        String optionName = dataValueCursor.getString(6);
-                                                        if (!isEmpty(optionCode) && !isEmpty(optionName))
-                                                            value = useCode ? optionCode : optionName; //If de has optionSet then check if value should be code or name for program rules
-                                                        dataValues.add(RuleDataValue.create(eventDateV, programStage,
-                                                                dataElement, value));
-                                                        dataValueCursor.moveToNext();
+                                                try (Cursor dataValueCursor = briteDatabase.query(QUERY_VALUES, eventUid)) {
+                                                    if (dataValueCursor != null && dataValueCursor.moveToFirst()) {
+                                                        for (int i = 0; i < dataValueCursor.getCount(); i++) {
+                                                            Date eventDateV = DateUtils.databaseDateFormat().parse(dataValueCursor.getString(0));
+                                                            String programStage = dataValueCursor.getString(1);
+                                                            String dataElement = dataValueCursor.getString(2);
+                                                            String value = dataValueCursor.getString(3) != null ? dataValueCursor.getString(3) : "";
+                                                            boolean useCode = dataValueCursor.getInt(4) == 1;
+                                                            String optionCode = dataValueCursor.getString(5);
+                                                            String optionName = dataValueCursor.getString(6);
+                                                            if (!isEmpty(optionCode) && !isEmpty(optionName))
+                                                                value = useCode ? optionCode : optionName; //If de has optionSet then check if value should be code or name for program rules
+                                                            dataValues.add(RuleDataValue.create(eventDateV, programStage,
+                                                                    dataElement, value));
+                                                            dataValueCursor.moveToNext();
+                                                        }
                                                     }
                                                 }
-                                            }
 
-                                            return RuleEvent.builder()
-                                                    .event(eventUid)
-                                                    .programStage(programStageUid)
-                                                    .programStageName(programStageName)
-                                                    .status(status)
-                                                    .eventDate(eventDate)
-                                                    .dueDate(dueDate)
-                                                    .organisationUnit(orgUnit)
-                                                    .organisationUnitCode(orgUnitCode)
-                                                    .dataValues(dataValues)
-                                                    .build();
+                                                Calendar calendar = Calendar.getInstance();
+                                                calendar.setTime(eventDate);
+                                                calendar.add(Calendar.SECOND,count);
+                                                eventDate = calendar.getTime();
+                                                calendar.setTime(dueDate);
+                                                calendar.add(Calendar.SECOND,count);
+                                                dueDate = calendar.getTime();
+                                                count--;
 
-                                        }))).toFlowable(BackpressureStrategy.LATEST);
+                                                return RuleEvent.builder()
+                                                        .event(eventUid)
+                                                        .programStage(programStageUid)
+                                                        .programStageName(programStageName)
+                                                        .status(status)
+                                                        .eventDate(eventDate)
+                                                        .dueDate(dueDate)
+                                                        .organisationUnit(orgUnit)
+                                                        .organisationUnitCode(orgUnitCode)
+                                                        .dataValues(dataValues)
+                                                        .build();
+
+                                            }));
+                }).toFlowable(BackpressureStrategy.LATEST);
     }
 
 

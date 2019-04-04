@@ -189,8 +189,11 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     public boolean getAccessDataWrite() {
         boolean canWrite;
         canWrite = d2.programModule().programs.uid(programUid).get().access().data().write();
-        if (canWrite)
+        if (canWrite && d2.programModule().programStages.byProgramUid().eq(programUid).one().get() != null)
             canWrite = d2.programModule().programStages.byProgramUid().eq(programUid).one().get().access().data().write();
+        else if(d2.programModule().programStages.byProgramUid().eq(programUid).one().get() == null)
+            canWrite = false;
+
         return canWrite;
     }
 
