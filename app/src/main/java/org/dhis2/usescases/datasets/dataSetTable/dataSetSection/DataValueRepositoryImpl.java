@@ -7,7 +7,9 @@ import com.squareup.sqlbrite2.BriteDatabase;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel;
 import org.dhis2.utils.DateUtils;
+import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.category.CategoryModel;
+import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionComboCategoryOptionLinkModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
@@ -24,6 +26,7 @@ import org.hisp.dhis.android.core.period.PeriodType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -33,6 +36,7 @@ import io.reactivex.Observable;
 
 public class DataValueRepositoryImpl implements DataValueRepository {
 
+    private final D2 d2;
     private BriteDatabase briteDatabase;
     private String dataSetUid;
 
@@ -100,14 +104,16 @@ public class DataValueRepositoryImpl implements DataValueRepository {
 
     private final String DATA_SET = "SELECT DataSet.* FROM DataSet WHERE DataSet.uid = ?";
 
-    private final String SECTION_GREYED_FIELDS = "select Section.name as section, DataElement.uid as dataElement, CategoryOptionComboCategoryOptionLink.categoryOption as categoryOption " +
+    private final String SECTION_GREYED_FIELDS = "select Section.name as section, DataElement.uid as dataElement, CategoryOptionComboCategoryOptionLink.categoryOption as categoryOption, " +
+            "categoryOption.accessDataWrite " +
             "from SectionGreyedFieldsLink " +
-            "join DataElementOperand on SectionGreyedFieldsLink.dataElementOperand = DataElementOperand.uid " +
+            "left join DataElementOperand on SectionGreyedFieldsLink.dataElementOperand = DataElementOperand.uid " +
             "join DataElement on DataElement.uid = DataElementOperand.dataElement " +
             "join CategoryOptionCombo on CategoryOptionCombo.uid = DataElementOperand.categoryOptionCombo " +
             "join CategoryOptionComboCategoryOptionLink on CategoryOptionComboCategoryOptionLink.categoryOptionCombo = CategoryOptionCombo.uid " +
             "join Section on Section.uid = SectionGreyedFieldsLink.section " +
-            "where CategoryOptionComboCategoryOptionLink.categoryOptionCombo in (?) " ;
+            "join CategoryOption on CategoryOption.uid = CategoryOptionComboCategoryOptionLink.categoryOption " +
+            "where CategoryOptionComboCategoryOptionLink.categoryOptionCombo in (?) ";
 
     private static final String GET_COMPULSORY_DATA_ELEMENT = "select DataElementOperand.dataElement as dataElement, CategoryOptionComboCategoryOptionLink.categoryOption as categoryOption " +
             "from DataSetCompulsoryDataElementOperandsLink " +
@@ -143,7 +149,8 @@ public class DataValueRepositoryImpl implements DataValueRepository {
     private static final String SELECT_COMPLETE_DATASET = "SELECT * FROM DataSetCompleteRegistration WHERE period = ? AND dataSet = ? AND attributeOptionCombo = ? and organisationUnit = ? " +
             "AND state in ('TO_UPDATE', 'SYNCED', 'TO_POST')";
 
-    public DataValueRepositoryImpl(BriteDatabase briteDatabase, String dataSetUid){
+    public DataValueRepositoryImpl(D2 d2, BriteDatabase briteDatabase, String dataSetUid) {
+        this.d2 = d2;
         this.briteDatabase = briteDatabase;
         this.dataSetUid = dataSetUid;
     }
@@ -163,7 +170,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
     }
 
     @Override
-    public Flowable<List<DataInputPeriodModel>> getDataInputPeriod(){
+    public Flowable<List<DataInputPeriodModel>> getDataInputPeriod() {
         return briteDatabase.createQuery(DataInputPeriodModel.TABLE, SELECT_DATA_INPUT_PERIOD, dataSetUid/*, periodId*/)
                 .mapToList(DataInputPeriodModel::create)
                 .toFlowable(BackpressureStrategy.LATEST);
@@ -172,7 +179,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
     @Override
     public Flowable<Map<String, List<String>>> getCategoryOptionComboCatOption() {
         Map<String, List<String>> map = new HashMap<>();
-        return briteDatabase.createQuery(CategoryOptionComboCategoryOptionLinkModel.TABLE,SELECT_CATEGORY_OPTION_COMBO, dataSetUid)
+        return briteDatabase.createQuery(CategoryOptionComboCategoryOptionLinkModel.TABLE, SELECT_CATEGORY_OPTION_COMBO, dataSetUid)
                 .mapToList(cursor -> {
                     String categoryOptionCombo = cursor.getString(cursor.getColumnIndex("categoryOptionCombo"));
 
@@ -188,9 +195,8 @@ public class DataValueRepositoryImpl implements DataValueRepository {
 
     @Override
     public Flowable<List<DataElementModel>> getDataElements(String section) {
-        Map<String, List<DataElementModel>> map = new HashMap<>();
         String query = DATA_ELEMENTS;
-        if(!section.equals("NO_SECTION")) {
+        if (!section.equals("NO_SECTION")) {
             query = query + " AND DataSetSection.name = ? ";
             query = query + " ORDER BY DataSetSection.sectionOrder,DataSetSection.sortOrder";
             return briteDatabase.createQuery(DataElementModel.TABLE, query, dataSetUid, section)
@@ -198,21 +204,8 @@ public class DataValueRepositoryImpl implements DataValueRepository {
         }
         query = query + " ORDER BY DataSetSection.sectionOrder,DataSetSection.sortOrder";
         return briteDatabase.createQuery(DataElementModel.TABLE, query, dataSetUid)
-                .mapToList(DataElementModel::create)
-                    /*DataElementModel dataElementModel = DataElementModel.create(cursor);
-                    String section = cursor.getString(cursor.getColumnIndex("sectionName"));
-                    if (section == null)
-                        section = "NO_SECTION";
-                    if (map.get(section) == null) {
-                        map.put(section, new ArrayList<>());
-                    }
-                    map.get(section).add(dataElementModel);
-
-                    return dataElementModel;
-                })*/
-                /*.flatMap(dataElementModels -> Observable.just(map))*/.toFlowable(BackpressureStrategy.LATEST);
+                .mapToList(DataElementModel::create).toFlowable(BackpressureStrategy.LATEST);
     }
-
 
 
     @Override
@@ -249,11 +242,11 @@ public class DataValueRepositoryImpl implements DataValueRepository {
     }
 
     @Override
-    public Flowable<Long> insertDataValue(DataValueModel dataValue){
+    public Flowable<Long> insertDataValue(DataValueModel dataValue) {
 
-        String where = DataValueModel.Columns.DATA_ELEMENT+ " = '"+ dataValue.dataElement() +"' AND "+ DataValueModel.Columns.PERIOD + " = '"+ dataValue.period() +
-                "' AND "+  DataValueModel.Columns.ATTRIBUTE_OPTION_COMBO+ " = '"+ dataValue.attributeOptionCombo() +
-                "' AND "+ DataValueModel.Columns.CATEGORY_OPTION_COMBO + " = '"+ dataValue.categoryOptionCombo()+"'";
+        String where = DataValueModel.Columns.DATA_ELEMENT + " = '" + dataValue.dataElement() + "' AND " + DataValueModel.Columns.PERIOD + " = '" + dataValue.period() +
+                "' AND " + DataValueModel.Columns.ATTRIBUTE_OPTION_COMBO + " = '" + dataValue.attributeOptionCombo() +
+                "' AND " + DataValueModel.Columns.CATEGORY_OPTION_COMBO + " = '" + dataValue.categoryOptionCombo() + "'";
         briteDatabase.delete(DataValueModel.TABLE, where);
 
         return Flowable.just(briteDatabase.insert(DataValueModel.TABLE, dataValue.toContentValues()));
@@ -284,8 +277,8 @@ public class DataValueRepositoryImpl implements DataValueRepository {
     public Flowable<Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>>> getCatOptions(String section) {
         Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>> map = new HashMap<>();
         String query = CATEGORY_OPTION;
-        if(!section.equals("NO_SECTION")){
-            query = query + "AND section.name = '" + section +"' ";
+        if (!section.equals("NO_SECTION")) {
+            query = query + "AND section.name = '" + section + "' ";
         }
         query = query + "GROUP BY  CategoryOption.uid,Category.uid, SectionName,catCombo, CategoryCategoryOptionLink.sortOrder " +
                 "ORDER BY section.uid, CategoryCategoryComboLink.sortOrder, CategoryCategoryOptionLink.sortOrder";
@@ -298,14 +291,14 @@ public class DataValueRepositoryImpl implements DataValueRepository {
                     if (map.get(catCombo) == null) {
                         map.put(catCombo, new ArrayList<>());
                     }
-                    if(map.get(catCombo).size() == 0){
+                    if (map.get(catCombo).size() == 0) {
                         List<Pair<CategoryOptionModel, CategoryModel>> list = new ArrayList<>();
                         list.add(Pair.create(catOption, category));
                         map.get(catCombo).add(list);
-                    }else {
+                    } else {
 
-                        if (map.get(catCombo).get(map.get(catCombo).size()-1).get(0).val1().uid().equals(cursor.getString(cursor.getColumnIndex("category")))) {
-                            map.get(catCombo).get(map.get(catCombo).size()-1).add(Pair.create(catOption, category));
+                        if (map.get(catCombo).get(map.get(catCombo).size() - 1).get(0).val1().uid().equals(cursor.getString(cursor.getColumnIndex("category")))) {
+                            map.get(catCombo).get(map.get(catCombo).size() - 1).add(Pair.create(catOption, category));
                         } else {
                             List<Pair<CategoryOptionModel, CategoryModel>> list = new ArrayList<>();
                             list.add(Pair.create(catOption, category));
@@ -322,9 +315,9 @@ public class DataValueRepositoryImpl implements DataValueRepository {
     public Flowable<List<DataSetTableModel>> getDataValues(String orgUnitUid, String periodType, String initPeriodType, String catOptionComb, String section) {
         List<DataSetTableModel> listData = new ArrayList<>();
         String query = DATA_VALUES;
-        if(!section.equals("NO_SECTION"))
-            query = query + "AND Section.name = '" + section +"' ";
-        return briteDatabase.createQuery(DataValueModel.TABLE, query, orgUnitUid, catOptionComb,dataSetUid, initPeriodType)
+        if (!section.equals("NO_SECTION"))
+            query = query + "AND Section.name = '" + section + "' ";
+        return briteDatabase.createQuery(DataValueModel.TABLE, query, orgUnitUid, catOptionComb, dataSetUid, initPeriodType)
                 .mapToList(cursor -> {
 
                     for (DataSetTableModel dataValue : listData) {
@@ -352,75 +345,71 @@ public class DataValueRepositoryImpl implements DataValueRepository {
                     listData.add(dataValue);
                     return dataValue;
 
-                }).map(data->listData).toFlowable(BackpressureStrategy.LATEST);
+                }).map(data -> listData).toFlowable(BackpressureStrategy.LATEST);
     }
 
     @Override
-    public Flowable<Map<String, List<String>>> getGreyedFields(List<String> categoryOptionCombo, String section) {
+    public Flowable<Map<String, List<String>>> getGreyedFields(List<String> categoryOptionCombos, String section) {
 
         Map<String, List<String>> mapData = new HashMap<>();
 
-        String query = SECTION_GREYED_FIELDS.replace("?", categoryOptionCombo.toString().substring(1, categoryOptionCombo.toString().length()-1));
-        if(!section.isEmpty() && !section.equals("NO_SECTION"))
-            query = query + "and Section.name = '" + section +"' ";
 
-        query = query + "GROUP BY section, dataElement, categoryOption";
-        return briteDatabase.createQuery(SectionGreyedFieldsLinkModel.TABLE, query)
-                .mapToList(cursor -> {
+        return getDataElements(section).flatMap(dataElements -> {
 
-                    if(mapData.containsKey(cursor.getString(cursor.getColumnIndex("dataElement")))){
-                        mapData.get(cursor.getString(cursor.getColumnIndex("dataElement")))
-                                .add(cursor.getString(cursor.getColumnIndex("categoryOption")));
-                    }else{
-                        List<String> listCatOptions =  new ArrayList<>();
-                        listCatOptions.add(cursor.getString(cursor.getColumnIndex("categoryOption")));
+            List<String> noAccessOptions = new ArrayList<>();
+            for (String categoryOptionCombo : categoryOptionCombos) {
+                List<CategoryOption> categoryOptions = d2.categoryModule().categoryOptionCombos.byUid().in(categoryOptionCombo.replace("'","")).withAllChildren().one().get().categoryOptions();
+                Iterator<CategoryOption> iterator = categoryOptions.iterator();
+                while (iterator.hasNext()) {
+                    CategoryOption categoryOption = iterator.next();
+                    if (!categoryOption.access().data().write() && !noAccessOptions.contains(categoryOption.uid()))
+                        noAccessOptions.add(categoryOption.uid());
+                }
+            }
 
-                        mapData.put(cursor.getString(cursor.getColumnIndex("dataElement")), listCatOptions);
-                    }
+            if (!noAccessOptions.isEmpty())
+                for (DataElementModel de : dataElements)
+                    mapData.put(de.uid(), noAccessOptions);
 
-                    /*if(mapData.containsKey(cursor.getString(cursor.getColumnIndex("section")))) {
-                        if(mapData.get(cursor.getString(cursor.getColumnIndex("section"))).containsKey(cursor.getString(cursor.getColumnIndex("dataElement")))){
-                            mapData.get(cursor.getString(cursor.getColumnIndex("section")))
-                                    .get(cursor.getString(cursor.getColumnIndex("dataElement")))
+            String query = SECTION_GREYED_FIELDS.replace("?", categoryOptionCombos.toString().substring(1, categoryOptionCombos.toString().length() - 1));
+            if (!section.isEmpty() && !section.equals("NO_SECTION"))
+                query = query + "and Section.name = '" + section + "' ";
+
+            query = query + "GROUP BY section, dataElement, categoryOption";
+
+            return briteDatabase.createQuery(SectionGreyedFieldsLinkModel.TABLE, query)
+                    .mapToList(cursor -> {
+                        if (mapData.containsKey(cursor.getString(cursor.getColumnIndex("dataElement")))) {
+                            mapData.get(cursor.getString(cursor.getColumnIndex("dataElement")))
                                     .add(cursor.getString(cursor.getColumnIndex("categoryOption")));
-                        }else{
-                            List<String> listCatOptions =  new ArrayList<>();
+                        } else {
+                            List<String> listCatOptions = new ArrayList<>();
                             listCatOptions.add(cursor.getString(cursor.getColumnIndex("categoryOption")));
 
-                            mapData.get(cursor.getString(cursor.getColumnIndex("section")))
-                                    .put(cursor.getString(cursor.getColumnIndex("dataElement")), listCatOptions);
+                            mapData.put(cursor.getString(cursor.getColumnIndex("dataElement")), listCatOptions);
                         }
-                    }
-                    else{
-                        List<String> listCatOptions = new ArrayList<>();
-                        listCatOptions.add(cursor.getString(cursor.getColumnIndex("categoryOption")));
-                        Map<String, List<String>> mapDataElement = new HashMap<>();
-                        mapDataElement.put(cursor.getString(cursor.getColumnIndex("dataElement")),listCatOptions);
-
-                        mapData.put(cursor.getString(cursor.getColumnIndex("section")), mapDataElement);
-                    }*/
-                    return mapData;
-                }).map(data->mapData).toFlowable(BackpressureStrategy.LATEST);
+                        return mapData;
+                    }).toFlowable(BackpressureStrategy.LATEST);
+        }).map(data -> mapData);
     }
 
     @Override
     public Flowable<Map<String, List<String>>> getMandatoryDataElement(List<String> categoryOptionCombo) {
         Map<String, List<String>> mapData = new HashMap<>();
 
-        String query = GET_COMPULSORY_DATA_ELEMENT.replace("?", categoryOptionCombo.toString().substring(1, categoryOptionCombo.toString().length()-1));
+        String query = GET_COMPULSORY_DATA_ELEMENT.replace("?", categoryOptionCombo.toString().substring(1, categoryOptionCombo.toString().length() - 1));
         return briteDatabase.createQuery(SectionGreyedFieldsLinkModel.TABLE, query)
                 .mapToList(cursor -> {
-                    if(mapData.containsKey(cursor.getString(0))){
+                    if (mapData.containsKey(cursor.getString(0))) {
                         mapData.get(cursor.getString(0)).add(cursor.getString(1));
-                    }
-                    else{
+                    } else {
                         List<String> listCatOp = new ArrayList<>();
                         listCatOp.add(cursor.getString(1));
                         mapData.put(cursor.getString(0), listCatOp);
                     }
 
-                    return mapData ;
-                }).map(data->mapData).toFlowable(BackpressureStrategy.LATEST);
+                    return mapData;
+                }).map(data -> mapData).toFlowable(BackpressureStrategy.LATEST);
     }
 
     @Override
@@ -430,7 +419,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
     }
 
     @Override
-    public Flowable<Boolean> completeDataSet(String orgUnitUid, String periodInitialDate, String catCombo){
+    public Flowable<Boolean> completeDataSet(String orgUnitUid, String periodInitialDate, String catCombo) {
         boolean updateOrInserted;
         String where = "period = ? AND dataSet = ? AND attributeOptionCombo = ?";
 
@@ -440,9 +429,9 @@ public class DataValueRepositoryImpl implements DataValueRepository {
         contentValues.put("date", completeDate);
         String[] values = {periodInitialDate, dataSetUid, catCombo};
 
-        updateOrInserted = briteDatabase.update(DataSetCompleteRegistration.class.getSimpleName(), contentValues, where, values)>0;
+        updateOrInserted = briteDatabase.update(DataSetCompleteRegistration.class.getSimpleName(), contentValues, where, values) > 0;
 
-        if(!updateOrInserted) {
+        if (!updateOrInserted) {
             DataSetCompleteRegistration dataSetCompleteRegistration =
                     DataSetCompleteRegistration.builder().dataSet(dataSetUid)
                             .period(periodInitialDate)
@@ -451,7 +440,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
                             .date(DateUtils.getInstance().getToday())
                             .state(State.TO_POST).build();
 
-            updateOrInserted = briteDatabase.insert(DataSetCompleteRegistration.class.getSimpleName(), dataSetCompleteRegistration.toContentValues())>0;
+            updateOrInserted = briteDatabase.insert(DataSetCompleteRegistration.class.getSimpleName(), dataSetCompleteRegistration.toContentValues()) > 0;
         }
 
         return Flowable.just(updateOrInserted);
@@ -468,7 +457,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
         String completeDate = DateUtils.databaseDateFormat().format(DateUtils.getInstance().getToday());
         contentValues.put("date", completeDate);
 
-        return Flowable.just(briteDatabase.update(DataSetCompleteRegistration.class.getSimpleName(), contentValues, where, values)>0);
+        return Flowable.just(briteDatabase.update(DataSetCompleteRegistration.class.getSimpleName(), contentValues, where, values) > 0);
     }
 
     @Override
