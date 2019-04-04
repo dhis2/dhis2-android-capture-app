@@ -7,6 +7,7 @@ import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.IndicatorsPresenter;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.notes.NotesPresenter;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipPresenter;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataPresenter;
 import org.dhis2.utils.Constants;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 
@@ -35,6 +36,9 @@ public class TeiDashboardActivity extends ActivityGlobalAbstract implements TeiD
 
     @Inject
     public RelationshipPresenter relationshipPresenter;
+
+    @Inject
+    public TEIDataPresenter teiDataPresenter;
 
     protected DashboardProgramModel programModel;
 

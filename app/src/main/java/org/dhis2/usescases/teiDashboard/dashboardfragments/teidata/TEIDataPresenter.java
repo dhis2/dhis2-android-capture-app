@@ -6,9 +6,13 @@ import org.hisp.dhis.android.core.event.EventModel;
 
 import androidx.lifecycle.LiveData;
 
-public interface TEIDataPresenter extends TeiDashboardContracts.Presenter {
+public interface TEIDataPresenter {
+
+    void init(TeiDashboardContracts.View view);
 
     LiveData<DashboardProgramModel> observeDashboardModel();
+
+    String getTeiUid();
 
     DashboardProgramModel getDashBoardData();
 
