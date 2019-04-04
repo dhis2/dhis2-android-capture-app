@@ -66,7 +66,7 @@ public abstract class RadioButtonViewModel extends FieldViewModel {
 
     @Override
     public FieldViewModel setValue(String value) {
-        return new AutoValue_RadioButtonViewModel(uid(), label(), value, programStageSection(), allowFutureDate(), editable(), optionSet(), warning(), error(), description(), dataElement(),listCategoryOption(), storeBy(), row(), column(), categoryOptionCombo(), catCombo(), true, valueType());
+        return new AutoValue_RadioButtonViewModel(uid(), label(), value, programStageSection(), allowFutureDate(), editable(), optionSet(), warning(), error(), description(), dataElement(),listCategoryOption(), storeBy(), row(), column(), categoryOptionCombo(), catCombo(), mandatory(), valueType());
     }
 
     @NonNull
