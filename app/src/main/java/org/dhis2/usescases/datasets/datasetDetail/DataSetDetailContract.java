@@ -23,8 +23,6 @@ public class DataSetDetailContract {
 
         void openDrawer();
 
-        void showTimeUnitPicker();
-
         void showRageDatePicker();
 
         void renderError(String message);
@@ -48,8 +46,6 @@ public class DataSetDetailContract {
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
         void init(View view);
-
-        void onTimeButtonClick();
 
         void onDateRangeButtonClick();
 
@@ -76,5 +72,7 @@ public class DataSetDetailContract {
         void getDataSetWithDates(List<String> periodIds, Period period, List<String> orgUnitQuery);
 
         Map<String, String> getPeriodAvailableForFilter();
+
+        String getFirstPeriodSelected();
     }
 }

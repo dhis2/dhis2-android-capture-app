@@ -59,11 +59,13 @@ public class RxDateDialog {
     private void showDialog(DateDialog dialog) {
         dialog.setCancelable(true);
         dialog.setPossitiveListener(v -> {
-            notifyClick(dialog.callback, dialog.getFilters());
+            if(mapPeriods == null) notifyClick(dialog.callback, dialog.getFilters());
+            else notifyClickDataSet(dialog.callbackPeriod, dialog.getFiltersPeriod());
             dialog.dismiss();
         });
         dialog.setNegativeListener(v -> {
-            notifyClick(dialog.callback, dialog.clearFilters());
+            if(mapPeriods == null) notifyClick(dialog.callback, dialog.clearFilters());
+            else notifyClickDataSet(dialog.callbackPeriod, dialog.clearFiltersPeriod());
             dialog.dismiss();
         });
 
@@ -81,6 +83,10 @@ public class RxDateDialog {
     }
 
     private void notifyClick(SingleEmitter<List<Date>> callback, List<Date> button) {
+        callback.onSuccess(button);
+    }
+
+    private void notifyClickDataSet(SingleEmitter<List<String>> callback, List<String> button) {
         callback.onSuccess(button);
     }
 

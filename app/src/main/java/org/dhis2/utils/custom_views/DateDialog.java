@@ -63,8 +63,10 @@ public class DateDialog extends DialogFragment {
         if (instace == null) {
             dialogActionTrigger = mActionTrigger;
             instace = new DateDialog();
-            adapter = new DateAdapter(mapPeriods);
+            adapter = new DateAdapter();
         }
+
+        adapter.swapMapPeriod(mapPeriods);
         return instace;
     }
 
@@ -131,7 +133,15 @@ public class DateDialog extends DialogFragment {
         return adapter.getSelectedDates();
     }
 
+    public List<String> getFiltersPeriod(){
+        return adapter.getSeletedDatesName();
+    }
+
     public List<Date> clearFilters() {
         return adapter.clearFilters();
+    }
+
+    public List<String> clearFiltersPeriod(){
+        return adapter.clearFiltersPeriod();
     }
 }

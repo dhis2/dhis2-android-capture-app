@@ -28,11 +28,11 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
             "FROM DataValue " +
             "JOIN DataSetDataElementLink " +
             "ON DataSetDataElementLink.dataElement = DataValue.dataElement " +
-            "WHERE DataSetDataElementLink.dataSet = ? %s " +
+            "WHERE DataSetDataElementLink.dataSet = ? %s %s" +
             "GROUP BY DataValue.period,DataValue.organisationUnit,DataValue.attributeOptionCombo";
 
     private final static String DATA_SETS_ORG_UNIT_FILTER = "AND DataValue.organisationUnit IN (%s) ";
-    private final static String DATA_SETS_PERIOD_FILTER = "AND DataValue.period = ? ";
+    private final static String DATA_SETS_PERIOD_FILTER = "AND DataValue.period IN (%s) ";
 
     private final BriteDatabase briteDatabase;
 
@@ -50,9 +50,10 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
     }
 
     @Override
-    public Flowable<List<DataSetDetailModel>> dataSetGroups(String dataSetUid, List<String> orgUnits, PeriodType selectedPeriodType, int page) {
+    public Flowable<List<DataSetDetailModel>> dataSetGroups(String dataSetUid, List<String> orgUnits, List<String> periodFilter, int page) {
         String SQL = GET_DATA_SETS;
         String orgUnitFilter = "";
+        String periodSelectedFilter = "";
         if (orgUnits != null && !orgUnits.isEmpty()) {
             StringBuilder orgUnitUids = new StringBuilder("");
             for (int i = 0; i < orgUnits.size(); i++) {
@@ -64,7 +65,20 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
             orgUnitFilter = String.format(DATA_SETS_ORG_UNIT_FILTER, orgUnitFilter);
         }
 
-        SQL = String.format(SQL, orgUnitFilter);
+        if(periodFilter != null && periodFilter.size() > 0){
+            StringBuilder periods = new StringBuilder("");
+            for (int i = 0; i < periodFilter.size(); i++) {
+                periods.append("'"+periodFilter.get(i));
+                if (i != periodFilter.size() - 1)
+                    periods.append("',");
+            }
+            if(!periods.equals(""))
+                periods.append("'");
+
+            periodSelectedFilter = String.format(DATA_SETS_PERIOD_FILTER, periods);
+        }
+
+        SQL = String.format(SQL, orgUnitFilter, periodSelectedFilter);
 
         return briteDatabase.createQuery(DataValueModel.TABLE, SQL, dataSetUid)
                 .mapToList(this::buildDataSetDetailModel).toFlowable(BackpressureStrategy.LATEST);

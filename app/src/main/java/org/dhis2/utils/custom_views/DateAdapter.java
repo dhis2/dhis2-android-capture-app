@@ -16,6 +16,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -36,7 +37,7 @@ public class DateAdapter extends RecyclerView.Adapter<DateViewHolder> {
     private String weeklyFormatWithDates = "%s, %s / %s";
     private SimpleDateFormat monthFormat = new SimpleDateFormat("MMMM yyyy", Locale.getDefault());
     private SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy", Locale.getDefault());
-    private Map<String, String> mapPeriod = null;
+    private Map<String, String> mapPeriod = new HashMap<>();
 
     public DateAdapter(Period period) {
         currentPeriod = period;
@@ -83,7 +84,10 @@ public class DateAdapter extends RecyclerView.Adapter<DateViewHolder> {
 
     }
 
-    public DateAdapter(Map<String, String> mapPeriods){
+    public DateAdapter(){
+    }
+
+    public void swapMapPeriod(Map<String, String> mapPeriods){
         this.mapPeriod = mapPeriods;
         for(Map.Entry<String, String> entry: mapPeriods.entrySet())
             datesNames.add(entry.getValue());
@@ -99,7 +103,7 @@ public class DateAdapter extends RecyclerView.Adapter<DateViewHolder> {
     public void onBindViewHolder(DateViewHolder holder, int position) {
         holder.bind(datesNames.get(position));
 
-        if (selectedDates.contains(dates.get(position)) || seletedDatesName.contains(datesNames.get(position))) {
+        if ((dates.size() > 0 && selectedDates.contains(dates.get(position))) || (datesNames.size() > 0 && seletedDatesName.contains(datesNames.get(position)))) {
             holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.white_dfd));
         } else {
             holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), android.R.color.transparent));
@@ -136,6 +140,11 @@ public class DateAdapter extends RecyclerView.Adapter<DateViewHolder> {
     public List<Date> clearFilters() {
         selectedDates.clear();
         return selectedDates;
+    }
+
+    public List<String> clearFiltersPeriod(){
+        seletedDatesName.clear();
+        return seletedDatesName;
     }
 
     public List<Date> getSelectedDates() {

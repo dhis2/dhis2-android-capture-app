@@ -19,6 +19,7 @@ import org.hisp.dhis.android.core.period.PeriodType;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -46,7 +47,7 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
     private List<OrganisationUnitModel> orgUnits;
     private CategoryComboModel mCatCombo;
     private List<String> selectedOrgUnits;
-    private PeriodType selectedPeriodType;
+    private List<String> selectedPeriods = new ArrayList<>();
     private Map<String, String> mapPeriodAvailable;
 
     @Retention(RetentionPolicy.SOURCE)
@@ -67,16 +68,21 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
     public void init(DataSetDetailContract.View view) {
         this.view = view;
         getOrgUnits(null);
+        setDataSet(true);
+    }
+
+    private void setDataSet(boolean isInit){
         compositeDisposable.add(
                 view.dataSetPage()
                         .startWith(0)
-                        .flatMap(page -> dataSetDetailRepository.dataSetGroups(view.dataSetUid(), selectedOrgUnits, selectedPeriodType, page))
+                        .flatMap(page -> dataSetDetailRepository.dataSetGroups(view.dataSetUid(), selectedOrgUnits, selectedPeriods, page))
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 dataSetDetailModels -> {
-                                    for(DataSetDetailModel dataset: dataSetDetailModels)
-                                        mapPeriodAvailable.put(dataset.periodId(), dataset.namePeriod());
+                                    if(isInit)
+                                        for(DataSetDetailModel dataset: dataSetDetailModels)
+                                            mapPeriodAvailable.put(dataset.periodId(), dataset.namePeriod());
 
                                     view.setData(dataSetDetailModels);
                                     view.setWritePermission(view.accessDataWrite());
@@ -84,11 +90,6 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
                                 Timber::d
                         )
         );
-    }
-
-    @Override
-    public void onTimeButtonClick() {
-        view.showTimeUnitPicker();
     }
 
     @Override
@@ -201,16 +202,15 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
     }
 
     @Override
-    public void getDataSetWithDates(List<String> dates, Period period, List<String> orgUnitQuery) {
+    public void getDataSetWithDates(List<String> selected, Period period, List<String> orgUnitQuery) {
         this.period = period;
         lastSearchType = LastSearchType.DATE_RANGES;
-        //ahora falla por que se va a hacer la select y no puede
-        /*compositeDisposable.add(dataSetDetailRepository.filteredDataSet(programId,"","", categoryOptionComboModel)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        list ->view.setData(getPeriodFromType(list)),
-                        throwable -> view.renderError(throwable.getMessage())));*/
+        selectedPeriods.clear();
+        for(Map.Entry<String, String> entry : mapPeriodAvailable.entrySet())
+            if(selected.contains(entry.getValue()) && !selectedPeriods.contains(entry.getValue()))
+                selectedPeriods.add(entry.getKey());
+
+        setDataSet(false);
     }
 
     @Override
@@ -226,5 +226,13 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
     @Override
     public Map<String, String> getPeriodAvailableForFilter() {
         return mapPeriodAvailable;
+    }
+
+    @Override
+    public String getFirstPeriodSelected(){
+        for(Map.Entry<String, String> entry : mapPeriodAvailable.entrySet())
+            if(!selectedPeriods.isEmpty() && selectedPeriods.get(0).equals(entry.getKey()))
+                return entry.getValue();
+        return "";
     }
 }
