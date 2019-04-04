@@ -27,6 +27,7 @@ import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.custom_views.OrgUnitDialog;
 import org.dhis2.utils.custom_views.PeriodDialog;
+import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryModel;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
@@ -249,13 +250,13 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
         binding.catComboContainer.removeAllViews();
         selectedCatOptions = new HashMap<>();
         if (!dataSetInitialModel.categoryComboName().equals("default"))
-            for (CategoryModel categoryModel : dataSetInitialModel.categories()) {
-                selectedCatOptions.put(categoryModel.uid(), null);
+            for (Category categories : dataSetInitialModel.categories()) {
+                selectedCatOptions.put(categories.uid(), null);
                 ItemCategoryComboBinding categoryComboBinding = ItemCategoryComboBinding.inflate(getLayoutInflater(), binding.catComboContainer, false);
-                categoryComboBinding.inputLayout.setHint(categoryModel.displayName());
+                categoryComboBinding.inputLayout.setHint(categories.displayName());
                 categoryComboBinding.inputEditText.setOnClickListener(view -> {
                     selectedView = view;
-                    presenter.onCatOptionClick(categoryModel.uid());
+                    presenter.onCatOptionClick(categories.uid());
                 });
                 binding.catComboContainer.addView(categoryComboBinding.getRoot());
             }
