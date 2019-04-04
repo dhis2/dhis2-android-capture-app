@@ -133,6 +133,11 @@ public class IndicatorsPresenterImpl implements IndicatorsPresenter {
                 ));
     }
 
+    @Override
+    public void onDettach() {
+        compositeDisposable.clear();
+    }
+
     private void applyRuleEffects(Result<RuleEffect> calcResult, IndicatorsFragment indicatorsFragment) {
 
         if (calcResult.error() != null) {

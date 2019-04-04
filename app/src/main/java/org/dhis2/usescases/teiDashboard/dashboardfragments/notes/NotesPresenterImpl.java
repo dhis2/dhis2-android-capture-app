@@ -40,6 +40,11 @@ public class NotesPresenterImpl implements NotesPresenter {
         getData();
     }
 
+    @Override
+    public void onDettach() {
+        compositeDisposable.clear();
+    }
+
     @SuppressLint({"CheckResult"})
     private void getData() {
         if (programUid != null)

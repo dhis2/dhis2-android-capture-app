@@ -14,6 +14,8 @@ public interface TEIDataPresenter {
 
     String getTeiUid();
 
+    void onDettach();
+
     DashboardProgramModel getDashBoardData();
 
     void getTEIEvents(TEIDataFragment teiDataFragment);

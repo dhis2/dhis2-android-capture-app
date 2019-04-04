@@ -79,6 +79,11 @@ public class TEIDataPresenterImpl implements TEIDataPresenter {
         getData();
     }
 
+    @Override
+    public void onDettach() {
+        compositeDisposable.clear();
+    }
+
     @SuppressLint({"CheckResult"})
     @Override
     public void getData() {

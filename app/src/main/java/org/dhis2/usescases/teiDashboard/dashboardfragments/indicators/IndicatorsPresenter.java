@@ -4,4 +4,5 @@ public interface IndicatorsPresenter {
 
     void subscribeToIndicators(IndicatorsFragment indicatorsFragment);
 
+    void onDettach();
 }

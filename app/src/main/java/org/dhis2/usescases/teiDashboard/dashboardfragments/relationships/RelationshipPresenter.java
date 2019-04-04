@@ -31,4 +31,6 @@ public interface RelationshipPresenter {
     void deleteRelationship(Relationship relationshipModel);
 
     void init(TeiDashboardContracts.View view);
+
+    void onDettach();
 }

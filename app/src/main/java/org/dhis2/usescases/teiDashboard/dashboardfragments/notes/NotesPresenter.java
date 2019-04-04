@@ -11,4 +11,6 @@ public interface NotesPresenter {
     void subscribeToNotes(NotesFragment notesFragment);
 
     Boolean hasProgramWritePermission();
+
+    void onDettach();
 }

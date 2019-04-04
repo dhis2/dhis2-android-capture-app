@@ -13,7 +13,6 @@ import org.hisp.dhis.android.core.program.ProgramModel;
 
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.MutableLiveData;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -35,8 +34,6 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
     private CompositeDisposable compositeDisposable;
     private DashboardProgramModel dashboardProgramModel;
-
-    private MutableLiveData<DashboardProgramModel> dashboardProgramModelLiveData = new MutableLiveData<>();
 
     public TeiDashboardPresenter(DashboardRepository dashboardRepository, MetadataRepository metadataRepository) {
         this.dashboardRepository = dashboardRepository;
@@ -72,7 +69,6 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                     .subscribe(
                             dashboardModel -> {
                                 this.dashboardProgramModel = dashboardModel;
-                                this.dashboardProgramModelLiveData.setValue(dashboardModel);
                                 view.setData(dashboardProgramModel);
                             },
                             Timber::e
