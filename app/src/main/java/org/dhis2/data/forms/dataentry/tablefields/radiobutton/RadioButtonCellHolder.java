@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
@@ -65,6 +66,8 @@ public class RadioButtonCellHolder extends FormViewHolder {
 
         if(checkBoxViewModel.mandatory())
             binding.icMandatory.setVisibility(View.VISIBLE);
+        else
+            binding.icMandatory.setVisibility(View.GONE);
 
     }
 
@@ -95,15 +98,20 @@ public class RadioButtonCellHolder extends FormViewHolder {
 
         radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
             RowAction rowAction;
+            RadioButton checkedRadioButton = group.findViewById(checkedId);
             switch (checkedId) {
                 case R.id.yes:
-                    rowAction = RowAction.create(viewModel.uid(), String.valueOf(true), viewModel.dataElement(), viewModel.listCategoryOption(),viewModel.catCombo(), viewModel.row(), viewModel.column());
-                    break;
+                    if (checkedRadioButton.isChecked()) {
+                        rowAction = RowAction.create(viewModel.uid(), String.valueOf(true), viewModel.dataElement(), viewModel.listCategoryOption(), viewModel.catCombo(), viewModel.row(), viewModel.column());
+                        break;
+                    }
                 case R.id.no:
-                    rowAction = RowAction.create(viewModel.uid(), String.valueOf(false), viewModel.dataElement(), viewModel.listCategoryOption(),viewModel.catCombo(), viewModel.row(), viewModel.column());
-                    break;
+                    if (checkedRadioButton.isChecked()) {
+                        rowAction = RowAction.create(viewModel.uid(), String.valueOf(false), viewModel.dataElement(), viewModel.listCategoryOption(), viewModel.catCombo(), viewModel.row(), viewModel.column());
+                        break;
+                    }
                 default:
-                    rowAction = RowAction.create(viewModel.uid(), null, viewModel.dataElement(), viewModel.listCategoryOption(),viewModel.catCombo(), viewModel.row(), viewModel.column());
+                    rowAction = RowAction.create(viewModel.uid(), null, viewModel.dataElement(), viewModel.listCategoryOption(), viewModel.catCombo(), viewModel.row(), viewModel.column());
                     break;
             }
             processor.onNext(rowAction);
@@ -113,7 +121,6 @@ public class RadioButtonCellHolder extends FormViewHolder {
         clearButton.setOnClickListener(view1 -> {
             if (viewModel.editable().booleanValue()) {
                 radioGroup.clearCheck();
-                processor.onNext(RowAction.create(viewModel.uid(), null, viewModel.dataElement(), viewModel.listCategoryOption(),viewModel.catCombo(), viewModel.row(), viewModel.column()));
                 alertDialog.dismiss();
             }
         });
