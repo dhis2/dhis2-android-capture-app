@@ -1,6 +1,7 @@
 package org.dhis2.usescases.reservedValue;
 
 import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.maintenance.D2Error;
 
 import io.reactivex.Completable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -52,8 +53,18 @@ public class ReservedValuePresenter implements ReservedValueContracts.Presenter 
                                 .syncReservedValues(reservedValue.uid(), reservedValue.orgUnitUid(), 100)
                 ).subscribeOn(Schedulers.io())
                         .observeOn(Schedulers.io())
-                        .subscribe(() -> updateProcessor.onNext(true), Timber::d)
+                        .subscribe(
+                                () -> updateProcessor.onNext(true),
+                                this::onReservedValuesError)
         );
+    }
+
+    private void onReservedValuesError(Throwable e) {
+        if (e instanceof D2Error) {
+            view.showReservedValuesError();
+        } else {
+            Timber.e(e);
+        }
     }
 
     @Override
