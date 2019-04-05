@@ -40,7 +40,6 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
         this.briteDatabase = briteDatabase;
     }
 
-
     @NonNull
     @Override
     public Observable<List<OrganisationUnitModel>> orgUnits() {

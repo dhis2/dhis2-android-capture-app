@@ -72,7 +72,6 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     DataSetTableContract.Presenter presenter;
     private ActivityDatasetTableBinding binding;
     private DataSetSectionAdapter viewPagerAdapter;
-    private int currentNumTables = 0;
 
     public static Bundle getBundle(@NonNull String dataSetUid,
                                    @NonNull String orgUnitUid,
@@ -205,11 +204,6 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     }
 
     @Override
-    public Flowable<RowAction> rowActions() {
-        return ((DataSetSectionFragment) viewPagerAdapter.getItem(binding.viewPager.getCurrentItem())).rowActions();
-    }
-
-    @Override
     public void showOptions(boolean open) {
         if (open)
             binding.infoContainer.setVisibility(View.VISIBLE);
@@ -265,7 +259,6 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     @Override
     public void showCatComboSelector(String catOptionUid, List<CategoryOption> data) {
         PopupMenu menu = new PopupMenu(this, selectedView, Gravity.BOTTOM);
-//        menu.getMenu().add(Menu.NONE, Menu.NONE, 0, viewModel.label()); Don't show label
         for (CategoryOption option : data)
             menu.getMenu().add(Menu.NONE, Menu.NONE, data.indexOf(option), option.displayName());
 
@@ -294,19 +287,6 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     @Override
     public String getDataSetUid() {
         return dataSetUid;
-    }
-
-    @Override
-    public String getSelectedCatOptions() {
-        StringBuilder catComb = new StringBuilder("'");
-        for (int i = 0; i < selectedCatOptions.keySet().size(); i++) {
-            CategoryOption catOpt = selectedCatOptions.get(selectedCatOptions.keySet().toArray()[i]);
-            catComb.append(catOpt.uid());
-
-            if (i < selectedCatOptions.values().size() - 1)
-                catComb.append("', '");
-        }
-        return catComb.append("'").toString();
     }
 
     @Override

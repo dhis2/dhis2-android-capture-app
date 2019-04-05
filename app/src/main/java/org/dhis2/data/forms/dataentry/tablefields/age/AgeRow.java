@@ -24,13 +24,6 @@ public class AgeRow implements Row<AgeHolder, AgeViewModel> {
     private final String renderType;
     private boolean accessDataWrite;
 
-    public AgeRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor, boolean isBgTransparent) {
-        this.inflater = layoutInflater;
-        this.isBgTransparent = isBgTransparent;
-        this.processor = processor;
-        this.renderType = null;
-    }
-
     public AgeRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor, boolean isBgTransparent, String renderType, boolean accessDataWrite) {
         this.inflater = layoutInflater;
         this.isBgTransparent = isBgTransparent;

@@ -21,11 +21,7 @@ public class TableCheckboxViewHolder extends RecyclerView.ViewHolder{
     }
 
     public void bind(String title, int position, int selectedPosition) {
-        /*RadioButton radio = new RadioButton(binding.getRoot().getContext());
-        radio.setText(title);
 
-        radio.setTextColor(binding.getRoot().getContext().getResources().getColor(R.color.white));
-*/
         binding.setTitle(title);
         if(position != selectedPosition) {
             binding.radioButton.setChecked(false);
@@ -47,10 +43,5 @@ public class TableCheckboxViewHolder extends RecyclerView.ViewHolder{
 
         binding.executePendingBindings();
 
-       /* if(position == 0)
-            radio.setChecked(true);
-
-        binding.radioGroup.addView(radio);*/
-        //binding.setTitle(title);
     }
 }

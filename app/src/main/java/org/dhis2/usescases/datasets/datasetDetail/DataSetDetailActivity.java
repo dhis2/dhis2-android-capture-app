@@ -1,17 +1,13 @@
 package org.dhis2.usescases.datasets.datasetDetail;
 
 import android.annotation.SuppressLint;
-import android.app.DatePickerDialog;
 import androidx.databinding.DataBindingUtil;
 import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import android.view.Gravity;
 import android.view.View;
-import android.widget.AdapterView;
 
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
@@ -21,23 +17,15 @@ import org.dhis2.R;
 import org.dhis2.databinding.ActivityDatasetDetailBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.main.program.OrgUnitHolder;
-import org.dhis2.utils.CatComboAdapter;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.custom_views.RxDateDialog;
-import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.Period;
-import org.hisp.dhis.android.core.category.CategoryComboModel;
-import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
-import org.hisp.dhis.android.core.period.PeriodType;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -45,11 +33,6 @@ import io.reactivex.Flowable;
 import io.reactivex.processors.PublishProcessor;
 import timber.log.Timber;
 
-import static org.dhis2.utils.Period.DAILY;
-import static org.dhis2.utils.Period.MONTHLY;
-import static org.dhis2.utils.Period.NONE;
-import static org.dhis2.utils.Period.WEEKLY;
-import static org.dhis2.utils.Period.YEARLY;
 
 public class DataSetDetailActivity extends ActivityGlobalAbstract implements DataSetDetailContract.View {
 
@@ -61,9 +44,6 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
     private Boolean accessWriteData;
     private Period currentPeriod = Period.NONE;
     private StringBuilder orgUnitFilter = new StringBuilder();
-    private SimpleDateFormat monthFormat = new SimpleDateFormat("yyyy-MM", Locale.getDefault());
-    private SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy", Locale.getDefault());
-    private Date chosenDateDay = new Date();
     private TreeNode treeNode;
     private AndroidTreeView treeView;
     private boolean isFilteredByCatCombo = false;
@@ -100,7 +80,6 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
         super.onResume();
         presenter.init(this);
 
-        //presenter.getDataSetWithDates(null, currentPeriod, orgUnitFilter.toString());
     }
 
     @Override
@@ -162,7 +141,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
 
         new RxDateDialog(getAbstractActivity(), presenter.getPeriodAvailableForFilter(), true).create().showSelectedPeriod().subscribe(selectedPeriods -> {
                     this.seletedPeriods = selectedPeriods;
-                    presenter.getDataSetWithDates(selectedPeriods, currentPeriod, selectedOrgUnit);
+                    presenter.getDataSetWithDates(selectedPeriods, selectedOrgUnit);
                     if(presenter.getFirstPeriodSelected().isEmpty())
                         binding.buttonPeriodText.setText(getString(R.string.period));
                     else
@@ -170,49 +149,6 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
                 },
                 Timber::d);
 
-    }
-
-    @Override
-    public void setCatComboOptions(CategoryComboModel catCombo, List<CategoryOptionComboModel> catComboList) {
-        if (catCombo.uid().equals(CategoryComboModel.DEFAULT_UID) || catComboList == null || catComboList.isEmpty()) {
-            binding.catCombo.setVisibility(View.GONE);
-            binding.catCombo.setVisibility(View.GONE);
-        } else {
-            binding.catCombo.setVisibility(View.VISIBLE);
-            CatComboAdapter adapter = new CatComboAdapter(this,
-                    R.layout.spinner_layout,
-                    R.id.spinner_text,
-                    catComboList,
-                    catCombo.displayName(),
-                    R.color.white_faf);
-
-            binding.catCombo.setVisibility(View.VISIBLE);
-            binding.catCombo.setAdapter(adapter);
-
-            binding.catCombo.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    if (position == 0) {
-                        isFilteredByCatCombo = false;
-                        presenter.clearCatComboFilters(orgUnitFilter.toString());
-                    } else {
-                        isFilteredByCatCombo = true;
-                        presenter.onCatComboSelected(adapter.getItem(position - 1), orgUnitFilter.toString());
-                    }
-                }
-
-                @Override
-                public void onNothingSelected(AdapterView<?> parent) {
-                    isFilteredByCatCombo = false;
-                    presenter.clearCatComboFilters(orgUnitFilter.toString());
-                }
-            });
-        }
-    }
-
-    @Override
-    public void setOrgUnitFilter(StringBuilder orgUnitFilter) {
-        this.orgUnitFilter = orgUnitFilter;
     }
 
     @Override
@@ -226,17 +162,12 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
         binding.drawerLayout.closeDrawers();
         orgUnitFilter = new StringBuilder();
         List<String> selectOrgUnit = new ArrayList<>();
-        for (int i = 0; i < treeView.getSelected().size(); i++) {
-            /*orgUnitFilter.append("'");
-            orgUnitFilter.append(((OrganisationUnitModel) treeView.getSelected().get(i).getValue()).uid());*/
+        for (int i = 0; i < treeView.getSelected().size(); i++)
             selectOrgUnit.add(((OrganisationUnitModel) treeView.getSelected().get(i).getValue()).uid());
-            /*orgUnitFilter.append("'");
-            if (i < treeView.getSelected().size() - 1)
-                orgUnitFilter.append(", ");*/
-        }
+
         this.selectedOrgUnit = selectOrgUnit;
 
-        presenter.getDataSetWithDates(this.seletedPeriods, currentPeriod, selectedOrgUnit);
+        presenter.getDataSetWithDates(this.seletedPeriods, selectedOrgUnit);
     }
 
     @SuppressLint("RestrictedApi")

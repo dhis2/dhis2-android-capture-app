@@ -33,7 +33,6 @@ public class AgeHolder extends FormViewHolder {
 
 
     public void update(AgeViewModel ageViewModel, boolean accessDataWrite) {
-//        model.onNext(viewModel);
         this.ageViewModel = ageViewModel;
 
         descriptionText = ageViewModel.description();
@@ -68,6 +67,5 @@ public class AgeHolder extends FormViewHolder {
 
     @Override
     public void dispose() {
-//        disposable.clear();
     }
 }

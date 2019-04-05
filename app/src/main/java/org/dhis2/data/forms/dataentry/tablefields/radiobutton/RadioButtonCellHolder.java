@@ -6,8 +6,6 @@ import androidx.core.content.ContextCompat;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -17,10 +15,8 @@ import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.databinding.CustomCellViewBinding;
-import org.dhis2.databinding.FormYesNoBinding;
 import org.dhis2.utils.custom_views.YesNoView;
 
-import androidx.databinding.DataBindingUtil;
 import io.reactivex.processors.FlowableProcessor;
 
 

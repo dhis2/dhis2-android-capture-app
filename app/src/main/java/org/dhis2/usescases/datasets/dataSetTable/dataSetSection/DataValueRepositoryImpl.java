@@ -9,7 +9,6 @@ import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.category.CategoryModel;
-import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionComboCategoryOptionLinkModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
@@ -39,28 +38,6 @@ public class DataValueRepositoryImpl implements DataValueRepository {
     private final D2 d2;
     private BriteDatabase briteDatabase;
     private String dataSetUid;
-
-    /*private final String DATA_ELEMENTS = "SELECT " +
-            "DataElement.* " +
-            *//*"DataSetSection.sectionName," +
-            "DataSetSection.sectionOrder " +*//*
-            "FROM DataElement " +
-            "LEFT JOIN (" +
-            "   SELECT " +
-            "       Section.sortOrder AS sectionOrder," +
-            "       Section.displayName AS sectionName," +
-            "       Section.name as name, " +
-            "       Section.uid AS sectionId," +
-            "       SectionDataElementLink.dataElement AS sectionDataElement, " +
-            "       SectionDataElementLink.sortOrder AS sortOrder " +
-            "   FROM Section " +
-            "   JOIN SectionDataElementLink ON SectionDataElementLink.section = Section.uid " +
-            ") AS DataSetSection ON DataSetSection.sectionDataElement = DataElement.uid " +
-            "JOIN DataSetDataElementLink ON DataSetDataElementLink.dataElement = DataElement.uid " +
-            "WHERE DataSetDataElementLink.dataSet = ? " +
-            "AND DataElement.aggregationType IS NOT 'NONE'"
-            *//*"AND DataSetSection.name = ? " +
-            "ORDER BY DataSetSection.sectionOrder,DataSetSection.sortOrder"*//*;*/
 
     private final String DATA_ELEMENTS = "SELECT " +
             "DataElement.* " +
@@ -97,9 +74,8 @@ public class DataValueRepositoryImpl implements DataValueRepository {
             "SELECT Section.dataSet as sectionDataSet, section.displayName, Section.name, Section.uid, SectionDataElementLink.dataElement " +
             "FROM Section JOIN SectionDataElementLink ON SectionDataElementLink.section = Section.uid ) " +
             "AS section ON section.sectionDataSet = DataSetDataElementLink.dataSet " +
-            "WHERE DataSetDataElementLink.dataSet = ? "
-            /*"AND section.name = ? " +
-            "GROUP BY CategoryOption.uid, section.uid ORDER BY section.uid, CategoryCategoryComboLink.sortOrder, CategoryCategoryOptionLink.sortOrder"*/;
+            "WHERE DataSetDataElementLink.dataSet = ? ";
+
 
     private final String CATEGORY_OPTION_COMBO = "SELECT CategoryOptionCombo.*,section.displayName as SectionName FROM CategoryOptionCombo " +
             "JOIN DataElement ON DataElement.categoryCombo = CategoryOptionCombo.categoryCombo " +
@@ -115,16 +91,14 @@ public class DataValueRepositoryImpl implements DataValueRepository {
 
     private final String DATA_SET = "SELECT DataSet.* FROM DataSet WHERE DataSet.uid = ?";
 
-    private final String SECTION_GREYED_FIELDS = "select Section.name as section, DataElement.uid as dataElement, CategoryOptionComboCategoryOptionLink.categoryOption as categoryOption, " +
-            "categoryOption.accessDataWrite " +
+    private final String SECTION_GREYED_FIELDS = "select Section.name as section, DataElement.uid as dataElement, CategoryOptionCombo.uid as CatOptionCombo, CategoryOptionComboCategoryOptionLink.categoryOption as categoryOption " +
             "from SectionGreyedFieldsLink " +
-            "left join DataElementOperand on SectionGreyedFieldsLink.dataElementOperand = DataElementOperand.uid " +
+            "join DataElementOperand on SectionGreyedFieldsLink.dataElementOperand = DataElementOperand.uid " +
             "join DataElement on DataElement.uid = DataElementOperand.dataElement " +
             "join CategoryOptionCombo on CategoryOptionCombo.uid = DataElementOperand.categoryOptionCombo " +
             "join CategoryOptionComboCategoryOptionLink on CategoryOptionComboCategoryOptionLink.categoryOptionCombo = CategoryOptionCombo.uid " +
             "join Section on Section.uid = SectionGreyedFieldsLink.section " +
-            "join CategoryOption on CategoryOption.uid = CategoryOptionComboCategoryOptionLink.categoryOption " +
-            "where CategoryOptionComboCategoryOptionLink.categoryOptionCombo in (?) ";
+            "where CategoryOptionComboCategoryOptionLink.categoryOptionCombo in (?) " ;
 
     private static final String GET_COMPULSORY_DATA_ELEMENT = "select DataElementOperand.dataElement as dataElement, CategoryOptionComboCategoryOptionLink.categoryOption as categoryOption " +
             "from DataSetCompulsoryDataElementOperandsLink " +
@@ -139,8 +113,6 @@ public class DataValueRepositoryImpl implements DataValueRepository {
             "JOIN DataSet ON DataSet.uid = Section.dataSet " +
             "WHERE DataSet.uid = ? " +
             "AND Section.name = ?";
-
-    private static final String NEW_ID_DATAVALUE = "SELECT MAX(_id) + 1 FROM DataValue";
 
     private static final String SELECT_CATEGORY_OPTION_COMBO = "SELECT CategoryOptionCombo.uid as categoryOptionCombo, CategoryOptionComboCategoryOptionLink.categoryOption as categoryOption " +
             "FROM CategoryOptionCombo " +
@@ -164,13 +136,6 @@ public class DataValueRepositoryImpl implements DataValueRepository {
         this.d2 = d2;
         this.briteDatabase = briteDatabase;
         this.dataSetUid = dataSetUid;
-    }
-
-    @Override
-    public Flowable<String> getNewIDDataValue() {
-        return briteDatabase.createQuery(DataValueModel.TABLE, NEW_ID_DATAVALUE)
-                .mapToOne(cursor -> cursor.getString(0))
-                .toFlowable(BackpressureStrategy.LATEST);
     }
 
     @Override
@@ -360,48 +325,43 @@ public class DataValueRepositoryImpl implements DataValueRepository {
     }
 
     @Override
-    public Flowable<Map<String, List<String>>> getGreyedFields(List<String> categoryOptionCombos, String section) {
+    public Flowable<Map<String, Map<String, List<String>>>> getGreyedFields(List<String> categoryOptionCombos, String section) {
 
-        Map<String, List<String>> mapData = new HashMap<>();
+        Map<String, Map<String, List<String>>> mapData = new HashMap<>();
 
+        String query = SECTION_GREYED_FIELDS.replace("?", categoryOptionCombos.toString().substring(1, categoryOptionCombos.toString().length()-1));
+        if(!section.isEmpty() && !section.equals("NO_SECTION"))
+            query = query + "and Section.name = '" + section +"' ";
 
-        return getDataElements(section).flatMap(dataElements -> {
+        query = query + "GROUP BY section, dataElement,CatOptionCombo, categoryOption";
+        return briteDatabase.createQuery(SectionGreyedFieldsLinkModel.TABLE, query)
+                .mapToList(cursor -> {
+                    String dataElement = cursor.getString(cursor.getColumnIndex("dataElement"));
+                    String catOptionCombo = cursor.getString(cursor.getColumnIndex("CatOptionCombo"));
+                    String catOption = cursor.getString(cursor.getColumnIndex("categoryOption"));
 
-            List<String> noAccessOptions = new ArrayList<>();
-            for (String categoryOptionCombo : categoryOptionCombos) {
-                List<CategoryOption> categoryOptions = d2.categoryModule().categoryOptionCombos.byUid().in(categoryOptionCombo.replace("'","")).withAllChildren().one().get().categoryOptions();
-                Iterator<CategoryOption> iterator = categoryOptions.iterator();
-                while (iterator.hasNext()) {
-                    CategoryOption categoryOption = iterator.next();
-                    if (!categoryOption.access().data().write() && !noAccessOptions.contains(categoryOption.uid()))
-                        noAccessOptions.add(categoryOption.uid());
-                }
-            }
+                    if(mapData.containsKey(dataElement)){
 
-           /* if (!noAccessOptions.isEmpty())
-                for (DataElementModel de : dataElements) TODO: FIX
-                    mapData.put(de.uid(), noAccessOptions);*/
+                        if(mapData.get(dataElement).get(catOptionCombo) != null){
 
-            String query = SECTION_GREYED_FIELDS.replace("?", categoryOptionCombos.toString().substring(1, categoryOptionCombos.toString().length() - 1));
-            if (!section.isEmpty() && !section.equals("NO_SECTION"))
-                query = query + "and Section.name = '" + section + "' ";
-
-            query = query + "GROUP BY section, dataElement, categoryOption";
-
-            return briteDatabase.createQuery(SectionGreyedFieldsLinkModel.TABLE, query)
-                    .mapToList(cursor -> {
-                        if (mapData.containsKey(cursor.getString(cursor.getColumnIndex("dataElement")))) {
-                            mapData.get(cursor.getString(cursor.getColumnIndex("dataElement")))
-                                    .add(cursor.getString(cursor.getColumnIndex("categoryOption")));
-                        } else {
-                            List<String> listCatOptions = new ArrayList<>();
-                            listCatOptions.add(cursor.getString(cursor.getColumnIndex("categoryOption")));
-
-                            mapData.put(cursor.getString(cursor.getColumnIndex("dataElement")), listCatOptions);
+                            mapData.get(dataElement).get(catOptionCombo)
+                                    .add(catOption);
+                        }else{
+                            List<String> options = new ArrayList<>();
+                            options.add(catOption);
+                            mapData.get(dataElement).put(catOptionCombo, options);
                         }
-                        return mapData;
-                    }).toFlowable(BackpressureStrategy.LATEST);
-        }).map(data -> mapData);
+                    }else{
+                        Map<String, List<String>> mapOptions =  new HashMap<>();
+                        List<String> options = new ArrayList<>();
+                        options.add(catOption);
+                        mapOptions.put(catOptionCombo, options);
+                        mapData.put(dataElement, mapOptions);
+
+                    }
+
+                    return mapData;
+                }).map(data->mapData).toFlowable(BackpressureStrategy.LATEST);
     }
 
     @Override

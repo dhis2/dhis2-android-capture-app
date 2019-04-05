@@ -3,9 +3,6 @@ package org.dhis2.usescases.datasets.datasetDetail;
 import com.unnamed.b.atv.model.TreeNode;
 
 import org.dhis2.usescases.general.AbstractActivityContracts;
-import org.dhis2.utils.Period;
-import org.hisp.dhis.android.core.category.CategoryComboModel;
-import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 
 import java.util.Date;
@@ -26,10 +23,6 @@ public class DataSetDetailContract {
         void showRageDatePicker();
 
         void renderError(String message);
-
-        void setCatComboOptions(CategoryComboModel catCombo, List<CategoryOptionComboModel> catComboList);
-
-        void setOrgUnitFilter(StringBuilder orgUnitFilter);
 
         void showHideFilter();
 
@@ -55,21 +48,15 @@ public class DataSetDetailContract {
 
         void onBackClick();
 
-        void onCatComboSelected(CategoryOptionComboModel categoryOptionComboModel, String orgUnitQuery);
-
-        void clearCatComboFilters(String orgUnitQuery);
-
         void onDataSetClick(String orgUnit, String orgUnitName, String perdiodId, String periodType, String initPeriodType, String catOptionComb);
 
         List<OrganisationUnitModel> getOrgUnits();
 
         void showFilter();
 
-        void getDataSets(Date fromDate, Date toDate, String orgUnitQuery);
-
         void getOrgUnits(Date date);
 
-        void getDataSetWithDates(List<String> periodIds, Period period, List<String> orgUnitQuery);
+        void getDataSetWithDates(List<String> periodIds, List<String> orgUnitQuery);
 
         Map<String, String> getPeriodAvailableForFilter();
 

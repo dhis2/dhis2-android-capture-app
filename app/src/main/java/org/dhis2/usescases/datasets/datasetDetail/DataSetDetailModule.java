@@ -3,7 +3,6 @@ package org.dhis2.usescases.datasets.datasetDetail;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.dagger.PerActivity;
-import org.dhis2.data.metadata.MetadataRepository;
 
 import dagger.Module;
 import dagger.Provides;
@@ -21,9 +20,8 @@ public class DataSetDetailModule {
 
     @Provides
     @PerActivity
-    DataSetDetailContract.Presenter providesPresenter(DataSetDetailRepository dataSetDetailRepository,
-                                                      MetadataRepository metadataRepository) {
-        return new DataSetDetailPresenter(dataSetDetailRepository, metadataRepository);
+    DataSetDetailContract.Presenter providesPresenter(DataSetDetailRepository dataSetDetailRepository) {
+        return new DataSetDetailPresenter(dataSetDetailRepository);
     }
 
     @Provides

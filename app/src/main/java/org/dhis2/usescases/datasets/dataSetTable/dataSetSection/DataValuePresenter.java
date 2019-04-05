@@ -2,7 +2,6 @@ package org.dhis2.usescases.datasets.dataSetTable.dataSetSection;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel;
-import org.dhis2.data.forms.dataentry.tablefields.FieldViewModelFactoryImpl;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.tuples.Pair;
@@ -92,7 +91,6 @@ public class DataValuePresenter implements DataValueContract.Presenter{
                         )
         );
 
-        //if(periodFinalDate == null)
             compositeDisposable.add(
                     Flowable.zip(
                             repository.getPeriod(periodId),
@@ -105,7 +103,6 @@ public class DataValuePresenter implements DataValueContract.Presenter{
                             .subscribe(
                                     data ->{
                                         view.setPeriod(data.val0());
-                                        view.setDataInputPeriod(data.val1());
                                         dataInputPeriodModel = data.val1();
                                     }
                                     ,
@@ -307,7 +304,8 @@ public class DataValuePresenter implements DataValueContract.Presenter{
                                     if(tableData!= null) {
                                         dataTableModel = DataTableModel
                                                 .create(sextet.val4().id() == null ? null : sextet.val4(), transformCategories(tableData.val1()),
-                                                        tableData.val0(), sextet.val0(), sextet.val2(), sextet.val3(), sextet.val5(), tableData.val1(), sextet.val1(),
+                                                        tableData.val0(), sextet.val0(), getCatOptionsByCatOptionComboDataElement(sextet.val2()),
+                                                        sextet.val3(), sextet.val5(), tableData.val1(), sextet.val1(),
                                                         getCatCombos(tableData.val0()), getCatOptions());
 
                                         dataSetSectionFragment.createTable(dataTableModel);
@@ -320,9 +318,24 @@ public class DataValuePresenter implements DataValueContract.Presenter{
 
     public List<String> getCatCombos(List<DataElementModel> dataElements){
         List<String> list = new ArrayList<>();
-        for(DataElementModel dataElement: dataElements){
-            if(!list.contains(dataElement.categoryCombo()))
+        for(DataElementModel dataElement: dataElements) {
+            if (!list.contains(dataElement.categoryCombo()))
                 list.add(dataElement.categoryCombo());
+        }
+        return list;
+    }
+
+    public List<Pair<String, List<String>>> getCatOptionsByCatOptionComboDataElement(Map<String, Map<String, List<String>>> map){
+        List<Pair<String, List<String>>> list = new ArrayList<>();
+
+        for(Map.Entry<String, Map<String, List<String>>> entryDataElement: map.entrySet()){
+            for(Map.Entry<String, List<String>> combination: entryDataElement.getValue().entrySet()) {
+                List<String> catOptions = new ArrayList<>();
+                for(String option: combination.getValue()) {
+                    catOptions.add(option);
+                    list.add(Pair.create(entryDataElement.getKey(), catOptions));
+                }
+            }
         }
         return list;
     }
@@ -362,21 +375,6 @@ public class DataValuePresenter implements DataValueContract.Presenter{
 
         }
         return mapTransform;
-    }
-
-    @Override
-    public List<FieldViewModel> transformToFieldViewModels(List<DataSetTableModel> dataValues) {
-        List<FieldViewModel> listFields = new ArrayList<>();
-        for (DataSetTableModel datavalue : dataValues) {
-            FieldViewModelFactoryImpl fieldFactory = new FieldViewModelFactoryImpl(
-                    "",
-                    "");
-
-            /*listFields.add(fieldFactory.create(datavalue.id(), "", datavalue.,
-                    mandatory, optionSetUid, dataValue, section, allowFutureDates,
-                    status == EventStatus.ACTIVE, null, description));*/
-        }
-        return null;
     }
 
     @Override
