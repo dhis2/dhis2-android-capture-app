@@ -404,7 +404,6 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                                         RelationshipItemTrackedEntityInstance.builder().trackedEntityInstance(teUid).build()).build()
                         ))
                         .flatMapIterable(list -> list)
-                        .filter(relationship -> relationship.from().trackedEntityInstance().trackedEntityInstance().equals(teUid))
                         .map(relationship -> {
                             RelationshipType relationshipType = null;
                             for (RelationshipType type : d2.relationshipModule().relationshipTypes.get())
