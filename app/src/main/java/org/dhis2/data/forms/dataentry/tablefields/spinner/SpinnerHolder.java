@@ -3,7 +3,9 @@ package org.dhis2.data.forms.dataentry.tablefields.spinner;
 import android.content.Context;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -36,7 +38,7 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
     private final FlowableProcessor<RowAction> processor;
     private final FlowableProcessor<Trio<String, String, Integer>> processorOptionSet;
     private final ImageView iconView;
-    private final TextInputAutoCompleteTextView editText;
+    private final TextView editText;
     private final TextInputLayout inputLayout;
 
     private SpinnerViewModel viewModel;
@@ -44,7 +46,7 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
 
     SpinnerHolder(ViewDataBinding mBinding, FlowableProcessor<RowAction> processor, FlowableProcessor<Trio<String, String, Integer>> processorOptionSet) {
         super(mBinding);
-        this.editText = mBinding.getRoot().findViewById(R.id.input_editText);
+        this.editText = mBinding.getRoot().findViewById(R.id.inputEditText);
         this.iconView = mBinding.getRoot().findViewById(R.id.renderImage);
         this.inputLayout = mBinding.getRoot().findViewById(R.id.input_layout);
         this.processor = processor;

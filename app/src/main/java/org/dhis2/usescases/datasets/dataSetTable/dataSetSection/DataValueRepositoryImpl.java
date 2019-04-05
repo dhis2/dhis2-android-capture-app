@@ -40,10 +40,10 @@ public class DataValueRepositoryImpl implements DataValueRepository {
     private BriteDatabase briteDatabase;
     private String dataSetUid;
 
-    private final String DATA_ELEMENTS = "SELECT " +
+    /*private final String DATA_ELEMENTS = "SELECT " +
             "DataElement.* " +
-            /*"DataSetSection.sectionName," +
-            "DataSetSection.sectionOrder " +*/
+            *//*"DataSetSection.sectionName," +
+            "DataSetSection.sectionOrder " +*//*
             "FROM DataElement " +
             "LEFT JOIN (" +
             "   SELECT " +
@@ -59,8 +59,19 @@ public class DataValueRepositoryImpl implements DataValueRepository {
             "JOIN DataSetDataElementLink ON DataSetDataElementLink.dataElement = DataElement.uid " +
             "WHERE DataSetDataElementLink.dataSet = ? " +
             "AND DataElement.aggregationType IS NOT 'NONE'"
-            /*"AND DataSetSection.name = ? " +
-            "ORDER BY DataSetSection.sectionOrder,DataSetSection.sortOrder"*/;
+            *//*"AND DataSetSection.name = ? " +
+            "ORDER BY DataSetSection.sectionOrder,DataSetSection.sortOrder"*//*;*/
+
+    private final String DATA_ELEMENTS = "SELECT " +
+            "DataElement.* " +
+            /*"DataSetSection.sectionName," +
+            "DataSetSection.sectionOrder " +*/
+            "FROM DataElement " +
+            "JOIN DataSetDataElementLink ON " +
+            "DataSetDataElementLink.dataElement = DataElement.uid " +
+            "LEFT JOIN SectionDataElementLink ON SectionDataElementLink.dataElement = DataElement.uid " +
+            "LEFT JOIN Section ON Section.uid = SectionDataElementLink.section " +
+            "WHERE DataSetDataElementLink.dataSet = ?";
 
     private final String DATA_VALUES = "SELECT DataValue.*, CategoryOptionComboCategoryOptionLink.categoryOption as catOption, DataElement.categoryCombo as catCombo FROM DataValue " +
             "JOIN CategoryOptionComboCategoryOptionLink ON CategoryOptionComboCategoryOptionLink.categoryOptionCombo = DataValue.categoryOptionCombo " +
@@ -197,12 +208,12 @@ public class DataValueRepositoryImpl implements DataValueRepository {
     public Flowable<List<DataElementModel>> getDataElements(String section) {
         String query = DATA_ELEMENTS;
         if (!section.equals("NO_SECTION")) {
-            query = query + " AND DataSetSection.name = ? ";
-            query = query + " ORDER BY DataSetSection.sectionOrder,DataSetSection.sortOrder";
+            query = query + " AND Section.name = ? ";
+            query = query + " ORDER BY SectionDataElementLink.sortOrder";
             return briteDatabase.createQuery(DataElementModel.TABLE, query, dataSetUid, section)
                     .mapToList(DataElementModel::create).toFlowable(BackpressureStrategy.LATEST);
         }
-        query = query + " ORDER BY DataSetSection.sectionOrder,DataSetSection.sortOrder";
+        query = query + " ORDER BY SectionDataElementLink.sortOrder";
         return briteDatabase.createQuery(DataElementModel.TABLE, query, dataSetUid)
                 .mapToList(DataElementModel::create).toFlowable(BackpressureStrategy.LATEST);
     }
@@ -367,9 +378,9 @@ public class DataValueRepositoryImpl implements DataValueRepository {
                 }
             }
 
-            if (!noAccessOptions.isEmpty())
-                for (DataElementModel de : dataElements)
-                    mapData.put(de.uid(), noAccessOptions);
+           /* if (!noAccessOptions.isEmpty())
+                for (DataElementModel de : dataElements) TODO: FIX
+                    mapData.put(de.uid(), noAccessOptions);*/
 
             String query = SECTION_GREYED_FIELDS.replace("?", categoryOptionCombos.toString().substring(1, categoryOptionCombos.toString().length() - 1));
             if (!section.isEmpty() && !section.equals("NO_SECTION"))

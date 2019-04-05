@@ -28,7 +28,7 @@ public abstract class CoordinateViewModel extends FieldViewModel {
 
     @Override
     public FieldViewModel setValue(String value) {
-        return new AutoValue_CoordinateViewModel(uid(), label(), true, value, programStageSection(), null, editable(), null, warning(), error(),description(), dataElement(),listCategoryOption(), storeBy(), row(), column(), categoryOptionCombo(),catCombo());
+        return new AutoValue_CoordinateViewModel(uid(), label(), mandatory(), value, programStageSection(), null, editable(), null, warning(), error(),description(), dataElement(),listCategoryOption(), storeBy(), row(), column(), categoryOptionCombo(),catCombo());
     }
 
     @NonNull

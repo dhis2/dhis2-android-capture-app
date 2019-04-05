@@ -30,7 +30,7 @@ public abstract class FileViewModel extends FieldViewModel {
 
     @Override
     public FieldViewModel setValue(String value) {
-        return new AutoValue_FileViewModel(uid(), label(), true, value, programStageSection(),
+        return new AutoValue_FileViewModel(uid(), label(), mandatory(), value, programStageSection(),
                 allowFutureDate(), editable(), optionSet(), warning(), error(),description(),dataElement(),listCategoryOption(), storeBy(), row(), column(), categoryOptionCombo(), catCombo());
     }
 
