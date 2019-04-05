@@ -3,6 +3,7 @@ package org.dhis2.data.forms.dataentry.tablefields.edittext;
 import android.annotation.SuppressLint;
 import android.text.InputFilter;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.text.method.DigitsKeyListener;
 import android.util.Patterns;
 import android.view.LayoutInflater;
@@ -106,12 +107,14 @@ final class EditTextCellCustomHolder extends FormViewHolder {
                             InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
                     break;
                 case TEXT:
+                    editText.setKeyListener(null);
                     editText.setFocusable(false);
                     editText.setOnClickListener(v -> {
                         showEditDialog();
                     });
                     break;
                 case LONG_TEXT:
+                    editText.setKeyListener(null);
                     editText.setFocusable(false);
                     editText.setOnClickListener(v -> {
                         showEditDialog();
