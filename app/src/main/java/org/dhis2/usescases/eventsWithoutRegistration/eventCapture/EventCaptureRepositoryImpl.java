@@ -145,6 +145,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     private String lastUpdatedUid;
     private RuleEvent.Builder eventBuilder;
     private Map<String, List<Rule>> dataElementRules = new HashMap<>();
+    private List<ProgramRule> mandatoryRules;
 
     public EventCaptureRepositoryImpl(Context context, BriteDatabase briteDatabase, FormRepository formRepository, String eventUid, D2 d2) {
         this.briteDatabase = briteDatabase;
@@ -182,7 +183,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     private void loadDataElementRules(Event event) {
         List<ProgramRule> rules = d2.programModule().programRules.byProgramUid().eq(event.program()).withAllChildren().get();
-        List<ProgramRule> mandatoryRules = new ArrayList<>();
+        mandatoryRules = new ArrayList<>();
         Iterator<ProgramRule> ruleIterator = rules.iterator();
         while (ruleIterator.hasNext()) {
             ProgramRule rule = ruleIterator.next();
@@ -220,7 +221,9 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 if (rule.condition().contains(variable.displayName()) || actionsContainsDE(rule.programRuleActions(), variable.displayName())) {
                     if (dataElementRules.get(variable.dataElement().uid()) == null)
                         dataElementRules.put(variable.dataElement().uid(), trasformToRule(mandatoryRules));
-                    dataElementRules.get(variable.dataElement().uid()).add(trasformToRule(rule));
+                    Rule fRule = trasformToRule(rule);
+                    if (!dataElementRules.get(variable.dataElement().uid()).contains(fRule))
+                        dataElementRules.get(variable.dataElement().uid()).add(fRule);
                 }
             }
         }
@@ -519,6 +522,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                                         return Flowable.fromCallable(ruleEngine.evaluate(event));
                                     else
                                         return Flowable.just(dataElementRules.get(lastUpdatedUid) != null ? dataElementRules.get(lastUpdatedUid) : new ArrayList<Rule>())
+                                                .map(rules -> rules.isEmpty() ? trasformToRule(mandatoryRules) : rules)
                                                 .filter(rules -> !rules.isEmpty())
                                                 .flatMap(rules -> Flowable.fromCallable(ruleEngine.evaluate(event, rules)));
                                 })
