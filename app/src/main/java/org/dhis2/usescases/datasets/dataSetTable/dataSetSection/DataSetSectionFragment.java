@@ -178,8 +178,15 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
                         boolean compulsory = false;
                         FieldViewModelFactoryImpl fieldFactory = createField();
 
-                        boolean editable = /*!dataTableModel.dataElementDisabled().containsKey(section) || */!dataTableModel.dataElementDisabled().containsKey(de.uid())
+                        boolean editable = !dataTableModel.dataElementDisabled().containsKey(de.uid())
                                 || !dataTableModel.dataElementDisabled().get(de.uid()).containsAll(catOpts);
+
+                        for(CategoryOptionModel catOption: dataTableModel.catOptions()){
+                            for(String option: catOpts){
+                                if(catOption.uid().equals(option) && !catOption.accessDataWrite())
+                                    editable = false;
+                            }
+                        }
 
                         if (dataTableModel.compulsoryCells().containsKey(de.uid()) && dataTableModel.compulsoryCells().get(de.uid()).containsAll(catOpts))
                             compulsory = true;

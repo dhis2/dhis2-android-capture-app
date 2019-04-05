@@ -307,7 +307,8 @@ public class DataValuePresenter implements DataValueContract.Presenter{
                                     if(tableData!= null) {
                                         dataTableModel = DataTableModel
                                                 .create(sextet.val4().id() == null ? null : sextet.val4(), transformCategories(tableData.val1()),
-                                                        tableData.val0(), sextet.val0(), sextet.val2(), sextet.val3(), sextet.val5(), tableData.val1(), sextet.val1(), getCatCombos(tableData.val0()));
+                                                        tableData.val0(), sextet.val0(), sextet.val2(), sextet.val3(), sextet.val5(), tableData.val1(), sextet.val1(),
+                                                        getCatCombos(tableData.val0()), getCatOptions());
 
                                         dataSetSectionFragment.createTable(dataTableModel);
                                     }
@@ -324,6 +325,18 @@ public class DataValuePresenter implements DataValueContract.Presenter{
                 list.add(dataElement.categoryCombo());
         }
         return list;
+    }
+
+    public List<CategoryOptionModel> getCatOptions(){
+        Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>> map = tableData.val1();
+        List<CategoryOptionModel> listCatOption = new ArrayList<>();
+        for(Map.Entry<String,List<List<Pair<CategoryOptionModel, CategoryModel>>>> entry: map.entrySet()){
+            for(List<Pair<CategoryOptionModel, CategoryModel>> list: entry.getValue()){
+                for(Pair<CategoryOptionModel, CategoryModel> listPair: list)
+                    listCatOption.add(listPair.val0());
+            }
+        }
+        return listCatOption;
     }
 
     @Override
