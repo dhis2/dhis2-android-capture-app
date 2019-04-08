@@ -1,14 +1,14 @@
 package org.dhis2.usescases.programStageSelection;
 
-import androidx.annotation.NonNull;
+import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.forms.RulesRepository;
-import com.squareup.sqlbrite2.BriteDatabase;
-
 import org.dhis2.utils.RulesUtilsProvider;
+import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.rules.RuleExpressionEvaluator;
 
+import androidx.annotation.NonNull;
 import dagger.Module;
 import dagger.Provides;
 
@@ -39,15 +39,16 @@ public class ProgramStageSelectionModule {
     @PerActivity
     ProgramStageSelectionContract.Presenter providesPresenter(@NonNull ProgramStageSelectionRepository programStageSelectionRepository,
                                                               @NonNull RulesUtilsProvider ruleUtils) {
-        return new ProgramStageSelectionPresenter(programStageSelectionRepository,ruleUtils);
+        return new ProgramStageSelectionPresenter(programStageSelectionRepository, ruleUtils);
     }
 
     @Provides
     @PerActivity
     ProgramStageSelectionRepository providesProgramStageSelectionRepository(@NonNull BriteDatabase briteDatabase,
                                                                             @NonNull RuleExpressionEvaluator evaluator,
-                                                                            RulesRepository rulesRepository) {
-        return new ProgramStageSelectionRepositoryImpl(briteDatabase, evaluator, rulesRepository, programUid, enrollmentUid,eventCreationType);
+                                                                            RulesRepository rulesRepository,
+                                                                            D2 d2) {
+        return new ProgramStageSelectionRepositoryImpl(briteDatabase, evaluator, rulesRepository, programUid, enrollmentUid, eventCreationType, d2);
     }
 
     @Provides

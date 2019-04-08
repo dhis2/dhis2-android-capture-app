@@ -1,36 +1,35 @@
 package org.dhis2.usescases.programStageSelection;
 
-import androidx.databinding.DataBindingUtil;
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ItemProgramStageBinding;
-
-import org.hisp.dhis.android.core.common.ObjectStyleModel;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
+import org.hisp.dhis.android.core.common.ObjectStyle;
+import org.hisp.dhis.android.core.program.ProgramStage;
 
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.databinding.DataBindingUtil;
+import androidx.recyclerview.widget.RecyclerView;
+
 /**
  * Created by Cristian on 13/02/2018.
- *
  */
 
 public class ProgramStageSelectionAdapter extends RecyclerView.Adapter<ProgramStageSelectionViewHolder> {
 
     private ProgramStageSelectionContract.Presenter presenter;
-    private List<Pair<ProgramStageModel, ObjectStyleModel>> programStageModels;
+    private List<Pair<ProgramStage, ObjectStyle>> programStages;
 
     ProgramStageSelectionAdapter(@NonNull ProgramStageSelectionContract.Presenter presenter) {
         this.presenter = presenter;
     }
 
-    public void setProgramStageModels(List<Pair<ProgramStageModel, ObjectStyleModel>> programStageModels) {
-        this.programStageModels = programStageModels;
+    public void setProgramStages(List<Pair<ProgramStage, ObjectStyle>> programStages) {
+        this.programStages = programStages;
     }
 
     @Override
@@ -42,13 +41,13 @@ public class ProgramStageSelectionAdapter extends RecyclerView.Adapter<ProgramSt
 
     @Override
     public void onBindViewHolder(ProgramStageSelectionViewHolder holder, int position) {
-        ProgramStageModel programStageModel = programStageModels.get(position).val0();
-        ObjectStyleModel objectStyleModel = programStageModels.get(position).val1();
-        holder.bind(presenter, programStageModel, objectStyleModel);
+        ProgramStage programStage = programStages.get(position).val0();
+        ObjectStyle objectStyle = programStages.get(position).val1();
+        holder.bind(presenter, programStage, objectStyle);
     }
 
     @Override
     public int getItemCount() {
-        return programStageModels != null ? programStageModels.size() : 0;
+        return programStages != null ? programStages.size() : 0;
     }
 }

@@ -13,9 +13,8 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialAc
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.Constants;
 import org.hisp.dhis.android.core.common.ObjectStyle;
-import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.period.PeriodType;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
+import org.hisp.dhis.android.core.program.ProgramStage;
 
 import java.util.List;
 
@@ -55,7 +54,7 @@ public class ProgramStageSelectionActivity extends ActivityGlobalAbstract implem
     public void onCreate(@Nullable Bundle savedInstanceState) {
         programId = getIntent().getStringExtra("PROGRAM_UID");
         enrollmenId = getIntent().getStringExtra("ENROLLMENT_UID");
-        String eventCreationType =  getIntent().getStringExtra(EVENT_CREATION_TYPE);
+        String eventCreationType = getIntent().getStringExtra(EVENT_CREATION_TYPE);
         ((App) getApplicationContext()).userComponent().plus(new ProgramStageSelectionModule(programId, enrollmenId, eventCreationType)).inject(this);
         super.onCreate(savedInstanceState);
 
@@ -81,9 +80,9 @@ public class ProgramStageSelectionActivity extends ActivityGlobalAbstract implem
     }
 
     @Override
-    public void setData(List<Pair<ProgramStageModel, ObjectStyleModel>> programStageModels) {
-        if (programStageModels != null && !programStageModels.isEmpty()) {
-            adapter.setProgramStageModels(programStageModels);
+    public void setData(List<Pair<ProgramStage, ObjectStyle>> programStages) {
+        if (programStages != null && !programStages.isEmpty()) {
+            adapter.setProgramStages(programStages);
             adapter.notifyDataSetChanged();
         } else {
             // if there are no program stages to select, the event cannot be added

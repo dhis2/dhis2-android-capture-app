@@ -7,8 +7,8 @@ import android.graphics.Color;
 import org.dhis2.BR;
 import org.dhis2.Bindings.Bindings;
 import org.dhis2.databinding.ItemProgramStageBinding;
-import org.hisp.dhis.android.core.common.ObjectStyleModel;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
+import org.hisp.dhis.android.core.common.ObjectStyle;
+import org.hisp.dhis.android.core.program.ProgramStage;
 
 import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
@@ -26,20 +26,20 @@ public class ProgramStageSelectionViewHolder extends RecyclerView.ViewHolder {
         this.binding = binding;
     }
 
-    public void bind(ProgramStageSelectionContract.Presenter presenter, ProgramStageModel programStage, ObjectStyleModel data) {
+    public void bind(ProgramStageSelectionContract.Presenter presenter, ProgramStage programStage, ObjectStyle style) {
         binding.setVariable(BR.presenter, presenter);
         binding.setVariable(BR.programStage, programStage);
         binding.executePendingBindings();
 
-        if (data.icon() != null) {
+        if (style.icon() != null) {
             Resources resources = binding.programStageIcon.getContext().getResources();
-            String iconName = data.icon().startsWith("ic_") ? data.icon() : "ic_" + data.icon();
+            String iconName = style.icon().startsWith("ic_") ? style.icon() : "ic_" + style.icon();
             int icon = resources.getIdentifier(iconName, "drawable", binding.programStageIcon.getContext().getPackageName());
             binding.programStageIcon.setImageResource(icon);
         }
 
-        if (data.color() != null) {
-            String color = data.color().startsWith("#") ? data.color() : "#" + data.color();
+        if (style.color() != null) {
+            String color = style.color().startsWith("#") ? style.color() : "#" + style.color();
             int colorRes = Color.parseColor(color);
             ColorStateList colorStateList = ColorStateList.valueOf(colorRes);
             ViewCompat.setBackgroundTintList(binding.programStageIcon, colorStateList);
@@ -47,7 +47,7 @@ public class ProgramStageSelectionViewHolder extends RecyclerView.ViewHolder {
         }
 
         itemView.setOnClickListener(view -> {
-            if (programStage.accessDataWrite())
+            if (programStage.access().data().write())
                 presenter.onProgramStageClick(programStage);
             else
                 presenter.displayMessage(null);
