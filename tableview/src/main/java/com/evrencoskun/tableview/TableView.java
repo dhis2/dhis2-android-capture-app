@@ -115,9 +115,8 @@ public class TableView extends FrameLayout implements ITableView {
     private int mHeaderCount = 1;
     private List<CellRecyclerView> mBackupHeaders = new ArrayList<>();
 
-    public TableView(@NonNull Context context, int mSeparatorColor) {
+    public TableView(@NonNull Context context) {
         super(context);
-        this.mSeparatorColor = mSeparatorColor;
         initialDefaultValues(null);
         initialize();
     }
@@ -149,7 +148,7 @@ public class TableView extends FrameLayout implements ITableView {
         mShadowColor = ContextCompat.getColor(getContext(), R.color
                 .table_view_default_shadow_background_color);
         mHeadersColor = ContextCompat.getColor(getContext(), R.color
-                .table_view_default_unselected_background_color);
+                .table_view_default_header_background_color);
 
         if (attrs == null) {
             // That means TableView is created programmatically.

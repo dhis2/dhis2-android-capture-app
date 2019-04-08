@@ -142,14 +142,14 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
             adapter.setShowColumnTotal(dataTableModel.section() == null ? false : dataTableModel.section().showColumnTotals());
             adapter.setShowRowTotal(dataTableModel.section() == null ? false : dataTableModel.section().showRowTotals());
             //adapter.initializeRows(isEditable);
-            TableView tableView = new TableView(getContext(),
-                    ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY));
+            TableView tableView = new TableView(getContext());
             tableView.setHasFixedWidth(true);
-            tableView.setUnSelectedColor(getResources().getColor(R.color.white));
-            tableView.setHeadersColor(getResources().getColor(R.color.table_bg));
-            tableView.setSelectedColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY_LIGHT));
-            tableView.setShadowColor(getResources().getColor(R.color.rfab__color_shadow));
-            tableView.setRowHeaderWidth(300);
+            //tableView.setUnSelectedColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY_LIGHT));
+            //tableView.setSeparatorColor(getResources().getColor(R.color.white));
+            //tableView.setHeadersColor(getResources().getColor(R.color.table_bg));
+            //tableView.setSelectedColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY_LIGHT));
+            //tableView.setShadowColor(getResources().getColor(R.color.rfab__color_shadow));
+            //tableView.setRowHeaderWidth(600);
 
             adapter.setTableView(tableView);
             adapter.initializeRows(isEditable);
