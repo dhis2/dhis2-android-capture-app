@@ -13,6 +13,7 @@ import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
+import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.dataelement.DataElement;
 import org.hisp.dhis.android.core.event.Event;
@@ -63,7 +64,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
         if (!catOptCombList.isEmpty())
             for (CategoryOptionCombo catOptComb : catOptCombList)
                 eventRepo = eventRepo.byAttributeOptionComboUid().eq(catOptComb.uid());
-        return Transformations.switchMap(eventRepo.orderByEventDate(RepositoryScope.OrderByDirection.DESC).withAllChildren().getPaged(20), this::transform);
+        return Transformations.switchMap(eventRepo.byState().notIn(State.TO_DELETE).orderByEventDate(RepositoryScope.OrderByDirection.DESC).withAllChildren().getPaged(20), this::transform);
     }
 
     @NonNull
@@ -189,8 +190,11 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     public boolean getAccessDataWrite() {
         boolean canWrite;
         canWrite = d2.programModule().programs.uid(programUid).get().access().data().write();
-        if (canWrite)
+        if (canWrite && d2.programModule().programStages.byProgramUid().eq(programUid).one().get() != null)
             canWrite = d2.programModule().programStages.byProgramUid().eq(programUid).one().get().access().data().write();
+        else if(d2.programModule().programStages.byProgramUid().eq(programUid).one().get() == null)
+            canWrite = false;
+
         return canWrite;
     }
 

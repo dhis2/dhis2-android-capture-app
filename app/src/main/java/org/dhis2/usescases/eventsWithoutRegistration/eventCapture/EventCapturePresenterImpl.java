@@ -184,10 +184,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                     eventSectionModels.add(EventSectionModel.create(sectionModel.label(), sectionModel.sectionUid(), cont, finalFields.keySet().size()));
                                 } else if (sectionList.size() == 1) {
                                     int cont = 0;
-                                    for (FieldViewModel fieldViewModel : fields)
-                                        if (!isEmpty(fieldViewModel.value()))
-                                            cont++;
-
                                     HashMap<String, Boolean> finalFields = new HashMap<>();
                                     for (FieldViewModel fieldViewModel : fields) {
                                         finalFields.put(fieldViewModel.optionSet() == null ? fieldViewModel.uid() : fieldViewModel.optionSet(), !isEmpty(fieldViewModel.value()));
