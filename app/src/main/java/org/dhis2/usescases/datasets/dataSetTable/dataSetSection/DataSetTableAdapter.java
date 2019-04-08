@@ -66,8 +66,6 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
     private static final int IMAGE = 11;
     private static final int UNSUPPORTED = 12;
 
-    private final int headerWidth = 400;
-
     @NonNull
     private List<List<FieldViewModel>> viewModels;
 
@@ -88,7 +86,6 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
         rows = new ArrayList<>();
         this.processor = processor;
         this.processorOptionSet = processorOptionSet;
-        //processor = PublishProcessor.create();
         layoutInflater = LayoutInflater.from(context);
         viewModels = new ArrayList<>();
     }
@@ -144,9 +141,7 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
 
         rows.get(holder.getItemViewType()).onBind(holder, viewModels.get(rowPosition).get(columnPosition), value);
         holder.itemView.setEnabled(false);
-        holder.itemView.getLayoutParams().width = headerWidth;
-        //holder.itemView.getLayoutParams().height = LinearLayout.LayoutParams.WRAP_CONTENT;
-
+        holder.itemView.getLayoutParams().width = getTableView().getHeaderWidth();
     }
 
     public void swap(List<List<FieldViewModel>> viewModels) {
@@ -188,10 +183,10 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
     public void onBindColumnHeaderViewHolder(AbstractViewHolder holder, Object columnHeaderItemModel, int position) {
         ((DataSetRHeaderHeader) holder).bind(((CategoryOptionModel) columnHeaderItemModel).displayName());
         if (((CategoryOptionModel) columnHeaderItemModel).displayName().isEmpty())
-            ((DataSetRHeaderHeader) holder).binding.container.getLayoutParams().width = headerWidth;
+            ((DataSetRHeaderHeader) holder).binding.container.getLayoutParams().width = getTableView().getHeaderWidth();
         else {
             int i = getHeaderRecyclerPositionFor(columnHeaderItemModel);
-            ((DataSetRHeaderHeader) holder).binding.container.getLayoutParams().width = (headerWidth * i);
+            ((DataSetRHeaderHeader) holder).binding.container.getLayoutParams().width = (getTableView().getHeaderWidth() * i);
         }
         ((DataSetRHeaderHeader) holder).binding.title.requestLayout();
     }

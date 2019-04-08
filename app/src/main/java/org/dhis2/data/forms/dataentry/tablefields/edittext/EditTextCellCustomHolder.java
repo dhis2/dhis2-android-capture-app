@@ -79,14 +79,11 @@ final class EditTextCellCustomHolder extends FormViewHolder {
         if (editTextModel.editable()) {
             if (accessDataWrite) {
                 customBinding.inputEditText.setEnabled(true);
-                //customBinding.inputEditText.setBackgroundColor(ContextCompat.getColor(editText.getContext(), R.color.white));
             } else {
                 customBinding.inputEditText.setEnabled(false);
-                //customBinding.inputEditText.setBackgroundColor(ContextCompat.getColor(editText.getContext(), R.color.table_view_default_disabled_background_color));
             }
         } else {
             customBinding.inputEditText.setEnabled(false);
-            //customBinding.inputEditText.setBackgroundColor(ContextCompat.getColor(editText.getContext(), R.color.table_view_default_disabled_background_color));
         }
 
         customBinding.executePendingBindings();

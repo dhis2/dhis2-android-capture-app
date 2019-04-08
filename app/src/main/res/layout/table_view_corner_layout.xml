@@ -4,6 +4,6 @@
     android:layout_height="wrap_content"
     android:minHeight="@dimen/default_cell_height"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/white_faf">
+    android:background="@color/table_view_default_separator_color">
 
 </RelativeLayout>

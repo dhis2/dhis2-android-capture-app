@@ -23,5 +23,6 @@
     <color name="table_view_default_header_background_color">#5B9AD4</color>
     <color name="table_view_default_selected_background_color">#fada65</color>
     <color name="table_view_default_disabled_background_color">#8797A5</color>
+    <color name="table_view_default_deactivated_background_color">#C3C3C3</color>
     <color name="table_view_default_shadow_background_color">#215E8B</color>
 </resources>

@@ -133,7 +133,7 @@ public interface ITableView {
 
     void remeasureColumnWidth(int column);
 
-    int getRowHeaderWidth();
+    int getHeaderWidth();
 
     void setRowHeaderWidth(int rowHeaderWidth);
 

@@ -100,6 +100,7 @@ public class TableView extends FrameLayout implements ITableView {
     private int mRowHeaderWidth;
     private int mColumnHeaderHeight;
     private int mHeaderHeight;
+    private int mHeaderWidth;
 
     private int mSelectedColor;
     private int mUnSelectedColor;
@@ -137,9 +138,9 @@ public class TableView extends FrameLayout implements ITableView {
     private void initialDefaultValues(AttributeSet attrs) {
         // Dimensions
         mRowHeaderWidth = (int) getResources().getDimension(R.dimen.default_row_header_width);
-        mColumnHeaderHeight = (int) getResources().getDimension(R.dimen
-                .default_column_header_height);
+        mColumnHeaderHeight = (int) getResources().getDimension(R.dimen.default_column_header_height);
         mHeaderHeight = (int) getResources().getDimension(R.dimen.small_column_header_height);
+        mHeaderWidth = (int) getResources().getDimension(R.dimen.small_row_header_width);
         // Colors
         mSelectedColor = ContextCompat.getColor(getContext(), R.color
                 .table_view_default_selected_background_color);
@@ -784,13 +785,13 @@ public class TableView extends FrameLayout implements ITableView {
     }
 
     /**
-     * get row header width
+     * get header width
      *
      * @return size in pixel
      */
     @Override
-    public int getRowHeaderWidth() {
-        return mRowHeaderWidth;
+    public int getHeaderWidth() {
+        return mHeaderWidth;
     }
 
     /**

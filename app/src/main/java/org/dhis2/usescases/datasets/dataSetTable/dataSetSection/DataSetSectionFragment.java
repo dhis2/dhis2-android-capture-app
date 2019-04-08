@@ -141,15 +141,8 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
             int row = 0, column = 0;
             adapter.setShowColumnTotal(dataTableModel.section() == null ? false : dataTableModel.section().showColumnTotals());
             adapter.setShowRowTotal(dataTableModel.section() == null ? false : dataTableModel.section().showRowTotals());
-            //adapter.initializeRows(isEditable);
             TableView tableView = new TableView(getContext());
             tableView.setHasFixedWidth(true);
-            //tableView.setUnSelectedColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY_LIGHT));
-            //tableView.setSeparatorColor(getResources().getColor(R.color.white));
-            //tableView.setHeadersColor(getResources().getColor(R.color.table_bg));
-            //tableView.setSelectedColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY_LIGHT));
-            //tableView.setShadowColor(getResources().getColor(R.color.rfab__color_shadow));
-            //tableView.setRowHeaderWidth(600);
 
             adapter.setTableView(tableView);
             adapter.initializeRows(isEditable);
@@ -159,7 +152,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
             if (!dataTableModel.catCombos().get(dataTableModel.catCombos().size() - 1).equals(catCombo)) {
                 View view = new View(getContext());
                 view.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 15));
-                view.setBackgroundColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY));
+                view.setBackgroundColor(tableView.getSeparatorColor());
 
                 binding.tableLayout.addView(view);
             }

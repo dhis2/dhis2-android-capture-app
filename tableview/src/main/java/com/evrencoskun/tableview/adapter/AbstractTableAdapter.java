@@ -69,7 +69,7 @@ public abstract class AbstractTableAdapter<CH, RH, C> implements ITableAdapter {
         for(int i=0; i<mTableView.getHeaderCount(); i++){
             mColumnsHeaderItems.add(null);
             mColumnsHeaderRecyclerViewAdapters.add(new ColumnHeaderRecyclerViewAdapter(mContext,
-                    mColumnsHeaderItems.get(i), this, i == mTableView.getHeaderCount()-1? true: false));
+                    mColumnsHeaderItems.get(i), this));
         }
 
         // Create Row Header RecyclerView Adapter

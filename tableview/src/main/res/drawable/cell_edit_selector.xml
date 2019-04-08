@@ -2,4 +2,5 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:state_enabled="true" android:color="@color/table_view_default_text_color"/>
     <item android:state_enabled="false" android:color="@color/table_view_default_disabled_background_color"/>
+    <item android:state_activated="false" android:color="@color/table_view_default_deactivated_background_color"/>
 </selector>
