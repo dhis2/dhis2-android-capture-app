@@ -32,6 +32,7 @@
 
     <string name="search_result_text">%s results found</string>
     <string name="add_new">Add new</string>
+    <string name="add">Add</string>
     <string name="schedule_new">Schedule new</string>
     <string name="lorem" translatable="false">Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat</string>
     <string name="referral">Referral</string>

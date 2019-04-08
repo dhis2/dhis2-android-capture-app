@@ -181,7 +181,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
         if (eventUid == null) {
             if (binding.actionButton != null)
-                binding.actionButton.setText(R.string.create);
+                binding.actionButton.setText(R.string.add);
         } else {
             if (binding.actionButton != null)
                 binding.actionButton.setText(R.string.update);
