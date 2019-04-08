@@ -31,6 +31,7 @@ import io.reactivex.functions.Consumer;
 
 public class IndicatorsFragment extends FragmentGlobalAbstract {
 
+    private FragmentIndicatorsBinding binding;
     private static IndicatorsFragment instance;
     private IndicatorsAdapter adapter;
 
@@ -51,7 +52,7 @@ public class IndicatorsFragment extends FragmentGlobalAbstract {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        FragmentIndicatorsBinding binding = DataBindingUtil.inflate(inflater, R.layout.fragment_indicators, container, false);
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_indicators, container, false);
         adapter = new IndicatorsAdapter();
         binding.indicatorsRecycler.setAdapter(adapter);
         return binding.getRoot();
@@ -70,7 +71,16 @@ public class IndicatorsFragment extends FragmentGlobalAbstract {
     }
 
     public Consumer<List<Trio<ProgramIndicatorModel, String, String>>> swapIndicators() {
-        return indicators -> adapter.setIndicators(indicators);
+        return indicators -> {
+            if (adapter != null) {
+                adapter.setIndicators(indicators);
+            }
+            if (indicators != null && !indicators.isEmpty()) {
+                binding.emptyIndicators.setVisibility(View.GONE);
+            } else {
+                binding.emptyIndicators.setVisibility(View.VISIBLE);
+            }
+        };
     }
 
     public void addIndicator(Trio<ProgramIndicatorModel, String, String> indicator) {
