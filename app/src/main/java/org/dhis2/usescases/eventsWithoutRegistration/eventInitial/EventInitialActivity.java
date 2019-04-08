@@ -402,13 +402,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
         presenter.filterOrgUnits(DateUtils.uiDateFormat().format(selectedDate));
 
-
-        if (program.captureCoordinates()) {
-            binding.coordinatesLayout.setVisibility(View.VISIBLE);
-            binding.location1.setOnClickListener(v -> presenter.onLocationClick());
-            binding.location2.setOnClickListener(v -> presenter.onLocation2Click());
-        }
-
         if (eventModel != null &&
                 (DateUtils.getInstance().isEventExpired(null, eventModel.completedDate(), program.completeEventsExpiryDays()) ||
                         eventModel.status() == EventStatus.COMPLETED ||
@@ -418,12 +411,25 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             binding.lat.setEnabled(false);
             binding.lon.setEnabled(false);
             binding.orgUnit.setEnabled(false);
+            binding.location1.setClickable(false);
+            binding.location2.setClickable(false);
             binding.location1.setEnabled(false);
             binding.location2.setEnabled(false);
             binding.temp.setEnabled(false);
             binding.actionButton.setText(getString(R.string.check_event));
+            binding.executePendingBindings();
 
         }
+
+        if (program.captureCoordinates()) {
+            binding.coordinatesLayout.setVisibility(View.VISIBLE);
+            if(binding.location1.isClickable())
+                binding.location1.setOnClickListener(v -> presenter.onLocationClick());
+            if(binding.location2.isClickable())
+                binding.location2.setOnClickListener(v -> presenter.onLocation2Click());
+        }
+
+
     }
 
     @Override
@@ -541,8 +547,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         this.programStageModel = programStage;
         if (programStageModel.captureCoordinates()) {
             binding.coordinatesLayout.setVisibility(View.VISIBLE);
-            binding.location1.setOnClickListener(v -> presenter.onLocationClick());
-            binding.location2.setOnClickListener(v -> presenter.onLocation2Click());
+            binding.location1.setOnClickListener(v ->{ if(v.isClickable()) presenter.onLocationClick();});
+            binding.location2.setOnClickListener(v ->{ if(v.isClickable()) presenter.onLocation2Click();});
         } else {
             binding.coordinatesLayout.setVisibility(View.GONE);
         }
@@ -784,13 +790,17 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         this.accessData = canWrite;
         if (!canWrite || !presenter.isEnrollmentOpen()) {
             binding.date.setEnabled(false);
+            binding.date.setClickable(false);
             binding.orgUnit.setEnabled(false);
             binding.catCombo.setEnabled(false);
             binding.actionButton.setText(getString(R.string.check_event));
+            binding.location1.setClickable(false);
+            binding.location2.setClickable(false);
             binding.location1.setEnabled(false);
             binding.location2.setEnabled(false);
             binding.lat.setEnabled(false);
             binding.lon.setEnabled(false);
+            binding.executePendingBindings();
         }
 
         if (!HelpManager.getInstance().isTutorialReadyForScreen(getClass().getName()))
