@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <corners android:radius="1dp"/>
+    <stroke android:color="@color/table_view_default_header_background_color"
+        android:width="0.5dp"/>
+    <solid android:color="@drawable/cell_edit_selector"/>
+</shape>
