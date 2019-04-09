@@ -8,14 +8,19 @@ import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.dataset.DataInputPeriodModel;
+import org.hisp.dhis.android.core.dataset.DataSet;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitDownloadModule;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.reactivex.internal.operators.observable.ObservableFromIterable;
 
 public class DataSetInitialRepositoryImpl implements DataSetInitialRepository {
 
@@ -63,12 +68,40 @@ public class DataSetInitialRepositoryImpl implements DataSetInitialRepository {
     @NonNull
     @Override
     public Observable<List<OrganisationUnitModel>> orgUnits() {
-        String GET_ORG_UNITS = "SELECT OrganisationUnit.* FROM OrganisationUnit " +
-                "JOIN DataSetOrganisationUnitLink ON DataSetOrganisationUnitLink.organisationUnit = OrganisationUnit.uid " +
-                "WHERE DataSetOrganisationUnitLink.dataSet = ?";
-
-        return briteDatabase.createQuery(OrganisationUnitModel.TABLE, GET_ORG_UNITS, dataSetUid)
-                .mapToList(OrganisationUnitModel::create);
+        return Observable.fromIterable(d2.organisationUnitModule().organisationUnits.withDataSets().get())
+                .map(organisationUnit -> {
+                    List<OrganisationUnit> dataSetOrgUnits = new ArrayList<>();
+                    List<OrganisationUnit> orgUnits = new ArrayList<>();
+                    for (DataSet dataSet : organisationUnit.dataSets()) {
+                        if (dataSet.uid().equals(dataSetUid))
+                            orgUnits.add(organisationUnit);
+                        dataSetOrgUnits.addAll(orgUnits);
+                    }
+                    return dataSetOrgUnits;
+                })
+                .flatMapIterable(organisationUnits -> organisationUnits)
+                .flatMap(organisationUnit-> {
+                    OrganisationUnitModel.Builder orgUnitBuilder = OrganisationUnitModel.builder();
+                    orgUnitBuilder.uid(organisationUnit.uid());
+                    orgUnitBuilder.code(organisationUnit.code());
+                    orgUnitBuilder.name(organisationUnit.name());
+                    orgUnitBuilder.displayName(organisationUnit.displayName());
+                    orgUnitBuilder.created(organisationUnit.created());
+                    orgUnitBuilder.lastUpdated(organisationUnit.lastUpdated());
+                    orgUnitBuilder.shortName(organisationUnit.shortName());
+                    orgUnitBuilder.displayShortName(organisationUnit.displayShortName());
+                    orgUnitBuilder.description(organisationUnit.description());
+                    orgUnitBuilder.displayDescription(organisationUnit.displayDescription());
+                    orgUnitBuilder.path(organisationUnit.path());
+                    orgUnitBuilder.openingDate(organisationUnit.openingDate());
+                    orgUnitBuilder.closedDate(organisationUnit.closedDate());
+                    orgUnitBuilder.level(organisationUnit.level());
+                    orgUnitBuilder.parent(organisationUnit.parent().uid());
+                    orgUnitBuilder.displayNamePath(organisationUnit.displayNamePath());
+                    OrganisationUnitModel orgUnit = orgUnitBuilder.build();
+                    return Observable.just(orgUnit);
+                })
+                .toList().toObservable();
     }
 
     @NonNull
