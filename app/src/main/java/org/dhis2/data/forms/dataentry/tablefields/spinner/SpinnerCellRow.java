@@ -10,7 +10,6 @@ import org.dhis2.data.forms.dataentry.tablefields.Row;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.CustomCellViewBinding;
-import org.dhis2.databinding.CustomTextViewCellBinding;
 
 import io.reactivex.processors.FlowableProcessor;
 

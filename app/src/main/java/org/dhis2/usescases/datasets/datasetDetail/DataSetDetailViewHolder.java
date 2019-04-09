@@ -23,22 +23,6 @@ public class DataSetDetailViewHolder extends RecyclerView.ViewHolder{
         binding.setVariable(BR.presenter, presenter);
         binding.setVariable(BR.dataset, dataset);
         binding.executePendingBindings();
-        //FIXME revisar para que sirve esto
-        /*disposable.add(presenter.getDataSetDataValueNew(dataset)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        values -> {
-                            StringBuilder stringBuilder = new StringBuilder("");
-                            int valuesSize = values.size() > 3 ? 3 : values.size();
-                            for (int i = 0; i < valuesSize; i++) {
-                                if (values.get(i) != null)
-                                    stringBuilder.append(values.get(i)).append("\n");
-                            }
-                            binding.dataValue.setText(stringBuilder);
-                        },
-                        Timber::d
-                ));*/
 
         itemView.setOnClickListener(view -> presenter.onDataSetClick(
                 dataset.orgUnitUid(),

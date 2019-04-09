@@ -88,7 +88,6 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
         rows = new ArrayList<>();
         this.processor = processor;
         this.processorOptionSet = processorOptionSet;
-        //processor = PublishProcessor.create();
         layoutInflater = LayoutInflater.from(context);
         viewModels = new ArrayList<>();
     }
@@ -145,7 +144,6 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
         rows.get(holder.getItemViewType()).onBind(holder, viewModels.get(rowPosition).get(columnPosition), value);
         holder.itemView.setEnabled(false);
         holder.itemView.getLayoutParams().width = headerWidth - 4;
-        //holder.itemView.getLayoutParams().height = LinearLayout.LayoutParams.WRAP_CONTENT;
 
     }
 

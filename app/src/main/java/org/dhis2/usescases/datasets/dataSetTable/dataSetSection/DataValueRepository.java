@@ -7,7 +7,6 @@ import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
 import org.hisp.dhis.android.core.dataset.DataInputPeriodModel;
-import org.hisp.dhis.android.core.dataset.DataSetCompleteRegistration;
 import org.hisp.dhis.android.core.dataset.DataSetModel;
 import org.hisp.dhis.android.core.dataset.SectionModel;
 import org.hisp.dhis.android.core.datavalue.DataValueModel;
@@ -31,13 +30,11 @@ public interface DataValueRepository {
 
     Flowable<List<DataSetTableModel>> getDataValues(String orgUnitUid, String periodType, String initPeriodType, String catOptionComb, String section);
 
-    Flowable<Map<String, List<String>>> getGreyedFields(List<String> categoryOptionCombo, String section);
+    Flowable<Map<String, Map<String, List<String>>>> getGreyedFields(List<String> categoryOptionCombo, String section);
 
     Flowable<Map<String, List<String>>> getMandatoryDataElement(List<String> categoryOptionCombo);
 
     Flowable<SectionModel> getSectionByDataSet(String section);
-
-    Flowable<String> getNewIDDataValue();
 
     Flowable<Map<String, List<String>>> getCategoryOptionComboCatOption();
 

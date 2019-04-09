@@ -9,8 +9,6 @@ import org.hisp.dhis.android.core.period.PeriodType;
 
 import java.util.Locale;
 
-import javax.inject.Inject;
-
 import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -133,7 +131,6 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
 
     @Override
     public void onReportPeriodClick() {
-
         //Aqui meter los data input
         view.showPeriodSelector(PeriodType.valueOf(periodTypeName));
 
@@ -176,8 +173,4 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
         view.goToTable(numTable);
     }
 
-    @Override
-    public void setCurrentNumTables(int numTables) {
-        view.setCurrentNumTables(numTables);
-    }
 }

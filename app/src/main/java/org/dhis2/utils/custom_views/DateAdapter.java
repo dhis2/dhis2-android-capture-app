@@ -10,13 +10,16 @@ import org.dhis2.R;
 import org.dhis2.databinding.ItemDateBinding;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.Period;
+import org.hisp.dhis.android.core.period.PeriodType;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * QUADRAM. Created by ppajuelo on 05/12/2017.
@@ -25,6 +28,7 @@ import java.util.Locale;
 public class DateAdapter extends RecyclerView.Adapter<DateViewHolder> {
 
     private List<String> datesNames = new ArrayList<>();
+    private List<String> seletedDatesName = new ArrayList<>();
     private List<Date> dates = new ArrayList<>();
     private List<Date> selectedDates = new ArrayList<>();
     private Period currentPeriod = Period.WEEKLY;
@@ -33,7 +37,7 @@ public class DateAdapter extends RecyclerView.Adapter<DateViewHolder> {
     private String weeklyFormatWithDates = "%s, %s / %s";
     private SimpleDateFormat monthFormat = new SimpleDateFormat("MMMM yyyy", Locale.getDefault());
     private SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy", Locale.getDefault());
-
+    private Map<String, String> mapPeriod = new HashMap<>();
 
     public DateAdapter(Period period) {
         currentPeriod = period;
@@ -80,6 +84,15 @@ public class DateAdapter extends RecyclerView.Adapter<DateViewHolder> {
 
     }
 
+    public DateAdapter(){
+    }
+
+    public void swapMapPeriod(Map<String, String> mapPeriods){
+        this.mapPeriod = mapPeriods;
+        for(Map.Entry<String, String> entry: mapPeriods.entrySet())
+            datesNames.add(entry.getValue());
+    }
+
     @Override
     public DateViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         ItemDateBinding binding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.item_date, parent, false);
@@ -90,25 +103,37 @@ public class DateAdapter extends RecyclerView.Adapter<DateViewHolder> {
     public void onBindViewHolder(DateViewHolder holder, int position) {
         holder.bind(datesNames.get(position));
 
-        if (selectedDates.contains(dates.get(position))) {
+        if ((dates.size() > 0 && selectedDates.contains(dates.get(position))) || (datesNames.size() > 0 && seletedDatesName.contains(datesNames.get(position)))) {
             holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.white_dfd));
         } else {
             holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), android.R.color.transparent));
         }
 
         holder.itemView.setOnClickListener(view -> {
-            if (!selectedDates.contains(dates.get(position))) {
-                selectedDates.add(dates.get(position));
-                holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.white_dfd));
-            } else {
-                selectedDates.remove(dates.get(position));
-                holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), android.R.color.transparent));
+            if(mapPeriod == null) {
+                if (!selectedDates.contains(dates.get(position))) {
+                    selectedDates.add(dates.get(position));
+                    holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.white_dfd));
+                } else {
+                    selectedDates.remove(dates.get(position));
+                    holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), android.R.color.transparent));
+                }
+            }else{
+                if (!seletedDatesName.contains(datesNames.get(position))) {
+                    seletedDatesName.add(datesNames.get(position));
+                    holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.white_dfd));
+                } else {
+                    seletedDatesName.remove(datesNames.get(position));
+                    holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), android.R.color.transparent));
+                }
             }
         });
     }
 
     @Override
     public int getItemCount() {
+        if(mapPeriod != null)
+            return mapPeriod.size();
         return datesNames != null ? datesNames.size() : 0;
     }
 
@@ -117,7 +142,16 @@ public class DateAdapter extends RecyclerView.Adapter<DateViewHolder> {
         return selectedDates;
     }
 
+    public List<String> clearFiltersPeriod(){
+        seletedDatesName.clear();
+        return seletedDatesName;
+    }
+
     public List<Date> getSelectedDates() {
         return selectedDates;
+    }
+
+    public List<String> getSeletedDatesName(){
+        return seletedDatesName;
     }
 }

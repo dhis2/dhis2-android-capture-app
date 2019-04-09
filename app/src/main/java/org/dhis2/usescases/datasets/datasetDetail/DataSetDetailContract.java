@@ -3,13 +3,11 @@ package org.dhis2.usescases.datasets.datasetDetail;
 import com.unnamed.b.atv.model.TreeNode;
 
 import org.dhis2.usescases.general.AbstractActivityContracts;
-import org.dhis2.utils.Period;
-import org.hisp.dhis.android.core.category.CategoryComboModel;
-import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import io.reactivex.Flowable;
 
@@ -22,15 +20,9 @@ public class DataSetDetailContract {
 
         void openDrawer();
 
-        void showTimeUnitPicker();
-
         void showRageDatePicker();
 
         void renderError(String message);
-
-        void setCatComboOptions(CategoryComboModel catCombo, List<CategoryOptionComboModel> catComboList);
-
-        void setOrgUnitFilter(StringBuilder orgUnitFilter);
 
         void showHideFilter();
 
@@ -48,8 +40,6 @@ public class DataSetDetailContract {
     public interface Presenter extends AbstractActivityContracts.Presenter {
         void init(View view);
 
-        void onTimeButtonClick();
-
         void onDateRangeButtonClick();
 
         void onOrgUnitButtonClick();
@@ -58,21 +48,18 @@ public class DataSetDetailContract {
 
         void onBackClick();
 
-        void onCatComboSelected(CategoryOptionComboModel categoryOptionComboModel, String orgUnitQuery);
-
-        void clearCatComboFilters(String orgUnitQuery);
-
         void onDataSetClick(String orgUnit, String orgUnitName, String perdiodId, String periodType, String initPeriodType, String catOptionComb);
 
         List<OrganisationUnitModel> getOrgUnits();
 
         void showFilter();
 
-        void getDataSets(Date fromDate, Date toDate, String orgUnitQuery);
-
         void getOrgUnits(Date date);
 
-        void getDataSetWithDates(List<Date> dates, Period period, String orgUnitQuery);
+        void getDataSetWithDates(List<String> periodIds, List<String> orgUnitQuery);
 
+        Map<String, String> getPeriodAvailableForFilter();
+
+        String getFirstPeriodSelected();
     }
 }

@@ -29,8 +29,11 @@ public class DataSetInitialContract {
         void showCatComboSelector(String catOptionUid, List<CategoryOption> data);
 
         String getDataSetUid();
+
         OrganisationUnitModel getSelectedOrgUnit();
+
         Date getSelectedPeriod();
+
         List<String> getSelectedCatOptions();
 
         String getPeriodType();
