@@ -16,8 +16,8 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialAc
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.IndicatorsFragment;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.NotesFragment;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipFragment;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.TEIDataFragment;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipFragment;
 import org.dhis2.usescases.teiDashboard.eventDetail.EventDetailActivity;
 import org.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
 import org.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity;
@@ -94,7 +94,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     }
 
     @Override
-    public LiveData<DashboardProgramModel> observeDashboardModel(){
+    public LiveData<DashboardProgramModel> observeDashboardModel() {
         return dashboardProgramModelLiveData;
     }
 
@@ -404,6 +404,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                                         RelationshipItemTrackedEntityInstance.builder().trackedEntityInstance(teUid).build()).build()
                         ))
                         .flatMapIterable(list -> list)
+                        .filter(relationship -> relationship.from().trackedEntityInstance().trackedEntityInstance().equals(teUid))
                         .map(relationship -> {
                             RelationshipType relationshipType = null;
                             for (RelationshipType type : d2.relationshipModule().relationshipTypes.get())
@@ -445,6 +446,36 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
     @Override
     public void subscribeToIndicators(IndicatorsFragment indicatorsFragment) {
+        compositeDisposable.add(
+                dashboardRepository.getIndicators(programUid)
+                        .map(indicators ->
+                                Observable.fromIterable(indicators)
+                                        .filter(indicator -> indicator.displayInForm() != null && indicator.displayInForm())
+                                        .map(indicator -> {
+                                            String indicatorValue = d2.programModule().programIndicatorEngine.getProgramIndicatorValue(
+                                                    dashboardProgramModel.getCurrentEnrollment().uid(),
+                                                    null,
+                                                    indicator.uid());
+                                            return Pair.create(indicator, indicatorValue == null ? "" : indicatorValue);
+                                        })
+                                        .filter(pair -> !pair.val1().isEmpty())
+                                        .flatMap(pair -> dashboardRepository.getLegendColorForIndicator(pair.val0(), pair.val1()))
+                                        .toList()
+                        )
+                        .flatMap(Single::toFlowable)
+                        .flatMap(indicators -> ruleRepository.calculate().map(this::applyRuleEffects)
+                                .map(ruleIndicators -> {
+                                    indicators.addAll(ruleIndicators);
+                                    return indicators;
+                                }))
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                indicatorsFragment.swapIndicators(),
+                                Timber::d
+                        )
+        );
+        /*
         compositeDisposable.add(dashboardRepository.getIndicators(programUid)
                 .map(indicators ->
                         Observable.fromIterable(indicators)
@@ -473,14 +504,17 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                 .subscribe(
                         calcResult -> applyRuleEffects(calcResult, indicatorsFragment),
                         Timber::e
-                ));
+                ));*/
     }
 
-    private void applyRuleEffects(Result<RuleEffect> calcResult, IndicatorsFragment indicatorsFragment) {
+
+    private List<Trio<ProgramIndicatorModel, String, String>> applyRuleEffects(Result<RuleEffect> calcResult) {
+
+        List<Trio<ProgramIndicatorModel, String, String>> indicators = new ArrayList<>();
 
         if (calcResult.error() != null) {
             Timber.e(calcResult.error());
-            return;
+            return new ArrayList<>();
         }
 
         for (RuleEffect ruleEffect : calcResult.items()) {
@@ -489,14 +523,16 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                 Trio<ProgramIndicatorModel, String, String> indicator = Trio.create(
                         ProgramIndicatorModel.builder().displayName(((RuleActionDisplayKeyValuePair) ruleAction).content()).build(),
                         ruleEffect.data(), "");
-                indicatorsFragment.addIndicator(indicator);
+                indicators.add(indicator);
             } else if (ruleAction instanceof RuleActionDisplayText) {
                 Trio<ProgramIndicatorModel, String, String> indicator = Trio.create(
                         ProgramIndicatorModel.builder().displayName(((RuleActionDisplayText) ruleAction).content()).build(),
                         ruleEffect.data(), "");
-                indicatorsFragment.addIndicator(indicator);
+                indicators.add(indicator);
             }
         }
+
+        return indicators;
     }
 
 

@@ -13,10 +13,12 @@ import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
+import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.dataelement.DataElement;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventCollectionRepository;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.period.DatePeriod;
 import org.hisp.dhis.android.core.program.Program;
@@ -24,6 +26,7 @@ import org.hisp.dhis.android.core.program.ProgramStageDataElement;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -63,7 +66,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
         if (!catOptCombList.isEmpty())
             for (CategoryOptionCombo catOptComb : catOptCombList)
                 eventRepo = eventRepo.byAttributeOptionComboUid().eq(catOptComb.uid());
-        return Transformations.switchMap(eventRepo.orderByEventDate(RepositoryScope.OrderByDirection.DESC).withAllChildren().getPaged(20), this::transform);
+        return Transformations.switchMap(eventRepo.byState().notIn(State.TO_DELETE).orderByEventDate(RepositoryScope.OrderByDirection.DESC).withAllChildren().getPaged(20), this::transform);
     }
 
     @NonNull
@@ -83,6 +86,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
             }
             List<Pair<String, String>> data = getData(event.trackedEntityDataValues(), showInReportsDataElements);
             boolean hasExpired = isExpired(event);
+            boolean inOrgUnitRange = checkOrgUnitRange(event.organisationUnit(), event.eventDate());
             CategoryOptionCombo catOptComb = d2.categoryModule().categoryOptionCombos.uid(event.attributeOptionCombo()).get();
             String attributeOptionCombo = catOptComb != null && !catOptComb.displayName().equals("default") ? catOptComb.displayName() : "";
 
@@ -94,7 +98,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
                     event.state(),
                     data,
                     event.status(),
-                    hasExpired,
+                    hasExpired || !inOrgUnitRange,
                     attributeOptionCombo);
         });
 
@@ -115,6 +119,18 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
                 program.expiryPeriodType(),
                 program.expiryDays());
 
+    }
+
+    private boolean checkOrgUnitRange(String orgUnitUid, Date eventDate) {
+        boolean inRange = true;
+        OrganisationUnit orgUnit = d2.organisationUnitModule().organisationUnits.uid(orgUnitUid).get();
+        if (orgUnit.openingDate() != null && eventDate.before(orgUnit.openingDate()))
+            inRange = false;
+        if (orgUnit.closedDate() != null && eventDate.after(orgUnit.closedDate()))
+            inRange = false;
+
+
+        return inRange;
     }
 
     private String getOrgUnitName(String orgUnitUid) {
@@ -191,7 +207,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
         canWrite = d2.programModule().programs.uid(programUid).get().access().data().write();
         if (canWrite && d2.programModule().programStages.byProgramUid().eq(programUid).one().get() != null)
             canWrite = d2.programModule().programStages.byProgramUid().eq(programUid).one().get().access().data().write();
-        else if(d2.programModule().programStages.byProgramUid().eq(programUid).one().get() == null)
+        else if (d2.programModule().programStages.byProgramUid().eq(programUid).one().get() == null)
             canWrite = false;
 
         return canWrite;
