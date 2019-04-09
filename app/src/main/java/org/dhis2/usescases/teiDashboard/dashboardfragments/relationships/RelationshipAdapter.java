@@ -1,4 +1,4 @@
-package org.dhis2.usescases.teiDashboard.adapters;
+package org.dhis2.usescases.teiDashboard.dashboardfragments.relationships;
 
 import androidx.databinding.DataBindingUtil;
 import androidx.annotation.NonNull;
@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ItemRelationshipBinding;
-import org.dhis2.usescases.teiDashboard.TeiDashboardContracts;
 
 import org.hisp.dhis.android.core.relationship.Relationship;
 import org.hisp.dhis.android.core.relationship.RelationshipType;
@@ -23,10 +22,10 @@ import java.util.List;
 
 public class RelationshipAdapter extends RecyclerView.Adapter<RelationshipViewHolder> {
 
-    private TeiDashboardContracts.Presenter presenter;
+    private RelationshipContracts.Presenter presenter;
     private List<Pair<Relationship, RelationshipType>> relationships;
 
-    public RelationshipAdapter(TeiDashboardContracts.Presenter presenter) {
+    public RelationshipAdapter(RelationshipContracts.Presenter presenter) {
         this.presenter = presenter;
         this.relationships = new ArrayList<>();
     }

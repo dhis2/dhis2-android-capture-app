@@ -1,20 +1,20 @@
-package org.dhis2.usescases.teiDashboard.adapters;
+package org.dhis2.usescases.teiDashboard.dashboardfragments.notes;
 
-import androidx.databinding.DataBindingUtil;
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ItemNotesBinding;
-
 import org.hisp.dhis.android.core.enrollment.note.NoteModel;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.databinding.DataBindingUtil;
+import androidx.recyclerview.widget.RecyclerView;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 
@@ -32,14 +32,15 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesViewholder> {
         this.notes = new ArrayList<>();
     }
 
+    @NotNull
     @Override
-    public NotesViewholder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public NotesViewholder onCreateViewHolder(@NotNull ViewGroup parent, int viewType) {
         ItemNotesBinding itemNotesBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.item_notes, parent, false);
         return new NotesViewholder(itemNotesBinding);
     }
 
     @Override
-    public void onBindViewHolder(NotesViewholder holder, int position) {
+    public void onBindViewHolder(@NotNull NotesViewholder holder, int position) {
         holder.bind(notes.get(position));
     }
 

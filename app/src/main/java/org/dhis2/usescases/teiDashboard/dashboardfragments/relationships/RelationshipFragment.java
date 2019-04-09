@@ -12,23 +12,24 @@ import com.wangjie.rapidfloatingactionbutton.contentimpl.labellist.RFACLabelItem
 import com.wangjie.rapidfloatingactionbutton.contentimpl.labellist.RapidFloatingActionContentLabelList;
 import com.wangjie.rapidfloatingactionbutton.util.RFABTextUtil;
 
+import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.FragmentRelationshipsBinding;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
-import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
-import org.dhis2.usescases.teiDashboard.TeiDashboardContracts;
-import org.dhis2.usescases.teiDashboard.adapters.RelationshipAdapter;
 import org.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.hisp.dhis.android.core.relationship.Relationship;
 import org.hisp.dhis.android.core.relationship.RelationshipType;
 import org.hisp.dhis.android.core.relationship.RelationshipTypeModel;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -42,53 +43,51 @@ import static android.app.Activity.RESULT_OK;
  * QUADRAM. Created by ppajuelo on 29/11/2017.
  */
 
-public class RelationshipFragment extends FragmentGlobalAbstract {
+public class RelationshipFragment extends FragmentGlobalAbstract implements RelationshipContracts.View {
 
-    FragmentRelationshipsBinding binding;
-    private TeiDashboardContracts.Presenter presenter;
+    @Inject
+    RelationshipContracts.Presenter presenter;
 
-    static RelationshipFragment instance;
+    private FragmentRelationshipsBinding binding;
+
     private RelationshipAdapter relationshipAdapter;
     private RapidFloatingActionHelper rfaHelper;
     private RelationshipTypeModel relationshipType;
 
-    static public RelationshipFragment getInstance() {
-        if (instance == null) {
-            instance = new RelationshipFragment();
-        }
-        return instance;
-    }
-
-    public static RelationshipFragment createInstance() {
-        return instance = new RelationshipFragment();
-    }
-
-
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NotNull Context context) {
         super.onAttach(context);
-        presenter = ((TeiDashboardMobileActivity) context).getPresenter();
+        TeiDashboardMobileActivity activity = (TeiDashboardMobileActivity) context;
+        if (((App) context.getApplicationContext()).dashboardComponent() != null)
+            ((App) context.getApplicationContext())
+                    .dashboardComponent()
+                    .plus(new RelationshipModule(activity.getProgramUid(), activity.getTeiUid()))
+                    .inject(this);
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_relationships, container, false);
-        binding.setPresenter(presenter);
         relationshipAdapter = new RelationshipAdapter(presenter);
         binding.relationshipRecycler.setAdapter(relationshipAdapter);
-        presenter.observeDashboardModel().observe(this, this::setData);
         return binding.getRoot();
     }
 
-    public void setData(DashboardProgramModel dashboardProgramModel) {
-        binding.executePendingBindings();
-
-        presenter.subscribeToRelationships(this);
-        presenter.subscribeToRelationshipTypes(this);
+    @Override
+    public void onResume() {
+        super.onResume();
+        presenter.init(this);
 
     }
 
+    @Override
+    public void onPause() {
+        presenter.onDettach();
+        super.onPause();
+    }
+
+    @Override
     public Consumer<List<Pair<Relationship, RelationshipType>>> setRelationships() {
         return relationships -> {
             if (relationshipAdapter != null) {
@@ -97,8 +96,14 @@ public class RelationshipFragment extends FragmentGlobalAbstract {
         };
     }
 
+    @Override
     public Consumer<List<Trio<RelationshipTypeModel, String, Integer>>> setRelationshipTypes() {
         return this::initFab;
+    }
+
+    @Override
+    public void goToAddRelationship(Intent intent) {
+        this.startActivityForResult(intent, Constants.REQ_ADD_RELATIONSHIP);
     }
 
     @Override

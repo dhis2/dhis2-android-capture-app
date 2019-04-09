@@ -1,4 +1,4 @@
-package org.dhis2.usescases.teiDashboard.dashboardfragments;
+package org.dhis2.usescases.teiDashboard.dashboardfragments.indicators;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -6,22 +6,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.FragmentIndicatorsBinding;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
-import org.dhis2.usescases.teiDashboard.TeiDashboardContracts;
-import org.dhis2.usescases.teiDashboard.adapters.IndicatorsAdapter;
 import org.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
 import org.hisp.dhis.android.core.program.ProgramIndicatorModel;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
-import androidx.fragment.app.Fragment;
 import io.reactivex.functions.Consumer;
 
 
@@ -29,23 +29,23 @@ import io.reactivex.functions.Consumer;
  * QUADRAM. Created by ppajuelo on 29/11/2017.
  */
 
-public class IndicatorsFragment extends FragmentGlobalAbstract {
+public class IndicatorsFragment extends FragmentGlobalAbstract implements IndicatorsContracts.View {
 
-    private static IndicatorsFragment instance;
+    @Inject
+    IndicatorsContracts.Presenter presenter;
+
     private IndicatorsAdapter adapter;
 
-    private TeiDashboardContracts.Presenter presenter;
-
-    static public IndicatorsFragment getInstance() {
-        if (instance == null)
-            instance = new IndicatorsFragment();
-        return instance;
-    }
 
     @Override
     public void onAttach(@NotNull Context context) {
         super.onAttach(context);
-        presenter = ((TeiDashboardMobileActivity) context).getPresenter();
+        TeiDashboardMobileActivity activity = (TeiDashboardMobileActivity) context;
+        if (((App) context.getApplicationContext()).dashboardComponent() != null)
+            ((App) context.getApplicationContext())
+                    .dashboardComponent()
+                    .plus(new IndicatorsModule(activity.getProgramUid(), activity.getTeiUid()))
+                    .inject(this);
     }
 
     @Nullable
@@ -60,25 +60,17 @@ public class IndicatorsFragment extends FragmentGlobalAbstract {
     @Override
     public void onResume() {
         super.onResume();
-        presenter.subscribeToIndicators(this);
+        presenter.init(this);
     }
 
     @Override
-    public void onDestroy() {
-        instance = null;
-        super.onDestroy();
+    public void onPause() {
+        presenter.onDettach();
+        super.onPause();
     }
 
+    @Override
     public Consumer<List<Trio<ProgramIndicatorModel, String, String>>> swapIndicators() {
         return indicators -> adapter.setIndicators(indicators);
-    }
-
-    public void addIndicator(Trio<ProgramIndicatorModel, String, String> indicator) {
-
-        getActivity().runOnUiThread(() -> adapter.addIndicator(indicator));
-    }
-
-    public static Fragment createInstance() {
-        return instance = new IndicatorsFragment();
     }
 }

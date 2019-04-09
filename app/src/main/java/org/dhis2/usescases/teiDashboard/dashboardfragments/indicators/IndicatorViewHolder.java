@@ -1,4 +1,4 @@
-package org.dhis2.usescases.teiDashboard.adapters;
+package org.dhis2.usescases.teiDashboard.dashboardfragments.indicators;
 
 import android.graphics.Color;
 import androidx.annotation.NonNull;
@@ -17,7 +17,7 @@ import org.hisp.dhis.android.core.program.ProgramIndicatorModel;
  * QUADRAM. Created by ppajuelo on 29/11/2017.
  */
 
-class IndicatorViewHolder extends RecyclerView.ViewHolder {
+public class IndicatorViewHolder extends RecyclerView.ViewHolder {
     ItemIndicatorBinding binding;
 
     IndicatorViewHolder(ItemIndicatorBinding binding) {

@@ -6,8 +6,8 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 
 import org.dhis2.R;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.IndicatorsFragment;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.NotesFragment;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.IndicatorsFragment;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.notes.NotesFragment;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipFragment;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.TEIDataFragment;
 import org.jetbrains.annotations.NotNull;
@@ -36,11 +36,11 @@ public class DashboardPagerAdapter extends FragmentStatePagerAdapter {
             default:
                 return TEIDataFragment.createInstance();
             case 1:
-                return IndicatorsFragment.createInstance();
+                return new IndicatorsFragment();
             case 2:
-                return  RelationshipFragment.createInstance();
+                return  new RelationshipFragment();
             case 3:
-                return NotesFragment.createInstance();
+                return new NotesFragment();
 
         }
     }

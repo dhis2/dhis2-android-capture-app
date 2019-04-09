@@ -1,4 +1,4 @@
-package org.dhis2.usescases.teiDashboard.adapters;
+package org.dhis2.usescases.teiDashboard.dashboardfragments.relationships;
 
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -6,6 +6,7 @@ import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ItemRelationshipBinding;
 import org.dhis2.usescases.teiDashboard.TeiDashboardContracts;
 
+import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipContracts;
 import org.hisp.dhis.android.core.relationship.Relationship;
 import org.hisp.dhis.android.core.relationship.RelationshipType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
@@ -30,13 +31,13 @@ public class RelationshipViewHolder extends RecyclerView.ViewHolder {
         this.compositeDisposable = new CompositeDisposable();
     }
 
-    public void bind(TeiDashboardContracts.Presenter presenter, Pair<Relationship, RelationshipType> relationships) {
+    public void bind(RelationshipContracts.Presenter presenter, Pair<Relationship, RelationshipType> relationships) {
 
         Relationship relationship = relationships.val0();
         String relationshipTEIUid;
         boolean from;
 
-        if (!presenter.getTeUid().equals(relationship.from().trackedEntityInstance().trackedEntityInstance())) {
+        if (!presenter.getTeiUid().equals(relationship.from().trackedEntityInstance().trackedEntityInstance())) {
             relationshipTEIUid = relationship.from().trackedEntityInstance().trackedEntityInstance();
             from = true;
         }else {
@@ -51,9 +52,7 @@ public class RelationshipViewHolder extends RecyclerView.ViewHolder {
                         )
         );
 
-        binding.teiRelationshipLink.setOnClickListener(view -> {
-            presenter.openDashboard(relationshipTEIUid);
-        });
+        binding.teiRelationshipLink.setOnClickListener(view -> presenter.openDashboard(relationshipTEIUid));
 
         binding.setPresenter(presenter);
         binding.setRelationship(relationship);
@@ -61,7 +60,6 @@ public class RelationshipViewHolder extends RecyclerView.ViewHolder {
         binding.relationshipName.setText(relationshipNameText!=null?relationshipNameText:relationships.val1().displayName());
         binding.executePendingBindings();
 
-//        presenter.subscribeToRelationshipLabel(relationship, binding.relationshipName);
     }
 
     private void setAttributes(List<TrackedEntityAttributeValueModel> trackedEntityAttributeValueModels) {
