@@ -427,7 +427,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                 binding.location1.setOnClickListener(v -> presenter.onLocationClick());
             if(binding.location2.isClickable())
                 binding.location2.setOnClickListener(v -> presenter.onLocation2Click());
-        }
+        }else
+            binding.coordinatesLayout.setVisibility(View.GONE);
 
 
     }

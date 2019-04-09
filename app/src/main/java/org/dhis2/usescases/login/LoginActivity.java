@@ -206,6 +206,7 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
     @Override
     public void showCrashlyticsDialog() {
         showInfoDialog(getString(R.string.send_user_name_title), getString(R.string.send_user_name_mesage),
+                getString(R.string.action_agree), getString(R.string.cancel),
                 new OnDialogClickListener() {
                     @Override
                     public void onPossitiveClick(AlertDialog alertDialog) {
