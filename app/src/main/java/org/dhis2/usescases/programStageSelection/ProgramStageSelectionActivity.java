@@ -107,7 +107,7 @@ public class ProgramStageSelectionActivity extends ActivityGlobalAbstract implem
         bundle.putInt(EVENT_SCHEDULE_INTERVAL, getIntent().getIntExtra(EVENT_SCHEDULE_INTERVAL, 0));
         intent.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT);
         intent.putExtras(bundle);
-        startActivity(intent, bundle);
+        startActivity(intent);
         finish();
     }
 }

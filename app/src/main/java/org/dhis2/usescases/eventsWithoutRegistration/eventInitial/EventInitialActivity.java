@@ -407,7 +407,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             binding.coordinatesLayout.setVisibility(View.VISIBLE);
             binding.location1.setOnClickListener(v -> presenter.onLocationClick());
             binding.location2.setOnClickListener(v -> presenter.onLocation2Click());
-        }
+        }else
+            binding.coordinatesLayout.setVisibility(View.GONE);
 
         if (eventModel != null &&
                 (DateUtils.getInstance().isEventExpired(null, eventModel.completedDate(), program.completeEventsExpiryDays()) ||

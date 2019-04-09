@@ -288,6 +288,20 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         return enrollment == null || enrollment.status() == EnrollmentStatus.ACTIVE;
     }
 
+    private boolean inOrgUnitRange(String eventUid) {
+        Event event = d2.eventModule().events.uid(eventUid).get();
+        String orgUnitUid = event.organisationUnit();
+        Date eventDate = event.eventDate();
+        boolean inRange = true;
+        OrganisationUnit orgUnit = d2.organisationUnitModule().organisationUnits.uid(orgUnitUid).get();
+        if (eventDate != null && orgUnit.openingDate() != null && eventDate.before(orgUnit.openingDate()))
+            inRange = false;
+        if (eventDate != null && orgUnit.closedDate() != null && eventDate.after(orgUnit.closedDate()))
+            inRange = false;
+
+        return inRange;
+    }
+
     @Override
     public boolean isEnrollmentCancelled() {
         Enrollment enrollment = d2.enrollmentModule().enrollments.uid(d2.eventModule().events.uid(eventUid).get().enrollment()).get();
@@ -325,7 +339,8 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                         return "";
                     else
                         return categoryOptionComboRepo.get().displayName();
-                });
+                })
+                .map(displayName -> displayName.equals("default") ? "" : displayName);
     }
 
     @Override
@@ -506,7 +521,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         return fieldFactory.create(uid, formName == null ? displayName : formName,
                 ValueType.valueOf(valueTypeName), mandatory, optionSet, dataValue,
                 programStageSection, allowFurureDates,
-                isEnrollmentOpen() && eventStatus == EventStatus.ACTIVE && accessDataWrite,
+                isEnrollmentOpen() && eventStatus == EventStatus.ACTIVE && accessDataWrite && inOrgUnitRange(eventUid),
                 renderingType, description, fieldRendering, optionCount, objectStyle);
     }
 
