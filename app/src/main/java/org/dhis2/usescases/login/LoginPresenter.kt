@@ -30,7 +30,6 @@ import retrofit2.Response
 import timber.log.Timber
 
 class LoginPresenter internal constructor(private val configurationRepository: ConfigurationRepository) : LoginContracts.Presenter {
-
     private lateinit var view: LoginContracts.View
     private var userManager: UserManager? = null
     private lateinit var disposable: CompositeDisposable
@@ -204,7 +203,7 @@ class LoginPresenter internal constructor(private val configurationRepository: C
                         .title("Title")
                         .description("description")
                         .negativeButtonText("Cancel")
-                        .negativeButtonListener(DialogInterface.OnClickListener { dialogInterface, i ->  })
+                        .negativeButtonListener(DialogInterface.OnClickListener { dialogInterface, i -> })
                         .executor(ActivityCompat.getMainExecutor(view.abstractActivity))
                         .build()
                         .authenticate(view.abstractActivity)
@@ -212,5 +211,9 @@ class LoginPresenter internal constructor(private val configurationRepository: C
                         .subscribe(
                                 { view.checkSecuredCredentials() },
                                 { error -> view.displayMessage("AUTH ERROR") }))
+    }
+
+    override fun onAccountRecovery() {
+        view.openAccountRecovery()
     }
 }

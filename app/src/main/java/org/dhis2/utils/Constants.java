@@ -41,6 +41,8 @@ public class Constants {
     public static final int TIME_15M = 15 * 60;
     public static final int TIME_HOURLY = 60 * 60;
 
+    // LOGIN
+    public static final String ACCOUNT_RECOVERY = "/dhis-web-commons/security/recovery.action";
 
     //EVENT_CREATION
     public static final String PREVIOUS_DASHBOARD_PROGRAM = "previous_dashboard_program";

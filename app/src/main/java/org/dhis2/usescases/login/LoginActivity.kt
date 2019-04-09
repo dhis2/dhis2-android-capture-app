@@ -3,10 +3,14 @@ package org.dhis2.usescases.login
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
 import android.text.InputType
 import android.text.TextUtils.isEmpty
+import android.text.TextWatcher
+import android.util.Patterns
 import android.view.View
 import android.view.WindowManager
+import android.webkit.URLUtil
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
@@ -17,6 +21,7 @@ import com.andrognito.pinlockview.PinLockListener
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import de.adorsys.android.securestoragelibrary.SecurePreferences
+import okhttp3.HttpUrl
 import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.data.tuples.Trio
@@ -25,7 +30,9 @@ import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.sync.SyncActivity
 import org.dhis2.utils.*
+import org.dhis2.utils.Constants.ACCOUNT_RECOVERY
 import org.dhis2.utils.Constants.RQ_QR_SCANNER
+import org.dhis2.utils.WebViewActivity.Companion.WEB_VIEW_URL
 import timber.log.Timber
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -76,9 +83,32 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
             binding.userPassEdit.setText(testingEnvironment.val2())
         })
 
+        binding.serverUrlEdit.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(p0: Editable?) {
+                if (checkUrl(binding.serverUrlEdit.text.toString())) {
+                    binding.accountRecovery.visibility = View.VISIBLE
+                } else {
+                    binding.accountRecovery.visibility = View.GONE
+                }
+            }
+
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                // nothing
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                // nothing
+            }
+        })
+
         setTestingCredentials()
         setAutocompleteAdapters()
+    }
 
+    private fun checkUrl(urlString: String): Boolean {
+        return URLUtil.isValidUrl(urlString) &&
+                Patterns.WEB_URL.matcher(urlString).matches() &&
+                HttpUrl.parse(urlString) != null
     }
 
     private fun setTestingCredentials() {
@@ -342,5 +372,9 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     }
 //endregion
 
-
+    override fun openAccountRecovery() {
+        val intent = Intent(this, WebViewActivity::class.java)
+        intent.putExtra(WEB_VIEW_URL, binding.serverUrlEdit.text.toString() + ACCOUNT_RECOVERY);
+        startActivity(intent);
+    }
 }
