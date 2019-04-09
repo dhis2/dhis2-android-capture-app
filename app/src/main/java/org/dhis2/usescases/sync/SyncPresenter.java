@@ -4,6 +4,7 @@ import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.service.ReservedValuesWorker;
 import org.dhis2.data.service.SyncDataWorker;
 import org.dhis2.data.service.SyncMetadataWorker;
+import org.hisp.dhis.android.core.D2;
 
 import java.util.concurrent.TimeUnit;
 
@@ -34,6 +35,7 @@ public class SyncPresenter implements SyncContracts.Presenter {
     public void init(SyncContracts.View view) {
         this.view = view;
         this.disposable = new CompositeDisposable();
+
     }
 
     @Override
@@ -71,21 +73,6 @@ public class SyncPresenter implements SyncContracts.Presenter {
                 ));
 
     }
-
-/*
-    @Override
-    public void syncAggregatesData() {
-        disposable.add(aggregatesData()
-                .map(response -> SyncResult.success())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .onErrorReturn(throwable -> SyncResult.failure(
-                        throwable.getMessage() == null ? "" : throwable.getMessage()))
-                .startWith(SyncResult.progress())
-                .subscribe(update(SyncActivity.SyncState.AGGREGATES),
-                        throwable -> view.displayMessage(throwable.getMessage())
-                ));
-    }*/
 
     @Override
     public void syncReservedValues() {
