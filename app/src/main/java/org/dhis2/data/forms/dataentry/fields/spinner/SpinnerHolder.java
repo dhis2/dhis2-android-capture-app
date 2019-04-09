@@ -146,7 +146,6 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
     public void onSelectOption(OptionModel option) {
         setValueOption(option.displayName(), option.code());
         OptionSetDialog.newInstance().dismiss();
-        delete.setVisibility(View.VISIBLE);
     }
 
 
@@ -165,6 +164,13 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
     private void setValueOption(String optionDisplayName, String optionCode) {
 
         editText.setText(optionDisplayName);
+
+        if (optionDisplayName != null && !optionDisplayName.isEmpty()) {
+            delete.setVisibility(View.VISIBLE);
+        } else {
+            delete.setVisibility(View.GONE);
+        }
+
         processor.onNext(
                 RowAction.create(viewModel.uid(), isSearchMode ? optionDisplayName + "_os_" + optionCode : optionCode, true)
         );
