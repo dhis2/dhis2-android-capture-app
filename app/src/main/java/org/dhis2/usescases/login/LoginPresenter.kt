@@ -51,7 +51,7 @@ class LoginPresenter internal constructor(private val configurationRepository: C
                     .subscribe({ isUserLoggedIn ->
                         val prefs = view.abstracContext.getSharedPreferences(
                                 Constants.SHARE_PREFS, Context.MODE_PRIVATE)
-                        if (isUserLoggedIn != null && !prefs.getBoolean("SessionLocked", false)) {
+                        if (isUserLoggedIn && !prefs.getBoolean("SessionLocked", false)) {
                             view.startActivity(MainActivity::class.java, null, true, true, null)
                         } else if (prefs.getBoolean("SessionLocked", false)) {
                             view.showUnlockButton()
@@ -69,7 +69,7 @@ class LoginPresenter internal constructor(private val configurationRepository: C
                             .subscribe(
                                     { systemInfo ->
                                         if (systemInfo.contextPath() != null)
-                                            view.setUrl(systemInfo.contextPath()!!)
+                                            view.setUrl(systemInfo.contextPath() ?: "")
                                         else
                                             view.setUrl(view.context.getString(R.string.login_https))
                                     },
@@ -117,7 +117,7 @@ class LoginPresenter internal constructor(private val configurationRepository: C
                                 if (user == null)
                                     Response.error<Any>(404, ResponseBody.create(MediaType.parse("text"), "NOT FOUND"))
                                 else {
-                                    prefs.edit().putString(Constants.USER, user.userCredentials()!!.username()).apply()
+                                    prefs.edit().putString(Constants.USER, user.userCredentials()?.username()).apply()
                                     Response.success<Any>(null)
                                 }
                             }
