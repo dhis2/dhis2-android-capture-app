@@ -403,7 +403,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
 
     @Override
     public void goToTable(int numTable) {
-        binding.scroll.scrollTo(0, binding.tableLayout.getChildAt(numTable).getTop());
+        binding.scroll.scrollTo(0, binding.tableLayout.getChildAt(numTable*2).getTop());
     }
 
     public int currentNumTables() {

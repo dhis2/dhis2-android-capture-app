@@ -61,13 +61,13 @@ public class RadioButtonCellHolder extends FormViewHolder {
 
         if(!(accessDataWrite && checkBoxViewModel.editable())) {
             textView.setEnabled(false);
-            textView.setBackgroundColor(ContextCompat.getColor(context, R.color.bg_black_e6e));
-        }
+        }else
+            textView.setEnabled(true);
 
         if(checkBoxViewModel.mandatory())
             binding.icMandatory.setVisibility(View.VISIBLE);
         else
-            binding.icMandatory.setVisibility(View.GONE);
+            binding.icMandatory.setVisibility(View.INVISIBLE);
 
     }
 

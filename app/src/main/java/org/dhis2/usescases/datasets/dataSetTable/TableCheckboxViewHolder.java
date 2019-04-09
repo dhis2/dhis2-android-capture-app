@@ -1,12 +1,7 @@
 package org.dhis2.usescases.datasets.dataSetTable;
 
 
-import android.os.Build;
-import android.widget.RadioButton;
-
-import org.dhis2.R;
 import org.dhis2.databinding.ItemTableCheckboxBinding;
-
 import androidx.recyclerview.widget.RecyclerView;
 
 public class TableCheckboxViewHolder extends RecyclerView.ViewHolder{
@@ -21,36 +16,22 @@ public class TableCheckboxViewHolder extends RecyclerView.ViewHolder{
     }
 
     public void bind(String title, int position, int selectedPosition) {
-        /*RadioButton radio = new RadioButton(binding.getRoot().getContext());
-        radio.setText(title);
 
-        radio.setTextColor(binding.getRoot().getContext().getResources().getColor(R.color.white));
-*/
         binding.setTitle(title);
+
         if(position != selectedPosition) {
             binding.radioButton.setChecked(false);
         }
 
         binding.radioButton.setOnCheckedChangeListener((checkButton, isChecked) ->{
             if(isChecked) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    binding.radioButton.setButtonDrawable(binding.getRoot().getContext().getResources().getDrawable(R.drawable.ic_check_circle_36, null));
-                }
+                binding.radioButton.setChecked(true);
                 presenter.onClickSelectTable(this.getAdapterPosition());
 
             }else
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    binding.radioButton.setButtonDrawable(binding.getRoot().getContext().getResources().getDrawable(android.R.color.transparent, null));
-                }
-
+                binding.radioButton.setChecked(false);
         } );
 
         binding.executePendingBindings();
-
-       /* if(position == 0)
-            radio.setChecked(true);
-
-        binding.radioGroup.addView(radio);*/
-        //binding.setTitle(title);
     }
 }

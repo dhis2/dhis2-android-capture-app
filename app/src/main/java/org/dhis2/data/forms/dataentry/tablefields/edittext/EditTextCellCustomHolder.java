@@ -82,9 +82,12 @@ final class EditTextCellCustomHolder extends FormViewHolder {
             } else {
                 customBinding.inputEditText.setEnabled(false);
             }
-        } else {
+        }else {
             customBinding.inputEditText.setEnabled(false);
+            if(editTextModel.dataElement().isEmpty())
+                customBinding.inputEditText.setActivated(true);
         }
+
 
         customBinding.executePendingBindings();
     }

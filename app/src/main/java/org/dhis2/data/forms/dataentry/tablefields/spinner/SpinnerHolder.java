@@ -65,30 +65,15 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
     public void update(SpinnerViewModel viewModel, boolean accessDataWrite) {
         this.viewModel = viewModel;
 
-        editText.setEnabled(viewModel.editable());
-        editText.setFocusable(false);
-        editText.setClickable(viewModel.editable());
-
         editText.setText(viewModel.value()); //option code is already transformed to value in the fieldviewmodelfactory implementation
-
-        if (!isEmpty(viewModel.warning())) {
-            inputLayout.setError(viewModel.warning());
-        } else if (!isEmpty(viewModel.error())) {
-            inputLayout.setError(viewModel.error());
-        }
 
         if (!viewModel.editable()) {
             editText.setEnabled(false);
-            editText.setBackgroundColor(ContextCompat.getColor(editText.getContext(), R.color.bg_black_e6e));
         } else if(accessDataWrite) {
             editText.setEnabled(true);
-            editText.setBackground(null);
         }else{
             editText.setEnabled(false);
         }
-
-        descriptionText = viewModel.description();
-
     }
 
     public void dispose() {
