@@ -5,20 +5,18 @@ import android.database.Cursor;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.forms.RulesRepository;
-import org.dhis2.data.tuples.Pair;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.EventCreationType;
 import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.State;
+import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 import org.hisp.dhis.rules.RuleEngine;
 import org.hisp.dhis.rules.RuleEngineContext;
 import org.hisp.dhis.rules.RuleExpressionEvaluator;
@@ -50,18 +48,6 @@ import static android.text.TextUtils.isEmpty;
  */
 
 public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectionRepository {
-
-    private static final String QUERY_ENROLLMENT = "SELECT\n" +
-            "  Enrollment.uid,\n" +
-            "  Enrollment.incidentDate,\n" +
-            "  Enrollment.enrollmentDate,\n" +
-            "  Enrollment.status,\n" +
-            "  Enrollment.organisationUnit,\n" +
-            "  Program.displayName\n" +
-            "FROM Enrollment\n" +
-            "JOIN Program ON Program.uid = Enrollment.program\n" +
-            "WHERE Enrollment.uid = ? \n" +
-            "LIMIT 1;";
 
     private static final String QUERY_ATTRIBUTE_VALUES = "SELECT\n" +
             "  Field.id,\n" +
@@ -95,7 +81,9 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
             "FROM Event\n" +
             "JOIN ProgramStage ON ProgramStage.uid = Event.programStage\n" +
             "WHERE Event.enrollment = ?\n" +
-            " AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'";
+            " AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'" +
+            " AND " + EventModel.TABLE + "." + EventModel.Columns.STATUS + " IN ( '" + EventStatus.ACTIVE.name() + ", " + EventStatus.COMPLETED.name() + "' )";
+
 
     private static final String QUERY_VALUES = "SELECT " +
             "  Event.eventDate," +
@@ -195,76 +183,56 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
                 }).toFlowable(BackpressureStrategy.LATEST);
     }
 
-    @NonNull
-    private Flowable<List<RuleDataValue>> queryDataValues(String eventUid) {
-        return briteDatabase.createQuery(Arrays.asList(EventModel.TABLE,
-                TrackedEntityDataValueModel.TABLE), QUERY_VALUES, eventUid == null ? "" : eventUid)
-                .mapToList(cursor -> {
-                    Date eventDate = DateUtils.databaseDateFormat().parse(cursor.getString(0));
-                    String programStage = cursor.getString(1);
-                    String dataElement = cursor.getString(2);
-                    String value = cursor.getString(3) != null ? cursor.getString(3) : "";
-                    Boolean useCode = cursor.getInt(4) == 1;
-                    String optionCode = cursor.getString(5);
-                    String optionName = cursor.getString(6);
-                    if (!isEmpty(optionCode) && !isEmpty(optionName))
-                        value = useCode ? optionCode : optionName; //If de has optionSet then check if value should be code or name for program rules
-                    return RuleDataValue.create(eventDate, programStage, dataElement, value);
-                }).toFlowable(BackpressureStrategy.LATEST);
-    }
-
-    private Flowable<RuleEnrollment> ruleEnrollemt(String enrollmentUid) {
+    private Flowable<RuleEnrollment> ruleEnrollment(String enrollmentUid) {
         return briteDatabase.createQuery(Arrays.asList(EnrollmentModel.TABLE,
                 TrackedEntityAttributeValueModel.TABLE), QUERY_ATTRIBUTE_VALUES, enrollmentUid == null ? "" : enrollmentUid)
                 .mapToList(cursor -> RuleAttributeValue.create(
                         cursor.getString(0), cursor.getString(1))
                 ).toFlowable(BackpressureStrategy.LATEST)
-                .flatMap(attributeValues ->
+                .flatMap(attributeValues -> {
 
-                        briteDatabase.createQuery(EnrollmentModel.TABLE, QUERY_ENROLLMENT, enrollmentUid == null ? "" : enrollmentUid)
-                                .mapToOne(cursor -> {
-                                    Date enrollmentDate = DateUtils.databaseDateFormat().parse(cursor.getString(2));
-                                    Date incidentDate = cursor.isNull(1) ?
-                                            enrollmentDate : DateUtils.databaseDateFormat().parse(cursor.getString(1));
-                                    RuleEnrollment.Status status = RuleEnrollment.Status
-                                            .valueOf(cursor.getString(3));
-                                    String orgUnit = cursor.getString(4);
-                                    String programName = cursor.getString(5);
-                                    String ouCode = getOrgUnitCode(orgUnit);
-                                    return RuleEnrollment.create(cursor.getString(0),
-                                            incidentDate, enrollmentDate, status, orgUnit, ouCode, attributeValues, programName);
-                                }).toFlowable(BackpressureStrategy.LATEST)
-                );
+                    Enrollment enrollment = d2.enrollmentModule().enrollments.byUid().eq(enrollmentUid == null ? "" : enrollmentUid).one().get();
+                    String programName = d2.programModule().programs.byUid().eq(enrollment.program()).one().get().displayName();
+                    Date enrollmentDate = enrollment.enrollmentDate();
+                    Date incidentDate = enrollment.incidentDate() == null ? enrollmentDate : enrollment.incidentDate();
+                    RuleEnrollment.Status status = RuleEnrollment.Status.valueOf(enrollment.status().name());
+
+                    return Flowable.just(RuleEnrollment.create(
+                            enrollment.uid(),
+                            incidentDate,
+                            enrollmentDate,
+                            status,
+                            enrollment.organisationUnit(),
+                            getOrgUnitCode(enrollment.organisationUnit()),
+                            attributeValues,
+                            programName)
+                    );
+                });
     }
 
     @Nonnull
     private String getOrgUnitCode(String orgUnitUid) {
-        String ouCode = "";
-        try (Cursor cursor = briteDatabase.query("SELECT code FROM OrganisationUnit WHERE uid = ? LIMIT 1", orgUnitUid)) {
-            if (cursor != null && cursor.moveToFirst()) {
-                ouCode = cursor.getString(0);
-            }
-        }
-        return ouCode;
+        String ouCode = d2.organisationUnitModule().organisationUnits.byUid().eq(orgUnitUid).one().get().code();
+        return ouCode == null ? "" : ouCode;
     }
 
     @NonNull
     @Override
     public Flowable<List<ProgramStage>> enrollmentProgramStages(String programId, String enrollmentUid) {
-        List<String> currentprogramsStages = new ArrayList<>();
+        List<String> currentProgramStages = new ArrayList<>();
         List<ProgramStage> selectableStages = new ArrayList<>();
         List<Event> events = d2.eventModule().events.byEnrollmentUid().eq(enrollmentUid == null ? "" : enrollmentUid).byState().neq(State.TO_DELETE).get();
         for (Event event : events)
-            currentprogramsStages.add(event.programStage());
+            currentProgramStages.add(event.programStage());
 
         return Observable.just(!Objects.equals(eventCreationType, EventCreationType.SCHEDULE.name()) ?
-                d2.programModule().programStages.byProgramUid().eq(programId).get() :
-                d2.programModule().programStages.byProgramUid().eq(programId).byHideDueDate().eq(false).get())
+                d2.programModule().programStages.byProgramUid().eq(programId).withStyle().get() :
+                d2.programModule().programStages.byProgramUid().eq(programId).withStyle().byHideDueDate().eq(false).get())
                 .map(programStages -> {
                     boolean isSelectable;
                     for (ProgramStage programStage : programStages) {
                         isSelectable = true;
-                        for (String enrollmentStage : currentprogramsStages)
+                        for (String enrollmentStage : currentProgramStages)
                             if (enrollmentStage.equals(programStage.uid()))
                                 isSelectable = programStage.repeatable();
                         if (isSelectable)
@@ -277,8 +245,7 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
 
     @Override
     public Flowable<Result<RuleEffect>> calculate() {
-
-        return ruleEnrollemt(enrollmentUid)
+        return ruleEnrollment(enrollmentUid)
                 .flatMap(enrollment ->
                         cachedRuleEngineFlowable
                                 .switchMap(ruleEngine -> Flowable.fromCallable(ruleEngine.evaluate(enrollment))
@@ -286,23 +253,5 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
                                         .onErrorReturn(error -> Result.failure(new Exception(error)))
                                 )
                 );
-    }
-
-    @Override
-    public List<Pair<ProgramStage, ObjectStyle>> objectStyle(List<ProgramStage> programStages) {
-        List<Pair<ProgramStage, ObjectStyle>> finalList = new ArrayList<>();
-        for (ProgramStage stage : programStages) {
-            ProgramStage programStage = d2.programModule().programStages.byUid().eq(stage.uid()).withStyle().one().get();
-            ObjectStyle.Builder builder = ObjectStyle.builder();
-            if(programStage.style() != null) {
-                builder.uid(programStage.style().uid());
-                builder.color(programStage.style().color());
-                builder.objectTable(programStage.style().objectTable());
-                builder.icon(programStage.style().icon());
-            }
-            ObjectStyle objectStyle = builder.build();
-            finalList.add(Pair.create(stage, objectStyle));
-        }
-        return finalList;
     }
 }

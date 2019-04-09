@@ -26,10 +26,15 @@ public class ProgramStageSelectionViewHolder extends RecyclerView.ViewHolder {
         this.binding = binding;
     }
 
-    public void bind(ProgramStageSelectionContract.Presenter presenter, ProgramStage programStage, ObjectStyle style) {
+    public void bind(ProgramStageSelectionContract.Presenter presenter, ProgramStage programStage) {
         binding.setVariable(BR.presenter, presenter);
         binding.setVariable(BR.programStage, programStage);
         binding.executePendingBindings();
+        ObjectStyle style;
+        if(programStage.style() != null)
+            style = programStage.style();
+        else
+            style = ObjectStyle.builder().build();
 
         if (style.icon() != null) {
             Resources resources = binding.programStageIcon.getContext().getResources();

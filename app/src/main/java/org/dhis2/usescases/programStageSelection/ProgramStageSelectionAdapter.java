@@ -4,9 +4,7 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import org.dhis2.R;
-import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ItemProgramStageBinding;
-import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.program.ProgramStage;
 
 import java.util.List;
@@ -22,13 +20,13 @@ import androidx.recyclerview.widget.RecyclerView;
 public class ProgramStageSelectionAdapter extends RecyclerView.Adapter<ProgramStageSelectionViewHolder> {
 
     private ProgramStageSelectionContract.Presenter presenter;
-    private List<Pair<ProgramStage, ObjectStyle>> programStages;
+    private List<ProgramStage> programStages;
 
     ProgramStageSelectionAdapter(@NonNull ProgramStageSelectionContract.Presenter presenter) {
         this.presenter = presenter;
     }
 
-    public void setProgramStages(List<Pair<ProgramStage, ObjectStyle>> programStages) {
+    public void setProgramStages(List<ProgramStage> programStages) {
         this.programStages = programStages;
     }
 
@@ -41,9 +39,8 @@ public class ProgramStageSelectionAdapter extends RecyclerView.Adapter<ProgramSt
 
     @Override
     public void onBindViewHolder(ProgramStageSelectionViewHolder holder, int position) {
-        ProgramStage programStage = programStages.get(position).val0();
-        ObjectStyle objectStyle = programStages.get(position).val1();
-        holder.bind(presenter, programStage, objectStyle);
+        ProgramStage programStage = programStages.get(position);
+        holder.bind(presenter, programStage);
     }
 
     @Override
