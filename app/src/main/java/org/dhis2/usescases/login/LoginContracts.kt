@@ -1,0 +1,79 @@
+package org.dhis2.usescases.login
+
+
+import org.dhis2.usescases.general.AbstractActivityContracts
+import androidx.annotation.UiThread
+import retrofit2.Response
+
+class LoginContracts {
+
+    interface View : AbstractActivityContracts.View {
+        @UiThread
+        fun showUnlockButton()
+
+        @UiThread
+        fun onUnlockClick(android: android.view.View)
+
+        @UiThread
+        fun onLogoutClick(android: android.view.View)
+
+        @UiThread
+        fun setAutocompleteAdapters()
+
+        @UiThread
+        fun saveUsersData()
+
+        fun handleLogout()
+
+        fun setLoginVisibility(isVisible: Boolean)
+
+        fun showLoginProgress(showLogin: Boolean)
+
+        fun goToNextScreen()
+
+        fun switchPasswordVisibility()
+
+        fun setUrl(url: String)
+
+        fun showCrashlyticsDialog()
+
+        @UiThread
+        fun renderError(throwable: Throwable)
+
+        //FingerPrintAuth
+
+        fun showBiometricButton()
+
+        fun checkSecuredCredentials()
+    }
+
+    interface Presenter {
+        fun init(view: View)
+
+        fun logIn(serverUrl: String, userName: String, pass: String)
+
+        fun onQRClick(v: android.view.View)
+
+        fun onVisibilityClick(v: android.view.View)
+
+        fun unlockSession(pin: String)
+
+        fun logOut()
+
+        fun onButtonClick()
+
+        fun onDestroy()
+
+        fun handleResponse(userResponse: Response<*>)
+
+        fun handleError(throwable: Throwable)
+
+        //FingerPrintAuth
+
+        fun onFingerprintClick()
+
+        fun canHandleBiometrics(): Boolean?
+
+    }
+
+}
