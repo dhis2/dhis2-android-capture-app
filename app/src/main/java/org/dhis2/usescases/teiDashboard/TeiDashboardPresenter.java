@@ -146,7 +146,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     public void onDettach() {
         compositeDisposable.clear();
     }
-
+    
     @Override
     public void onBackPressed() {
         view.back();
