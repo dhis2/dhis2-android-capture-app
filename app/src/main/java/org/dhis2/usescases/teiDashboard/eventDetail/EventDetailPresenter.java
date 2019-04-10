@@ -297,7 +297,7 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
                 year,
                 month,
                 day);
-        if (eventDetailModel.getEventModel().status() != EventStatus.SCHEDULE) {
+        if (eventDetailModel.getEventModel().status() != EventStatus.SCHEDULE && eventDetailModel.getEventModel().status() != EventStatus.OVERDUE) {
             dateDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
         }
 
@@ -332,7 +332,7 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
                     }
                 });
 
-        if (eventDetailModel.getEventModel().status() != EventStatus.SCHEDULE) {
+        if (eventDetailModel.getEventModel().status() != EventStatus.SCHEDULE && eventDetailModel.getEventModel().status() != EventStatus.OVERDUE) {
             periodDialog.setMaxDate(Calendar.getInstance().getTime());
         }
 
