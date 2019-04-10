@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
         <variable
@@ -22,7 +23,7 @@
         android:textColor="?colorPrimary"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="6dp"
-        android:button="@drawable/radiobutton_selector"
+        app:buttonCompat="@drawable/radiobutton_selector"
         android:textColorHint="?colorPrimary"
         android:text="@{title}"
         tools:text="Holaaaa">

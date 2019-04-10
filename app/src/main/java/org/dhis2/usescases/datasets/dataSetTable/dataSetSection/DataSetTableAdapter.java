@@ -65,6 +65,7 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
     private static final int ORG_UNIT = 10;
     private static final int IMAGE = 11;
     private static final int UNSUPPORTED = 12;
+    private final Context context;
 
     @NonNull
     private List<List<FieldViewModel>> viewModels;
@@ -83,6 +84,7 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
 
     public DataSetTableAdapter(Context context, FlowableProcessor<RowAction> processor, FlowableProcessor<Trio<String, String, Integer>> processorOptionSet) {
         super(context);
+        this.context = context;
         rows = new ArrayList<>();
         this.processor = processor;
         this.processorOptionSet = processorOptionSet;
@@ -140,7 +142,6 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
         String value = cellItemModel != null && !cellItemModel.equals("") ? cellItemModel.toString() : viewModels.get(rowPosition).get(columnPosition).value();
 
         rows.get(holder.getItemViewType()).onBind(holder, viewModels.get(rowPosition).get(columnPosition), value);
-        holder.itemView.setEnabled(false);
         holder.itemView.getLayoutParams().width = getTableView().getHeaderWidth();
     }
 
@@ -186,7 +187,8 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
             ((DataSetRHeaderHeader) holder).binding.container.getLayoutParams().width = getTableView().getHeaderWidth();
         else {
             int i = getHeaderRecyclerPositionFor(columnHeaderItemModel);
-            ((DataSetRHeaderHeader) holder).binding.container.getLayoutParams().width = (getTableView().getHeaderWidth() * i);
+            ((DataSetRHeaderHeader) holder).binding.container.getLayoutParams().width =
+                    (getTableView().getHeaderWidth() * i + (int) (context.getResources().getDisplayMetrics().density*(i-1)));
         }
         ((DataSetRHeaderHeader) holder).binding.title.requestLayout();
     }
