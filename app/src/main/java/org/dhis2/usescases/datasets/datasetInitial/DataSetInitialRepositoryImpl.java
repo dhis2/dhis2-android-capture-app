@@ -1,49 +1,45 @@
 package org.dhis2.usescases.datasets.datasetInitial;
 
-import com.squareup.sqlbrite2.BriteDatabase;
-
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
-import org.hisp.dhis.android.core.dataset.DataInputPeriodModel;
 import org.hisp.dhis.android.core.dataset.DataSet;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitDownloadModule;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import androidx.annotation.NonNull;
-import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
-import io.reactivex.internal.operators.observable.ObservableFromIterable;
 
 public class DataSetInitialRepositoryImpl implements DataSetInitialRepository {
 
-    private final BriteDatabase briteDatabase;
     private final String dataSetUid;
     private final D2 d2;
 
-    public DataSetInitialRepositoryImpl(D2 d2, BriteDatabase briteDatabase, String dataSetUid) {
+    public DataSetInitialRepositoryImpl(D2 d2, String dataSetUid) {
         this.d2 = d2;
-        this.briteDatabase = briteDatabase;
         this.dataSetUid = dataSetUid;
     }
 
     @Override
     public Flowable<List<DateRangeInputPeriodModel>> getDataInputPeriod() {
-        String GET_DATA_INPUT_PERIOD = "SELECT DataInputPeriod.*, Period.startDate as initialPeriodDate, Period.endDate as endPeriodDate " +
-                "FROM DataInputPeriod " +
-                "JOIN Period ON Period.periodId = DataInputPeriod.period " +
-                "WHERE dataset = ? ORDER BY initialPeriodDate DESC";
-
-        return briteDatabase.createQuery(DataInputPeriodModel.TABLE, GET_DATA_INPUT_PERIOD, dataSetUid)
-                .mapToList(DateRangeInputPeriodModel::fromCursor)
-                .toFlowable(BackpressureStrategy.LATEST);
+       return Flowable.just(d2.dataSetModule().dataSets.withDataInputPeriods().byUid().eq(dataSetUid).one().get())
+               .flatMapIterable(dataSet -> dataSet.dataInputPeriods())
+               .flatMap(dataInputPeriod ->
+                       Flowable.just(d2.periodModule().periods.byPeriodId().eq(dataInputPeriod.period().uid()).get())
+                               .flatMapIterable(periods -> periods)
+                               .map(period -> {
+                                   Date periodStartDate = period.startDate();
+                                   Date periodEndDate = period.endDate();
+                                   return DateRangeInputPeriodModel.create(dataSetUid, dataInputPeriod.period().uid(), dataInputPeriod.openingDate(), dataInputPeriod.closingDate(), periodStartDate, periodEndDate);
+                               })
+               ).toList().toFlowable();
     }
 
     @NonNull
