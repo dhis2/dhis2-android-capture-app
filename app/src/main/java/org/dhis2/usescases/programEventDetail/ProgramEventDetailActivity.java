@@ -2,7 +2,9 @@ package org.dhis2.usescases.programEventDetail;
 
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -14,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.DatePicker;
 import android.widget.PopupMenu;
 
 import com.google.android.flexbox.FlexboxLayout;
@@ -217,21 +220,62 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                     },
                     Timber::d);
         } else if (currentPeriod == DAILY) {
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(chosenDateDay);
-            DatePickerDialog pickerDialog;
-            pickerDialog = new DatePickerDialog(getContext(), (datePicker, year, monthOfYear, dayOfMonth) -> {
-                calendar.set(year, monthOfYear, dayOfMonth);
-                Date[] dates = DateUtils.getInstance().getDateFromDateAndPeriod(calendar.getTime(), currentPeriod);
-                ArrayList<Date> selectedDates = new ArrayList<>();
-                selectedDates.add(dates[0]);
-
-                presenter.updateDateFilter(DateUtils.getInstance().getDatePeriodListFor(selectedDates, currentPeriod));
-                binding.buttonPeriodText.setText(DateUtils.getInstance().formatDate(dates[0]));
-                chosenDateDay = dates[0];
-            }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
-            pickerDialog.show();
+            showNativeCalendar(calendar);
         }
+    }
+
+    private void showNativeCalendar(Calendar calendar) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(chosenDateDay);
+        DatePickerDialog pickerDialog;
+        pickerDialog = new DatePickerDialog(getContext(), (datePicker, year, monthOfYear, dayOfMonth) -> {
+            calendar.set(year, monthOfYear, dayOfMonth);
+            Date[] dates = DateUtils.getInstance().getDateFromDateAndPeriod(calendar.getTime(), currentPeriod);
+            ArrayList<Date> selectedDates = new ArrayList<>();
+            selectedDates.add(dates[0]);
+
+            presenter.updateDateFilter(DateUtils.getInstance().getDatePeriodListFor(selectedDates, currentPeriod));
+            binding.buttonPeriodText.setText(DateUtils.getInstance().formatDate(dates[0]));
+            chosenDateDay = dates[0];
+        }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            pickerDialog.setButton(DialogInterface.BUTTON_NEUTRAL, getContext().getResources().getString(R.string.change_calendar), (dialog, which) -> {
+                pickerDialog.dismiss();
+                showCustomCalendar(calendar);
+            });
+        }
+
+        pickerDialog.show();
+    }
+
+    private void showCustomCalendar(Calendar calendar) {
+        LayoutInflater layoutInflater = LayoutInflater.from(getContext());
+        View datePickerView = layoutInflater.inflate(R.layout.widget_datepicker, null);
+        final DatePicker datePicker = datePickerView.findViewById(R.id.widget_datepicker);
+
+        Calendar c = Calendar.getInstance();
+        datePicker.updateDate(
+                c.get(Calendar.YEAR),
+                c.get(Calendar.MONTH),
+                c.get(Calendar.DAY_OF_MONTH));
+
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(getContext(), R.style.DatePickerTheme)
+                .setPositiveButton(R.string.action_accept, (dialog, which) -> {
+                    calendar.set(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
+                    Date[] dates = DateUtils.getInstance().getDateFromDateAndPeriod(calendar.getTime(), currentPeriod);
+                    ArrayList<Date> selectedDates = new ArrayList<>();
+                    selectedDates.add(dates[0]);
+
+                    presenter.updateDateFilter(DateUtils.getInstance().getDatePeriodListFor(selectedDates, currentPeriod));
+                    binding.buttonPeriodText.setText(DateUtils.getInstance().formatDate(dates[0]));
+                    chosenDateDay = dates[0];
+                })
+                .setNeutralButton(getContext().getResources().getString(R.string.change_calendar), (dialog, which) -> showNativeCalendar(calendar));
+
+        alertDialog.setView(datePickerView);
+        Dialog dialog = alertDialog.create();
+        dialog.show();
     }
 
 

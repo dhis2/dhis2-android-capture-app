@@ -1,10 +1,13 @@
 package org.dhis2.utils.custom_views;
 
 import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.util.AttributeSet;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.DatePicker;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -18,6 +21,7 @@ import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
 import timber.log.Timber;
@@ -142,6 +146,10 @@ public class DateView extends FieldLayout implements View.OnClickListener {
 
     @Override
     public void onClick(View view) {
+        showNativeCalendar();
+    }
+
+    private void showNativeCalendar() {
         Calendar c = Calendar.getInstance();
         if (date != null)
             c.setTime(date);
@@ -160,21 +168,74 @@ public class DateView extends FieldLayout implements View.OnClickListener {
                     String result = DateUtils.uiDateFormat().format(selectedDate);
                     editText.setText(result);
                     listener.onDateSelected(selectedDate);
-//                    nextFocus(view);
                 }),
                 year,
                 month,
                 day);
+
         dateDialog.setTitle(label);
+
         if (!allowFutureDates) {
             dateDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
         }
+
         dateDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getContext().getString(R.string.date_dialog_clear), (dialog, which) -> {
             editText.setText(null);
             listener.onDateSelected(null);
         });
 
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP){
+            dateDialog.setButton(DialogInterface.BUTTON_NEUTRAL, getContext().getResources().getString(R.string.change_calendar), (dialog, which) -> {
+                dateDialog.dismiss();
+                showCustomCalendar();
+            });
+        }
+
         dateDialog.show();
+    }
+
+    private void showCustomCalendar() {
+        LayoutInflater layoutInflater = LayoutInflater.from(getContext());
+        View datePickerView = layoutInflater.inflate(R.layout.widget_datepicker, null);
+        final DatePicker datePicker = datePickerView.findViewById(R.id.widget_datepicker);
+
+        Calendar c = Calendar.getInstance();
+        if (date != null)
+            c.setTime(date);
+        int year = c.get(Calendar.YEAR);
+        int month = c.get(Calendar.MONTH);
+        int day = c.get(Calendar.DAY_OF_MONTH);
+
+        datePicker.updateDate(year, month, day);
+
+        if (!allowFutureDates) {
+            datePicker.setMaxDate(System.currentTimeMillis());
+        }
+
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(getContext(), R.style.DatePickerTheme)
+                .setTitle(label)
+                .setPositiveButton(R.string.action_accept, (dialog, which) -> {
+                    selectedCalendar.set(Calendar.YEAR, datePicker.getYear());
+                    selectedCalendar.set(Calendar.MONTH, datePicker.getMonth());
+                    selectedCalendar.set(Calendar.DAY_OF_MONTH, datePicker.getDayOfMonth());
+                    selectedCalendar.set(Calendar.HOUR_OF_DAY, c.get(Calendar.HOUR_OF_DAY));
+                    selectedCalendar.set(Calendar.MINUTE, c.get(Calendar.MINUTE));
+                    Date selectedDate = selectedCalendar.getTime();
+                    String result = DateUtils.uiDateFormat().format(selectedDate);
+                    editText.setText(result);
+                    listener.onDateSelected(selectedDate);
+                })
+                .setNegativeButton(getContext().getString(R.string.date_dialog_clear), (dialog, which) -> {
+                    editText.setText(null);
+                    listener.onDateSelected(null);
+                })
+                .setNeutralButton(getContext().getResources().getString(R.string.change_calendar), (dialog, which) -> {
+                    showNativeCalendar();
+                });
+
+        alertDialog.setView(datePickerView);
+        Dialog dialog = alertDialog.create();
+        dialog.show();
     }
 
     public TextInputEditText getEditText() {
