@@ -146,6 +146,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     private RuleEvent.Builder eventBuilder;
     private Map<String, List<Rule>> dataElementRules = new HashMap<>();
     private List<ProgramRule> mandatoryRules;
+    private List<ProgramRule> rules;
 
     public EventCaptureRepositoryImpl(Context context, BriteDatabase briteDatabase, FormRepository formRepository, String eventUid, D2 d2) {
         this.briteDatabase = briteDatabase;
@@ -182,25 +183,27 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     }
 
     private void loadDataElementRules(Event event) {
-        List<ProgramRule> rules = d2.programModule().programRules.byProgramUid().eq(event.program()).withAllChildren().get();
+        rules = d2.programModule().programRules.byProgramUid().eq(event.program()).withAllChildren().get();
+
         mandatoryRules = new ArrayList<>();
         Iterator<ProgramRule> ruleIterator = rules.iterator();
         while (ruleIterator.hasNext()) {
             ProgramRule rule = ruleIterator.next();
-            if (rule.programStage() != null && rule.programStage().uid().equals(event.programStage()))
+            if (rule.programStage() != null && !rule.programStage().uid().equals(event.programStage()))
                 ruleIterator.remove();
             else if (rule.condition() == null)
                 ruleIterator.remove();
-            for (ProgramRuleAction action : rule.programRuleActions())
-                if (action.programRuleActionType() == ProgramRuleActionType.HIDEFIELD ||
-                        action.programRuleActionType() == ProgramRuleActionType.HIDESECTION ||
-                        action.programRuleActionType() == ProgramRuleActionType.ASSIGN ||
-                        action.programRuleActionType() == ProgramRuleActionType.SHOWWARNING ||
-                        action.programRuleActionType() == ProgramRuleActionType.SHOWERROR ||
-                        action.programRuleActionType() == ProgramRuleActionType.HIDEOPTIONGROUP ||
-                        action.programRuleActionType() == ProgramRuleActionType.HIDEOPTION)
-                    if (!mandatoryRules.contains(rule))
-                        mandatoryRules.add(rule);
+            else
+                for (ProgramRuleAction action : rule.programRuleActions())
+                    if (action.programRuleActionType() == ProgramRuleActionType.HIDEFIELD ||
+                            action.programRuleActionType() == ProgramRuleActionType.HIDESECTION ||
+                            action.programRuleActionType() == ProgramRuleActionType.ASSIGN ||
+                            action.programRuleActionType() == ProgramRuleActionType.SHOWWARNING ||
+                            action.programRuleActionType() == ProgramRuleActionType.SHOWERROR ||
+                            action.programRuleActionType() == ProgramRuleActionType.HIDEOPTIONGROUP ||
+                            action.programRuleActionType() == ProgramRuleActionType.HIDEOPTION)
+                        if (!mandatoryRules.contains(rule))
+                            mandatoryRules.add(rule);
         }
 
         List<ProgramRuleVariable> variables = d2.programModule().programRuleVariables
@@ -534,7 +537,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                         event -> formRepository.ruleEngine()
                                 .switchMap(ruleEngine -> {
                                     if (isEmpty(lastUpdatedUid))
-                                        return Flowable.fromCallable(ruleEngine.evaluate(event));
+                                        return Flowable.fromCallable(ruleEngine.evaluate(event, trasformToRule(rules)));
                                     else
                                         return Flowable.just(dataElementRules.get(lastUpdatedUid) != null ? dataElementRules.get(lastUpdatedUid) : new ArrayList<Rule>())
                                                 .map(rules -> rules.isEmpty() ? trasformToRule(mandatoryRules) : rules)
