@@ -11,7 +11,7 @@ import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.databinding.FragmentNotesBinding;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
-import org.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
+import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
 import org.hisp.dhis.android.core.enrollment.note.NoteModel;
 
 import java.util.List;

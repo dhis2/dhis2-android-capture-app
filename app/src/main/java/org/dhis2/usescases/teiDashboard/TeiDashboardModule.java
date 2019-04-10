@@ -9,7 +9,6 @@ import org.dhis2.data.forms.RulesRepository;
 import org.dhis2.data.forms.dataentry.EnrollmentRuleEngineRepository;
 import org.dhis2.data.forms.dataentry.RuleEngineRepository;
 import org.dhis2.data.metadata.MetadataRepository;
-import org.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
 import org.dhis2.utils.CodeGenerator;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.enrollment.EnrollmentCollectionRepository;

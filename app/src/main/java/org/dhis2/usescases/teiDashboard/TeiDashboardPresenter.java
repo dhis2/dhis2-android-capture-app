@@ -9,10 +9,8 @@ import android.view.View;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.RuleEngineRepository;
 import org.dhis2.data.metadata.MetadataRepository;
-import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.notes.NotesFragment;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.TEIDataFragment;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.TEIDataFragment;
 import org.dhis2.usescases.teiDashboard.eventDetail.EventDetailActivity;
 import org.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity;
 import org.dhis2.utils.DateUtils;
@@ -183,7 +181,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         );
     }
 
-    @Override
+ /*   @Override
     public void displayGenerateEvent(TEIDataFragment teiDataFragment, String eventUid) {
         compositeDisposable.add(
                 dashboardRepository.displayGenerateEvent(eventUid)
@@ -194,7 +192,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                                 Timber::d
                         )
         );
-    }
+    }*/
 
     @Override
     public void generateEvent(String lastModifiedEventUid, Integer standardInterval) {
@@ -225,7 +223,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     }
 
 
-    @Override
+ /*   @Override
     public void onShareClick(View mView) {
         PopupMenu menu = new PopupMenu(view.getContext(), mView);
 
@@ -246,7 +244,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         });
 
         menu.show();
-    }
+    }*/
 
     @Override
     public void onEnrollmentSelectorClick() {
@@ -255,10 +253,10 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         view.goToEnrollmentList(extras);
     }
 
-    @Override
+   /* @Override
     public void onShareQRClick() {
         view.showQR();
-    }
+    }*/
 
     @Override
     public void setProgram(ProgramModel program) {
@@ -267,7 +265,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         getData();
     }
 
-    @Override
+    /*@Override
     public void seeDetails(View sharedView, DashboardProgramModel dashboardProgramModel) {
         Fragment teiFragment = TEIDataFragment.getInstance();
         Intent intent = new Intent(view.getContext(), TeiDataDetailActivity.class);
@@ -279,9 +277,9 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         intent.putExtras(extras);
         ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(view.getAbstractActivity(), sharedView, "user_info");
         teiFragment.startActivityForResult(intent, TEIDataFragment.getDetailsRequestCode(), options.toBundle());
-    }
+    }*/
 
-    @Override
+   /* @Override
     public void onEventSelected(String uid, View sharedView) {
         Fragment teiFragment = TEIDataFragment.getInstance();
         if (teiFragment != null && teiFragment.getContext() != null && teiFragment.isAdded()) {
@@ -291,9 +289,9 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
             ));
             teiFragment.startActivityForResult(intent, TEIDataFragment.getEventRequestCode(), null);
         }
-    }
+    }*/
 
-    @Override
+    /*@Override
     public void onScheduleSelected(String uid, View sharedView) {
         Fragment teiFragment = TEIDataFragment.getInstance();
         if (teiFragment != null && teiFragment.getContext() != null && teiFragment.isAdded()) {
@@ -306,9 +304,9 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
             ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(view.getAbstractActivity(), sharedView, "shared_view");
             teiFragment.startActivityForResult(intent, TEIDataFragment.getEventRequestCode(), options.toBundle());
         }
-    }
+    }*/
 
-    @Override
+    /*@Override
     public void onFollowUp(DashboardProgramModel dashboardProgramModel) {
         boolean followup = dashboardRepository.setFollowUp(dashboardProgramModel.getCurrentEnrollment().uid());
 
@@ -320,7 +318,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         TEIDataFragment.getInstance().switchFollowUp(followup);
 
 
-    }
+    }*/
 
     @Override
     public void onDettach() {
@@ -357,7 +355,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         return programWritePermission;
     }
 
-    @Override
+   /* @Override
     public void completeEnrollment(TEIDataFragment teiDataFragment) {
         if (programWritePermission) {
             Flowable<Long> flowable = null;
@@ -375,14 +373,14 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
             );
         } else
             view.displayMessage(null);
-    }
+    }*/
 
     @Override
     public void showDescription(String description) {
         view.showDescription(description);
     }
 
-    public void getCatComboOptions(EventModel event) {
+    /*public void getCatComboOptions(EventModel event) {
         compositeDisposable.add(
                 dashboardRepository.catComboForProgram(event.program())
                         .subscribeOn(Schedulers.io())
@@ -394,16 +392,16 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                                     }
                                 },
                                 Timber::e));
-    }
+    }*/
 
-    @Override
+   /* @Override
     public void changeCatOption(String eventUid, String catOptionComboUid) {
         metadataRepository.saveCatOption(eventUid, catOptionComboUid);
-    }
+    }*/
 
-    @Override
+   /* @Override
     public void setDefaultCatOptCombToEvent(String eventUid) {
         dashboardRepository.setDefaultCatOptCombToEvent(eventUid);
-    }
+    }*/
 
 }

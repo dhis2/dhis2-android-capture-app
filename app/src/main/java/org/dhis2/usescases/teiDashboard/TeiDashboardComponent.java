@@ -7,7 +7,8 @@ import org.dhis2.usescases.teiDashboard.dashboardfragments.notes.NotesComponent;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.notes.NotesModule;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipComponent;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipModule;
-import org.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.TEIDataComponent;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.TEIDataModule;
 
 import androidx.annotation.NonNull;
 import dagger.Subcomponent;
@@ -27,6 +28,9 @@ public interface TeiDashboardComponent {
 
     @NonNull
     NotesComponent plus(NotesModule notesModule);
+
+    @NonNull
+    TEIDataComponent plus(TEIDataModule teiDataModule);
 
     void inject(TeiDashboardMobileActivity mobileActivity);
 }

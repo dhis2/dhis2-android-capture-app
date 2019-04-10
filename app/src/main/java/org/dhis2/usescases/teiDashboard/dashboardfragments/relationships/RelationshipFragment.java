@@ -18,7 +18,7 @@ import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.FragmentRelationshipsBinding;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
-import org.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
+import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.hisp.dhis.android.core.relationship.Relationship;

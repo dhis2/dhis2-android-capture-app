@@ -8,7 +8,7 @@ import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity;
 import org.dhis2.usescases.teiDashboard.DashboardRepository;
-import org.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
+import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.relationship.Relationship;

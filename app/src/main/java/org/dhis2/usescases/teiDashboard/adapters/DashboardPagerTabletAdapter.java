@@ -1,6 +1,7 @@
 package org.dhis2.usescases.teiDashboard.adapters;
 
 import android.content.Context;
+import android.os.Parcelable;
 
 import org.dhis2.R;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.IndicatorsFragment;
@@ -27,6 +28,12 @@ public class DashboardPagerTabletAdapter extends FragmentStatePagerAdapter {
         super(fm);
         this.currentProgram = program;
         this.context = context;
+    }
+
+    @Override
+    public Parcelable saveState() {
+        // Do Nothing
+        return null;
     }
 
     @NotNull
