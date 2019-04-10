@@ -128,6 +128,7 @@
     <string name="field_required">If you set a value, the whole row needs all of values to complete the Data Set.</string>
     <string name="field_mandatory">Some values required are missing. You need set mandatory values to complete the Data Set.</string>
     <string name="datavalue_saved">Value is saved!</string>
+    <string name="there_is_no_available_period">There is no available periods to select.</string>
     <!--Event Detail-->
     <string name="event_date">Event date</string>
     <string name="due_date">Due date</string>
