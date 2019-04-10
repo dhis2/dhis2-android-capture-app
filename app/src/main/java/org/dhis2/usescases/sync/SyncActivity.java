@@ -51,13 +51,13 @@ public class SyncActivity extends ActivityGlobalAbstract implements SyncContract
         super.onCreate(savedInstanceState);
 
         WorkManager.getInstance().getStatusesForUniqueWorkLiveData(Constants.META).observe(this, status -> {
-            if (!status.isEmpty()) {
+            if (status != null && !status.isEmpty()){
                 Timber.d("WORK %s WITH STATUS %s", Constants.META, status.get(0).getState().name());
                 handleMetaState(status.get(0).getState());
             }
         });
         WorkManager.getInstance().getStatusesForUniqueWorkLiveData(Constants.DATA).observe(this, status -> {
-            if (!status.isEmpty()) {
+            if (status != null && !status.isEmpty()) {
                 Timber.d("WORK %s WITH STATUS %s", Constants.DATA, status.get(0).getState().name());
                 handleDataState(status.get(0).getState());
             }
