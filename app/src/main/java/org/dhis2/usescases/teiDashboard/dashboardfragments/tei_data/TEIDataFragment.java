@@ -341,7 +341,6 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
     @Override
     public void showQR(Intent intent) {
-
         startActivity(intent);
     }
 
@@ -353,6 +352,10 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     @Override
     public void openEventInitial(Intent intent) {
         this.startActivityForResult(intent, REQ_EVENT, null);
+    }
 
+    @Override
+    public void openEventCapture(Intent intent) {
+        this.startActivity(intent);
     }
 }

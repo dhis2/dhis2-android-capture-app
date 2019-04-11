@@ -2,13 +2,13 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
@@ -47,6 +47,8 @@ public class TEIDataContracts {
         void openEventDetails(Intent intent, Bundle bundle);
 
         void openEventInitial(Intent intent);
+
+        void openEventCapture(Intent intent);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
@@ -77,7 +79,7 @@ public class TEIDataContracts {
 
         void onScheduleSelected(String uid, android.view.View sharedView);
 
-        void onEventSelected(String uid, android.view.View sharedView);
+        void onEventSelected(String uid, EventStatus eventStatus, android.view.View sharedView);
 
         void setDashboardProgram(DashboardProgramModel dashboardModel);
 

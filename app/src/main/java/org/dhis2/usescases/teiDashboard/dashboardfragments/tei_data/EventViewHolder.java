@@ -39,7 +39,7 @@ class EventViewHolder extends RecyclerView.ViewHolder {
             if (eventModel.status() == EventStatus.SCHEDULE || eventModel.status() == EventStatus.SKIPPED || eventModel.status() == EventStatus.OVERDUE) {
                 presenter.onScheduleSelected(eventModel.uid(), binding.sharedView);
             } else
-                presenter.onEventSelected(eventModel.uid(), binding.sharedView);
+                presenter.onEventSelected(eventModel.uid(), eventModel.status(), binding.sharedView);
         });
     }
 }
