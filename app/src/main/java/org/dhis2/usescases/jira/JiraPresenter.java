@@ -1,6 +1,11 @@
 package org.dhis2.usescases.jira;
 
-import org.dhis2.usescases.general.ActivityGlobalAbstract;
+import org.dhis2.data.tuples.Quartet;
+import org.dhis2.utils.jira.IssueRequest;
+import org.dhis2.utils.jira.JiraIssueListResponse;
+
+import okhttp3.ResponseBody;
+import retrofit2.Callback;
 
 /**
  * QUADRAM. Created by ppajuelo on 24/05/2018.
@@ -8,15 +13,7 @@ import org.dhis2.usescases.general.ActivityGlobalAbstract;
 
 public interface JiraPresenter {
 
-    void init(ActivityGlobalAbstract context);
+    void sendIssue(Quartet<IssueRequest, String, String, Boolean> issue, Callback<ResponseBody> callback);
 
-    void onSendClick();
-
-    void onSummaryChanged(CharSequence s, int start, int before, int count);
-
-    void onDescriptionChanged(CharSequence s, int start, int before, int count);
-
-    void onJiraUserChanged(CharSequence s, int start, int before, int count);
-
-    void onJiraPassChanged(CharSequence s, int start, int before, int count);
+    void getIssues(Callback<JiraIssueListResponse> callback);
 }
