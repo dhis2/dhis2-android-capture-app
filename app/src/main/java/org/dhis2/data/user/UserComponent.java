@@ -145,4 +145,5 @@ public interface UserComponent {
 
     @NonNull
     EnrollmentComponent plus(EnrollmentModule enrollmentModule);
+
 }

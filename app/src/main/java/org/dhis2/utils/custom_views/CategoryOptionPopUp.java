@@ -7,6 +7,9 @@ import android.view.View;
 import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryOption;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import androidx.appcompat.widget.PopupMenu;
 
 /**
@@ -17,6 +20,7 @@ public class CategoryOptionPopUp {
     private static CategoryOptionPopUp instance;
     private OnCatOptionClick listener;
     private Category category;
+    private List<CategoryOption> options;
 
     public static CategoryOptionPopUp getInstance() {
         if (instance == null)
@@ -27,6 +31,12 @@ public class CategoryOptionPopUp {
 
     public CategoryOptionPopUp setCategory(Category category) {
         this.category = category;
+        this.options = new ArrayList<>();
+
+        for (CategoryOption option : category.categoryOptions())
+            if (option.access().data().write())
+                options.add(option);
+
 
         return this;
     }
@@ -38,13 +48,13 @@ public class CategoryOptionPopUp {
             if (item.getOrder() == 0) {
                 listener.onCategoryOptionClick(null);
             } else {
-                listener.onCategoryOptionClick(category.categoryOptions().get(item.getOrder() - 1));
+                listener.onCategoryOptionClick(options.get(item.getOrder() - 1));
             }
             return false;
         });
         menu.getMenu().add(Menu.NONE, Menu.NONE, 0, category.displayName());
-        for (CategoryOption option : category.categoryOptions()) {
-            menu.getMenu().add(Menu.NONE, Menu.NONE, category.categoryOptions().indexOf(option) + 1, option.displayName());
+        for (CategoryOption option : options) {
+            menu.getMenu().add(Menu.NONE, Menu.NONE, options.indexOf(option) + 1, option.displayName());
         }
         menu.show();
     }

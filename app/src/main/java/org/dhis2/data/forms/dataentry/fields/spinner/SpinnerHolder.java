@@ -93,8 +93,10 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
         }
 
         if (!isEmpty(viewModel.warning())) {
+            inputLayout.setErrorTextAppearance(R.style.warning_appearance);
             inputLayout.setError(viewModel.warning());
         } else if (!isEmpty(viewModel.error())) {
+            inputLayout.setErrorTextAppearance(R.style.error_appearance);
             inputLayout.setError(viewModel.error());
         } else
             inputLayout.setError(null);
