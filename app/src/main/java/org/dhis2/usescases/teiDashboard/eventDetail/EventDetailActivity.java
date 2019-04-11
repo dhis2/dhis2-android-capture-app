@@ -213,6 +213,9 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
             case ACTIVE:
                 binding.deactivateButton.setText(getString(R.string.complete));
                 break;
+            case OVERDUE:
+                binding.deactivateButton.setText(R.string.skip);
+                break;
             default:
                 binding.deactivateButton.setVisibility(View.GONE);
                 break;

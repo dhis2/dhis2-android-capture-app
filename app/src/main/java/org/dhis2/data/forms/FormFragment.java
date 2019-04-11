@@ -27,7 +27,7 @@ import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.usescases.map.MapSelectorActivity;
-import org.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
+import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.custom_views.CategoryComboDialog;

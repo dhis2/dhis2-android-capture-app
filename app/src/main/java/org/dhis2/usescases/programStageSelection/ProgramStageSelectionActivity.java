@@ -7,15 +7,12 @@ import android.os.Bundle;
 
 import org.dhis2.App;
 import org.dhis2.R;
-import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ActivityProgramStageSelectionBinding;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.Constants;
-import org.hisp.dhis.android.core.common.ObjectStyle;
-import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.period.PeriodType;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
+import org.hisp.dhis.android.core.program.ProgramStage;
 
 import java.util.List;
 
@@ -47,16 +44,15 @@ public class ProgramStageSelectionActivity extends ActivityGlobalAbstract implem
     ProgramStageSelectionContract.Presenter presenter;
 
     ProgramStageSelectionAdapter adapter;
-    private String enrollmenId;
+    private String enrollmentId;
     private String programId;
-    private int orientation;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         programId = getIntent().getStringExtra("PROGRAM_UID");
-        enrollmenId = getIntent().getStringExtra("ENROLLMENT_UID");
-        String eventCreationType =  getIntent().getStringExtra(EVENT_CREATION_TYPE);
-        ((App) getApplicationContext()).userComponent().plus(new ProgramStageSelectionModule(programId, enrollmenId, eventCreationType)).inject(this);
+        enrollmentId = getIntent().getStringExtra("ENROLLMENT_UID");
+        String eventCreationType = getIntent().getStringExtra(EVENT_CREATION_TYPE);
+        ((App) getApplicationContext()).userComponent().plus(new ProgramStageSelectionModule(programId, enrollmentId, eventCreationType)).inject(this);
         super.onCreate(savedInstanceState);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_program_stage_selection);
@@ -68,8 +64,8 @@ public class ProgramStageSelectionActivity extends ActivityGlobalAbstract implem
     @Override
     protected void onResume() {
         super.onResume();
-        orientation = Resources.getSystem().getConfiguration().orientation;
-        presenter.getProgramStages(programId, enrollmenId, this); //TODO: enrollment / event path
+        int orientation = Resources.getSystem().getConfiguration().orientation;
+        presenter.getProgramStages(programId, enrollmentId, this); //TODO: enrollment / event path
         int columnCount = (orientation == Configuration.ORIENTATION_LANDSCAPE) ? 3 : 2;
         binding.recyclerView.setLayoutManager(new GridLayoutManager(this, columnCount));
     }
@@ -81,9 +77,9 @@ public class ProgramStageSelectionActivity extends ActivityGlobalAbstract implem
     }
 
     @Override
-    public void setData(List<Pair<ProgramStageModel, ObjectStyleModel>> programStageModels) {
-        if (programStageModels != null && !programStageModels.isEmpty()) {
-            adapter.setProgramStageModels(programStageModels);
+    public void setData(List<ProgramStage> programStages) {
+        if (programStages != null && !programStages.isEmpty()) {
+            adapter.setProgramStages(programStages);
             adapter.notifyDataSetChanged();
         } else {
             // if there are no program stages to select, the event cannot be added
@@ -107,7 +103,7 @@ public class ProgramStageSelectionActivity extends ActivityGlobalAbstract implem
         bundle.putInt(EVENT_SCHEDULE_INTERVAL, getIntent().getIntExtra(EVENT_SCHEDULE_INTERVAL, 0));
         intent.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT);
         intent.putExtras(bundle);
-        startActivity(intent, bundle);
+        startActivity(intent);
         finish();
     }
 }

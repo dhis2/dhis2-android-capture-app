@@ -44,6 +44,8 @@ public class AbstractActivityContracts {
 
         void showToast(String message);
 
+        AlertDialog showInfoDialog(String title, String message, String possitiveButtonText, String negativeButtonText, OnDialogClickListener clickListener);
+
         void showDescription(String description);
 
         SharedPreferences getSharedPreferences();

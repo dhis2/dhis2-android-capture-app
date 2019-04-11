@@ -102,7 +102,13 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
         editText.setText(data);
     }
 
-    public void setWarningOrError(String msg) {
+    public void setWarning(String msg) {
+        inputLayout.setErrorTextAppearance(R.style.warning_appearance);
+        inputLayout.setError(msg);
+    }
+
+    public void setError(String msg) {
+        inputLayout.setErrorTextAppearance(R.style.error_appearance);
         inputLayout.setError(msg);
     }
 
