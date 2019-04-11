@@ -7,10 +7,6 @@
 
         <import type="java.lang.String" />
 
-        <variable
-            name="presenter"
-            type="org.dhis2.usescases.teiDashboard.TeiDashboardContracts.Presenter" />
-
     </data>
 
 

@@ -71,27 +71,27 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
 
         if (dateTimeViewModel.warning() != null) {
             if (binding instanceof FormTimeTextBinding)
-                ((FormTimeTextBinding) binding).timeView.setWarningOrError(dateTimeViewModel.warning());
+                ((FormTimeTextBinding) binding).timeView.setWarning(dateTimeViewModel.warning());
             if (binding instanceof FormDateTextBinding)
-                ((FormDateTextBinding) binding).dateView.setWarningOrError(dateTimeViewModel.warning());
+                ((FormDateTextBinding) binding).dateView.setWarning(dateTimeViewModel.warning());
             if (binding instanceof FormDateTimeTextBinding)
-                ((FormDateTimeTextBinding) binding).dateTimeView.setWarningOrError(dateTimeViewModel.warning());
+                ((FormDateTimeTextBinding) binding).dateTimeView.setWarning(dateTimeViewModel.warning());
 
         } else if (dateTimeViewModel.error() != null) {
             if (binding instanceof FormTimeTextBinding)
-                ((FormTimeTextBinding) binding).timeView.setWarningOrError(dateTimeViewModel.error());
+                ((FormTimeTextBinding) binding).timeView.setError(dateTimeViewModel.error());
             if (binding instanceof FormDateTextBinding)
-                ((FormDateTextBinding) binding).dateView.setWarningOrError(dateTimeViewModel.error());
+                ((FormDateTextBinding) binding).dateView.setError(dateTimeViewModel.error());
             if (binding instanceof FormDateTimeTextBinding)
-                ((FormDateTimeTextBinding) binding).dateTimeView.setWarningOrError(dateTimeViewModel.error());
+                ((FormDateTimeTextBinding) binding).dateTimeView.setError(dateTimeViewModel.error());
 
         } else {
             if (binding instanceof FormTimeTextBinding)
-                ((FormTimeTextBinding) binding).timeView.setWarningOrError(null);
+                ((FormTimeTextBinding) binding).timeView.setError(null);
             if (binding instanceof FormDateTextBinding)
-                ((FormDateTextBinding) binding).dateView.setWarningOrError(null);
+                ((FormDateTextBinding) binding).dateView.setError(null);
             if (binding instanceof FormDateTimeTextBinding)
-                ((FormDateTimeTextBinding) binding).dateTimeView.setWarningOrError(null);
+                ((FormDateTimeTextBinding) binding).dateTimeView.setError(null);
         }
 
         if (binding instanceof FormTimeTextBinding)

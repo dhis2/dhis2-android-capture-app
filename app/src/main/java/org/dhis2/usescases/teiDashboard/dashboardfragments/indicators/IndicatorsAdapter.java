@@ -1,6 +1,5 @@
-package org.dhis2.usescases.teiDashboard.adapters;
+package org.dhis2.usescases.teiDashboard.dashboardfragments.indicators;
 
-import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -15,6 +14,8 @@ import org.hisp.dhis.android.core.program.ProgramIndicatorModel;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 /**
  * QUADRAM. Created by ppajuelo on 29/11/2017.
  */
@@ -23,7 +24,7 @@ public class IndicatorsAdapter extends RecyclerView.Adapter<IndicatorViewHolder>
 
     private List<Trio<ProgramIndicatorModel, String, String>> programIndicators;
 
-    public IndicatorsAdapter() {
+    IndicatorsAdapter() {
         programIndicators = new ArrayList<>();
     }
 

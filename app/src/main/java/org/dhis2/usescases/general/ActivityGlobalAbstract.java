@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -298,6 +299,37 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
             //BODY
             final View msgView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_body, null);
             ((TextView) msgView.findViewById(R.id.dialogBody)).setText(message);
+            msgView.findViewById(R.id.dialogAccept).setOnClickListener(view -> {
+                clickListener.onPossitiveClick(alertDialog);
+                alertDialog.dismiss();
+            });
+            msgView.findViewById(R.id.dialogCancel).setOnClickListener(view -> {
+                clickListener.onNegativeClick(alertDialog);
+                alertDialog.dismiss();
+            });
+            alertDialog.setView(msgView);
+
+            return alertDialog;
+
+        } else
+            return null;
+    }
+
+    @Override
+    public AlertDialog showInfoDialog(String title, String message, String positiveButtonText, String negativeButtonText, OnDialogClickListener clickListener) {
+        if (getActivity() != null) {
+            AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
+
+            //TITLE
+            final View titleView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_title, null);
+            ((TextView) titleView.findViewById(R.id.dialogTitle)).setText(title);
+            alertDialog.setCustomTitle(titleView);
+
+            //BODY
+            final View msgView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_body, null);
+            ((TextView) msgView.findViewById(R.id.dialogBody)).setText(message);
+            ((Button)msgView.findViewById(R.id.dialogAccept)).setText(positiveButtonText);
+            ((Button)msgView.findViewById(R.id.dialogCancel)).setText(negativeButtonText);
             msgView.findViewById(R.id.dialogAccept).setOnClickListener(view -> {
                 clickListener.onPossitiveClick(alertDialog);
                 alertDialog.dismiss();

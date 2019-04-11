@@ -2,10 +2,6 @@ package org.dhis2.usescases.general;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.app.ActivityOptionsCompat;
-import androidx.appcompat.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +16,10 @@ import org.dhis2.utils.OnDialogClickListener;
 import java.lang.reflect.Type;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.ActivityOptionsCompat;
 import androidx.fragment.app.Fragment;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -69,6 +69,11 @@ public abstract class FragmentGlobalAbstract extends Fragment implements Abstrac
     @Override
     public void displayMessage(String message) {
         getAbstractActivity().displayMessage(message);
+    }
+
+    @Override
+    public AlertDialog showInfoDialog(String title, String message, String possitiveButtonText, String negativeButtonText, OnDialogClickListener clickListener) {
+        return getAbstractActivity().showInfoDialog(title, message, possitiveButtonText, negativeButtonText, clickListener);
     }
 
     @Override
