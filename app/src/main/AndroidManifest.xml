@@ -55,7 +55,7 @@
         <activity android:name=".usescases.programEventDetail.ProgramEventDetailActivity" />
         <activity android:name=".usescases.searchTrackEntity.SearchTEActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"/>
-        <activity android:name=".usescases.teiDashboard.mobile.TeiDashboardMobileActivity" />
+        <activity android:name=".usescases.teiDashboard.TeiDashboardMobileActivity" />
         <activity android:name=".usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity" />
         <activity android:name=".usescases.teiDashboard.eventDetail.EventDetailActivity" />
         <activity android:name=".usescases.qrScanner.QRActivity" />
@@ -71,7 +71,7 @@
         <activity
             android:name=".usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity"
             android:windowSoftInputMode="stateHidden" />
-        <activity android:name=".usescases.teiDashboard.TeiDashboardActivity" />
+        <!--<activity android:name=".usescases.teiDashboard.TeiDashboardActivity" />-->
         <activity android:name=".usescases.qrCodes.QrActivity" />
         <activity android:name=".usescases.qrCodes.eventsworegistration.QrEventsWORegistrationActivity" />
 
