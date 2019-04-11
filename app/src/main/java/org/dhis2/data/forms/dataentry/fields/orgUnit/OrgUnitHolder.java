@@ -90,11 +90,13 @@ public class OrgUnitHolder extends FormViewHolder {
         else
             description.setVisibility(View.GONE);
 
-        if (viewModel.warning() != null)
+        if (viewModel.warning() != null) {
+            inputLayout.setErrorTextAppearance(R.style.warning_appearance);
             inputLayout.setError(viewModel.warning());
-        else if (viewModel.error() != null)
+        } else if (viewModel.error() != null){
+            inputLayout.setErrorTextAppearance(R.style.error_appearance);
             inputLayout.setError(viewModel.error());
-        else
+        } else
             inputLayout.setError(null);
 
         if (viewModel.value() != null) {

@@ -67,26 +67,44 @@ final class DataValueStore implements DataEntryStore {
 
     @Override
     public void updateEventStatus(EventModel eventModel) {
+        if (eventModel.status() == EventStatus.OVERDUE)
+            skipEvent(eventModel);
+        else {
+            ContentValues contentValues = new ContentValues();
+            Date currentDate = Calendar.getInstance().getTime();
+            contentValues.put(EventModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(currentDate));
+            String eventStatus = null;
+            switch (eventModel.status()) {
+                case COMPLETED:
+                    eventStatus = EventStatus.ACTIVE.name(); //TODO: should check if visited/skiped/overdue
+                    contentValues.putNull(EventModel.Columns.COMPLETE_DATE);
+                    break;
+                case SCHEDULE:
+                    eventStatus = EventStatus.ACTIVE.name();
+                    contentValues.putNull(EventModel.Columns.COMPLETE_DATE);
+                    break;
+                default:
+                    eventStatus = EventStatus.COMPLETED.name();
+                    contentValues.put(EventModel.Columns.COMPLETE_DATE, DateUtils.databaseDateFormat().format(currentDate));
+                    break;
+
+            }
+            contentValues.put(EventModel.Columns.STATUS, eventStatus);
+            contentValues.put(EventModel.Columns.STATE, eventModel.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
+            updateProgramTable(currentDate, eventModel.program());
+
+            briteDatabase.update(EventModel.TABLE, contentValues, EventModel.Columns.UID + "= ?", eventModel.uid());
+            updateTEi();
+        }
+    }
+
+    @Override
+    public void skipEvent(EventModel eventModel) {
         ContentValues contentValues = new ContentValues();
         Date currentDate = Calendar.getInstance().getTime();
         contentValues.put(EventModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(currentDate));
-        String eventStatus = null;
-        switch (eventModel.status()) {
-            case COMPLETED:
-                eventStatus = EventStatus.ACTIVE.name(); //TODO: should check if visited/skiped/overdue
-                contentValues.putNull(EventModel.Columns.COMPLETE_DATE);
-                break;
-            case SCHEDULE:
-                eventStatus = EventStatus.ACTIVE.name();
-                contentValues.putNull(EventModel.Columns.COMPLETE_DATE);
-                break;
-            default:
-                eventStatus = EventStatus.COMPLETED.name();
-                contentValues.put(EventModel.Columns.COMPLETE_DATE, DateUtils.databaseDateFormat().format(currentDate));
-                break;
-
-        }
-        contentValues.put(EventModel.Columns.STATUS, eventStatus);
+        contentValues.putNull(EventModel.Columns.COMPLETE_DATE);
+        contentValues.put(EventModel.Columns.STATUS, EventStatus.SKIPPED.name());
         contentValues.put(EventModel.Columns.STATE, eventModel.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
         updateProgramTable(currentDate, eventModel.program());
 
@@ -95,15 +113,30 @@ final class DataValueStore implements DataEntryStore {
     }
 
     @Override
-    public void updateEvent(@NonNull Date eventDate, @NonNull EventModel eventModel) {
+    public void rescheduleEvent(EventModel eventModel, Date newDate) {
         ContentValues contentValues = new ContentValues();
         Date currentDate = Calendar.getInstance().getTime();
         contentValues.put(EventModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(currentDate));
-        contentValues.put(EventModel.Columns.EVENT_DATE, DateUtils.databaseDateFormat().format(eventDate));
-        if (eventDate.before(currentDate))
-            contentValues.put(EventModel.Columns.STATUS, EventStatus.ACTIVE.name());
+        contentValues.put(EventModel.Columns.DUE_DATE, DateUtils.databaseDateFormat().format(newDate));
+        contentValues.put(EventModel.Columns.STATUS, EventStatus.SCHEDULE.name());
         briteDatabase.update(EventModel.TABLE, contentValues, EventModel.Columns.UID + "= ?", eventModel.uid());
         updateTEi();
+    }
+
+    @Override
+    public void updateEvent(@NonNull Date eventDate, @NonNull EventModel eventModel) {
+        if (eventModel.status() == EventStatus.OVERDUE)
+            rescheduleEvent(eventModel, eventDate);
+        else {
+            ContentValues contentValues = new ContentValues();
+            Date currentDate = Calendar.getInstance().getTime();
+            contentValues.put(EventModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(currentDate));
+            contentValues.put(EventModel.Columns.EVENT_DATE, DateUtils.databaseDateFormat().format(eventDate));
+            if (eventDate.before(currentDate))
+                contentValues.put(EventModel.Columns.STATUS, EventStatus.ACTIVE.name());
+            briteDatabase.update(EventModel.TABLE, contentValues, EventModel.Columns.UID + "= ?", eventModel.uid());
+            updateTEi();
+        }
     }
 
     private void updateProgramTable(Date lastUpdated, String programUid) {

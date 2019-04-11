@@ -118,8 +118,14 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
         this.latLong.setText(String.format(Locale.getDefault(), "%.5f, %.5f", Double.valueOf(latLongValue[0]), Double.valueOf(latLongValue[1])));
     }
 
-    public void setWargingOrError(String msg) {
-        this.inputLayout.setError(msg);
+    public void setWarning(String msg) {
+        inputLayout.setErrorTextAppearance(R.style.warning_appearance);
+        inputLayout.setError(msg);
+    }
+
+    public void setError(String msg) {
+        inputLayout.setErrorTextAppearance(R.style.error_appearance);
+        inputLayout.setError(msg);
     }
 
     @Override

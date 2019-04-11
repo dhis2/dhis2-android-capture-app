@@ -11,7 +11,7 @@
 
         <variable
             name="presenter"
-            type="org.dhis2.usescases.teiDashboard.TeiDashboardContracts.Presenter" />
+            type="org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipContracts.Presenter" />
 
         <variable
             name="teiName"

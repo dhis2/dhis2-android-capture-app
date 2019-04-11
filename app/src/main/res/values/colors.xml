@@ -357,6 +357,9 @@
     <color name="sectionSelectorBgColor">#fdfdfe</color>
     <color name="color_item_selected_c3">#c3c3c3</color>
     <color name="item_unselected_fdf">#fdfdfe</color>
+
+    <color name="warning_color">#F19525</color>
+    <color name="error_color">#F11E1E</color>
     <!--endregion-->
 
 </resources>

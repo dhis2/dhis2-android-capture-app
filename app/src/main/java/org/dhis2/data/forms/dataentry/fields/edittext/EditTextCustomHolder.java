@@ -195,8 +195,10 @@ final class EditTextCustomHolder extends FormViewHolder {
             editText.setText(null);
 
         if (!isEmpty(editTextModel.warning())) {
+            inputLayout.setErrorTextAppearance(R.style.warning_appearance);
             inputLayout.setError(editTextModel.warning());
         } else if (!isEmpty(editTextModel.error())) {
+            inputLayout.setErrorTextAppearance(R.style.error_appearance);
             inputLayout.setError(editTextModel.error());
         } else
             inputLayout.setError(null);
