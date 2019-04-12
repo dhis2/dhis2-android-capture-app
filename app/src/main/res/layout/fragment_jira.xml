@@ -3,9 +3,15 @@
 
     <data>
 
+        <import type="android.view.View" />
+
         <variable
-            name="presenter"
-            type="org.dhis2.usescases.jira.JiraPresenter" />
+            name="jiraViewModel"
+            type="org.dhis2.usescases.jira.JiraViewModel" />
+
+        <variable
+            name="securedCredentials"
+            type="java.lang.Boolean" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -22,12 +28,13 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/userName"
+            style="@style/boxedInputText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="2.5dp"
             android:hint="Jira user*"
             android:textColorHint="?colorPrimary"
-            android:theme="@style/loginInputText"
+            android:visibility="@{securedCredentials ? View.GONE : View.VISIBLE}"
             app:layout_constraintEnd_toStartOf="@id/guideline"
             app:layout_constraintStart_toStartOf="parent">
 
@@ -36,18 +43,19 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:maxLines="1"
-                android:onTextChanged="@{presenter::onJiraUserChanged}" />
+                android:onTextChanged="@{jiraViewModel::onJiraUserChanged}" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/pass"
+            style="@style/boxedInputText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="2.5dp"
             android:hint="Jira password*"
             android:textColorHint="?colorPrimary"
-            android:theme="@style/loginInputText"
+            android:visibility="@{securedCredentials ? View.GONE : View.VISIBLE}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/guideline">
 
@@ -57,62 +65,95 @@
                 android:layout_height="wrap_content"
                 android:inputType="textWebPassword"
                 android:maxLines="1"
-                android:onTextChanged="@{presenter::onJiraPassChanged}" />
+                android:onTextChanged="@{jiraViewModel::onJiraPassChanged}" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/summary"
+            style="@style/boxedInputText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Summary*"
             android:textColorHint="?colorPrimary"
-            android:theme="@style/loginInputText"
             app:layout_constraintTop_toBottomOf="@id/userName">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/summaryEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:lines="1"
                 android:maxLines="1"
-                android:onTextChanged="@{presenter::onSummaryChanged}" />
+                android:onTextChanged="@{jiraViewModel::onSummaryChanged}" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/description"
+            style="@style/boxedInputText"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="200dp"
             android:layout_marginTop="10dp"
             android:hint="Description*"
             android:textColorHint="?colorPrimary"
-            android:theme="@style/loginInputText"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@id/summary">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/descriptionEditText"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:onTextChanged="@{presenter::onDescriptionChanged}"/>
+                android:layout_height="match_parent"
+                android:fadeScrollbars="false"
+                android:gravity="top"
+                android:maxLines="15"
+                android:onTextChanged="@{jiraViewModel::onDescriptionChanged}"
+                android:scrollbarStyle="insideOverlay"
+                android:scrollbars="vertical" />
 
         </com.google.android.material.textfield.TextInputLayout>
+
+        <CheckBox
+            android:id="@+id/rememberCheck"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onCheckedChanged="@{jiraViewModel::onCheckedChanged}"
+            android:text="Remember me"
+            android:visibility="@{securedCredentials? View.GONE : View.VISIBLE}"
+            app:layout_constraintTop_toBottomOf="@id/description" />
+
+        <Button
+            style="@style/TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="@{()->jiraViewModel.closeSession()}"
+            android:paddingStart="9dp"
+            android:paddingEnd="9dp"
+            android:text="Close jira session"
+            android:visibility="@{securedCredentials? View.VISIBLE : View.GONE}"
+            app:layout_constraintTop_toBottomOf="@id/rememberCheck" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/sendReportButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"
-            android:layout_marginBottom="16dp"
+            android:layout_alignParentBottom="true"
             android:layout_marginEnd="16dp"
-            android:onClick="@{()->presenter.onSendClick()}"
+            android:layout_marginBottom="16dp"
+            android:onClick="@{()->jiraViewModel.sendIssue()}"
+            android:visibility="@{jiraViewModel.formComplete()?View.VISIBLE:View.GONE}"
             app:backgroundTint="?colorPrimary"
             app:fabSize="normal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:srcCompat="@drawable/ic_send"
             app:tint="?colorAccent" />
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/chipContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:chipSpacing="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
