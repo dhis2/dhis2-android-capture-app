@@ -48,7 +48,7 @@ public class SearchTEAdapter extends RecyclerView.Adapter<SearchTEViewHolder> {
     @Override
     public long getItemId(int position) {
 //        return trackedEntityInstances.get(position).uid().hashCode();
-        return teis.get(position).getTei().uid().hashCode();
+        return teis.get(position).getTeiModel().uid().hashCode();
     }
 
     @Override

@@ -15,6 +15,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import androidx.annotation.Nullable;
+import androidx.lifecycle.LiveData;
+import androidx.paging.PagedList;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
@@ -51,6 +53,8 @@ public class SearchTEContractsModule {
         String fromRelationshipTEI();
 
         void setListOptions(List<OptionModel> options);
+
+        void setLiveData(Pair<LiveData<PagedList<SearchTeiModel>>,String> liveData);
     }
 
     public interface Presenter {
@@ -73,7 +77,7 @@ public class SearchTEContractsModule {
 
         void onTEIClick(String TEIuid, boolean isOnline);
 
-        void getTrakedEntities();
+        //void getTrakedEntities();
 
         TrackedEntityTypeModel getTrackedEntityName();
 

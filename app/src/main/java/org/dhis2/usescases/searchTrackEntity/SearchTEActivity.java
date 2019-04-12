@@ -18,6 +18,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.LiveData;
+import androidx.paging.PagedList;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
 import android.util.TypedValue;
@@ -41,6 +43,7 @@ import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.searchTrackEntity.adapters.FormAdapter;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchRelationshipAdapter;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTEAdapter;
+import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiLiveAdapter;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
@@ -99,6 +102,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     private static PublishProcessor<Integer> onlinePagerProcessor;
     private PublishProcessor<Integer> offlinePagerProcessor;
     private EndlessRecyclerViewScrollListener endlessRecyclerViewScrollListener;
+
+    private SearchTeiLiveAdapter liveAdapter;
     //---------------------------------------------------------------------------------------------
     //region LIFECYCLE
 
@@ -125,8 +130,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             searchRelationshipAdapter = new SearchRelationshipAdapter(presenter, metadataRepository, false);
             binding.scrollView.setAdapter(searchRelationshipAdapter);
         } else {
-            searchTEAdapter = new SearchTEAdapter(presenter, metadataRepository);
-            binding.scrollView.setAdapter(searchTEAdapter);
+            liveAdapter = new SearchTeiLiveAdapter(presenter);
+            //searchTEAdapter = new SearchTEAdapter(presenter, metadataRepository);
+            binding.scrollView.setAdapter(liveAdapter);
         }
 
         binding.scrollView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
@@ -141,14 +147,14 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
                 if (NetworkUtils.isOnline(SearchTEActivity.this))
                     onlinePagerProcessor.onNext(page);
-                else {
+                /*else {
                     if(program != null)
                         if(program.maxTeiCountToReturn() != 0 && totalItemsCount >= program.maxTeiCountToReturn())
                             offlinePagerProcessor.onNext(page);
                     else
                         if(totalItemsCount >= 20)
                             offlinePagerProcessor.onNext(page);
-                }
+                }*/
             }
         };
         binding.scrollView.addOnScrollListener(endlessRecyclerViewScrollListener);
@@ -219,8 +225,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         endlessRecyclerViewScrollListener.resetState(NetworkUtils.isOnline(this) ? 1 : 0);
         if (fromRelationship)
             searchRelationshipAdapter.clear();
-        else
-            searchTEAdapter.clear();
+        //else
+            //searchTEAdapter.clear();
     }
 
     @Override
@@ -270,6 +276,29 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     //---------------------------------------------------------------------
     //region TEI LIST
+
+
+    @Override
+    public void setLiveData(Pair<LiveData<PagedList<SearchTeiModel>>, String> liveData) {
+        binding.progressLayout.setVisibility(View.GONE);
+        if (!fromRelationship) {
+            if (liveData.val1().isEmpty()) {
+                binding.messageContainer.setVisibility(View.GONE);
+                liveData.val0().observe(this, liveAdapter::submitList);
+            } else {
+                binding.messageContainer.setVisibility(View.VISIBLE);
+                binding.message.setText(liveData.val1());
+            }
+        } else {
+            if (liveData.val1().isEmpty()) {
+                binding.messageContainer.setVisibility(View.GONE);
+                searchRelationshipAdapter.setItems(liveData.val0().getValue().snapshot());
+            } else {
+                binding.messageContainer.setVisibility(View.VISIBLE);
+                binding.message.setText(liveData.val1());
+            }
+        }
+    }
 
     @Override
     public Consumer<Pair<List<SearchTeiModel>, String>> swapTeiListData() {

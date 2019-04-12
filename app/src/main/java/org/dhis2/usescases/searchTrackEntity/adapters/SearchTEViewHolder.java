@@ -44,19 +44,19 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
         binding.setPresenter(presenter);
         binding.setOverdue(searchTeiModel.isHasOverdue());
         binding.setIsOnline(searchTeiModel.isOnline());
-        binding.setSyncState(searchTeiModel.getTei().state());
+        binding.setSyncState(searchTeiModel.getTeiModel().state());
 
-        setEnrollment(searchTeiModel.getEnrollments());
+        setEnrollment(searchTeiModel.getEnrollmentModels());
         setEnrollmentInfo(searchTeiModel.getEnrollmentInfo());
 
-        setTEIData(searchTeiModel.getAttributeValues());
+        setTEIData(searchTeiModel.getAttributeValueModels());
 
         binding.trackedEntityImage.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.photo_temp_gray));
         binding.followUp.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.ic_circle_red));
 
         binding.executePendingBindings();
 
-        itemView.setOnClickListener(view -> presenter.onTEIClick(searchTeiModel.getTei().uid(), searchTeiModel.isOnline()));
+        itemView.setOnClickListener(view -> presenter.onTEIClick(searchTeiModel.getTeiModel().uid(), searchTeiModel.isOnline()));
 
     }
 

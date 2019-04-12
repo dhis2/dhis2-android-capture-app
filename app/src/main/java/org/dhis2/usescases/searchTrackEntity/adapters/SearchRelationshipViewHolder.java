@@ -42,7 +42,7 @@ public class SearchRelationshipViewHolder extends RecyclerView.ViewHolder {
 
         //--------------------------
         //region ATTRI
-        setTEIData(teiModel.getAttributeValues());
+        setTEIData(teiModel.getAttributeValueModels());
         //endregion
 
        /* if (presenter.getProgramModel() != null)
@@ -55,7 +55,7 @@ public class SearchRelationshipViewHolder extends RecyclerView.ViewHolder {
 
         binding.executePendingBindings();
 
-        itemView.setOnClickListener(view->presenter.addRelationship(trackedEntityInstanceModel.getTei().uid(),trackedEntityInstanceModel.isOnline()));
+        itemView.setOnClickListener(view->presenter.addRelationship(trackedEntityInstanceModel.getTeiModel().uid(),trackedEntityInstanceModel.isOnline()));
 
 
     }
@@ -72,7 +72,7 @@ public class SearchRelationshipViewHolder extends RecyclerView.ViewHolder {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (position > 0) {
                     Pair<RelationshipTypeModel, String> selectedRelationShip = (Pair<RelationshipTypeModel, String>) parent.getItemAtPosition(position);
-                    presenter.addRelationship(trackedEntityInstanceModel.getTei().uid(), selectedRelationShip.val0().uid(),trackedEntityInstanceModel.isOnline());
+                    presenter.addRelationship(trackedEntityInstanceModel.getTeiModel().uid(), selectedRelationShip.val0().uid(),trackedEntityInstanceModel.isOnline());
                 }
             }
 
