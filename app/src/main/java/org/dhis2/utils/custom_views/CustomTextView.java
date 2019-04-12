@@ -1,40 +1,41 @@
 package org.dhis2.utils.custom_views;
 
 import android.content.Context;
-import androidx.databinding.BindingAdapter;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
 import com.google.android.material.textfield.TextInputLayout;
-import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.text.method.DigitsKeyListener;
 import android.util.AttributeSet;
+import android.util.Patterns;
 import android.view.LayoutInflater;
-import android.widget.EditText;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import org.dhis2.BR;
 import org.dhis2.R;
-import org.dhis2.utils.TextChangedListener;
-
 import org.hisp.dhis.android.core.common.ValueType;
+import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
+
+import static android.text.TextUtils.isEmpty;
 
 /**
  * QUADRAM. Created by frodriguez on 1/17/2018.
  */
 
-public class CustomTextView extends RelativeLayout implements TextWatcher {
+public class CustomTextView extends RelativeLayout implements View.OnFocusChangeListener {
 
-    private static boolean isBgTransparent;
-    private EditText editText;
-    private static String label;
-    private static ValueType valueType;
-    private static ViewDataBinding binding;
+    private boolean isBgTransparent;
+    private TextInputAutoCompleteTextView editText;
+    private ImageView icon;
+    private String label;
+    private ValueType valueType;
+    private ViewDataBinding binding;
 
-    private TextChangedListener listener;
+    private OnFocusChangeListener listener;
 
     private LayoutInflater inflater;
     private TextInputLayout inputLayout;
@@ -66,11 +67,14 @@ public class CustomTextView extends RelativeLayout implements TextWatcher {
 
         inputLayout = findViewById(R.id.input_layout);
         editText = findViewById(R.id.input_editText);
-        editText.addTextChangedListener(this);
-        configureViews();
+        icon = findViewById(R.id.renderImage);
+        editText.setOnFocusChangeListener(this);
     }
 
     private void configureViews() {
+
+        editText.setFilters(new InputFilter[]{});
+
         if (valueType != null)
             switch (valueType) {
                 case PHONE_NUMBER:
@@ -85,10 +89,23 @@ public class CustomTextView extends RelativeLayout implements TextWatcher {
                     editText.setLines(1);
                     editText.setEllipsize(TextUtils.TruncateAt.END);
                     break;
+                case LONG_TEXT:
+                    editText.setInputType(InputType.TYPE_CLASS_TEXT);
+                    editText.setLines(1);
+                    editText.setEllipsize(TextUtils.TruncateAt.END);
+                    break;
                 case LETTER:
                     editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
-                    editText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(1)});
-                    return;
+                    editText.setFilters(new InputFilter[]{
+                            new InputFilter.LengthFilter(1),
+                            (source, start, end, dest, dstart, dend) -> {
+                                if (source.equals(""))
+                                    return source;
+                                if (source.toString().matches("[a-zA-Z]"))
+                                    return source;
+                                return "";
+                            }});
+                    break;
                 case NUMBER:
                     editText.setInputType(InputType.TYPE_CLASS_NUMBER |
                             InputType.TYPE_NUMBER_FLAG_DECIMAL |
@@ -106,52 +123,136 @@ public class CustomTextView extends RelativeLayout implements TextWatcher {
                 case UNIT_INTERVAL:
                     editText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
                     break;
+                case PERCENTAGE:
+                    editText.setInputType(InputType.TYPE_CLASS_NUMBER);
+                    break;
+                case URL:
+                    editText.setInputType(InputType.TYPE_TEXT_VARIATION_WEB_EDIT_TEXT);
+                    break;
                 default:
                     break;
             }
-        binding.setVariable(BR.label, label);
 
         binding.executePendingBindings();
     }
 
 
-    public void setTextChangedListener(TextChangedListener listener) {
-        this.listener = listener;
-    }
-
-    @BindingAdapter(value = {"isBgTransparent", "label", "valueType"})
-    public static void setIsBgTransparent(CustomTextView view, boolean mIsBgTransparent, String mLabel, ValueType mValueType) {
+    public void setIsBgTransparent(boolean mIsBgTransparent) {
         isBgTransparent = mIsBgTransparent;
-        label = mLabel;
-        valueType = mValueType;
-
-        view.setLayout();
+        setLayout();
     }
 
-
-    @Override
-    public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {
-        if (listener != null)
-            listener.beforeTextChanged(charSequence, start, count, after);
+    public void setValueType(ValueType valueType){
+        this.valueType = valueType;
+        configureViews();
     }
 
-    @Override
-    public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
-        if (listener != null)
-            listener.onTextChanged(charSequence, start, before, count);
+    public void setEditable(Boolean editable) {
+        editText.setFocusable(editable);
+        editText.setFocusableInTouchMode(editable);
+        editText.setEnabled(editable);
     }
 
-    @Override
-    public void afterTextChanged(Editable editable) {
-        if (listener != null)
-            listener.afterTextChanged(editable);
+    public void setWarning(String msg) {
+        inputLayout.setErrorTextAppearance(R.style.warning_appearance);
+        inputLayout.setError(msg);
     }
 
-    public EditText getEditText() {
+    public void setError(String msg) {
+        inputLayout.setErrorTextAppearance(R.style.error_appearance);
+        inputLayout.setError(msg);
+    }
+
+    public void setText(String text){
+        editText.setText(text);
+        editText.setSelection(editText.getText() == null ?
+                0 : editText.getText().length());
+    }
+
+    public void setLabel(String label) {
+        binding.setVariable(BR.label, label);
+        binding.executePendingBindings();
+    }
+
+    public TextInputAutoCompleteTextView getEditText() {
         return editText;
     }
 
     public TextInputLayout getInputLayout() {
         return inputLayout;
+    }
+
+    public void setFocusChangedListener(OnFocusChangeListener listener) {
+        this.listener = listener;
+    }
+    @Override
+    public void onFocusChange(View v, boolean hasFocus) {
+        if (listener != null && validate())
+            listener.onFocusChange(v, hasFocus);
+    }
+
+    private boolean validate() {
+        if (editText.getText() != null && !isEmpty(editText.getText())) {
+            switch (valueType) {
+                case PHONE_NUMBER:
+                    if (Patterns.PHONE.matcher(editText.getText().toString()).matches())
+                        return true;
+                    else {
+                        inputLayout.setError(editText.getContext().getString(R.string.invalid_phone_number));
+                        return false;
+                    }
+                case EMAIL:
+                    if (Patterns.EMAIL_ADDRESS.matcher(editText.getText().toString()).matches())
+                        return true;
+                    else {
+                        inputLayout.setError(editText.getContext().getString(R.string.invalid_email));
+                        return false;
+                    }
+                case INTEGER_NEGATIVE:
+                    if (Integer.valueOf(editText.getText().toString()) < 0)
+                        return true;
+                    else {
+                        inputLayout.setError(editText.getContext().getString(R.string.invalid_negative_number));
+                        return false;
+                    }
+                case INTEGER_ZERO_OR_POSITIVE:
+                    if (editText.getText() != null &&
+                            Integer.valueOf(editText.getText().toString()) >= 0)
+                        return true;
+                    else {
+                        inputLayout.setError(editText.getContext().getString(R.string.invalid_possitive_zero));
+                        return false;
+                    }
+                case INTEGER_POSITIVE:
+                    if (Integer.valueOf(editText.getText().toString()) > 0)
+                        return true;
+                    else {
+                        inputLayout.setError(editText.getContext().getString(R.string.invalid_possitive));
+                        return false;
+                    }
+                case UNIT_INTERVAL:
+                    if (Float.valueOf(editText.getText().toString()) >= 0 && Float.valueOf(editText.getText().toString()) <= 1)
+                        return true;
+                    else {
+                        inputLayout.setError(editText.getContext().getString(R.string.invalid_interval));
+                        return false;
+                    }
+                case PERCENTAGE:
+                    if (Float.valueOf(editText.getText().toString()) >= 0 && Float.valueOf(editText.getText().toString()) <= 100)
+                        return true;
+                    else {
+                        inputLayout.setError(editText.getContext().getString(R.string.invalid_percentage));
+                        return false;
+                    }
+                default:
+                    return true;
+            }
+        }
+        return true;
+    }
+
+    public void setRenderType(String renderType) {
+        if (renderType != null && !renderType.equals(ProgramStageSectionRenderingType.LISTING.name()))
+            icon.setVisibility(View.VISIBLE);
     }
 }
