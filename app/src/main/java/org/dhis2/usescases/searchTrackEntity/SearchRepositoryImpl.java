@@ -194,7 +194,7 @@ public class SearchRepositoryImpl implements SearchRepository {
     public LiveData<PagedList<SearchTeiModel>> searchTrackedEntitiesOffline(@Nullable ProgramModel selectedProgram,
                                                                             @NonNull List<String> orgUnits,
                                                                             @Nullable HashMap<String, String> queryData) {
-        TrackedEntityInstanceQuery.Builder queryBuilder = setQueryBuilder(selectedProgram, orgUnits);
+        TrackedEntityInstanceQuery.Builder queryBuilder = setQueryBuilder(selectedProgram.uid(), orgUnits);
         if (queryData != null && !isEmpty(queryData.get(Constants.ENROLLMENT_DATE_UID))) {
             try{
                 Date enrollmentDate = DateUtils.databaseDateFormat().parse(queryData.get(Constants.ENROLLMENT_DATE_UID));
@@ -219,7 +219,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                                                                         int page,
                                                                         @Nullable HashMap<String, String> queryData) {
 
-        TrackedEntityInstanceQuery.Builder queryBuilder = setQueryBuilder(selectedProgram, orgUnits);
+        TrackedEntityInstanceQuery.Builder queryBuilder = setQueryBuilder(selectedProgram.uid(), orgUnits);
         if (queryData != null && !isEmpty(queryData.get(Constants.ENROLLMENT_DATE_UID))) {
             try{
                 Date enrollmentDate = DateUtils.databaseDateFormat().parse(queryData.get(Constants.ENROLLMENT_DATE_UID));
@@ -477,12 +477,12 @@ public class SearchRepositoryImpl implements SearchRepository {
     }
 
     // Private Region Start //
-    private TrackedEntityInstanceQuery.Builder setQueryBuilder(@Nullable ProgramModel selectedProgram, @NonNull List<String> orgUnits) {
+    private TrackedEntityInstanceQuery.Builder setQueryBuilder(@Nullable String selectedProgram, @NonNull List<String> orgUnits) {
         return TrackedEntityInstanceQuery.builder()
                 .orgUnits(orgUnits)
                 .orgUnitMode(OuMode.ACCESSIBLE)
                 .pageSize(50)
-                .program(selectedProgram == null ? "" : selectedProgram.uid())
+                .program(selectedProgram == null ? "" : selectedProgram)
                 .page(1)
                 .paging(true);
     }
