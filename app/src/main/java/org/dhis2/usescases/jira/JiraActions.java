@@ -21,4 +21,6 @@ public interface JiraActions {
     void sendIssue();
 
     void closeSession();
+
+    void openSession();
 }

@@ -5,23 +5,24 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Browser;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.android.material.chip.Chip;
+import com.google.gson.Gson;
 
 import org.dhis2.Components;
 import org.dhis2.R;
 import org.dhis2.databinding.FragmentJiraBinding;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
-import org.dhis2.utils.BiometricStorage;
-import org.dhis2.utils.Constants;
 import org.dhis2.utils.NetworkUtils;
 import org.dhis2.utils.jira.JiraIssue;
 import org.dhis2.utils.jira.JiraIssueListResponse;
-import org.jetbrains.annotations.NotNull;
+import org.dhis2.utils.jira.OnJiraIssueClick;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -29,11 +30,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProviders;
-import de.adorsys.android.securestoragelibrary.SecurePreferences;
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import androidx.recyclerview.widget.DividerItemDecoration;
 
 import static org.hisp.dhis.android.core.utils.support.StringUtils.isEmpty;
 
@@ -41,13 +38,14 @@ import static org.hisp.dhis.android.core.utils.support.StringUtils.isEmpty;
  * QUADRAM. Created by ppajuelo on 24/05/2018.
  */
 
-public class JiraFragment extends FragmentGlobalAbstract {
+public class JiraFragment extends FragmentGlobalAbstract implements OnJiraIssueClick {
 
     @Inject
     JiraPresenter presenter;
     private Context context;
     private JiraViewModel jiraViewModel;
-    FragmentJiraBinding binding;
+    private FragmentJiraBinding binding;
+    private JiraIssueAdapter adapter = new JiraIssueAdapter(this);
 
     @Override
     public void onAttach(Context context) {
@@ -62,75 +60,42 @@ public class JiraFragment extends FragmentGlobalAbstract {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_jira, container, false);
         jiraViewModel = ViewModelProviders.of(this).get(JiraViewModel.class);
+        jiraViewModel.init();
 
-        jiraViewModel.rememberCredentials().observe(this, sessionActive -> {
-            boolean hasActiveSession = sessionActive != null && sessionActive && SecurePreferences.contains(Constants.JIRA_USER);
-            binding.setSecuredCredentials(hasActiveSession);
-            if (hasActiveSession)
-                presenter.getIssues(getJiraIssueListCallback());
-
+        jiraViewModel.issueListResponse().observe(this, response -> {
+            if (response.isSuccessful() && response.body() != null) {
+                List<JiraIssue> issueList = new ArrayList<>();
+                try {
+                    JiraIssueListResponse jiraIssueListRes = new Gson().fromJson(response.body().string(), JiraIssueListResponse.class);
+                    issueList = jiraIssueListRes.getIssues();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                adapter.addItems(issueList);
+            } else
+                displayMessage(response.message());
         });
 
-        jiraViewModel.issue().observe(this, issue -> {
-            binding.setSecuredCredentials(!isEmpty(issue.val2()) && issue.val3());
-            presenter.sendIssue(issue, new Callback<ResponseBody>() {
-                @Override
-                public void onResponse(@NotNull Call<ResponseBody> call, @NotNull Response<ResponseBody> response) {
-                    if (response.isSuccessful()) {
-                        displayMessage(context.getString(R.string.issue_reported));
-                        if (issue.val3()) {
-                            BiometricStorage.saveJiraCredentials(issue.val2());
-                            BiometricStorage.saveJiraUser(issue.val1());
-                            binding.setSecuredCredentials(true);
-                        }
-                    } else {
-                        if (response.code() == 403 || response.code() == 401) {
-                            displayMessage(context.getString(R.string.jira_credential_error));
-                        } else
-                            displayMessage(context.getString(R.string.jira_issue_error));
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<ResponseBody> call, Throwable t) {
-                    displayMessage(context.getString(R.string.jira_issue_error));
-                }
-            });
+        jiraViewModel.issueMessage().observe(this, message -> {
+            if (!isEmpty(message))
+                displayMessage(message);
         });
+
         binding.setJiraViewModel(jiraViewModel);
         binding.sendReportButton.setEnabled(NetworkUtils.isOnline(context));
+        binding.issueRecycler.setAdapter(adapter);
+        binding.issueRecycler.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
 
         return binding.getRoot();
     }
 
-    private Callback<JiraIssueListResponse> getJiraIssueListCallback() {
-
-        return new Callback<JiraIssueListResponse>() {
-            @Override
-            public void onResponse(@NotNull Call<JiraIssueListResponse> call, @NotNull Response<JiraIssueListResponse> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    binding.chipContainer.removeAllViews();
-                    for (JiraIssue jiraIssue : response.body().getIssues()) {
-                        Chip chip = new Chip(context);
-                        chip.setText(String.format("%s - %s", jiraIssue.getKey(), jiraIssue.getFields().getStatus().getName()));
-                        chip.setTextSize(TypedValue.COMPLEX_UNIT_SP, 9);
-                        chip.setOnClickListener(view -> {
-                            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://jira.dhis2.org/browse/" + jiraIssue.getKey()));
-                            Bundle bundle = new Bundle();
-                            bundle.putString("Authorization", BiometricStorage.getJiraCredentials());
-                            browserIntent.putExtra(Browser.EXTRA_HEADERS, bundle);
-                            startActivity(browserIntent);
-                        });
-                        binding.chipContainer.addView(chip);
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(@NotNull Call<JiraIssueListResponse> call, @NotNull Throwable t) {
-
-            }
-        };
+    @Override
+    public void onJiraIssueClick(String issueKey) {
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://jira.dhis2.org/browse/" + issueKey));
+        Bundle bundle = new Bundle();
+        bundle.putString("Authorization", String.format("Basic %s", jiraViewModel.getAuth()));
+        browserIntent.putExtra(Browser.EXTRA_HEADERS, bundle);
+        startActivity(browserIntent);
     }
 
 
