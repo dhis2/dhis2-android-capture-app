@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 
 import com.google.gson.Gson;
 
-import org.dhis2.Components;
 import org.dhis2.R;
 import org.dhis2.databinding.FragmentJiraBinding;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
@@ -23,8 +22,6 @@ import org.dhis2.utils.jira.OnJiraIssueClick;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.inject.Inject;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -40,25 +37,20 @@ import static org.hisp.dhis.android.core.utils.support.StringUtils.isEmpty;
 
 public class JiraFragment extends FragmentGlobalAbstract implements OnJiraIssueClick {
 
-    @Inject
-    JiraPresenter presenter;
     private Context context;
     private JiraViewModel jiraViewModel;
-    private FragmentJiraBinding binding;
     private JiraIssueAdapter adapter = new JiraIssueAdapter(this);
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         this.context = context;
-        ((Components) context.getApplicationContext()).userComponent()
-                .plus(new JiraModule()).inject(this);
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_jira, container, false);
+        FragmentJiraBinding binding = DataBindingUtil.inflate(inflater, R.layout.fragment_jira, container, false);
         jiraViewModel = ViewModelProviders.of(this).get(JiraViewModel.class);
         jiraViewModel.init();
 

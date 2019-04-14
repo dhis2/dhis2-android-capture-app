@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
@@ -12,170 +13,166 @@
 
     </data>
 
-    <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="5dp">
+            android:layout_height="match_parent">
 
-            <androidx.constraintlayout.widget.Guideline
-                android:id="@+id/guideline"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
-                app:layout_constraintGuide_percent="0.5" />
+                android:padding="5dp">
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/userName"
-                style="@style/boxedInputText"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="2.5dp"
-                android:hint="Jira user*"
-                android:textColorHint="?colorPrimary"
-                android:visibility="@{jiraViewModel.isSessionOpen() ? View.GONE : View.VISIBLE}"
-                app:layout_constraintEnd_toStartOf="@id/guideline"
-                app:layout_constraintStart_toStartOf="parent">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/userNameEditText"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:maxLines="1"
-                    android:onTextChanged="@{jiraViewModel::onJiraUserChanged}" />
+                    android:baselineAligned="false"
+                    android:orientation="horizontal"
+                    android:visibility="@{jiraViewModel.isSessionOpen() ? View.GONE : View.VISIBLE}">
 
-            </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/userName"
+                        style="@style/boxedInputText"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="2.5dp"
+                        android:layout_weight="1"
+                        android:hint="Jira user*"
+                        android:textColorHint="?colorPrimary">
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/pass"
-                style="@style/boxedInputText"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="2.5dp"
-                android:hint="Jira password*"
-                android:textColorHint="?colorPrimary"
-                android:visibility="@{jiraViewModel.isSessionOpen() ? View.GONE : View.VISIBLE}"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/guideline">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/userNameEditText"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:maxLines="1"
+                            android:onTextChanged="@{jiraViewModel::onJiraUserChanged}" />
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/passEditText"
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/pass"
+                        style="@style/boxedInputText"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="2.5dp"
+                        android:layout_weight="1"
+                        android:hint="Jira password*"
+                        android:textColorHint="?colorPrimary">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/passEditText"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="textWebPassword"
+                            android:maxLines="1"
+                            android:onTextChanged="@{jiraViewModel::onJiraPassChanged}" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+                </LinearLayout>
+
+
+                <CheckBox
+                    android:id="@+id/rememberCheck"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textWebPassword"
-                    android:maxLines="1"
-                    android:onTextChanged="@{jiraViewModel::onJiraPassChanged}" />
+                    android:onCheckedChanged="@{jiraViewModel::onCheckedChanged}"
+                    android:text="Remember me"
+                    android:visibility="@{jiraViewModel.isSessionOpen()? View.GONE : View.VISIBLE}"
+                    app:layout_constraintTop_toBottomOf="@id/userName" />
 
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <CheckBox
-                android:id="@+id/rememberCheck"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:onCheckedChanged="@{jiraViewModel::onCheckedChanged}"
-                android:text="Remember me"
-                android:visibility="@{jiraViewModel.isSessionOpen()? View.GONE : View.VISIBLE}"
-                app:layout_constraintTop_toBottomOf="@id/userName" />
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/summary"
-                style="@style/boxedInputText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Summary*"
-                android:textColorHint="?colorPrimary"
-                android:visibility="@{jiraViewModel.isSessionOpen() ? View.VISIBLE : View.GONE}"
-                app:layout_constraintTop_toBottomOf="@id/rememberCheck">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/summaryEditText"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/summary"
+                    style="@style/boxedInputText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:lines="1"
-                    android:maxLines="1"
-                    android:onTextChanged="@{jiraViewModel::onSummaryChanged}" />
+                    android:hint="Summary*"
+                    android:textColorHint="?colorPrimary"
+                    android:visibility="@{jiraViewModel.isSessionOpen() ? View.VISIBLE : View.GONE}">
 
-            </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/summaryEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:lines="1"
+                        android:maxLines="1"
+                        android:onTextChanged="@{jiraViewModel::onSummaryChanged}" />
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/description"
-                style="@style/boxedInputText"
-                android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:layout_marginTop="10dp"
-                android:hint="Description*"
-                android:textColorHint="?colorPrimary"
-                android:visibility="@{jiraViewModel.isSessionOpen() ? View.VISIBLE : View.GONE}"
-                app:layout_constraintTop_toBottomOf="@id/summary">
+                </com.google.android.material.textfield.TextInputLayout>
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/descriptionEditText"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/description"
+                    style="@style/boxedInputText"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:fadeScrollbars="false"
-                    android:gravity="top"
-                    android:maxLines="15"
-                    android:onTextChanged="@{jiraViewModel::onDescriptionChanged}"
-                    android:scrollbarStyle="insideOverlay"
-                    android:scrollbars="vertical" />
+                    android:layout_height="200dp"
+                    android:layout_marginTop="10dp"
+                    android:hint="Description*"
+                    android:textColorHint="?colorPrimary"
+                    android:visibility="@{jiraViewModel.isSessionOpen() ? View.VISIBLE : View.GONE}">
 
-            </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/descriptionEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:fadeScrollbars="false"
+                        android:gravity="top"
+                        android:maxLines="15"
+                        android:onTextChanged="@{jiraViewModel::onDescriptionChanged}"
+                        android:scrollbarStyle="insideOverlay"
+                        android:scrollbars="vertical" />
 
-
-            <Button
-                android:id="@+id/closeSession"
-                style="@style/TextButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:onClick="@{()->jiraViewModel.closeSession()}"
-                android:paddingStart="9dp"
-                android:paddingEnd="9dp"
-                android:text="Close jira session"
-                android:visibility="@{jiraViewModel.isSessionOpen()? View.VISIBLE : View.GONE}"
-                app:layout_constraintTop_toBottomOf="@id/description" />
-
-            <Button
-                style="@style/TextButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:onClick="@{()->jiraViewModel.openSession()}"
-                android:paddingStart="9dp"
-                android:paddingEnd="9dp"
-                android:text="Open jira session"
-                android:visibility="@{jiraViewModel.isSessionOpen()? View.GONE : View.VISIBLE}"
-                app:layout_constraintTop_toBottomOf="@id/closeSession" />
+                </com.google.android.material.textfield.TextInputLayout>
 
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/issueRecycler"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:visibility="@{jiraViewModel.isSessionOpen() ? View.VISIBLE : View.GONE}"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/closeSession"
-                tools:listitem="@layout/jira_issue_item" />
+                <Button
+                    android:id="@+id/closeSession"
+                    style="@style/TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="@{()->jiraViewModel.closeSession()}"
+                    android:paddingStart="9dp"
+                    android:paddingEnd="9dp"
+                    android:text="Close jira session"
+                    android:visibility="@{jiraViewModel.isSessionOpen()? View.VISIBLE : View.GONE}" />
 
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/sendReportButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentBottom="true"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="16dp"
-                android:onClick="@{()->jiraViewModel.sendIssue()}"
-                android:visibility="@{jiraViewModel.formComplete()?View.VISIBLE:View.GONE}"
-                app:backgroundTint="?colorPrimary"
-                app:fabSize="normal"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:srcCompat="@drawable/ic_send"
-                app:tint="?colorAccent" />
+                <Button
+                    style="@style/TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="@{()->jiraViewModel.openSession()}"
+                    android:paddingStart="9dp"
+                    android:paddingEnd="9dp"
+                    android:text="Open jira session"
+                    android:visibility="@{jiraViewModel.isSessionOpen()? View.GONE : View.VISIBLE}" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.core.widget.NestedScrollView>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/issueRecycler"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="@{jiraViewModel.isSessionOpen() ? View.VISIBLE : View.GONE}"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:listitem="@layout/jira_issue_item" />
+
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/sendReportButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            android:onClick="@{()->jiraViewModel.sendIssue()}"
+            android:visibility="@{jiraViewModel.formComplete()?View.VISIBLE:View.GONE}"
+            app:backgroundTint="?colorPrimary"
+            app:fabSize="normal"
+            app:srcCompat="@drawable/ic_send"
+            app:tint="?colorAccent" />
+    </RelativeLayout>
 </layout>
