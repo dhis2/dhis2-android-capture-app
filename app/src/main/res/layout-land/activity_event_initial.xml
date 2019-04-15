@@ -396,7 +396,7 @@
                     android:background="?attr/selector_button_round_7"
                     android:paddingStart="10dp"
                     android:paddingEnd="10dp"
-                    android:text="@string/create"
+                    android:text="@string/next"
                     android:textAllCaps="true"
                     android:textColor="@color/white" />
             </RelativeLayout>
