@@ -58,7 +58,7 @@ public class DevelopmentActivity extends ActivityGlobalAbstract {
         count = 0;
         binding.iconButton.setOnClickListener(view -> {
             String iconName;
-            if(count == iconNames.size())
+            if (count == iconNames.size())
                 count = 0;
 
             if (iconNames.isEmpty()) {
@@ -73,13 +73,13 @@ public class DevelopmentActivity extends ActivityGlobalAbstract {
             int iconResource_negative = getResources().getIdentifier(iconName + "_negative", "drawable", getPackageName());
             int iconResource_outline = getResources().getIdentifier(iconName + "_outline", "drawable", getPackageName());
             int iconResource_positive = getResources().getIdentifier(iconName + "_positive", "drawable", getPackageName());
-//            Drawable drawable = AppCompatResources.getDrawable(this, iconResource);
             try {
                 binding.iconInput.setError(null);
                 binding.iconImagePossitive.setImageResource(iconResource_positive);
                 binding.iconImageOutline.setImageResource(iconResource_outline);
                 binding.iconImageNegative.setImageResource(iconResource_negative);
-            }catch (Exception e){
+            } catch (Exception e) {
+                e.printStackTrace();
                 binding.iconInput.setError("This drawable has errors");
             }
 
@@ -87,8 +87,8 @@ public class DevelopmentActivity extends ActivityGlobalAbstract {
 
         binding.iconButtonBack.setOnClickListener(view -> {
             String iconName;
-            if(count == 0)
-                count = iconNames.size()-1;
+            if (count == 0)
+                count = iconNames.size() - 1;
             if (iconNames.isEmpty() || count == 0) {
                 count = 0;
                 iconName = binding.iconInput.getText().toString();
@@ -102,13 +102,13 @@ public class DevelopmentActivity extends ActivityGlobalAbstract {
             int iconResource_negative = getResources().getIdentifier(iconName + "_negative", "drawable", getPackageName());
             int iconResource_outline = getResources().getIdentifier(iconName + "_outline", "drawable", getPackageName());
             int iconResource_positive = getResources().getIdentifier(iconName + "_positive", "drawable", getPackageName());
-//            Drawable drawable = AppCompatResources.getDrawable(this, iconResource);
             try {
                 binding.iconInput.setError(null);
                 binding.iconImagePossitive.setImageResource(iconResource_positive);
                 binding.iconImageOutline.setImageResource(iconResource_outline);
                 binding.iconImageNegative.setImageResource(iconResource_negative);
-            }catch (Exception e){
+            } catch (Exception e) {
+                e.printStackTrace();
                 binding.iconInput.setError("This drawable has errors");
             }
 

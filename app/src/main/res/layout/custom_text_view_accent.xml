@@ -8,6 +8,10 @@
         <import type="android.view.View" />
 
         <variable
+            name="label"
+            type="java.lang.String" />
+
+        <variable
             name="renderType"
             type="java.lang.String" />
 
@@ -45,6 +49,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/renderImage"
                 android:layout_weight="1"
+                android:hint='@{label}'
                 android:textColorHint="@drawable/edit_text_hint_accent"
                 android:theme="@style/loginInputTextAccent"
                 tools:hint="this is the hint">
