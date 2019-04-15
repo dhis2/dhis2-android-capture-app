@@ -2,10 +2,13 @@ package org.dhis2.usescases.teiDashboard.eventDetail;
 
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Handler;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.DatePicker;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.FormFragment;
@@ -134,7 +137,7 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
     public void eventStatus(View buttonView, EventModel eventModel, ProgramStageModel stageModel) {
 
         if (stageModel.accessDataWrite()) {
-            if(eventModel.status()==EventStatus.OVERDUE)
+            if (eventModel.status() == EventStatus.OVERDUE)
                 updateEventStatus(eventModel);
             else {
                 FormFragment formFragment = (FormFragment) view.getAbstractActivity().getSupportFragmentManager().getFragments().get(0);
@@ -317,7 +320,72 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
 
         dateDialog.setButton(DialogInterface.BUTTON_NEGATIVE, view.getContext().getString(R.string.date_dialog_clear), (dialog, which) -> {
         });
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            dateDialog.setButton(DialogInterface.BUTTON_NEUTRAL,
+                    view.getContext().getResources().getString(R.string.change_calendar), (dialog, which) -> {
+                        dateDialog.dismiss();
+                        showCustomCalendar(futureOnly);
+                    });
+        }
         dateDialog.show();
+    }
+
+
+    private void showCustomCalendar(boolean futureOnly) {
+        LayoutInflater layoutInflater = LayoutInflater.from(view.getContext());
+        View datePickerView = layoutInflater.inflate(R.layout.widget_datepicker, null);
+        final DatePicker datePicker = datePickerView.findViewById(R.id.widget_datepicker);
+
+        Calendar c = Calendar.getInstance();
+        if (futureOnly)
+            c.add(Calendar.DAY_OF_YEAR, 1);
+        int year = c.get(Calendar.YEAR);
+        int month = c.get(Calendar.MONTH);
+        int day = c.get(Calendar.DAY_OF_MONTH);
+
+        datePicker.updateDate(year, month, day);
+        datePicker.setMaxDate(c.getTimeInMillis());
+
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(view.getContext(), R.style.DatePickerTheme)
+                .setPositiveButton(R.string.action_accept, (dialog, which) -> {
+                    Calendar selectedCalendar = Calendar.getInstance();
+                    selectedCalendar.set(Calendar.YEAR, datePicker.getYear());
+                    selectedCalendar.set(Calendar.MONTH, datePicker.getMonth());
+                    selectedCalendar.set(Calendar.DAY_OF_MONTH, datePicker.getDayOfMonth());
+                    selectedCalendar.set(Calendar.HOUR_OF_DAY, c.get(Calendar.HOUR_OF_DAY));
+                    selectedCalendar.set(Calendar.MINUTE, c.get(Calendar.MINUTE));
+                    Date selectedDate = selectedCalendar.getTime();
+                    String result = DateUtils.uiDateFormat().format(selectedDate);
+                    view.setDate(result);
+
+                    if (eventDetailModel.getProgramStage().accessDataWrite()) {
+                        dataEntryStore.updateEvent(selectedDate, eventDetailModel.getEventModel());
+                    }
+                })
+                .setNeutralButton(view.getContext().getResources().getString(R.string.change_calendar), (dialog, which) -> openDailySelector(futureOnly));
+
+        if (eventDetailModel.getEventModel().status() != EventStatus.SCHEDULE && eventDetailModel.getEventModel().status() != EventStatus.OVERDUE) {
+            datePicker.setMaxDate(System.currentTimeMillis());
+        }
+
+        if (futureOnly)
+            datePicker.setMinDate(c.getTimeInMillis());
+
+        if (eventDetailModel.getProgram().expiryPeriodType() != null) {// eventDetailModel.orgUnitOpeningDate() != null) {
+            Date minDate = DateUtils.getInstance().expDate(null,
+                    eventDetailModel.getProgram().expiryDays() != null ? eventDetailModel.getProgram().expiryDays() : 0,
+                    eventDetailModel.getProgram().expiryPeriodType());
+            datePicker.setMinDate(minDate.getTime());
+        }
+
+        if (eventDetailModel.orgUnitClosingDate() != null)
+            datePicker.setMaxDate(eventDetailModel.orgUnitClosingDate().getTime());
+
+
+        alertDialog.setView(datePickerView);
+        Dialog dialog = alertDialog.create();
+        dialog.show();
     }
 
     private void openPeriodSelector(Boolean futureOnly) {

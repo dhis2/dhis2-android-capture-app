@@ -73,6 +73,7 @@
     <string name="enter_positive_integer">Enter positive integer</string>
     <string name="filter_options">Filter options</string>
     <string name="choose_date">Choose date</string>
+    <string name="change_calendar">Change calendar</string>
 
     <!-- Status -->
     <string name="program_completed">Program Completed</string>
