@@ -101,6 +101,7 @@
             android:configChanges="keyboardHidden|orientation|screenSize"/>
         <activity android:name=".usescases.sync.SyncActivity" />
         <activity android:name=".usescases.enrollment.EnrollmentActivity" />
+        <activity android:name=".usescases.development.DevelopmentActivity" />
     </application>
 
 </manifest>
