@@ -260,11 +260,11 @@ dependencies {
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     androidTestImplementation'androidx.test.espresso:espresso-core:3.1.1'
-  /*  androidTestImplementation('androidx.test.espresso:espresso-core:3.1.1', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-        exclude group: 'com.google.code.findbugs'
+    /*  androidTestImplementation('androidx.test.espresso:espresso-core:3.1.1', {
+          exclude group: 'com.android.support', module: 'support-annotations'
+          exclude group: 'com.google.code.findbugs'
 
-    })*/
+      })*/
     androidTestImplementation 'androidx.test.ext:junit:1.1.0'
 
 
