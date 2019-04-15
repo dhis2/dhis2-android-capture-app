@@ -115,7 +115,8 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     @Override
     protected void onDestroy() {
-        ((App) getApplicationContext()).releaseDashboardComponent();
+        if(programUid!=null)
+            ((App) getApplicationContext()).releaseDashboardComponent();
         super.onDestroy();
     }
 

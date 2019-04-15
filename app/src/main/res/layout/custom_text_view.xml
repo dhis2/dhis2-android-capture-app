@@ -8,6 +8,10 @@
         <import type="android.view.View" />
 
         <variable
+            name="label"
+            type="java.lang.String" />
+
+        <variable
             name="renderType"
             type="java.lang.String" />
 
@@ -43,6 +47,7 @@
                 android:id="@+id/input_layout"
                 android:layout_width="0dp"
                 android:layout_weight="1"
+                android:hint='@{label}'
                 android:layout_height="wrap_content"
                 android:theme="@style/loginInputText"
                 android:textColorHint="@color/text_black_808"

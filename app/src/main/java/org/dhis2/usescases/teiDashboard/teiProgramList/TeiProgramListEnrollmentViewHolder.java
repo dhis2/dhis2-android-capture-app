@@ -16,6 +16,7 @@ import org.dhis2.utils.ColorUtils;
 import androidx.core.content.ContextCompat;
 import androidx.databinding.ViewDataBinding;
 import androidx.recyclerview.widget.RecyclerView;
+import timber.log.Timber;
 
 /**
  * QUADRAM. Created by Cristian on 13/02/2018.
@@ -60,7 +61,12 @@ public class TeiProgramListEnrollmentViewHolder extends RecyclerView.ViewHolder 
                 icon = R.drawable.ic_program_default;
             }
 
-            Drawable iconImage = ContextCompat.getDrawable(itemView.getContext(), icon);
+            Drawable iconImage = null;
+            try {
+                iconImage = ContextCompat.getDrawable(itemView.getContext(), icon);
+            }catch (Exception e){
+                Timber.log(1,e);
+            }
 
             if (iconImage != null) {
                 programImage.setImageDrawable(ColorUtils.tintDrawableReosurce(iconImage, color));
@@ -94,7 +100,13 @@ public class TeiProgramListEnrollmentViewHolder extends RecyclerView.ViewHolder 
                 icon = R.drawable.ic_program_default;
             }
 
-            Drawable iconImage = ContextCompat.getDrawable(itemView.getContext(), icon);
+            Drawable iconImage = null;
+            try {
+                iconImage = ContextCompat.getDrawable(itemView.getContext(), icon);
+            }catch (Exception e){
+                Timber.log(1,e);
+            }
+
             if (iconImage != null) {
                 programImage.setImageDrawable(ColorUtils.tintDrawableReosurce(iconImage, color));
             }
