@@ -80,6 +80,7 @@ public class DevelopmentActivity extends ActivityGlobalAbstract {
                 binding.iconImageOutline.setImageResource(iconResource_outline);
                 binding.iconImageNegative.setImageResource(iconResource_negative);
             }catch (Exception e){
+                e.printStackTrace();
                 binding.iconInput.setError("This drawable has errors");
             }
 
@@ -109,6 +110,7 @@ public class DevelopmentActivity extends ActivityGlobalAbstract {
                 binding.iconImageOutline.setImageResource(iconResource_outline);
                 binding.iconImageNegative.setImageResource(iconResource_negative);
             }catch (Exception e){
+                e.printStackTrace();
                 binding.iconInput.setError("This drawable has errors");
             }
 
