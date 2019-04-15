@@ -50,6 +50,7 @@
     <string name="data_ready">Your Data is ready</string>
     <string name="configuration_sync_failed">Configuration sync failed</string>
     <string name="data_sync_failed">Data sync failed</string>
+    <string name="account_recovery">Account recovery</string>
 
     <!--PERIOD-->
     <string name="DAILY">Daily</string>
