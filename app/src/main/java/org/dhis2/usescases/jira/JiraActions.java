@@ -1,16 +1,12 @@
 package org.dhis2.usescases.jira;
 
-import org.dhis2.usescases.general.ActivityGlobalAbstract;
+import android.widget.CompoundButton;
 
 /**
- * QUADRAM. Created by ppajuelo on 24/05/2018.
+ * QUADRAM. Created by ppajuelo on 11/04/2019.
  */
+public interface JiraActions {
 
-public interface JiraPresenter {
-
-    void init(ActivityGlobalAbstract context);
-
-    void onSendClick();
 
     void onSummaryChanged(CharSequence s, int start, int before, int count);
 
@@ -19,4 +15,12 @@ public interface JiraPresenter {
     void onJiraUserChanged(CharSequence s, int start, int before, int count);
 
     void onJiraPassChanged(CharSequence s, int start, int before, int count);
+
+    void onCheckedChanged(CompoundButton buttonView, boolean isChecked);
+
+    void sendIssue();
+
+    void closeSession();
+
+    void openSession();
 }

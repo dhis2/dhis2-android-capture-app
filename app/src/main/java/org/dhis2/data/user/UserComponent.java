@@ -25,8 +25,6 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialCo
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialModule;
 import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryComponent;
 import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryModule;
-import org.dhis2.usescases.jira.JiraComponent;
-import org.dhis2.usescases.jira.JiraModule;
 import org.dhis2.usescases.main.MainComponent;
 import org.dhis2.usescases.main.MainModule;
 import org.dhis2.usescases.main.program.ProgramComponent;
@@ -112,9 +110,6 @@ public interface UserComponent {
 
     @NonNull
     QrReaderComponent plus(QrReaderModule qrReaderModule);
-
-    @NonNull
-    JiraComponent plus(JiraModule jiraModule);
 
     @NonNull
     AboutComponent plus(AboutModule aboutModule);
