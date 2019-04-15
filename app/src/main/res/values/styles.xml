@@ -65,6 +65,13 @@
         <item name="colorControlActivated">@color/text_black_333</item>
     </style>
 
+    <style name="boxedInputText" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="android:textColorHint">?colorPrimaryLight</item>
+        <item name="colorAccent">?colorPrimaryLight</item>
+        <item name="colorControlNormal">?colorPrimaryLight</item>
+        <item name="colorControlActivated">?colorPrimaryLight</item>
+    </style>
+
     <style name="loginInputTextAccent" parent="Base.Widget.MaterialComponents.TextInputLayout">
         <item name="android:textColorHint">@color/colorAccent</item>
         <item name="colorAccent">@color/colorAccent</item>
