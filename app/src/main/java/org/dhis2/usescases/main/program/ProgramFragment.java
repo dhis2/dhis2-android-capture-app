@@ -28,7 +28,7 @@ import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.Period;
 import org.dhis2.utils.custom_views.RxDateDialog;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.jetbrains.annotations.NotNull;
 
 import java.text.SimpleDateFormat;
@@ -262,7 +262,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
         return currentPeriod;
     }
 
-    public boolean areFiltersApplied(){
+    public boolean areFiltersApplied() {
         return presenter.areFiltersApplied();
     }
 
@@ -377,7 +377,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                 if (treeView != null) {
                     treeView.selectAll(false);
                     for (TreeNode node : treeView.getSelected()) {
-                        ((OrgUnitHolder) node.getViewHolder()).check();
+                        ((OrgUnitHolder_2) node.getViewHolder()).check();
                     }
                 }
             });
@@ -385,8 +385,8 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
             binding.orgUnitUnselectAll.setOnClickListener(view -> {
                 if (treeView != null) {
                     for (TreeNode node : treeView.getSelected()) {
-                        ((OrgUnitHolder) node.getViewHolder()).uncheck();
-                        ((OrgUnitHolder) node.getViewHolder()).update();
+                        ((OrgUnitHolder_2) node.getViewHolder()).uncheck();
+                        ((OrgUnitHolder_2) node.getViewHolder()).update();
                     }
                     treeView.deselectAll();
                 }
@@ -409,7 +409,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                         }
                     }
                     if (node.getChildren().isEmpty())
-                        presenter.onExpandOrgUnitNode(node, ((OrganisationUnitModel) node.getValue()).uid());
+                        presenter.onExpandOrgUnitNode(node, ((OrganisationUnit) node.getValue()).uid());
                     else
                         node.setExpanded(node.isExpanded());
                 }
@@ -474,7 +474,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
 
                 List<String> orgUnitsUids = new ArrayList<>();
                 for (TreeNode treeNode : treeView.getSelected()) {
-                    orgUnitsUids.add(((OrganisationUnitModel) treeNode.getValue()).uid());
+                    orgUnitsUids.add(((OrganisationUnit) treeNode.getValue()).uid());
                 }
 
                 if (treeView.getSelected().size() >= 1) {

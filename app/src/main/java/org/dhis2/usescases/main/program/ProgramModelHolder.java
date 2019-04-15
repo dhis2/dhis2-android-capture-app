@@ -39,11 +39,10 @@ public class ProgramModelHolder extends RecyclerView.ViewHolder {
         if (programViewModel.icon() != null) {
             Resources resources = binding.programImage.getResources();
             String iconName = programViewModel.icon().startsWith("ic_") ? programViewModel.icon() : "ic_" + programViewModel.icon();
-            icon = resources.getIdentifier(iconName, "drawable", binding.programImage.getContext().getPackageName());
+            icon = resources.getIdentifier(iconName, "drawable", "org.hisp.dhis.android.core");
         } else {
             icon = R.drawable.ic_program_default;
         }
-
         Drawable iconImage = ContextCompat.getDrawable(binding.programImage.getContext(), R.drawable.ic_program_default);
         try {
             iconImage = ContextCompat.getDrawable(binding.programImage.getContext(), icon);
