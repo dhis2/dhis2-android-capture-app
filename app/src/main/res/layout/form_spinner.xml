@@ -77,6 +77,14 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <ImageView
+                android:id="@+id/delete"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:visibility="gone"
+                app:srcCompat="@drawable/ic_close"
+                app:tint="?colorPrimary" />
+
+            <ImageView
                 android:id="@+id/descriptionLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"

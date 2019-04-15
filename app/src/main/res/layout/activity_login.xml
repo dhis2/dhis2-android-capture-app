@@ -13,7 +13,7 @@
 
         <variable
             name="loginModel"
-            type="org.dhis2.usescases.login.LoginViewModel"/>
+            type="org.dhis2.usescases.login.LoginViewModel" />
 
     </data>
 
@@ -170,6 +170,21 @@
                     app:srcCompat="@drawable/ic_fingerprint"
                     tools:visibility="visible" />
 
+                <TextView
+                    android:id="@+id/account_recovery"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/primaryTextSize"
+                    android:gravity="center"
+                    android:textColor="@color/colorPrimary"
+                    app:layout_constraintTop_toBottomOf="@id/biometricButton"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginTop="12dp"
+                    android:padding="6dp"
+                    android:onClick="@{()->presenter.onAccountRecovery()}"
+                    android:text="@string/account_recovery"/>
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <LinearLayout
@@ -200,8 +215,7 @@
                 android:id="@+id/login"
                 style="@style/FullWidthButton"
                 android:onClick="@{()-> presenter.onButtonClick()}"
-                android:text="@string/log_in_button"
-                />
+                android:text="@string/log_in_button" />
 
             <LinearLayout
                 android:id="@+id/unlock_layout"
