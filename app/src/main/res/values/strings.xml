@@ -374,6 +374,7 @@
     <string name="tuto_main_10">Log out to change user or server. You will be able to log in again even if there is no internet connection.</string>
     <string name="text_plus_colon">%s:</string>
     <string name="relationships">relationships</string>
+    <string name="empty_relationships">There are no relationships, click "+" to add a new one.</string>
     <string name="qr_data_values">Data values</string>
     <string name="info">Info</string>
     <string name="qr_no_id_error">Could not read this Id</string>
@@ -381,6 +382,7 @@
     <string name="dashboard_overview">Overview</string>
     <string name="dashboard_relationships">Relationships</string>
     <string name="dashboard_indicators">Indicators</string>
+    <string name="empty_indicators">There are no indicators for this program.</string>
     <string name="dashboard_notes">Notes</string>
     <string name="unable_to_complete">Unable to complete</string>
     <string name="field_errors">Some fields have errors. Please, check them to be able to complete</string>

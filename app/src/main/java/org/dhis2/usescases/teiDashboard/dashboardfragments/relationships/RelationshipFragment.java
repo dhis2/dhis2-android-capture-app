@@ -93,6 +93,11 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
             if (relationshipAdapter != null) {
                 relationshipAdapter.addItems(relationships);
             }
+            if (relationships != null && !relationships.isEmpty()) {
+                binding.emptyRelationships.setVisibility(View.GONE);
+            } else {
+                binding.emptyRelationships.setVisibility(View.VISIBLE);
+            }
         };
     }
 
