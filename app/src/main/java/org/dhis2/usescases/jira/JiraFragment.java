@@ -1,52 +1,94 @@
 package org.dhis2.usescases.jira;
 
 import android.content.Context;
-import androidx.databinding.DataBindingUtil;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import android.provider.Browser;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.dhis2.Components;
+import com.google.gson.Gson;
+
 import org.dhis2.R;
 import org.dhis2.databinding.FragmentJiraBinding;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.utils.NetworkUtils;
+import org.dhis2.utils.jira.JiraIssue;
+import org.dhis2.utils.jira.JiraIssueListResponse;
+import org.dhis2.utils.jira.OnJiraIssueClick;
 
-import javax.inject.Inject;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.DividerItemDecoration;
+
+import static org.hisp.dhis.android.core.utils.support.StringUtils.isEmpty;
 
 /**
  * QUADRAM. Created by ppajuelo on 24/05/2018.
  */
 
-public class JiraFragment extends FragmentGlobalAbstract {
+public class JiraFragment extends FragmentGlobalAbstract implements OnJiraIssueClick {
 
-    @Inject
-    JiraPresenter presenter;
     private Context context;
+    private JiraViewModel jiraViewModel;
+    private JiraIssueAdapter adapter = new JiraIssueAdapter(this);
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         this.context = context;
-        ((Components) context.getApplicationContext()).userComponent()
-                .plus(new JiraModule()).inject(this);
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         FragmentJiraBinding binding = DataBindingUtil.inflate(inflater, R.layout.fragment_jira, container, false);
-        binding.setPresenter(presenter);
+        jiraViewModel = ViewModelProviders.of(this).get(JiraViewModel.class);
+        jiraViewModel.init();
+
+        jiraViewModel.issueListResponse().observe(this, response -> {
+            if (response.isSuccessful() && response.body() != null) {
+                List<JiraIssue> issueList = new ArrayList<>();
+                try {
+                    JiraIssueListResponse jiraIssueListRes = new Gson().fromJson(response.body().string(), JiraIssueListResponse.class);
+                    issueList = jiraIssueListRes.getIssues();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                adapter.addItems(issueList);
+            } else
+                displayMessage(response.message());
+        });
+
+        jiraViewModel.issueMessage().observe(this, message -> {
+            if (!isEmpty(message))
+                displayMessage(message);
+        });
+
+        binding.setJiraViewModel(jiraViewModel);
         binding.sendReportButton.setEnabled(NetworkUtils.isOnline(context));
+        binding.issueRecycler.setAdapter(adapter);
+        binding.issueRecycler.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
+
         return binding.getRoot();
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        presenter.init(getAbstracContext());
+    public void onJiraIssueClick(String issueKey) {
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://jira.dhis2.org/browse/" + issueKey));
+        Bundle bundle = new Bundle();
+        bundle.putString("Authorization", String.format("Basic %s", jiraViewModel.getAuth()));
+        browserIntent.putExtra(Browser.EXTRA_HEADERS, bundle);
+        startActivity(browserIntent);
     }
+
+
 }
