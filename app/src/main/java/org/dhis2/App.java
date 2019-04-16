@@ -8,6 +8,7 @@ import android.os.Looper;
 import com.crashlytics.android.Crashlytics;
 import com.facebook.stetho.Stetho;
 import com.google.android.gms.security.ProviderInstaller;
+import com.mapbox.mapboxsdk.Mapbox;
 
 import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.dagger.PerServer;
@@ -104,6 +105,7 @@ public class App extends MultiDexApplication implements Components {
             Stetho.initializeWithDefaults(this);
             Timber.d("STETHO INITIALIZATION END AT %s", System.currentTimeMillis() - startTime);
         }
+        Mapbox.getInstance(this, BuildConfig.MAPBOX_ACCESS_TOKEN);
         Fabric.with(this, new Crashlytics());
         Timber.d("FABRIC INITIALIZATION END AT %s", System.currentTimeMillis() - startTime);
 
