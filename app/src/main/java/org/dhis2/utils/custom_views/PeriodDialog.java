@@ -198,6 +198,10 @@ public class PeriodDialog extends DialogFragment {
         this.currentDate = DateUtils.getInstance().getNextPeriod(period, currentDate, -1);
     }
 
+    protected void setRealCurrentDate(Date currentDate){
+        this.currentDate = currentDate;
+    }
+
     @Nullable
     @Override
     public Context getContext() {

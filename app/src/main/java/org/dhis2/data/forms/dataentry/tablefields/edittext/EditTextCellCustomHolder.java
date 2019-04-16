@@ -3,7 +3,6 @@ package org.dhis2.data.forms.dataentry.tablefields.edittext;
 import android.annotation.SuppressLint;
 import android.text.InputFilter;
 import android.text.InputType;
-import android.text.TextUtils;
 import android.text.method.DigitsKeyListener;
 import android.util.Patterns;
 import android.view.LayoutInflater;

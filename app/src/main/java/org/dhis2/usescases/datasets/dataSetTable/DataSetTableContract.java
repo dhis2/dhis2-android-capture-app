@@ -27,8 +27,6 @@ public class DataSetTableContract {
 
         Boolean accessDataWrite();
 
-        Flowable<RowAction> rowActions();
-
         void showOptions(boolean open);
 
         void showOrgUnitDialog(List<OrganisationUnitModel> data);
@@ -40,8 +38,6 @@ public class DataSetTableContract {
         Date getSelectedPeriod();
 
         String getDataSetUid();
-
-        String getSelectedCatOptions();
 
         String getOrgUnitName();
 
@@ -79,7 +75,6 @@ public class DataSetTableContract {
 
         void onClickSelectTable(int numTable);
 
-        void setCurrentNumTables(int numTables);
     }
 
 }

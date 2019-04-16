@@ -16,6 +16,7 @@ import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModelFactoryImpl;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
+import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.FragmentDatasetSectionBinding;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity;
@@ -30,7 +31,6 @@ import org.dhis2.utils.custom_views.OptionSetCellPopUp;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
-import org.hisp.dhis.android.core.dataset.DataInputPeriodModel;
 import org.hisp.dhis.android.core.dataset.DataSetModel;
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.period.PeriodModel;
@@ -62,16 +62,11 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
     private DataSetTableActivity activity;
     private DataSetTableAdapter adapter;
     private String section;
-    private boolean accessDataWrite;
-    private boolean tableCreated = false;
     private String dataSetUid;
 
     private PeriodModel periodModel;
-    private List<DataInputPeriodModel> dataInputPeriodModel;
     @Inject
     DataValueContract.Presenter presenterFragment;
-
-    private TableView tableView;
 
     private ArrayList<Integer> heights = new ArrayList<>();
     private MutableLiveData<Integer> currentTablePosition = new MutableLiveData<>();
@@ -109,7 +104,6 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
     public void onResume() {
         super.onResume();
         section = getArguments().getString(Constants.DATA_SET_SECTION);
-        accessDataWrite = getArguments().getBoolean(Constants.ACCESS_DATA);
         presenterFragment.init(this, presenter.getOrgUnitUid(), presenter.getPeriodTypeName(),
                 presenter.getPeriodFinalDate(), presenter.getCatCombo(), section, presenter.getPeriodId());
         presenterFragment.getData(this, section);
@@ -171,8 +165,20 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
                         boolean compulsory = false;
                         FieldViewModelFactoryImpl fieldFactory = createField();
 
-                        boolean editable = /*!dataTableModel.dataElementDisabled().containsKey(section) || */!dataTableModel.dataElementDisabled().containsKey(de.uid())
-                                || !dataTableModel.dataElementDisabled().get(de.uid()).containsAll(catOpts);
+                        boolean editable = true;
+                        for(Pair<String, List<String>> listDisabled: dataTableModel.dataElementDisabled()){
+                            if(listDisabled.val0().equals(de.uid()) && listDisabled.val1().containsAll(catOpts)){
+                                editable = false;
+                            }
+                        }
+
+                        for(CategoryOptionModel catOption: dataTableModel.catOptions()){
+                            for(String option: catOpts){
+                                //Revert this when Jose tell us how to do disabled CategoryOptions
+                                /*if(catOption.uid().equals(option) && !catOption.accessDataWrite())
+                                    editable = false;*/
+                            }
+                        }
 
                         if (dataTableModel.compulsoryCells().containsKey(de.uid()) && dataTableModel.compulsoryCells().get(de.uid()).containsAll(catOpts))
                             compulsory = true;
@@ -394,11 +400,6 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
         }
 
         return DateUtils.getInstance().isDataSetExpired(dataSet.expiryDays(), periodModel.endDate());
-    }
-
-    @Override
-    public void setDataInputPeriod(List<DataInputPeriodModel> dataInputPeriod) {
-        this.dataInputPeriodModel = dataInputPeriod;
     }
 
     @Override

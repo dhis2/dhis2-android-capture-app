@@ -4,19 +4,12 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import org.dhis2.R;
-import org.dhis2.databinding.ItemDatasetBinding;
 import org.dhis2.databinding.ItemTableCheckboxBinding;
-import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailContract;
-import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailModel;
-import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailViewHolder;
-import org.dhis2.usescases.datasets.datasetDetail.DataSetDiffCallback;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
-import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class TableCheckboxAdapter extends RecyclerView.Adapter<TableCheckboxViewHolder> {

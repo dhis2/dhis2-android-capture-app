@@ -15,5 +15,5 @@ public interface DataSetDetailRepository {
     @NonNull
     Observable<List<OrganisationUnitModel>> orgUnits();
 
-    Flowable<List<DataSetDetailModel>> dataSetGroups(String dataSetUid, List<String> selectedOrgUnit, PeriodType selectedPeriodType, int page);
+    Flowable<List<DataSetDetailModel>> dataSetGroups(String dataSetUid, List<String> selectedOrgUnit, List<String> periodFilter, int page);
 }

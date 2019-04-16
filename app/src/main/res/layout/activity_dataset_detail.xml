@@ -99,9 +99,9 @@
                                 android:layout_width="56dp"
                                 android:layout_height="match_parent"
                                 android:background="?attr/period_button"
-                                android:onClick="@{()->presenter.onTimeButtonClick()}"
+                                android:onClick="@{()->presenter.onDateRangeButtonClick()}"
                                 android:padding="7dp"
-                                app:srcCompat="@drawable/ic_view_none"
+                                app:srcCompat="@drawable/ic_view_day"
                                 android:tint="@color/colorGreyDefault"
                                 tools:ignore="ContentDescription" />
 

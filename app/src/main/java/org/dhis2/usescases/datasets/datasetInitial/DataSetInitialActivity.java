@@ -123,8 +123,6 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
         new PeriodDialogInputPeriod()
                 .setInputPeriod(periods)
                 .setPeriod(periodType)
-//                .setMinDate() TODO: Depends on dataSet expiration settings and orgUnit Opening date
-//                .setMaxDate() TODO: Depends on dataSet open Future settings. Default: TODAY
                 .setMaxDate(DateUtils.getInstance().getNextPeriod(periodType, DateUtils.getInstance().getToday(), -1))
                 .setPossitiveListener(selectedDate -> {
                     Calendar calendar = Calendar.getInstance();
@@ -146,7 +144,6 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
         } else {
 
             PopupMenu menu = new PopupMenu(this, selectedView, Gravity.BOTTOM);
-//        menu.getMenu().add(Menu.NONE, Menu.NONE, 0, viewModel.label()); Don't show label
             for (CategoryOption option : data)
                 menu.getMenu().add(Menu.NONE, Menu.NONE, data.indexOf(option), option.displayName());
 
