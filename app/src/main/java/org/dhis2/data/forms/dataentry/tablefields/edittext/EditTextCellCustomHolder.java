@@ -73,20 +73,20 @@ final class EditTextCellCustomHolder extends FormViewHolder {
         if (editTextModel.mandatory())
             customBinding.icMandatory.setVisibility(View.VISIBLE);
         else
-            customBinding.icMandatory.setVisibility(View.GONE);
+            customBinding.icMandatory.setVisibility(View.INVISIBLE);
 
         if (editTextModel.editable()) {
             if (accessDataWrite) {
                 customBinding.inputEditText.setEnabled(true);
-                customBinding.inputEditText.setBackground(null);
             } else {
                 customBinding.inputEditText.setEnabled(false);
-                customBinding.inputEditText.setBackgroundColor(ContextCompat.getColor(editText.getContext(), R.color.bg_black_e6e));
             }
-        } else {
+        }else {
             customBinding.inputEditText.setEnabled(false);
-            customBinding.inputEditText.setBackgroundColor(ContextCompat.getColor(editText.getContext(), R.color.bg_black_e6e));
+            if(editTextModel.dataElement().isEmpty())
+                customBinding.inputEditText.setActivated(true);
         }
+
 
         customBinding.executePendingBindings();
     }

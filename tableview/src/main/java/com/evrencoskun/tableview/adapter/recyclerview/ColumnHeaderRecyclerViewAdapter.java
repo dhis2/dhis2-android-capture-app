@@ -40,14 +40,12 @@ public class ColumnHeaderRecyclerViewAdapter<CH> extends AbstractRecyclerViewAda
     private ITableAdapter mTableAdapter;
     private ITableView mTableView;
     private ColumnSortHelper mColumnSortHelper;
-    private boolean isLast;
 
     public ColumnHeaderRecyclerViewAdapter(Context context, List<CH> itemList, ITableAdapter
-            tableAdapter, boolean isLast) {
+            tableAdapter) {
         super(context, itemList);
         this.mTableAdapter = tableAdapter;
         this.mTableView = tableAdapter.getTableView();
-        this.isLast = isLast;
     }
 
     @Override
@@ -69,7 +67,7 @@ public class ColumnHeaderRecyclerViewAdapter<CH> extends AbstractRecyclerViewAda
     public void onViewAttachedToWindow(AbstractViewHolder viewHolder) {
         super.onViewAttachedToWindow(viewHolder);
 
-        if(isLast) {
+
             SelectionState selectionState = mTableView.getSelectionHandler().getColumnSelectionState
                     (viewHolder.getAdapterPosition());
 
@@ -94,7 +92,7 @@ public class ColumnHeaderRecyclerViewAdapter<CH> extends AbstractRecyclerViewAda
                     ((AbstractSorterViewHolder) viewHolder).onSortingStatusChanged(state);
                 }
             }
-        }
+
     }
 
 

@@ -357,7 +357,6 @@
     <color name="sectionSelectorBgColor">#fdfdfe</color>
     <color name="color_item_selected_c3">#c3c3c3</color>
     <color name="item_unselected_fdf">#fdfdfe</color>
-    <color name="table_bg">#EBEBEB</color>
     <!--endregion-->
 
 </resources>

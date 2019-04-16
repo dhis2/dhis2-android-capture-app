@@ -100,6 +100,7 @@ public class TableView extends FrameLayout implements ITableView {
     private int mRowHeaderWidth;
     private int mColumnHeaderHeight;
     private int mHeaderHeight;
+    private int mHeaderWidth;
 
     private int mSelectedColor;
     private int mUnSelectedColor;
@@ -115,9 +116,8 @@ public class TableView extends FrameLayout implements ITableView {
     private int mHeaderCount = 1;
     private List<CellRecyclerView> mBackupHeaders = new ArrayList<>();
 
-    public TableView(@NonNull Context context, int mSeparatorColor) {
+    public TableView(@NonNull Context context) {
         super(context);
-        this.mSeparatorColor = mSeparatorColor;
         initialDefaultValues(null);
         initialize();
     }
@@ -138,9 +138,9 @@ public class TableView extends FrameLayout implements ITableView {
     private void initialDefaultValues(AttributeSet attrs) {
         // Dimensions
         mRowHeaderWidth = (int) getResources().getDimension(R.dimen.default_row_header_width);
-        mColumnHeaderHeight = (int) getResources().getDimension(R.dimen
-                .default_column_header_height);
+        mColumnHeaderHeight = (int) getResources().getDimension(R.dimen.default_column_header_height);
         mHeaderHeight = (int) getResources().getDimension(R.dimen.small_column_header_height);
+        mHeaderWidth = (int) getResources().getDimension(R.dimen.small_row_header_width);
         // Colors
         mSelectedColor = ContextCompat.getColor(getContext(), R.color
                 .table_view_default_selected_background_color);
@@ -149,7 +149,7 @@ public class TableView extends FrameLayout implements ITableView {
         mShadowColor = ContextCompat.getColor(getContext(), R.color
                 .table_view_default_shadow_background_color);
         mHeadersColor = ContextCompat.getColor(getContext(), R.color
-                .table_view_default_unselected_background_color);
+                .table_view_default_header_background_color);
 
         if (attrs == null) {
             // That means TableView is created programmatically.
@@ -785,13 +785,13 @@ public class TableView extends FrameLayout implements ITableView {
     }
 
     /**
-     * get row header width
+     * get header width
      *
      * @return size in pixel
      */
     @Override
-    public int getRowHeaderWidth() {
-        return mRowHeaderWidth;
+    public int getHeaderWidth() {
+        return mHeaderWidth;
     }
 
     /**

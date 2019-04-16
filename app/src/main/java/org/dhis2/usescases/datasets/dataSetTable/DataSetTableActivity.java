@@ -155,7 +155,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
                     binding.selectorLayout.setVisibility(View.VISIBLE);
                     List<String> tables = new ArrayList<>();
                     for(int i =1; i<= viewPagerAdapter.getCurrentItem(binding.tabLayout.getSelectedTabPosition()).currentNumTables() ; i++){
-                        tables.add(getResources().getString(R.string.table) + i);
+                        tables.add(getResources().getString(R.string.table) + " " + i);
                     }
                     FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(getContext());
                     layoutManager.setFlexDirection(FlexDirection.ROW);
@@ -308,5 +308,10 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
             tables.add(getResources().getString(R.string.table)+ i);
         }
         ((TableCheckboxAdapter)binding.tableRecycler.getAdapter()).swapData(tables);
+    }
+
+    @Override
+    public void renderDetails(DataSetInitialModel dataSetInitialModel) {
+        binding.dataSetSubtitle.setText(dataSetInitialModel.displayName());
     }
 }

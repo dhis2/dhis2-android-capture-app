@@ -17,46 +17,45 @@
 
     </data>
 
-    <RelativeLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:minHeight="@dimen/default_cell_height">
+        android:layout_height="@dimen/default_cell_height">
 
+        <EditText
+            android:id="@+id/input_editText"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_margin="4dp"
+            android:background="@drawable/cell_edit_bg"
+            android:ellipsize="end"
+            android:imeOptions="actionNext"
+            android:lines="1"
+            android:minHeight="@dimen/default_cell_height"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:scrollHorizontally="true"
+            android:singleLine="true"
+            android:textAlignment="textEnd"
+            android:textColor="@color/text_black_333"
+            android:textSize="14sp"
+            android:textCursorDrawable="@null"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/ic_mandatory"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="hello" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/renderImage"
-            android:orientation="horizontal">
+        <ImageView
+            android:id="@+id/ic_mandatory"
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            app:srcCompat="@drawable/ic_mandatory"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:visibility="visible" />
 
-            <ImageView
-                android:id="@+id/ic_mandatory"
-                android:layout_width="10dp"
-                android:layout_height="10dp"
-                android:layout_marginStart="4dp"
-                android:layout_marginTop="4dp"
-                android:src="@drawable/ic_mandatory"
-                android:visibility="gone"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:visibility="visible" />
-
-            <org.dhis2.utils.custom_views.TextInputAutoCompleteTextView
-                android:id="@+id/input_editText"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:imeOptions="actionNext"
-                android:lines="1"
-                android:scrollHorizontally="true"
-                android:ellipsize="end"
-                android:singleLine="true"
-                android:minHeight="@dimen/default_cell_height"
-                android:textAlignment="textEnd"
-                android:textColor="@color/text_black_333"
-                android:textSize="15sp"
-                tools:text="hello" />
-
-        </LinearLayout>
-    </RelativeLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

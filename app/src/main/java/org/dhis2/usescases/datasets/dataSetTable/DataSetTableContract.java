@@ -49,6 +49,7 @@ public class DataSetTableContract {
 
         void setCurrentNumTables(int numTables);
 
+        void renderDetails(DataSetInitialModel dataSetInitialModel);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {

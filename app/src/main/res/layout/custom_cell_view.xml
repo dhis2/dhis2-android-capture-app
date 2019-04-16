@@ -7,31 +7,37 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/default_cell_height">
 
-        <ImageView
-            android:id="@+id/ic_mandatory"
-            android:layout_width="10dp"
-            android:layout_height="10dp"
-            android:layout_marginStart="4dp"
-            android:layout_marginTop="4dp"
-            android:src="@drawable/ic_mandatory"
-            android:visibility="gone"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:visibility="visible" />
-
         <TextView
             android:id="@+id/inputEditText"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:padding="8dp"
-            android:gravity="center"
-            android:maxLines="1"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_margin="4dp"
+            android:background="@drawable/cell_edit_bg"
             android:ellipsize="end"
+            android:lines="1"
+            android:minHeight="@dimen/default_cell_height"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:gravity="end|center_vertical"
             android:textColor="@color/text_black_333"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/ic_mandatory"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="hello" />
+
+        <ImageView
+            android:id="@+id/ic_mandatory"
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:src="@drawable/ic_mandatory"
+            android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            tools:visibility="visible" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
