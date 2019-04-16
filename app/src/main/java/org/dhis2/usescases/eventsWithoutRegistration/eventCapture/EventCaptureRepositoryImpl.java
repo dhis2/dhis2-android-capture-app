@@ -28,6 +28,7 @@ import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
+import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramRule;
 import org.hisp.dhis.android.core.program.ProgramRuleAction;
@@ -315,6 +316,15 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     }
 
     @Override
+    public boolean isEventExpired(String eventUid) {
+        Event event = d2.eventModule().events.uid(eventUid).withAllChildren().get();
+        Program program = d2.programModule().programs.uid(event.program()).withAllChildren().get();
+        boolean isExpired = DateUtils.getInstance().isEventExpired(event.eventDate(),event.completedDate(), event.status(),program.completeEventsExpiryDays(),program.expiryPeriodType(),program.expiryDays());
+        boolean editable = isEnrollmentOpen() && /*event.status() == EventStatus.ACTIVE*/!isExpired && accessDataWrite && inOrgUnitRange(eventUid);
+        return !editable;
+    }
+
+    @Override
     public Flowable<String> programStageName() {
         return Flowable.just(d2.eventModule().events.uid(eventUid).get())
                 .map(event -> d2.programModule().programStages.uid(event.programStage()).get().displayName());
@@ -524,7 +534,8 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         return fieldFactory.create(uid, formName == null ? displayName : formName,
                 ValueType.valueOf(valueTypeName), mandatory, optionSet, dataValue,
                 programStageSection, allowFurureDates,
-                isEnrollmentOpen() && eventStatus == EventStatus.ACTIVE && accessDataWrite && inOrgUnitRange(eventUid),
+                !isEventExpired(eventUid),
+//                isEnrollmentOpen() && eventStatus == EventStatus.ACTIVE && accessDataWrite && inOrgUnitRange(eventUid),
                 renderingType, description, fieldRendering, optionCount, objectStyle);
     }
 
