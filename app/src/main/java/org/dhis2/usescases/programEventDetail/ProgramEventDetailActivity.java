@@ -417,7 +417,10 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void setLiveData(LiveData<PagedList<ProgramEventViewModel>> pagedListLiveData) {
-        pagedListLiveData.observe(this, liveAdapter::submitList);
+        pagedListLiveData.observe(this, pagedList -> {
+            binding.programProgress.setVisibility(View.GONE);
+            liveAdapter.submitList(pagedList);
+        });
 
     }
 
