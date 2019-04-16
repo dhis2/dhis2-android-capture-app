@@ -143,6 +143,8 @@ public class EventCaptureContract {
         void setLastUpdated(String lastUpdatedUid);
 
         boolean isEnrollmentCancelled();
+
+        boolean isEventExpired(String eventUid);
     }
 
 }

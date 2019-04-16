@@ -117,7 +117,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
             "      FROM ProgramStageDataElement\n" +
             "        INNER JOIN DataElement ON DataElement.uid = ProgramStageDataElement.dataElement\n" +
             "        LEFT JOIN ProgramStageSection ON ProgramStageSection.programStage = ProgramStageDataElement.programStage\n" +
-            "        LEFT JOIN ProgramStageSectionDataElementLink ON ProgramStageSectionDataElementLink.programStageSection = ProgramStageSection.uid AND ProgramStageSectionDataElementLink.dataElement = DataElement.uid\n" +            "    ) AS Field ON (Field.stage = Event.programStage)\n" +
+            "        LEFT JOIN ProgramStageSectionDataElementLink ON ProgramStageSectionDataElementLink.programStageSection = ProgramStageSection.uid AND ProgramStageSectionDataElementLink.dataElement = DataElement.uid\n" + "    ) AS Field ON (Field.stage = Event.programStage)\n" +
             "  LEFT OUTER JOIN TrackedEntityDataValue AS Value ON (\n" +
             "    Value.event = Event.uid AND Value.dataElement = Field.id\n" +
             "  )\n" +
@@ -265,12 +265,13 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
         }
 
         int optionCount = 0;
-        try (Cursor countCursor = briteDatabase.query("SELECT COUNT (uid) FROM Option WHERE optionSet = ?", optionSet)) {
-            if (countCursor != null && countCursor.moveToFirst())
-                optionCount = countCursor.getInt(0);
-        } catch (Exception e) {
-            Timber.e(e);
-        }
+        if (optionSet != null)
+            try (Cursor countCursor = briteDatabase.query("SELECT COUNT (uid) FROM Option WHERE optionSet = ?", optionSet)) {
+                if (countCursor != null && countCursor.moveToFirst())
+                    optionCount = countCursor.getInt(0);
+            } catch (Exception e) {
+                Timber.e(e);
+            }
 
         ValueTypeDeviceRenderingModel fieldRendering = null;
         try (Cursor rendering = briteDatabase.query("SELECT * FROM ValueTypeDeviceRendering WHERE uid = ?", uid)) {
