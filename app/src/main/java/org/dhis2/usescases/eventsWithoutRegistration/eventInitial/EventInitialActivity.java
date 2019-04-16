@@ -406,11 +406,12 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         presenter.filterOrgUnits(DateUtils.uiDateFormat().format(selectedDate));
 
         if (eventModel != null &&
-                (DateUtils.getInstance().isEventExpired(null, eventModel.completedDate(), program.completeEventsExpiryDays()) ||
+                (DateUtils.getInstance().isEventExpired(eventModel.eventDate(), eventModel.completedDate(), eventModel.status(), program.completeEventsExpiryDays(), program.expiryPeriodType(), program.expiryDays()) ||
                         eventModel.status() == EventStatus.COMPLETED ||
                         eventModel.status() == EventStatus.SKIPPED)) {
             binding.date.setEnabled(false);
-            binding.catCombo.setEnabled(false);
+            for (int i = 0; i < binding.catComboLayout.getChildCount(); i++)
+                binding.catComboLayout.getChildAt(i).findViewById(R.id.cat_combo).setEnabled(false);
             binding.lat.setEnabled(false);
             binding.lon.setEnabled(false);
             binding.orgUnit.setEnabled(false);
@@ -845,7 +846,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             binding.date.setEnabled(false);
             binding.date.setClickable(false);
             binding.orgUnit.setEnabled(false);
-            binding.catCombo.setEnabled(false);
+            for (int i = 0; i < binding.catComboLayout.getChildCount(); i++)
+                binding.catComboLayout.getChildAt(i).findViewById(R.id.cat_combo).setEnabled(false);
             binding.actionButton.setText(getString(R.string.check_event));
             binding.location1.setClickable(false);
             binding.location2.setClickable(false);
