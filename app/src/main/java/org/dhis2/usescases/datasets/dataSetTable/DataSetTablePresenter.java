@@ -75,6 +75,16 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
                                 Timber::d
                         ));
 
+        compositeDisposable.add(
+                tableRepository.dataSetStatus()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                view.isDataSetOpen(),
+                                Timber::d
+                        )
+        );
+
     }
 
     @Override
@@ -99,7 +109,7 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
         return periodFinalDate;
     }
 
-    public String getPeriodId(){
+    public String getPeriodId() {
         return periodId;
     }
 
@@ -110,9 +120,9 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
     @Override
     public void optionsClick() {
         view.showOptions(open);
-        open =!open;
+        open = !open;
 
-        if(!open) {
+        if (!open) {
             compositeDisposable.add(
                     initialRepository.dataSet()
                             .subscribeOn(Schedulers.io())
@@ -146,7 +156,7 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
 
     @Override
     public void onRefreshClick() {
-        if(view.getSelectedOrgUnit()!=null || view.getSelectedPeriod()!=null) {
+        if (view.getSelectedOrgUnit() != null || view.getSelectedPeriod() != null) {
             Bundle bundle = DataSetTableActivity.getBundle(
                     view.getDataSetUid(),
                     view.getSelectedOrgUnit() != null ? view.getSelectedOrgUnit().uid() : orgUnitUid,
@@ -157,8 +167,7 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
                     catCombo/*view.getSelectedCatOptions() Fixed is the same always*/
             );
             view.startActivity(DataSetTableActivity.class, bundle, true, false, null);
-        }
-        else{
+        } else {
             view.showOptions(open);
         }
     }

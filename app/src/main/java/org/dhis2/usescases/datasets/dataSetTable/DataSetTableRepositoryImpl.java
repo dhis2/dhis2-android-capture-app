@@ -4,13 +4,14 @@ import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.utils.DateUtils;
+import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.category.CategoryModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
+import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
+import org.hisp.dhis.android.core.dataset.DataSetCompleteRegistration;
 import org.hisp.dhis.android.core.dataset.DataSetModel;
-import org.hisp.dhis.android.core.dataset.SectionGreyedFieldsLinkModel;
-import org.hisp.dhis.android.core.dataset.SectionModel;
 import org.hisp.dhis.android.core.period.PeriodType;
 
 import java.util.ArrayList;
@@ -72,10 +73,19 @@ public class DataSetTableRepositoryImpl implements DataSetTableRepository {
 
     private final BriteDatabase briteDatabase;
     private final String dataSetUid;
+    private final D2 d2;
+    private final String periodId;
+    private final String orgUnitUid;
+    private final String catOptCombo;
 
-    public DataSetTableRepositoryImpl(BriteDatabase briteDatabase, String dataSetUid) {
+    public DataSetTableRepositoryImpl(D2 d2, BriteDatabase briteDatabase, String dataSetUid,
+                                      String periodId, String orgUnitUid, String catOptCombo) {
+        this.d2 = d2;
         this.briteDatabase = briteDatabase;
         this.dataSetUid = dataSetUid;
+        this.periodId = periodId;
+        this.orgUnitUid = orgUnitUid;
+        this.catOptCombo = catOptCombo;
     }
 
     @Override
@@ -148,6 +158,16 @@ public class DataSetTableRepositoryImpl implements DataSetTableRepository {
 
                     return catOptionCombo;
                 }).flatMap(categoryOptionComboModels -> Observable.just(map)).toFlowable(BackpressureStrategy.LATEST);
+    }
+
+    @Override
+    public Flowable<Boolean> dataSetStatus() {
+        DataSetCompleteRegistration dscr = d2.dataSetModule().dataSetCompleteRegistrations
+                .byDataSetUid().eq(dataSetUid)
+                .byAttributeOptionComboUid().eq(catOptCombo)
+                .byOrganisationUnitUid().eq(orgUnitUid)
+                .byPeriod().eq(periodId).one().get();
+        return Flowable.defer(() -> Flowable.just(dscr != null && dscr.state() != State.TO_DELETE));
     }
 
     /**

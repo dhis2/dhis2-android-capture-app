@@ -1,6 +1,7 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection;
 
 import android.content.Context;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -75,15 +76,35 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
     @NonNull
     private final List<Row> rows;
 
-    LayoutInflater layoutInflater;
+    private LayoutInflater layoutInflater;
 
     private Boolean showRowTotal = false;
     private Boolean showColumnTotal = false;
     private final FlowableProcessor<Trio<String, String, Integer>> processorOptionSet;
 
+    private int currentWidth = 400;
+    private int currentHeight;
+
+    private void scale() {
+        if (currentWidth == 200) {
+            currentWidth = 300;
+            currentHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 36, context.getResources().getDisplayMetrics());
+        } else if (currentWidth == 300) {
+            currentWidth = 400;
+            currentHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 48, context.getResources().getDisplayMetrics());
+        } else if (currentWidth == 400) {
+            currentWidth = 200;
+            currentHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 34, context.getResources().getDisplayMetrics());
+
+        }
+
+        notifyDataSetChanged();
+    }
+
 
     public DataSetTableAdapter(Context context, FlowableProcessor<RowAction> processor, FlowableProcessor<Trio<String, String, Integer>> processorOptionSet) {
         super(context);
+        this.currentHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 48, context.getResources().getDisplayMetrics());
         this.context = context;
         rows = new ArrayList<>();
         this.processor = processor;
@@ -142,7 +163,8 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
         String value = cellItemModel != null && !cellItemModel.equals("") ? cellItemModel.toString() : viewModels.get(rowPosition).get(columnPosition).value();
 
         rows.get(holder.getItemViewType()).onBind(holder, viewModels.get(rowPosition).get(columnPosition), value);
-        holder.itemView.getLayoutParams().width = getTableView().getHeaderWidth();
+        holder.itemView.getLayoutParams().width = currentWidth;
+        holder.itemView.getLayoutParams().height = currentHeight;
     }
 
     public void swap(List<List<FieldViewModel>> viewModels) {
@@ -183,12 +205,12 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
     @Override
     public void onBindColumnHeaderViewHolder(AbstractViewHolder holder, Object columnHeaderItemModel, int position) {
         ((DataSetRHeaderHeader) holder).bind(((CategoryOptionModel) columnHeaderItemModel).displayName());
-        if (((CategoryOptionModel) columnHeaderItemModel).displayName().isEmpty())
-            ((DataSetRHeaderHeader) holder).binding.container.getLayoutParams().width = getTableView().getHeaderWidth();
-        else {
+        if (((CategoryOptionModel) columnHeaderItemModel).displayName().isEmpty()) {
+            ((DataSetRHeaderHeader) holder).binding.container.getLayoutParams().width = currentWidth;
+        }else {
             int i = getHeaderRecyclerPositionFor(columnHeaderItemModel);
             ((DataSetRHeaderHeader) holder).binding.container.getLayoutParams().width =
-                    (getTableView().getHeaderWidth() * i + (int) (context.getResources().getDisplayMetrics().density*(i-1)));
+                    (currentWidth * i + (int) (context.getResources().getDisplayMetrics().density * (i - 1)));
         }
         ((DataSetRHeaderHeader) holder).binding.title.requestLayout();
     }
@@ -227,13 +249,16 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
     public void onBindRowHeaderViewHolder(AbstractViewHolder holder, Object rowHeaderItemModel, int
             position) {
         ((DataSetRowHeader) holder).bind(mRowHeaderItems.get(position));
+        holder.itemView.getLayoutParams().height = currentHeight;
     }
 
 
     @Override
     public View onCreateCornerView() {
         // Get Corner xml layout
-        return LayoutInflater.from(mContext).inflate(R.layout.table_view_corner_layout, null);
+        View corner = LayoutInflater.from(mContext).inflate(R.layout.table_view_corner_layout, null);
+        corner.findViewById(R.id.buttonScale).setOnClickListener(view -> scale());
+        return corner;
     }
 
     @Override

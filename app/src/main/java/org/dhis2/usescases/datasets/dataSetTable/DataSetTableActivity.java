@@ -16,11 +16,9 @@ import com.google.android.material.textfield.TextInputEditText;
 
 import org.dhis2.App;
 import org.dhis2.R;
-import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ActivityDatasetTableBinding;
 import org.dhis2.databinding.ItemCategoryComboBinding;
-import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetSectionFragment;
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialModel;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.Constants;
@@ -47,7 +45,7 @@ import javax.inject.Inject;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
-import io.reactivex.Flowable;
+import io.reactivex.functions.Consumer;
 
 public class DataSetTableActivity extends ActivityGlobalAbstract implements DataSetTableContract.View {
 
@@ -55,7 +53,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     String orgUnitName;
     String periodTypeName;
     String periodInitialDate;
-    String catCombo;
+    String catOptCombo;
     String dataSetUid;
     String periodId;
 
@@ -79,7 +77,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
                                    @NonNull String periodTypeName,
                                    @NonNull String periodInitialDate,
                                    @NonNull String periodId,
-                                   @NonNull String catCombo) {
+                                   @NonNull String catOptCombo) {
         Bundle bundle = new Bundle();
         bundle.putString(Constants.DATA_SET_UID, dataSetUid);
         bundle.putString(Constants.ORG_UNIT, orgUnitUid);
@@ -87,7 +85,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
         bundle.putString(Constants.PERIOD_TYPE, periodTypeName);
         bundle.putString(Constants.PERIOD_TYPE_DATE, periodInitialDate);
         bundle.putString(Constants.PERIOD_ID, periodId);
-        bundle.putString(Constants.CAT_COMB, catCombo);
+        bundle.putString(Constants.CAT_COMB, catOptCombo);
         return bundle;
     }
 
@@ -104,10 +102,10 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
         periodTypeName = getIntent().getStringExtra(Constants.PERIOD_TYPE);
         periodId = getIntent().getStringExtra(Constants.PERIOD_ID);
         periodInitialDate = getIntent().getStringExtra(Constants.PERIOD_TYPE_DATE);
-        catCombo = getIntent().getStringExtra(Constants.CAT_COMB);
+        catOptCombo = getIntent().getStringExtra(Constants.CAT_COMB);
         dataSetUid = getIntent().getStringExtra(Constants.DATA_SET_UID);
         accessDataWrite = getIntent().getBooleanExtra(Constants.ACCESS_DATA, true);
-        ((App) getApplicationContext()).userComponent().plus(new DataSetTableModule(dataSetUid)).inject(this);
+        ((App) getApplicationContext()).userComponent().plus(new DataSetTableModule(dataSetUid, periodId, orgUnitUid, catOptCombo)).inject(this);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dataset_table);
         binding.setPresenter(presenter);
@@ -121,7 +119,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     @Override
     protected void onResume() {
         super.onResume();
-        presenter.init(this, orgUnitUid, periodTypeName, catCombo, periodInitialDate, periodId);
+        presenter.init(this, orgUnitUid, periodTypeName, catOptCombo, periodInitialDate, periodId);
     }
 
     @Override
@@ -148,42 +146,42 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
-                if(viewPagerAdapter.getCurrentItem(binding.tabLayout.getSelectedTabPosition()).currentNumTables()>1)
-                if (tableSelectorVisible)
-                    binding.selectorLayout.setVisibility(View.GONE);
-                else {
-                    binding.selectorLayout.setVisibility(View.VISIBLE);
-                    List<String> tables = new ArrayList<>();
-                    for(int i =1; i<= viewPagerAdapter.getCurrentItem(binding.tabLayout.getSelectedTabPosition()).currentNumTables() ; i++){
-                        tables.add(getResources().getString(R.string.table) + " " + i);
-                    }
-                    FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(getContext());
-                    layoutManager.setFlexDirection(FlexDirection.ROW);
-                    layoutManager.setJustifyContent(JustifyContent.FLEX_START);
-                    binding.tableRecycler.setLayoutManager(layoutManager);
+                if (viewPagerAdapter.getCurrentItem(binding.tabLayout.getSelectedTabPosition()).currentNumTables() > 1)
+                    if (tableSelectorVisible)
+                        binding.selectorLayout.setVisibility(View.GONE);
+                    else {
+                        binding.selectorLayout.setVisibility(View.VISIBLE);
+                        List<String> tables = new ArrayList<>();
+                        for (int i = 1; i <= viewPagerAdapter.getCurrentItem(binding.tabLayout.getSelectedTabPosition()).currentNumTables(); i++) {
+                            tables.add(getResources().getString(R.string.table) + " " + i);
+                        }
+                        FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(getContext());
+                        layoutManager.setFlexDirection(FlexDirection.ROW);
+                        layoutManager.setJustifyContent(JustifyContent.FLEX_START);
+                        binding.tableRecycler.setLayoutManager(layoutManager);
 
-                    binding.tableRecycler.setAdapter(new TableCheckboxAdapter(presenter));
-                    ((TableCheckboxAdapter)binding.tableRecycler.getAdapter()).swapData(tables);
-                }
+                        binding.tableRecycler.setAdapter(new TableCheckboxAdapter(presenter));
+                        ((TableCheckboxAdapter) binding.tableRecycler.getAdapter()).swapData(tables);
+                    }
 
                 tableSelectorVisible = !tableSelectorVisible;
             }
         });
         this.dataElements = dataElements;
-        if(dataElements.containsKey("NO_SECTION") && dataElements.size() > 1)
-                dataElements.remove("NO_SECTION");
+        if (dataElements.containsKey("NO_SECTION") && dataElements.size() > 1)
+            dataElements.remove("NO_SECTION");
         viewPagerAdapter.swapData(dataElements);
     }
 
-    public void updateTabLayout(String section, int numTables){
+    public void updateTabLayout(String section, int numTables) {
 
-        if(section.equals("NO_SECTION")) {
+        if (section.equals("NO_SECTION")) {
             if (numTables > 1) {
                 dataElements.put(getString(R.string.tab_tables), dataElements.remove("NO_SECTION"));
                 viewPagerAdapter.swapData(dataElements);
             } else
                 binding.tabLayout.setVisibility(View.GONE);
-        }else {
+        } else {
             if (numTables > 1)
                 viewPagerAdapter.swapData(dataElements);
         }
@@ -296,7 +294,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
     @Override
     public void goToTable(int numTable) {
-        ((TableCheckboxAdapter)binding.tableRecycler.getAdapter()).setSelectedPosition(numTable);
+        ((TableCheckboxAdapter) binding.tableRecycler.getAdapter()).setSelectedPosition(numTable);
         viewPagerAdapter.getCurrentItem(binding.tabLayout.getSelectedTabPosition()).goToTable(numTable);
     }
 
@@ -304,14 +302,22 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     public void setCurrentNumTables(int numTables) {
         //Table Selector
         List<String> tables = new ArrayList<>();
-        for(int i =1; i<= numTables ; i++){
-            tables.add(getResources().getString(R.string.table)+ i);
+        for (int i = 1; i <= numTables; i++) {
+            tables.add(getResources().getString(R.string.table) + i);
         }
-        ((TableCheckboxAdapter)binding.tableRecycler.getAdapter()).swapData(tables);
+        ((TableCheckboxAdapter) binding.tableRecycler.getAdapter()).swapData(tables);
     }
 
     @Override
     public void renderDetails(DataSetInitialModel dataSetInitialModel) {
         binding.dataSetSubtitle.setText(dataSetInitialModel.displayName());
+    }
+
+    @Override
+    public Consumer<Boolean> isDataSetOpen() {
+        return dataSetIsOpen -> {
+            binding.programLock.setImageResource(!dataSetIsOpen ? R.drawable.ic_lock_open_green : R.drawable.ic_lock_completed);
+            binding.programLockText.setText(!dataSetIsOpen ? getString(org.dhis2.R.string.data_set_open) : getString(org.dhis2.R.string.data_set_closed));
+        };
     }
 }

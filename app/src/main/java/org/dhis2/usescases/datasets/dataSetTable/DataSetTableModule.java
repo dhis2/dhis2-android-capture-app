@@ -15,9 +15,15 @@ import dagger.Provides;
 public class DataSetTableModule {
 
     private final String dataSetUid;
+    private final String periodId;
+    private final String orgUnitUid;
+    private final String catOptCombo;
 
-    DataSetTableModule(String dataSetUid) {
+    DataSetTableModule(String dataSetUid, String periodId, String orgUnitUid, String catOptCombo) {
         this.dataSetUid = dataSetUid;
+        this.periodId = periodId;
+        this.orgUnitUid = orgUnitUid;
+        this.catOptCombo = catOptCombo;
     }
 
     @Provides
@@ -35,14 +41,14 @@ public class DataSetTableModule {
 
     @Provides
     @PerActivity
-    DataSetTableRepository DataSetTableRepository(BriteDatabase briteDatabase) {
-        return new DataSetTableRepositoryImpl(briteDatabase, dataSetUid);
+    DataSetTableRepository DataSetTableRepository(BriteDatabase briteDatabase, D2 d2) {
+        return new DataSetTableRepositoryImpl(d2, briteDatabase, dataSetUid, periodId, orgUnitUid, catOptCombo);
     }
 
     @Provides
     @PerActivity
-    DataSetInitialRepository DataSetInitialRepository(BriteDatabase briteDatabase,D2 d2) {
-        return new DataSetInitialRepositoryImpl(d2,briteDatabase, dataSetUid);
+    DataSetInitialRepository DataSetInitialRepository(BriteDatabase briteDatabase, D2 d2) {
+        return new DataSetInitialRepositoryImpl(d2, dataSetUid);
     }
 
 }
