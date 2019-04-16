@@ -68,6 +68,14 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
                                 Timber::e
                         )
         );
+        compositeDisposable.add(
+                initialRepository.dataSet()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                view::renderDetails,
+                                Timber::d
+                        ));
 
     }
 

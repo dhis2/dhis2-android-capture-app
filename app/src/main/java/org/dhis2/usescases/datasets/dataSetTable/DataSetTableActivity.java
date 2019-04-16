@@ -329,4 +329,9 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
         }
         ((TableCheckboxAdapter)binding.tableRecycler.getAdapter()).swapData(tables);
     }
+
+    @Override
+    public void renderDetails(DataSetInitialModel dataSetInitialModel) {
+        binding.dataSetSubtitle.setText(dataSetInitialModel.displayName());
+    }
 }
