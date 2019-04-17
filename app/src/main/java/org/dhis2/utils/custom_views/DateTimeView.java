@@ -8,12 +8,14 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
+import org.dhis2.BR;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.datetime.OnDateSelected;
+import org.dhis2.databinding.CustomCellViewBinding;
 import org.dhis2.databinding.DateTimeViewBinding;
+import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetTableAdapter;
 import org.dhis2.utils.DateUtils;
 
 import java.text.DateFormat;
@@ -22,6 +24,8 @@ import java.util.Calendar;
 import java.util.Date;
 
 import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ObservableField;
+import androidx.databinding.ViewDataBinding;
 import timber.log.Timber;
 
 /**
@@ -32,7 +36,7 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
 
     private TextView editText;
     private TextInputLayout inputLayout;
-    private DateTimeViewBinding binding;
+    private ViewDataBinding binding;
 
     private Calendar selectedCalendar;
     private DateFormat dateFormat;
@@ -40,6 +44,7 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
     private boolean allowFutureDates;
     private Date date;
     DatePickerDialog dateDialog;
+    private String label;
 
     public DateTimeView(Context context) {
         super(context);
@@ -64,12 +69,13 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
 
 
     public void setLabel(String label) {
-        binding.setLabel(label);
+        this.label = label;
+        binding.setVariable(BR.label, label);
         binding.executePendingBindings();
     }
 
     public void setDescription(String description) {
-        binding.setDescription(description);
+        binding.setVariable(BR.description, description);
         binding.executePendingBindings();
     }
 
@@ -121,9 +127,9 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
         editText.setOnClickListener(this);
     }
 
-    public void setCellLayout(){
+    public void setCellLayout(ObservableField<DataSetTableAdapter.TableScale> tableScale) {
         binding = DataBindingUtil.inflate(inflater, R.layout.custom_cell_view, this, true);
-
+        ((CustomCellViewBinding) binding).setTableScale(tableScale);
         editText = findViewById(R.id.inputEditText);
         selectedCalendar = Calendar.getInstance();
         editText.setFocusable(false); //Makes editText not editable
@@ -142,7 +148,7 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
         this.listener = listener;
     }
 
-    public void setMandatory(){
+    public void setMandatory() {
         ImageView mandatory = binding.getRoot().findViewById(R.id.ic_mandatory);
         mandatory.setVisibility(View.VISIBLE);
     }
@@ -167,7 +173,7 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
                 year,
                 month,
                 day);
-        dateDialog.setTitle(binding.getLabel());
+        dateDialog.setTitle(label);
         if (!allowFutureDates) {
             dateDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
         }
@@ -193,7 +199,7 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
                 hour,
                 minute,
                 is24HourFormat);
-        dialog.setTitle(binding.getLabel());
+        dialog.setTitle(label);
         dialog.show();
     }
 

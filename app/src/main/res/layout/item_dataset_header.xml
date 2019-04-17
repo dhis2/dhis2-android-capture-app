@@ -3,6 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <data>
+
+        <variable
+            name="tableScale"
+            type="androidx.databinding.ObservableField&lt;org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetTableAdapter.TableScale&gt;" />
+    </data>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/container"
         android:layout_width="wrap_content"
@@ -13,14 +20,15 @@
             android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
             android:ellipsize="end"
+            android:gravity="center"
             android:maxLines="1"
             android:textColor="@color/table_view_default_text_color"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            app:tableScaleTextSize="@{tableScale}"
             tools:text="DATA ELEMENT TEXT" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

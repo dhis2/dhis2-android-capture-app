@@ -62,4 +62,6 @@ public interface ITableAdapter {
      * @param listener The AdapterDataSetChangedListener listener.
      */
     void addAdapterDataSetChangedListener(AdapterDataSetChangedListener listener);
+
+    void setOnScaleListener(AbstractTableAdapter.OnScale listener);
 }

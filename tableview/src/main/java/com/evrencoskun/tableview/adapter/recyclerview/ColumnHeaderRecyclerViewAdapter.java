@@ -21,6 +21,7 @@ import android.content.Context;
 import android.view.ViewGroup;
 
 import com.evrencoskun.tableview.ITableView;
+import com.evrencoskun.tableview.adapter.AbstractTableAdapter;
 import com.evrencoskun.tableview.adapter.ITableAdapter;
 import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractSorterViewHolder;
 import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder;

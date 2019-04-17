@@ -39,6 +39,7 @@ import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,13 +47,14 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ObservableBoolean;
+import androidx.databinding.ObservableField;
 import io.reactivex.processors.FlowableProcessor;
 
 /**
  * QUADRAM. Created by ppajuelo on 02/10/2018.
  */
 
-class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, DataElementModel, String> {
+public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, DataElementModel, String> {
     private static final int EDITTEXT = 0;
     private static final int BUTTON = 1;
     private static final int CHECKBOX = 2;
@@ -85,26 +87,38 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
     private int currentWidth = 400;
     private int currentHeight;
 
+    public enum TableScale {
+        SMALL, DEFAULT, LARGE
+    }
+
+    private ObservableField<TableScale> currentTableScale = new ObservableField<>();
+
     private void scale() {
         if (currentWidth == 200) {
             currentWidth = 300;
             currentHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 36, context.getResources().getDisplayMetrics());
+            currentTableScale.set(TableScale.DEFAULT);
         } else if (currentWidth == 300) {
             currentWidth = 400;
             currentHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 48, context.getResources().getDisplayMetrics());
+            currentTableScale.set(TableScale.LARGE);
         } else if (currentWidth == 400) {
             currentWidth = 200;
-            currentHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 34, context.getResources().getDisplayMetrics());
+            currentHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 24, context.getResources().getDisplayMetrics());
+            currentTableScale.set(TableScale.SMALL);
 
         }
+
+        onScaleListener.scaleTo(currentWidth, currentHeight);
 
         notifyDataSetChanged();
     }
 
 
-    public DataSetTableAdapter(Context context, FlowableProcessor<RowAction> processor, FlowableProcessor<Trio<String, String, Integer>> processorOptionSet) {
+    public DataSetTableAdapter(Context context, @NotNull FlowableProcessor<RowAction> processor, FlowableProcessor<Trio<String, String, Integer>> processorOptionSet) {
         super(context);
         this.currentHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 48, context.getResources().getDisplayMetrics());
+        this.currentTableScale.set(TableScale.LARGE);
         this.context = context;
         rows = new ArrayList<>();
         this.processor = processor;
@@ -114,17 +128,17 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
     }
 
     public void initializeRows(Boolean accessDataWrite) {
-        rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, new ObservableBoolean(accessDataWrite), (TableView) getTableView()));
-        rows.add(BUTTON, new FileCellRow(layoutInflater, processor));
-        rows.add(CHECKBOX, new RadioButtonRow(layoutInflater, processor, accessDataWrite));
-        rows.add(SPINNER, new SpinnerCellRow(layoutInflater, processor, accessDataWrite, processorOptionSet));
-        rows.add(COORDINATES, new CoordinateRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name(), accessDataWrite));
-        rows.add(TIME, new DateTimeRow(layoutInflater, processor, TIME, true, accessDataWrite));
-        rows.add(DATE, new DateTimeRow(layoutInflater, processor, DATE, true, accessDataWrite));
-        rows.add(DATETIME, new DateTimeRow(layoutInflater, processor, DATETIME, true, accessDataWrite));
-        rows.add(AGEVIEW, new AgeRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name(), accessDataWrite));
-        rows.add(YES_NO, new RadioButtonRow(layoutInflater, processor, accessDataWrite));
-        rows.add(ORG_UNIT, new OrgUnitRow(null, layoutInflater, processor, true, null, ProgramStageSectionRenderingType.LISTING.name()));
+        rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, new ObservableBoolean(accessDataWrite), (TableView) getTableView(),currentTableScale));
+        rows.add(BUTTON, new FileCellRow(layoutInflater, processor,currentTableScale));
+        rows.add(CHECKBOX, new RadioButtonRow(layoutInflater, processor, accessDataWrite,currentTableScale));
+        rows.add(SPINNER, new SpinnerCellRow(layoutInflater, processor, accessDataWrite, processorOptionSet,currentTableScale));
+        rows.add(COORDINATES, new CoordinateRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name(), accessDataWrite,currentTableScale)); //TODO TABLE SCALE
+        rows.add(TIME, new DateTimeRow(layoutInflater, processor, TIME, true, accessDataWrite,currentTableScale));
+        rows.add(DATE, new DateTimeRow(layoutInflater, processor, DATE, true, accessDataWrite, currentTableScale));
+        rows.add(DATETIME, new DateTimeRow(layoutInflater, processor, DATETIME, true, accessDataWrite, currentTableScale));
+        rows.add(AGEVIEW, new AgeRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name(), accessDataWrite,currentTableScale)); //TODO: TABLE SCALE
+        rows.add(YES_NO, new RadioButtonRow(layoutInflater, processor, accessDataWrite, currentTableScale));
+        rows.add(ORG_UNIT, new OrgUnitRow(null, layoutInflater, processor, true, null, ProgramStageSectionRenderingType.LISTING.name())); //TODO: TABLE SCALE
         rows.add(IMAGE, new ImageRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name()));
         rows.add(UNSUPPORTED, new UnsupportedRow(layoutInflater, processor));
     }
@@ -204,10 +218,10 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
      */
     @Override
     public void onBindColumnHeaderViewHolder(AbstractViewHolder holder, Object columnHeaderItemModel, int position) {
-        ((DataSetRHeaderHeader) holder).bind(((CategoryOptionModel) columnHeaderItemModel).displayName());
+        ((DataSetRHeaderHeader) holder).bind(((CategoryOptionModel) columnHeaderItemModel).displayName(), currentTableScale);
         if (((CategoryOptionModel) columnHeaderItemModel).displayName().isEmpty()) {
             ((DataSetRHeaderHeader) holder).binding.container.getLayoutParams().width = currentWidth;
-        }else {
+        } else {
             int i = getHeaderRecyclerPositionFor(columnHeaderItemModel);
             ((DataSetRHeaderHeader) holder).binding.container.getLayoutParams().width =
                     (currentWidth * i + (int) (context.getResources().getDisplayMetrics().density * (i - 1)));
@@ -248,7 +262,7 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
     @Override
     public void onBindRowHeaderViewHolder(AbstractViewHolder holder, Object rowHeaderItemModel, int
             position) {
-        ((DataSetRowHeader) holder).bind(mRowHeaderItems.get(position));
+        ((DataSetRowHeader) holder).bind(mRowHeaderItems.get(position),currentTableScale);
         holder.itemView.getLayoutParams().height = currentHeight;
     }
 
@@ -357,4 +371,6 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
     public Boolean getShowColumnTotal() {
         return showColumnTotal;
     }
+
+
 }

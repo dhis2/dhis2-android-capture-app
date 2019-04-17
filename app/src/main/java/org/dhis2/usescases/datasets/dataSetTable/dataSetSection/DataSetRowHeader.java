@@ -12,6 +12,8 @@ import org.hisp.dhis.android.core.dataelement.DataElementModel;
 
 import java.util.Objects;
 
+import androidx.databinding.ObservableField;
+
 import static android.text.TextUtils.isEmpty;
 
 /**
@@ -27,7 +29,8 @@ public class DataSetRowHeader extends AbstractViewHolder {
         this.binding = binding;
     }
 
-    public void bind(DataElementModel dataElement) {
+    public void bind(DataElementModel dataElement, ObservableField<DataSetTableAdapter.TableScale> currentTableScale) {
+        binding.setTableScale(currentTableScale);
         binding.title.setText(!isEmpty(dataElement.displayFormName()) ? dataElement.displayFormName() : dataElement.displayName());
 
         if (dataElement.description() != null && !dataElement.description().equals("")) {

@@ -9,7 +9,9 @@ import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.Row;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.databinding.FormAgeCustomBinding;
+import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetTableAdapter;
 
+import androidx.databinding.ObservableField;
 import io.reactivex.processors.FlowableProcessor;
 
 /**
@@ -24,7 +26,7 @@ public class AgeRow implements Row<AgeHolder, AgeViewModel> {
     private final String renderType;
     private boolean accessDataWrite;
 
-    public AgeRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor, boolean isBgTransparent, String renderType, boolean accessDataWrite) {
+    public AgeRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor, boolean isBgTransparent, String renderType, boolean accessDataWrite, ObservableField<DataSetTableAdapter.TableScale> currentTableScale) {
         this.inflater = layoutInflater;
         this.isBgTransparent = isBgTransparent;
         this.processor = processor;
