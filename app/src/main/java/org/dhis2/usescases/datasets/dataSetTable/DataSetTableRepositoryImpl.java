@@ -4,6 +4,7 @@ import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.utils.DateUtils;
+import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.category.CategoryModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
@@ -72,8 +73,10 @@ public class DataSetTableRepositoryImpl implements DataSetTableRepository {
 
     private final BriteDatabase briteDatabase;
     private final String dataSetUid;
+    private final D2 d2;
 
-    public DataSetTableRepositoryImpl(BriteDatabase briteDatabase, String dataSetUid) {
+    public DataSetTableRepositoryImpl(D2 d2, BriteDatabase briteDatabase, String dataSetUid) {
+        this.d2 = d2;
         this.briteDatabase = briteDatabase;
         this.dataSetUid = dataSetUid;
     }
@@ -185,6 +188,11 @@ public class DataSetTableRepositoryImpl implements DataSetTableRepository {
 
                     return catOption;
                 }).flatMap(categoryOptionComboModels -> Observable.just(map)).toFlowable(BackpressureStrategy.LATEST);
+    }
+
+    @Override
+    public Flowable<String> getCatComboName(String catcomboUid) {
+        return Flowable.just(d2.categoryModule().categoryOptionCombos.uid(catcomboUid).get().displayName());
     }
 
 
