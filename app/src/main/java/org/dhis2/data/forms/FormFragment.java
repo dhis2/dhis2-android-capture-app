@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.snackbar.Snackbar;
@@ -18,6 +19,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.jakewharton.rxbinding2.view.RxView;
 
 import org.dhis2.App;
+import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.DataEntryFragment;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
@@ -105,7 +107,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     private Date closingDate;
     private boolean mandatoryDelete = true;
     private Context context;
-
+    private ProgressBar progressBar;
 
     public View getDatesLayout() {
         return datesLayout;
@@ -161,6 +163,8 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
         incidentDateLayout = view.findViewById(R.id.incident_date_layout);
         incidentDate = view.findViewById(R.id.incident_date_text);
         coordinatorLayout = view.findViewById(R.id.coordinatorlayout_form);
+        progressBar = view.findViewById(R.id.progress);
+        Bindings.setProgressColor(progressBar, R.color.colorPrimary);
         formSectionAdapter = new FormSectionAdapter(getChildFragmentManager());
         viewPager.setAdapter(formSectionAdapter);
         tabLayout.setupWithViewPager(viewPager);
@@ -360,6 +364,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     public Consumer<Trio<String, String, String>> finishEnrollment() {
         return trio -> {
             enrollmentTrio = trio;
+            progressBar.setVisibility(View.VISIBLE);
             formPresenter.checkMandatoryFields();
         };
     }
@@ -540,6 +545,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
                 checkAction();
             }
         } else {
+            progressBar.setVisibility(View.GONE);
             showMandatoryFieldsDialog();
         }
     }
@@ -563,6 +569,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
                         @Override
                         public void onNegative() {
                             // do nothing
+                            progressBar.setVisibility(View.GONE);
                         }
                     });
             if (isAdded() && !isEmpty(messageOnComplete) && !dialog.isShowing())

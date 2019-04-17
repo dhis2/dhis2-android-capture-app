@@ -5,8 +5,10 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import org.dhis2.App;
+import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
 import org.dhis2.data.forms.FormFragment;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
@@ -46,7 +48,7 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
     private RecyclerView recyclerView;
     private Fragment formFragment;
     private String section;
-
+    private ProgressBar progressBar;
     @NonNull
     public static DataEntryFragment create(@NonNull DataEntryArguments arguments) {
         Bundle bundle = new Bundle();
@@ -82,7 +84,10 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_data_entry, container, false);
+        View view = inflater.inflate(R.layout.fragment_data_entry, container, false);
+        progressBar = view.findViewById(R.id.progress);
+        Bindings.setProgressColor(progressBar, R.color.colorPrimary);
+        return view;
     }
 
     @Override
@@ -123,7 +128,10 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
     @NonNull
     @Override
     public Consumer<List<FieldViewModel>> showFields() {
-        return updates -> dataEntryAdapter.swap(updates);
+        return updates -> {
+            progressBar.setVisibility(View.INVISIBLE);
+            dataEntryAdapter.swap(updates);
+        };
     }
 
     @Override
