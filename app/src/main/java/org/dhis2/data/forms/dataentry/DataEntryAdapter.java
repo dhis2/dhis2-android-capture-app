@@ -118,9 +118,10 @@ public final class DataEntryAdapter extends Adapter {
                             @NonNull FragmentManager fragmentManager,
                             @NonNull DataEntryArguments dataEntryArguments,
                             @NonNull Observable<List<OrganisationUnitModel>> orgUnits,
-                            ObservableBoolean isEditable,
+                            ObservableBoolean isEditable,//TODO: Add isEditable to all fields and test if can be changed on the fly
                             @NonNull FlowableProcessor<RowAction> processor,
-                            @NonNull FlowableProcessor<Trio<String, String, Integer>> processorOptSet) { //TODO: Add isEditable to all fields and test if can be changed on the fly
+                            @NonNull FlowableProcessor<Trio<String, String, Integer>> processorOptSet,
+                            Observable<List<OrganisationUnitLevel>> levels) {
         setHasStableIds(true);
         rows = new ArrayList<>();
         viewModels = new ArrayList<>();
@@ -129,7 +130,7 @@ public final class DataEntryAdapter extends Adapter {
         currentPosition = PublishProcessor.create();
         this.processorOptionSet = processorOptSet;
         this.dataEntryArguments = dataEntryArguments;
-        this.levels = null;
+        this.levels = levels;
 
         rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType(), isEditable));
         rows.add(BUTTON, new FileRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
@@ -141,7 +142,7 @@ public final class DataEntryAdapter extends Adapter {
         rows.add(DATETIME, new DateTimeRow(layoutInflater, processor, currentPosition, DATETIME, true, dataEntryArguments.renderType()));
         rows.add(AGEVIEW, new AgeRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
         rows.add(YES_NO, new RadioButtonRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
-        rows.add(ORG_UNIT, new OrgUnitRow(fragmentManager, layoutInflater, processor, currentPosition, true, orgUnits, dataEntryArguments.renderType(), null));
+        rows.add(ORG_UNIT, new OrgUnitRow(fragmentManager, layoutInflater, processor, currentPosition, true, orgUnits, dataEntryArguments.renderType(), levels));
         rows.add(IMAGE, new ImageRow(layoutInflater, processor, currentPosition, dataEntryArguments.renderType()));
         rows.add(UNSUPPORTED, new UnsupportedRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
 
