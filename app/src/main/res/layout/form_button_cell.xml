@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
 
         <variable
             name="label"
             type="java.lang.String" />
+        <variable
+            name="tableScale"
+            type="androidx.databinding.ObservableField&lt;org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetTableAdapter.TableScale&gt;" />
 
     </data>
 
@@ -18,6 +22,7 @@
         android:minHeight="@dimen/default_cell_height"
         android:focusable="true"
         android:paddingEnd="0dp"
+        app:tableScaleTextSize="@{tableScale}"
         android:paddingStart="20dp"
         android:text="@{label!=null?label:@string/add_file}"
         android:textAlignment="viewStart"

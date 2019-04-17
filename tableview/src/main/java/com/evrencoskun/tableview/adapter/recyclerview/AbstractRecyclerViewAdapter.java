@@ -20,6 +20,7 @@ package com.evrencoskun.tableview.adapter.recyclerview;
 import android.content.Context;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.evrencoskun.tableview.adapter.AbstractTableAdapter;
 import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder;
 
 import java.util.ArrayList;
@@ -140,4 +141,5 @@ public abstract class AbstractRecyclerViewAdapter<T> extends RecyclerView
     public int getItemViewType(int position) {
         return 1;
     }
+
 }

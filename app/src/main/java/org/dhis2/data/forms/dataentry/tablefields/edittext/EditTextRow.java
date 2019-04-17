@@ -1,8 +1,5 @@
 package org.dhis2.data.forms.dataentry.tablefields.edittext;
 
-import androidx.databinding.DataBindingUtil;
-import androidx.databinding.ObservableBoolean;
-import androidx.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -12,7 +9,12 @@ import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.Row;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.databinding.CustomTextViewCellBinding;
+import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetTableAdapter;
 
+import androidx.annotation.NonNull;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ObservableBoolean;
+import androidx.databinding.ObservableField;
 import io.reactivex.processors.FlowableProcessor;
 
 /**
@@ -27,13 +29,15 @@ public class EditTextRow implements Row<EditTextCellCustomHolder, EditTextModel>
     private final FlowableProcessor<RowAction> processor;
     private final ObservableBoolean isEditable;
     private final TableView tableView;
+    private final ObservableField<DataSetTableAdapter.TableScale> tableScale;
 
     public EditTextRow(@NonNull LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor,
-                       ObservableBoolean isEditable, TableView tableView) {
+                       ObservableBoolean isEditable, TableView tableView, ObservableField<DataSetTableAdapter.TableScale> tableScale) {
         this.inflater = layoutInflater;
         this.processor = processor;
         this.isEditable = isEditable;
         this.tableView = tableView;
+        this.tableScale = tableScale;
     }
 
     @NonNull
@@ -41,10 +45,11 @@ public class EditTextRow implements Row<EditTextCellCustomHolder, EditTextModel>
     public EditTextCellCustomHolder onCreate(@NonNull ViewGroup viewGroup) {
         CustomTextViewCellBinding binding = DataBindingUtil.inflate(
                 inflater,
-                R.layout.custom_text_view_cell ,
+                R.layout.custom_text_view_cell,
                 viewGroup,
                 false
         );
+        binding.setTableScale(tableScale);
         return new EditTextCellCustomHolder(binding, processor, isEditable, tableView);
     }
 

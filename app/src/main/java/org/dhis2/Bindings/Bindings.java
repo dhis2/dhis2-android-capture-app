@@ -17,6 +17,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import org.dhis2.R;
+import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetTableAdapter;
 import org.dhis2.usescases.programEventDetail.ProgramEventViewModel;
 import org.dhis2.utils.CatComboAdapter;
 import org.dhis2.utils.DateUtils;
@@ -498,5 +499,20 @@ public class Bindings {
 
         imageView.setBackground(drawable);
 
+    }
+
+    @BindingAdapter("tableScaleTextSize")
+    public static void setTabeScaleTextSize(TextView textView, DataSetTableAdapter.TableScale tableScale) {
+        switch (tableScale) {
+            case LARGE:
+                textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+                break;
+            case SMALL:
+                textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+                break;
+            default:
+                textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
+                break;
+        }
     }
 }

@@ -15,6 +15,10 @@
             name="isEditable"
             type="androidx.databinding.ObservableBoolean" />
 
+        <variable
+            name="tableScale"
+            type="androidx.databinding.ObservableField&lt;org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetTableAdapter.TableScale&gt;" />
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -25,7 +29,6 @@
             android:id="@+id/input_editText"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_margin="4dp"
             android:background="@drawable/cell_edit_bg"
             android:ellipsize="end"
             android:imeOptions="actionNext"
@@ -37,10 +40,11 @@
             android:singleLine="true"
             android:textAlignment="textEnd"
             android:textColor="@color/text_black_333"
-            android:textSize="14sp"
             android:textCursorDrawable="@null"
+            android:textSize="14sp"
+            app:tableScaleTextSize="@{tableScale}"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/ic_mandatory"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="hello" />
@@ -49,12 +53,12 @@
             android:id="@+id/ic_mandatory"
             android:layout_width="8dp"
             android:layout_height="8dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp"
-            app:srcCompat="@drawable/ic_mandatory"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
             android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_mandatory"
             tools:visibility="visible" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

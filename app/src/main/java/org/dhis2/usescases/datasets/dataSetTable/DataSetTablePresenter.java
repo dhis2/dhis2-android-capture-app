@@ -78,6 +78,16 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
                                 Timber::e
                         )
         );
+
+        compositeDisposable.add(
+                tableRepository.dataSetStatus()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                view.isDataSetOpen(),
+                                Timber::d
+                        )
+        );
     }
 
     @Override
@@ -102,7 +112,7 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
         return periodFinalDate;
     }
 
-    public String getPeriodId(){
+    public String getPeriodId() {
         return periodId;
     }
 

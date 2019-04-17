@@ -109,7 +109,6 @@
                     android:fontFamily="sans-serif"
                     android:gravity="center_horizontal"
                     android:maxWidth="60dp"
-                    android:text="@string/event_open"
                     android:textColor="@color/green_7ed"
                     android:textSize="11sp"
                     android:textStyle="normal"

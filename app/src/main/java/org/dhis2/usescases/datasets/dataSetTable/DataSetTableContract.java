@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 import io.reactivex.Flowable;
+import io.reactivex.functions.Consumer;
 
 public class DataSetTableContract {
 
@@ -43,6 +44,9 @@ public class DataSetTableContract {
         void setCurrentNumTables(int numTables);
 
         void renderDetails(DataSetModel dataSetModel, String catcomboName);
+        void renderDetails(DataSetInitialModel dataSetInitialModel);
+
+        Consumer<Boolean> isDataSetOpen();
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {

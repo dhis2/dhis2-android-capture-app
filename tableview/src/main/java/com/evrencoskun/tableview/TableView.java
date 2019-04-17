@@ -28,6 +28,7 @@ import android.widget.FrameLayout;
 
 import com.evrencoskun.tableview.adapter.AbstractTableAdapter;
 import com.evrencoskun.tableview.adapter.recyclerview.CellRecyclerView;
+import com.evrencoskun.tableview.adapter.recyclerview.ColumnHeaderRecyclerViewAdapter;
 import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder;
 import com.evrencoskun.tableview.filter.Filter;
 import com.evrencoskun.tableview.handler.ColumnSortHandler;
@@ -299,7 +300,8 @@ public class TableView extends FrameLayout implements ITableView {
                 recyclerView.addItemDecoration(getVerticalItemDecoration());
             }
 
-            recyclerView.setAdapter(mColumnHeaderRecyclerViews.get(i).getAdapter());
+            ColumnHeaderRecyclerViewAdapter adapter = (ColumnHeaderRecyclerViewAdapter) mColumnHeaderRecyclerViews.get(i).getAdapter();
+            recyclerView.setAdapter(adapter);
             headerBackups.add(recyclerView);
         }
         return headerBackups;
@@ -388,7 +390,37 @@ public class TableView extends FrameLayout implements ITableView {
                 // Create Filter Handler
                 mFilterHandler = new FilterHandler(this);
             }
+
+            tableAdapter.setOnScaleListener(new AbstractTableAdapter.OnScale() {
+                @Override
+                public void scaleTo(int width, int height) {
+                    //ROW HEADERS
+                    FrameLayout.LayoutParams mRowHeaderParams = ((FrameLayout.LayoutParams) mRowHeaderRecyclerView.getLayoutParams());
+                    mRowHeaderParams.topMargin = height * mHeaderCount;
+
+                    //COLUMN HEADERS
+                    for (int i = 0; i < mColumnHeaderRecyclerViews.size(); i++) {
+                        FrameLayout.LayoutParams mColumnHeaderParams = ((FrameLayout.LayoutParams) mColumnHeaderRecyclerViews.get(i).getLayoutParams());
+                        FrameLayout.LayoutParams mBuckupHeaderParams = ((FrameLayout.LayoutParams) mBackupHeaders.get(i).getLayoutParams());
+                        mColumnHeaderParams.height = height;
+                        mColumnHeaderParams.topMargin = height * i;
+                        mBuckupHeaderParams.height = height;
+                        mBuckupHeaderParams.topMargin = height * i;
+                    }
+
+                    //CELL HEADERS
+                    FrameLayout.LayoutParams mCellHeaderParams = ((FrameLayout.LayoutParams) mCellRecyclerView.getLayoutParams());
+                    mCellHeaderParams.topMargin = height * mHeaderCount;
+
+                    //Corner
+                    FrameLayout.LayoutParams mCornerHeaderParams = ((FrameLayout.LayoutParams) getAdapter().getCornerView().getLayoutParams());
+                    mCornerHeaderParams.height = height * mHeaderCount;
+
+                }
+            });
+
         }
+
     }
 
     @Override

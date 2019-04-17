@@ -54,6 +54,7 @@ public abstract class AbstractTableAdapter<CH, RH, C> implements ITableAdapter {
     private List<AdapterDataSetChangedListener> dataSetChangedListeners;
     private boolean mHasTotal;
     private int headerHeight;
+    public OnScale onScaleListener;
 
     public AbstractTableAdapter(Context context) {
         mContext = context;
@@ -66,7 +67,7 @@ public abstract class AbstractTableAdapter<CH, RH, C> implements ITableAdapter {
 
     private void initialize() {
         // Create Column header RecyclerView Adapter
-        for(int i=0; i<mTableView.getHeaderCount(); i++){
+        for (int i = 0; i < mTableView.getHeaderCount(); i++) {
             mColumnsHeaderItems.add(null);
             mColumnsHeaderRecyclerViewAdapters.add(new ColumnHeaderRecyclerViewAdapter(mContext,
                     mColumnsHeaderItems.get(i), this));
@@ -123,7 +124,7 @@ public abstract class AbstractTableAdapter<CH, RH, C> implements ITableAdapter {
     public void setAllItems(List<List<CH>> columnHeaderItems, List<RH> rowHeaderItems, List<List<C>>
             cellItems, boolean hasTotal) {
         // Set all items
-        for(int i=0; i<columnHeaderItems.size(); i++){
+        for (int i = 0; i < columnHeaderItems.size(); i++) {
             setColumnHeaderItems(columnHeaderItems.get(i), i);
         }
         setRowHeaderItems(rowHeaderItems);
@@ -137,7 +138,7 @@ public abstract class AbstractTableAdapter<CH, RH, C> implements ITableAdapter {
             // Create corner view
             mCornerView = onCreateCornerView();
             mTableView.addView(mCornerView, new FrameLayout.LayoutParams(mRowHeaderWidth,
-                    headerHeight*columnHeaderItems.size()));
+                    headerHeight * columnHeaderItems.size()));
         } else if (mCornerView != null) {
 
             // Change corner view visibility
@@ -310,7 +311,8 @@ public abstract class AbstractTableAdapter<CH, RH, C> implements ITableAdapter {
 
 
     public final void notifyDataSetChanged() {
-        mColumnsHeaderRecyclerViewAdapters.get(0).notifyDataSetChanged();
+        for (int i = 0; i < mColumnsHeaderRecyclerViewAdapters.size(); i++)
+            mColumnsHeaderRecyclerViewAdapters.get(i).notifyDataSetChanged();
         mRowHeaderRecyclerViewAdapter.notifyDataSetChanged();
         mCellRecyclerViewAdapter.notifyCellDataSetChanged();
     }
@@ -359,15 +361,16 @@ public abstract class AbstractTableAdapter<CH, RH, C> implements ITableAdapter {
 
         dataSetChangedListeners.add(listener);
     }
-    protected int getHeaderRecyclerPositionFor(Object object){
-        for(int i = 0; i<mTableView.getHeaderCount(); i++){
-            if(mColumnsHeaderRecyclerViewAdapters.get(i).getItems().contains(object)) {
-                if(i!=mTableView.getHeaderCount()-1) {
-                    int p = mColumnsHeaderRecyclerViewAdapters.get(i+1).getItems().size() / mColumnsHeaderRecyclerViewAdapters.get(i).getItems().size();
-                    if(mHasTotal)
-                        p = (mColumnsHeaderRecyclerViewAdapters.get(i+1).getItems().size()-1) / (mColumnsHeaderRecyclerViewAdapters.get(i).getItems().size()-1);
 
-                    return p*(mTableView.getHeaderCount() - (i+1));
+    protected int getHeaderRecyclerPositionFor(Object object) {
+        for (int i = 0; i < mTableView.getHeaderCount(); i++) {
+            if (mColumnsHeaderRecyclerViewAdapters.get(i).getItems().contains(object)) {
+                if (i != mTableView.getHeaderCount() - 1) {
+                    int p = mColumnsHeaderRecyclerViewAdapters.get(i + 1).getItems().size() / mColumnsHeaderRecyclerViewAdapters.get(i).getItems().size();
+                    if (mHasTotal)
+                        p = (mColumnsHeaderRecyclerViewAdapters.get(i + 1).getItems().size() - 1) / (mColumnsHeaderRecyclerViewAdapters.get(i).getItems().size() - 1);
+
+                    return p * (mTableView.getHeaderCount() - (i + 1));
                 }
                 return mTableView.getHeaderCount() - i;
             }
@@ -376,8 +379,18 @@ public abstract class AbstractTableAdapter<CH, RH, C> implements ITableAdapter {
     }
 
 
-    public void clear(){
+    public void clear() {
         mColumnsHeaderRecyclerViewAdapters.clear();
         mColumnsHeaderItems.clear();
+    }
+
+    public interface OnScale {
+        void scaleTo(int width, int height);
+    }
+
+
+    @Override
+    public void setOnScaleListener(AbstractTableAdapter.OnScale listener) {
+        this.onScaleListener = listener;
     }
 }
