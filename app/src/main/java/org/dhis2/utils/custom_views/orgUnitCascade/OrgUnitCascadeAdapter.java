@@ -60,7 +60,7 @@ public class OrgUnitCascadeAdapter extends RecyclerView.Adapter<OrgUnitCascadeHo
 
     @Override
     public void onBindViewHolder(@NonNull OrgUnitCascadeHolder orgUnitCascadeHolder, int position) {
-        int lastLevelselected = 1;
+        int lastLevelselected = 0;
         for(Map.Entry<Integer, String> entry: selectedParent.entrySet()){
             if(lastLevelselected < entry.getKey() && !entry.getValue().isEmpty())
                 lastLevelselected = entry.getKey();
@@ -75,7 +75,7 @@ public class OrgUnitCascadeAdapter extends RecyclerView.Adapter<OrgUnitCascadeHo
     @Override
     public int getItemCount() {
 
-        int size;
+        /*int size;
 
         if (selectedParent.get(level.get()).isEmpty())
             size = level.get();
@@ -83,7 +83,7 @@ public class OrgUnitCascadeAdapter extends RecyclerView.Adapter<OrgUnitCascadeHo
             size = level.get() + 1 <= items.size() ? level.get() + 1 : items.size();
 
         if (items.get(level.get() + 1) != null && items.get(level.get() + 1).isEmpty())
-            size--;
+            size--;*/
 
         return items.size();
     }

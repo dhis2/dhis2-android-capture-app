@@ -75,19 +75,15 @@ class OrgUnitCascadeHolder extends RecyclerView.ViewHolder {
             if (parent.isEmpty() || trio.val2().equals(parent)) //Only if ou is child of parent or is root
                 data.add(trio.val1());
 
-        if (data.size() > 1 && lastLevelSelected + 1 >= getAdapterPosition() + 1/* && selectedUid == null*/) {
-            //itemView.setVisibility(View.VISIBLE);
+        if (data.size() > 1 && lastLevelSelected >= getAdapterPosition() ) {
             itemView.setEnabled(true);
             setMenu(data, adapter);
             binding.levelText.setOnClickListener(view -> menu.show());
-        } else if (lastLevelSelected < getAdapterPosition() + 1 /*data.size() <= 1*/)
+        } else if (lastLevelSelected < getAdapterPosition() + 1 )
             itemView.setEnabled(false);
-            //itemView.setVisibility(View.GONE);
 
-        //if ((itemView.getVisibility() == View.VISIBLE) )
-        //if(itemView.isEnabled())
-            binding.levelText.setText(isEmpty(selectedOrgUnitName) ? (isEmpty(levelName)?
-                    String.format(context.getString(R.string.org_unit_select_level), getAdapterPosition() + 1): levelName) : selectedOrgUnitName);
+        binding.levelText.setText(isEmpty(selectedOrgUnitName) ? (isEmpty(levelName)?
+                String.format(context.getString(R.string.org_unit_select_level), getAdapterPosition() + 1): levelName) : selectedOrgUnitName);
     }
 
     private void setMenu(ArrayList<String> data, OrgUnitCascadeAdapter adapter) {
