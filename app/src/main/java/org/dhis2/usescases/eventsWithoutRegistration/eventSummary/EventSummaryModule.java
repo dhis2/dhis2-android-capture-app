@@ -11,6 +11,7 @@ import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.rules.RuleExpressionEvaluator;
 
 import dagger.Module;
@@ -66,8 +67,9 @@ public class EventSummaryModule {
     @Provides
     FormRepository formRepository(@NonNull BriteDatabase briteDatabase,
                                   @NonNull RuleExpressionEvaluator evaluator,
-                                  @NonNull RulesRepository rulesRepository) {
-        return new EventRepository(briteDatabase, evaluator, rulesRepository, eventUid);
+                                  @NonNull RulesRepository rulesRepository,
+                                  @NonNull D2 d2) {
+        return new EventRepository(briteDatabase, evaluator, rulesRepository, eventUid,d2);
     }
 
     @Provides

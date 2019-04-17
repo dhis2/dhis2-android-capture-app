@@ -14,12 +14,17 @@ import org.dhis2.data.tuples.Trio;
 import org.dhis2.utils.CodeGenerator;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.ValueUtils;
+import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.category.Category;
+import org.hisp.dhis.android.core.category.CategoryCombo;
+import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.data.database.DbDateColumnAdapter;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.enrollment.note.NoteModel;
+import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.legendset.LegendModel;
@@ -34,6 +39,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -166,6 +172,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
     private final BriteDatabase briteDatabase;
     private final CodeGenerator codeGenerator;
+    private final D2 d2;
 
     private String teiUid;
     private String programUid;
@@ -195,9 +202,10 @@ public class DashboardRepositoryImpl implements DashboardRepository {
             LegendModel.TABLE, LegendModel.Columns.START_VALUE,
             LegendModel.TABLE, LegendModel.Columns.END_VALUE);
 
-    public DashboardRepositoryImpl(CodeGenerator codeGenerator, BriteDatabase briteDatabase) {
+    public DashboardRepositoryImpl(CodeGenerator codeGenerator, BriteDatabase briteDatabase, D2 d2) {
         this.briteDatabase = briteDatabase;
         this.codeGenerator = codeGenerator;
+        this.d2 = d2;
     }
 
 
@@ -390,14 +398,16 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     @Override
     public Integer getObjectStyle(Context context, String uid) {
         String GET_OBJECT_STYLE = "SELECT * FROM ObjectStyle WHERE uid = ?";
-        Cursor objectStyleCurosr = briteDatabase.query(GET_OBJECT_STYLE, uid);
-        if (objectStyleCurosr != null && objectStyleCurosr.moveToNext()) {
-            String iconName = objectStyleCurosr.getString(objectStyleCurosr.getColumnIndex("icon"));
-            Resources resources = context.getResources();
-            iconName = iconName.startsWith("ic_") ? iconName : "ic_" + iconName;
-            return resources.getIdentifier(iconName, "drawable", context.getPackageName());
-        } else
-            return R.drawable.ic_person;
+        try (Cursor objectStyleCurosr = briteDatabase.query(GET_OBJECT_STYLE, uid)) {
+            if (objectStyleCurosr != null && objectStyleCurosr.moveToNext()) {
+                String iconName = objectStyleCurosr.getString(objectStyleCurosr.getColumnIndex("icon"));
+                Resources resources = context.getResources();
+                iconName = iconName.startsWith("ic_") ? iconName : "ic_" + iconName;
+                objectStyleCurosr.close();
+                return resources.getIdentifier(iconName, "drawable", context.getPackageName());
+            } else
+                return R.drawable.ic_person;
+        }
     }
 
     @Override
@@ -429,9 +439,34 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     }
 
     @Override
+    public Observable<CategoryCombo> catComboForProgram(String programUid) {
+        return Observable.defer(() -> Observable.just(d2.categoryModule().categoryCombos.uid(d2.programModule().programs.uid(programUid).get().categoryCombo().uid()).withAllChildren().get()))
+                .map(categoryCombo -> {
+                    List<Category> fullCategories = new ArrayList<>();
+                    List<CategoryOptionCombo> fullOptionCombos = new ArrayList<>();
+                    for (Category category : categoryCombo.categories()) {
+                        fullCategories.add(d2.categoryModule().categories.uid(category.uid()).withAllChildren().get());
+                    }
+                    for (CategoryOptionCombo categoryOptionCombo : categoryCombo.categoryOptionCombos())
+                        fullOptionCombos.add(d2.categoryModule().categoryOptionCombos.uid(categoryOptionCombo.uid()).withAllChildren().get());
+                    return categoryCombo.toBuilder().categories(fullCategories).categoryOptionCombos(fullOptionCombos).build();
+                });
+    }
+
+    @Override
+    public void setDefaultCatOptCombToEvent(String eventUid) {
+        Event event = d2.eventModule().events.uid(eventUid).get();
+        ContentValues cv = event.toContentValues();
+        List<CategoryCombo> categoryCombos = d2.categoryModule().categoryCombos.byIsDefault().isTrue().withAllChildren().get();
+        cv.put(EventModel.Columns.ATTRIBUTE_OPTION_COMBO, categoryCombos.get(0).categoryOptionCombos().get(0).uid());
+        cv.put(EventModel.Columns.STATE, event.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
+        briteDatabase.update("Event", cv, "Event.uid = ?", eventUid);
+    }
+
+    @Override
     public Observable<List<TrackedEntityAttributeValueModel>> getTEIAttributeValues(String programUid, String teiUid) {
         if (programUid != null)
-            return briteDatabase.createQuery(ATTRIBUTE_VALUES_TABLE, ATTRIBUTE_VALUES_QUERY, programUid == null ? "" : programUid, teiUid == null ? "" : teiUid)
+            return briteDatabase.createQuery(ATTRIBUTE_VALUES_TABLE, ATTRIBUTE_VALUES_QUERY, programUid, teiUid == null ? "" : teiUid)
                     .mapToList(cursor -> ValueUtils.transform(briteDatabase, cursor));
         else
             return briteDatabase.createQuery(ATTRIBUTE_VALUES_TABLE, ATTRIBUTE_VALUES_NO_PROGRAM_QUERY, teiUid == null ? "" : teiUid)
@@ -534,15 +569,15 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                 String userName = cursor.getString(0);
 
                 cursor1.moveToFirst();
-                String enrollmentUid = cursor1.getString(0);
+                String enrollmentUidAux = cursor1.getString(0);
 
                 SQLiteStatement insetNoteStatement = briteDatabase.getWritableDatabase()
                         .compileStatement(INSERT_NOTE);
 
 
                 sqLiteBind(insetNoteStatement, 1, codeGenerator.generate()); //enrollment
-                sqLiteBind(insetNoteStatement, 2, enrollmentUid == null ? "" : enrollmentUid); //enrollment
-                sqLiteBind(insetNoteStatement, 3, stringBooleanPair.val0() == null ? "" : stringBooleanPair.val0()); //value
+                sqLiteBind(insetNoteStatement, 2, enrollmentUidAux == null ? "" : enrollmentUidAux); //enrollment
+                sqLiteBind(insetNoteStatement, 3, stringBooleanPair.val0()); //value
                 sqLiteBind(insetNoteStatement, 4, userName == null ? "" : userName); //storeBy
                 sqLiteBind(insetNoteStatement, 5, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime())); //storeDate
 

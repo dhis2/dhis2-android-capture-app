@@ -129,7 +129,7 @@ public class FormAdapter extends RecyclerView.Adapter {
             switch (holder.getItemViewType()) {
                 case EDITTEXT:
                     viewModel = EditTextViewModel.create(attr.uid(), label, false,
-                            queryData.get(attr.uid()), label, 1, attr.valueType(), null, !attr.generated(),
+                            queryData.get(attr.uid()), label, 1, attr.valueType(), null, true,
                             attr.displayDescription(), null, ObjectStyleModel.builder().build());
                     break;
                 case BUTTON:
@@ -235,15 +235,9 @@ public class FormAdapter extends RecyclerView.Adapter {
         this.queryData = queryData;
         if (programModel != null) {
             this.programModel = programModel;
-            programData = programModel.displayIncidentDate() ? 1 : 1;
+            programData = programModel.displayIncidentDate() ? 1 : 0;
         } else {
             programData = 0;
-           /* List<TrackedEntityAttributeModel> modelListnew = new ArrayList<>();
-            for (TrackedEntityAttributeModel attributeModel : modelList) {
-                if (attributeModel.displayInListNoProgram())
-                    modelListnew.add(attributeModel);
-            }
-            modelList = new ArrayList<>(modelListnew);*/
         }
 
         this.attributeList = modelList;

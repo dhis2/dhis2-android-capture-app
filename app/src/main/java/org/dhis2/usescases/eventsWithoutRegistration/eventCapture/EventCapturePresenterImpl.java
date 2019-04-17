@@ -133,8 +133,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                         .subscribe(
                                 data -> {
                                     this.eventStatus = data;
-                                    if (eventStatus == EventStatus.COMPLETED)
-                                        checkExpiration();
+//                                    if (eventStatus == EventStatus.COMPLETED)
+                                    checkExpiration();
                                 },
                                 Timber::e
                         )
@@ -172,17 +172,27 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                         fieldViewModels.addAll(fieldMap.get(sectionModel.sectionUid()));
 
                                     int cont = 0;
-                                    for (FieldViewModel fieldViewModel : fieldViewModels)
-                                        if (!isEmpty(fieldViewModel.value()))
+
+                                    HashMap<String, Boolean> finalFields = new HashMap<>();
+                                    for (FieldViewModel fieldViewModel : fieldViewModels) {
+                                        finalFields.put(fieldViewModel.optionSet() == null ? fieldViewModel.uid() : fieldViewModel.optionSet(), !isEmpty(fieldViewModel.value()));
+                                    }
+                                    for (String key : finalFields.keySet())
+                                        if (finalFields.get(key))
                                             cont++;
 
-                                    eventSectionModels.add(EventSectionModel.create(sectionModel.label(), sectionModel.sectionUid(), cont, fieldViewModels.size()));
+                                    eventSectionModels.add(EventSectionModel.create(sectionModel.label(), sectionModel.sectionUid(), cont, finalFields.keySet().size()));
                                 } else if (sectionList.size() == 1) {
                                     int cont = 0;
-                                    for (FieldViewModel fieldViewModel : fields)
-                                        if (!isEmpty(fieldViewModel.value()))
+                                    HashMap<String, Boolean> finalFields = new HashMap<>();
+                                    for (FieldViewModel fieldViewModel : fields) {
+                                        finalFields.put(fieldViewModel.optionSet() == null ? fieldViewModel.uid() : fieldViewModel.optionSet(), !isEmpty(fieldViewModel.value()));
+                                    }
+                                    for (String key : finalFields.keySet())
+                                        if (finalFields.get(key))
                                             cont++;
-                                    eventSectionModels.add(EventSectionModel.create("NO_SECTION", "no_section", cont, fields.size()));
+
+                                    eventSectionModels.add(EventSectionModel.create("NO_SECTION", "no_section", cont, finalFields.keySet().size()));
                                 }
                             }
 
@@ -209,6 +219,10 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                             fieldMap.put(fieldViewModel.programStageSection(), new ArrayList<>());
                                         fieldMap.get(fieldViewModel.programStageSection()).add(fieldViewModel);
                                     }
+                                    if (fieldMap.containsKey(null) && fieldMap.containsKey(section))
+                                        for (FieldViewModel fieldViewModel : fieldMap.get(null))
+                                            fieldMap.get(section).add(fieldViewModel);
+
                                     List<FieldViewModel> fieldsToShow = fieldMap.get(section.equals("NO_SECTION") ? null : section);
                                     return fieldsToShow != null ? fieldsToShow : new ArrayList<FieldViewModel>();
                                 }))
@@ -224,7 +238,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     }
 
     private Flowable<List<FieldViewModel>> getFieldFlowable(@Nullable String sectionUid) {
-        if (isEmpty(sectionUid) || sectionUid.equals("NO_SECTION")) {
+        if (sectionUid == null || sectionUid.equals("NO_SECTION")) {
             return Flowable.zip(
                     eventCaptureRepository.list().subscribeOn(Schedulers.computation()),
                     eventCaptureRepository.calculate().subscribeOn(Schedulers.computation()),
@@ -244,10 +258,14 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                     this::applyEffects)
                     .map(fields -> {
                         //Clear all sections fields from map
+                        List<String> toRemoveKeys = new ArrayList<>();
                         for (Map.Entry<String, FieldViewModel> entry : emptyMandatoryFields.entrySet()) {
                             if (entry.getValue().programStageSection().equals(sectionUid))
-                                emptyMandatoryFields.remove(entry.getKey());
+                                toRemoveKeys.add(entry.getKey());
                         }
+                        for (String key : toRemoveKeys)
+                            emptyMandatoryFields.remove(key);
+
                         for (FieldViewModel fieldViewModel : fields) {
                             if (fieldViewModel.mandatory() && isEmpty(fieldViewModel.value()))
                                 emptyMandatoryFields.put(fieldViewModel.uid(), fieldViewModel);
@@ -258,15 +276,18 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     }
 
     private void checkExpiration() {
-        compositeDisposable.add(
-                metadataRepository.isCompletedEventExpired(eventUid)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                hasExpired -> this.hasExpired = hasExpired,
-                                Timber::e
-                        )
-        );
+        if (eventStatus == EventStatus.COMPLETED)
+            compositeDisposable.add(
+                    metadataRepository.isCompletedEventExpired(eventUid)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(
+                                    hasExpiredResult -> this.hasExpired = hasExpiredResult && eventCaptureRepository.isEventExpired(eventUid),
+                                    Timber::e
+                            )
+            );
+        else
+            this.hasExpired = eventCaptureRepository.isEventExpired(eventUid);
     }
 
     @Override
@@ -372,7 +393,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         long currentTime = System.currentTimeMillis();
 
         if (calcResult.error() != null) {
-            calcResult.error().printStackTrace();
+            Timber.e(calcResult.error());
             return viewModels;
         }
 
@@ -651,7 +672,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
     @Override
     public void unsupportedRuleAction() {
-        view.displayMessage(view.getContext().getString(R.string.unsupported_program_rule));
+//        view.displayMessage(view.getContext().getString(R.string.unsupported_program_rule));
+        Timber.d(view.getContext().getString(R.string.unsupported_program_rule));
     }
 
     @Override

@@ -10,6 +10,7 @@ import org.dhis2.data.forms.dataentry.RuleEngineRepository;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.utils.Result;
+import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.rules.models.RuleAction;
 import org.hisp.dhis.rules.models.RuleActionErrorOnCompletion;
@@ -66,14 +67,15 @@ class FormPresenterImpl implements FormPresenter {
     FormPresenterImpl(@NonNull FormViewArguments formViewArguments,
                       @NonNull SchedulerProvider schedulerProvider,
                       @NonNull BriteDatabase briteDatabase,
-                      @NonNull FormRepository formRepository) {
+                      @NonNull FormRepository formRepository,
+                      @NonNull D2 d2) {
         this.formViewArguments = formViewArguments;
         this.formRepository = formRepository;
         this.schedulerProvider = schedulerProvider;
         this.compositeDisposable = new CompositeDisposable();
         if (formViewArguments.type() == FormViewArguments.Type.ENROLLMENT) {
             isEvent = false;
-            this.ruleEngineRepository = new EnrollmentRuleEngineRepository(briteDatabase, formRepository, formViewArguments.uid());
+            this.ruleEngineRepository = new EnrollmentRuleEngineRepository(briteDatabase, formRepository, formViewArguments.uid(), d2);
         } else {
             isEvent = true;
             this.ruleEngineRepository = new EventsRuleEngineRepository(briteDatabase, formRepository, formViewArguments.uid());
@@ -211,7 +213,7 @@ class FormPresenterImpl implements FormPresenter {
             @NonNull List<FieldViewModel> viewModels,
             @NonNull Result<RuleEffect> calcResult) {
         if (calcResult.error() != null) {
-            calcResult.error().printStackTrace();
+            Timber.e(calcResult.error());
             return viewModels;
         }
 
@@ -255,7 +257,7 @@ class FormPresenterImpl implements FormPresenter {
             @NonNull List<FormSectionViewModel> viewModels,
             @NonNull Result<RuleEffect> calcResult) {
         if (calcResult.error() != null) {
-            calcResult.error().printStackTrace();
+            Timber.e(calcResult.error());
             return viewModels;
         }
 

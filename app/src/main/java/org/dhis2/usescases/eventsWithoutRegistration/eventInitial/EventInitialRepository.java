@@ -1,18 +1,20 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventInitial;
 
 import android.content.Context;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
-import org.hisp.dhis.android.core.category.CategoryComboModel;
-import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
+import org.hisp.dhis.android.core.category.CategoryCombo;
+import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 
 /**
@@ -28,10 +30,7 @@ public interface EventInitialRepository {
     Observable<List<OrganisationUnitModel>> orgUnits(String programId);
 
     @NonNull
-    Observable<CategoryComboModel> catComboModel(String programUid);
-
-    @NonNull
-    Observable<List<CategoryOptionComboModel>> catCombo(String programUid);
+    Observable<CategoryCombo> catCombo(String programUid);
 
     @NonNull
     Observable<List<OrganisationUnitModel>> filteredOrgUnits(String date, String programId);
@@ -70,4 +69,6 @@ public interface EventInitialRepository {
     void deleteEvent(String eventId, String trackedEntityInstance);
 
     boolean isEnrollmentOpen();
+
+    Flowable<Map<String,CategoryOption>> getOptionsFromCatOptionCombo(String eventId);
 }

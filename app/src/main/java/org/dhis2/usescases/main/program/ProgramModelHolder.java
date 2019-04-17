@@ -3,17 +3,13 @@ package org.dhis2.usescases.main.program;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 
-import com.bumptech.glide.Glide;
-
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.RecyclerView;
-
 import org.dhis2.R;
 import org.dhis2.databinding.ItemProgramModelBinding;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Period;
 
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.recyclerview.widget.RecyclerView;
 import timber.log.Timber;
 
 /**
@@ -43,18 +39,19 @@ public class ProgramModelHolder extends RecyclerView.ViewHolder {
         } else {
             icon = R.drawable.ic_program_default;
         }
-
+        Drawable iconImage = AppCompatResources.getDrawable(binding.programImage.getContext(), R.drawable.ic_program_default);
         try {
-            Drawable iconImage = ContextCompat.getDrawable(binding.programImage.getContext(), icon);
-            iconImage.mutate();
-        }catch (Exception e){
-            Timber.log(1,e);
-            Drawable iconImage = ContextCompat.getDrawable(binding.programImage.getContext(), R.drawable.ic_program_default);
+            iconImage = AppCompatResources.getDrawable(binding.programImage.getContext(), icon);
+        } catch (Exception e) {
+            Timber.log(1, e);
+        }
+
+        if (iconImage != null) {
             iconImage.mutate();
         }
-        binding.programImage.setImageResource(icon);
-        binding.programImage.setColorFilter(ColorUtils.getContrastColor(color));
 
+        binding.programImage.setImageDrawable(iconImage);
+        binding.programImage.setColorFilter(ColorUtils.getContrastColor(color));
         binding.programImage.setBackgroundColor(color);
 
     }

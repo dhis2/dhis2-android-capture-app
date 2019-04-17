@@ -81,7 +81,10 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
 
             if (date == null)
                 try {
-                    date = DateUtils.databaseDateFormatNoMillis().parse(data);
+                    if(DateUtils.dateHasNoSeconds(data))
+                        date = DateUtils.databaseDateFormatNoSeconds().parse(data);
+                    else
+                        date = DateUtils.databaseDateFormatNoMillis().parse(data);
                 } catch (ParseException e) {
                     Timber.e(e);
                 }
@@ -93,7 +96,13 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
         editText.setText(data);
     }
 
-    public void setWarningOrError(String msg) {
+    public void setWarning(String msg) {
+        inputLayout.setErrorTextAppearance(R.style.warning_appearance);
+        inputLayout.setError(msg);
+    }
+
+    public void setError(String msg) {
+        inputLayout.setErrorTextAppearance(R.style.error_appearance);
         inputLayout.setError(msg);
     }
 

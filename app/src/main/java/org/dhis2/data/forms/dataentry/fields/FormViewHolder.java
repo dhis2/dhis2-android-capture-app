@@ -17,10 +17,10 @@ import org.dhis2.utils.custom_views.CustomDialog;
 
 public abstract class FormViewHolder extends RecyclerView.ViewHolder {
 
-    public ViewDataBinding binding;
-    public ImageView description;
-    public StringBuilder label;
-    public String descriptionText;
+    protected ViewDataBinding binding;
+    protected ImageView description;
+    protected StringBuilder label;
+    protected String descriptionText;
 
     public FormViewHolder(ViewDataBinding binding) {
         super(binding.getRoot());

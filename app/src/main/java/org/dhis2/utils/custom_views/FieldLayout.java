@@ -16,8 +16,8 @@ import androidx.annotation.Nullable;
  */
 public abstract class FieldLayout extends RelativeLayout {
 
-    public boolean isBgTransparent;
-    public LayoutInflater inflater;
+    protected boolean isBgTransparent;
+    protected LayoutInflater inflater;
 
 
     public FieldLayout(Context context) {

@@ -55,7 +55,7 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
         OrgUnitDialog orgUnitDialog = OrgUnitDialog.getInstace().setMultiSelection(false);
         orgUnitDialog.setTitle("Enrollment Org Unit")
                 .setPossitiveListener(v -> {
-                    if (orgUnitDialog.getSelectedOrgUnit() != null)
+                    if (orgUnitDialog.getSelectedOrgUnit() != null && !orgUnitDialog.getSelectedOrgUnit().isEmpty())
                         enrollInOrgUnit(orgUnitDialog.getSelectedOrgUnit(), programUid, uid, selectedEnrollmentDate);
                     orgUnitDialog.dismiss();
                 })
@@ -115,7 +115,9 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
         if (selectedProgram != null && !selectedProgram.selectEnrollmentDatesInFuture()) {
             dateDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
         }
-        dateDialog.setTitle(selectedProgram.enrollmentDateLabel());
+        if (selectedProgram != null) {
+            dateDialog.setTitle(selectedProgram.enrollmentDateLabel());
+        }
         dateDialog.setButton(DialogInterface.BUTTON_NEGATIVE, view.getContext().getString(R.string.date_dialog_clear), (dialog, which) -> {
             dialog.dismiss();
         });
@@ -129,7 +131,7 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
 
     private void enrollInOrgUnit(String orgUnitUid, String programUid, String teiUid, Date enrollmentDate) {
         compositeDisposable.add(
-                teiProgramListRepository.saveToEnroll(orgUnitUid, programUid, teiUid,enrollmentDate)
+                teiProgramListRepository.saveToEnroll(orgUnitUid, programUid, teiUid, enrollmentDate)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(enrollmentUid -> {

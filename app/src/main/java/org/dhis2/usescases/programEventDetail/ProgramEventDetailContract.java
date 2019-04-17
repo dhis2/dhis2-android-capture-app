@@ -1,23 +1,24 @@
 package org.dhis2.usescases.programEventDetail;
 
+import com.unnamed.b.atv.model.TreeNode;
+
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.utils.Period;
-import com.unnamed.b.atv.model.TreeNode;
-
-import org.hisp.dhis.android.core.category.CategoryComboModel;
+import org.hisp.dhis.android.core.category.Category;
+import org.hisp.dhis.android.core.category.CategoryCombo;
+import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
-import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.period.DatePeriod;
+import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 
-import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
-import io.reactivex.Flowable;
-import io.reactivex.Observable;
+import androidx.lifecycle.LiveData;
+import androidx.paging.PagedList;
 import io.reactivex.functions.Consumer;
 
 /**
@@ -27,7 +28,6 @@ import io.reactivex.functions.Consumer;
 public class ProgramEventDetailContract {
 
     public interface View extends AbstractActivityContracts.View {
-        void setData(List<ProgramEventViewModel> events);
 
         void addTree(TreeNode treeNode);
 
@@ -37,11 +37,11 @@ public class ProgramEventDetailContract {
 
         void showRageDatePicker();
 
-        void setProgram(ProgramModel programModel);
+        void setProgram(Program programModel);
 
         void renderError(String message);
 
-        void setCatComboOptions(CategoryComboModel catCombo, List<CategoryOptionComboModel> catComboList);
+        void setCatComboOptions( List<Category> categories);
 
         void showHideFilter();
 
@@ -49,11 +49,11 @@ public class ProgramEventDetailContract {
 
         void setWritePermission(Boolean aBoolean);
 
-        Flowable<Integer> currentPage();
-
         void orgUnitProgress(boolean showProgress);
 
         Consumer<Pair<TreeNode, List<TreeNode>>> addNodeToTree();
+
+        void setLiveData(LiveData<PagedList<ProgramEventViewModel>> pagedListLiveData);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
@@ -62,6 +62,8 @@ public class ProgramEventDetailContract {
         void updateDateFilter(List<DatePeriod> datePeriodList);
 
         void updateOrgUnitFilter(List<String> orgUnitList);
+
+        void updateCatOptCombFilter(List<CategoryOption> categoryOptionComboMap);
 
         void onTimeButtonClick();
 
@@ -81,13 +83,9 @@ public class ProgramEventDetailContract {
 
         void onEventClick(String eventId, String orgUnit);
 
-        Observable<List<String>> getEventDataValueNew(EventModel event);
-
         void showFilter();
 
         List<OrganisationUnitModel> getOrgUnits();
-
-        void setFilters(List<Date> selectedDates, Period currentPeriod, String orgUnits);
 
         void onExpandOrgUnitNode(TreeNode node, String uid);
     }

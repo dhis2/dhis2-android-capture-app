@@ -13,6 +13,7 @@ import org.dhis2.data.tuples.Trio;
 import org.dhis2.utils.CodeGenerator;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
+import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
@@ -23,7 +24,7 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
@@ -53,7 +54,7 @@ import static android.text.TextUtils.isEmpty;
 @SuppressWarnings({
         "PMD.AvoidDuplicateLiterals"
 })
-class EnrollmentFormRepository implements FormRepository {
+public class EnrollmentFormRepository implements FormRepository {
     private static final List<String> TITLE_TABLES = Arrays.asList(
             EnrollmentModel.TABLE, ProgramModel.TABLE);
 
@@ -196,21 +197,28 @@ class EnrollmentFormRepository implements FormRepository {
     private final CodeGenerator codeGenerator;
 
     @NonNull
-    private final Flowable<RuleEngine> cachedRuleEngineFlowable;
+    private Flowable<RuleEngine> cachedRuleEngineFlowable;
 
     @NonNull
     private final String enrollmentUid;
+    private final D2 d2;
+    private final RulesRepository rulesRepository;
+    private final RuleExpressionEvaluator expressionEvaluator;
 
     private String programUid;
 
-    EnrollmentFormRepository(@NonNull BriteDatabase briteDatabase,
-                             @NonNull RuleExpressionEvaluator expressionEvaluator,
-                             @NonNull RulesRepository rulesRepository,
-                             @NonNull CodeGenerator codeGenerator,
-                             @NonNull String enrollmentUid) {
+    public EnrollmentFormRepository(@NonNull BriteDatabase briteDatabase,
+                                    @NonNull RuleExpressionEvaluator expressionEvaluator,
+                                    @NonNull RulesRepository rulesRepository,
+                                    @NonNull CodeGenerator codeGenerator,
+                                    @NonNull String enrollmentUid,
+                                    @NonNull D2 d2) {
+        this.d2 = d2;
         this.briteDatabase = briteDatabase;
         this.codeGenerator = codeGenerator;
         this.enrollmentUid = enrollmentUid;
+        this.rulesRepository = rulesRepository;
+        this.expressionEvaluator = expressionEvaluator;
 
         // We don't want to rebuild RuleEngine on each request, since metadata of
         // the event is not changing throughout lifecycle of FormComponent.
@@ -219,12 +227,37 @@ class EnrollmentFormRepository implements FormRepository {
                         rulesRepository.rulesNew(program),
                         rulesRepository.ruleVariables(program),
                         rulesRepository.enrollmentEvents(enrollmentUid),
-                        (rules, variables, events) -> {
+                        rulesRepository.queryConstants(),
+                        (rules, variables, events, constants) -> {
                             RuleEngine.Builder builder = RuleEngineContext.builder(expressionEvaluator)
                                     .rules(rules)
                                     .ruleVariables(variables)
                                     .calculatedValueMap(new HashMap<>())
                                     .supplementaryData(new HashMap<>())
+                                    .constantsValue(constants)
+                                    .build().toEngineBuilder();
+                            builder.triggerEnvironment(TriggerEnvironment.ANDROIDCLIENT);
+                            builder.events(events);
+                            return builder.build();
+                        }))
+                .cacheWithInitialCapacity(1);
+    }
+
+    @Override
+    public Flowable<RuleEngine> restartRuleEngine() {
+        return this.cachedRuleEngineFlowable = enrollmentProgram()
+                .switchMap(program -> Flowable.zip(
+                        rulesRepository.rulesNew(program),
+                        rulesRepository.ruleVariables(program),
+                        rulesRepository.enrollmentEvents(enrollmentUid),
+                        rulesRepository.queryConstants(),
+                        (rules, variables, events, constants) -> {
+                            RuleEngine.Builder builder = RuleEngineContext.builder(expressionEvaluator)
+                                    .rules(rules)
+                                    .ruleVariables(variables)
+                                    .calculatedValueMap(new HashMap<>())
+                                    .supplementaryData(new HashMap<>())
+                                    .constantsValue(constants)
                                     .build().toEngineBuilder();
                             builder.triggerEnvironment(TriggerEnvironment.ANDROIDCLIENT);
                             builder.events(events);
@@ -550,11 +583,9 @@ class EnrollmentFormRepository implements FormRepository {
     }
 
     @Override
-    public Observable<OrganisationUnitModel> getOrgUnitDates() {
-        return briteDatabase.createQuery("SELECT * FROM OrganisationUnit " +
-                "JOIN Enrollment ON Enrollment.organisationUnit = OrganisationUnit.uid " +
-                "WHERE Enrollment.uid = ?", enrollmentUid)
-                .mapToOne(OrganisationUnitModel::create);
+    public Observable<OrganisationUnit> getOrgUnitDates() {
+        return Observable.defer(() -> Observable.just(d2.enrollmentModule().enrollments.uid(enrollmentUid).get()))
+                .switchMap(enrollment -> Observable.just(d2.organisationUnitModule().organisationUnits.uid(enrollment.organisationUnit()).get()));
     }
 
     @NonNull

@@ -2,7 +2,6 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventSummary;
 
 import android.util.Log;
 
-import org.dhis2.Bindings.Bindings;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.schedulers.SchedulerProvider;
@@ -162,7 +161,7 @@ public class EventSummaryInteractor implements EventSummaryContract.Interactor {
             @NonNull List<FieldViewModel> viewModels,
             @NonNull Result<RuleEffect> calcResult) {
         if (calcResult.error() != null) {
-            calcResult.error().printStackTrace();
+            Timber.e(calcResult.error());
             return viewModels;
         }
 

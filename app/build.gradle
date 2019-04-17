@@ -45,7 +45,7 @@ android {
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
 
-        setProperty("archivesBaseName", "dhis2-v" + versionName)
+        setProperty("archivesBaseName", "dhis2-v" + versions.vName)
 
         buildConfigField "String", "SDK_VERSION", "\"" + libraries.dhis2sdk + "\""
     }
@@ -104,19 +104,15 @@ android {
     productFlavors {
         dhis {
             applicationId "com.dhis2"
-            archivesBaseName = "dhis"
             dimension "default"
             versionCode versions.vCode
             versionName versions.vName
-            setProperty("archivesBaseName", "dhis2-v" + versionName)
         }
         psi {
             applicationId "org.dhis2.psi"
-            archivesBaseName = "PSI"
             dimension "default"
             versionCode 2
             versionName "1.1.0"
-            setProperty("archivesBaseName", "PSI-v" + versionName)
         }
     }
 
@@ -205,7 +201,7 @@ dependencies {
 
     //region DAGGER
     implementation "com.google.dagger:dagger:${libraries.dagger}"
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-alpha3'
+//    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-alpha3'
     kapt "com.google.dagger:dagger-compiler:${libraries.dagger}"
     //endregion
 
@@ -240,6 +236,7 @@ dependencies {
 
     //GSON
     implementation 'com.google.code.gson:gson:2.8.2'
+//    implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
 
     //JOB SCHEDULER
     implementation("android.arch.work:work-runtime:1.0.0-alpha10") {
@@ -258,11 +255,12 @@ dependencies {
     //Test
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    androidTestImplementation('androidx.test.espresso:espresso-core:3.1.1', {
+    androidTestImplementation'androidx.test.espresso:espresso-core:3.1.1'
+  /*  androidTestImplementation('androidx.test.espresso:espresso-core:3.1.1', {
         exclude group: 'com.android.support', module: 'support-annotations'
         exclude group: 'com.google.code.findbugs'
 
-    })
+    })*/
     androidTestImplementation 'androidx.test.ext:junit:1.1.0'
 
 
@@ -271,6 +269,7 @@ dependencies {
     testImplementation 'org.robolectric:robolectric:4.1'
     testImplementation "org.robolectric:shadows-multidex:4.0.1"
     testImplementation group: 'org.mockito', name: 'mockito-all', version: '1.8.4'
+    testImplementation 'com.google.truth:truth:0.43'
 
     implementation 'com.facebook.stetho:stetho:1.5.0'
     implementation 'com.facebook.stetho:stetho-okhttp3:1.5.0'

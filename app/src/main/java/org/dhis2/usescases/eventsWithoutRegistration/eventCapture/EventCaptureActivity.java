@@ -345,7 +345,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Timber.e(e);
         }
         popupMenu.getMenuInflater().inflate(R.menu.event_menu, popupMenu.getMenu());
         popupMenu.setOnMenuItemClickListener(item -> {
@@ -358,6 +358,8 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                     break;
                 case R.id.menu_overview:
                     goToInitialScreen();
+                    break;
+                default:
                     break;
             }
             return false;
@@ -466,5 +468,10 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
     public void onSwipeLeft() {
         presenter.onNextSection();
+    }
+
+    @Override
+    public void back() {
+        finishDataEntry();
     }
 }

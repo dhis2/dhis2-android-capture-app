@@ -93,7 +93,7 @@ public final class DataValueStore implements DataEntryStore {
             // ToDo: write test cases for different events
             return (long) briteDatabase.update(TrackedEntityDataValueModel.TABLE, dataValue,
                     TrackedEntityDataValueModel.Columns.DATA_ELEMENT + " = ? AND " +
-                            TrackedEntityDataValueModel.Columns.EVENT + " = ?", uid == null ? "" : uid, eventUid == null ? "" : eventUid);
+                            TrackedEntityDataValueModel.Columns.EVENT + " = ?", uid, eventUid);
         } else {
             dataValue.put(TrackedEntityAttributeValueModel.Columns.LAST_UPDATED,
                     BaseIdentifiableObject.DATE_FORMAT.format(Calendar.getInstance().getTime()));
@@ -195,7 +195,7 @@ public final class DataValueStore implements DataEntryStore {
             return (long) briteDatabase.delete(TrackedEntityDataValueModel.TABLE,
                     TrackedEntityDataValueModel.Columns.DATA_ELEMENT + " = ? AND " +
                             TrackedEntityDataValueModel.Columns.EVENT + " = ?",
-                    uid == null ? "" : uid, eventUid == null ? "" : eventUid);
+                    uid, eventUid);
         else {
             String teiUid = "";
             try (Cursor enrollmentCursor = briteDatabase.query(
@@ -215,7 +215,7 @@ public final class DataValueStore implements DataEntryStore {
     }
 
     private Flowable<Long> updateEvent(long status) {
-        return briteDatabase.createQuery(EventModel.TABLE, SELECT_EVENT, eventUid == null ? "" : eventUid)
+        return briteDatabase.createQuery(EventModel.TABLE, SELECT_EVENT, eventUid)
                 .mapToOne(EventModel::create).take(1).toFlowable(BackpressureStrategy.LATEST)
                 .switchMap(eventModel -> {
                     if (State.SYNCED.equals(eventModel.state()) || State.TO_DELETE.equals(eventModel.state()) ||
@@ -225,7 +225,7 @@ public final class DataValueStore implements DataEntryStore {
                         values.put(EventModel.Columns.STATE, State.TO_UPDATE.toString());
 
                         if (briteDatabase.update(EventModel.TABLE, values,
-                                EventModel.Columns.UID + " = ?", eventUid == null ? "" : eventUid) <= 0) {
+                                EventModel.Columns.UID + " = ?", eventUid) <= 0) {
 
                             throw new IllegalStateException(String.format(Locale.US, "Event=[%s] " +
                                     "has not been successfully updated", eventUid));

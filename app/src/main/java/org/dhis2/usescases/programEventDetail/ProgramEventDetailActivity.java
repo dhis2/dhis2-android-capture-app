@@ -8,9 +8,15 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.TypedValue;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
-import android.widget.AdapterView;
+import android.view.ViewGroup;
+import android.widget.PopupMenu;
 
+import com.google.android.flexbox.FlexboxLayout;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
@@ -19,26 +25,27 @@ import org.dhis2.BuildConfig;
 import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ActivityProgramEventDetailBinding;
+import org.dhis2.databinding.CatCombFilterBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.main.program.OrgUnitHolder;
-import org.dhis2.utils.CatComboAdapter;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
-import org.dhis2.utils.EndlessRecyclerViewScrollListener;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.Period;
 import org.dhis2.utils.custom_views.RxDateDialog;
-import org.hisp.dhis.android.core.category.CategoryComboModel;
-import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
+import org.hisp.dhis.android.core.category.Category;
+import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
-import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.program.Program;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -49,11 +56,9 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.core.view.GravityCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.RecyclerView;
-import io.reactivex.Flowable;
+import androidx.lifecycle.LiveData;
+import androidx.paging.PagedList;
 import io.reactivex.functions.Consumer;
-import io.reactivex.processors.PublishProcessor;
 import me.toptas.fancyshowcase.FancyShowCaseView;
 import timber.log.Timber;
 
@@ -86,10 +91,9 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy", Locale.getDefault());
     private AndroidTreeView treeView;
     private TreeNode treeNode;
-    private StringBuilder orgUnitFilter = new StringBuilder();
     private boolean isFilteredByCatCombo = false;
-    private PublishProcessor<Integer> pageProcessor;
-    private EndlessRecyclerViewScrollListener endlessScrollListener;
+    private ProgramEventDetailLiveAdapter liveAdapter;
+    private Map<String, CategoryOption> catCombFilter;
 
     public static Bundle getBundle(String programUid, String period, List<Date> dates) {
         Bundle bundle = new Bundle();
@@ -103,7 +107,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     public void onCreate(@Nullable Bundle savedInstanceState) {
         ((App) getApplicationContext()).userComponent().plus(new ProgramEventDetailModule(getIntent().getStringExtra("PROGRAM_UID"))).inject(this);
         super.onCreate(savedInstanceState);
-
+        catCombFilter = new HashMap<>();
         currentPeriod = Period.valueOf(getIntent().getStringExtra("CURRENT_PERIOD"));
 
         chosenDateWeek.add(new Date());
@@ -116,14 +120,9 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
         binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
-        pageProcessor = PublishProcessor.create();
+        liveAdapter = new ProgramEventDetailLiveAdapter(presenter);
+        binding.recycler.setAdapter(liveAdapter);
 
-        endlessScrollListener = new EndlessRecyclerViewScrollListener(binding.recycler.getLayoutManager(), 2, 0) {
-            @Override
-            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                pageProcessor.onNext(page);
-            }
-        };
     }
 
     @Override
@@ -141,21 +140,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     }
 
     @Override
-    public void setData(List<ProgramEventViewModel> events) {
-        if (binding.recycler.getAdapter() == null) {
-            binding.recycler.setAdapter(adapter);
-            binding.recycler.addOnScrollListener(endlessScrollListener);
-            binding.recycler.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
-        }
-        adapter.setEvents(events, endlessScrollListener.getCurrentPage());
-
-        if (!HelpManager.getInstance().isTutorialReadyForScreen(getClass().getName()))
-            setTutorial();
-    }
-
-
-    @Override
-    public void setProgram(ProgramModel program) {
+    public void setProgram(Program program) {
         binding.setName(program.displayName());
     }
 
@@ -202,10 +187,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                             }
                             binding.buttonPeriodText.setText(textToShow);
 
-                            presenter.setFilters(selectedDates, currentPeriod, orgUnitFilter.toString());
-                            endlessScrollListener.resetState(0);
-                            pageProcessor.onNext(0);
-//                            presenter.getProgramEventsWithDates(selectedDates, currentPeriod, orgUnitFilter.toString());
+                            presenter.updateDateFilter(DateUtils.getInstance().getDatePeriodListFor(selectedDates, currentPeriod));
 
                         } else {
                             ArrayList<Date> date = new ArrayList<>();
@@ -230,11 +212,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                                     break;
                             }
                             binding.buttonPeriodText.setText(text);
-
-                            presenter.setFilters(date, currentPeriod, orgUnitFilter.toString());
-                            endlessScrollListener.resetState(0);
-                            pageProcessor.onNext(0);
-//                            presenter.getProgramEventsWithDates(date, currentPeriod, orgUnitFilter.toString());
+                            presenter.updateDateFilter(DateUtils.getInstance().getDatePeriodListFor(selectedDates, currentPeriod));
                         }
                     },
                     Timber::d);
@@ -245,13 +223,10 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
             pickerDialog = new DatePickerDialog(getContext(), (datePicker, year, monthOfYear, dayOfMonth) -> {
                 calendar.set(year, monthOfYear, dayOfMonth);
                 Date[] dates = DateUtils.getInstance().getDateFromDateAndPeriod(calendar.getTime(), currentPeriod);
-                ArrayList<Date> day = new ArrayList<>();
-                day.add(dates[0]);
+                ArrayList<Date> selectedDates = new ArrayList<>();
+                selectedDates.add(dates[0]);
 
-                presenter.setFilters(day, currentPeriod, orgUnitFilter.toString());
-                endlessScrollListener.resetState(0);
-                pageProcessor.onNext(0);
-//                presenter.getProgramEventsWithDates(day, currentPeriod, orgUnitFilter.toString());
+                presenter.updateDateFilter(DateUtils.getInstance().getDatePeriodListFor(selectedDates, currentPeriod));
                 binding.buttonPeriodText.setText(DateUtils.getInstance().formatDate(dates[0]));
                 chosenDateDay = dates[0];
             }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
@@ -293,8 +268,6 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         switch (currentPeriod) {
             case NONE:
                 presenter.updateDateFilter(new ArrayList<>());
-                endlessScrollListener.resetState(0);
-                pageProcessor.onNext(0);
                 textToShow = getString(R.string.period);
                 break;
             case DAILY:
@@ -304,8 +277,6 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                     textToShow = DateUtils.getInstance().formatDate(datesD.get(0));
                 if (!datesD.isEmpty() && datesD.size() > 1) textToShow += "... ";
                 presenter.updateDateFilter(DateUtils.getInstance().getDatePeriodListFor(datesD, currentPeriod));
-                endlessScrollListener.resetState(0);
-                pageProcessor.onNext(0);
                 break;
             case WEEKLY:
                 if (!chosenDateWeek.isEmpty()) {
@@ -317,8 +288,6 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                     textToShow += "... ";
 
                 presenter.updateDateFilter(DateUtils.getInstance().getDatePeriodListFor(chosenDateWeek, currentPeriod));
-                endlessScrollListener.resetState(0);
-                pageProcessor.onNext(0);
                 break;
             case MONTHLY:
                 if (!chosenDateMonth.isEmpty()) {
@@ -328,8 +297,6 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                 if (!chosenDateMonth.isEmpty() && chosenDateMonth.size() > 1) textToShow += "... ";
 
                 presenter.updateDateFilter(DateUtils.getInstance().getDatePeriodListFor(chosenDateMonth, currentPeriod));
-                endlessScrollListener.resetState(0);
-                pageProcessor.onNext(0);
                 break;
             case YEARLY:
                 if (!chosenDateYear.isEmpty())
@@ -337,8 +304,6 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                 if (!chosenDateYear.isEmpty() && chosenDateYear.size() > 1) textToShow += "... ";
 
                 presenter.updateDateFilter(DateUtils.getInstance().getDatePeriodListFor(chosenDateYear, currentPeriod));
-                endlessScrollListener.resetState(0);
-                pageProcessor.onNext(0);
                 break;
         }
 
@@ -407,6 +372,12 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     }
 
     @Override
+    public void setLiveData(LiveData<PagedList<ProgramEventViewModel>> pagedListLiveData) {
+        pagedListLiveData.observe(this, liveAdapter::submitList);
+
+    }
+
+    @Override
     public void renderError(String message) {
         if (getActivity() != null)
             new AlertDialog.Builder(getActivity())
@@ -417,52 +388,43 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     }
 
     @Override
-    public void setCatComboOptions(CategoryComboModel catCombo, List<CategoryOptionComboModel> catComboList) {
-        ArrayList<CategoryOptionComboModel> catComboListFinal = new ArrayList<>();
-        if (catComboList != null) {
-            for (CategoryOptionComboModel categoryOptionComboModel : catComboList) {
-                if (!"default".equals(categoryOptionComboModel.displayName()) && !categoryOptionComboModel.uid().equals(CategoryComboModel.DEFAULT_UID)) {
-                    catComboListFinal.add(categoryOptionComboModel);
-                }
-            }
-        }
-
-        if (catCombo.isDefault() || "default".equals(catCombo.displayName()) || catCombo.uid().equals(CategoryComboModel.DEFAULT_UID) || catComboListFinal.isEmpty()) {
-            binding.catCombo.setVisibility(View.GONE);
-        } else {
-            binding.catCombo.setVisibility(View.VISIBLE);
-            CatComboAdapter adapter = new CatComboAdapter(this,
-                    R.layout.spinner_layout,
-                    R.id.spinner_text,
-                    catComboListFinal,
-                    catCombo.displayName(),
-                    R.color.white_faf);
-
-            binding.catCombo.setVisibility(View.VISIBLE);
-            binding.catCombo.setAdapter(adapter);
-
-            binding.catCombo.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+    public void setCatComboOptions(List<Category> categories) {
+        if (binding.filterLayout.getChildCount() > 2)
+            binding.filterLayout.removeViews(2, binding.filterLayout.getChildCount() - 1);
+        if (categories != null && !categories.isEmpty()) {
+            for (Category category : categories) {
+                CatCombFilterBinding catCombFilterBinding = CatCombFilterBinding.inflate(LayoutInflater.from(this));
+                PopupMenu menu = new PopupMenu(catCombFilterBinding.catCombo.getContext(), catCombFilterBinding.catCombo, Gravity.BOTTOM);
+                menu.getMenu().add(Menu.NONE, Menu.NONE, 0, category.displayName());
+                for (CategoryOption catOption : category.categoryOptions())
+                    menu.getMenu().add(Menu.NONE, Menu.NONE, category.categoryOptions().indexOf(catOption) + 1, catOption.displayName());
+                catCombFilterBinding.catCombo.setOnClickListener(view -> menu.show());
+                menu.setOnMenuItemClickListener(item -> {
+                    int position = item.getOrder();
                     if (position == 0) {
-                        isFilteredByCatCombo = false;
-                        presenter.clearCatComboFilters();
-                        endlessScrollListener.resetState();
-                        pageProcessor.onNext(0);
+                        catCombFilter.remove(category.uid());
+                        isFilteredByCatCombo = !catCombFilter.isEmpty();
+                        presenter.updateCatOptCombFilter(new ArrayList<>(catCombFilter.values()));
+                        catCombFilterBinding.catCombo.setText(category.displayName());
                     } else {
+                        CategoryOption categoryOption = category.categoryOptions().get(position - 1);
                         isFilteredByCatCombo = true;
-                        presenter.onCatComboSelected(adapter.getItem(position - 1));
-                        endlessScrollListener.resetState();
-                        pageProcessor.onNext(0);
+                        catCombFilter.put(category.uid(), categoryOption);
+                        presenter.updateCatOptCombFilter(new ArrayList<>(catCombFilter.values()));
+                        catCombFilterBinding.catCombo.setText(categoryOption.displayName());
                     }
-                }
+                    return false;
+                });
 
-                @Override
-                public void onNothingSelected(AdapterView<?> parent) {
-                   /* isFilteredByCatCombo = false;
-                    presenter.clearCatComboFilters();*/
-                }
-            });
+                FlexboxLayout.LayoutParams lp = new FlexboxLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                        (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 40, getResources().getDisplayMetrics()));
+                lp.setFlexBasisPercent(50f);
+                lp.setMargins(0, 10, 5, 0);
+                catCombFilterBinding.getRoot().setLayoutParams(lp);
+                catCombFilterBinding.catCombo.setText(category.displayName());
+                binding.filterLayout.addView(catCombFilterBinding.getRoot());
+
+            }
         }
     }
 
@@ -557,11 +519,6 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
         }, 500);
 
-    }
-
-    @Override
-    public Flowable<Integer> currentPage() {
-        return pageProcessor;
     }
 
     @Override

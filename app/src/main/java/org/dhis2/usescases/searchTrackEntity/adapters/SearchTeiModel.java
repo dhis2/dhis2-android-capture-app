@@ -83,4 +83,8 @@ public class SearchTeiModel {
     public List<Trio<String, String, String>> getEnrollmentInfo() {
         return enrollmentsInfo;
     }
+
+    public void toLocalTei(TrackedEntityInstanceModel localTei){
+        this.tei = localTei;
+    }
 }

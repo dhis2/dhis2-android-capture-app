@@ -182,20 +182,6 @@
                             android:textSize="15sp"
                             tools:text="Unidad Organizativa" />
 
-                        <Spinner
-                            android:id="@+id/cat_combo"
-                            android:layout_width="match_parent"
-                            android:layout_height="40dp"
-                            android:layout_marginStart="5dp"
-                            android:layout_marginTop="10dp"
-                            android:background="?attr/selector_button_round_20"
-                            android:dropDownWidth="match_parent"
-                            android:paddingStart="15dp"
-                            android:paddingEnd="15dp"
-                            android:textColor="?colorAccent"
-                            android:textSize="15sp"
-                            android:visibility="gone"
-                            app:layout_flexBasisPercent="50%" />
                     </com.google.android.flexbox.FlexboxLayout>
 
                     <RelativeLayout

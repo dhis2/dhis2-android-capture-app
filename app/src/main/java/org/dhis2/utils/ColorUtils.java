@@ -28,9 +28,8 @@ public class ColorUtils {
         return new RippleDrawable(getPressedState(pressedColor), bgDrawable, null);
     }
 
-    public static ColorStateList getPressedState(int pressedColor)
-    {
-        return new ColorStateList(new int[][]{ new int[]{}},new int[]{pressedColor});
+    public static ColorStateList getPressedState(int pressedColor) {
+        return new ColorStateList(new int[][]{new int[]{}}, new int[]{pressedColor});
     }
 
     public enum ColorType {

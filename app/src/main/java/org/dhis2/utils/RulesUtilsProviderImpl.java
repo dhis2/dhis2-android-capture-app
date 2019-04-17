@@ -4,6 +4,7 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.ValueType;
+import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.rules.models.RuleAction;
 import org.hisp.dhis.rules.models.RuleActionAssign;
@@ -91,7 +92,7 @@ public class RulesUtilsProviderImpl implements RulesUtilsProvider {
     }
 
     @Override
-    public void applyRuleEffects(Map<String, ProgramStageModel> programStages, Result<RuleEffect> calcResult) {
+    public void applyRuleEffects(Map<String, ProgramStage> programStages, Result<RuleEffect> calcResult) {
         for (RuleEffect ruleEffect : calcResult.items()) {
             if (ruleEffect.ruleAction() instanceof RuleActionHideProgramStage)
                 hideProgramStage(programStages, (RuleActionHideProgramStage) ruleEffect.ruleAction());
@@ -136,13 +137,7 @@ public class RulesUtilsProviderImpl implements RulesUtilsProvider {
                 displayText.content(), false, ruleEffect.data(), "Information", 1,
                 ValueType.TEXT, null, false, null, null, ObjectStyleModel.builder().build());
 
-        if (this.currentFieldViewModels == null ||
-                !this.currentFieldViewModels.containsKey(uid)) {
-            fieldViewModels.put(uid, textViewModel);
-        } else if (this.currentFieldViewModels.containsKey(uid) &&
-                !Objects.equals(currentFieldViewModels.get(uid).value(), textViewModel.value())) {
-            fieldViewModels.put(uid, textViewModel);
-        }
+        fieldViewModels.put(uid, textViewModel);
     }
 
     private void displayKeyValuePair(RuleActionDisplayKeyValuePair displayKeyValuePair,
@@ -202,7 +197,7 @@ public class RulesUtilsProviderImpl implements RulesUtilsProvider {
         rulesActionCallbacks.setHideProgramStage(hideProgramStage.programStage());
     }
 
-    private void hideProgramStage(Map<String, ProgramStageModel> programStages, RuleActionHideProgramStage hideProgramStage) {
+    private void hideProgramStage(Map<String, ProgramStage> programStages, RuleActionHideProgramStage hideProgramStage) {
         programStages.remove(hideProgramStage.programStage());
     }
 

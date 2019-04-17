@@ -206,6 +206,7 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
     @Override
     public void showCrashlyticsDialog() {
         showInfoDialog(getString(R.string.send_user_name_title), getString(R.string.send_user_name_mesage),
+                getString(R.string.action_agree), getString(R.string.cancel),
                 new OnDialogClickListener() {
                     @Override
                     public void onPossitiveClick(AlertDialog alertDialog) {
@@ -278,6 +279,7 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
         binding.userNameEdit.setAdapter(userAdapter);
     }
 
+    @SuppressWarnings("squid:S2583")
     @Override
     public void saveUsersData() {
         if (urls != null && !urls.contains(binding.serverUrlEdit.getText().toString())) {

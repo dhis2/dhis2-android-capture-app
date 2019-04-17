@@ -25,7 +25,8 @@ import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.Period;
 import org.dhis2.utils.custom_views.RxDateDialog;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
+import org.jetbrains.annotations.NotNull;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -62,7 +63,7 @@ import static org.dhis2.utils.Period.YEARLY;
 
 public class ProgramFragment extends FragmentGlobalAbstract implements ProgramContract.View, OrgUnitInterface {
 
-    public FragmentProgramBinding binding;
+    private FragmentProgramBinding binding;
     @Inject
     ProgramContract.Presenter presenter;
 
@@ -75,21 +76,25 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
     private ArrayList<Date> chosenDateWeek = new ArrayList<>();
     private ArrayList<Date> chosenDateMonth = new ArrayList<>();
     private ArrayList<Date> chosenDateYear = new ArrayList<>();
-    SimpleDateFormat monthFormat = new SimpleDateFormat("MMM-yyyy", Locale.getDefault());
-    SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy", Locale.getDefault());
+    private SimpleDateFormat monthFormat = new SimpleDateFormat("MMM-yyyy", Locale.getDefault());
+    private SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy", Locale.getDefault());
     private TreeNode treeNode;
     private Context context;
 
+    public FragmentProgramBinding getBinding() {
+        return binding;
+    }
     //-------------------------------------------
     //region LIFECYCLE
 
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NotNull Context context) {
         super.onAttach(context);
         this.context = context;
-        ((Components) getActivity().getApplicationContext()).userComponent()
-                .plus(new ProgramModule()).inject(this);
+        if (getActivity() != null)
+            ((Components) getActivity().getApplicationContext()).userComponent()
+                    .plus(new ProgramModule()).inject(this);
     }
 
     @Nullable
@@ -214,7 +219,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
         return currentPeriod;
     }
 
-    public boolean areFiltersApplied(){
+    public boolean areFiltersApplied() {
         return presenter.areFiltersApplied();
     }
 
@@ -247,7 +252,9 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                     drawable = ContextCompat.getDrawable(context, R.drawable.ic_view_none);
                     break;
             }
-            ((ProgramModelAdapter) binding.programRecycler.getAdapter()).setCurrentPeriod(currentPeriod);
+            if (binding.programRecycler.getAdapter() != null) {
+                ((ProgramModelAdapter) binding.programRecycler.getAdapter()).setCurrentPeriod(currentPeriod);
+            }
             binding.buttonTime.setImageDrawable(drawable);
 
             switch (currentPeriod) {
@@ -327,7 +334,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                 if (treeView != null) {
                     treeView.selectAll(false);
                     for (TreeNode node : treeView.getSelected()) {
-                        ((OrgUnitHolder) node.getViewHolder()).check();
+                        ((OrgUnitHolder_2) node.getViewHolder()).check();
                     }
                 }
             });
@@ -335,8 +342,8 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
             binding.orgUnitUnselectAll.setOnClickListener(view -> {
                 if (treeView != null) {
                     for (TreeNode node : treeView.getSelected()) {
-                        ((OrgUnitHolder) node.getViewHolder()).uncheck();
-                        ((OrgUnitHolder) node.getViewHolder()).update();
+                        ((OrgUnitHolder_2) node.getViewHolder()).uncheck();
+                        ((OrgUnitHolder_2) node.getViewHolder()).update();
                     }
                     treeView.deselectAll();
                 }
@@ -354,14 +361,12 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
             treeView.setDefaultNodeClickListener((node, value) -> {
                 if (isAdded()) {
                     if (treeView != null) {
-                        if (treeView.getSelected().size() == 1 && !node.isSelected()) {
-                            binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
-                        } else if (treeView.getSelected().size() > 1) {
+                        if ((treeView.getSelected().size() == 1 && !node.isSelected()) || treeView.getSelected().size() > 1) {
                             binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
                         }
                     }
                     if (node.getChildren().isEmpty())
-                        presenter.onExpandOrgUnitNode(node, ((OrganisationUnitModel) node.getValue()).uid());
+                        presenter.onExpandOrgUnitNode(node, ((OrganisationUnit) node.getValue()).uid());
                     else
                         node.setExpanded(node.isExpanded());
                 }
@@ -426,7 +431,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
 
                 List<String> orgUnitsUids = new ArrayList<>();
                 for (TreeNode treeNode : treeView.getSelected()) {
-                    orgUnitsUids.add(((OrganisationUnitModel) treeNode.getValue()).uid());
+                    orgUnitsUids.add(((OrganisationUnit) treeNode.getValue()).uid());
                 }
 
                 if (treeView.getSelected().size() >= 1) {
@@ -499,11 +504,12 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                             .dismissListener(new DismissListener() {
                                 @Override
                                 public void onDismiss(String id) {
+                                    // do nothing
                                 }
 
                                 @Override
                                 public void onSkipped(String id) {
-
+                                    // do nothing
                                 }
                             })
                             .build();
@@ -520,7 +526,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                     HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
 
                     if (!prefs.getBoolean("TUTO_SHOWN", false) && !BuildConfig.DEBUG) {
-                        HelpManager.getInstance().showHelp();/* getAbstractActivity().fancyShowCaseQueue.show();*/
+                        HelpManager.getInstance().showHelp();
                         prefs.edit().putBoolean("TUTO_SHOWN", true).apply();
                     }
 

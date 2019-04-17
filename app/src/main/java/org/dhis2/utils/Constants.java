@@ -71,11 +71,13 @@ public class Constants {
     public static final String SECURE_CREDENTIALS = "SECURE_CREDENTIALS";
     public static final String USER = "USER";
     public static final String USER_ASKED_CRASHLYTICS = "USER_ACCEPT_CRASHLYTICS";
+    public static final String ENROLLMENT_STATUS = "ENROLLMENT_STATUS";
 
-    public static String LAST_DATA_SYNC = "last_data_sync";
-    public static String LAST_DATA_SYNC_STATUS = "last_data_sync_status";
-    public static String LAST_META_SYNC = "last_meta_sync";
-    public static String LAST_META_SYNC_STATUS = "last_meta_sync_status";
+    public static final String LAST_DATA_SYNC = "last_data_sync";
+    public static final String LAST_DATA_SYNC_STATUS = "last_data_sync_status";
+    public static final String LAST_META_SYNC = "last_meta_sync";
+    public static final String LAST_META_SYNC_STATUS = "last_meta_sync_status";
+    public static final String LAST_META_SYNC_NO_NETWORK = "last_meta_sync_no_network";
 
     public static final String EVENT_UID = "EVENT_UID";
 
@@ -103,6 +105,8 @@ public class Constants {
     public static final String DATA_NOW = "DATA_NOW";
     public static final String TIME_META = "timeMeta";
     public static final String TIME_DATA = "timeData";
+    public static final String JIRA_AUTH = "JIRA_AUTH";
+    public static final String JIRA_USER = "JIRA_USER";
 
     private Constants() {
         // hide public constructor

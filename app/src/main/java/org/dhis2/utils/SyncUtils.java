@@ -5,6 +5,7 @@ import java.util.List;
 import androidx.work.State;
 import androidx.work.WorkManager;
 import androidx.work.WorkStatus;
+import timber.log.Timber;
 
 public class SyncUtils {
 
@@ -27,7 +28,7 @@ public class SyncUtils {
                     running = true;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Timber.e(e);
         }
 
         return running;

@@ -11,7 +11,7 @@ import org.dhis2.databinding.ItemDatasetRowBinding;
 
 public class DataSetRHeaderHeader extends AbstractViewHolder {
 
-    public ItemDatasetHeaderBinding binding;
+    protected ItemDatasetHeaderBinding binding;
 
     DataSetRHeaderHeader(ItemDatasetHeaderBinding binding) {
         super(binding.getRoot());
