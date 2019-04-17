@@ -207,5 +207,10 @@ public class DataSetTableRepositoryImpl implements DataSetTableRepository {
                 }).flatMap(categoryOptionComboModels -> Observable.just(map)).toFlowable(BackpressureStrategy.LATEST);
     }
 
+    @Override
+    public Flowable<String> getCatComboName(String catcomboUid) {
+        return Flowable.just(d2.categoryModule().categoryOptionCombos.uid(catcomboUid).get().displayName());
+    }
+
 
 }

@@ -55,12 +55,16 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
                 android:layout_weight="1"
+                android:ellipsize="end"
                 android:gravity="start|center"
+                android:maxLines="1"
                 android:textColor="@android:color/white"
                 android:textSize="12sp"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/more"
                 app:layout_constraintStart_toEndOf="@+id/menu"
                 app:layout_constraintTop_toBottomOf="@+id/dataSetName"
                 tools:text="DATA_SET_SUBTITLE" />
@@ -194,74 +198,108 @@
 
                 <ImageView
                     android:id="@+id/programStageIcon"
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="8dp"
                     android:layout_marginBottom="8dp"
+                    android:background="@drawable/bg_rounded_corners_white"
                     android:padding="7dp"
                     android:tint="?colorPrimaryDark"
-                    app:imageBackground="@{ @drawable/photo_temp }"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:srcCompat="@drawable/ic_clinical_f_outline"
-                    tools:background="@drawable/photo_temp"
-                    tools:tint="@color/black_de0" />
+                    app:srcCompat="@drawable/ic_clinical_f_outline" />
 
-                <ImageView
+                <TextView
+                    android:id="@+id/dataset_description"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:onClick="@{() -> presenter.onRefreshClick()}"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_sync" />
+                    android:layout_marginStart="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:textColor="@color/white_d6d"
+                    android:textSize="13sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/programStageIcon"
+                    app:layout_constraintTop_toTopOf="parent" />
+
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/dataSetOrgUnitInputLayout"
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/org_unit"
-                android:textColorHint="@color/greyish">
+                android:layout_height="match_parent">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/dataSetOrgUnitEditText"
-                    android:layout_width="match_parent"
+                <TextView
+                    android:id="@+id/report_period_label"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:focusable="false"
-                    android:onClick="@{()->presenter.onOrgUnitSelectorClick()}"
+                    android:layout_marginStart="8dp"
+                    android:text="@string/report_period"
                     android:textColor="@color/white"
-                    android:textSize="15sp"
-                    tools:text="Ngelehun CHC" />
+                    android:textSize="14sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/dataSetPeriodInputLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/report_period"
-                android:textColorHint="@color/greyish">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/dataSetPeriodEditText"
-                    android:layout_width="match_parent"
+                <TextView
+                    android:id="@+id/org_unit_label"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:focusable="false"
-                    android:onClick="@{()->presenter.onReportPeriodClick()}"
+                    android:layout_marginStart="8dp"
+                    android:text="@string/org_unit"
                     android:textColor="@color/white"
-                    android:textSize="15sp"
-                    tools:text="June 2018" />
+                    android:textSize="14sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/report_period_label" />
 
-            </com.google.android.material.textfield.TextInputLayout>
+                <TextView
+                    android:id="@+id/cat_combo_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="@string/cat_combo"
+                    android:textColor="@color/white"
+                    android:textSize="14sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/org_unit_label" />
 
-            <LinearLayout
-                android:id="@+id/catComboContainer"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical" />
+                <TextView
+                    android:id="@+id/report_period"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:gravity="end"
+                    android:textColor="@color/white_d6d"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/report_period_label"
+                    app:layout_constraintTop_toTopOf="@id/report_period_label"
+                    tools:text="DD/MM/YYYY" />
 
+                <TextView
+                    android:id="@+id/org_unit"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:gravity="end"
+                    android:textColor="@color/white_d6d"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/org_unit_label"
+                    app:layout_constraintTop_toTopOf="@id/org_unit_label"
+                    tools:text="DD/MM/YYYY" />
+
+                <TextView
+                    android:id="@+id/cat_combo"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:gravity="end"
+                    android:textColor="@color/white_d6d"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/cat_combo_label"
+                    app:layout_constraintTop_toTopOf="@id/cat_combo_label" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

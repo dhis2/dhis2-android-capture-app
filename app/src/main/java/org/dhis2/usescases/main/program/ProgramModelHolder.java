@@ -43,7 +43,6 @@ public class ProgramModelHolder extends RecyclerView.ViewHolder {
         } else {
             icon = R.drawable.ic_program_default;
         }
-
         Drawable iconImage = ContextCompat.getDrawable(binding.programImage.getContext(), R.drawable.ic_program_default);
         try {
             iconImage = ContextCompat.getDrawable(binding.programImage.getContext(), icon);

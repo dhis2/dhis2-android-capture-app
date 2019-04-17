@@ -8,6 +8,7 @@ import org.hisp.dhis.android.core.category.CategoryModel;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
+import org.hisp.dhis.android.core.dataset.DataSetModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.period.PeriodType;
 
@@ -30,10 +31,6 @@ public class DataSetTableContract {
 
         void showOptions(boolean open);
 
-        void showOrgUnitDialog(List<OrganisationUnitModel> data);
-
-        void showPeriodSelector(PeriodType periodType);
-
         OrganisationUnitModel getSelectedOrgUnit();
 
         Date getSelectedPeriod();
@@ -42,14 +39,11 @@ public class DataSetTableContract {
 
         String getOrgUnitName();
 
-        void showCatComboSelector(String catOptionUid, List<CategoryOption> data);
-
-        void setData(DataSetInitialModel dataSetInitialModel);
-
         void goToTable(int numTable);
 
         void setCurrentNumTables(int numTables);
 
+        void renderDetails(DataSetModel dataSetModel, String catcomboName);
         void renderDetails(DataSetInitialModel dataSetInitialModel);
 
         Consumer<Boolean> isDataSetOpen();
@@ -67,14 +61,6 @@ public class DataSetTableContract {
         String getCatCombo();
         String getPeriodId();
         void optionsClick();
-
-        void onOrgUnitSelectorClick();
-
-        void onReportPeriodClick();
-
-        void onRefreshClick();
-
-        void onCatOptionClick(String catOptionUid);
 
         void onClickSelectTable(int numTable);
 

@@ -3,16 +3,12 @@ package org.dhis2.usescases.datasets.dataSetTable;
 
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-import android.view.Gravity;
-import android.view.Menu;
 import android.view.View;
-import android.widget.PopupMenu;
 
 import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexboxLayoutManager;
 import com.google.android.flexbox.JustifyContent;
 import com.google.android.material.tabs.TabLayout;
-import com.google.android.material.textfield.TextInputEditText;
 
 import org.dhis2.App;
 import org.dhis2.R;
@@ -22,22 +18,17 @@ import org.dhis2.databinding.ItemCategoryComboBinding;
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialModel;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.DateUtils;
-import org.dhis2.utils.custom_views.OrgUnitDialog;
-import org.dhis2.utils.custom_views.PeriodDialog;
-import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryModel;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
+import org.hisp.dhis.android.core.dataset.DataSetModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
-import org.hisp.dhis.android.core.period.PeriodType;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -64,7 +55,6 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     private Date selectedPeriod;
     private HashMap<String, CategoryOption> selectedCatOptions;
     private Map<String, List<DataElementModel>> dataElements;
-    View selectedView;
 
     @Inject
     DataSetTableContract.Presenter presenter;
@@ -111,9 +101,6 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
         binding.setPresenter(presenter);
         binding.dataSetName.setText(String.format("%s - %s", orgUnitName, periodInitialDate));
 
-        //DataSet Selector
-        binding.dataSetOrgUnitEditText.setText(orgUnitName);
-        binding.dataSetPeriodEditText.setText(periodInitialDate);
     }
 
     @Override
@@ -210,69 +197,6 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     }
 
     @Override
-    public void showOrgUnitDialog(List<OrganisationUnitModel> data) {
-        OrgUnitDialog orgUnitDialog = OrgUnitDialog.getInstace().setMultiSelection(false);
-        orgUnitDialog.setOrgUnits(data);
-        orgUnitDialog.setTitle(getString(R.string.org_unit))
-                .setPossitiveListener(v -> {
-                    if (orgUnitDialog.getSelectedOrgUnit() != null) {
-                        selectedOrgUnit = orgUnitDialog.getSelectedOrgUnitModel();
-                        binding.dataSetOrgUnitEditText.setText(selectedOrgUnit.displayName());
-                    }
-                    orgUnitDialog.dismiss();
-                })
-                .setNegativeListener(v -> orgUnitDialog.dismiss());
-        orgUnitDialog.show(getSupportFragmentManager(), OrgUnitDialog.class.getSimpleName());
-    }
-
-    @Override
-    public void showPeriodSelector(PeriodType periodType) {
-        new PeriodDialog()
-                .setPeriod(periodType)
-                .setMaxDate(DateUtils.getInstance().getCalendar().getTime())
-                .setPossitiveListener(selectedDate -> {
-                    this.selectedPeriod = selectedDate;
-                    binding.dataSetPeriodEditText.setText(DateUtils.getInstance().getPeriodUIString(periodType, selectedDate, Locale.getDefault()));
-                })
-                .show(getSupportFragmentManager(), PeriodDialog.class.getSimpleName());
-    }
-
-    @Override
-    public void setData(DataSetInitialModel dataSetInitialModel) {
-        binding.catComboContainer.removeAllViews();
-        selectedCatOptions = new HashMap<>();
-        if (!dataSetInitialModel.categoryComboName().equals("default"))
-            for (Category categories : dataSetInitialModel.categories()) {
-                selectedCatOptions.put(categories.uid(), null);
-                ItemCategoryComboBinding categoryComboBinding = ItemCategoryComboBinding.inflate(getLayoutInflater(), binding.catComboContainer, false);
-                categoryComboBinding.inputLayout.setHint(categories.displayName());
-                categoryComboBinding.inputEditText.setOnClickListener(view -> {
-                    selectedView = view;
-                    presenter.onCatOptionClick(categories.uid());
-                });
-                binding.catComboContainer.addView(categoryComboBinding.getRoot());
-            }
-    }
-
-    @Override
-    public void showCatComboSelector(String catOptionUid, List<CategoryOption> data) {
-        PopupMenu menu = new PopupMenu(this, selectedView, Gravity.BOTTOM);
-        for (CategoryOption option : data)
-            menu.getMenu().add(Menu.NONE, Menu.NONE, data.indexOf(option), option.displayName());
-
-        menu.setOnDismissListener(menu1 -> selectedView = null);
-        menu.setOnMenuItemClickListener(item -> {
-            if (selectedCatOptions == null)
-                selectedCatOptions = new HashMap<>();
-            selectedCatOptions.put(catOptionUid, data.get(item.getOrder()));
-            ((TextInputEditText) selectedView).setText(data.get(item.getOrder()).displayName());
-            ((TextInputEditText) selectedView).setTextColor(getResources().getColor(R.color.white));
-            return false;
-        });
-        menu.show();
-    }
-
-    @Override
     public OrganisationUnitModel getSelectedOrgUnit() {
         return selectedOrgUnit;
     }
@@ -309,8 +233,16 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     }
 
     @Override
-    public void renderDetails(DataSetInitialModel dataSetInitialModel) {
-        binding.dataSetSubtitle.setText(dataSetInitialModel.displayName());
+    public void renderDetails(DataSetModel dataSetModel, String catComboName) {
+        binding.dataSetSubtitle.setText(String.format("%s %s", dataSetModel.displayName(), !catComboName.equals("default") ? "- "+catComboName : ""));
+        if (catComboName.equals("default")) {
+            binding.catCombo.setVisibility(View.GONE);
+            binding.catComboLabel.setVisibility(View.GONE);
+        }
+        binding.orgUnit.setText(orgUnitName);
+        binding.reportPeriod.setText(periodInitialDate);
+        binding.catCombo.setText(catComboName);
+        binding.datasetDescription.setText(dataSetModel.displayDescription());
     }
 
     @Override

@@ -18,7 +18,6 @@ import timber.log.Timber;
 public class DataSetTablePresenter implements DataSetTableContract.Presenter {
 
     private final DataSetTableRepository tableRepository;
-    private final DataSetInitialRepository initialRepository;
     DataSetTableContract.View view;
     private CompositeDisposable compositeDisposable;
 
@@ -29,10 +28,8 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
     private boolean open = true;
     private String periodId;
 
-    public DataSetTablePresenter(DataSetTableRepository dataSetTableRepository,
-                                 DataSetInitialRepository dataSetInitialRepository) {
+    public DataSetTablePresenter(DataSetTableRepository dataSetTableRepository) {
         this.tableRepository = dataSetTableRepository;
-        this.initialRepository = dataSetInitialRepository;
     }
 
     @Override
@@ -67,13 +64,20 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
                         )
         );
         compositeDisposable.add(
-                initialRepository.dataSet()
+                Flowable.zip(
+                        tableRepository.getDataSet(),
+                        tableRepository.getCatComboName(catCombo),
+                        Pair::create
+                )
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                view::renderDetails,
-                                Timber::d
-                        ));
+                                data -> {
+                                    view.renderDetails(data.val0(), data.val1());
+                                },
+                                Timber::e
+                        )
+        );
 
         compositeDisposable.add(
                 tableRepository.dataSetStatus()
@@ -84,7 +88,6 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
                                 Timber::d
                         )
         );
-
     }
 
     @Override
@@ -120,69 +123,7 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
     @Override
     public void optionsClick() {
         view.showOptions(open);
-        open = !open;
-
-        if (!open) {
-            compositeDisposable.add(
-                    initialRepository.dataSet()
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(
-                                    view::setData,
-                                    Timber::d
-                            ));
-        }
-    }
-
-    @Override
-    public void onOrgUnitSelectorClick() {
-        compositeDisposable.add(
-                initialRepository.orgUnits()
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                data -> view.showOrgUnitDialog(data),
-                                Timber::d
-                        )
-        );
-    }
-
-    @Override
-    public void onReportPeriodClick() {
-        //Aqui meter los data input
-        view.showPeriodSelector(PeriodType.valueOf(periodTypeName));
-
-    }
-
-    @Override
-    public void onRefreshClick() {
-        if (view.getSelectedOrgUnit() != null || view.getSelectedPeriod() != null) {
-            Bundle bundle = DataSetTableActivity.getBundle(
-                    view.getDataSetUid(),
-                    view.getSelectedOrgUnit() != null ? view.getSelectedOrgUnit().uid() : orgUnitUid,
-                    view.getSelectedOrgUnit() != null ? view.getSelectedOrgUnit().name() : view.getOrgUnitName(),
-                    periodTypeName,
-                    view.getSelectedPeriod() != null ? DateUtils.getInstance().getPeriodUIString(PeriodType.valueOf(periodTypeName), view.getSelectedPeriod(), Locale.getDefault()) : periodFinalDate,
-                    view.getSelectedPeriod() != null ? DateUtils.getInstance().generateId(PeriodType.valueOf(periodTypeName), view.getSelectedPeriod(), Locale.getDefault()) : periodId,
-                    catCombo/*view.getSelectedCatOptions() Fixed is the same always*/
-            );
-            view.startActivity(DataSetTableActivity.class, bundle, true, false, null);
-        } else {
-            view.showOptions(open);
-        }
-    }
-
-    @Override
-    public void onCatOptionClick(String catOptionUid) {
-        compositeDisposable.add(
-                initialRepository.catCombo(catOptionUid)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                data -> view.showCatComboSelector(catOptionUid, data),
-                                Timber::d
-                        )
-        );
+        open =!open;
     }
 
     @Override

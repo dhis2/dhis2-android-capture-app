@@ -34,9 +34,8 @@ public class DataSetTableModule {
 
     @Provides
     @PerActivity
-    DataSetTableContract.Presenter providesPresenter(DataSetTableRepository DataSetTableRepository,
-                                                     DataSetInitialRepository dataSetInitialRepository) {
-        return new DataSetTablePresenter(DataSetTableRepository, dataSetInitialRepository);
+    DataSetTableContract.Presenter providesPresenter(DataSetTableRepository DataSetTableRepository) {
+        return new DataSetTablePresenter(DataSetTableRepository);
     }
 
     @Provides
