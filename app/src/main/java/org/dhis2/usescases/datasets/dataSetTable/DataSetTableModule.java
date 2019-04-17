@@ -28,21 +28,20 @@ public class DataSetTableModule {
 
     @Provides
     @PerActivity
-    DataSetTableContract.Presenter providesPresenter(DataSetTableRepository DataSetTableRepository,
-                                                     DataSetInitialRepository dataSetInitialRepository) {
-        return new DataSetTablePresenter(DataSetTableRepository, dataSetInitialRepository);
+    DataSetTableContract.Presenter providesPresenter(DataSetTableRepository DataSetTableRepository) {
+        return new DataSetTablePresenter(DataSetTableRepository);
     }
 
     @Provides
     @PerActivity
-    DataSetTableRepository DataSetTableRepository(BriteDatabase briteDatabase) {
-        return new DataSetTableRepositoryImpl(briteDatabase, dataSetUid);
+    DataSetTableRepository DataSetTableRepository(D2 d2, BriteDatabase briteDatabase) {
+        return new DataSetTableRepositoryImpl(d2, briteDatabase, dataSetUid);
     }
 
     @Provides
     @PerActivity
     DataSetInitialRepository DataSetInitialRepository(BriteDatabase briteDatabase,D2 d2) {
-        return new DataSetInitialRepositoryImpl(d2,briteDatabase, dataSetUid);
+        return new DataSetInitialRepositoryImpl(d2, dataSetUid);
     }
 
 }

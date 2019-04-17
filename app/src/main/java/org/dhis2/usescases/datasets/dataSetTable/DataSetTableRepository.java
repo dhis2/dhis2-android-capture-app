@@ -23,4 +23,6 @@ public interface DataSetTableRepository {
 
     Flowable<Map<String, List<CategoryOptionComboModel>>> getCatOptionCombo();
 
+    Flowable<String> getCatComboName(String catcomboUid);
+
 }
