@@ -155,7 +155,8 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
         dataEntryAdapter = new DataEntryAdapter(LayoutInflater.from(getActivity()),
                 getChildFragmentManager(), arguments,
                 dataEntryPresenter.getOrgUnits(),
-                new ObservableBoolean(true));
+                new ObservableBoolean(true),
+                dataEntryPresenter.getLevels());
 
         RecyclerView.LayoutManager layoutManager;
         if (arguments.renderType() != null && arguments.renderType().equals(ProgramStageSectionRenderingType.MATRIX.name())) {

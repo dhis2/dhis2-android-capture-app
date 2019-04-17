@@ -13,6 +13,7 @@ import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
@@ -26,6 +27,7 @@ import java.util.Locale;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import timber.log.Timber;
 
@@ -288,5 +290,10 @@ final class ProgramStageRepository implements DataEntryRepository {
         }
 
         return String.format(Locale.US, QUERY, where);
+    }
+
+    @Override
+    public Observable<List<OrganisationUnitLevel>> getOrgUnitLevels() {
+        return null;
     }
 }

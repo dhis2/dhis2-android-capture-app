@@ -12,6 +12,7 @@ import org.dhis2.R;
 import org.dhis2.data.tuples.Quartet;
 import org.dhis2.data.tuples.Quintet;
 import org.dhis2.databinding.OrgUnitCascadeLevelItemBinding;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,15 +30,16 @@ public class OrgUnitCascadeAdapter extends RecyclerView.Adapter<OrgUnitCascadeHo
     private HashMap<Integer, String> selectedParent = new HashMap<>();
     private Quintet<String, String, String, Integer, Boolean> selectedOrgUnit;
     private OrgUnitCascadeAdapterInterface orgUnitCascadeAdapterInterface;
+    private List<OrganisationUnitLevel> levels;
 
     public interface OrgUnitCascadeAdapterInterface {
         void onNewLevelSelected(boolean canBeSelected);
     }
 
-    OrgUnitCascadeAdapter(List<Quintet<String, String, String, Integer, Boolean>> orgUnits, OrgUnitCascadeAdapterInterface orgUnitCascadeAdapterInterface) {
+    OrgUnitCascadeAdapter(List<Quintet<String, String, String, Integer, Boolean>> orgUnits, OrgUnitCascadeAdapterInterface orgUnitCascadeAdapterInterface, List<OrganisationUnitLevel> levels) {
         items = new HashMap<>();
         this.orgUnitCascadeAdapterInterface = orgUnitCascadeAdapterInterface;
-
+        this.levels = levels;
         for (Quintet<String, String, String, Integer, Boolean> orgUnit : orgUnits) {
             if (items.get(orgUnit.val3()) == null)
                 items.put(orgUnit.val3(), new ArrayList<>());
@@ -58,11 +60,16 @@ public class OrgUnitCascadeAdapter extends RecyclerView.Adapter<OrgUnitCascadeHo
 
     @Override
     public void onBindViewHolder(@NonNull OrgUnitCascadeHolder orgUnitCascadeHolder, int position) {
+        int lastLevelselected = 1;
+        for(Map.Entry<Integer, String> entry: selectedParent.entrySet()){
+            if(lastLevelselected < entry.getKey() && !entry.getValue().isEmpty())
+                lastLevelselected = entry.getKey();
+        }
         orgUnitCascadeHolder.bind(items.get(position + 1),
                 position != 0 ? selectedParent.get(position) : "",
                 selectedOrgUnit,
                 selectedParent.get(position + 1),
-                this);
+                this, levels, lastLevelselected);
     }
 
     @Override
@@ -78,7 +85,7 @@ public class OrgUnitCascadeAdapter extends RecyclerView.Adapter<OrgUnitCascadeHo
         if (items.get(level.get() + 1) != null && items.get(level.get() + 1).isEmpty())
             size--;
 
-        return size;
+        return items.size();
     }
 
     void setSelectedLevel(int level, String selectedUid, Boolean canBeSelected) {

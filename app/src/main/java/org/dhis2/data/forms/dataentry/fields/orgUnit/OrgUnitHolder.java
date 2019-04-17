@@ -10,6 +10,7 @@ import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.utils.custom_views.TextInputAutoCompleteTextView;
 import org.dhis2.utils.custom_views.orgUnitCascade.OrgUnitCascadeDialog;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 
 import java.util.List;
@@ -33,14 +34,17 @@ public class OrgUnitHolder extends FormViewHolder {
     private CompositeDisposable compositeDisposable;
     private OrgUnitViewModel model;
     private String selectedOrgUnit;
+    private Observable<List<OrganisationUnitLevel>> levelsObservable;
+    private List<OrganisationUnitLevel> levels;
 
-    OrgUnitHolder(FragmentManager fm, ViewDataBinding binding, FlowableProcessor<RowAction> processor, Observable<List<OrganisationUnitModel>> orgUnits) {
+    OrgUnitHolder(FragmentManager fm, ViewDataBinding binding, FlowableProcessor<RowAction> processor, Observable<List<OrganisationUnitModel>> orgUnits, Observable<List<OrganisationUnitLevel>> levels) {
         super(binding);
         compositeDisposable = new CompositeDisposable();
         this.editText = binding.getRoot().findViewById(R.id.input_editText);
         this.inputLayout = binding.getRoot().findViewById(R.id.input_layout);
         this.description = binding.getRoot().findViewById(R.id.descriptionLabel);
         this.orgUnitsObservable = orgUnits;
+        this.levelsObservable = levels;
 
         this.editText.setOnClickListener(view -> {
             editText.setEnabled(false);
@@ -48,6 +52,7 @@ public class OrgUnitHolder extends FormViewHolder {
                     .setTitle(model.label())
                     .setOrgUnits(this.orgUnits)
                     .setSelectedOrgUnit(model.value())
+                    .setLevels(this.levels)
                     .setCallbacks(new OrgUnitCascadeDialog.CascadeOrgUnitCallbacks() {
                         @Override
                         public void textChangedConsumer(String selectedOrgUnitUid, String selectedOrgUnitName) {
@@ -70,6 +75,7 @@ public class OrgUnitHolder extends FormViewHolder {
 
 
         getOrgUnits();
+        getLevels();
     }
 
     @Override
@@ -136,5 +142,13 @@ public class OrgUnitHolder extends FormViewHolder {
                         Timber::d
                 )
         );
+    }
+
+    private void getLevels(){
+        compositeDisposable.add(levelsObservable
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .subscribe(data -> this.levels = data,
+                        Timber::e));
     }
 }
