@@ -76,13 +76,10 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             teiUid = getIntent().getStringExtra("TEI_UID");
             programUid = getIntent().getStringExtra("PROGRAM_UID");
         }
-        ((App) getApplicationContext()).createDashboardComponent(new TeiDashboardModule(teiUid, programUid)).inject(this);
         super.onCreate(savedInstanceState);
         dashboardViewModel = ViewModelProviders.of(this).get(DashboardViewModel.class);
 
-
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dashboard_mobile);
-        binding.setPresenter(presenter);
 
         binding.tabLayout.setupWithViewPager(binding.teiPager);
         binding.tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
@@ -97,6 +94,10 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     @Override
     protected void onResume() {
         super.onResume();
+
+        ((App) getApplicationContext()).createDashboardComponent(new TeiDashboardModule(teiUid, programUid)).inject(this);
+        binding.setPresenter(presenter);
+
         String prevDashboardProgram = getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE)
                 .getString(Constants.PREVIOUS_DASHBOARD_PROGRAM, null);
         if (!changingProgram && prevDashboardProgram != null && !prevDashboardProgram.equals(programUid)) {
@@ -110,14 +111,8 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     @Override
     protected void onPause() {
         super.onPause();
+        ((App) getApplicationContext()).releaseDashboardComponent();
         presenter.onDettach();
-    }
-
-    @Override
-    protected void onDestroy() {
-        if(programUid!=null)
-            ((App) getApplicationContext()).releaseDashboardComponent();
-        super.onDestroy();
     }
 
     @Override
