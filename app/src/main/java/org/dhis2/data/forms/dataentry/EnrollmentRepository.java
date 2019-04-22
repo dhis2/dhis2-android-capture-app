@@ -48,7 +48,8 @@ final class EnrollmentRepository implements DataEntryRepository {
             "  Enrollment.organisationUnit,\n" +
             "  Enrollment.status,\n" +
             "  Field.displayDescription,\n" +
-            "  Field.pattern\n" +
+            "  Field.pattern, \n" +
+            "  Field.formName \n" +
             "FROM (Enrollment INNER JOIN Program ON Program.uid = Enrollment.program)\n" +
             "  LEFT OUTER JOIN (\n" +
             "      SELECT\n" +
@@ -61,7 +62,8 @@ final class EnrollmentRepository implements DataEntryRepository {
             "        ProgramTrackedEntityAttribute.mandatory AS mandatory,\n" +
             "        ProgramTrackedEntityAttribute.allowFutureDate AS allowFutureDate,\n" +
             "        TrackedEntityAttribute.generated AS generated,\n" +
-            "        TrackedEntityAttribute.displayDescription AS displayDescription\n" +
+            "        TrackedEntityAttribute.displayDescription AS displayDescription, \n" +
+            "        TrackedEntityAttribute.formName AS formName\n" +
             "      FROM ProgramTrackedEntityAttribute INNER JOIN TrackedEntityAttribute\n" +
             "          ON TrackedEntityAttribute.uid = ProgramTrackedEntityAttribute.trackedEntityAttribute\n" +
             "    ) AS Field ON Field.program = Program.uid\n" +
@@ -132,7 +134,7 @@ final class EnrollmentRepository implements DataEntryRepository {
     @NonNull
     private FieldViewModel transform(@NonNull Cursor cursor) {
         String uid = cursor.getString(0);
-        String label = cursor.getString(1);
+        String label = cursor.getString(13) != null && !cursor.getString(13).isEmpty() ? cursor.getString(13) : cursor.getString(1);
         ValueType valueType = ValueType.valueOf(cursor.getString(2));
         boolean mandatory = cursor.getInt(3) == 1;
         String optionSet = cursor.getString(4);
