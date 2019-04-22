@@ -9,29 +9,31 @@ import android.widget.TextView;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.LatLng;
+import com.mapbox.mapboxsdk.camera.CameraPosition;
+import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
+import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.maps.MapboxMap;
+import com.mapbox.mapboxsdk.maps.Style;
 
 import org.dhis2.R;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
+import org.jetbrains.annotations.NotNull;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
+import io.ona.kujaku.views.KujakuMapView;
 
 
 /**
  * Created by Cristian on 15/03/2018.
  */
 
-public class MapSelectorActivity extends ActivityGlobalAbstract implements OnMapReadyCallback {
+public class MapSelectorActivity extends ActivityGlobalAbstract {
 
-    private GoogleMap mMap;
+    private KujakuMapView mapView;
+    private MapboxMap map;
     private static final int ACCESS_COARSE_LOCATION_PERMISSION_REQUEST = 102;
     private FusedLocationProviderClient mFusedLocationClient;
     public static final String LATITUDE = "latitude";
@@ -47,32 +49,81 @@ public class MapSelectorActivity extends ActivityGlobalAbstract implements OnMap
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map_selector);
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         findViewById(R.id.back).setOnClickListener(v -> finish());
         findViewById(R.id.fab).setOnClickListener(v -> {
-            if (mMap != null) {
+            if (map != null && map.getCameraPosition().target != null) {
                 Intent data = new Intent();
-                data.putExtra(LATITUDE, String.valueOf(mMap.getCameraPosition().target.latitude));
-                data.putExtra(LONGITUDE, String.valueOf(mMap.getCameraPosition().target.longitude));
+                data.putExtra(LATITUDE, String.valueOf(map.getCameraPosition().target.getLatitude()));
+                data.putExtra(LONGITUDE, String.valueOf(map.getCameraPosition().target.getLongitude()));
                 setResult(RESULT_OK, data);
+                finish();
+            } else {
+                setResult(RESULT_CANCELED);
                 finish();
             }
         });
 
         latLon = findViewById(R.id.latlon);
+
+        mapView = findViewById(R.id.map_view);
+        mapView.onCreate(savedInstanceState);
+        mapView.getMapAsync(mapboxMap -> {
+            map = mapboxMap;
+            mapboxMap.setStyle(Style.MAPBOX_STREETS, style -> {
+                // Map is set up and the style has loaded. Now you can add data or make other map adjustments
+                centerMapOnCurrentLocation();
+            });
+            map.addOnCameraIdleListener(() -> {
+                if (map.getCameraPosition().target != null) {
+                    String latLonText = map.getCameraPosition().target.getLatitude() + " : " + map.getCameraPosition().target.getLongitude();
+                    latLon.setText(latLonText);
+                }
+            });
+        });
+    }
+
+    // Add the mapView's own lifecycle methods to the activity's lifecycle methods
+    @Override
+    public void onStart() {
+        super.onStart();
+        mapView.onStart();
     }
 
     @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
-        mMap.setOnCameraIdleListener(() -> {
-            String latLonText = mMap.getCameraPosition().target.latitude + " : " + mMap.getCameraPosition().target.longitude;
-            latLon.setText(latLonText);
-        });
-        centerMapOnCurrentLocation();
+    public void onResume() {
+        super.onResume();
+        mapView.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mapView.onPause();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        mapView.onStop();
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        mapView.onLowMemory();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mapView.onDestroy();
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NotNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        mapView.onSaveInstanceState(outState);
     }
 
     private void centerMapOnCurrentLocation() {
@@ -94,13 +145,13 @@ public class MapSelectorActivity extends ActivityGlobalAbstract implements OnMap
 
         mFusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
             if (location != null) {
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 13));
+                map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 13));
 
                 CameraPosition cameraPosition = new CameraPosition.Builder()
                         .target(new LatLng(location.getLatitude(), location.getLongitude()))      // Sets the center of the map to location user
                         .zoom(17)                   // Sets the zoom
                         .build();                   // Creates a CameraPosition from the builder
-                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+                map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
             }
         });
     }
