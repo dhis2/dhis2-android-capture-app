@@ -199,7 +199,9 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         binding.executePendingBindings();
         this.programModel = program;
 
-        setViewpagerAdapter();
+        if (binding.teiPager.getAdapter() == null) {
+            setViewpagerAdapter();
+        }
 
         if (orientation == Configuration.ORIENTATION_LANDSCAPE)
             getSupportFragmentManager().beginTransaction()

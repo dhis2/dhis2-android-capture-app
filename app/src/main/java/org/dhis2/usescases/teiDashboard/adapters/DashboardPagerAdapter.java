@@ -37,19 +37,35 @@ public class DashboardPagerAdapter extends FragmentStatePagerAdapter {
         return null;
     }
 
+    private IndicatorsFragment indicatorsFragment;
+    private RelationshipFragment relationshipFragment;
+    private NotesFragment notesFragment;
+    private TEIDataFragment teiDataFragment;
+
     @NotNull
     @Override
     public Fragment getItem(int position) {
         switch (position) {
-            default:
-                return new TEIDataFragment();
             case 1:
-                return new IndicatorsFragment();
+                if (indicatorsFragment == null){
+                    indicatorsFragment = new IndicatorsFragment();
+                }
+                return indicatorsFragment;
             case 2:
-                return  new RelationshipFragment();
+                if (relationshipFragment == null){
+                    relationshipFragment = new RelationshipFragment();
+                }
+                return relationshipFragment;
             case 3:
-                return new NotesFragment();
-
+                if (notesFragment == null){
+                    notesFragment = new NotesFragment();
+                }
+                return notesFragment;
+            default:
+                if (teiDataFragment == null){
+                    teiDataFragment = new TEIDataFragment();
+                }
+                return teiDataFragment;
         }
     }
 
