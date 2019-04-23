@@ -275,7 +275,8 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
         TrackedEntityAttribute attr = d2.trackedEntityModule().trackedEntityAttributes.uid(uid).withAllChildren().get();
         if (attr.optionSet() != null) {
             ProgramRuleVariable ruleVariable = attrRuleVariableMap.get(attr.uid());
-            if (ruleVariable != null && (ruleVariable.useCodeForOptionSet() == null || !ruleVariable.useCodeForOptionSet())) {
+            if ((ruleVariable != null && (ruleVariable.useCodeForOptionSet() == null || !ruleVariable.useCodeForOptionSet())) &&
+                    attr.optionSet().options() != null) {
                 for (Option option : attr.optionSet().options()) {
                     if (value.equals(option.code()))
                         value = option.displayName();
