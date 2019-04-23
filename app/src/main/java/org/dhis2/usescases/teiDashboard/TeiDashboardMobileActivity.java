@@ -80,7 +80,6 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         super.onCreate(savedInstanceState);
         dashboardViewModel = ViewModelProviders.of(this).get(DashboardViewModel.class);
 
-
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dashboard_mobile);
         binding.setPresenter(presenter);
 
@@ -97,6 +96,12 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     @Override
     protected void onResume() {
         super.onResume();
+
+        if(((App) getApplicationContext()).dashboardComponent()==null)
+            ((App) getApplicationContext())
+                    .createDashboardComponent(new TeiDashboardModule(teiUid, programUid))
+                    .inject(this);
+
         String prevDashboardProgram = getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE)
                 .getString(Constants.PREVIOUS_DASHBOARD_PROGRAM, null);
         if (!changingProgram && prevDashboardProgram != null && !prevDashboardProgram.equals(programUid)) {
@@ -110,14 +115,8 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     @Override
     protected void onPause() {
         super.onPause();
+        ((App) getApplicationContext()).releaseDashboardComponent();
         presenter.onDettach();
-    }
-
-    @Override
-    protected void onDestroy() {
-        if(programUid!=null)
-            ((App) getApplicationContext()).releaseDashboardComponent();
-        super.onDestroy();
     }
 
     @Override
