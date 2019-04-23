@@ -191,7 +191,7 @@ final class EnrollmentRepository implements DataEntryRepository {
                     updateStatement.clearBindings();
                 }
             } catch (D2Error e) {
-                Timber.e(e);
+                //Timber.e(e);
                 warning = context.getString(R.string.no_reserved_values);
             }
         }
