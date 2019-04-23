@@ -247,4 +247,18 @@ public final class DataEntryAdapter extends Adapter {
 
         return hasError;
     }
+
+    public void notifyChanges(RowAction rowAction){
+        List<FieldViewModel> helperModels = new ArrayList<>();
+        for(FieldViewModel field: viewModels){
+            FieldViewModel toAdd = field;
+            if(field.uid().equals(rowAction.id()))
+               toAdd = field.withValue(rowAction.value());
+
+            helperModels.add(toAdd);
+        }
+
+        viewModels.clear();
+        viewModels.addAll(helperModels);
+    }
 }
