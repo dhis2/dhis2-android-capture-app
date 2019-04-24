@@ -199,4 +199,8 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
     public Flowable<Trio<String, String, Integer>> optionSetActions() {
         return dataEntryAdapter.asFlowableOption();
     }
+
+    public void updateAdapter(RowAction rowAction) {
+        dataEntryAdapter.notifyChanges(rowAction);
+    }
 }

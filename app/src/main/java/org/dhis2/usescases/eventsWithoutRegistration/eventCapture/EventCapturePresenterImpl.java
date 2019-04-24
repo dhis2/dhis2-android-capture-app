@@ -359,6 +359,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                     .switchMap(action -> {
                                 eventCaptureRepository.setLastUpdated(action.id());
                                 ruleInitTime = System.currentTimeMillis();
+                                EventCaptureFormFragment.getInstance().updateAdapter(action);
                                 return dataEntryStore.save(action.id(), action.value());
                             }
                     ).subscribe(result -> Timber.d(result.toString()),
