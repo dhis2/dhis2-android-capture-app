@@ -198,4 +198,9 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
         dialog.show();
         dialog.setCanceledOnTouchOutside(false);
     }
+
+    @Override
+    public void updateAdapter(RowAction rowAction) {
+        dataEntryAdapter.notifyChanges(rowAction);
+    }
 }

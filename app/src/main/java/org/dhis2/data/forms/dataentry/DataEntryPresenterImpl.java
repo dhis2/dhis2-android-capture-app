@@ -118,6 +118,8 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
                                 map(result -> {
                                     if (result == 5)
                                         dataEntryStore.save(action.id(), null);
+
+                                    dataEntryView.updateAdapter(action);
                                     return Trio.create(result, action.id(), action.value());
                                 });}
                 ).subscribe(resultUidValue -> {

@@ -112,11 +112,11 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
             checkSyncStatus();
         });
 
-        if (BuildConfig.DEBUG)
+        /*if (BuildConfig.DEBUG)
             binding.moreOptions.setOnLongClickListener(view -> {
                 startActivity(DevelopmentActivity.class, null, false, false, null);
                 return false;
-            });
+            });*/
 
     }
 
