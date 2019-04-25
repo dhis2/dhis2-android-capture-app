@@ -32,7 +32,6 @@ import org.hisp.dhis.rules.models.RuleEnrollment;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
