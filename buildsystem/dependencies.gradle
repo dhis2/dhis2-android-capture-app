@@ -3,8 +3,8 @@ ext {
             sdk   : 28,
             tools : "28.0.3",
             minSdk: 19,
-            vCode : 42,
-            vName : "1.2.2"
+            vCode : 45,
+            vName : "1.3.0"
     ]
 
     libraries = [
@@ -43,7 +43,6 @@ ext {
             glide                     : "4.7.1",
             indicatordots             : "2.1.2",
             latestSecureStorageVersion: "1.0.3",
-
             paperwork                 : "1.2.7",
             leakcanary                : "1.5",
             rxjava                    : "2.1.0",

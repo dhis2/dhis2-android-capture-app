@@ -77,7 +77,7 @@ public class IndicatorsPresenterImpl implements IndicatorsContracts.Presenter {
                                         .toList()
                         )
                         .flatMap(Single::toFlowable)
-                        .flatMap(indicators -> ruleEngineRepository.calculate().map(this::applyRuleEffects)
+                        .flatMap(indicators -> ruleEngineRepository.updateRuleEngine().flatMap(ruleEngine -> ruleEngineRepository.reCalculate()).map(this::applyRuleEffects) //Restart rule engine to take into account value changes
                                 .map(ruleIndicators -> {
                                     indicators.addAll(ruleIndicators);
                                     return indicators;

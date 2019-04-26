@@ -45,7 +45,7 @@ android {
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
 
-        setProperty("archivesBaseName", "dhis2-v" + versionName)
+        setProperty("archivesBaseName", "dhis2-v" + versions.vName)
 
         buildConfigField "String", "SDK_VERSION", "\"" + libraries.dhis2sdk + "\""
         buildConfigField "String", "MAPBOX_ACCESS_TOKEN", "\"pk.eyJ1Ijoib3Jpa2dnIiwiYSI6ImNqdWpqb24zYTFsOXo0M2xwcXRseGx3aXkifQ.6N9aqvpqdrrSBwO9GyfjUw\""
@@ -105,19 +105,15 @@ android {
     productFlavors {
         dhis {
             applicationId "com.dhis2"
-            archivesBaseName = "dhis"
             dimension "default"
             versionCode versions.vCode
             versionName versions.vName
-            setProperty("archivesBaseName", "dhis2-v" + versionName)
         }
         psi {
             applicationId "org.dhis2.psi"
-            archivesBaseName = "PSI"
             dimension "default"
             versionCode 2
             versionName "1.1.0"
-            setProperty("archivesBaseName", "PSI-v" + versionName)
         }
     }
 

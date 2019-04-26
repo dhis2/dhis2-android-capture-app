@@ -445,8 +445,11 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
     @Override
     public void showLocalDataDeleted(boolean error) {
-        binding.eventCurrentData.setText(String.valueOf(0));
-        binding.teiCurrentData.setText(String.valueOf(0));
+
+        if(!error) {
+            binding.eventCurrentData.setText(String.valueOf(0));
+            binding.teiCurrentData.setText(String.valueOf(0));
+        }
 
         Snackbar deleteDataSnack = Snackbar.make(binding.getRoot(),
                 error ? R.string.delete_local_data_error : R.string.delete_local_data_done,

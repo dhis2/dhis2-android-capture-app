@@ -22,6 +22,7 @@ import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
+import org.hisp.dhis.rules.RuleEngine;
 import org.hisp.dhis.rules.models.Rule;
 import org.hisp.dhis.rules.models.RuleAction;
 import org.hisp.dhis.rules.models.RuleAttributeValue;
@@ -88,7 +89,7 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
 
     @NonNull
     private final String enrollmentUid;
-    private final RuleEnrollment.Builder ruleEnrollmentBuilder;
+    private RuleEnrollment.Builder ruleEnrollmentBuilder;
     @NonNull
     private final D2 d2;
 
@@ -97,6 +98,7 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
     private Map<String, List<Rule>> attributeRules = new HashMap<>();
     private String lastUpdatedAttr = null;
     private List<ProgramRule> mandatoryRules;
+
     public EnrollmentRuleEngineRepository(
             @NonNull BriteDatabase briteDatabase,
             @NonNull FormRepository formRepository,
@@ -107,6 +109,11 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
         this.enrollmentUid = enrollmentUid;
         this.ruleAttributeValueMap = new HashMap<>();
 
+        initData();
+
+    }
+
+    public void initData() {
         Enrollment enrollment = d2.enrollmentModule().enrollments.uid(enrollmentUid).withAllChildren().get();
         OrganisationUnit ou = d2.organisationUnitModule().organisationUnits.uid(enrollment.organisationUnit()).get();
         Program program = d2.programModule().programs.uid(enrollment.program()).withAllChildren().get();
@@ -156,7 +163,6 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
                 .programName(program.displayName());
 
         loadAttrRules(program.uid());
-
     }
 
     private void loadAttrRules(String programUid) {
@@ -173,6 +179,8 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
                         action.programRuleActionType() == ProgramRuleActionType.ASSIGN ||
                         action.programRuleActionType() == ProgramRuleActionType.SHOWWARNING ||
                         action.programRuleActionType() == ProgramRuleActionType.SHOWERROR ||
+                        action.programRuleActionType() == ProgramRuleActionType.DISPLAYKEYVALUEPAIR ||
+                        action.programRuleActionType() == ProgramRuleActionType.DISPLAYTEXT ||
                         action.programRuleActionType() == ProgramRuleActionType.HIDEOPTIONGROUP ||
                         action.programRuleActionType() == ProgramRuleActionType.HIDEOPTION)
                     if (!mandatoryRules.contains(rule))
@@ -277,6 +285,11 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
         ruleAttributeValueMap.put(uid, RuleAttributeValue.create(uid, value));
     }
 
+    @Override
+    public Flowable<RuleEngine> updateRuleEngine() {
+        return this.formRepository.restartRuleEngine();
+    }
+
 
     @NonNull
     @Override
@@ -288,19 +301,20 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
                             if (isEmpty(lastUpdatedAttr))
                                 return Flowable.fromCallable(ruleEngine.evaluate(enrollment));
                             else
-                                return Flowable.just(attributeRules.get(lastUpdatedAttr) != null ? attributeRules.get(lastUpdatedAttr) : new ArrayList<Rule>())
-                                        .map(rules -> rules.isEmpty()?trasformToRule(mandatoryRules):rules)
+                                return Flowable.just(attributeRules.get(lastUpdatedAttr) != null ? attributeRules.get(lastUpdatedAttr) : trasformToRule(mandatoryRules))
                                         .filter(rules -> !rules.isEmpty())
                                         .flatMap(rules -> Flowable.fromCallable(ruleEngine.evaluate(enrollment, rules)));
-                           /* else
-                            if (attributeRules.get(lastUpdatedAttr) != null && !attributeRules.get(lastUpdatedAttr).isEmpty())
-                                return Flowable.fromCallable(ruleEngine.evaluate(enrollment, getRulesFor(lastUpdatedAttr)));
-                            else
-                                return Flowable.just(new ArrayList<RuleEffect>());*/
                         })
                         .map(Result::success)
                         .onErrorReturn(error -> Result.failure(new Exception(error)))
                 );
+    }
+
+    @NonNull
+    @Override
+    public Flowable<Result<RuleEffect>> reCalculate() {
+        initData();
+        return calculate();
     }
 
     private List<Rule> getRulesFor(String lastUpdatedAttr) {

@@ -11,6 +11,7 @@ import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
+import org.hisp.dhis.rules.RuleEngine;
 import org.hisp.dhis.rules.models.RuleDataValue;
 import org.hisp.dhis.rules.models.RuleEffect;
 import org.hisp.dhis.rules.models.RuleEvent;
@@ -87,6 +88,11 @@ public final class EventsRuleEngineRepository implements RuleEngineRepository {
 
     }
 
+    @Override
+    public Flowable<RuleEngine> updateRuleEngine() {
+        return formRepository.restartRuleEngine();
+    }
+
     @NonNull
     @Override
     public Flowable<Result<RuleEffect>> calculate() {
@@ -98,6 +104,12 @@ public final class EventsRuleEngineRepository implements RuleEngineRepository {
                                 .onErrorReturn(error -> Result.failure(new Exception(error)))
                         )
                 );
+    }
+
+    @NonNull
+    @Override
+    public Flowable<Result<RuleEffect>> reCalculate() {
+        return calculate();
     }
 
     @NonNull
