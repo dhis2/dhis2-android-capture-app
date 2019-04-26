@@ -816,13 +816,15 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void showOrgUnitSelector(List<OrganisationUnitModel> orgUnits) {
-        Iterator<OrganisationUnitModel> iterator = orgUnits.iterator();
-        while (iterator.hasNext()) {
-            OrganisationUnitModel orgUnit = iterator.next();
-            if (orgUnit.closedDate() != null && selectedDate.after(orgUnit.closedDate()))
-                iterator.remove();
-        }
         if (orgUnits != null && !orgUnits.isEmpty()) {
+
+            Iterator<OrganisationUnitModel> iterator = orgUnits.iterator();
+            while (iterator.hasNext()) {
+                OrganisationUnitModel orgUnit = iterator.next();
+                if (orgUnit.closedDate() != null && selectedDate.after(orgUnit.closedDate()))
+                    iterator.remove();
+            }
+
             orgUnitDialog = new OrgUnitDialog()
                     .setTitle(getString(R.string.org_unit))
                     .setMultiSelection(false)
