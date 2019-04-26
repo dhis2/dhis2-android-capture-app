@@ -19,6 +19,7 @@ import org.dhis2.utils.RulesUtilsProvider;
 import org.dhis2.utils.custom_views.OptionSetDialog;
 import org.dhis2.utils.custom_views.OptionSetPopUp;
 import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.rules.models.RuleActionShowError;
 import org.hisp.dhis.rules.models.RuleEffect;
@@ -75,6 +76,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private final FlowableProcessor<String> sectionProcessor;
     private boolean isSubscribed;
     private long ruleInitTime;
+    private List<OrganisationUnitLevel> levels;
 
     public EventCapturePresenterImpl(String eventUid, EventCaptureContract.EventCaptureRepository eventCaptureRepository, MetadataRepository metadataRepository, RulesUtilsProvider rulesUtils, DataEntryStore dataEntryStore) {
         this.eventUid = eventUid;
@@ -152,6 +154,14 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                 Timber::e
                         )
         );
+
+        compositeDisposable.add(eventCaptureRepository.getOrgUnitLevels()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        data -> levels = data,
+                        Timber::e
+                ));
 
         compositeDisposable.add(
                 getFieldFlowable(null)
@@ -640,6 +650,11 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     @Override
     public void displayMessage(String message) {
         view.displayMessage(message);
+    }
+
+    @Override
+    public Observable<List<OrganisationUnitLevel>> getLevels() {
+        return eventCaptureRepository.getOrgUnitLevels();
     }
 
     //region ruleActions

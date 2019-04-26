@@ -7,6 +7,8 @@
 
         <import type="java.lang.String" />
 
+        <import type="android.view.View"/>
+
         <variable
             name="presenter"
             type="org.dhis2.usescases.reservedValue.ReservedValueContracts.Presenter" />
@@ -14,6 +16,10 @@
         <variable
             name="dataElement"
             type="org.dhis2.usescases.reservedValue.ReservedValueModel" />
+
+        <variable
+            name="isConnected"
+            type="Boolean" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -47,16 +53,28 @@
 
         <TextView
             android:id="@+id/reservedValue"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@{ String.valueOf(dataElement.reservedValues()) }"
             android:textColor="@color/black_de0"
             android:textSize="16sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
+            android:visibility="@{dataElement.reservedValues() > 0  ? View.VISIBLE : View.GONE}"
+            app:layout_constraintEnd_toStartOf="@id/refill"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/orgUnit"
             tools:text="100" />
+
+        <TextView
+            android:id="@+id/errorMessage"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@{isConnected ? @string/no_reserved_values : @string/no_reserved_values_connection }"
+            android:textColor="@color/error_color"
+            android:textSize="16sp"
+            android:visibility="@{dataElement.reservedValues() > 0  ? View.GONE : View.VISIBLE}"
+            app:layout_constraintEnd_toStartOf="@id/refill"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/orgUnit" />
 
         <Button
             android:id="@+id/refill"
@@ -68,6 +86,7 @@
             android:onClick="@{() -> presenter.onClickRefill(dataElement) }"
             android:text="@string/refill_reserved_values"
             android:textColor="@color/white"
+            android:visibility="@{isConnected ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.915"

@@ -28,6 +28,7 @@ import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedRow;
 import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel;
 import org.dhis2.data.tuples.Trio;
 import org.hisp.dhis.android.core.common.ValueType;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 
 import java.util.ArrayList;
@@ -79,11 +80,14 @@ public final class DataEntryAdapter extends Adapter {
 
     private final FlowableProcessor<Trio<String, String, Integer>> processorOptionSet;
 
+    private final Observable<List<OrganisationUnitLevel>> levels;
+
     public DataEntryAdapter(@NonNull LayoutInflater layoutInflater,
                             @NonNull FragmentManager fragmentManager,
                             @NonNull DataEntryArguments dataEntryArguments,
                             @NonNull Observable<List<OrganisationUnitModel>> orgUnits,
-                            ObservableBoolean isEditable) { //TODO: Add isEditable to all fields and test if can be changed on the fly
+                            ObservableBoolean isEditable,
+                            Observable<List<OrganisationUnitLevel>> levels) { //TODO: Add isEditable to all fields and test if can be changed on the fly
         setHasStableIds(true);
         rows = new ArrayList<>();
         viewModels = new ArrayList<>();
@@ -92,6 +96,7 @@ public final class DataEntryAdapter extends Adapter {
         currentPosition = PublishProcessor.create();
         this.processorOptionSet = PublishProcessor.create();
         this.dataEntryArguments = dataEntryArguments;
+        this.levels = levels;
 
         rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType(), isEditable));
         rows.add(BUTTON, new FileRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
@@ -103,7 +108,7 @@ public final class DataEntryAdapter extends Adapter {
         rows.add(DATETIME, new DateTimeRow(layoutInflater, processor, currentPosition, DATETIME, true, dataEntryArguments.renderType()));
         rows.add(AGEVIEW, new AgeRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
         rows.add(YES_NO, new RadioButtonRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
-        rows.add(ORG_UNIT, new OrgUnitRow(fragmentManager, layoutInflater, processor, currentPosition, true, orgUnits, dataEntryArguments.renderType()));
+        rows.add(ORG_UNIT, new OrgUnitRow(fragmentManager, layoutInflater, processor, currentPosition, true, orgUnits, dataEntryArguments.renderType(), levels));
         rows.add(IMAGE, new ImageRow(layoutInflater, processor, currentPosition, dataEntryArguments.renderType()));
         rows.add(UNSUPPORTED, new UnsupportedRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
 
@@ -113,9 +118,10 @@ public final class DataEntryAdapter extends Adapter {
                             @NonNull FragmentManager fragmentManager,
                             @NonNull DataEntryArguments dataEntryArguments,
                             @NonNull Observable<List<OrganisationUnitModel>> orgUnits,
-                            ObservableBoolean isEditable,
+                            ObservableBoolean isEditable,//TODO: Add isEditable to all fields and test if can be changed on the fly
                             @NonNull FlowableProcessor<RowAction> processor,
-                            @NonNull FlowableProcessor<Trio<String, String, Integer>> processorOptSet) { //TODO: Add isEditable to all fields and test if can be changed on the fly
+                            @NonNull FlowableProcessor<Trio<String, String, Integer>> processorOptSet,
+                            Observable<List<OrganisationUnitLevel>> levels) {
         setHasStableIds(true);
         rows = new ArrayList<>();
         viewModels = new ArrayList<>();
@@ -124,6 +130,7 @@ public final class DataEntryAdapter extends Adapter {
         currentPosition = PublishProcessor.create();
         this.processorOptionSet = processorOptSet;
         this.dataEntryArguments = dataEntryArguments;
+        this.levels = levels;
 
         rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType(), isEditable));
         rows.add(BUTTON, new FileRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
@@ -135,7 +142,7 @@ public final class DataEntryAdapter extends Adapter {
         rows.add(DATETIME, new DateTimeRow(layoutInflater, processor, currentPosition, DATETIME, true, dataEntryArguments.renderType()));
         rows.add(AGEVIEW, new AgeRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
         rows.add(YES_NO, new RadioButtonRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
-        rows.add(ORG_UNIT, new OrgUnitRow(fragmentManager, layoutInflater, processor, currentPosition, true, orgUnits, dataEntryArguments.renderType()));
+        rows.add(ORG_UNIT, new OrgUnitRow(fragmentManager, layoutInflater, processor, currentPosition, true, orgUnits, dataEntryArguments.renderType(), levels));
         rows.add(IMAGE, new ImageRow(layoutInflater, processor, currentPosition, dataEntryArguments.renderType()));
         rows.add(UNSUPPORTED, new UnsupportedRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
 

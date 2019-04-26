@@ -19,12 +19,26 @@
         <!-- <FrameLayout
              android:layout_width="match_parent"
              android:layout_height="match_parent">
- -->
-        <androidx.viewpager.widget.ViewPager
-            android:id="@+id/viewpager_dataentry"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/bg_white_f9f" />
+ -->    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+            <androidx.viewpager.widget.ViewPager
+                android:id="@+id/viewpager_dataentry"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/bg_white_f9f" />
+            <ProgressBar
+                android:id="@+id/progress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:visibility="gone"
+                android:layout_margin="5dp"
+                />
+        </RelativeLayout>
+
 
         <!--</FrameLayout>-->
     </androidx.core.widget.NestedScrollView>

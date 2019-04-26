@@ -18,6 +18,7 @@ import com.jakewharton.rxbinding2.widget.RxTextView;
 import org.dhis2.R;
 import org.dhis2.data.tuples.Quintet;
 import org.dhis2.databinding.DialogCascadeOrgunitBinding;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 
 import java.util.ArrayList;
@@ -44,6 +45,7 @@ public class OrgUnitCascadeDialog extends DialogFragment {
     private OrgUnitCascadeAdapter adapter;
     private String selectedOrgUnit;
     private HashMap<String, String> paths;
+    private List<OrganisationUnitLevel> levels;
 
     public OrgUnitCascadeDialog setTitle(String title) {
         this.title = title;
@@ -57,6 +59,11 @@ public class OrgUnitCascadeDialog extends DialogFragment {
 
     public OrgUnitCascadeDialog setSelectedOrgUnit(String orgUnitUid){
         this.selectedOrgUnit = orgUnitUid;
+        return this;
+    }
+
+    public OrgUnitCascadeDialog setLevels(List<OrganisationUnitLevel> levels){
+        this.levels = levels;
         return this;
     }
 
@@ -139,7 +146,7 @@ public class OrgUnitCascadeDialog extends DialogFragment {
                 } else {
                     binding.acceptButton.setVisibility(View.INVISIBLE);
                 }
-            });
+            }, levels);
             binding.recycler.setAdapter(adapter);
             binding.acceptButton.setVisibility(View.INVISIBLE);
         });
@@ -170,7 +177,7 @@ public class OrgUnitCascadeDialog extends DialogFragment {
             } else {
                 binding.acceptButton.setVisibility(View.INVISIBLE);
             }
-        });
+        }, levels);
 
         if (selectedOrgUnit != null){
             for (Quintet<String, String, String, Integer, Boolean> orgUnit : orgUnits){

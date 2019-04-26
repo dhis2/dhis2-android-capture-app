@@ -48,6 +48,7 @@ android {
         setProperty("archivesBaseName", "dhis2-v" + versions.vName)
 
         buildConfigField "String", "SDK_VERSION", "\"" + libraries.dhis2sdk + "\""
+        buildConfigField "String", "MAPBOX_ACCESS_TOKEN", "\"pk.eyJ1Ijoib3Jpa2dnIiwiYSI6ImNqdWpqb24zYTFsOXo0M2xwcXRseGx3aXkifQ.6N9aqvpqdrrSBwO9GyfjUw\""
     }
 
     testOptions {
@@ -227,8 +228,10 @@ dependencies {
     //LOCATION
     implementation 'com.google.android.gms:play-services-basement:16.2.0'
     implementation 'com.google.android.gms:play-services-location:16.0.0'
-    implementation 'com.google.android.gms:play-services-maps:16.1.0'
     //endregion
+
+    // Kujaku dependencies
+    implementation 'io.ona.kujaku:library:0.7.1'
 
     // Jake Wharton libraries
     //timber
@@ -255,12 +258,12 @@ dependencies {
     //Test
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    androidTestImplementation'androidx.test.espresso:espresso-core:3.1.1'
-  /*  androidTestImplementation('androidx.test.espresso:espresso-core:3.1.1', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-        exclude group: 'com.google.code.findbugs'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
+    /*  androidTestImplementation('androidx.test.espresso:espresso-core:3.1.1', {
+          exclude group: 'com.android.support', module: 'support-annotations'
+          exclude group: 'com.google.code.findbugs'
 
-    })*/
+      })*/
     androidTestImplementation 'androidx.test.ext:junit:1.1.0'
 
 
