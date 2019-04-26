@@ -67,8 +67,11 @@ class LoginPresenter internal constructor(private val configurationRepository: C
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(
                                     { systemInfo ->
-                                        if (systemInfo.contextPath() != null)
+                                        if (systemInfo.contextPath() != null) {
+                                            val prefs = view.abstractActivity.getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE)
                                             view.setUrl(systemInfo.contextPath() ?: "")
+                                            view.setUser(prefs.getString(Constants.USER, "")!!)
+                                        }
                                         else
                                             view.setUrl(view.context.getString(R.string.login_https))
                                     },
