@@ -35,6 +35,8 @@ class LoginContracts {
 
         fun setUrl(url: String)
 
+        fun setUser(user: String)
+
         fun showCrashlyticsDialog()
 
         @UiThread
