@@ -14,6 +14,7 @@ import org.hisp.dhis.android.core.constant.Constant;
 import org.hisp.dhis.android.core.constant.ConstantTableInfo;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramRuleActionModel;
 import org.hisp.dhis.android.core.program.ProgramRuleActionType;
@@ -158,6 +159,7 @@ public final class RulesRepository {
             "FROM Event\n" +
             "JOIN ProgramStage ON ProgramStage.uid = Event.programStage\n" +
             "WHERE Event.program = ? AND Event.uid != ? AND (Event.eventDate < ? OR (Event.eventDate = ? AND Event.lastUpdated < ?))\n" +
+            " AND Event.Status NOT IN ('SCHEDULE', 'SKIPPED', 'OVERDUE')" +
             " AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "' ORDER BY Event.eventDate DESC,Event.lastUpdated DESC LIMIT 10";
 
     /**
@@ -173,7 +175,8 @@ public final class RulesRepository {
             "FROM Event\n" +
             "JOIN ProgramStage ON ProgramStage.uid = Event.programStage\n" +
             "WHERE Event.enrollment = ? AND Event.uid != ? AND (Event.eventDate < ? OR (Event.eventDate = ? AND Event.lastUpdated < ?))\n" +
-            " AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "' ORDER BY Event.eventDate DESC,Event.lastUpdated DESC LIMIT 10";
+            " AND Event.Status NOT IN ('SCHEDULE', 'SKIPPED', 'OVERDUE')" +
+            " AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "' ORDER BY Event.eventDate DESC,Event.lastUpdated DESC";/*LIMIT 10*/
 
     /**
      * Query all events from an enrollment
@@ -188,7 +191,8 @@ public final class RulesRepository {
             "FROM Event\n" +
             "JOIN ProgramStage ON ProgramStage.uid = Event.programStage\n" +
             "WHERE Event.enrollment = ?\n" +
-            " AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "' ORDER BY Event.eventDate,Event.lastUpdated DESC LIMIT 10";
+            " AND Event.Status NOT IN ('SCHEDULE', 'SKIPPED', 'OVERDUE')" +
+            " AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "' ORDER BY Event.eventDate,Event.lastUpdated DESC ";/*LIMIT 10*/
 
     private static final String QUERY_VALUES = "SELECT " +
             "  Event.eventDate," +
@@ -474,9 +478,11 @@ public final class RulesRepository {
 
         switch (actionType) {
             case DISPLAYTEXT:
-                return createDisplayTextAction(content, data, location);
+                if(location!=null)
+                    return createDisplayTextAction(content, data, location);
             case DISPLAYKEYVALUEPAIR:
-                return createDisplayKeyValuePairAction(content, data, location);
+                if(location!=null)
+                    return createDisplayKeyValuePairAction(content, data, location);
             case HIDEFIELD:
                 return RuleActionHideField.create(content,
                         isEmpty(attribute) ? field : attribute);

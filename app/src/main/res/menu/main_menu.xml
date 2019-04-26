@@ -43,7 +43,7 @@
         android:checkableBehavior="single">
         <item
             android:id="@+id/menu_jira"
-            android:icon="@drawable/ic_menu_info"
+            android:icon="@drawable/ic_jira"
             android:title="@string/jira_report" />
     </group>
 </menu>

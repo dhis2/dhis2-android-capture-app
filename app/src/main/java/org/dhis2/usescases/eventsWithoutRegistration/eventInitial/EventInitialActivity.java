@@ -263,10 +263,10 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
         if (eventCreationType == EventCreationType.ADDNEW || eventCreationType == EventCreationType.SCHEDULE) {
             fixedOrgUnit = true;
-            binding.orgUnit.setVisibility(View.GONE);
+            binding.orgUnitLayout.setVisibility(View.GONE);
         } else {
             fixedOrgUnit = false;
-            binding.orgUnit.setVisibility(View.VISIBLE);
+            binding.orgUnitLayout.setVisibility(View.VISIBLE);
             binding.orgUnit.setOnClickListener(v -> {
                 if (!fixedOrgUnit)
                     presenter.onOrgUnitButtonClick();
@@ -351,8 +351,10 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         if (eventCreationType == EventCreationType.REFERAL) {
             activityTitle = program.displayName() + " - " + getString(R.string.referral);
         } else {
-            if (eventModel != null && !isEmpty(eventModel.enrollment()))
+            if (eventModel != null && !isEmpty(eventModel.enrollment())) {
                 binding.orgUnit.setEnabled(false);
+                binding.orgUnitLayout.setVisibility(View.GONE);
+            }
 
             activityTitle = eventUid == null ? program.displayName() + " - " + getString(R.string.new_event) : program.displayName();
         }
@@ -379,8 +381,10 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
             binding.date.setText(selectedDateString);
         } else {
-            if (!isEmpty(eventModel.enrollment()))
+            if (!isEmpty(eventModel.enrollment())) {
                 binding.orgUnit.setEnabled(false);
+                binding.orgUnitLayout.setVisibility(View.GONE);
+            }
         }
 
         binding.date.setOnClickListener(view -> {
@@ -402,28 +406,36 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
         presenter.filterOrgUnits(DateUtils.uiDateFormat().format(selectedDate));
 
-
-        if (program.captureCoordinates()) {
-            binding.coordinatesLayout.setVisibility(View.VISIBLE);
-            binding.location1.setOnClickListener(v -> presenter.onLocationClick());
-            binding.location2.setOnClickListener(v -> presenter.onLocation2Click());
-        }
-
         if (eventModel != null &&
-                (DateUtils.getInstance().isEventExpired(null, eventModel.completedDate(), program.completeEventsExpiryDays()) ||
+                (DateUtils.getInstance().isEventExpired(eventModel.eventDate(), eventModel.completedDate(), eventModel.status(), program.completeEventsExpiryDays(), program.expiryPeriodType(), program.expiryDays()) ||
                         eventModel.status() == EventStatus.COMPLETED ||
                         eventModel.status() == EventStatus.SKIPPED)) {
             binding.date.setEnabled(false);
-            binding.catCombo.setEnabled(false);
+            for (int i = 0; i < binding.catComboLayout.getChildCount(); i++)
+                binding.catComboLayout.getChildAt(i).findViewById(R.id.cat_combo).setEnabled(false);
             binding.lat.setEnabled(false);
             binding.lon.setEnabled(false);
             binding.orgUnit.setEnabled(false);
+            binding.location1.setClickable(false);
+            binding.location2.setClickable(false);
             binding.location1.setEnabled(false);
             binding.location2.setEnabled(false);
             binding.temp.setEnabled(false);
             binding.actionButton.setText(getString(R.string.check_event));
+            binding.executePendingBindings();
 
         }
+
+        if (program.captureCoordinates()) {
+            binding.coordinatesLayout.setVisibility(View.VISIBLE);
+            if (binding.location1.isClickable())
+                binding.location1.setOnClickListener(v -> presenter.onLocationClick());
+            if (binding.location2.isClickable())
+                binding.location2.setOnClickListener(v -> presenter.onLocation2Click());
+        } else
+            binding.coordinatesLayout.setVisibility(View.GONE);
+
+
     }
 
     @Override
@@ -541,8 +553,12 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         this.programStageModel = programStage;
         if (programStageModel.captureCoordinates()) {
             binding.coordinatesLayout.setVisibility(View.VISIBLE);
-            binding.location1.setOnClickListener(v -> presenter.onLocationClick());
-            binding.location2.setOnClickListener(v -> presenter.onLocation2Click());
+            binding.location1.setOnClickListener(v -> {
+                if (v.isClickable()) presenter.onLocationClick();
+            });
+            binding.location2.setOnClickListener(v -> {
+                if (v.isClickable()) presenter.onLocation2Click();
+            });
         } else {
             binding.coordinatesLayout.setVisibility(View.GONE);
         }
@@ -784,13 +800,18 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         this.accessData = canWrite;
         if (!canWrite || !presenter.isEnrollmentOpen()) {
             binding.date.setEnabled(false);
+            binding.date.setClickable(false);
             binding.orgUnit.setEnabled(false);
-            binding.catCombo.setEnabled(false);
+            for (int i = 0; i < binding.catComboLayout.getChildCount(); i++)
+                binding.catComboLayout.getChildAt(i).findViewById(R.id.cat_combo).setEnabled(false);
             binding.actionButton.setText(getString(R.string.check_event));
+            binding.location1.setClickable(false);
+            binding.location2.setClickable(false);
             binding.location1.setEnabled(false);
             binding.location2.setEnabled(false);
             binding.lat.setEnabled(false);
             binding.lon.setEnabled(false);
+            binding.executePendingBindings();
         }
 
         if (!HelpManager.getInstance().isTutorialReadyForScreen(getClass().getName()))
@@ -799,13 +820,15 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void showOrgUnitSelector(List<OrganisationUnitModel> orgUnits) {
-        Iterator<OrganisationUnitModel> iterator = orgUnits.iterator();
-        while (iterator.hasNext()) {
-            OrganisationUnitModel orgUnit = iterator.next();
-            if (orgUnit.closedDate() != null && selectedDate.after(orgUnit.closedDate()))
-                iterator.remove();
-        }
         if (orgUnits != null && !orgUnits.isEmpty()) {
+
+            Iterator<OrganisationUnitModel> iterator = orgUnits.iterator();
+            while (iterator.hasNext()) {
+                OrganisationUnitModel orgUnit = iterator.next();
+                if (orgUnit.closedDate() != null && selectedDate.after(orgUnit.closedDate()))
+                    iterator.remove();
+            }
+
             orgUnitDialog = new OrgUnitDialog()
                     .setTitle(getString(R.string.org_unit))
                     .setMultiSelection(false)

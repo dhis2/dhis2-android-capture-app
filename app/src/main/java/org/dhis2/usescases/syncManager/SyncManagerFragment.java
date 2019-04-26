@@ -427,6 +427,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 steps.add(tuto7);
 
                 HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
+                HelpManager.getInstance().setScroll(scrollView);
 
                 if (prefs != null && !prefs.getBoolean("TUTO_SETTINGS_SHOWN", false) && !BuildConfig.DEBUG) {
                     HelpManager.getInstance().showHelp();
@@ -444,6 +445,12 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
     @Override
     public void showLocalDataDeleted(boolean error) {
+
+        if(!error) {
+            binding.eventCurrentData.setText(String.valueOf(0));
+            binding.teiCurrentData.setText(String.valueOf(0));
+        }
+
         Snackbar deleteDataSnack = Snackbar.make(binding.getRoot(),
                 error ? R.string.delete_local_data_error : R.string.delete_local_data_done,
                 Snackbar.LENGTH_SHORT);

@@ -11,6 +11,7 @@ import org.dhis2.BR;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.Row;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
+import org.dhis2.databinding.FormEditTextCustomBinding;
 
 import io.reactivex.processors.FlowableProcessor;
 
@@ -53,16 +54,11 @@ public class EditTextRow implements Row<EditTextCustomHolder, EditTextModel> {
     @NonNull
     @Override
     public EditTextCustomHolder onCreate(@NonNull ViewGroup viewGroup) {
-        ViewDataBinding binding = DataBindingUtil.inflate(
-                inflater,
-                isBgTransparent ? R.layout.custom_text_view : R.layout.custom_text_view_accent,
-                viewGroup,
-                false
-        );
-        binding.setVariable(BR.renderType, renderType);
-        binding.executePendingBindings();
-        return new EditTextCustomHolder(viewGroup, binding
-                , processor, isBgTransparent, renderType, isEditable, isSearchMode);
+        FormEditTextCustomBinding binding = DataBindingUtil.inflate(inflater,
+                R.layout.form_edit_text_custom, viewGroup, false);
+        binding.customEdittext.setIsBgTransparent(isBgTransparent);
+        binding.customEdittext.setRenderType(renderType);
+        return new EditTextCustomHolder(binding, processor);
     }
 
     @Override

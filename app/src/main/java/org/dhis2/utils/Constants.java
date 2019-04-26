@@ -105,6 +105,8 @@ public class Constants {
     public static final String DATA_NOW = "DATA_NOW";
     public static final String TIME_META = "timeMeta";
     public static final String TIME_DATA = "timeData";
+    public static final String JIRA_AUTH = "JIRA_AUTH";
+    public static final String JIRA_USER = "JIRA_USER";
 
     private Constants() {
         // hide public constructor

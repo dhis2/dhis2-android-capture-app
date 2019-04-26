@@ -1038,17 +1038,20 @@ public class DateUtils {
         expiredBecouseOfCompletion = status == EventStatus.COMPLETED ?
                 isEventExpired(null, eventDate, compExpDays) : false;
 
-        Date expDate = getNextPeriod(programPeriodType, eventDate, 1); //Initial date of next period
-        if (expDays > 0) {
-            Calendar calendar = getCalendar();
-            calendar.setTime(expDate);
-            calendar.add(Calendar.DAY_OF_YEAR, expDays);
-            expDate = calendar.getTime();
-        }
+        if (programPeriodType != null) {
+            Date expDate = getNextPeriod(programPeriodType, eventDate, 1); //Initial date of next period
+            if (expDays > 0) {
+                Calendar calendar = getCalendar();
+                calendar.setTime(expDate);
+                calendar.add(Calendar.DAY_OF_YEAR, expDays);
+                expDate = calendar.getTime();
+            }
 
-        expiredBecouseOfPeriod = expDate != null && expDate.before(getCalendar().getTime());
+            expiredBecouseOfPeriod = expDate != null && expDate.before(getCalendar().getTime());
 
-        return expiredBecouseOfPeriod || expiredBecouseOfCompletion;
+            return expiredBecouseOfPeriod || expiredBecouseOfCompletion;
+        } else
+            return expiredBecouseOfCompletion;
 
     }
 

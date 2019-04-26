@@ -469,4 +469,9 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     public void onSwipeLeft() {
         presenter.onNextSection();
     }
+
+    @Override
+    public void back() {
+        finishDataEntry();
+    }
 }

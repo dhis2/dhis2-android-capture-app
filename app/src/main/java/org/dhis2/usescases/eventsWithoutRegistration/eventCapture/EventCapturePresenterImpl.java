@@ -133,8 +133,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                         .subscribe(
                                 data -> {
                                     this.eventStatus = data;
-                                    if (eventStatus == EventStatus.COMPLETED)
-                                        checkExpiration();
+//                                    if (eventStatus == EventStatus.COMPLETED)
+                                    checkExpiration();
                                 },
                                 Timber::e
                         )
@@ -276,15 +276,18 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     }
 
     private void checkExpiration() {
-        compositeDisposable.add(
-                metadataRepository.isCompletedEventExpired(eventUid)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                hasExpiredResult -> this.hasExpired = hasExpiredResult,
-                                Timber::e
-                        )
-        );
+        if (eventStatus == EventStatus.COMPLETED)
+            compositeDisposable.add(
+                    metadataRepository.isCompletedEventExpired(eventUid)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(
+                                    hasExpiredResult -> this.hasExpired = hasExpiredResult && eventCaptureRepository.isEventExpired(eventUid),
+                                    Timber::e
+                            )
+            );
+        else
+            this.hasExpired = eventCaptureRepository.isEventExpired(eventUid);
     }
 
     @Override
@@ -356,6 +359,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                     .switchMap(action -> {
                                 eventCaptureRepository.setLastUpdated(action.id());
                                 ruleInitTime = System.currentTimeMillis();
+                                EventCaptureFormFragment.getInstance().updateAdapter(action);
                                 return dataEntryStore.save(action.id(), action.value());
                             }
                     ).subscribe(result -> Timber.d(result.toString()),

@@ -17,7 +17,7 @@
 
         <variable
             name="presenter"
-            type="org.dhis2.usescases.teiDashboard.TeiDashboardContracts.Presenter" />
+            type="org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.TEIDataContracts.Presenter" />
 
         <variable
             name="dashboardModel"
@@ -310,6 +310,7 @@
                     android:gravity="end"
                     android:textColor="@color/gray_444"
                     android:textSize="14sp"
+                    android:visibility="@{dashboardModel.currentEnrollment.enrollmentDate()==null?View.GONE:View.VISIBLE}"
                     app:date="@{dashboardModel.currentEnrollment.enrollmentDate()}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@id/enrollment_date_label"

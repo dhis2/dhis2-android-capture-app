@@ -28,6 +28,7 @@ import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
+import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramRule;
 import org.hisp.dhis.android.core.program.ProgramRuleAction;
@@ -145,6 +146,8 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     private String lastUpdatedUid;
     private RuleEvent.Builder eventBuilder;
     private Map<String, List<Rule>> dataElementRules = new HashMap<>();
+    private List<ProgramRule> mandatoryRules;
+    private List<ProgramRule> rules;
 
     public EventCaptureRepositoryImpl(Context context, BriteDatabase briteDatabase, FormRepository formRepository, String eventUid, D2 d2) {
         this.briteDatabase = briteDatabase;
@@ -181,25 +184,28 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     }
 
     private void loadDataElementRules(Event event) {
-        List<ProgramRule> rules = d2.programModule().programRules.byProgramUid().eq(event.program()).withAllChildren().get();
-        List<ProgramRule> mandatoryRules = new ArrayList<>();
+        rules = d2.programModule().programRules.byProgramUid().eq(event.program()).withAllChildren().get();
+
+        mandatoryRules = new ArrayList<>();
         Iterator<ProgramRule> ruleIterator = rules.iterator();
         while (ruleIterator.hasNext()) {
             ProgramRule rule = ruleIterator.next();
-            if (rule.programStage() != null && rule.programStage().uid().equals(event.programStage()))
+            if (rule.programStage() != null && !rule.programStage().uid().equals(event.programStage()))
                 ruleIterator.remove();
             else if (rule.condition() == null)
                 ruleIterator.remove();
-            for (ProgramRuleAction action : rule.programRuleActions())
-                if (action.programRuleActionType() == ProgramRuleActionType.HIDEFIELD ||
-                        action.programRuleActionType() == ProgramRuleActionType.HIDESECTION ||
-                        action.programRuleActionType() == ProgramRuleActionType.ASSIGN ||
-                        action.programRuleActionType() == ProgramRuleActionType.SHOWWARNING ||
-                        action.programRuleActionType() == ProgramRuleActionType.SHOWERROR ||
-                        action.programRuleActionType() == ProgramRuleActionType.HIDEOPTIONGROUP ||
-                        action.programRuleActionType() == ProgramRuleActionType.HIDEOPTION)
-                    if (!mandatoryRules.contains(rule))
-                        mandatoryRules.add(rule);
+            else
+                for (ProgramRuleAction action : rule.programRuleActions())
+                    if (action.programRuleActionType() == ProgramRuleActionType.HIDEFIELD ||
+                            action.programRuleActionType() == ProgramRuleActionType.HIDESECTION ||
+                            action.programRuleActionType() == ProgramRuleActionType.ASSIGN ||
+                            action.programRuleActionType() == ProgramRuleActionType.SHOWWARNING ||
+                            action.programRuleActionType() == ProgramRuleActionType.SHOWERROR ||
+                            action.programRuleActionType() == ProgramRuleActionType.HIDEOPTIONGROUP ||
+                            action.programRuleActionType() == ProgramRuleActionType.HIDEOPTION ||
+                            action.programRuleActionType() == ProgramRuleActionType.SETMANDATORYFIELD)
+                        if (!mandatoryRules.contains(rule))
+                            mandatoryRules.add(rule);
         }
 
         List<ProgramRuleVariable> variables = d2.programModule().programRuleVariables
@@ -220,7 +226,9 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 if (rule.condition().contains(variable.displayName()) || actionsContainsDE(rule.programRuleActions(), variable.displayName())) {
                     if (dataElementRules.get(variable.dataElement().uid()) == null)
                         dataElementRules.put(variable.dataElement().uid(), trasformToRule(mandatoryRules));
-                    dataElementRules.get(variable.dataElement().uid()).add(trasformToRule(rule));
+                    Rule fRule = trasformToRule(rule);
+                    if (!dataElementRules.get(variable.dataElement().uid()).contains(fRule))
+                        dataElementRules.get(variable.dataElement().uid()).add(fRule);
                 }
             }
         }
@@ -285,6 +293,20 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         return enrollment == null || enrollment.status() == EnrollmentStatus.ACTIVE;
     }
 
+    private boolean inOrgUnitRange(String eventUid) {
+        Event event = d2.eventModule().events.uid(eventUid).get();
+        String orgUnitUid = event.organisationUnit();
+        Date eventDate = event.eventDate();
+        boolean inRange = true;
+        OrganisationUnit orgUnit = d2.organisationUnitModule().organisationUnits.uid(orgUnitUid).get();
+        if (eventDate != null && orgUnit.openingDate() != null && eventDate.before(orgUnit.openingDate()))
+            inRange = false;
+        if (eventDate != null && orgUnit.closedDate() != null && eventDate.after(orgUnit.closedDate()))
+            inRange = false;
+
+        return inRange;
+    }
+
     @Override
     public boolean isEnrollmentCancelled() {
         Enrollment enrollment = d2.enrollmentModule().enrollments.uid(d2.eventModule().events.uid(eventUid).get().enrollment()).get();
@@ -292,6 +314,15 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
             return false;
         else
             return d2.enrollmentModule().enrollments.uid(d2.eventModule().events.uid(eventUid).get().enrollment()).get().status() == EnrollmentStatus.CANCELLED;
+    }
+
+    @Override
+    public boolean isEventExpired(String eventUid) {
+        Event event = d2.eventModule().events.uid(eventUid).withAllChildren().get();
+        Program program = d2.programModule().programs.uid(event.program()).withAllChildren().get();
+        boolean isExpired = DateUtils.getInstance().isEventExpired(event.eventDate(),event.completedDate(), event.status(),program.completeEventsExpiryDays(),program.expiryPeriodType(),program.expiryDays());
+        boolean editable = isEnrollmentOpen() && /*event.status() == EventStatus.ACTIVE*/!isExpired && accessDataWrite && inOrgUnitRange(eventUid);
+        return !editable;
     }
 
     @Override
@@ -322,7 +353,8 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                         return "";
                     else
                         return categoryOptionComboRepo.get().displayName();
-                });
+                })
+                .map(displayName -> displayName.equals("default") ? "" : displayName);
     }
 
     @Override
@@ -503,7 +535,8 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         return fieldFactory.create(uid, formName == null ? displayName : formName,
                 ValueType.valueOf(valueTypeName), mandatory, optionSet, dataValue,
                 programStageSection, allowFurureDates,
-                isEnrollmentOpen() && eventStatus == EventStatus.ACTIVE && accessDataWrite,
+                !isEventExpired(eventUid),
+//                isEnrollmentOpen() && eventStatus == EventStatus.ACTIVE && accessDataWrite && inOrgUnitRange(eventUid),
                 renderingType, description, fieldRendering, optionCount, objectStyle);
     }
 
@@ -516,9 +549,10 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                         event -> formRepository.ruleEngine()
                                 .switchMap(ruleEngine -> {
                                     if (isEmpty(lastUpdatedUid))
-                                        return Flowable.fromCallable(ruleEngine.evaluate(event));
+                                        return Flowable.fromCallable(ruleEngine.evaluate(event, trasformToRule(rules)));
                                     else
                                         return Flowable.just(dataElementRules.get(lastUpdatedUid) != null ? dataElementRules.get(lastUpdatedUid) : new ArrayList<Rule>())
+                                                .map(rules -> rules.isEmpty() ? trasformToRule(mandatoryRules) : rules)
                                                 .filter(rules -> !rules.isEmpty())
                                                 .flatMap(rules -> Flowable.fromCallable(ruleEngine.evaluate(event, rules)));
                                 })

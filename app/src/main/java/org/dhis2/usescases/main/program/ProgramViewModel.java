@@ -1,14 +1,15 @@
 package org.dhis2.usescases.main.program;
 
 import android.database.Cursor;
-import androidx.databinding.BaseObservable;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.gabrielittner.auto.value.cursor.ColumnName;
 import com.google.auto.value.AutoValue;
 
 import java.io.Serializable;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.databinding.BaseObservable;
 
 @AutoValue
 public abstract class ProgramViewModel extends BaseObservable implements Serializable {

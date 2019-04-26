@@ -44,11 +44,11 @@ public class AgeHolder extends FormViewHolder {
         }
 
         if (ageViewModel.warning() != null)
-            binding.customAgeview.setWarningOrError(ageViewModel.warning());
+            binding.customAgeview.setWarning(ageViewModel.warning());
         else if (ageViewModel.error() != null)
-            binding.customAgeview.setWarningOrError(ageViewModel.error());
+            binding.customAgeview.setError(ageViewModel.error());
         else
-            binding.customAgeview.setWarningOrError(null);
+            binding.customAgeview.setError(null);
 
         binding.customAgeview.setEditable(ageViewModel.editable());
 
