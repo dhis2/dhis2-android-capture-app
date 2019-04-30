@@ -2,6 +2,7 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.indicators;
 
 import android.graphics.Color;
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.dhis2.BR;
@@ -26,7 +27,13 @@ public class IndicatorViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void bind(Trio<ProgramIndicatorModel, String, String> programIndicatorModel) {
-        binding.setVariable(BR.indicator, programIndicatorModel.val0());
+        if(programIndicatorModel.val0()==null){
+            ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) binding.guideline.getLayoutParams();
+            params.guidePercent = 0;
+            binding.guideline.setLayoutParams(params);
+        }else
+            binding.setVariable(BR.indicator, programIndicatorModel.val0());
+
         binding.setVariable(BR.value, programIndicatorModel.val1());
         binding.setVariable(BR.colorBg, programIndicatorModel.val2().isEmpty() ? -1 : Color.parseColor(programIndicatorModel.val2()));
         binding.executePendingBindings();
