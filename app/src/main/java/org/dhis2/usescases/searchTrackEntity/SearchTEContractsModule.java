@@ -54,7 +54,7 @@ public class SearchTEContractsModule {
 
         void setListOptions(List<OptionModel> options);
 
-        void setLiveData(Pair<LiveData<PagedList<SearchTeiModel>>,String> liveData);
+        void setLiveData(LiveData<PagedList<SearchTeiModel>> liveData);
     }
 
     public interface Presenter {

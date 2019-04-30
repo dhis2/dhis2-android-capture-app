@@ -187,9 +187,9 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                             if(!NetworkUtils.isOnline(view.getContext()) || selectedProgram == null || Build.VERSION.SDK_INT <= 19)
                                 return searchRepository.searchTrackedEntitiesOffline(selectedProgram, orgUnitsUid, map);
                             else
-                                return searchRepository.searchTrackedEntitiesAll(selectedProgram, orgUnitsUid, 1, map);
+                                return searchRepository.searchTrackedEntitiesAll(selectedProgram, orgUnitsUid, map);
                         })
-                        .map(pagedListLiveData -> getMessage(pagedListLiveData))
+                        //.map(pagedListLiveData -> getMessage(pagedListLiveData))
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(view::setLiveData, Timber::d)

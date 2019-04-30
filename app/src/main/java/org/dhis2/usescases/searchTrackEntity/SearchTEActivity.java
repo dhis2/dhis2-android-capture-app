@@ -18,7 +18,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 import androidx.paging.PagedList;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
@@ -102,6 +105,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     private static PublishProcessor<Integer> onlinePagerProcessor;
     private PublishProcessor<Integer> offlinePagerProcessor;
     private EndlessRecyclerViewScrollListener endlessRecyclerViewScrollListener;
+    LiveData<PagedList<SearchTeiModel>> liveData = new MutableLiveData<>();
 
     private SearchTeiLiveAdapter liveAdapter;
     //---------------------------------------------------------------------------------------------
@@ -141,23 +145,23 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
         onlinePagerProcessor = PublishProcessor.create();
         offlinePagerProcessor = PublishProcessor.create();
-        endlessRecyclerViewScrollListener = new EndlessRecyclerViewScrollListener(binding.scrollView.getLayoutManager(), 2,
+        /*endlessRecyclerViewScrollListener = new EndlessRecyclerViewScrollListener(binding.scrollView.getLayoutManager(), 2,
                 NetworkUtils.isOnline(this) ? 1 : 0) {
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
                 if (NetworkUtils.isOnline(SearchTEActivity.this))
                     onlinePagerProcessor.onNext(page);
-                /*else {
+                *//*else {
                     if(program != null)
                         if(program.maxTeiCountToReturn() != 0 && totalItemsCount >= program.maxTeiCountToReturn())
                             offlinePagerProcessor.onNext(page);
                     else
                         if(totalItemsCount >= 20)
                             offlinePagerProcessor.onNext(page);
-                }*/
+                }*//*
             }
-        };
-        binding.scrollView.addOnScrollListener(endlessRecyclerViewScrollListener);
+        };*/
+        //binding.scrollView.addOnScrollListener(endlessRecyclerViewScrollListener);
 
     }
 
@@ -222,7 +226,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     public void clearData() {
         binding.progressLayout.setVisibility(View.VISIBLE);
-        endlessRecyclerViewScrollListener.resetState(NetworkUtils.isOnline(this) ? 1 : 0);
+        //endlessRecyclerViewScrollListener.resetState(NetworkUtils.isOnline(this) ? 1 : 0);
         if (fromRelationship)
             searchRelationshipAdapter.clear();
         //else
@@ -279,17 +283,20 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
 
     @Override
-    public void setLiveData(Pair<LiveData<PagedList<SearchTeiModel>>, String> liveData) {
+    public void setLiveData(LiveData<PagedList<SearchTeiModel>> liveData) {
         binding.progressLayout.setVisibility(View.GONE);
         if (!fromRelationship) {
-            if (liveData.val1().isEmpty()) {
-                binding.messageContainer.setVisibility(View.GONE);
-                liveData.val0().observe(this, liveAdapter::submitList);
-            } else {
-                binding.messageContainer.setVisibility(View.VISIBLE);
-                binding.message.setText(liveData.val1());
-            }
-        } else {
+            binding.messageContainer.setVisibility(View.GONE);
+            liveData.observeForever(searchTeiModels -> liveAdapter.submitList(searchTeiModels));
+
+            //if (liveData.val1().isEmpty()) {
+            //binding.messageContainer.setVisibility(View.GONE);
+            //liveData.val0().observe(this, liveAdapter::submitList);
+            //} else {
+            // binding.messageContainer.setVisibility(View.VISIBLE);
+            //binding.message.setText(liveData.val1());
+            //}
+        }/* else {
             if (liveData.val1().isEmpty()) {
                 binding.messageContainer.setVisibility(View.GONE);
                 searchRelationshipAdapter.setItems(liveData.val0().getValue().snapshot());
@@ -297,7 +304,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 binding.messageContainer.setVisibility(View.VISIBLE);
                 binding.message.setText(liveData.val1());
             }
-        }
+        }*/
     }
 
     @Override

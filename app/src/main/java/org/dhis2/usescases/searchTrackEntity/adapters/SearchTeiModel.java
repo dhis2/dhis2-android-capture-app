@@ -41,6 +41,7 @@ public class SearchTeiModel {
         this.tei = null;
         this.attributeValueModels = new ArrayList<>();
         this.enrollmentModels = new ArrayList<>();
+        this.enrollmentsInfo = new ArrayList<>();
         this.isOnline = true;
     }
 
@@ -79,7 +80,7 @@ public class SearchTeiModel {
     public void setOnline(boolean online) {
         isOnline = online;
         this.attributeValueModels.clear();
-        this.attributeValues.clear();
+        //this.attributeValues.clear();
     }
 
     public List<TrackedEntityAttributeValueModel> getAttributeValueModels() {
@@ -92,7 +93,7 @@ public class SearchTeiModel {
 
     public void resetEnrollments() {
         this.enrollmentModels.clear();
-        this.enrollments.clear();
+        //this.enrollments.clear();
         this.enrollmentsInfo.clear();
     }
 
