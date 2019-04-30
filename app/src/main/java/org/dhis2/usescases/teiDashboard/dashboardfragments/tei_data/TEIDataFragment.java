@@ -169,6 +169,19 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
             binding.setFollowup(followUp);
         }
 
+        if (binding.teiRecycler.getAdapter() != null && binding.teiRecycler.getAdapter().getItemCount() == 0){
+            binding.emptyTeis.setVisibility(View.VISIBLE);
+            if (binding.fab.getVisibility() == View.VISIBLE){
+                binding.emptyTeis.setText(R.string.empty_tei_add);
+            }
+            else{
+                binding.emptyTeis.setText(R.string.empty_tei_no_add);
+            }
+        }
+        else{
+            binding.emptyTeis.setVisibility(View.GONE);
+        }
+
         binding.executePendingBindings();
 
     }

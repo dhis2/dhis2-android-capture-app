@@ -76,6 +76,21 @@
             app:layout_constraintTop_toBottomOf="@id/tei_data"
             tools:listitem="@layout/item_event" />
 
+        <TextView
+            android:id="@+id/empty_teis"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tei_data"
+            android:background="@color/bg_white_f9f"
+            android:gravity="center"
+            android:padding="42dp"
+            android:text="@string/empty_tei_add"
+            android:visibility="gone"
+            android:textSize="@dimen/primaryTextSize" />
+
         <com.dekoservidoni.omfm.OneMoreFabMenu
             android:id="@+id/fab"
             android:layout_width="wrap_content"
