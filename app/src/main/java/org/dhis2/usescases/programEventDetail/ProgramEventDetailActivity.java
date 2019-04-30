@@ -420,6 +420,12 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         pagedListLiveData.observe(this, pagedList -> {
             binding.programProgress.setVisibility(View.GONE);
             liveAdapter.submitList(pagedList);
+            if (binding.recycler.getAdapter() != null && binding.recycler.getAdapter().getItemCount() == 0){
+                binding.emptyTeis.setVisibility(View.VISIBLE);
+            }
+            else{
+                binding.emptyTeis.setVisibility(View.GONE);
+            }
         });
 
     }
@@ -531,6 +537,12 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     @Override
     public void setWritePermission(Boolean canWrite) {
         binding.addEventButton.setVisibility(canWrite ? View.VISIBLE : View.GONE);
+        if (binding.addEventButton.getVisibility() == View.VISIBLE){
+            binding.emptyTeis.setText(R.string.empty_tei_add);
+        }
+        else{
+            binding.emptyTeis.setText(R.string.empty_tei_no_add);
+        }
     }
 
     @Override
