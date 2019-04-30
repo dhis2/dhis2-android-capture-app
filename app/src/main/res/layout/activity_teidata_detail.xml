@@ -358,11 +358,30 @@
                     </RelativeLayout>
                 </LinearLayout>
 
-
-                <FrameLayout
-                    android:id="@+id/dataFragment"
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="match_parent">
+                    <FrameLayout
+                        android:id="@+id/dataFragment"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <Button
+                        android:id="@+id/next"
+                        style="@style/ButtonRoundedGrey"
+                        android:layout_gravity="end|bottom"
+                        android:layout_margin="16dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginBottom="8dp"
+                        android:elevation="8dp"
+                        android:text="@string/save"
+                        android:onClick="@{()->presenter.onSaveClick()}"
+                        app:elevation="8dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
