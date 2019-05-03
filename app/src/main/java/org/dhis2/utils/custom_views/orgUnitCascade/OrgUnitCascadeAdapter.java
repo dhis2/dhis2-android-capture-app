@@ -31,15 +31,17 @@ public class OrgUnitCascadeAdapter extends RecyclerView.Adapter<OrgUnitCascadeHo
     private Quintet<String, String, String, Integer, Boolean> selectedOrgUnit;
     private OrgUnitCascadeAdapterInterface orgUnitCascadeAdapterInterface;
     private List<OrganisationUnitLevel> levels;
+    private boolean oneOption;
 
     public interface OrgUnitCascadeAdapterInterface {
         void onNewLevelSelected(boolean canBeSelected);
     }
 
-    OrgUnitCascadeAdapter(List<Quintet<String, String, String, Integer, Boolean>> orgUnits, OrgUnitCascadeAdapterInterface orgUnitCascadeAdapterInterface, List<OrganisationUnitLevel> levels) {
+    OrgUnitCascadeAdapter(List<Quintet<String, String, String, Integer, Boolean>> orgUnits, OrgUnitCascadeAdapterInterface orgUnitCascadeAdapterInterface, List<OrganisationUnitLevel> levels, boolean oneOption) {
         items = new HashMap<>();
         this.orgUnitCascadeAdapterInterface = orgUnitCascadeAdapterInterface;
         this.levels = levels;
+        this.oneOption = oneOption;
         for (Quintet<String, String, String, Integer, Boolean> orgUnit : orgUnits) {
             if (items.get(orgUnit.val3()) == null)
                 items.put(orgUnit.val3(), new ArrayList<>());
@@ -69,7 +71,7 @@ public class OrgUnitCascadeAdapter extends RecyclerView.Adapter<OrgUnitCascadeHo
                 position != 0 ? selectedParent.get(position) : "",
                 selectedOrgUnit,
                 selectedParent.get(position + 1),
-                this, levels, lastLevelselected);
+                this, levels, lastLevelselected, oneOption);
     }
 
     @Override
@@ -96,6 +98,15 @@ public class OrgUnitCascadeAdapter extends RecyclerView.Adapter<OrgUnitCascadeHo
         if (orgUnitCascadeAdapterInterface != null)
             orgUnitCascadeAdapterInterface.onNewLevelSelected(canBeSelected);
         notifyDataSetChanged();
+    }
+
+    public void setSelectedParent(int level, String selectedUid, Boolean canBeSelected){
+        this.selectedOrgUnit = null;
+        selectedParent.put(level, selectedUid);//Set selected orgUnit for level
+        reorderSelectedParent(level);
+        this.level.set(level);
+        if (orgUnitCascadeAdapterInterface != null)
+            orgUnitCascadeAdapterInterface.onNewLevelSelected(canBeSelected);
     }
 
     public void reorderSelectedParent(int fromLevel) {

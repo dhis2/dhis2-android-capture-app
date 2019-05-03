@@ -186,6 +186,11 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         binding.serverUrlEdit.setText(if (!isEmpty(qrUrl)) qrUrl else url)
     }
 
+    override fun setUser(user: String) {
+        binding.userNameEdit.setText(user)
+        binding.userNameEdit.setSelectAllOnFocus(true)
+    }
+
     override fun showUnlockButton() {
         binding.unlockLayout?.visibility = View.VISIBLE
     }

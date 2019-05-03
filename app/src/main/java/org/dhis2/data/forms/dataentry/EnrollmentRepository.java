@@ -63,7 +63,7 @@ final class EnrollmentRepository implements DataEntryRepository {
             "        ProgramTrackedEntityAttribute.allowFutureDate AS allowFutureDate,\n" +
             "        TrackedEntityAttribute.generated AS generated,\n" +
             "        TrackedEntityAttribute.displayDescription AS displayDescription, \n" +
-            "        TrackedEntityAttribute.formName AS formName\n" +
+            "        TrackedEntityAttribute.formName AS formName \n" +
             "      FROM ProgramTrackedEntityAttribute INNER JOIN TrackedEntityAttribute\n" +
             "          ON TrackedEntityAttribute.uid = ProgramTrackedEntityAttribute.trackedEntityAttribute\n" +
             "    ) AS Field ON Field.program = Program.uid\n" +
@@ -134,7 +134,7 @@ final class EnrollmentRepository implements DataEntryRepository {
     @NonNull
     private FieldViewModel transform(@NonNull Cursor cursor) {
         String uid = cursor.getString(0);
-        String label = cursor.getString(13) != null && !cursor.getString(13).isEmpty() ? cursor.getString(13) : cursor.getString(1);
+        String label = cursor.getString(1);
         ValueType valueType = ValueType.valueOf(cursor.getString(2));
         boolean mandatory = cursor.getInt(3) == 1;
         String optionSet = cursor.getString(4);
@@ -148,6 +148,8 @@ final class EnrollmentRepository implements DataEntryRepository {
         EnrollmentStatus enrollmentStatus = EnrollmentStatus.valueOf(cursor.getString(10));
         String description = cursor.getString(11);
         String pattern = cursor.getString(12);
+        String formName = cursor.getString(13);
+
         if (!isEmpty(optionCodeName)) {
             dataValue = optionCodeName;
         }
@@ -225,12 +227,12 @@ final class EnrollmentRepository implements DataEntryRepository {
 
         if (warning != null) {
             return fieldFactory.create(uid,
-                    label, valueType, mandatory, optionSet, dataValue, null, allowFutureDates,
+                    formName != null && !formName.isEmpty()? formName: label, valueType, mandatory, optionSet, dataValue, null, allowFutureDates,
                     false, null, description, fieldRendering, optionCount, objectStyle)
                     .withWarning(warning);
         } else {
             return fieldFactory.create(uid,
-                    label, valueType, mandatory, optionSet, dataValue, null, allowFutureDates,
+                    formName != null && !formName.isEmpty()? formName: label, valueType, mandatory, optionSet, dataValue, null, allowFutureDates,
                     !generated && enrollmentStatus == EnrollmentStatus.ACTIVE, null, description, fieldRendering, optionCount, objectStyle);
         }
     }

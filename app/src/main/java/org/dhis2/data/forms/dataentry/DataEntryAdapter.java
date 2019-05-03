@@ -260,7 +260,7 @@ public final class DataEntryAdapter extends Adapter {
         for(FieldViewModel field: viewModels){
             FieldViewModel toAdd = field;
             if(field.uid().equals(rowAction.id()))
-               toAdd = field.withValue(rowAction.value());
+               toAdd = field.withValue(rowAction.value()).withEditMode(toAdd.editable());
 
             helperModels.add(toAdd);
         }

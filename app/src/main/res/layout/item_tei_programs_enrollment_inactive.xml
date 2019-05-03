@@ -32,11 +32,10 @@
 
             <RelativeLayout
                 android:id="@+id/iconBg"
-                android:layout_width="0dp"
+                android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:layout_gravity="center_vertical"
                 android:layout_margin="8dp"
-                android:layout_weight="1"
                 android:alpha="0.5"
                 tools:background="@drawable/photo_temp">
 

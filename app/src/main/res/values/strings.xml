@@ -376,6 +376,8 @@
     <string name="text_plus_colon">%s:</string>
     <string name="relationships">relationships</string>
     <string name="empty_relationships">There are no relationships, click "+" to add a new one.</string>
+    <string name="empty_tei_add">There are no events registered, click "+" to add a new one.</string>
+    <string name="empty_tei_no_add">There are no events registered.</string>
     <string name="qr_data_values">Data values</string>
     <string name="info">Info</string>
     <string name="qr_no_id_error">Could not read this Id</string>
