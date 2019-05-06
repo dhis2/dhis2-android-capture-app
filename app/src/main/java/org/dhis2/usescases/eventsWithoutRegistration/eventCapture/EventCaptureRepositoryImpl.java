@@ -554,7 +554,6 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                                     else
                                         return Flowable.just(dataElementRules.get(lastUpdatedUid) != null ? dataElementRules.get(lastUpdatedUid) : new ArrayList<Rule>())
                                                 .map(rules -> rules.isEmpty() ? trasformToRule(mandatoryRules) : rules)
-                                                .filter(rules -> !rules.isEmpty())
                                                 .flatMap(rules -> Flowable.fromCallable(ruleEngine.evaluate(event, rules)));
                                 })
                                 .map(Result::success)
