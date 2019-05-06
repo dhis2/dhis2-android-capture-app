@@ -313,7 +313,6 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
                                 return Flowable.fromCallable(ruleEngine.evaluate(enrollment));
                             else
                                 return Flowable.just(attributeRules.get(lastUpdatedAttr) != null ? attributeRules.get(lastUpdatedAttr) : trasformToRule(mandatoryRules))
-                                        .filter(rules -> !rules.isEmpty())
                                         .flatMap(rules -> Flowable.fromCallable(ruleEngine.evaluate(enrollment, rules)));
                         })
                         .map(Result::success)

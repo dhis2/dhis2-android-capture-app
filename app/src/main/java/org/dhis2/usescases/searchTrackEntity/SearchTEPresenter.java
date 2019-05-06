@@ -224,7 +224,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                         else if (!key.equals(Constants.INCIDENT_DATE_UID)) { //TODO: HOW TO INCLUDE INCIDENT DATE IN ONLINE SEARCH
                                             String value = queryData.get(key);
                                             if (value.contains("_os_"))
-                                                value = value.split("_os_")[0];
+                                                value = value.split("_os_")[1];
                                             String queryItem = String.format("%s:%s:%s", key, queryDataEQ.containsKey(key) ? "EQ" : "LIKE", value);
                                             filterList.add(queryItem);
                                         }

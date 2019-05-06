@@ -169,6 +169,12 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
         if (!allowFutureDates) {
             dateDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
         }
+
+        dateDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getContext().getString(R.string.date_dialog_clear), (dialog, which) -> {
+            editText.setText(null);
+            listener.onDateSelected(null);
+        });
+
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP){
             dateDialog.setButton(DialogInterface.BUTTON_NEUTRAL, getContext().getResources().getString(R.string.change_calendar), (dialog, which) -> {
                 dateDialog.dismiss();
