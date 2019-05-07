@@ -2,6 +2,8 @@ package org.dhis2.data.forms.dataentry;
 
 import android.database.Cursor;
 
+import androidx.annotation.NonNull;
+
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.forms.FormRepository;
@@ -40,7 +42,6 @@ import java.util.Map;
 
 import javax.annotation.Nonnull;
 
-import androidx.annotation.NonNull;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 
@@ -272,7 +273,7 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
         }
     }
 
-    private List<RuleAttributeValue> getRuleAttributeValueMap(){
+    private List<RuleAttributeValue> getRuleAttributeValueMap() {
         Enrollment enrollment = d2.enrollmentModule().enrollments.uid(enrollmentUid).withAllChildren().get();
         Program program = d2.programModule().programs.uid(enrollment.program()).withAllChildren().get();
         setRuleAttributeMap(getAttributesValueMap(enrollment, program));
@@ -293,7 +294,10 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
                 }
             }
         }
-        ruleAttributeValueMap.put(uid, RuleAttributeValue.create(uid, value));
+        if (value != null)
+            ruleAttributeValueMap.put(uid, RuleAttributeValue.create(uid, value));
+        else
+            ruleAttributeValueMap.remove(uid);
     }
 
     @Override

@@ -3,22 +3,18 @@ package org.dhis2.data.service;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import androidx.annotation.NonNull;
+
 import org.dhis2.utils.Constants;
 import org.hisp.dhis.android.core.D2;
-
-import androidx.annotation.NonNull;
-import io.reactivex.disposables.CompositeDisposable;
 
 final class SyncPresenterImpl implements SyncPresenter {
 
     @NonNull
     private final D2 d2;
 
-    private CompositeDisposable disposable;
-
     SyncPresenterImpl(@NonNull D2 d2) {
         this.d2 = d2;
-        this.disposable = new CompositeDisposable();
     }
 
     @Override
