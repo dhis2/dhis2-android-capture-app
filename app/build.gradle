@@ -228,6 +228,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-basement:16.2.0'
     implementation 'com.google.android.gms:play-services-location:16.0.0'
     implementation 'com.google.android.gms:play-services-maps:16.1.0'
+
     //endregion
 
     // Jake Wharton libraries
@@ -236,7 +237,6 @@ dependencies {
 
     //GSON
     implementation 'com.google.code.gson:gson:2.8.2'
-//    implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
 
     //JOB SCHEDULER
     implementation("android.arch.work:work-runtime:1.0.0-alpha10") {
