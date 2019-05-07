@@ -235,7 +235,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                             isEmpty(binding.lat.getText()) ? null : binding.lat.getText().toString(),
                             isEmpty(binding.lon.getText()) ? null : binding.lon.getText().toString()
                     );
-                    startFormActivity(eventUid);
                 }
             });
         }
