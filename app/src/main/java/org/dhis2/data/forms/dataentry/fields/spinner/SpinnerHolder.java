@@ -5,6 +5,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 
+import androidx.appcompat.widget.PopupMenu;
+import androidx.databinding.ViewDataBinding;
+import androidx.fragment.app.FragmentActivity;
+
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -22,9 +26,6 @@ import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
 import java.util.Map;
 
-import androidx.appcompat.widget.PopupMenu;
-import androidx.databinding.ViewDataBinding;
-import androidx.fragment.app.FragmentActivity;
 import io.reactivex.processors.FlowableProcessor;
 
 import static android.text.TextUtils.isEmpty;
@@ -156,7 +157,7 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
 
         editText.setText(optionDisplayName);
         processor.onNext(
-                RowAction.create(viewModel.uid(), isSearchMode ? optionDisplayName + "_os_" + optionCode : optionCode, true)
+                RowAction.create(viewModel.uid(), isSearchMode ? optionDisplayName + "_os_" + optionCode : optionCode, true, optionCode, optionDisplayName)
         );
         viewModel.withValue(isSearchMode ? optionDisplayName : optionCode);
       /*  View nextView;

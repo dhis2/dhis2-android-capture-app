@@ -4,6 +4,8 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 
+import androidx.annotation.NonNull;
+
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.R;
@@ -13,6 +15,7 @@ import org.dhis2.data.forms.RulesRepository;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
+import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.D2;
@@ -21,12 +24,15 @@ import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
+import org.hisp.dhis.android.core.dataelement.DataElement;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.option.Option;
+import org.hisp.dhis.android.core.option.OptionSet;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -35,10 +41,13 @@ import org.hisp.dhis.android.core.program.ProgramRuleAction;
 import org.hisp.dhis.android.core.program.ProgramRuleActionType;
 import org.hisp.dhis.android.core.program.ProgramRuleVariable;
 import org.hisp.dhis.android.core.program.ProgramStage;
+import org.hisp.dhis.android.core.program.ProgramStageDataElement;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
+import org.hisp.dhis.android.core.program.ProgramStageSection;
 import org.hisp.dhis.android.core.program.ProgramStageSectionDeviceRendering;
 import org.hisp.dhis.android.core.program.ProgramStageSectionModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 import org.hisp.dhis.rules.models.Rule;
@@ -58,11 +67,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import androidx.annotation.NonNull;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -140,6 +149,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     private final BriteDatabase briteDatabase;
     private final String eventUid;
+    private final Event currentEvent;
     private final FormRepository formRepository;
     private final D2 d2;
     private boolean accessDataWrite;
@@ -155,18 +165,18 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         this.formRepository = formRepository;
         this.d2 = d2;
 
-        Event event = d2.eventModule().events.uid(eventUid).withAllChildren().get();
-        ProgramStage programStage = d2.programModule().programStages.uid(event.programStage()).withAllChildren().get();
-        OrganisationUnit ou = d2.organisationUnitModule().organisationUnits.uid(event.organisationUnit()).withAllChildren().get();
+        currentEvent = d2.eventModule().events.uid(eventUid).withAllChildren().get();
+        ProgramStage programStage = d2.programModule().programStages.uid(currentEvent.programStage()).withAllChildren().get();
+        OrganisationUnit ou = d2.organisationUnitModule().organisationUnits.uid(currentEvent.organisationUnit()).withAllChildren().get();
 
         eventBuilder = RuleEvent.builder()
-                .event(event.uid())
-                .programStage(event.programStage())
+                .event(currentEvent.uid())
+                .programStage(currentEvent.programStage())
                 .programStageName(programStage.displayName())
-                .status(RuleEvent.Status.valueOf(event.status().name()))
-                .eventDate(event.eventDate())
-                .dueDate(event.dueDate() != null ? event.dueDate() : event.eventDate())
-                .organisationUnit(event.organisationUnit())
+                .status(RuleEvent.Status.valueOf(currentEvent.status().name()))
+                .eventDate(currentEvent.eventDate())
+                .dueDate(currentEvent.dueDate() != null ? currentEvent.dueDate() : currentEvent.eventDate())
+                .organisationUnit(currentEvent.organisationUnit())
                 .organisationUnitCode(ou.code());
 
         fieldFactory = new FieldViewModelFactoryImpl(
@@ -180,7 +190,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 context.getString(R.string.filter_options),
                 context.getString(R.string.choose_date));
 
-        loadDataElementRules(event);
+        loadDataElementRules(currentEvent);
     }
 
     private void loadDataElementRules(Event event) {
@@ -320,7 +330,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     public boolean isEventExpired(String eventUid) {
         Event event = d2.eventModule().events.uid(eventUid).withAllChildren().get();
         Program program = d2.programModule().programs.uid(event.program()).withAllChildren().get();
-        boolean isExpired = DateUtils.getInstance().isEventExpired(event.eventDate(),event.completedDate(), event.status(),program.completeEventsExpiryDays(),program.expiryPeriodType(),program.expiryDays());
+        boolean isExpired = DateUtils.getInstance().isEventExpired(event.eventDate(), event.completedDate(), event.status(), program.completeEventsExpiryDays(), program.expiryPeriodType(), program.expiryDays());
         boolean editable = isEnrollmentOpen() && /*event.status() == EventStatus.ACTIVE*/!isExpired && accessDataWrite && inOrgUnitRange(eventUid);
         return !editable;
     }
@@ -372,7 +382,10 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         return briteDatabase
                 .createQuery(TrackedEntityDataValueModel.TABLE, prepareStatement(sectionUid, eventUid))
                 .mapToList(this::transform)
-                .map(this::checkRenderType)
+                .map(fieldViewModels -> {
+
+                    return checkRenderType(fieldViewModels);
+                })
                 .toFlowable(BackpressureStrategy.LATEST);
     }
 
@@ -438,12 +451,157 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     @NonNull
     @Override
     public Flowable<List<FieldViewModel>> list() {
-        accessDataWrite = getAccessDataWrite();
-        return briteDatabase
+
+        return Flowable.fromCallable(() -> {
+
+            long init = System.currentTimeMillis();
+            accessDataWrite = getAccessDataWrite();
+            ProgramStage programStage = d2.programModule().programStages.uid(currentEvent.programStage()).withAllChildren().get();
+            List<ProgramStageSection> sections = d2.programModule().programStageSections.byProgramStageUid().eq(programStage.uid()).withAllChildren().get();
+
+            List<ProgramStageDataElement> programStageDataElementList = programStage.programStageDataElements();
+            Map<String, ProgramStageDataElement> programStageDataElementMap = new HashMap<>();
+            for (ProgramStageDataElement programStageDataElement : programStageDataElementList)
+                programStageDataElementMap.put(programStageDataElement.dataElement().uid(), programStageDataElement);
+
+            List<FieldViewModel> fieldViewModelList;
+
+            Timber.d("field list init at %s", System.currentTimeMillis() - init);
+            if (sections != null && !sections.isEmpty())
+                fieldViewModelList = getFieldViewModelForSection(sections, programStageDataElementMap);
+            else
+                fieldViewModelList = getFieldViewModelFor(programStageDataElementList);
+
+            long finalTime = System.currentTimeMillis() - init;
+            Timber.d("list() took %s to load %s viewmodels", finalTime, fieldViewModelList.size());
+
+            return fieldViewModelList;
+        }).map(this::checkRenderType);
+
+       /* return briteDatabase
                 .createQuery(TrackedEntityDataValueModel.TABLE, prepareStatement(eventUid))
                 .mapToList(this::transform)
                 .map(this::checkRenderType)
-                .toFlowable(BackpressureStrategy.LATEST);
+                .toFlowable(BackpressureStrategy.LATEST);*/
+    }
+
+    private List<FieldViewModel> getFieldViewModelFor(List<ProgramStageDataElement> programStageDataElementList) {
+        List<FieldViewModel> fieldViewModelList = new ArrayList<>();
+
+        String programStageSection = null;
+        for (ProgramStageDataElement programStageDataElement : programStageDataElementList) {
+
+            DataElement dataElement = d2.dataElementModule().dataElements.uid(programStageDataElement.dataElement().uid()).withAllChildren().get();
+
+            String uid = dataElement.uid();
+            String displayName = dataElement.displayName();
+            ValueType valueType = dataElement.valueType();
+            boolean mandatory = programStageDataElement.compulsory();
+            String optionSet = dataElement.optionSetUid();
+
+            boolean allowFurureDates = programStageDataElement.allowFutureDate();
+            String formName = dataElement.displayFormName();
+            String description = dataElement.displayDescription();
+
+
+            int optionCount = 0;
+            String dataValue = null;
+            TrackedEntityDataValue teDataValue = d2.trackedEntityModule().trackedEntityDataValues.byEvent().eq(eventUid).byDataElement().eq(dataElement.uid()).withAllChildren().one().get();
+            if (teDataValue != null) {
+                dataValue = teDataValue.value();
+                if (optionSet != null) {
+                    OptionSet optionSet1 = d2.optionModule().optionSets.uid(optionSet).withAllChildren().get();
+                    optionCount = optionSet1.options().size();
+                    for (Option option : optionSet1.options())
+                        if (option.code().equals(dataValue))
+                            dataValue = option.displayName();
+                }
+            }
+
+            ValueTypeDeviceRenderingModel fieldRendering = null;
+            try (Cursor rendering = briteDatabase.query("SELECT ValueTypeDeviceRendering.* FROM ValueTypeDeviceRendering" +
+                    " JOIN ProgramStageDataElement ON ProgramStageDataElement.uid = ValueTypeDeviceRendering.uid" +
+                    " WHERE ProgramStageDataElement.dataElement = ? LIMIT 1", uid)) {
+                if (rendering != null && rendering.moveToFirst())
+                    fieldRendering = ValueTypeDeviceRenderingModel.create(rendering);
+            }
+            ObjectStyleModel objectStyle = ObjectStyleModel.builder().build();
+            try (Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", uid)) {
+                if (objStyleCursor != null && objStyleCursor.moveToFirst())
+                    objectStyle = ObjectStyleModel.create(objStyleCursor);
+            }
+
+            ProgramStageSectionRenderingType renderingType = renderingType(programStageSection);
+
+            fieldViewModelList.add(fieldFactory.create(uid, formName == null ? displayName : formName,
+                    valueType, mandatory, optionSet, dataValue,
+                    programStageSection, allowFurureDates,
+                    !isEventExpired(eventUid),
+                    renderingType, description, fieldRendering, optionCount, objectStyle));
+
+        }
+        return fieldViewModelList;
+    }
+
+    private List<FieldViewModel> getFieldViewModelForSection(List<ProgramStageSection> sections, Map<String, ProgramStageDataElement> programStageDataElementList) {
+        List<FieldViewModel> fieldViewModelList = new ArrayList<>();
+        for (ProgramStageSection section : sections) {
+            String programStageSection = section.uid();
+            for (DataElement dataElement : section.dataElements()) {
+
+                ProgramStageDataElement programStageDataElement = programStageDataElementList.get(dataElement.uid());
+
+                String uid = dataElement.uid();
+                String displayName = dataElement.displayName();
+                ValueType valueType = dataElement.valueType();
+                boolean mandatory = programStageDataElement.compulsory();
+                String optionSet = dataElement.optionSetUid();
+
+                boolean allowFurureDates = programStageDataElement.allowFutureDate();
+                String formName = dataElement.displayFormName();
+                String description = dataElement.displayDescription();
+
+
+                int optionCount = 0;
+                String dataValue = null;
+                TrackedEntityDataValue teDataValue = d2.trackedEntityModule().trackedEntityDataValues.byEvent().eq(eventUid).byDataElement().eq(dataElement.uid()).withAllChildren().one().get();
+                if (teDataValue != null) {
+                    dataValue = teDataValue.value();
+                    if (optionSet != null) {
+                        OptionSet optionSet1 = d2.optionModule().optionSets.uid(optionSet).withAllChildren().get();
+                        optionCount = optionSet1.options().size();
+                        for (Option option : optionSet1.options())
+                            if (option.code().equals(dataValue))
+                                dataValue = option.displayName();
+                    }
+                }
+
+                ValueTypeDeviceRenderingModel fieldRendering = null;
+                try (Cursor rendering = briteDatabase.query("SELECT ValueTypeDeviceRendering.* FROM ValueTypeDeviceRendering" +
+                        " JOIN ProgramStageDataElement ON ProgramStageDataElement.uid = ValueTypeDeviceRendering.uid" +
+                        " WHERE ProgramStageDataElement.dataElement = ? LIMIT 1", uid)) {
+                    if (rendering != null && rendering.moveToFirst())
+                        fieldRendering = ValueTypeDeviceRenderingModel.create(rendering);
+                }
+                ObjectStyleModel objectStyle = ObjectStyleModel.builder().build();
+                try (Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", uid)) {
+                    if (objStyleCursor != null && objStyleCursor.moveToFirst())
+                        objectStyle = ObjectStyleModel.create(objStyleCursor);
+                }
+
+                ProgramStageSectionRenderingType renderingType = renderingType(programStageSection);
+
+                fieldViewModelList.add(fieldFactory.create(uid, formName == null ? displayName : formName,
+                        valueType, mandatory, optionSet, dataValue,
+                        programStageSection, allowFurureDates,
+                        !isEventExpired(eventUid),
+                        renderingType, description, fieldRendering, optionCount, objectStyle));
+
+            }
+
+
+        }
+        return fieldViewModelList;
     }
 
 

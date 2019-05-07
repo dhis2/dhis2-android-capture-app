@@ -2,6 +2,10 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
 import android.os.Handler;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.databinding.ObservableField;
+
 import com.google.android.material.snackbar.Snackbar;
 
 import org.dhis2.R;
@@ -30,9 +34,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.databinding.ObservableField;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -390,7 +391,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private List<FieldViewModel> applyEffects(
             @NonNull List<FieldViewModel> viewModels,
             @NonNull Result<RuleEffect> calcResult) {
-        Timber.d("RULE EFFECTS INIT TOOK %s ms to execute", System.currentTimeMillis() - ruleInitTime);
+        Timber.d("RULE EFFECTS INIT TOOK %s ms to execute for %s viewmodels", System.currentTimeMillis() - ruleInitTime, viewModels.size());
         long currentTime = System.currentTimeMillis();
 
         if (calcResult.error() != null) {
@@ -408,7 +409,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         Map<String, FieldViewModel> fieldViewModels = toMap(viewModels);
         rulesUtils.applyRuleEffects(fieldViewModels, calcResult, this);
 
-        Timber.d("RULE EFFECTS TOOK %s ms to execute", System.currentTimeMillis() - currentTime);
+        Timber.d("RULE EFFECTS TOOK %s ms to execute, final count is %s viewmodels", System.currentTimeMillis() - currentTime,fieldViewModels.values().size());
         return new ArrayList<>(fieldViewModels.values());
     }
 
