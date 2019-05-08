@@ -210,10 +210,13 @@
                     android:indeterminate="true"
                     app:progressColor="@{@color/colorPrimary}" />
             </LinearLayout>
+            <!--style="@style/FullWidthButton"-->
 
             <Button
                 android:id="@+id/login"
-                style="@style/FullWidthButton"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
                 android:onClick="@{()-> presenter.onButtonClick()}"
                 android:text="@string/log_in_button" />
 
