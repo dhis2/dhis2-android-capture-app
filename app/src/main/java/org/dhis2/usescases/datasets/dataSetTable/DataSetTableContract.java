@@ -44,7 +44,6 @@ public class DataSetTableContract {
         void setCurrentNumTables(int numTables);
 
         void renderDetails(DataSetModel dataSetModel, String catcomboName);
-        void renderDetails(DataSetInitialModel dataSetInitialModel);
 
         Consumer<Boolean> isDataSetOpen();
     }
