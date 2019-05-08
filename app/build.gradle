@@ -161,7 +161,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.1.0-alpha01'
     implementation 'androidx.annotation:annotation:1.0.1'
     implementation 'androidx.cardview:cardview:1.0.0'
-    implementation 'com.google.android.material:material:1.1.0-alpha02'
+    implementation 'com.google.android.material:material:1.1.0-alpha06'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 
     implementation 'androidx.multidex:multidex:2.0.1'
@@ -301,7 +301,7 @@ dependencies {
     //Paperwork
     implementation "hu.supercluster:paperwork:${libraries.paperwork}"
 
-    implementation group: 'com.google.guava', name: 'guava', version: '24.1-jre'
+    implementation 'com.google.guava:guava:27.0.1-android'
 
     implementation 'cat.ereza:customactivityoncrash:2.2.0'
 

@@ -159,7 +159,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     }
 
     override fun switchPasswordVisibility() {
-        if (binding.userPassEdit.inputType == InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD) {
+        /*if (binding.userPassEdit.inputType == InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD) {
             ContextCompat.getDrawable(this, R.drawable.ic_visibility)?.let {
                 binding.visibilityButton.setImageDrawable(
                         ColorUtils.tintDrawableWithColor(
@@ -179,7 +179,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
         binding.userPassEdit.text?.let {
             binding.userPassEdit.setSelection(it.length)
-        }
+        }*/
     }
 
     override fun setUrl(url: String) {
