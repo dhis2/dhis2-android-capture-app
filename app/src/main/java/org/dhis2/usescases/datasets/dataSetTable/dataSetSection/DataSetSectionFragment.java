@@ -60,7 +60,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
     FragmentDatasetSectionBinding binding;
     private DataSetTableContract.Presenter presenter;
     private DataSetTableActivity activity;
-    private DataSetTableAdapter adapter;
+    private List<DataSetTableAdapter> adapters = new ArrayList<>();
     private String section;
     private String dataSetUid;
 
@@ -122,9 +122,10 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
 
         presenterFragment.setCurrentNumTables(dataTableModel.catCombos().size());
         activity.updateTabLayout(section, dataTableModel.catCombos().size());
-        adapter = new DataSetTableAdapter(getAbstracContext(), presenterFragment.getProcessor(), presenterFragment.getProcessorOptionSet());
-        presenterFragment.initializeProcessor(this);
+
         for (String catCombo : dataTableModel.catCombos()) {
+            DataSetTableAdapter adapter = new DataSetTableAdapter(getAbstracContext(), presenterFragment.getProcessor(), presenterFragment.getProcessorOptionSet());
+            adapters.add(adapter);
             List<List<CategoryOptionModel>> columnHeaderItems = dataTableModel.headers().get(catCombo);
             ArrayList<List<String>> cells = new ArrayList<>();
             List<List<FieldViewModel>> listFields = new ArrayList<>();
@@ -138,6 +139,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
             TableView tableView = new TableView(getContext());
             tableView.setHasFixedWidth(true);
 
+            adapter.setCatCombo(catCombo);
             adapter.setTableView(tableView);
             adapter.initializeRows(isEditable);
 
@@ -254,6 +256,8 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
 
         }
 
+        presenterFragment.initializeProcessor(this);
+
         binding.scroll.scrollTo(0, 1000);
 
         binding.scroll.setOnScrollChangeListener((NestedScrollView.OnScrollChangeListener) (v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
@@ -359,15 +363,17 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
 
     @NonNull
     public Flowable<RowAction> rowActions() {
-        return adapter.asFlowable();
+        return adapters.get(0).asFlowable();
     }
 
     public FlowableProcessor<Trio<String, String, Integer>> optionSetActions() {
-        return adapter.asFlowableOptionSet();
+        return adapters.get(0).asFlowableOptionSet();
     }
 
-    public void updateData(RowAction rowAction) {
-        adapter.updateValue(rowAction);
+    public void updateData(RowAction rowAction, String catCombo) {
+        for(DataSetTableAdapter adapter : adapters)
+            if(adapter.getCatCombo().equals(catCombo))
+                adapter.updateValue(rowAction);
     }
 
     @Override

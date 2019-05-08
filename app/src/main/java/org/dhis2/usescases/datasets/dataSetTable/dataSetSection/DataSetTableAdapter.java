@@ -87,6 +87,8 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionMode
     private int currentWidth = 400;
     private int currentHeight;
 
+    private String catCombo;
+
     public enum TableScale {
         SMALL, DEFAULT, LARGE
     }
@@ -353,7 +355,7 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionMode
                 changeCellItem(viewModels.get(0).size() - 1, viewModels.size() - 1, total + "", true);
             }
         }
-        changeCellItem(rowAction.columnPos(), rowAction.rowPos(), rowAction.value() != null ? rowAction.value() : "", false);
+        notifyDataSetChanged();
     }
 
     public void setShowRowTotal(Boolean showRowTotal) {
@@ -370,6 +372,14 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionMode
 
     public Boolean getShowColumnTotal() {
         return showColumnTotal;
+    }
+
+    public void setCatCombo(String catCombo){
+        this.catCombo = catCombo;
+    }
+
+    public String getCatCombo(){
+        return catCombo;
     }
 
 
