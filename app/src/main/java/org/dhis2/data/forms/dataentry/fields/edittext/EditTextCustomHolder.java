@@ -1,7 +1,12 @@
 package org.dhis2.data.forms.dataentry.fields.edittext;
 
 
+import android.view.KeyEvent;
 import android.widget.ArrayAdapter;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -11,14 +16,12 @@ import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.FormEditTextCustomBinding;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.Preconditions;
-import org.dhis2.utils.custom_views.TextInputAutoCompleteTextView;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
 
 import java.lang.reflect.Type;
 import java.util.List;
 
-import androidx.annotation.NonNull;
 import io.reactivex.processors.FlowableProcessor;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -36,7 +39,7 @@ final class EditTextCustomHolder extends FormViewHolder {
     private FormEditTextCustomBinding binding;
     private EditTextViewModel editTextModel;
 
-    EditTextCustomHolder(FormEditTextCustomBinding binding, FlowableProcessor<RowAction> processor){
+    EditTextCustomHolder(FormEditTextCustomBinding binding, FlowableProcessor<RowAction> processor) {
         super(binding);
         this.binding = binding;
         binding.customEdittext.setFocusChangedListener((v, hasFocus) -> {
@@ -49,6 +52,11 @@ final class EditTextCustomHolder extends FormViewHolder {
                     processor.onNext(RowAction.create(editTextModel.uid(), null));
                 }
             }
+        });
+        binding.customEdittext.setOnEditorActionListener((v, actionId, event) -> {
+            binding.customEdittext.getEditText().clearFocus();
+            closeKeyboard(binding.customEdittext.getEditText());
+            return false;
         });
     }
 
@@ -120,7 +128,6 @@ final class EditTextCustomHolder extends FormViewHolder {
 
         return gson.fromJson(json, type);
     }
-
 
 
     public void dispose() {
