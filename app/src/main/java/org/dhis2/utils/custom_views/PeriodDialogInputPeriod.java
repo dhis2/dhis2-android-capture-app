@@ -20,9 +20,15 @@ import androidx.databinding.DataBindingUtil;
 public class PeriodDialogInputPeriod extends PeriodDialog {
 
     private List<DateRangeInputPeriodModel> inputPeriod;
+    private Integer openFuturePeriods;
 
     public PeriodDialogInputPeriod setInputPeriod(List<DateRangeInputPeriodModel> inputPeriod) {
         this.inputPeriod = inputPeriod;
+        return this;
+    }
+
+    public PeriodDialogInputPeriod setOpenFuturePeriods(Integer openFuturePeriods){
+        this.openFuturePeriods = openFuturePeriods;
         return this;
     }
 
@@ -38,7 +44,7 @@ public class PeriodDialogInputPeriod extends PeriodDialog {
             dismiss();
         });
         binding.clearButton.setOnClickListener(view -> dismiss());
-
+        setDateWithOpenFuturePeriod(openFuturePeriods);
         binding.periodSubtitle.setText(getPeriod().name());
         boolean isAllowed = false;
 
