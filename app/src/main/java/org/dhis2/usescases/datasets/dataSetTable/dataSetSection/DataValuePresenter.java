@@ -111,7 +111,7 @@ public class DataValuePresenter implements DataValueContract.Presenter{
     }
     @Override
     public void complete(){
-        if(view.isOpenOrReopen() && dataTableModel.dataSet().validCompleteOnly()) {
+        if(view.isOpenOrReopen()) {
             if (((!dataTableModel.dataSet().fieldCombinationRequired()) || checkAllFieldRequired() && dataTableModel.dataSet().fieldCombinationRequired())
                     && checkMandatoryField())
                 compositeDisposable.add(
@@ -124,13 +124,8 @@ public class DataValuePresenter implements DataValueContract.Presenter{
                 view.showAlertDialog(view.getContext().getString(R.string.missing_mandatory_fields_title), view.getContext().getResources().getString(R.string.field_mandatory));
             else
                 view.showAlertDialog(view.getContext().getString(R.string.missing_mandatory_fields_title), view.getContext().getResources().getString(R.string.field_required));
-        }else if (view.isOpenOrReopen()){
-            compositeDisposable.add(
-                    repository.completeDataSet(orgUnitUid, periodId, attributeOptionCombo)
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(completed -> view.onComplete(), Timber::e));
-        }else{
+        }else {
+            view.isOpenOrReopen();
             compositeDisposable.add(
                     repository.reopenDataSet(orgUnitUid, periodId, attributeOptionCombo)
                             .subscribeOn(Schedulers.io())
