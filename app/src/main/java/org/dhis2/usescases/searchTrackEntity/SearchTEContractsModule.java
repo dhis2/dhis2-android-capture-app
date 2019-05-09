@@ -30,8 +30,6 @@ public class SearchTEContractsModule {
     public interface View extends AbstractActivityContracts.View {
         void setForm(List<TrackedEntityAttributeModel> trackedEntityAttributeModels, @Nullable ProgramModel program, HashMap<String, String> queryData);
 
-        Consumer<Pair<List<SearchTeiModel>, String>> swapTeiListData();
-
         void setPrograms(List<ProgramModel> programModels);
 
         void clearList(String uid);
@@ -39,10 +37,6 @@ public class SearchTEContractsModule {
         Flowable<RowAction> rowActionss();
 
         Flowable<Trio<String, String, Integer>> optionSetActions();
-
-        Flowable<Integer> onlinePage();
-
-        Flowable<Integer> offlinePage();
 
         void clearData();
 
@@ -77,8 +71,6 @@ public class SearchTEContractsModule {
 
         void onTEIClick(String TEIuid, boolean isOnline);
 
-        //void getTrakedEntities();
-
         TrackedEntityTypeModel getTrackedEntityName();
 
         ProgramModel getProgramModel();
@@ -94,5 +86,7 @@ public class SearchTEContractsModule {
         Observable<List<OrganisationUnitModel>> getOrgUnits();
 
         String getProgramColor(String uid);
+
+        Pair<PagedList<SearchTeiModel>, String> getMessage(PagedList<SearchTeiModel> list);
     }
 }

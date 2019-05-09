@@ -193,7 +193,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                             else
                                 return searchRepository.searchTrackedEntitiesAll(selectedProgram, orgUnitsUid, map);
                         })
-                        //.map(pagedListLiveData -> getMessage(pagedListLiveData))
+                        .doOnError(this::handleError)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(view::setLiveData, Timber::d)
@@ -209,133 +209,10 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     //------------------------------------------
     //region DATA
-   /* @Override
-    public void getTrakedEntities() {
-        if (!NetworkUtils.isOnline(view.getContext()) || selectedProgram == null || Build.VERSION.SDK_INT <= 19)
-            compositeDisposable.add(
-                    queryProcessor
-                            .map(map -> {
-                                if(!NetworkUtils.isOnline(view.getContext()) || selectedProgram == null || Build.VERSION.SDK_INT <= 19)
-                                    return searchRepository.searchTrackedEntitiesOffline(selectedProgram, orgUnitsUid, map);
-                                else
-                                    return searchRepository.searchTrackedEntitiesOffline(selectedProgram, orgUnitsUid, map);
-                            })
-                            .map(pagedListLiveData -> getMessage(pagedListLiveData))
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(view::setLiveData, Timber::d)
+    @Override
+    public Pair<PagedList<SearchTeiModel>, String> getMessage(PagedList<SearchTeiModel> list) {
 
-                            *//*.map(trackedEntityInstanceModels -> {
-                                List<SearchTeiModel> teiModels = new ArrayList<>();
-                                for (TrackedEntityInstanceModel tei : trackedEntityInstanceModels)
-                                    if (view.fromRelationshipTEI() == null || !tei.uid().equals(view.fromRelationshipTEI())) //If fetching for relationship, discard selected TEI
-                                        teiModels.add(new SearchTeiModel(tei, new ArrayList<>()));
-                                return teiModels;
-                            })*//*
-
-            );
-        *//*else
-            compositeDisposable.add(
-                    view.onlinePage()
-                            .filter(page -> selectedProgram != null)
-                            .filter(page -> page > 0)
-                            .startWith(1)
-                            .flatMap(page -> {
-                                this.currentPage = page;
-
-                                return Flowable.defer(() -> searchRepository.trackedEntityInstances2(trackedEntity.uid(), selectedProgram, queryData, page, orgUnits).toFlowable(BackpressureStrategy.BUFFER))
-                                        .observeOn(Schedulers.io())
-                                        .subscribeOn(Schedulers.io())
-                                        .doOnError(this::handleError)
-                                        .onErrorReturn(data -> new ArrayList<>()); //If there is an error returns an empty list
-
-                            })
-                            .map(trackedEntityInstances -> {
-                                List<SearchTeiModel> teiList = new ArrayList<>();
-                                for (TrackedEntityInstance tei : trackedEntityInstances) {
-                                    if (view.fromRelationshipTEI() == null || !tei.uid().equals(view.fromRelationshipTEI())) { //If fetching for relationship, discard selected TEI
-                                        List<TrackedEntityAttributeValueModel> attributeModels = new ArrayList<>();
-                                        TrackedEntityAttributeValueModel.Builder attrValueBuilder = TrackedEntityAttributeValueModel.builder();
-                                        if (tei.trackedEntityAttributeValues() != null) {
-                                            for (TrackedEntityAttributeValue attrValue : tei.trackedEntityAttributeValues()) {
-                                                attrValueBuilder.value(attrValue.value())
-                                                        .created(attrValue.created())
-                                                        .lastUpdated(attrValue.lastUpdated())
-                                                        .trackedEntityAttribute(attrValue.trackedEntityAttribute())
-                                                        .trackedEntityInstance(tei.uid());
-                                                attributeModels.add(attrValueBuilder.build());
-                                            }
-                                        }
-                                        TrackedEntityInstanceModel model = TrackedEntityInstanceModel.builder()
-                                                .created(tei.created())
-                                                .id(tei.id())
-                                                .lastUpdated(tei.lastUpdated())
-                                                .state(tei.state())
-                                                .coordinates(tei.coordinates())
-                                                .createdAtClient(tei.createdAtClient())
-                                                .featureType(tei.featureType())
-                                                .lastUpdatedAtClient(tei.lastUpdatedAtClient())
-                                                .organisationUnit(tei.organisationUnit())
-                                                .uid(tei.uid())
-                                                .trackedEntityType(tei.trackedEntityType())
-                                                .build();
-                                        SearchTeiModel teiModel = new SearchTeiModel(model, attributeModels);
-                                        teiList.add(teiModel);
-                                    }
-                                }
-                                return teiList;
-                            })
-                            .flatMap(list -> searchRepository.transformIntoModel(list, selectedProgram))
-                            .map(list -> {
-                                List<SearchTeiModel> searchTeiModels = new ArrayList<>();
-                                for (SearchTeiModel searchTeiModel : list)
-                                    if (searchTeiModel.isOnline() || !searchTeiModel.getEnrollmentModels().isEmpty())
-                                        searchTeiModels.add(searchTeiModel);
-                                return searchTeiModels;
-                            })
-                            *//**//*.flatMap(list -> {
-                                int minAttrToSearch = selectedProgram.minAttributesRequiredToSearch() != null ? selectedProgram.minAttributesRequiredToSearch() : 0;
-                                if (currentPage == 1 && (minAttrToSearch <= queryData.size()))
-                                    return searchRepository.trackedEntityInstancesToUpdate(trackedEntity.uid(), selectedProgram, queryData, list.size())
-                                            .map(trackedEntityInstanceModels -> {
-                                                List<SearchTeiModel> helperList = new ArrayList<>();
-
-                                                for (SearchTeiModel searchTeiModel : list) {
-                                                    boolean toUpdate = false;
-                                                    for (TrackedEntityInstanceModel tei : trackedEntityInstanceModels) {
-                                                        if (searchTeiModel.getTeiModel().uid().equals(tei.uid())) {
-                                                            toUpdate = true;
-                                                        }
-                                                    }
-                                                    if (!toUpdate)
-                                                        helperList.add(searchTeiModel);
-                                                }
-
-                                                for (TrackedEntityInstanceModel tei : trackedEntityInstanceModels) {
-                                                    if (view.fromRelationshipTEI() == null || !tei.uid().equals(view.fromRelationshipTEI()))
-                                                        helperList.add(new SearchTeiModel(tei, new ArrayList<>()));
-                                                }
-
-                                                return helperList;
-                                            }).toFlowable(BackpressureStrategy.LATEST);
-                                else
-                                    return Flowable.just(list);
-                            })*//**//*
-                            .flatMap(list -> searchRepository.transformIntoModel(list, selectedProgram))
-                            //.map(this::getMessage)
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(view.swapTeiListData(), Timber::d)
-            );*//*
-    }*/
-
-    private Pair<LiveData<PagedList<SearchTeiModel>>, String> getMessage(LiveData<PagedList<SearchTeiModel>> list) {
-
-        int size;
-        if(list.getValue() == null)
-            size = 0;
-        else
-            size = list.getValue().size();
+        int size = list.size();
 
         String messageId = "";
         if (selectedProgram != null && !selectedProgram.displayFrontPageList()) {
@@ -439,7 +316,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
             getProgramTrackedEntityAttributes();
 
         queryProcessor.onNext(new HashMap<>());
-        //getTrakedEntities(); //TODO: Check if queryData dataElements are only those from the selectedProgram
 
     }
 

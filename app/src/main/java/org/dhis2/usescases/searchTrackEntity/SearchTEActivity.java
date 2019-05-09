@@ -135,7 +135,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             binding.scrollView.setAdapter(searchRelationshipAdapter);
         } else {
             liveAdapter = new SearchTeiLiveAdapter(presenter);
-            //searchTEAdapter = new SearchTEAdapter(presenter, metadataRepository);
             binding.scrollView.setAdapter(liveAdapter);
         }
 
@@ -211,26 +210,10 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     }
 
     @Override
-    public Flowable<Integer> onlinePage() {
-        if (program != null)
-            return onlinePagerProcessor;
-        else
-            return Flowable.just(-1);
-    }
-
-    @Override
-    public Flowable<Integer> offlinePage() {
-        return offlinePagerProcessor;
-    }
-
-    @Override
     public void clearData() {
         binding.progressLayout.setVisibility(View.VISIBLE);
-        //endlessRecyclerViewScrollListener.resetState(NetworkUtils.isOnline(this) ? 1 : 0);
         if (fromRelationship)
             searchRelationshipAdapter.clear();
-        //else
-            //searchTEAdapter.clear();
     }
 
     @Override
@@ -286,57 +269,35 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     public void setLiveData(LiveData<PagedList<SearchTeiModel>> liveData) {
         binding.progressLayout.setVisibility(View.GONE);
         if (!fromRelationship) {
-            binding.messageContainer.setVisibility(View.GONE);
-            liveData.observeForever(searchTeiModels -> liveAdapter.submitList(searchTeiModels));
-
-            //if (liveData.val1().isEmpty()) {
-            //binding.messageContainer.setVisibility(View.GONE);
-            //liveData.val0().observe(this, liveAdapter::submitList);
-            //} else {
-            // binding.messageContainer.setVisibility(View.VISIBLE);
-            //binding.message.setText(liveData.val1());
-            //}
-        }/* else {
-            if (liveData.val1().isEmpty()) {
-                binding.messageContainer.setVisibility(View.GONE);
-                searchRelationshipAdapter.setItems(liveData.val0().getValue().snapshot());
-            } else {
-                binding.messageContainer.setVisibility(View.VISIBLE);
-                binding.message.setText(liveData.val1());
-            }
-        }*/
-    }
-
-    @Override
-    public Consumer<Pair<List<SearchTeiModel>, String>> swapTeiListData() {
-        return data -> {
-            binding.progressLayout.setVisibility(View.GONE);
-            if (!fromRelationship) {
-                if (data.val1().isEmpty()) {
+            liveData.observeForever(searchTeiModels -> {
+                Pair<PagedList<SearchTeiModel>, String> data = presenter.getMessage(searchTeiModels);
+                if(data.val1().isEmpty()){
                     binding.messageContainer.setVisibility(View.GONE);
-                    searchTEAdapter.setTeis(data.val0());
-                } else if (searchTEAdapter.getItemCount() == 0) {
+                    liveAdapter.submitList(data.val0());
+                } else {
                     binding.messageContainer.setVisibility(View.VISIBLE);
                     binding.message.setText(data.val1());
                 }
 
-
-            } else {
+            });
+        } else {
+            liveData.observeForever(searchTeiModels -> {
+                Pair<PagedList<SearchTeiModel>, String> data = presenter.getMessage(searchTeiModels);
                 if (data.val1().isEmpty()) {
                     binding.messageContainer.setVisibility(View.GONE);
-                    searchRelationshipAdapter.setItems(data.val0());
+                    searchRelationshipAdapter.setItems(data.val0().snapshot());
                 } else if (searchTEAdapter.getItemCount() == 0) {
                     binding.messageContainer.setVisibility(View.VISIBLE);
                     binding.message.setText(data.val1());
                 }
-            }
-        };
+            });
+        }
     }
+
 
     @Override
     public void clearList(String uid) {
         this.initialProgram = uid;
-
         if (uid == null)
             binding.programSpinner.setSelection(0);
     }
