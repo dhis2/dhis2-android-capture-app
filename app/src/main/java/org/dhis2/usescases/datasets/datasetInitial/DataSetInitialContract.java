@@ -24,7 +24,7 @@ public class DataSetInitialContract {
 
         void showOrgUnitDialog(List<OrganisationUnitModel> data);
 
-        void showPeriodSelector(PeriodType periodType, List<DateRangeInputPeriodModel> periods);
+        void showPeriodSelector(PeriodType periodType, List<DateRangeInputPeriodModel> periods, Integer openFuturePeriods);
 
         void showCatComboSelector(String catOptionUid, List<CategoryOption> data);
 

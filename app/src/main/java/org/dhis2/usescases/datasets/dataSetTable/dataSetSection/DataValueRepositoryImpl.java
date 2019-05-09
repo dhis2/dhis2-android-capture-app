@@ -58,8 +58,8 @@ public class DataValueRepositoryImpl implements DataValueRepository {
             "WHERE DataValue.organisationUnit = ? " +
             "AND DataValue.attributeOptionCombo = ? " +
             "AND DataSetDataElementLink.dataSet = ? " +
-            "AND DataValue.period = ? " +
-            "AND DataElement.aggregationType IS NOT 'NONE'"
+            "AND DataValue.period = ? "
+            //"AND DataElement.aggregationType IS NOT 'NONE'"
             /*"AND Section.name = ?"*/;
 
     private final String CATEGORY_OPTION = "SELECT CategoryOption.*, Category.uid AS category, section.displayName as SectionName, CategoryCombo.uid as catCombo,CategoryCategoryComboLink.sortOrder as sortOrder " +
