@@ -55,28 +55,27 @@
                 android:paddingEnd="40dp">
 
 
+                <!--  <ImageButton
+                      android:id="@+id/qr_button"
+                      style="@style/ActionIconNoPadding"
+                      android:onClick="@{presenter::onQRClick}"
+                      android:tint="#5C5C5C"
+                      app:layout_constraintBottom_toBottomOf="@id/server_url"
+                      app:layout_constraintEnd_toEndOf="parent"
+                      app:layout_constraintTop_toTopOf="@id/server_url"
+                      app:srcCompat="@drawable/ic_qr"
+                      tools:ignore="ContentDescription" />-->
+
                 <ImageButton
-                    android:id="@+id/qr_button"
+                    android:id="@+id/urlInfo"
                     style="@style/ActionIconNoPadding"
-                    android:onClick="@{presenter::onQRClick}"
+                    android:onClick="@{presenter::onUrlInfoClick}"
                     android:tint="#5C5C5C"
                     app:layout_constraintBottom_toBottomOf="@id/server_url"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@id/server_url"
-                    app:srcCompat="@drawable/ic_qr"
+                    app:srcCompat="@drawable/ic_info_outline"
                     tools:ignore="ContentDescription" />
-
-                <!--<ImageButton
-                    android:id="@+id/visibility_button"
-                    style="@style/ActionIcon"
-                    android:layout_toEndOf="@id/user_pass"
-                    android:onClick="@{presenter::onVisibilityClick}"
-                    android:tint="?colorPrimary"
-                    app:layout_constraintBottom_toBottomOf="@id/user_pass"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/user_pass"
-                    app:srcCompat="@drawable/ic_visibility_off"
-                    tools:ignore="ContentDescription" />-->
 
                 <ImageView
                     android:id="@+id/serverIcon"
@@ -97,9 +96,8 @@
                     android:textColorHint="@color/text_black_808"
                     android:theme="@style/loginInputText"
                     app:layout_constraintBottom_toTopOf="@+id/user_name"
-                    app:layout_constraintEnd_toStartOf="@id/qr_button"
+                    app:layout_constraintEnd_toStartOf="@id/urlInfo"
                     app:layout_constraintStart_toEndOf="@id/serverIcon"
-
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintVertical_chainStyle="packed">
 
@@ -113,7 +111,9 @@
                         android:padding="5dp"
                         android:text="@string/login_https"
                         android:textColor="@color/text_black_333"
-                        android:textSize="17sp" />
+                        android:textSize="17sp"
+                        app:drawableEndCompat="@drawable/ic_i_qr_code"
+                        tools:drawableEnd="@drawable/ic_i_qr_code" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 

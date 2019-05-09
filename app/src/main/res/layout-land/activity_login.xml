@@ -17,152 +17,87 @@
 
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/white"
         android:focusableInTouchMode="true">
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.3"
-            tools:layout_editor_absoluteX="178dp"
-            tools:layout_editor_absoluteY="25dp" />
-
-        <RelativeLayout
-            android:id="@+id/logo"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:background="?colorPrimary"
-            android:gravity="center"
-            android:transitionName="logo"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@id/guideline"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <!--  <com.airbnb.lottie.LottieAnimationView
-                  android:id="@+id/lottieView"
-                  android:layout_width="match_parent"
-                  android:layout_height="match_parent"
-                  android:scaleType="centerCrop"
-                  android:visibility="gone"
-                  app:lottie_autoPlay="false"
-                  app:lottie_loop="true"
-                  app:lottie_rawRes="@raw/world_lottie" />-->
-
-            <!-- <include
-                 android:id="@+id/logo_layout"
-                 layout="@layout/logo_dhis"
-                 android:layout_width="wrap_content"
-                 android:layout_height="wrap_content"
-                 android:layout_centerInParent="true" />-->
-
-            <ImageView
-                android:id="@+id/dhisLogo"
-                android:layout_width="wrap_content"
-                android:layout_height="60dp"
-                android:layout_centerInParent="true"
-                android:layout_margin="10dp"
-                android:tint="@color/white"
-                app:srcCompat="@drawable/ic_dhis_white" />
-
-            <ImageView
-                android:id="@+id/logo_flag"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:alpha="0"
-                tools:src="@drawable/sierra_leone" />
-
-            <LinearLayout
-                android:id="@+id/sync_layout"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_below="@id/dhisLogo"
-                android:layout_margin="20dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="20dp"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:visibility="gone">
-
-                <TextView
-                    android:id="@+id/metadataText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
-                    android:gravity="center_vertical"
-                    android:text="@string/syncing_configuration"
-                    android:textColor="@color/colorAccent"
-                    app:drawableEnd="@{@drawable/animator_sync}" />
-
-                <TextView
-                    android:id="@+id/eventsText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
-                    android:alpha=".3"
-                    android:gravity="center_vertical"
-                    android:text="@string/syncing_data_shortly"
-                    android:textColor="@color/colorAccent" />
-
-            </LinearLayout>
-        </RelativeLayout>
-
         <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:orientation="vertical"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/guideline"
-            app:layout_constraintTop_toTopOf="parent">
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+
+            <RelativeLayout
+                android:id="@+id/logo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?colorPrimary">
+
+                <ImageView
+                    android:layout_width="200dp"
+                    android:layout_height="100dp"
+                    android:layout_marginStart="85dp"
+                    app:srcCompat="@drawable/ic_dhis_white" />
+
+            </RelativeLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/credentialLayout"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_margin="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
                 android:layout_weight="1"
-                android:gravity="center">
+                android:gravity="center"
+                android:paddingStart="300dp"
+                android:paddingEnd="300dp">
 
+
+                <!--  <ImageButton
+                      android:id="@+id/qr_button"
+                      style="@style/ActionIconNoPadding"
+                      android:onClick="@{presenter::onQRClick}"
+                      android:tint="#5C5C5C"
+                      app:layout_constraintBottom_toBottomOf="@id/server_url"
+                      app:layout_constraintEnd_toEndOf="parent"
+                      app:layout_constraintTop_toTopOf="@id/server_url"
+                      app:srcCompat="@drawable/ic_qr"
+                      tools:ignore="ContentDescription" />-->
 
                 <ImageButton
-                    android:id="@+id/qr_button"
-                    style="@style/ActionIcon"
-                    android:onClick="@{presenter::onQRClick}"
-                    android:tint="?colorPrimary"
+                    android:id="@+id/urlInfo"
+                    style="@style/ActionIconNoPadding"
+                    android:onClick="@{presenter::onUrlInfoClick}"
+                    android:tint="#5C5C5C"
                     app:layout_constraintBottom_toBottomOf="@id/server_url"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@id/server_url"
-                    app:srcCompat="@drawable/ic_qr"
+                    app:srcCompat="@drawable/ic_info_outline"
                     tools:ignore="ContentDescription" />
 
-                <ImageButton
-                    android:id="@+id/visibility_button"
-                    style="@style/ActionIcon"
-                    android:layout_toEndOf="@id/user_pass"
-                    android:onClick="@{presenter::onVisibilityClick}"
-                    android:tint="?colorPrimary"
-                    app:layout_constraintBottom_toBottomOf="@id/user_pass"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/user_pass"
-                    app:srcCompat="@drawable/ic_visibility_off"
-                    tools:ignore="ContentDescription" />
+                <ImageView
+                    android:id="@+id/serverIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="@id/server_url"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/server_url"
+                    app:srcCompat="@drawable/ic_i_url" />
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/server_url"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginEnd="12dp"
                     android:hint="@string/url_hint"
                     android:textColorHint="@color/text_black_808"
                     android:theme="@style/loginInputText"
                     app:layout_constraintBottom_toTopOf="@+id/user_name"
-                    app:layout_constraintEnd_toStartOf="@id/qr_button"
-                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/urlInfo"
+                    app:layout_constraintStart_toEndOf="@id/serverIcon"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintVertical_chainStyle="packed">
 
@@ -176,19 +111,45 @@
                         android:padding="5dp"
                         android:text="@string/login_https"
                         android:textColor="@color/text_black_333"
-                        android:textSize="17sp" />
+                        android:textSize="17sp"
+                        app:drawableEndCompat="@drawable/ic_i_qr_code"
+                        tools:drawableEnd="@drawable/ic_i_qr_code" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <ImageView
+                    android:id="@+id/userIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="@id/user_name"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/user_name"
+                    app:srcCompat="@drawable/ic_i_user" />
+
+                <ImageButton
+                    android:id="@+id/clearUserNameButton"
+                    style="@style/ActionIconNoPadding"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
+                    app:layout_constraintBottom_toBottomOf="@id/user_name"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/user_name"
+                    app:srcCompat="@drawable/ic_close" />
+
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/user_name"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginEnd="12dp"
                     android:hint="@string/user_hint"
                     android:textColorHint="@color/text_black_808"
                     android:theme="@style/loginInputText"
                     app:layout_constraintBottom_toTopOf="@+id/user_pass"
+                    app:layout_constraintEnd_toStartOf="@id/clearUserNameButton"
+                    app:layout_constraintStart_toEndOf="@id/userIcon"
                     app:layout_constraintTop_toBottomOf="@+id/server_url"
                     app:layout_constraintVertical_chainStyle="spread">
 
@@ -205,17 +166,40 @@
 
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <ImageView
+                    android:id="@+id/passIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="@id/user_pass"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/user_pass"
+                    app:srcCompat="@drawable/ic_i_block" />
+
+                <ImageButton
+                    android:id="@+id/clearPassButton"
+                    style="@style/ActionIconNoPadding"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
+                    app:layout_constraintBottom_toBottomOf="@id/user_pass"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/user_pass"
+                    app:srcCompat="@drawable/ic_close" />
+
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/user_pass"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginEnd="12dp"
                     android:hint="@string/password_hint"
                     android:textColorHint="@color/text_black_808"
                     android:theme="@style/loginInputText"
+                    app:endIconMode="password_toggle"
                     app:layout_constraintBottom_toTopOf="@+id/biometricButton"
-                    app:layout_constraintEnd_toStartOf="@id/visibility_button"
-                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/clearPassButton"
+                    app:layout_constraintStart_toEndOf="@id/passIcon"
                     app:layout_constraintTop_toBottomOf="@+id/user_name"
                     app:layout_constraintVertical_chainStyle="spread">
 
@@ -252,16 +236,16 @@
                     android:id="@+id/account_recovery"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="@dimen/primaryTextSize"
-                    android:gravity="center"
-                    android:textColor="@color/colorPrimary"
-                    app:layout_constraintTop_toBottomOf="@id/biometricButton"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    android:padding="6dp"
                     android:layout_marginTop="12dp"
+                    android:gravity="center"
                     android:onClick="@{()->presenter.onAccountRecovery()}"
-                    android:text="@string/account_recovery"/>
+                    android:padding="6dp"
+                    android:text="@string/account_recovery"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="@dimen/textSize_12"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/biometricButton" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -288,42 +272,65 @@
                     android:indeterminate="true"
                     app:progressColor="@{@color/colorPrimary}" />
             </LinearLayout>
+            <!--style="@style/FullWidthButton"-->
 
-
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/login"
-                style="@style/FullWidthButton"
-                android:onClick="@{()-> presenter.onButtonClick()}"
-                android:text="@string/log_in_button" />
-
-            <LinearLayout
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:layout_marginStart="300dp"
+                android:layout_marginEnd="300dp"
+                android:onClick="@{()-> presenter.onButtonClick()}"
+                android:text="@string/log_in_button"
+                android:textSize="12sp"
+                app:strokeColor="#61333333" />
+
+            <LinearLayout
+                android:id="@+id/unlock_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="300dp"
+                android:layout_marginEnd="300dp"
+                android:layout_marginBottom="16dp"
                 android:orientation="horizontal"
-                android:visibility="gone">
+                android:visibility="visible">
 
-                <Button
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/logout"
-                    style="@style/HalfWidthButton"
-                    android:layout_marginEnd="4dp"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    android:layout_weight="1"
                     android:onClick="onLogoutClick"
-                    android:text="@string/log_out" />
+                    android:text="@string/log_out"
+                    android:textSize="@dimen/textSize_12"
+                    app:strokeColor="#61333333" />
 
-                <Button
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/unlock"
-                    style="@style/HalfWidthButton"
-                    android:layout_marginStart="4dp"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="1"
                     android:onClick="onUnlockClick"
-                    android:text="@string/unlock_button" />
+                    android:text="@string/unlock_button"
+                    android:textSize="@dimen/textSize_12"
+                    app:strokeColor="#61333333" />
 
             </LinearLayout>
         </LinearLayout>
 
         <!-- PIN LAYOUT -->
+
         <include
             android:id="@+id/pin_layout"
             layout="@layout/pin_layout"
             android:visibility="gone" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </RelativeLayout>
 </layout>

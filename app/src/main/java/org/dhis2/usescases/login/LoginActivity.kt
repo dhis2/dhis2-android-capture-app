@@ -1,28 +1,30 @@
 package org.dhis2.usescases.login
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
-import android.text.InputType
 import android.text.TextUtils.isEmpty
 import android.text.TextWatcher
 import android.util.Patterns
+import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
 import android.webkit.URLUtil
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AlertDialog
-import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.andrognito.pinlockview.PinLockListener
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import de.adorsys.android.securestoragelibrary.SecurePreferences
 import okhttp3.HttpUrl
 import org.dhis2.App
+import org.dhis2.Bindings.onRightDrawableClicked
 import org.dhis2.R
 import org.dhis2.data.tuples.Trio
 import org.dhis2.databinding.ActivityLoginBinding
@@ -59,6 +61,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     private var testingCredentials: List<TestingCredential> = ArrayList()
 
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
 
         var loginComponent = (applicationContext as App).loginComponent()
@@ -100,6 +103,8 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
                 // nothing
             }
         })
+
+        binding.serverUrlEdit.onRightDrawableClicked { presenter.onQRClick(binding.serverUrl) }
 
         setTestingCredentials()
         setAutocompleteAdapters()
@@ -382,4 +387,13 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         intent.putExtra(WEB_VIEW_URL, binding.serverUrlEdit.text.toString() + ACCOUNT_RECOVERY);
         startActivity(intent);
     }
+
+    override fun displayAlertDialog(titleResource: Int, descriptionResource: Int, negativeResource: Int?, positiveResource: Int) {
+       MaterialAlertDialogBuilder(this, R.style.DhisMaterialDialog)
+               .setTitle(titleResource)
+               .setMessage(descriptionResource)
+               .setPositiveButton(positiveResource,null)
+               .show()
+    }
+
 }
