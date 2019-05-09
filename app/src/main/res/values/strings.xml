@@ -432,5 +432,6 @@
     <string name="error_no_network_during_sync">You lost your internet connection while performing your configuration sync. Please try again later</string>
     <string name="data_set_closed">Close</string>
     <string name="data_set_open">Open</string>
+    <string name="unsupported_value_type">Unsupported value type</string>
 
 </resources>
