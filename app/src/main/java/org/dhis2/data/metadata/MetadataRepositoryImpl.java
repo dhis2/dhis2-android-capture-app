@@ -463,8 +463,7 @@ public class MetadataRepositoryImpl implements MetadataRepository {
 
         String optionQuery = "SELECT Option.* FROM Option WHERE Option.optionSet = ? " +
                 (!optionsToHide.isEmpty() ? "AND Option.uid NOT IN (" + formattedOptionsToHide + ") " : "") +
-                (!isEmpty(text) ? "AND Option.displayName LIKE '%" + text + "%' " : "") +
-                pageQuery;
+                (!isEmpty(text) ? "AND Option.displayName LIKE '%" + text + "%' " : "");
 
         return briteDatabase.createQuery(OptionModel.TABLE, optionQuery, idOptionSet)
                 .mapToList(OptionModel::create)
@@ -491,7 +490,12 @@ public class MetadataRepositoryImpl implements MetadataRepository {
                             iterator.remove();
 
                     }
-                    return optionList;
+                    int from = page * 15;
+                    int to = page * 15 + 15 > optionList.size() ? optionList.size() : page * 15 + 15;
+                    if (to > from)
+                        return optionList.subList(from, to);
+                    else
+                        return new ArrayList<>();
                 });
 /*
         return briteDatabase.createQuery(OptionModel.TABLE, options, idOptionSet)

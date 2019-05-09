@@ -144,8 +144,6 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
                 flowableProcessor,
                 flowableOptions);
 
-        binding.formRecycler.setAdapter(dataEntryAdapter);
-
         RecyclerView.LayoutManager layoutManager;
         if (arguments.renderType() != null && arguments.renderType().equals(ProgramStageSectionRenderingType.MATRIX.name())) {
             layoutManager = new GridLayoutManager(activity, 2);
@@ -154,6 +152,8 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
                     RecyclerView.VERTICAL, false);
 
         binding.formRecycler.setLayoutManager(layoutManager);
+        binding.formRecycler.setAdapter(dataEntryAdapter);
+
 
     }
 

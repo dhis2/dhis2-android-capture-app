@@ -15,7 +15,6 @@ import org.dhis2.data.forms.RulesRepository;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
-import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.D2;
@@ -331,7 +330,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         Event event = d2.eventModule().events.uid(eventUid).withAllChildren().get();
         Program program = d2.programModule().programs.uid(event.program()).withAllChildren().get();
         boolean isExpired = DateUtils.getInstance().isEventExpired(event.eventDate(), event.completedDate(), event.status(), program.completeEventsExpiryDays(), program.expiryPeriodType(), program.expiryDays());
-        boolean editable = isEnrollmentOpen() && /*event.status() == EventStatus.ACTIVE*/!isExpired && accessDataWrite && inOrgUnitRange(eventUid);
+        boolean editable = isEnrollmentOpen() && /*event.status() == EventStatus.ACTIVE*/!isExpired && getAccessDataWrite() && inOrgUnitRange(eventUid);
         return !editable;
     }
 
@@ -379,14 +378,19 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     @Override
     public Flowable<List<FieldViewModel>> list(String sectionUid) {
         accessDataWrite = getAccessDataWrite();
+        long time;
         return briteDatabase
                 .createQuery(TrackedEntityDataValueModel.TABLE, prepareStatement(sectionUid, eventUid))
                 .mapToList(this::transform)
                 .map(fieldViewModels -> {
-
+                    Timber.d("CHECK RENDERING FOR SECTION");
                     return checkRenderType(fieldViewModels);
                 })
-                .toFlowable(BackpressureStrategy.LATEST);
+                .toFlowable(BackpressureStrategy.LATEST)
+                .doOnSubscribe(subscription -> Timber.d("LIST SUBSCRIBED! at %s", System.currentTimeMillis()))
+                .doOnNext(onNext -> Timber.d("LIST ON NEXT! at %s", System.currentTimeMillis()))
+                .doOnComplete(() -> Timber.d("LIST COMPLETE! at %s", System.currentTimeMillis()))
+                ;
     }
 
     private ProgramStageSectionRenderingType renderingType(String sectionUid) {
@@ -401,7 +405,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     }
 
     private List<FieldViewModel> checkRenderType(List<FieldViewModel> fieldViewModels) {
-
+        long renderingCheckInitTime = System.currentTimeMillis();
         ArrayList<FieldViewModel> renderList = new ArrayList<>();
 
         for (FieldViewModel fieldViewModel : fieldViewModels) {
@@ -444,6 +448,8 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 renderList.add(fieldViewModel);
         }
 
+        Timber.d("RENDERING CHECK TIME IS %s", System.currentTimeMillis() - renderingCheckInitTime);
+
         return renderList;
 
     }
@@ -452,7 +458,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     @Override
     public Flowable<List<FieldViewModel>> list() {
 
-        return Flowable.fromCallable(() -> {
+       /* return Flowable.fromCallable(() -> {
 
             long init = System.currentTimeMillis();
             accessDataWrite = getAccessDataWrite();
@@ -476,13 +482,15 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
             Timber.d("list() took %s to load %s viewmodels", finalTime, fieldViewModelList.size());
 
             return fieldViewModelList;
-        }).map(this::checkRenderType);
+        }).map(this::checkRenderType);*/
 
-       /* return briteDatabase
+        return briteDatabase
                 .createQuery(TrackedEntityDataValueModel.TABLE, prepareStatement(eventUid))
                 .mapToList(this::transform)
-                .map(this::checkRenderType)
-                .toFlowable(BackpressureStrategy.LATEST);*/
+                .map(fieldViewModels -> checkRenderType(fieldViewModels))
+                .toFlowable(BackpressureStrategy.BUFFER)
+                .doOnNext(onNext -> Timber.d("LIST ON NEXT! at %s", System.currentTimeMillis()))
+                ;
     }
 
     private List<FieldViewModel> getFieldViewModelFor(List<ProgramStageDataElement> programStageDataElementList) {
@@ -650,6 +658,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     @NonNull
     private FieldViewModel transform(@NonNull Cursor cursor) {
+        long transformInitTime = System.currentTimeMillis();
         String uid = cursor.getString(0);
         String displayName = cursor.getString(1);
         String valueTypeName = cursor.getString(2);
@@ -690,11 +699,12 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
         ProgramStageSectionRenderingType renderingType = renderingType(programStageSection);
 
+        Timber.d("TRANSFORM TIME IS %s", System.currentTimeMillis() - transformInitTime);
+
         return fieldFactory.create(uid, formName == null ? displayName : formName,
                 ValueType.valueOf(valueTypeName), mandatory, optionSet, dataValue,
                 programStageSection, allowFurureDates,
                 !isEventExpired(eventUid),
-//                isEnrollmentOpen() && eventStatus == EventStatus.ACTIVE && accessDataWrite && inOrgUnitRange(eventUid),
                 renderingType, description, fieldRendering, optionCount, objectStyle);
     }
 
@@ -716,7 +726,8 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                                 .map(Result::success)
                                 .onErrorReturn(error -> Result.failure(new Exception(error)))
 
-                );
+                )
+                .doOnNext(onNext -> Timber.d("RULES ON NEXT! at %s", System.currentTimeMillis()));
     }
 
     @Override
