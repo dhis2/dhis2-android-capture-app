@@ -119,11 +119,12 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
     }
 
     @Override
-    public void showPeriodSelector(PeriodType periodType, List<DateRangeInputPeriodModel> periods) {
+    public void showPeriodSelector(PeriodType periodType, List<DateRangeInputPeriodModel> periods, Integer openFuturePeriods) {
         new PeriodDialogInputPeriod()
                 .setInputPeriod(periods)
+                .setOpenFuturePeriods(openFuturePeriods)
                 .setPeriod(periodType)
-                .setMaxDate(DateUtils.getInstance().getNextPeriod(periodType, DateUtils.getInstance().getToday(), -1))
+                //.setMaxDate(DateUtils.getInstance().getNextPeriod(periodType, DateUtils.getInstance().getToday(), -1))
                 .setPossitiveListener(selectedDate -> {
                     Calendar calendar = Calendar.getInstance();
                     calendar.setTime(selectedDate);

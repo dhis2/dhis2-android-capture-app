@@ -32,14 +32,18 @@ public abstract class DataSetInitialModel {
     @NonNull
     public abstract List<Category> categories();
 
+    @Nullable
+    public abstract Integer openFuturePeriods();
+
     @NonNull
     public static DataSetInitialModel create(@NonNull String displayName,
                                              @Nullable String description,
                                              @NonNull String categoryCombo,
                                              @NonNull String categoryComboName,
                                              @NonNull PeriodType periodType,
-                                             @NonNull List<Category> categories) {
-        return new AutoValue_DataSetInitialModel(displayName, description, categoryCombo, categoryComboName, periodType, categories);
+                                             @NonNull List<Category> categories,
+                                             @Nullable Integer openFuturePeriods) {
+        return new AutoValue_DataSetInitialModel(displayName, description, categoryCombo, categoryComboName, periodType, categories, openFuturePeriods);
     }
 
     public final List<Category> getCategories() {

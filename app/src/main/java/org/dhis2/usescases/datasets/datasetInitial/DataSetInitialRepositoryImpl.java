@@ -29,7 +29,7 @@ public class DataSetInitialRepositoryImpl implements DataSetInitialRepository {
 
     @Override
     public Flowable<List<DateRangeInputPeriodModel>> getDataInputPeriod() {
-       return Flowable.just(d2.dataSetModule().dataSets.withDataInputPeriods().byUid().eq(dataSetUid).one().get())
+        return Flowable.just(d2.dataSetModule().dataSets.withDataInputPeriods().byUid().eq(dataSetUid).one().get())
                .flatMapIterable(dataSet -> dataSet.dataInputPeriods())
                .flatMap(dataInputPeriod ->
                        Flowable.just(d2.periodModule().periods.byPeriodId().eq(dataInputPeriod.period().uid()).get())
@@ -37,7 +37,10 @@ public class DataSetInitialRepositoryImpl implements DataSetInitialRepository {
                                .map(period -> {
                                    Date periodStartDate = period.startDate();
                                    Date periodEndDate = period.endDate();
-                                   return DateRangeInputPeriodModel.create(dataSetUid, dataInputPeriod.period().uid(), dataInputPeriod.openingDate(), dataInputPeriod.closingDate(), periodStartDate, periodEndDate);
+
+                                   return DateRangeInputPeriodModel.create(dataSetUid,
+                                           dataInputPeriod.period().uid(), dataInputPeriod.openingDate(),
+                                           dataInputPeriod.closingDate(), periodStartDate, periodEndDate);
                                })
                ).toList().toFlowable();
     }
@@ -56,7 +59,8 @@ public class DataSetInitialRepositoryImpl implements DataSetInitialRepository {
                             dataSet.categoryCombo().uid(),
                             categoryComboDisplayName,
                             dataSet.periodType(),
-                            categoryCombos.categories()
+                            categoryCombos.categories(),
+                            dataSet.openFuturePeriods()
                     );
                 });
     }

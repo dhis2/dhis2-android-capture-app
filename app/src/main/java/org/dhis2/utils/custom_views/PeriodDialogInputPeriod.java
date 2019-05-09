@@ -9,6 +9,9 @@ import org.dhis2.R;
 import org.dhis2.usescases.datasets.datasetInitial.DateRangeInputPeriodModel;
 import org.dhis2.utils.DateUtils;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -20,9 +23,15 @@ import androidx.databinding.DataBindingUtil;
 public class PeriodDialogInputPeriod extends PeriodDialog {
 
     private List<DateRangeInputPeriodModel> inputPeriod;
+    private Integer openFuturePeriods;
 
     public PeriodDialogInputPeriod setInputPeriod(List<DateRangeInputPeriodModel> inputPeriod) {
-        this.inputPeriod = inputPeriod;
+        this.inputPeriod = sortInputPeriod(inputPeriod);
+        return this;
+    }
+
+    public PeriodDialogInputPeriod setOpenFuturePeriods(Integer openFuturePeriods){
+        this.openFuturePeriods = openFuturePeriods;
         return this;
     }
 
@@ -38,14 +47,17 @@ public class PeriodDialogInputPeriod extends PeriodDialog {
             dismiss();
         });
         binding.clearButton.setOnClickListener(view -> dismiss());
+        if(inputPeriod.size()==0)
+            setDateWithOpenFuturePeriod(openFuturePeriods);
 
         binding.periodSubtitle.setText(getPeriod().name());
         boolean isAllowed = false;
 
         for (DateRangeInputPeriodModel inputPeriodModel : inputPeriod) {
             do{
-                if (getCurrentDate().after(inputPeriodModel.initialPeriodDate()) && getCurrentDate().before(inputPeriodModel.endPeriodDate())
-                        && (inputPeriodModel.openingDate() == null || (inputPeriodModel.openingDate() != null && DateUtils.getInstance().getToday().after(inputPeriodModel.openingDate())))
+                if ((getCurrentDate().after(inputPeriodModel.initialPeriodDate()) || getCurrentDate().equals(inputPeriodModel.initialPeriodDate())) && getCurrentDate().before(inputPeriodModel.endPeriodDate())
+                        && (inputPeriodModel.openingDate() == null || (inputPeriodModel.openingDate() != null && (DateUtils.getInstance().getToday().after(inputPeriodModel.openingDate())))
+                        || DateUtils.getInstance().getToday().equals(inputPeriodModel.openingDate()))
                         && (inputPeriodModel.closingDate() == null || (inputPeriodModel.closingDate() != null && DateUtils.getInstance().getToday().before(inputPeriodModel.closingDate()))))
                     isAllowed = true;
                 else if(getCurrentDate().before(inputPeriod.get(inputPeriod.size()-1).initialPeriodDate()) ||
@@ -84,7 +96,6 @@ public class PeriodDialogInputPeriod extends PeriodDialog {
                 }
 
                 checkConstraintDates();
-
                 if (inputPeriod.size() != 0 && !isPreviousAllowed) {
                     setRealCurrentDate(currentDate);
                     binding.selectedPeriod.setText(DateUtils.getInstance().getPeriodUIString(getPeriod(), currentDate, Locale.getDefault()));
@@ -119,10 +130,14 @@ public class PeriodDialogInputPeriod extends PeriodDialog {
                 }
             });
         }
-
         checkConstraintDates();
 
         return binding.getRoot();
+    }
+
+    private List<DateRangeInputPeriodModel> sortInputPeriod(List<DateRangeInputPeriodModel> inputPeriod){
+        Collections.sort(inputPeriod, (dateRangeInputPeriodModel, t1) -> dateRangeInputPeriodModel.initialPeriodDate().before(t1.initialPeriodDate()) ? 1:-1);
+        return inputPeriod;
     }
 
 }
