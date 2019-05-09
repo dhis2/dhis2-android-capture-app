@@ -7,7 +7,6 @@ import org.dhis2.utils.Constants;
 import org.hisp.dhis.android.core.D2;
 
 import androidx.annotation.NonNull;
-
 import io.reactivex.Completable;
 import io.reactivex.disposables.CompositeDisposable;
 

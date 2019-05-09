@@ -246,6 +246,7 @@
     <string name="default_relationship_label">Create relationship</string>
     <string name="next">Next</string>
     <string name="search_min_num_attr">You need to enter at least %d of the attributes to do a search</string>
+    <string name="search_attr">You need to enter at least one of the attributes to do a search</string>
     <string name="search_max_tei_reached">There is more than %d results. Please enter further search criteria</string>
     <string name="search_criteria_not_met">Your search criteria didn\'t return any result.\nRevise your criteria or enroll a new %s</string>
     <string name="search_init">Enter your search criteria</string>

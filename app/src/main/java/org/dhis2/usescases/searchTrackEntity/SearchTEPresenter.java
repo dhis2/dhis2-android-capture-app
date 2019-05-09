@@ -333,6 +333,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
         String messageId = "";
         if (selectedProgram != null && !selectedProgram.displayFrontPageList()) {
+            if (selectedProgram != null && selectedProgram.minAttributesRequiredToSearch() == 0 && queryData.size() == 0)
+                messageId = view.getContext().getString(R.string.search_attr);
             if (selectedProgram != null && selectedProgram.minAttributesRequiredToSearch() > queryData.size())
                 messageId = String.format(view.getContext().getString(R.string.search_min_num_attr), selectedProgram.minAttributesRequiredToSearch());
             else if (selectedProgram.maxTeiCountToReturn() != 0 && teiList.size() > selectedProgram.maxTeiCountToReturn())

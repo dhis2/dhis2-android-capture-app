@@ -1,5 +1,6 @@
 package org.dhis2.utils
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.databinding.DataBindingUtil
 import org.dhis2.R
@@ -13,6 +14,7 @@ class WebViewActivity : ActivityGlobalAbstract() {
         const val WEB_VIEW_URL = "url"
     }
 
+    @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val binding: ActivityWebviewBinding = DataBindingUtil.setContentView(this, R.layout.activity_webview)
@@ -20,6 +22,7 @@ class WebViewActivity : ActivityGlobalAbstract() {
         val url = intent?.extras?.getString(WEB_VIEW_URL)
 
         url?.let {
+            binding.webView.settings.javaScriptEnabled = true
             binding.webView.loadUrl(it)
         }
     }
