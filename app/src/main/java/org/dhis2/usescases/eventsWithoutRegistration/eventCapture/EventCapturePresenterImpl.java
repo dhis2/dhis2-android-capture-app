@@ -4,9 +4,8 @@ import android.os.Handler;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.databinding.ObservableField;
-
-import com.google.android.material.snackbar.Snackbar;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.FormSectionViewModel;
@@ -17,6 +16,7 @@ import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.tuples.Quartet;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureFragment.EventCaptureFormFragment;
+import org.dhis2.utils.OnDialogClickListener;
 import org.dhis2.utils.Result;
 import org.dhis2.utils.RulesActionCallbacks;
 import org.dhis2.utils.RulesUtilsProvider;
@@ -705,7 +705,24 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         canComplete = false;
         if (!snackBarIsShowing) {
             snackBarIsShowing = true;
-            Snackbar.make(view.getSnackbarAnchor(), showError.content(), Snackbar.LENGTH_INDEFINITE)
+            view.getAbstractActivity().runOnUiThread(() ->
+                    view.showInfoDialog(view.getContext().getString(R.string.error),
+                            showError.content(),
+                            view.getContext().getString(R.string.action_accept),
+                            null, new OnDialogClickListener() {
+                                @Override
+                                public void onPossitiveClick(AlertDialog alertDialog) {
+                                    snackBarIsShowing = false;
+                                }
+
+                                @Override
+                                public void onNegativeClick(AlertDialog alertDialog) {
+                                    snackBarIsShowing = false;
+                                }
+                            }).show()
+            );
+
+          /*  Snackbar.make(view.getSnackbarAnchor(), showError.content(), Snackbar.LENGTH_INDEFINITE)
                     .setAction(view.getAbstracContext().getString(R.string.delete), v1 -> {
                         if (model != null)
                             save(model.uid(), null);
@@ -717,7 +734,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                             super.onDismissed(transientBottomBar, event);
                         }
                     })
-                    .show();
+                    .show();*/
         }
 
     }
