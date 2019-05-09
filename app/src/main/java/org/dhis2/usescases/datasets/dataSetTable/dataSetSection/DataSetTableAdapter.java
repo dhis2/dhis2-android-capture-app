@@ -134,7 +134,7 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionMode
         rows.add(BUTTON, new FileCellRow(layoutInflater, processor,currentTableScale));
         rows.add(CHECKBOX, new RadioButtonRow(layoutInflater, processor, accessDataWrite,currentTableScale));
         rows.add(SPINNER, new SpinnerCellRow(layoutInflater, processor, accessDataWrite, processorOptionSet,currentTableScale));
-        rows.add(COORDINATES, new CoordinateRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name(), accessDataWrite,currentTableScale)); //TODO TABLE SCALE
+        rows.add(COORDINATES, new CoordinateRow(layoutInflater, processor, accessDataWrite,currentTableScale));
         rows.add(TIME, new DateTimeRow(layoutInflater, processor, TIME, true, accessDataWrite,currentTableScale));
         rows.add(DATE, new DateTimeRow(layoutInflater, processor, DATE, true, accessDataWrite, currentTableScale));
         rows.add(DATETIME, new DateTimeRow(layoutInflater, processor, DATETIME, true, accessDataWrite, currentTableScale));
@@ -355,7 +355,7 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionMode
                 changeCellItem(viewModels.get(0).size() - 1, viewModels.size() - 1, total + "", true);
             }
         }
-        notifyDataSetChanged();
+        changeCellItem(rowAction.columnPos(), rowAction.rowPos(), rowAction.value() != null ? rowAction.value() : "", false);
     }
 
     public void setShowRowTotal(Boolean showRowTotal) {
