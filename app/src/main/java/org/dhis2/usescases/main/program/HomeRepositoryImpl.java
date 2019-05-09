@@ -1,17 +1,16 @@
 package org.dhis2.usescases.main.program;
 
+import androidx.annotation.NonNull;
+
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.period.DatePeriod;
-import org.hisp.dhis.android.core.user.UserOrganisationUnitLinkModel;
 
 import java.util.List;
 
-import androidx.annotation.NonNull;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 
@@ -52,17 +51,55 @@ class HomeRepositoryImpl implements HomeRepository {
                     else
                         typeName = "DataSets";
 
-                    int count = 0;
-                    if (program.programType() == WITHOUT_REGISTRATION)
-                        if (!dateFilter.isEmpty())
-                            count = d2.eventModule().events.byProgramUid().eq(program.uid()).byEventDate().inDatePeriods(dateFilter).count();
-                        else
-                            count = d2.eventModule().events.byProgramUid().eq(program.uid()).count();
-                    else {
+                    int count;
+                    if (program.programType() == WITHOUT_REGISTRATION) {
                         if (!dateFilter.isEmpty()) {
-                            count = d2.eventModule().events.byProgramUid().eq(program.uid()).byEventDate().inDatePeriods(dateFilter).countTrackedEntityInstances();
-                        } else
-                            count = d2.eventModule().events.byProgramUid().eq(program.uid()).countTrackedEntityInstances();
+                            if (!orgUnitFilter.isEmpty()) {
+                                count = d2.eventModule().events
+                                        .byProgramUid().eq(program.uid())
+                                        .byEventDate().inDatePeriods(dateFilter)
+                                        .byOrganisationUnitUid().in(orgUnitFilter)
+                                        .count();
+                            } else {
+                                count = d2.eventModule().events
+                                        .byProgramUid().eq(program.uid())
+                                        .byEventDate().inDatePeriods(dateFilter)
+                                        .count();
+                            }
+                        } else if (!orgUnitFilter.isEmpty()) {
+                            count = d2.eventModule().events
+                                    .byProgramUid().eq(program.uid())
+                                    .byOrganisationUnitUid().in(orgUnitFilter)
+                                    .count();
+                        } else {
+                            count = d2.eventModule().events
+                                    .byProgramUid().eq(program.uid())
+                                    .count();
+                        }
+                    } else {
+                        if (!dateFilter.isEmpty()) {
+                            if (!orgUnitFilter.isEmpty()) {
+                                count = d2.eventModule().events
+                                        .byProgramUid().eq(program.uid())
+                                        .byEventDate().inDatePeriods(dateFilter)
+                                        .byOrganisationUnitUid().in(orgUnitFilter)
+                                        .countTrackedEntityInstances();
+                            } else {
+                                count = d2.eventModule().events
+                                        .byProgramUid().eq(program.uid())
+                                        .byEventDate().inDatePeriods(dateFilter)
+                                        .countTrackedEntityInstances();
+                            }
+                        } else if (!orgUnitFilter.isEmpty()) {
+                            count = d2.eventModule().events
+                                    .byProgramUid().eq(program.uid())
+                                    .byOrganisationUnitUid().in(orgUnitFilter)
+                                    .countTrackedEntityInstances();
+                        } else {
+                            count = d2.eventModule().events
+                                    .byProgramUid().eq(program.uid())
+                                    .countTrackedEntityInstances();
+                        }
                     }
 
                     return ProgramViewModel.create(

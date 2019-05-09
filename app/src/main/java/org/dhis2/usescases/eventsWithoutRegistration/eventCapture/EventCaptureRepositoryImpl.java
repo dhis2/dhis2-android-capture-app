@@ -28,6 +28,7 @@ import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramRule;
@@ -553,7 +554,6 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                                     else
                                         return Flowable.just(dataElementRules.get(lastUpdatedUid) != null ? dataElementRules.get(lastUpdatedUid) : new ArrayList<Rule>())
                                                 .map(rules -> rules.isEmpty() ? trasformToRule(mandatoryRules) : rules)
-                                                .filter(rules -> !rules.isEmpty())
                                                 .flatMap(rules -> Flowable.fromCallable(ruleEngine.evaluate(event, rules)));
                                 })
                                 .map(Result::success)
@@ -733,5 +733,10 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
             // This programstage has sections
             return FormSectionViewModel.createForSection(eventUid, cursor.getString(2), cursor.getString(3), cursor.getString(5));
         }
+    }
+
+    @Override
+    public Observable<List<OrganisationUnitLevel>> getOrgUnitLevels(){
+        return Observable.just(d2.organisationUnitModule().organisationUnitLevels.get());
     }
 }

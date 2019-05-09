@@ -5,6 +5,7 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.rules.models.RuleEffect;
 
@@ -99,6 +100,8 @@ public class EventCaptureContract {
         boolean canWrite();
 
         boolean hasExpired();
+
+        Observable<List<OrganisationUnitLevel>> getLevels();
     }
 
     public interface EventCaptureRepository {
@@ -145,6 +148,8 @@ public class EventCaptureContract {
         boolean isEnrollmentCancelled();
 
         boolean isEventExpired(String eventUid);
+
+        Observable<List<OrganisationUnitLevel>> getOrgUnitLevels();
     }
 
 }

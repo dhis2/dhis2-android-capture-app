@@ -13,7 +13,8 @@
     <string name="yes">yes</string>
     <string name="no">no</string>
     <string name="no_value">no value</string>
-    <string name="no_reserved_values">There are no more reserved values</string>
+    <string name="no_reserved_values">There are no more reserved values. Contact your system administrator</string>
+    <string name="no_reserved_values_connection">There are no more reserved values. Connect to the network to refill them</string>
 
     <!-- SyncService strings: -->
     <string name="sync_now">Synchronise now</string>
@@ -32,6 +33,7 @@
 
     <string name="search_result_text">%s results found</string>
     <string name="add_new">Add new</string>
+    <string name="add">Add</string>
     <string name="schedule_new">Schedule new</string>
     <string name="lorem" translatable="false">Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat</string>
     <string name="referral">Referral</string>
@@ -49,6 +51,7 @@
     <string name="data_ready">Your Data is ready</string>
     <string name="configuration_sync_failed">Configuration sync failed</string>
     <string name="data_sync_failed">Data sync failed</string>
+    <string name="account_recovery">Account recovery</string>
 
     <!--PERIOD-->
     <string name="DAILY">Daily</string>
@@ -72,6 +75,7 @@
     <string name="enter_positive_integer">Enter positive integer</string>
     <string name="filter_options">Filter options</string>
     <string name="choose_date">Choose date</string>
+    <string name="change_calendar">Change calendar</string>
 
     <!-- Status -->
     <string name="program_completed">Program Completed</string>
@@ -242,6 +246,7 @@
     <string name="default_relationship_label">Create relationship</string>
     <string name="next">Next</string>
     <string name="search_min_num_attr">You need to enter at least %d of the attributes to do a search</string>
+    <string name="search_attr">You need to enter at least one of the attributes to do a search</string>
     <string name="search_max_tei_reached">There is more than %d results. Please enter further search criteria</string>
     <string name="search_criteria_not_met">Your search criteria didn\'t return any result.\nRevise your criteria or enroll a new %s</string>
     <string name="search_init">Enter your search criteria</string>
@@ -371,6 +376,9 @@
     <string name="tuto_main_10">Log out to change user or server. You will be able to log in again even if there is no internet connection.</string>
     <string name="text_plus_colon">%s:</string>
     <string name="relationships">relationships</string>
+    <string name="empty_relationships">There are no relationships, click "+" to add a new one.</string>
+    <string name="empty_tei_add">There are no events registered, click "+" to add a new one.</string>
+    <string name="empty_tei_no_add">There are no events registered.</string>
     <string name="qr_data_values">Data values</string>
     <string name="info">Info</string>
     <string name="qr_no_id_error">Could not read this Id</string>
@@ -378,6 +386,7 @@
     <string name="dashboard_overview">Overview</string>
     <string name="dashboard_relationships">Relationships</string>
     <string name="dashboard_indicators">Indicators</string>
+    <string name="empty_indicators">There are no indicators for this program.</string>
     <string name="dashboard_notes">Notes</string>
     <string name="unable_to_complete">Unable to complete</string>
     <string name="field_errors">Some fields have errors. Please, check them to be able to complete</string>

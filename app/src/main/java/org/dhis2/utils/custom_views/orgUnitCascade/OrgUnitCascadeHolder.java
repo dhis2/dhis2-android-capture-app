@@ -12,6 +12,7 @@ import org.dhis2.R;
 import org.dhis2.data.tuples.Quartet;
 import org.dhis2.data.tuples.Quintet;
 import org.dhis2.databinding.OrgUnitCascadeLevelItemBinding;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -40,7 +41,10 @@ class OrgUnitCascadeHolder extends RecyclerView.ViewHolder {
                      String parent,
                      Quintet<String, String, String, Integer, Boolean> selectedOrgUnit,
                      String currentUid,
-                     OrgUnitCascadeAdapter adapter) {
+                     OrgUnitCascadeAdapter adapter,
+                     List<OrganisationUnitLevel> levels,
+                     int lastLevelSelected,
+                     boolean oneOption) {
 
         this.levelOrgUnit = organisationUnitModels;
         if (selectedOrgUnit != null) {
@@ -51,7 +55,16 @@ class OrgUnitCascadeHolder extends RecyclerView.ViewHolder {
                         ou1.val1().compareTo(ou2.val1()));
 
         ArrayList<String> data = new ArrayList<>();
-        data.add(String.format(context.getString(R.string.org_unit_select_level), getAdapterPosition() + 1));
+        String levelName = "";
+        if(levels != null)
+            for(OrganisationUnitLevel level: levels)
+                if(getAdapterPosition() + 1 == level.level().intValue())
+                    levelName = level.displayName();
+
+        if(isEmpty(levelName))
+            data.add(String.format(context.getString(R.string.org_unit_select_level), getAdapterPosition() + 1));
+        else
+            data.add(levelName);
 
         String selectedOrgUnitName = null;
         if(!isEmpty(currentUid))
@@ -59,19 +72,32 @@ class OrgUnitCascadeHolder extends RecyclerView.ViewHolder {
                 if(orgUnit.val0().equals(currentUid))
                     selectedOrgUnitName = orgUnit.val1();
 
-        if (binding.levelText.getText() == null || binding.levelText.getText().toString().isEmpty() || isEmpty(currentUid))
-            binding.levelText.setText(isEmpty(selectedOrgUnitName) ? String.format(context.getString(R.string.org_unit_select_level), getAdapterPosition() + 1) : selectedOrgUnitName);
-
         for (Quartet<String, String, String, Boolean> trio : levelOrgUnit)
             if (parent.isEmpty() || trio.val2().equals(parent)) //Only if ou is child of parent or is root
                 data.add(trio.val1());
 
-        if (data.size() > 1/* && selectedUid == null*/) {
-            itemView.setVisibility(View.VISIBLE);
-            setMenu(data, adapter);
-            binding.levelText.setOnClickListener(view -> menu.show());
-        } else if (data.size() <= 1)
-            itemView.setVisibility(View.GONE);
+        if (oneOption) {
+            itemView.setEnabled(true);
+            selectedUid = levelOrgUnit.get(0).val0();
+            binding.levelText.setText(data.get(1));
+            adapter.setSelectedParent(
+                    getAdapterPosition() + 1,
+                    selectedUid,
+                    levelOrgUnit.get(0).val3());
+            binding.levelText.setText(levelOrgUnit.get(0).val1());
+
+        }else {
+            if (data.size() > 1 && lastLevelSelected >= getAdapterPosition() ) {
+                itemView.setEnabled(true);
+                setMenu(data, adapter);
+                binding.levelText.setOnClickListener(view -> menu.show());
+            } else if (lastLevelSelected < getAdapterPosition() + 1 )
+                itemView.setEnabled(false);
+
+            binding.levelText.setText(isEmpty(selectedOrgUnitName) ? (isEmpty(levelName)?
+                    String.format(context.getString(R.string.org_unit_select_level), getAdapterPosition() + 1): levelName) : selectedOrgUnitName);
+        }
+
     }
 
     private void setMenu(ArrayList<String> data, OrgUnitCascadeAdapter adapter) {
@@ -93,4 +119,5 @@ class OrgUnitCascadeHolder extends RecyclerView.ViewHolder {
             return false;
         });
     }
+
 }

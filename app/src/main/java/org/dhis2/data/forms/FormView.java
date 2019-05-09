@@ -1,11 +1,12 @@
 package org.dhis2.data.forms;
 
+import com.mapbox.mapboxsdk.geometry.LatLng;
+
 import androidx.annotation.NonNull;
 
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
-import com.google.android.gms.maps.model.LatLng;
 
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;

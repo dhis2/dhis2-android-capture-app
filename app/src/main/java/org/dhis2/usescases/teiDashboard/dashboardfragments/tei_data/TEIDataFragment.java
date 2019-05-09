@@ -204,17 +204,28 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     @Override
     public Consumer<List<EventModel>> setEvents() {
         return events -> {
-            adapter.swapItems(events);
-            for (EventModel event : events) {
-                if (event.eventDate() != null) {
-                    if (event.eventDate().after(DateUtils.getInstance().getToday()))
-                        binding.teiRecycler.scrollToPosition(events.indexOf(event));
+            if (events.isEmpty()) {
+                binding.emptyTeis.setVisibility(View.VISIBLE);
+                if (binding.fab.getVisibility() == View.VISIBLE){
+                    binding.emptyTeis.setText(R.string.empty_tei_add);
                 }
-                if (hasCatComb && event.attributeOptionCombo() == null && !catComboShowed.contains(event)) {
-                    presenter.getCatComboOptions(event);
-                    catComboShowed.add(event);
-                } else if (!hasCatComb && event.attributeOptionCombo() == null)
-                    presenter.setDefaultCatOptCombToEvent(event.uid());
+                else{
+                    binding.emptyTeis.setText(R.string.empty_tei_no_add);
+                }
+            } else {
+                binding.emptyTeis.setVisibility(View.GONE);
+                adapter.swapItems(events);
+                for (EventModel event : events) {
+                    if (event.eventDate() != null) {
+                        if (event.eventDate().after(DateUtils.getInstance().getToday()))
+                            binding.teiRecycler.scrollToPosition(events.indexOf(event));
+                    }
+                    if (hasCatComb && event.attributeOptionCombo() == null && !catComboShowed.contains(event)) {
+                        presenter.getCatComboOptions(event);
+                        catComboShowed.add(event);
+                    } else if (!hasCatComb && event.attributeOptionCombo() == null)
+                        presenter.setDefaultCatOptCombToEvent(event.uid());
+                }
             }
         };
     }
@@ -344,7 +355,6 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
     @Override
     public void showQR(Intent intent) {
-
         startActivity(intent);
     }
 
@@ -356,6 +366,10 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     @Override
     public void openEventInitial(Intent intent) {
         this.startActivityForResult(intent, REQ_EVENT, null);
+    }
 
+    @Override
+    public void openEventCapture(Intent intent) {
+        this.startActivity(intent);
     }
 }

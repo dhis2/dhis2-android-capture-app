@@ -41,6 +41,7 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
     private final TextInputEditText editText;
     private final TextInputLayout inputLayout;
     private final View descriptionLabel;
+    private final View delete;
     private final boolean isSearchMode;
 
     private SpinnerViewModel viewModel;
@@ -53,6 +54,7 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
         this.iconView = mBinding.getRoot().findViewById(R.id.renderImage);
         this.inputLayout = mBinding.getRoot().findViewById(R.id.input_layout);
         this.descriptionLabel = mBinding.getRoot().findViewById(R.id.descriptionLabel);
+        this.delete = mBinding.getRoot().findViewById(R.id.delete);
         this.processor = processor;
         this.processorOptionSet = processorOptionSet;
         this.isSearchMode = isSearchMode;
@@ -62,12 +64,17 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
 
         editText.setOnClickListener(this);
 
+        delete.setOnClickListener(view -> deleteSelectedOption());
+
         editText.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus)
                 editText.performClick();
         });
+    }
 
-
+    private void deleteSelectedOption() {
+        setValueOption(null, null);
+        delete.setVisibility(View.GONE);
     }
 
     public void update(SpinnerViewModel viewModel) {
@@ -79,7 +86,15 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
         editText.setFocusable(false);
         editText.setClickable(viewModel.editable());
 
-        editText.setText(viewModel.value()); //option code is already transformed to value in the fieldviewmodelfactory implementation
+        String value = viewModel.value();
+        if (value != null && value.contains("_os_"))
+            value = value.split("_os_")[0];
+
+        editText.setText(value);
+
+        if (editText.getText() != null && !editText.getText().toString().isEmpty()) {
+            delete.setVisibility(View.VISIBLE);
+        }
 
         if (!isEmpty(viewModel.warning())) {
             inputLayout.setErrorTextAppearance(R.style.warning_appearance);
@@ -155,6 +170,13 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
     private void setValueOption(String optionDisplayName, String optionCode) {
 
         editText.setText(optionDisplayName);
+
+        if (optionDisplayName != null && !optionDisplayName.isEmpty()) {
+            delete.setVisibility(View.VISIBLE);
+        } else {
+            delete.setVisibility(View.GONE);
+        }
+
         processor.onNext(
                 RowAction.create(viewModel.uid(), isSearchMode ? optionDisplayName + "_os_" + optionCode : optionCode, true)
         );
