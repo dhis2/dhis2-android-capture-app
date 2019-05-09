@@ -170,6 +170,16 @@ public class PeriodDialog extends DialogFragment {
         return currentDate;
     }
 
+    public void setDateWithOpenFuturePeriod(Integer openFuture){
+        currentDate = DateUtils.getInstance().getNextPeriod(period, DateUtils.getInstance().getToday(), -1);
+        if(openFuture != null && openFuture != 0) {
+            for (int i = 0; i < openFuture; i++) {
+                currentDate = DateUtils.getInstance().getNextPeriod(period, currentDate, 1);
+            }
+        }
+        maxDate = currentDate;
+    }
+
     public PeriodType getPeriod() {
         return period;
     }

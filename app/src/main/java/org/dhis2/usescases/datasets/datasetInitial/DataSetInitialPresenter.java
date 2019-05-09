@@ -21,6 +21,8 @@ public class DataSetInitialPresenter implements DataSetInitialContract.Presenter
     private DataSetInitialContract.View view;
     private String catCombo;
     private D2 d2;
+    private Integer openFuturePeriods = 0;
+
     public DataSetInitialPresenter(DataSetInitialRepository dataSetInitialRepository, D2 d2) {
         this.dataSetInitialRepository = dataSetInitialRepository;
         this.d2 = d2;
@@ -38,6 +40,7 @@ public class DataSetInitialPresenter implements DataSetInitialContract.Presenter
                         .subscribe(
                                 dataSetInitialModel -> {
                                         catCombo = dataSetInitialModel.categoryCombo();
+                                        openFuturePeriods = dataSetInitialModel.openFuturePeriods();
                                         view.setData(dataSetInitialModel);
                                     },
                                 Timber::d
@@ -69,7 +72,7 @@ public class DataSetInitialPresenter implements DataSetInitialContract.Presenter
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(data -> {
-                            view.showPeriodSelector(periodType, data);
+                            view.showPeriodSelector(periodType, data, openFuturePeriods);
                         },
                         Timber::e)
         );
