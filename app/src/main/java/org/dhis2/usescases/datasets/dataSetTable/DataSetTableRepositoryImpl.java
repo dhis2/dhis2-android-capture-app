@@ -16,6 +16,7 @@ import org.hisp.dhis.android.core.period.PeriodType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -123,7 +124,7 @@ public class DataSetTableRepositoryImpl implements DataSetTableRepository {
 
     @Override
     public Flowable<Map<String, List<DataElementModel>>> getDataElements() {
-        Map<String, List<DataElementModel>> map = new HashMap<>();
+        Map<String, List<DataElementModel>> map = new LinkedHashMap<>();
         return briteDatabase.createQuery(DataElementModel.TABLE, DATA_ELEMENTS, dataSetUid, dataSetUid)
                 .mapToList(cursor -> {
                     DataElementModel dataElementModel = DataElementModel.create(cursor);
