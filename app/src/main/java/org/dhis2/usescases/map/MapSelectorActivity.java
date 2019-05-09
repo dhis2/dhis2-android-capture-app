@@ -12,18 +12,17 @@ import com.google.android.gms.location.LocationServices;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.Style;
 
 import org.dhis2.R;
-import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.jetbrains.annotations.NotNull;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
-import io.ona.kujaku.views.KujakuMapView;
 
 
 /**
@@ -32,7 +31,7 @@ import io.ona.kujaku.views.KujakuMapView;
 
 public class MapSelectorActivity extends ActivityGlobalAbstract {
 
-    private KujakuMapView mapView;
+    private MapView mapView;
     private MapboxMap map;
     private static final int ACCESS_COARSE_LOCATION_PERMISSION_REQUEST = 102;
     private FusedLocationProviderClient mFusedLocationClient;
@@ -71,7 +70,6 @@ public class MapSelectorActivity extends ActivityGlobalAbstract {
         mapView.getMapAsync(mapboxMap -> {
             map = mapboxMap;
             mapboxMap.setStyle(Style.MAPBOX_STREETS, style -> {
-                // Map is set up and the style has loaded. Now you can add data or make other map adjustments
                 centerMapOnCurrentLocation();
             });
             map.addOnCameraIdleListener(() -> {
@@ -127,29 +125,26 @@ public class MapSelectorActivity extends ActivityGlobalAbstract {
     }
 
     private void centerMapOnCurrentLocation() {
+        // Map is set up and the style has loaded. Now you can add data or make other map adjustments
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_COARSE_LOCATION)) {
+            /*if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_COARSE_LOCATION)) {
                 // TODO CRIS
                 // Show an expanation to the user *asynchronously* -- don't block
                 // this thread waiting for the user's response! After the user
                 // sees the explanation, try again to request the permission.
 
-            } else {
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
-                        ACCESS_COARSE_LOCATION_PERMISSION_REQUEST);
-            }
+            }*/
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, ACCESS_COARSE_LOCATION_PERMISSION_REQUEST);
             return;
         }
-
         mFusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
             if (location != null) {
                 map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 13));
 
                 CameraPosition cameraPosition = new CameraPosition.Builder()
                         .target(new LatLng(location.getLatitude(), location.getLongitude()))      // Sets the center of the map to location user
-                        .zoom(17)                   // Sets the zoom
+                        .zoom(15)                   // Sets the zoom
                         .build();                   // Creates a CameraPosition from the builder
                 map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
             }
@@ -158,8 +153,9 @@ public class MapSelectorActivity extends ActivityGlobalAbstract {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode) {
-            case EventInitialPresenter.ACCESS_COARSE_LOCATION_PERMISSION_REQUEST: {
+            case ACCESS_COARSE_LOCATION_PERMISSION_REQUEST: {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     centerMapOnCurrentLocation();

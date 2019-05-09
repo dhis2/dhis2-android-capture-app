@@ -169,19 +169,6 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
             binding.setFollowup(followUp);
         }
 
-        if (binding.teiRecycler.getAdapter() != null && binding.teiRecycler.getAdapter().getItemCount() == 0){
-            binding.emptyTeis.setVisibility(View.VISIBLE);
-            if (binding.fab.getVisibility() == View.VISIBLE){
-                binding.emptyTeis.setText(R.string.empty_tei_add);
-            }
-            else{
-                binding.emptyTeis.setText(R.string.empty_tei_no_add);
-            }
-        }
-        else{
-            binding.emptyTeis.setVisibility(View.GONE);
-        }
-
         binding.executePendingBindings();
 
     }
@@ -217,17 +204,28 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     @Override
     public Consumer<List<EventModel>> setEvents() {
         return events -> {
-            adapter.swapItems(events);
-            for (EventModel event : events) {
-                if (event.eventDate() != null) {
-                    if (event.eventDate().after(DateUtils.getInstance().getToday()))
-                        binding.teiRecycler.scrollToPosition(events.indexOf(event));
+            if (events.isEmpty()) {
+                binding.emptyTeis.setVisibility(View.VISIBLE);
+                if (binding.fab.getVisibility() == View.VISIBLE){
+                    binding.emptyTeis.setText(R.string.empty_tei_add);
                 }
-                if (hasCatComb && event.attributeOptionCombo() == null && !catComboShowed.contains(event)) {
-                    presenter.getCatComboOptions(event);
-                    catComboShowed.add(event);
-                } else if (!hasCatComb && event.attributeOptionCombo() == null)
-                    presenter.setDefaultCatOptCombToEvent(event.uid());
+                else{
+                    binding.emptyTeis.setText(R.string.empty_tei_no_add);
+                }
+            } else {
+                binding.emptyTeis.setVisibility(View.GONE);
+                adapter.swapItems(events);
+                for (EventModel event : events) {
+                    if (event.eventDate() != null) {
+                        if (event.eventDate().after(DateUtils.getInstance().getToday()))
+                            binding.teiRecycler.scrollToPosition(events.indexOf(event));
+                    }
+                    if (hasCatComb && event.attributeOptionCombo() == null && !catComboShowed.contains(event)) {
+                        presenter.getCatComboOptions(event);
+                        catComboShowed.add(event);
+                    } else if (!hasCatComb && event.attributeOptionCombo() == null)
+                        presenter.setDefaultCatOptCombToEvent(event.uid());
+                }
             }
         };
     }
