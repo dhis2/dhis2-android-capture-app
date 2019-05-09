@@ -73,7 +73,7 @@ public class SearchTEContractsModule {
 
         void onTEIClick(String TEIuid, boolean isOnline);
 
-        void getTrakedEntities();
+        void getTrakedEntities(boolean offlineOnly);
 
         TrackedEntityTypeModel getTrackedEntityName();
 

@@ -8,18 +8,9 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
-import androidx.databinding.BindingMethod;
-import androidx.databinding.BindingMethods;
-import androidx.databinding.DataBindingUtil;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.RecyclerView;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +18,17 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Spinner;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.databinding.BindingMethod;
+import androidx.databinding.BindingMethods;
+import androidx.databinding.DataBindingUtil;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.dhis2.App;
 import org.dhis2.BuildConfig;
@@ -44,10 +46,10 @@ import org.dhis2.usescases.searchTrackEntity.adapters.SearchTEAdapter;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.custom_views.OptionSetDialog;
 import org.dhis2.utils.EndlessRecyclerViewScrollListener;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.NetworkUtils;
+import org.dhis2.utils.custom_views.OptionSetDialog;
 import org.dhis2.utils.custom_views.OptionSetPopUp;
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -55,6 +57,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -142,11 +145,10 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 if (NetworkUtils.isOnline(SearchTEActivity.this))
                     onlinePagerProcessor.onNext(page);
                 else {
-                    if(program != null)
-                        if(program.maxTeiCountToReturn() != 0 && totalItemsCount >= program.maxTeiCountToReturn())
+                    if (program != null)
+                        if (program.maxTeiCountToReturn() != 0 && totalItemsCount >= program.maxTeiCountToReturn())
                             offlinePagerProcessor.onNext(page);
-                    else
-                        if(totalItemsCount >= 20)
+                        else if (totalItemsCount >= 20)
                             offlinePagerProcessor.onNext(page);
                 }
             }
@@ -196,7 +198,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     }
 
     @Override
-    public Flowable<Trio<String, String, Integer>> optionSetActions(){
+    public Flowable<Trio<String, String, Integer>> optionSetActions() {
         return ((FormAdapter) binding.formRecycler.getAdapter()).asFlowableOption();
     }
 
@@ -274,11 +276,14 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     public Consumer<Pair<List<SearchTeiModel>, String>> swapTeiListData() {
         return data -> {
+            List<SearchTeiModel> searchTeiModels = data.val0();
+            Collections.sort(searchTeiModels, (o1, o2) -> Boolean.compare(o1.isOnline(), o2.isOnline()));
+
             binding.progressLayout.setVisibility(View.GONE);
             if (!fromRelationship) {
                 if (data.val1().isEmpty()) {
                     binding.messageContainer.setVisibility(View.GONE);
-                    searchTEAdapter.setTeis(data.val0());
+                    searchTEAdapter.setTeis(searchTeiModels);
                 } else if (searchTEAdapter.getItemCount() == 0) {
                     binding.messageContainer.setVisibility(View.VISIBLE);
                     binding.message.setText(data.val1());
@@ -288,7 +293,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             } else {
                 if (data.val1().isEmpty()) {
                     binding.messageContainer.setVisibility(View.GONE);
-                    searchRelationshipAdapter.setItems(data.val0());
+                    searchRelationshipAdapter.setItems(searchTeiModels);
                 } else if (searchTEAdapter.getItemCount() == 0) {
                     binding.messageContainer.setVisibility(View.VISIBLE);
                     binding.message.setText(data.val1());
