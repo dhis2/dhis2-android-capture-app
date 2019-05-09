@@ -1,9 +1,7 @@
 package org.dhis2.data.forms.dataentry.fields.edittext;
 
 
-import android.view.KeyEvent;
 import android.widget.ArrayAdapter;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
@@ -39,13 +37,14 @@ final class EditTextCustomHolder extends FormViewHolder {
     private FormEditTextCustomBinding binding;
     private EditTextViewModel editTextModel;
 
-    EditTextCustomHolder(FormEditTextCustomBinding binding, FlowableProcessor<RowAction> processor) {
+    EditTextCustomHolder(FormEditTextCustomBinding binding, FlowableProcessor<RowAction> processor, boolean isSearchMode) {
         super(binding);
         this.binding = binding;
         binding.customEdittext.setFocusChangedListener((v, hasFocus) -> {
-            if (!hasFocus && editTextModel != null && editTextModel.editable() && valueHasChanged()) {
+            if (isSearchMode || (!hasFocus && editTextModel != null && editTextModel.editable() && valueHasChanged())) {
                 if (!isEmpty(binding.customEdittext.getEditText().getText())) {
                     checkAutocompleteRendering();
+                    editTextModel.withValue(binding.customEdittext.getEditText().getText().toString());
                     processor.onNext(RowAction.create(editTextModel.uid(), binding.customEdittext.getEditText().getText().toString()));
 
                 } else {
