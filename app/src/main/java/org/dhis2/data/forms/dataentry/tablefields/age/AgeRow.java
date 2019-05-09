@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.Row;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
-import org.dhis2.databinding.FormAgeCustomBinding;
+import org.dhis2.databinding.CustomCellViewBinding;
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetTableAdapter;
 
 import androidx.databinding.ObservableField;
@@ -21,26 +21,24 @@ import io.reactivex.processors.FlowableProcessor;
 public class AgeRow implements Row<AgeHolder, AgeViewModel> {
 
     private final LayoutInflater inflater;
-    private final boolean isBgTransparent;
     private final FlowableProcessor<RowAction> processor;
-    private final String renderType;
+    private final ObservableField<DataSetTableAdapter.TableScale> tableScale;
     private boolean accessDataWrite;
 
-    public AgeRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor, boolean isBgTransparent, String renderType, boolean accessDataWrite, ObservableField<DataSetTableAdapter.TableScale> currentTableScale) {
+    public AgeRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor, boolean accessDataWrite, ObservableField<DataSetTableAdapter.TableScale> currentTableScale) {
         this.inflater = layoutInflater;
-        this.isBgTransparent = isBgTransparent;
         this.processor = processor;
-        this.renderType = renderType;
         this.accessDataWrite = accessDataWrite;
+        this.tableScale = currentTableScale;
     }
 
     @NonNull
     @Override
     public AgeHolder onCreate(@NonNull ViewGroup parent) {
-        FormAgeCustomBinding binding = DataBindingUtil.inflate(inflater,
-                R.layout.form_age_custom, parent, false);
-        binding.customAgeview.setIsBgTransparent(isBgTransparent);
-        return new AgeHolder(binding, processor);
+        CustomCellViewBinding binding = DataBindingUtil.inflate(inflater,
+                R.layout.custom_cell_view, parent, false);
+        binding.setTableScale(tableScale);
+        return new AgeHolder(binding, processor, inflater.getContext());
     }
 
     @Override
