@@ -434,5 +434,7 @@
     <string name="check_mandatory_field">Check fields</string>
     <string name="error_no_network_during_sync">You lost your internet connection while performing your configuration sync. Please try again later</string>
     <string name="action_agree">Agree</string>
+    <string name="login_server_info_title">Server url</string>
+    <string name="login_server_info_message">"Enter the DHIS 2 server url for your organisation as provided by your system administrator.\n\nAlternatively, you can scan a QR code containing the URL of your server"</string>
 
 </resources>
