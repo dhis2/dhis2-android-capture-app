@@ -87,6 +87,8 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionMode
     private int currentWidth = 400;
     private int currentHeight;
 
+    private String catCombo;
+
     public enum TableScale {
         SMALL, DEFAULT, LARGE
     }
@@ -132,11 +134,11 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionMode
         rows.add(BUTTON, new FileCellRow(layoutInflater, processor,currentTableScale));
         rows.add(CHECKBOX, new RadioButtonRow(layoutInflater, processor, accessDataWrite,currentTableScale));
         rows.add(SPINNER, new SpinnerCellRow(layoutInflater, processor, accessDataWrite, processorOptionSet,currentTableScale));
-        rows.add(COORDINATES, new CoordinateRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name(), accessDataWrite,currentTableScale)); //TODO TABLE SCALE
+        rows.add(COORDINATES, new CoordinateRow(layoutInflater, processor, accessDataWrite,currentTableScale));
         rows.add(TIME, new DateTimeRow(layoutInflater, processor, TIME, true, accessDataWrite,currentTableScale));
         rows.add(DATE, new DateTimeRow(layoutInflater, processor, DATE, true, accessDataWrite, currentTableScale));
         rows.add(DATETIME, new DateTimeRow(layoutInflater, processor, DATETIME, true, accessDataWrite, currentTableScale));
-        rows.add(AGEVIEW, new AgeRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name(), accessDataWrite,currentTableScale)); //TODO: TABLE SCALE
+        rows.add(AGEVIEW, new AgeRow(layoutInflater, processor, accessDataWrite, currentTableScale));
         rows.add(YES_NO, new RadioButtonRow(layoutInflater, processor, accessDataWrite, currentTableScale));
         rows.add(ORG_UNIT, new OrgUnitRow(null, layoutInflater, processor, true, null, ProgramStageSectionRenderingType.LISTING.name())); //TODO: TABLE SCALE
         rows.add(IMAGE, new ImageRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name()));
@@ -370,6 +372,14 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionMode
 
     public Boolean getShowColumnTotal() {
         return showColumnTotal;
+    }
+
+    public void setCatCombo(String catCombo){
+        this.catCombo = catCombo;
+    }
+
+    public String getCatCombo(){
+        return catCombo;
     }
 
 
