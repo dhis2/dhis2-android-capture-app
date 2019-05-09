@@ -10,6 +10,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.DatePicker;
 
+import androidx.appcompat.app.AlertDialog;
+
 import org.dhis2.R;
 import org.dhis2.data.forms.FormActivity;
 import org.dhis2.data.forms.FormViewArguments;
@@ -43,7 +45,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nullable;
 
-import androidx.appcompat.app.AlertDialog;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -155,7 +156,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                     queryData.put(data.id(), data.value());
                                 else
                                     queryData.remove(data.id());
-                                getTrakedEntities();
+                                getTrakedEntities(false);
                             }
                         },
                         Timber::d)
@@ -184,8 +185,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     //------------------------------------------
     //region DATA
     @Override
-    public void getTrakedEntities() {
-        if (!NetworkUtils.isOnline(view.getContext()) || selectedProgram == null || Build.VERSION.SDK_INT <= 19)
+    public void getTrakedEntities(boolean offlineOnly) {
+        if (offlineOnly || !NetworkUtils.isOnline(view.getContext()) || selectedProgram == null || Build.VERSION.SDK_INT <= 19)
             compositeDisposable.add(
                     view.offlinePage()
                             .startWith(0)
@@ -432,7 +433,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         else
             getProgramTrackedEntityAttributes();
 
-        getTrakedEntities(); //TODO: Check if queryData dataElements are only those from the selectedProgram
+        //TODO: Check if queryData dataElements are only those from the selectedProgram
+        getTrakedEntities(true);
 
     }
 
