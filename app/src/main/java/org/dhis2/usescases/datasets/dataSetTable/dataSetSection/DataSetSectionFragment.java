@@ -60,7 +60,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
     FragmentDatasetSectionBinding binding;
     private DataSetTableContract.Presenter presenter;
     private DataSetTableActivity activity;
-    private DataSetTableAdapter adapter;
+    private List<DataSetTableAdapter> adapters = new ArrayList<>();
     private String section;
     private String dataSetUid;
 
@@ -122,9 +122,10 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
 
         presenterFragment.setCurrentNumTables(new ArrayList<>(dataTableModel.catCombos().values()));
         activity.updateTabLayout(section, dataTableModel.catCombos().size());
-        adapter = new DataSetTableAdapter(getAbstracContext(), presenterFragment.getProcessor(), presenterFragment.getProcessorOptionSet());
-        presenterFragment.initializeProcessor(this);
+
         for (String catCombo : dataTableModel.catCombos().keySet()) {
+            DataSetTableAdapter adapter = new DataSetTableAdapter(getAbstracContext(), presenterFragment.getProcessor(), presenterFragment.getProcessorOptionSet());
+            adapters.add(adapter);
             List<List<CategoryOptionModel>> columnHeaderItems = dataTableModel.headers().get(catCombo);
             ArrayList<List<String>> cells = new ArrayList<>();
             List<List<FieldViewModel>> listFields = new ArrayList<>();
@@ -138,6 +139,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
             TableView tableView = new TableView(getContext());
             tableView.setHasFixedWidth(true);
 
+            adapter.setCatCombo(catCombo);
             adapter.setTableView(tableView);
             adapter.initializeRows(isEditable);
 
@@ -209,7 +211,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
                             //If value type is null, it is due to is dataElement for Total row/column
                             fields.add(fieldFactory.create("", "", de.valueType(),
                                     compulsory, de.optionSet(), "", section, true,
-                                    editable, null, null, de.uid() == null ? "" : de.uid(), catOpts, "", row, column, ""/*SET CATEGORYOPTIONCOMBO*/, ""));
+                                    editable, null, null, de.uid() == null ? "" : de.uid(), catOpts, "", row, column, ""/*SET CATEGORYOPTIONCOMBO*/, catCombo));
 
                             values.add("");
                         }
@@ -253,6 +255,8 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
                 adapter = new DataSetTableAdapter(getAbstracContext(), presenterFragment.getProcessor(), presenterFragment.getProcessorOptionSet());
 
         }
+
+        presenterFragment.initializeProcessor(this);
 
         binding.scroll.scrollTo(0, 1000);
 
@@ -359,15 +363,17 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
 
     @NonNull
     public Flowable<RowAction> rowActions() {
-        return adapter.asFlowable();
+        return adapters.get(0).asFlowable();
     }
 
     public FlowableProcessor<Trio<String, String, Integer>> optionSetActions() {
-        return adapter.asFlowableOptionSet();
+        return adapters.get(0).asFlowableOptionSet();
     }
 
-    public void updateData(RowAction rowAction) {
-        adapter.updateValue(rowAction);
+    public void updateData(RowAction rowAction, String catCombo) {
+        for(DataSetTableAdapter adapter : adapters)
+            if(adapter.getCatCombo().equals(catCombo))
+                adapter.updateValue(rowAction);
     }
 
     @Override

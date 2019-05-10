@@ -18,7 +18,9 @@
         android:clickable="false"
         android:enabled="false"
         android:focusable="true"
-        android:textAlignment="viewStart"
+        android:padding="3dp"
+        android:maxLines="2"
+        android:ellipsize="end"
         android:textAllCaps="false"
         android:textColor="@color/gray_b2b"
         tools:text="Unsupported" />

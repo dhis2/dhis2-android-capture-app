@@ -1,12 +1,21 @@
 package org.dhis2.data.forms.dataentry.tablefields.age;
 
-import androidx.core.content.ContextCompat;
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.TextView;
+
+import androidx.appcompat.app.AlertDialog;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
-import org.dhis2.databinding.FormAgeCustomBinding;
+import org.dhis2.databinding.CustomCellViewBinding;
 import org.dhis2.utils.DateUtils;
+import org.dhis2.utils.custom_views.AgeView;
+
+import java.text.ParseException;
+import java.util.Date;
 
 import io.reactivex.processors.FlowableProcessor;
 
@@ -18,51 +27,76 @@ import static android.text.TextUtils.isEmpty;
 
 public class AgeHolder extends FormViewHolder {
 
-    FormAgeCustomBinding binding;
-    AgeViewModel ageViewModel;
+    private final FlowableProcessor<RowAction> processor;
 
-    AgeHolder(FormAgeCustomBinding binding, FlowableProcessor<RowAction> processor) {
+    CustomCellViewBinding binding;
+    TextView textView;
+    AgeViewModel ageViewModel;
+    Context context;
+
+    AgeHolder(CustomCellViewBinding binding, FlowableProcessor<RowAction> processor, Context context) {
         super(binding);
         this.binding = binding;
-        binding.customAgeview.setAgeChangedListener(ageDate -> {
-                    if (ageViewModel.value() == null || !ageViewModel.value().equals(DateUtils.databaseDateFormat().format(ageDate)))
-                        processor.onNext(RowAction.create(ageViewModel.uid(), DateUtils.databaseDateFormat().format(ageDate), ageViewModel.dataElement(), ageViewModel.listCategoryOption(), ageViewModel.catCombo(), ageViewModel.row(), ageViewModel.column()));
-                }
-        );
+        this.context = context;
+        this.processor = processor;
+        textView = binding.inputEditText;
     }
 
 
     public void update(AgeViewModel ageViewModel, boolean accessDataWrite) {
+
         this.ageViewModel = ageViewModel;
 
-        descriptionText = ageViewModel.description();
-        label = new StringBuilder(ageViewModel.label());
-        if (ageViewModel.mandatory())
-            label.append("*");
-        binding.customAgeview.setLabel(label.toString(),ageViewModel.description());
         if (!isEmpty(ageViewModel.value())) {
-            binding.customAgeview.setInitialValue(ageViewModel.value());
+            try {
+                Date date = DateUtils.databaseDateFormat().parse(ageViewModel.value());
+                textView.setText(DateUtils.uiDateFormat().format(date));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
         }
 
-        if (ageViewModel.warning() != null)
-            binding.customAgeview.setWarningOrError(ageViewModel.warning());
-        else if (ageViewModel.error() != null)
-            binding.customAgeview.setWarningOrError(ageViewModel.error());
+        if(ageViewModel.mandatory())
+            binding.icMandatory.setVisibility(View.VISIBLE);
         else
-            binding.customAgeview.setWarningOrError(null);
+            binding.icMandatory.setVisibility(View.INVISIBLE);
 
-        if (!ageViewModel.editable()) {
-            binding.customAgeview.setEnabled(false);
-            binding.customAgeview.setBackgroundColor(ContextCompat.getColor(binding.customAgeview.getContext(), R.color.bg_black_e6e));
-        } else {
-            binding.customAgeview.setEnabled(true);
-            binding.customAgeview.setBackgroundColor(ContextCompat.getColor(binding.customAgeview.getContext(), R.color.white));
-        }
-
-        binding.customAgeview.setEditable(accessDataWrite);
+        if(!(accessDataWrite && ageViewModel.editable())) {
+            textView.setEnabled(false);
+        }else
+            textView.setEnabled(true);
 
         binding.executePendingBindings();
 
+    }
+
+    @Override
+    public void setSelected(SelectionState selectionState) {
+        super.setSelected(selectionState);
+        if (selectionState == SelectionState.SELECTED && textView.isEnabled()) {
+            showEditDialog();
+        }
+    }
+
+    private void showEditDialog() {
+
+        AlertDialog alertDialog = new AlertDialog.Builder(context).create();
+        View view = LayoutInflater.from(context).inflate(R.layout.form_age_custom, null);
+        AgeView ageView = view.findViewById(R.id.custom_ageview);
+        ageView.setIsBgTransparent(true);
+        if(ageViewModel.value() != null && !ageViewModel.value().isEmpty())
+            ageView.setInitialValue(ageViewModel.value());
+
+        ageView.setLabel(ageViewModel.label(), ageViewModel.description());
+
+        ageView.setAgeChangedListener(ageDate -> {
+                    if (ageViewModel.value() == null || !ageViewModel.value().equals(DateUtils.databaseDateFormat().format(ageDate)))
+                        processor.onNext(RowAction.create(ageViewModel.uid(), DateUtils.databaseDateFormat().format(ageDate), ageViewModel.dataElement(), ageViewModel.listCategoryOption(), ageViewModel.catCombo(), ageViewModel.row(), ageViewModel.column()));
+                    alertDialog.dismiss();
+        });
+        alertDialog.setView(view);
+
+        alertDialog.show();
     }
 
     @Override

@@ -225,7 +225,7 @@ public class DataValuePresenter implements DataValueContract.Presenter{
                             dataTableModel.dataValues().add(dataSetTableModel);
                             exists = true;
                             setValueIntoFieldViewModel(rowAction.value(), rowAction.dataElement(), dataValue.categoryOptionCombo(), dataValue.listCategoryOption());
-                            dataSetSectionFragment.updateData(rowAction);
+                            dataSetSectionFragment.updateData(rowAction, dataSetTableModel.catCombo());
                             repository.insertDataValue(tranformDataSetTableModelToDataValueModel(dataSetTableModel));
                             break;
                         }
@@ -241,7 +241,7 @@ public class DataValuePresenter implements DataValueContract.Presenter{
                                 "", rowAction.listCategoryOption(), rowAction.catCombo());
                         dataTableModel.dataValues().add(dataSetTableModel);
                         setValueIntoFieldViewModel(rowAction.value(), rowAction.dataElement(), catOptionCombo, dataSetTableModel.listCategoryOption());
-                        dataSetSectionFragment.updateData(rowAction);
+                        dataSetSectionFragment.updateData(rowAction, dataSetTableModel.catCombo());
                         return repository.insertDataValue(tranformDataSetTableModelToDataValueModel(dataSetTableModel));
                     }
 
