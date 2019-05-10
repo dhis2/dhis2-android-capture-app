@@ -249,7 +249,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
 
             presenterFragment.addCells(listFields);
 
-            if (!catCombo.equals(dataTableModel.catCombos().get(dataTableModel.catCombos().size() - 1)))
+            if (!catCombo.equals(new ArrayList<>(dataTableModel.catCombos().keySet()).get(dataTableModel.catCombos().keySet().size() - 1)))
                 adapter = new DataSetTableAdapter(getAbstracContext(), presenterFragment.getProcessor(), presenterFragment.getProcessorOptionSet());
 
         }
