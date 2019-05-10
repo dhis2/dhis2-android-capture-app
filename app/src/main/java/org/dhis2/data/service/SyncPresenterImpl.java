@@ -17,11 +17,8 @@ final class SyncPresenterImpl implements SyncPresenter {
     @NonNull
     private final D2 d2;
 
-    private CompositeDisposable disposable;
-
     SyncPresenterImpl(@NonNull D2 d2) {
         this.d2 = d2;
-        this.disposable = new CompositeDisposable();
     }
 
     @Override

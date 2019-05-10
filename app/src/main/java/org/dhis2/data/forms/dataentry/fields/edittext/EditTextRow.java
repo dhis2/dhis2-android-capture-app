@@ -1,13 +1,12 @@
 package org.dhis2.data.forms.dataentry.fields.edittext;
 
-import androidx.databinding.DataBindingUtil;
-import androidx.databinding.ObservableBoolean;
-import androidx.databinding.ViewDataBinding;
-import androidx.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import org.dhis2.BR;
+import androidx.annotation.NonNull;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ObservableBoolean;
+
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.Row;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
@@ -58,7 +57,7 @@ public class EditTextRow implements Row<EditTextCustomHolder, EditTextModel> {
                 R.layout.form_edit_text_custom, viewGroup, false);
         binding.customEdittext.setIsBgTransparent(isBgTransparent);
         binding.customEdittext.setRenderType(renderType);
-        return new EditTextCustomHolder(binding, processor);
+        return new EditTextCustomHolder(binding, processor, isSearchMode);
     }
 
     @Override
