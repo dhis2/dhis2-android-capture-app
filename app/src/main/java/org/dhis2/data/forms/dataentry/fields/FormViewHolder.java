@@ -1,11 +1,12 @@
 package org.dhis2.data.forms.dataentry.fields;
 
 import android.app.Activity;
-import androidx.databinding.ViewDataBinding;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
+
+import androidx.databinding.ViewDataBinding;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.dhis2.R;
 import org.dhis2.utils.Constants;
@@ -42,8 +43,13 @@ public abstract class FormViewHolder extends RecyclerView.ViewHolder {
 
     public abstract void dispose();
 
-    public void closeKeyboard(View v){
+    public void closeKeyboard(View v) {
         InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+    }
+
+    public void openKeyboard(View v) {
+        InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(v, 0);
     }
 }
