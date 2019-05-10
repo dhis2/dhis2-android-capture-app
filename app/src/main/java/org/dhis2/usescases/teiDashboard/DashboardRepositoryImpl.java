@@ -63,8 +63,8 @@ import static org.hisp.dhis.android.core.utils.StoreUtils.sqLiteBind;
 public class DashboardRepositoryImpl implements DashboardRepository {
 
     private static final String INSERT_NOTE = "INSERT INTO Note ( " +
-            "uid, enrollment, value, storedBy, storedDate" +
-            ") VALUES (?, ?, ?, ?, ?);";
+            "uid, enrollment, value, storedBy, storedDate, state" +
+            ") VALUES (?, ?, ?, ?, ?, ?);";
     private static final String SELECT_NOTES = "SELECT " +
             "Note.* FROM Note\n" +
             "JOIN Enrollment ON Enrollment.uid = Note.enrollment\n" +
@@ -554,6 +554,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                     sqLiteBind(insetNoteStatement, 3, stringBooleanPair.val0() == null ? "" : stringBooleanPair.val0()); //value
                     sqLiteBind(insetNoteStatement, 4, userName == null ? "" : userName); //storeBy
                     sqLiteBind(insetNoteStatement, 5, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime())); //storeDate
+                    sqLiteBind(insetNoteStatement, 6, State.TO_POST.toString());
 
                     briteDatabase.executeInsert(NoteModel.TABLE, insetNoteStatement);
 
@@ -585,6 +586,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                 sqLiteBind(insetNoteStatement, 3, stringBooleanPair.val0()); //value
                 sqLiteBind(insetNoteStatement, 4, userName == null ? "" : userName); //storeBy
                 sqLiteBind(insetNoteStatement, 5, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime())); //storeDate
+                sqLiteBind(insetNoteStatement, 6, State.TO_POST.toString());
 
                 long success = briteDatabase.executeInsert(NoteModel.TABLE, insetNoteStatement);
 
