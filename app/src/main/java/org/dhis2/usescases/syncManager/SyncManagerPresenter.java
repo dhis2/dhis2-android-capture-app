@@ -155,6 +155,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
         editor.putInt(Constants.EVENT_MAX, Constants.EVENT_MAX_DEFAULT);
         editor.putInt(Constants.TEI_MAX, Constants.TEI_MAX_DEFAULT);
         editor.putBoolean(Constants.LIMIT_BY_ORG_UNIT, false);
+        editor.putBoolean(Constants.LIMIT_BY_PROGRAM, false);
 
         editor.apply();
 

@@ -17,6 +17,7 @@ public class Constants {
     public static final String EVENT_MAX = "EVENT_MAX";
     public static final String TEI_MAX = "TEI_MAX";
     public static final String LIMIT_BY_ORG_UNIT = "LIMIT_BY_ORG_UNIT";
+    public static final String LIMIT_BY_PROGRAM = "LIMIT_BY_PROGRAM";
     public static final int EVENT_MAX_DEFAULT = 1000;
     public static final int TEI_MAX_DEFAULT = 500;
 
