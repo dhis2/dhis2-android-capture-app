@@ -8,6 +8,7 @@ import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Sextet;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel;
+import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
@@ -42,7 +43,7 @@ public class DataValuePresenter implements DataValueContract.Presenter{
     private String periodFinalDate;
     private String attributeOptionCombo;
 
-    private Pair<List<DataElementModel>, Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>>> tableData;
+    private Trio<List<DataElementModel>, Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>>, List<CategoryCombo>> tableData;
 
     private DataValueRepository repository;
     private DataValueContract.View view;
@@ -51,7 +52,7 @@ public class DataValuePresenter implements DataValueContract.Presenter{
     private List<DataSetTableModel> dataValuesChanged;
     private DataTableModel dataTableModel;
     private String periodId;
-    private int currentNumTables;
+    private List<String> tablesNames;
 
     private List<List<FieldViewModel>> cells;
     private List<DataInputPeriodModel> dataInputPeriodModel;
@@ -81,7 +82,8 @@ public class DataValuePresenter implements DataValueContract.Presenter{
                 Flowable.zip(
                         repository.getDataElements(section),
                         repository.getCatOptions(section),
-                        Pair::create
+                        repository.getCatCombo(section),
+                        Trio::create
                 )
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
@@ -301,7 +303,7 @@ public class DataValuePresenter implements DataValueContract.Presenter{
                                                 .create(sextet.val4().id() == null ? null : sextet.val4(), transformCategories(tableData.val1()),
                                                         tableData.val0(), sextet.val0(), getCatOptionsByCatOptionComboDataElement(sextet.val2()),
                                                         sextet.val3(), sextet.val5(), tableData.val1(), sextet.val1(),
-                                                        getCatCombos(tableData.val0()), getCatOptions());
+                                                        getCatCombos(tableData.val0(),tableData.val2()), getCatOptions());
 
                                         dataSetSectionFragment.createTable(dataTableModel);
                                     }
@@ -311,11 +313,14 @@ public class DataValuePresenter implements DataValueContract.Presenter{
         );
     }
 
-    public List<String> getCatCombos(List<DataElementModel> dataElements){
-        List<String> list = new ArrayList<>();
+    public Map<String, String> getCatCombos(List<DataElementModel> dataElements, List<CategoryCombo> catCombos){
+        Map<String, String> list = new HashMap<>();
         for(DataElementModel dataElement: dataElements) {
-            if (!list.contains(dataElement.categoryCombo()))
-                list.add(dataElement.categoryCombo());
+            if (!list.keySet().contains(dataElement.categoryCombo())) {
+                for(CategoryCombo categoryCombo: catCombos)
+                    if(categoryCombo.uid().equals(dataElement.categoryCombo()))
+                        list.put(categoryCombo.uid(), categoryCombo.name());
+            }
         }
         return list;
     }
@@ -420,13 +425,13 @@ public class DataValuePresenter implements DataValueContract.Presenter{
     }
 
     @Override
-    public void setCurrentNumTables(int numTables) {
-        this.currentNumTables = numTables;
+    public void setCurrentNumTables(List<String> tablesNames) {
+        this.tablesNames = tablesNames;
     }
 
     @Override
-    public int getCurrentNumTables() {
-        return currentNumTables;
+    public List<String> getCurrentNumTables() {
+        return tablesNames;
     }
 
     @Override

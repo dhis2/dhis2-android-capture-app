@@ -50,9 +50,9 @@ public class DataValueContract {
 
         List<List<String>> getCatOptionCombos(List<List<Pair<CategoryOptionModel, CategoryModel>>> listCategories, int num ,List<List<String>> result, List<String> current);
 
-        void setCurrentNumTables(int numTables);
+        void setCurrentNumTables(List<String> tablesNames);
 
-        int getCurrentNumTables();
+        List<String> getCurrentNumTables();
 
         FlowableProcessor<RowAction> getProcessor();
 

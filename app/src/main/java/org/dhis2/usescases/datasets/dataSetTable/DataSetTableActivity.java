@@ -133,15 +133,13 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
-                if (viewPagerAdapter.getCurrentItem(binding.tabLayout.getSelectedTabPosition()).currentNumTables() > 1)
+                if (viewPagerAdapter.getCurrentItem(binding.tabLayout.getSelectedTabPosition()).currentNumTables().size() > 1)
                     if (tableSelectorVisible)
                         binding.selectorLayout.setVisibility(View.GONE);
                     else {
                         binding.selectorLayout.setVisibility(View.VISIBLE);
                         List<String> tables = new ArrayList<>();
-                        for (int i = 1; i <= viewPagerAdapter.getCurrentItem(binding.tabLayout.getSelectedTabPosition()).currentNumTables(); i++) {
-                            tables.add(getResources().getString(R.string.table) + " " + i);
-                        }
+                        tables.addAll(viewPagerAdapter.getCurrentItem(binding.tabLayout.getSelectedTabPosition()).currentNumTables());
                         FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(getContext());
                         layoutManager.setFlexDirection(FlexDirection.ROW);
                         layoutManager.setJustifyContent(JustifyContent.FLEX_START);

@@ -39,7 +39,7 @@ public abstract class DataTableModel {
                                         List<DataSetTableModel> dataValues,List<Pair<String, List<String>>> dataElementDisabled,
                                         Map<String, List<String>> compulsoryCells, Map<String, List<String>> catOptionComboCatOption,
                                         Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>> listCatOptionsCatComboOptions,
-                                        DataSetModel dataSet, List<String> catCombos, List<CategoryOptionModel> catOptions) {
+                                        DataSetModel dataSet, Map<String, String> catCombos, List<CategoryOptionModel> catOptions) {
         return new AutoValue_DataTableModel(section, headers, rows, dataValues, dataElementDisabled, compulsoryCells, catOptionComboCatOption, listCatOptionsCatComboOptions, dataSet,
                 catCombos, catOptions);
     }
@@ -82,7 +82,7 @@ public abstract class DataTableModel {
 
     @Nullable
     @ColumnName(Columns.CAT_COMBOS)
-    public abstract List<String> catCombos();
+    public abstract Map<String, String> catCombos();
 
     @Nullable
     @ColumnName(Columns.CAT_OPTIONS)

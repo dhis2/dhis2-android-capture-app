@@ -120,10 +120,10 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
             isEditable = true;
         }
 
-        presenterFragment.setCurrentNumTables(dataTableModel.catCombos().size());
+        presenterFragment.setCurrentNumTables(new ArrayList<>(dataTableModel.catCombos().values()));
         activity.updateTabLayout(section, dataTableModel.catCombos().size());
 
-        for (String catCombo : dataTableModel.catCombos()) {
+        for (String catCombo : dataTableModel.catCombos().keySet()) {
             DataSetTableAdapter adapter = new DataSetTableAdapter(getAbstracContext(), presenterFragment.getProcessor(), presenterFragment.getProcessorOptionSet());
             adapters.add(adapter);
             List<List<CategoryOptionModel>> columnHeaderItems = dataTableModel.headers().get(catCombo);
@@ -145,7 +145,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
 
             binding.tableLayout.addView(tableView);
 
-            if (!dataTableModel.catCombos().get(dataTableModel.catCombos().size() - 1).equals(catCombo)) {
+            if (!new ArrayList<>(dataTableModel.catCombos().keySet()).get(dataTableModel.catCombos().keySet().size() - 1).equals(catCombo)) {
                 View view = new View(getContext());
                 view.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 15));
                 view.setBackgroundColor(tableView.getSeparatorColor());
@@ -251,7 +251,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
 
             presenterFragment.addCells(listFields);
 
-            if (!catCombo.equals(dataTableModel.catCombos().get(dataTableModel.catCombos().size() - 1)))
+            if (!catCombo.equals(new ArrayList<>(dataTableModel.catCombos().keySet()).get(dataTableModel.catCombos().keySet().size() - 1)))
                 adapter = new DataSetTableAdapter(getAbstracContext(), presenterFragment.getProcessor(), presenterFragment.getProcessorOptionSet());
 
         }
@@ -397,13 +397,13 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
         if (0 == dataSet.expiryDays()) {
             return false;
         }
-        if (presenter.getPeriodFinalDate() != null) {
+        /*if (presenter.getPeriodFinalDate() != null) {
             try {
                 return DateUtils.getInstance().isDataSetExpired(dataSet.expiryDays(), DateUtils.databaseDateFormat().parse(presenter.getPeriodFinalDate()));
             } catch (ParseException e) {
                 Timber.e(e);
             }
-        }
+        }*/
 
         return DateUtils.getInstance().isDataSetExpired(dataSet.expiryDays(), periodModel.endDate());
     }
@@ -413,8 +413,8 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
         binding.scroll.scrollTo(0, binding.tableLayout.getChildAt(numTable*2).getTop());
     }
 
-    public int currentNumTables() {
-        return presenterFragment != null ? presenterFragment.getCurrentNumTables() : 0;
+    public List<String> currentNumTables() {
+        return presenterFragment != null ? presenterFragment.getCurrentNumTables() : new ArrayList<>();
     }
 
     @Override

@@ -8,6 +8,7 @@ import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboCategoryOptionLinkModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
@@ -49,6 +50,15 @@ public class DataValueRepositoryImpl implements DataValueRepository {
             "LEFT JOIN SectionDataElementLink ON SectionDataElementLink.dataElement = DataElement.uid " +
             "LEFT JOIN Section ON Section.uid = SectionDataElementLink.section " +
             "WHERE DataSetDataElementLink.dataSet = ?";
+
+    private final String CAT_COMBO = "SELECT \n" +
+            "            CategoryCombo.* \n" +
+            "          FROM CategoryCombo \n" +
+            "          JOIN DataSetDataElementLink ON DataSetDataElementLink.dataElement = DataElement.uid \n" +
+            "          JOIN DataElement ON CategoryCombo.uid = DataElement.categoryCombo\n" +
+            "          LEFT JOIN SectionDataElementLink ON SectionDataElementLink.dataElement = DataElement.uid \n" +
+            "          LEFT JOIN Section ON Section.uid = SectionDataElementLink.section \n" +
+            "          WHERE DataSetDataElementLink.dataSet = ? ";
 
     private final String DATA_VALUES = "SELECT DataValue.*, CategoryOptionComboCategoryOptionLink.categoryOption as catOption, DataElement.categoryCombo as catCombo FROM DataValue " +
             "JOIN CategoryOptionComboCategoryOptionLink ON CategoryOptionComboCategoryOptionLink.categoryOptionCombo = DataValue.categoryOptionCombo " +
@@ -183,7 +193,18 @@ public class DataValueRepositoryImpl implements DataValueRepository {
                 .mapToList(DataElementModel::create).toFlowable(BackpressureStrategy.LATEST);
     }
 
-
+    public Flowable<List<CategoryCombo>> getCatCombo(String section){
+        String query = CAT_COMBO;
+        if (!section.equals("NO_SECTION")) {
+            query = query + " AND Section.name = ? ";
+            query = query + " GROUP BY CategoryCombo.uid ORDER BY SectionDataElementLink.sortOrder";
+            return briteDatabase.createQuery(DataElementModel.TABLE, query, dataSetUid, section)
+                    .mapToList(CategoryCombo::create).toFlowable(BackpressureStrategy.LATEST);
+        }
+        query = query + "GROUP BY CategoryCombo.uid ORDER BY SectionDataElementLink.sortOrder";
+        return briteDatabase.createQuery(DataElementModel.TABLE, query, dataSetUid)
+                .mapToList(CategoryCombo::create).toFlowable(BackpressureStrategy.LATEST);
+    }
     @Override
     public Flowable<DataSetModel> getDataSet() {
         return briteDatabase.createQuery(DataSetModel.TABLE, DATA_SET, dataSetUid)
@@ -253,6 +274,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
     public Flowable<Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>>> getCatOptions(String section) {
         Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>> map = new HashMap<>();
         String query = CATEGORY_OPTION;
+
         if (!section.equals("NO_SECTION")) {
             query = query + "AND section.name = '" + section + "' ";
         }
