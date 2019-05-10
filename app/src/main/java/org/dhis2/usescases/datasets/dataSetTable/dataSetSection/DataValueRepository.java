@@ -2,6 +2,7 @@ package org.dhis2.usescases.datasets.dataSetTable.dataSetSection;
 
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel;
+import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
@@ -23,6 +24,8 @@ public interface DataValueRepository {
     Flowable<DataSetModel> getDataSet();
 
     Flowable<List<DataElementModel>> getDataElements(String section);
+
+    Flowable<List<CategoryCombo>> getCatCombo(String section);
 
     Flowable<Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>>> getCatOptions(String section);
 
