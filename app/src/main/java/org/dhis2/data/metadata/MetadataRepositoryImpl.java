@@ -437,7 +437,9 @@ public class MetadataRepositoryImpl implements MetadataRepository {
         try (Cursor cursor = briteDatabase.query("SELECT * FROM D2Error ORDER BY created DESC LIMIT 20")) {
             if (cursor != null && cursor.moveToFirst()) {
                 for (int i = 0; i < cursor.getCount(); i++) {
-                    d2Errors.add(D2Error.create(cursor));
+                    D2Error d2Error = D2Error.create(cursor);
+                    if (d2Error.url() == null || !d2Error.url().contains("api/trackedEntityInstances/query"))
+                        d2Errors.add(D2Error.create(cursor));
                     cursor.moveToNext();
                 }
             }

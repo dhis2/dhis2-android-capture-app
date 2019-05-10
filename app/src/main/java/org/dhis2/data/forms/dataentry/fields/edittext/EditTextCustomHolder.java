@@ -41,6 +41,8 @@ final class EditTextCustomHolder extends FormViewHolder {
         super(binding);
         this.binding = binding;
         binding.customEdittext.setFocusChangedListener((v, hasFocus) -> {
+            if(hasFocus)
+                openKeyboard(binding.customEdittext.getEditText());
             if (isSearchMode || (!hasFocus && editTextModel != null && editTextModel.editable() && valueHasChanged())) {
                 if (!isEmpty(binding.customEdittext.getEditText().getText())) {
                     checkAutocompleteRendering();

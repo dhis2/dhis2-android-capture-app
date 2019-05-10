@@ -39,6 +39,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.annotation.Nonnull;
 
@@ -147,7 +148,7 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
             String uid = attributeValue.trackedEntityAttribute();
             String value = attributeValue.value();
             TrackedEntityAttribute attr = d2.trackedEntityModule().trackedEntityAttributes.uid(attributeValue.trackedEntityAttribute()).withAllChildren().get();
-            if (attr.optionSet() != null) {
+            if (attr!=null && attr.optionSet() != null) {
                 List<Option> options = d2.optionModule().optionSets.uid(attr.optionSet().uid()).withAllChildren().get().options();
                 ProgramRuleVariable ruleVariable = attrRuleVariableMap.get(attr.uid());
                 if (ruleVariable != null && (ruleVariable.useCodeForOptionSet() == null || !ruleVariable.useCodeForOptionSet())) {
@@ -284,12 +285,13 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
     public void updateRuleAttributeMap(String uid, String value) {
         lastUpdatedAttr = uid;
         TrackedEntityAttribute attr = d2.trackedEntityModule().trackedEntityAttributes.uid(uid).withAllChildren().get();
-        if (attr.optionSet() != null) {
+        if (attr!=null && attr.optionSet() != null) {
             ProgramRuleVariable ruleVariable = attrRuleVariableMap.get(attr.uid());
+            List<Option> options = d2.optionModule().optionSets.uid(attr.optionSet().uid()).withAllChildren().get().options();
             if ((ruleVariable != null && (ruleVariable.useCodeForOptionSet() == null || !ruleVariable.useCodeForOptionSet())) &&
-                    attr.optionSet().options() != null) {
-                for (Option option : attr.optionSet().options()) {
-                    if (value.equals(option.code()))
+                    options != null) {
+                for (Option option : options) {
+                    if (Objects.equals(value, option.code()))
                         value = option.displayName();
                 }
             }
