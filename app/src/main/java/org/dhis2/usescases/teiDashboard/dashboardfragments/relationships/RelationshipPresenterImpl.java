@@ -69,7 +69,6 @@ public class RelationshipPresenterImpl implements RelationshipContracts.Presente
                                                 RelationshipItem.builder().trackedEntityInstance(
                                                         RelationshipItemTrackedEntityInstance.builder().trackedEntityInstance(teiUid).build()).build()
                                         ))
-                                        .filter(relationship -> relationship.from().trackedEntityInstance().trackedEntityInstance().equals(teiUid))
                                         .map(relationship -> {
                                             RelationshipType relationshipType = null;
                                             for (RelationshipType type : d2.relationshipModule().relationshipTypes.get())

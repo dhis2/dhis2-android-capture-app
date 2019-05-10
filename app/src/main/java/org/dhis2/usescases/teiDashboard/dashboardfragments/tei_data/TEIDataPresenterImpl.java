@@ -18,6 +18,7 @@ import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.EventCreationType;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
+import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -232,9 +233,10 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
             view.openEventCapture(intent);
         }
         else {
+            Event event = d2.eventModule().events.uid(uid).get();
             Intent intent = new Intent(view.getContext(), EventInitialActivity.class);
             intent.putExtras(EventInitialActivity.getBundle(
-                    programUid, uid, EventCreationType.DEFAULT.name(), teiUid, null, null, null, dashboardModel.getCurrentEnrollment().uid(), 0, dashboardModel.getCurrentEnrollment().enrollmentStatus()
+                    programUid, uid, EventCreationType.DEFAULT.name(), teiUid, null, event.organisationUnit(), event.programStage(), dashboardModel.getCurrentEnrollment().uid(), 0, dashboardModel.getCurrentEnrollment().enrollmentStatus()
             ));
             view.openEventInitial(intent);
         }
@@ -249,7 +251,6 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
     public void setProgram(ProgramModel program) {
         this.programUid = program.uid();
         view.restoreAdapter(programUid);
-//        getData();
     }
 
     @Override
