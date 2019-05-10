@@ -11,6 +11,7 @@ import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.utils.custom_views.OrgUnitDialog;
+import org.dhis2.utils.custom_views.TextInputAutoCompleteTextView;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 
 import java.util.List;
@@ -26,7 +27,7 @@ import timber.log.Timber;
  */
 
 public class OrgUnitHolder extends FormViewHolder {
-    private final TextInputEditText editText;
+    private final TextInputAutoCompleteTextView editText;
     private final TextInputLayout inputLayout;
     private final Observable<List<OrganisationUnitModel>> orgUnitsObservable;
     private final ImageView description;
@@ -64,7 +65,7 @@ public class OrgUnitHolder extends FormViewHolder {
         });
 
 
-        getOrgUnits();
+        //getOrgUnits();
     }
 
     @Override
@@ -95,7 +96,7 @@ public class OrgUnitHolder extends FormViewHolder {
         if (viewModel.value() != null) {
             editText.post(() -> editText.setText(getOrgUnitName(viewModel.value())));
         }
-        editText.setEnabled(viewModel.editable());
+        editText.setEnabled(false);
 
         this.model = viewModel;
 
