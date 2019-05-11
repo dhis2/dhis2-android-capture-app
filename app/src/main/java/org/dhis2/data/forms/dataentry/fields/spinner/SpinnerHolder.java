@@ -180,9 +180,14 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
             delete.setVisibility(View.GONE);
         }
 
-        processor.onNext(
-                RowAction.create(viewModel.uid(), isSearchMode ? optionDisplayName + "_os_" + optionCode : optionCode, true, optionCode, optionDisplayName)
-        );
+        if (optionDisplayName != null && optionCode != null)
+            processor.onNext(
+                    RowAction.create(viewModel.uid(), isSearchMode ? optionDisplayName + "_os_" + optionCode : optionCode, true, optionCode, optionDisplayName)
+            );
+        else
+            processor.onNext(
+                    RowAction.create(viewModel.uid(), null)
+            );
         viewModel.withValue(isSearchMode ? optionDisplayName : optionCode);
       /*  View nextView;
         if ((nextView = editText.focusSearch(View.FOCUS_DOWN)) != null)

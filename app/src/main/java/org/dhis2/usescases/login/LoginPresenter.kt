@@ -142,10 +142,6 @@ class LoginPresenter internal constructor(private val configurationRepository: C
         view.abstractActivity.startActivityForResult(intent, Constants.RQ_QR_SCANNER)
     }
 
-    override fun onVisibilityClick(v: View) {
-        view.switchPasswordVisibility()
-    }
-
     override fun unlockSession(pin: String) {
         val prefs = view.abstracContext.getSharedPreferences(
                 Constants.SHARE_PREFS, Context.MODE_PRIVATE)
