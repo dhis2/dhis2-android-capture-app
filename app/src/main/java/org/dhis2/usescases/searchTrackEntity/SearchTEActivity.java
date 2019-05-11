@@ -134,7 +134,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
         binding.scrollView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
-        binding.formRecycler.setAdapter(new FormAdapter(getSupportFragmentManager(), LayoutInflater.from(this), presenter.getOrgUnits(), this));
+        binding.formRecycler.setAdapter(new FormAdapter(getSupportFragmentManager(), LayoutInflater.from(this), presenter.getOrgUnits(), this, presenter.getOrgUnitLevels()));
 
         onlinePagerProcessor = PublishProcessor.create();
         offlinePagerProcessor = PublishProcessor.create();
@@ -283,9 +283,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             if (!fromRelationship) {
                 if (data.val1().isEmpty()) {
                     binding.messageContainer.setVisibility(View.GONE);
+                    binding.enrollmentButton.setVisibility(View.VISIBLE);
                     searchTEAdapter.setTeis(searchTeiModels);
                 } else if (searchTEAdapter.getItemCount() == 0) {
                     binding.messageContainer.setVisibility(View.VISIBLE);
+                    binding.enrollmentButton.setVisibility(View.GONE);
                     binding.message.setText(data.val1());
                 }
 
@@ -293,9 +295,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             } else {
                 if (data.val1().isEmpty()) {
                     binding.messageContainer.setVisibility(View.GONE);
+                    binding.enrollmentButton.setVisibility(View.VISIBLE);
                     searchRelationshipAdapter.setItems(searchTeiModels);
                 } else if (searchTEAdapter.getItemCount() == 0) {
                     binding.messageContainer.setVisibility(View.VISIBLE);
+                    binding.enrollmentButton.setVisibility(View.GONE);
                     binding.message.setText(data.val1());
                 }
             }
