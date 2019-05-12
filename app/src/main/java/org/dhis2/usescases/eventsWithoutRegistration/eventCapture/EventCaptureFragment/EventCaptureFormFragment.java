@@ -96,15 +96,8 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
         });
 
         activity.getPresenter().initCompletionPercentage(sectionSelectorAdapter.completionPercentage());
-//        activity.getPresenter().subscribeToSection();
 
         return binding.getRoot();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-
     }
 
     public void setSectionTitle(DataEntryArguments arguments, FormSectionViewModel formSectionViewModel) {
@@ -157,7 +150,6 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
 
     }
 
-    @NonNull
     public void showFields(List<FieldViewModel> updates) {
         binding.progress.setVisibility(View.GONE);
 
@@ -190,10 +182,6 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
             binding.sectionRecycler.setVisibility(binding.sectionRecycler.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
             binding.currentSectionTitle.root.setVisibility(binding.currentSectionTitle.root.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
         }
-    }
-
-    public View getSectionSelector() {
-        return binding.sectionSelector.getRoot();
     }
 
     public Flowable<Trio<String, String, Integer>> optionSetActions() {

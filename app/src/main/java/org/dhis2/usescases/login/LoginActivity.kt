@@ -253,6 +253,9 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
     override fun setAutocompleteAdapters() {
 
+        binding.serverUrlEdit.dropDownWidth = resources.displayMetrics.widthPixels
+        binding.userNameEdit.dropDownWidth = resources.displayMetrics.widthPixels
+
         urls = getListFromPreference(Constants.PREFS_URLS)
         users = getListFromPreference(Constants.PREFS_USERS)
 

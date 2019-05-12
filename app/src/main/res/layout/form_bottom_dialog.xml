@@ -50,6 +50,14 @@
             android:orientation="vertical"
             android:showDividers="end">
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:text="@string/event_form_end_options_title"
+                android:textColor="@color/text_black_333"
+                android:textSize="16sp" />
+
 
             <TextView
                 android:id="@+id/skip"
@@ -72,32 +80,12 @@
                 android:text="@string/reschedule"
                 android:visibility="@{canWrite &amp;&amp; isEnrollmentOpen &amp;&amp;!hasExpired &amp;&amp;reschedule?View.VISIBLE:View.GONE}" />
 
-          <!--  <TextView
-                android:id="@+id/completeAndAddNew"
-                style="@style/BottomDialogItem"
-                android:onClick="@{()->listener.onActionSelected(ActionType.COMPLETE_ADD_NEW)}"
-                android:text="@string/complete_add_new"
-                android:visibility="@{canWrite &amp;&amp; isEnrollmentOpen &amp;&amp;!hasExpired &amp;&amp;canComplete?View.VISIBLE:View.GONE}" />-->
-
             <TextView
                 android:id="@+id/complete"
                 style="@style/BottomDialogItem"
                 android:onClick="@{()->listener.onActionSelected(ActionType.COMPLETE)}"
                 android:text="@string/finish_and_complete"
                 android:visibility="@{canWrite &amp;&amp; isEnrollmentOpen &amp;&amp;!hasExpired &amp;&amp;canComplete?View.VISIBLE:View.GONE}" />
-
-            <!--<TextView
-                android:id="@+id/completeLater"
-                style="@style/BottomDialogItem"
-                android:onClick="@{()->listener.onActionSelected(ActionType.COMPLETE_LATER)}"
-                android:text="@string/complete_later"
-                android:visibility="@{canWrite &amp;&amp; isEnrollmentOpen &amp;&amp;canComplete?View.VISIBLE:View.GONE}" />-->
-          <!--  <TextView
-                android:id="@+id/finishAndAddNew"
-                style="@style/BottomDialogItem"
-                android:onClick="@{()->listener.onActionSelected(ActionType.FINISH_ADD_NEW)}"
-                android:text="@string/finish_add_new"
-                android:visibility="@{canWrite &amp;&amp; isEnrollmentOpen &amp;&amp;!hasExpired ? View.VISIBLE:View.GONE}" />-->
 
             <TextView
                 android:id="@+id/finish"
