@@ -65,8 +65,10 @@ public class RelationshipViewHolder extends RecyclerView.ViewHolder {
     private void setAttributes(List<TrackedEntityAttributeValueModel> trackedEntityAttributeValueModels) {
         if (trackedEntityAttributeValueModels.size() > 1)
             binding.setTeiName(String.format("%s %s", trackedEntityAttributeValueModels.get(0).value(), trackedEntityAttributeValueModels.get(1).value()));
-        else
+        else if(!trackedEntityAttributeValueModels.isEmpty())
             binding.setTeiName(trackedEntityAttributeValueModels.get(0).value());
+        else
+            binding.setTeiName("-");
         binding.executePendingBindings();
     }
 }

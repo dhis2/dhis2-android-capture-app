@@ -29,7 +29,7 @@ public class SearchTEContractsModule {
     public interface View extends AbstractActivityContracts.View {
         void setForm(List<TrackedEntityAttributeModel> trackedEntityAttributeModels, @Nullable ProgramModel program, HashMap<String, String> queryData);
 
-        Consumer<Pair<List<SearchTeiModel>, String>> swapTeiListData();
+        Consumer<Trio<List<SearchTeiModel>, String, Boolean>> swapTeiListData();
 
         void setPrograms(List<ProgramModel> programModels);
 
