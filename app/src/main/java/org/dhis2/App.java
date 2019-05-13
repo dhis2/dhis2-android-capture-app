@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Looper;
+import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 import com.facebook.stetho.Stetho;
@@ -46,6 +47,7 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.multidex.MultiDex;
 import androidx.multidex.MultiDexApplication;
 import io.fabric.sdk.android.Fabric;
+import io.ona.kujaku.KujakuLibrary;
 import io.reactivex.Scheduler;
 import io.reactivex.android.plugins.RxAndroidPlugins;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -105,7 +107,10 @@ public class App extends MultiDexApplication implements Components {
             Stetho.initializeWithDefaults(this);
             Timber.d("STETHO INITIALIZATION END AT %s", System.currentTimeMillis() - startTime);
         }
-        Mapbox.getInstance(this, BuildConfig.MAPBOX_ACCESS_TOKEN);
+
+        KujakuLibrary.setEnableMapDownloadResume(false);
+        KujakuLibrary.init(this);
+
         Fabric.with(this, new Crashlytics());
         Timber.d("FABRIC INITIALIZATION END AT %s", System.currentTimeMillis() - startTime);
 

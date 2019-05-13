@@ -3,23 +3,22 @@ package org.dhis2.data.service;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import androidx.annotation.NonNull;
+
 import org.dhis2.utils.Constants;
 import org.hisp.dhis.android.core.D2;
 
-import androidx.annotation.NonNull;
 import io.reactivex.Completable;
 import io.reactivex.disposables.CompositeDisposable;
+import timber.log.Timber;
 
 final class SyncPresenterImpl implements SyncPresenter {
 
     @NonNull
     private final D2 d2;
 
-    private CompositeDisposable disposable;
-
     SyncPresenterImpl(@NonNull D2 d2) {
         this.d2 = d2;
-        this.disposable = new CompositeDisposable();
     }
 
     @Override
@@ -39,7 +38,7 @@ final class SyncPresenterImpl implements SyncPresenter {
                 Constants.SHARE_PREFS, Context.MODE_PRIVATE);
         int teiLimit = prefs.getInt(Constants.TEI_MAX, Constants.TEI_MAX_DEFAULT);
         boolean limityByOU = prefs.getBoolean(Constants.LIMIT_BY_ORG_UNIT, false);
-        Completable.fromObservable(d2.trackedEntityModule().downloadTrackedEntityInstances(teiLimit, limityByOU).asObservable()).blockingAwait();
+        Completable.fromObservable(d2.trackedEntityModule().downloadTrackedEntityInstances(teiLimit, limityByOU).asObservable().doOnNext(data -> Timber.d(data.percentage() + "% " + data.doneCalls().size() + "/" + data.totalCalls()))).blockingAwait();
     }
 
     @Override

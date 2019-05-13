@@ -10,11 +10,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.DatePicker;
 
+import androidx.appcompat.app.AlertDialog;
+
 import org.dhis2.R;
 import org.dhis2.data.forms.FormActivity;
 import org.dhis2.data.forms.FormViewArguments;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.tuples.Pair;
+import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
 import org.dhis2.utils.Constants;
@@ -23,6 +26,7 @@ import org.dhis2.utils.NetworkUtils;
 import org.dhis2.utils.custom_views.OrgUnitDialog;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.maintenance.D2Error;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
@@ -210,38 +214,57 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     //------------------------------------------
     //region DATA
     @Override
-    public Pair<PagedList<SearchTeiModel>, String> getMessage(PagedList<SearchTeiModel> list) {
+    public Trio<PagedList<SearchTeiModel>, String, Boolean> getMessage(PagedList<SearchTeiModel> list) {
 
         int size = list.size();
 
         String messageId = "";
+        boolean canRegister = true;
+
         if (selectedProgram != null && !selectedProgram.displayFrontPageList()) {
-            if (selectedProgram != null && selectedProgram.minAttributesRequiredToSearch() == 0 && queryData.size() == 0)
+            if (selectedProgram != null && selectedProgram.minAttributesRequiredToSearch() == 0 && queryData.size() == 0) {
                 messageId = view.getContext().getString(R.string.search_attr);
-            if (selectedProgram != null && selectedProgram.minAttributesRequiredToSearch() > queryData.size())
+                canRegister = false;
+            }if (selectedProgram != null && selectedProgram.minAttributesRequiredToSearch() > queryData.size()) {
                 messageId = String.format(view.getContext().getString(R.string.search_min_num_attr), selectedProgram.minAttributesRequiredToSearch());
             else if (selectedProgram.maxTeiCountToReturn() != 0 && size > selectedProgram.maxTeiCountToReturn())
+                canRegister = false;
                 messageId = String.format(view.getContext().getString(R.string.search_max_tei_reached), selectedProgram.maxTeiCountToReturn());
+                canRegister = false;
+            }else if (teiList.isEmpty() && !queryData.isEmpty())
             else if (size == 0 && !queryData.isEmpty())
                 messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
             else if (size == 0)
+            else if (teiList.isEmpty()) {
                 messageId = view.getContext().getString(R.string.search_init);
+                canRegister = false;
+            }
         } else if (selectedProgram == null) {
-            if (queryData.isEmpty() && view.fromRelationshipTEI() == null)
+            if (queryData.isEmpty() && view.fromRelationshipTEI() == null) {
                 messageId = view.getContext().getString(R.string.search_init);
             else if (size == 0)
+                canRegister = false;
+            }else if (teiList.isEmpty()) {
                 messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
+                canRegister = true;
+            }else if (teiList.size() > MAX_NO_SELECTED_PROGRAM_RESULTS && view.fromRelationshipTEI() == null) {
             else if (size > MAX_NO_SELECTED_PROGRAM_RESULTS && view.fromRelationshipTEI() == null) {
                 messageId = String.format(view.getContext().getString(R.string.search_max_tei_reached), MAX_NO_SELECTED_PROGRAM_RESULTS);
+                canRegister = false;
             }
         } else {
             if (size == 0 && !queryData.isEmpty())
+            if (teiList.isEmpty() && !queryData.isEmpty()) {
                 messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
             else if (size == 0)
+                canRegister = true;
+            }else if (teiList.isEmpty()) {
                 messageId = view.getContext().getString(R.string.search_init);
+                canRegister = false;
+            }
         }
 
-        return Pair.create(list, messageId);
+        return Trio.create(teiList, messageId, canRegister);
     }
 
     private void handleError(Throwable throwable) {
@@ -594,5 +617,10 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     @Override
     public String getProgramColor(String uid) {
         return searchRepository.getProgramColor(uid);
+    }
+
+    @Override
+    public Observable<List<OrganisationUnitLevel>> getOrgUnitLevels() {
+        return Observable.just(d2.organisationUnitModule().organisationUnitLevels.get());
     }
 }

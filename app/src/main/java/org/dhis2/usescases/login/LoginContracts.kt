@@ -1,6 +1,7 @@
 package org.dhis2.usescases.login
 
 
+import android.view.View
 import androidx.annotation.UiThread
 import org.dhis2.usescases.general.AbstractActivityContracts
 import retrofit2.Response
@@ -31,8 +32,6 @@ class LoginContracts {
 
         fun goToNextScreen()
 
-        fun switchPasswordVisibility()
-
         fun setUrl(url: String)
 
         fun setUser(user: String)
@@ -49,6 +48,8 @@ class LoginContracts {
         fun checkSecuredCredentials()
 
         fun openAccountRecovery()
+
+        fun displayAlertDialog(titleResource:Int, descriptionResource:Int,negativeResource:Int?,positiveResource:Int)
     }
 
     interface Presenter {
@@ -57,8 +58,6 @@ class LoginContracts {
         fun logIn(serverUrl: String, userName: String, pass: String)
 
         fun onQRClick(v: android.view.View)
-
-        fun onVisibilityClick(v: android.view.View)
 
         fun unlockSession(pin: String)
 
@@ -79,6 +78,7 @@ class LoginContracts {
         fun onFingerprintClick()
 
         fun canHandleBiometrics(): Boolean?
+        fun onUrlInfoClick(v: android.view.View)
     }
 
 }

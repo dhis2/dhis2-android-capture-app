@@ -11,6 +11,13 @@ import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
 
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.viewpager.widget.ViewPager;
+
 import com.google.android.material.tabs.TabLayout;
 
 import org.dhis2.App;
@@ -33,12 +40,6 @@ import java.util.ArrayList;
 
 import javax.inject.Inject;
 
-import androidx.annotation.Nullable;
-import androidx.databinding.DataBindingUtil;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentStatePagerAdapter;
-import androidx.lifecycle.ViewModelProviders;
-import androidx.viewpager.widget.ViewPager;
 import me.toptas.fancyshowcase.FancyShowCaseView;
 import me.toptas.fancyshowcase.FocusShape;
 
@@ -97,7 +98,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     protected void onResume() {
         super.onResume();
 
-        if(((App) getApplicationContext()).dashboardComponent()==null)
+        if (((App) getApplicationContext()).dashboardComponent() == null)
             ((App) getApplicationContext())
                     .createDashboardComponent(new TeiDashboardModule(teiUid, programUid))
                     .inject(this);
@@ -223,6 +224,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         this.tabletAdapter = null;
         this.currentAdapter = null;
         this.programUid = programUid;
+        binding.teiPager.setAdapter(null);
         presenter.init(this, teiUid, programUid);
     }
 

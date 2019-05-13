@@ -30,6 +30,7 @@ import retrofit2.Response
 import timber.log.Timber
 
 class LoginPresenter internal constructor(private val configurationRepository: ConfigurationRepository) : LoginContracts.Presenter {
+
     private lateinit var view: LoginContracts.View
     private var userManager: UserManager? = null
     private lateinit var disposable: CompositeDisposable
@@ -71,8 +72,7 @@ class LoginPresenter internal constructor(private val configurationRepository: C
                                             val prefs = view.abstractActivity.getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE)
                                             view.setUrl(systemInfo.contextPath() ?: "")
                                             view.setUser(prefs.getString(Constants.USER, "")!!)
-                                        }
-                                        else
+                                        } else
                                             view.setUrl(view.context.getString(R.string.login_https))
                                     },
                                     { Timber.e(it) }))
@@ -140,10 +140,6 @@ class LoginPresenter internal constructor(private val configurationRepository: C
     override fun onQRClick(v: View) {
         val intent = Intent(view.context, QRActivity::class.java)
         view.abstractActivity.startActivityForResult(intent, Constants.RQ_QR_SCANNER)
-    }
-
-    override fun onVisibilityClick(v: View) {
-        view.switchPasswordVisibility()
     }
 
     override fun unlockSession(pin: String) {
@@ -218,5 +214,9 @@ class LoginPresenter internal constructor(private val configurationRepository: C
 
     override fun onAccountRecovery() {
         view.openAccountRecovery()
+    }
+
+    override fun onUrlInfoClick(v: View) {
+        view.displayAlertDialog(R.string.login_server_info_title, R.string.login_server_info_message, null, R.string.action_accept)
     }
 }

@@ -6,6 +6,7 @@ import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.hisp.dhis.android.core.option.OptionModel;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
@@ -87,6 +88,8 @@ public class SearchTEContractsModule {
 
         String getProgramColor(String uid);
 
-        Pair<PagedList<SearchTeiModel>, String> getMessage(PagedList<SearchTeiModel> list);
+        Observable<List<OrganisationUnitLevel>> getOrgUnitLevels();
+
+        Trio<PagedList<SearchTeiModel>, String> getMessage(PagedList<SearchTeiModel> list);
     }
 }

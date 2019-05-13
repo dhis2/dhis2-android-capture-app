@@ -118,8 +118,8 @@ android {
     }
 
     compileOptions {
-        targetCompatibility JavaVersion.VERSION_1_8
-        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility = "8"
+        sourceCompatibility = "8"
     }
 
     dataBinding {
@@ -140,7 +140,13 @@ android {
     }
 
     configurations.all {
-        resolutionStrategy.force 'junit:junit:4.12'
+        resolutionStrategy {
+            preferProjectModules()
+
+            force 'junit:junit:4.12','com.squareup.okhttp3:okhttp:3.12.0'
+
+            forcedModules = ['com.squareup.okhttp3:okhttp:3.12.0']
+        }
     }
 }
 
@@ -161,7 +167,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.1.0-alpha01'
     implementation 'androidx.annotation:annotation:1.0.1'
     implementation 'androidx.cardview:cardview:1.0.0'
-    implementation 'com.google.android.material:material:1.1.0-alpha02'
+    implementation 'com.google.android.material:material:1.1.0-alpha06'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 
     implementation 'androidx.multidex:multidex:2.0.1'
@@ -239,7 +245,6 @@ dependencies {
 
     //GSON
     implementation 'com.google.code.gson:gson:2.8.2'
-//    implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
 
     //JOB SCHEDULER
     implementation("android.arch.work:work-runtime:1.0.0-alpha10") {
@@ -277,6 +282,8 @@ dependencies {
     implementation 'com.facebook.stetho:stetho:1.5.0'
     implementation 'com.facebook.stetho:stetho-okhttp3:1.5.0'
 
+    implementation("com.squareup.okhttp3:okhttp:3.12.0")
+
     //RXLint
     implementation 'nl.littlerobots.rxlint:rxlint:1.6'
 
@@ -301,7 +308,7 @@ dependencies {
     //Paperwork
     implementation "hu.supercluster:paperwork:${libraries.paperwork}"
 
-    implementation group: 'com.google.guava', name: 'guava', version: '24.1-jre'
+    implementation 'com.google.guava:guava:27.0.1-android'
 
     implementation 'cat.ereza:customactivityoncrash:2.2.0'
 

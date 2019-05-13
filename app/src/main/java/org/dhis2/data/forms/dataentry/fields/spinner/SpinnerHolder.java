@@ -5,6 +5,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 
+import androidx.appcompat.widget.PopupMenu;
+import androidx.databinding.ViewDataBinding;
+import androidx.fragment.app.FragmentActivity;
+
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -22,9 +26,6 @@ import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
 import java.util.Map;
 
-import androidx.appcompat.widget.PopupMenu;
-import androidx.databinding.ViewDataBinding;
-import androidx.fragment.app.FragmentActivity;
 import io.reactivex.processors.FlowableProcessor;
 
 import static android.text.TextUtils.isEmpty;
@@ -124,27 +125,29 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
     @Override
     public void onClick(View v) {
         closeKeyboard(v);
-        if (numberOfOptions > itemView.getContext().getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE).getInt(Constants.OPTION_SET_DIALOG_THRESHOLD, 15)) {
-            OptionSetDialog dialog = OptionSetDialog.newInstance();
-            dialog
-                    .setProcessor(processorOptionSet)
-                    .setOptionSetUid(viewModel)
-                    .setOnClick(this)
-                    .setCancelListener(view -> dialog.dismiss())
-                    .setClearListener(view -> {
-                                processor.onNext(
-                                        RowAction.create(viewModel.uid(), null));
-                                viewModel.withValue(null);
-                                editText.setText(null);
-                                dialog.dismiss();
-                            }
-                    ).show(((FragmentActivity) binding.getRoot().getContext()).getSupportFragmentManager(), null);
-        } else {
-            OptionSetPopUp.getInstance()
-                    .setOptionSetUid(viewModel)
-                    .setProcessor(processorOptionSet)
-                    .setOnClick(this)
-                    .show(itemView.getContext(), v);
+        if (!OptionSetDialog.isCreated() && !OptionSetPopUp.isCreated()) {
+            if (numberOfOptions > itemView.getContext().getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE).getInt(Constants.OPTION_SET_DIALOG_THRESHOLD, 15)) {
+                OptionSetDialog dialog = OptionSetDialog.newInstance();
+                dialog
+                        .setProcessor(processorOptionSet)
+                        .setOptionSetUid(viewModel)
+                        .setOnClick(this)
+                        .setCancelListener(view -> dialog.dismiss())
+                        .setClearListener(view -> {
+                                    processor.onNext(
+                                            RowAction.create(viewModel.uid(), null));
+                                    viewModel.withValue(null);
+                                    editText.setText(null);
+                                    dialog.dismiss();
+                                }
+                        ).show(((FragmentActivity) binding.getRoot().getContext()).getSupportFragmentManager(), null);
+            } else {
+                OptionSetPopUp.getInstance()
+                        .setOptionSetUid(viewModel)
+                        .setProcessor(processorOptionSet)
+                        .setOnClick(this)
+                        .show(itemView.getContext(), v);
+            }
         }
     }
 
@@ -162,8 +165,8 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
             if (selectedOption != null) {
                 setValueOption(selectedOption.displayName(), selectedOption.code());
             }
-            OptionSetPopUp.getInstance().dismiss();
         }
+        OptionSetPopUp.getInstance().dismiss();
         return false;
     }
 
@@ -177,9 +180,14 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
             delete.setVisibility(View.GONE);
         }
 
-        processor.onNext(
-                RowAction.create(viewModel.uid(), isSearchMode ? optionDisplayName + "_os_" + optionCode : optionCode, true)
-        );
+        if (optionDisplayName != null && optionCode != null)
+            processor.onNext(
+                    RowAction.create(viewModel.uid(), isSearchMode ? optionDisplayName + "_os_" + optionCode : optionCode, true, optionCode, optionDisplayName)
+            );
+        else
+            processor.onNext(
+                    RowAction.create(viewModel.uid(), null)
+            );
         viewModel.withValue(isSearchMode ? optionDisplayName : optionCode);
       /*  View nextView;
         if ((nextView = editText.focusSearch(View.FOCUS_DOWN)) != null)
