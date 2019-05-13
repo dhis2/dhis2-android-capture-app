@@ -32,7 +32,9 @@ final class SyncPresenterImpl implements SyncPresenter {
         int eventLimit = prefs.getInt(Constants.EVENT_MAX, Constants.EVENT_MAX_DEFAULT);
         boolean limitByOU = prefs.getBoolean(Constants.LIMIT_BY_ORG_UNIT, false);
         boolean limitByProgram = prefs.getBoolean(Constants.LIMIT_BY_PROGRAM, false);
-        d2.eventModule().downloadSingleEvents(eventLimit, limitByOU, limitByProgram).call();
+        d2.eventModule().downloadSingleEvents(eventLimit, limitByOU).call();
+        // TODO: REPLACE THIS LINE WHEN SDK ADDS LIMITBYPROGRAM
+//        d2.eventModule().downloadSingleEvents(eventLimit, limitByOU, limitByProgram).call();
     }
 
     @Override
@@ -44,7 +46,9 @@ final class SyncPresenterImpl implements SyncPresenter {
         boolean limitByOU = prefs.getBoolean(Constants.LIMIT_BY_ORG_UNIT, false);
         boolean limitByProgram = prefs.getBoolean(Constants.LIMIT_BY_PROGRAM, false);
         Completable.fromObservable(d2.trackedEntityModule()
-                .downloadTrackedEntityInstances(teiLimit, limitByOU, limitByProgram)
+                // TODO: REPLACE THIS LINE WHEN SDK ADDS LIMITBYPROGRAM
+//                .downloadTrackedEntityInstances(teiLimit, limitByOU, limitByProgram)
+                .downloadTrackedEntityInstances(teiLimit, limitByOU)
                 .asObservable()
                 .doOnNext(data -> Timber.d(data.percentage() + "% " + data.doneCalls().size() + "/" + data.totalCalls())))
                 .blockingAwait();
