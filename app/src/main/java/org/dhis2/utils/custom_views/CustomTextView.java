@@ -1,9 +1,6 @@
 package org.dhis2.utils.custom_views;
 
 import android.content.Context;
-import androidx.databinding.DataBindingUtil;
-import androidx.databinding.ViewDataBinding;
-import com.google.android.material.textfield.TextInputLayout;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -14,6 +11,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ViewDataBinding;
+
+import com.google.android.material.textfield.TextInputLayout;
 
 import org.dhis2.BR;
 import org.dhis2.R;
@@ -26,7 +29,7 @@ import static android.text.TextUtils.isEmpty;
  * QUADRAM. Created by frodriguez on 1/17/2018.
  */
 
-public class CustomTextView extends RelativeLayout implements View.OnFocusChangeListener {
+public class CustomTextView extends FieldLayout implements View.OnFocusChangeListener {
 
     private boolean isBgTransparent;
     private TextInputAutoCompleteTextView editText;
@@ -55,8 +58,13 @@ public class CustomTextView extends RelativeLayout implements View.OnFocusChange
         init(context);
     }
 
-    private void init(Context context) {
+    public void init(Context context) {
         inflater = LayoutInflater.from(context);
+    }
+
+    @Override
+    public void performOnFocusAction() {
+        editText.performClick();
     }
 
     private void setLayout() {
@@ -142,7 +150,7 @@ public class CustomTextView extends RelativeLayout implements View.OnFocusChange
         setLayout();
     }
 
-    public void setValueType(ValueType valueType){
+    public void setValueType(ValueType valueType) {
         this.valueType = valueType;
         configureViews();
     }
@@ -163,13 +171,14 @@ public class CustomTextView extends RelativeLayout implements View.OnFocusChange
         inputLayout.setError(msg);
     }
 
-    public void setText(String text){
+    public void setText(String text) {
         editText.setText(text);
         editText.setSelection(editText.getText() == null ?
                 0 : editText.getText().length());
     }
 
     public void setLabel(String label) {
+        this.label = label;
         binding.setVariable(BR.label, label);
         binding.executePendingBindings();
     }
@@ -185,6 +194,7 @@ public class CustomTextView extends RelativeLayout implements View.OnFocusChange
     public void setFocusChangedListener(OnFocusChangeListener listener) {
         this.listener = listener;
     }
+
     @Override
     public void onFocusChange(View v, boolean hasFocus) {
         if (listener != null && validate())
@@ -254,5 +264,9 @@ public class CustomTextView extends RelativeLayout implements View.OnFocusChange
     public void setRenderType(String renderType) {
         if (renderType != null && !renderType.equals(ProgramStageSectionRenderingType.LISTING.name()))
             icon.setVisibility(View.VISIBLE);
+    }
+
+    public void setOnEditorActionListener(TextView.OnEditorActionListener actionListener) {
+        editText.setOnEditorActionListener(actionListener);
     }
 }

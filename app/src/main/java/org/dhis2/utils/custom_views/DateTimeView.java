@@ -9,6 +9,9 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.DatePicker;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -23,7 +26,6 @@ import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 
-import androidx.appcompat.app.AlertDialog;
 import timber.log.Timber;
 
 /**
@@ -175,7 +177,7 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
             listener.onDateSelected(null);
         });
 
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP){
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
             dateDialog.setButton(DialogInterface.BUTTON_NEUTRAL, getContext().getResources().getString(R.string.change_calendar), (dialog, which) -> {
                 dateDialog.dismiss();
                 showCustomCalendar(view);
@@ -237,7 +239,7 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
             String result = dateFormat.format(selectedDate);
             editText.setText(result);
             listener.onDateSelected(selectedDate);
-//            nextFocus(view);
+            nextFocus(view);
         },
                 hour,
                 minute,
