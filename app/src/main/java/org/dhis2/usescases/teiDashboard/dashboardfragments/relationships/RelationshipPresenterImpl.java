@@ -3,13 +3,17 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.relationships;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.appcompat.app.AlertDialog;
+
 import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity;
 import org.dhis2.usescases.teiDashboard.DashboardRepository;
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
+import org.dhis2.utils.OnDialogClickListener;
 import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.relationship.Relationship;
 import org.hisp.dhis.android.core.relationship.RelationshipHelper;
@@ -146,12 +150,30 @@ public class RelationshipPresenterImpl implements RelationshipContracts.Presente
 
     @Override
     public void openDashboard(String teiUid) {
-        Intent intent = new Intent(view.getContext(), TeiDashboardMobileActivity.class);
-        Bundle bundle = new Bundle();
-        bundle.putString("TEI_UID", teiUid);
-        bundle.putString("PROGRAM_UID", null);
-        intent.putExtras(bundle);
-        view.getAbstractActivity().startActivity(intent);
+        if (d2.trackedEntityModule().trackedEntityInstances.uid(teiUid).get().state() != State.RELATIONSHIP) {
+            Intent intent = new Intent(view.getContext(), TeiDashboardMobileActivity.class);
+            Bundle bundle = new Bundle();
+            bundle.putString("TEI_UID", teiUid);
+            bundle.putString("PROGRAM_UID", null);
+            intent.putExtras(bundle);
+            view.getAbstractActivity().startActivity(intent);
+        } else {
+            view.showInfoDialog(String.format(view.getContext().getString(R.string.resource_not_found), d2.trackedEntityModule().trackedEntityTypes.uid(teiType).get().displayName()),
+                    view.getContext().getString(R.string.relationship_not_found_message),
+                    view.getContext().getString(R.string.yes),
+                    view.getContext().getString(R.string.no),
+                    new OnDialogClickListener() {
+                        @Override
+                        public void onPossitiveClick(AlertDialog alertDialog) {
+                            view.back();
+                        }
+
+                        @Override
+                        public void onNegativeClick(AlertDialog alertDialog) {
+                            //not needed
+                        }
+                    }).show();
+        }
     }
 
     @Override
