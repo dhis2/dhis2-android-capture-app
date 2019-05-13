@@ -477,7 +477,12 @@ public class Bindings {
 
         if (objectStyle.color() != null) {
             String color = objectStyle.color().startsWith("#") ? objectStyle.color() : "#" + objectStyle.color();
-            int colorRes = Color.parseColor(color);
+            int colorRes;
+            if(color.length() == 4)
+                colorRes = ContextCompat.getColor(view.getContext(), R.color.colorPrimary);
+            else
+                colorRes = Color.parseColor(color);
+
             itemView.setBackgroundColor(colorRes);
             setFromResBgColor(view, colorRes);
         }

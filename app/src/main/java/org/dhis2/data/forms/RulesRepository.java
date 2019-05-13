@@ -478,9 +478,11 @@ public final class RulesRepository {
 
         switch (actionType) {
             case DISPLAYTEXT:
-                return createDisplayTextAction(content, data, location);
+                if(location!=null)
+                    return createDisplayTextAction(content, data, location);
             case DISPLAYKEYVALUEPAIR:
-                return createDisplayKeyValuePairAction(content, data, location);
+                if(location!=null)
+                    return createDisplayKeyValuePairAction(content, data, location);
             case HIDEFIELD:
                 return RuleActionHideField.create(content,
                         isEmpty(attribute) ? field : attribute);

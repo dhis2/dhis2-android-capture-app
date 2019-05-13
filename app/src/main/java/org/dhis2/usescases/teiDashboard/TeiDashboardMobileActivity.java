@@ -11,6 +11,13 @@ import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
 
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.viewpager.widget.ViewPager;
+
 import com.google.android.material.tabs.TabLayout;
 
 import org.dhis2.App;
@@ -33,12 +40,6 @@ import java.util.ArrayList;
 
 import javax.inject.Inject;
 
-import androidx.annotation.Nullable;
-import androidx.databinding.DataBindingUtil;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentStatePagerAdapter;
-import androidx.lifecycle.ViewModelProviders;
-import androidx.viewpager.widget.ViewPager;
 import me.toptas.fancyshowcase.FancyShowCaseView;
 import me.toptas.fancyshowcase.FocusShape;
 
@@ -80,7 +81,6 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         super.onCreate(savedInstanceState);
         dashboardViewModel = ViewModelProviders.of(this).get(DashboardViewModel.class);
 
-
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dashboard_mobile);
         binding.setPresenter(presenter);
 
@@ -97,6 +97,12 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     @Override
     protected void onResume() {
         super.onResume();
+
+        if (((App) getApplicationContext()).dashboardComponent() == null)
+            ((App) getApplicationContext())
+                    .createDashboardComponent(new TeiDashboardModule(teiUid, programUid))
+                    .inject(this);
+
         String prevDashboardProgram = getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE)
                 .getString(Constants.PREVIOUS_DASHBOARD_PROGRAM, null);
         if (!changingProgram && prevDashboardProgram != null && !prevDashboardProgram.equals(programUid)) {
@@ -110,14 +116,8 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     @Override
     protected void onPause() {
         super.onPause();
+        ((App) getApplicationContext()).releaseDashboardComponent();
         presenter.onDettach();
-    }
-
-    @Override
-    protected void onDestroy() {
-        if(programUid!=null)
-            ((App) getApplicationContext()).releaseDashboardComponent();
-        super.onDestroy();
     }
 
     @Override
@@ -200,7 +200,9 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         binding.executePendingBindings();
         this.programModel = program;
 
-        setViewpagerAdapter();
+        if (binding.teiPager.getAdapter() == null) {
+            setViewpagerAdapter();
+        }
 
         if (orientation == Configuration.ORIENTATION_LANDSCAPE)
             getSupportFragmentManager().beginTransaction()
@@ -222,6 +224,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         this.tabletAdapter = null;
         this.currentAdapter = null;
         this.programUid = programUid;
+        binding.teiPager.setAdapter(null);
         presenter.init(this, teiUid, programUid);
     }
 
