@@ -291,11 +291,15 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                             })
                             .flatMap(list -> {
                                 int minAttrToSearch = selectedProgram.minAttributesRequiredToSearch() != null ? selectedProgram.minAttributesRequiredToSearch() : 0;
-                                if (currentPage == 1 && (minAttrToSearch <= queryData.size()))
+                                if (currentPage == 1 && (selectedProgram.displayFrontPageList() || minAttrToSearch <= queryData.size()))
                                     return searchRepository.trackedEntityInstancesToUpdate(trackedEntity.uid(), selectedProgram, queryData, list.size())
                                             .map(trackedEntityInstanceModels -> {
                                                 List<SearchTeiModel> helperList = new ArrayList<>();
 
+                                                for (TrackedEntityInstanceModel tei : trackedEntityInstanceModels) {
+                                                    if (view.fromRelationshipTEI() == null || !tei.uid().equals(view.fromRelationshipTEI()))
+                                                        helperList.add(new SearchTeiModel(tei, new ArrayList<>()));
+                                                }
                                                 for (SearchTeiModel searchTeiModel : list) {
                                                     boolean toUpdate = false;
                                                     for (TrackedEntityInstanceModel tei : trackedEntityInstanceModels) {
@@ -305,11 +309,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                                     }
                                                     if (!toUpdate)
                                                         helperList.add(searchTeiModel);
-                                                }
-
-                                                for (TrackedEntityInstanceModel tei : trackedEntityInstanceModels) {
-                                                    if (view.fromRelationshipTEI() == null || !tei.uid().equals(view.fromRelationshipTEI()))
-                                                        helperList.add(new SearchTeiModel(tei, new ArrayList<>()));
                                                 }
 
                                                 return helperList;
