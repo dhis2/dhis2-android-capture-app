@@ -162,6 +162,7 @@
                 android:layout_margin="15dp"
                 android:onClick="@{(view)->presenter.onFabClick(view)}"
                 android:tint="@color/white"
+                android:visibility="gone"
                 app:backgroundTint="?attr/colorPrimary"
                 app:elevation="7dp"
                 app:fabSize="normal"

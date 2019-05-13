@@ -3,6 +3,9 @@ package org.dhis2.data.metadata;
 import android.content.ContentValues;
 import android.database.Cursor;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.R;
@@ -18,6 +21,7 @@ import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.maintenance.D2Error;
+import org.hisp.dhis.android.core.option.OptionGroup;
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -35,13 +39,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -434,7 +437,9 @@ public class MetadataRepositoryImpl implements MetadataRepository {
         try (Cursor cursor = briteDatabase.query("SELECT * FROM D2Error ORDER BY created DESC LIMIT 20")) {
             if (cursor != null && cursor.moveToFirst()) {
                 for (int i = 0; i < cursor.getCount(); i++) {
-                    d2Errors.add(D2Error.create(cursor));
+                    D2Error d2Error = D2Error.create(cursor);
+                    if (d2Error.url() == null || !d2Error.url().contains("api/trackedEntityInstances/query"))
+                        d2Errors.add(D2Error.create(cursor));
                     cursor.moveToNext();
                 }
             }
@@ -458,42 +463,44 @@ public class MetadataRepositoryImpl implements MetadataRepository {
                 (!isEmpty(text) ? "AND Option.displayName LIKE '%" + text + "%' " : "") +
                 pageQuery;
 
-        return briteDatabase.createQuery(OptionModel.TABLE, options, idOptionSet)
-                .mapToList(OptionModel::create);
+        String optionQuery = "SELECT Option.* FROM Option WHERE Option.optionSet = ? " +
+                (!optionsToHide.isEmpty() ? "AND Option.uid NOT IN (" + formattedOptionsToHide + ") " : "") +
+                (!isEmpty(text) ? "AND Option.displayName LIKE '%" + text + "%' " : "");
 
-        /*String optionGroupQuery = "SELECT Option.*, OptionGroupOptionLink.optionGroup FROM Option " +
-                "LEFT JOIN OptionGroupOptionLink ON OptionGroupOptionLink.option = Option.uid  " +
-                "WHERE Option.optionSet = ? " +
-                "AND (OptionGroupOptionLink.optionGroup IS NULL OR OptionGroupOptionLink.optionGroup NOT IN (" + formattedOptionGroupsToHide + ")) " +
-                "GROUP BY Option.uid ORDER BY  Option.sortOrder ASC";
-
-        return briteDatabase.createQuery(OptionGroupOptionLinkTableInfo.TABLE_INFO.name(), optionGroupQuery, idOptionSet)
+        return briteDatabase.createQuery(OptionModel.TABLE, optionQuery, idOptionSet)
                 .mapToList(OptionModel::create)
-                .flatMap(list -> {
-                    if (list.isEmpty()) {
-                        String optionQuery = !isEmpty(text) ?
-                                "select Option.* from OptionSet " +
-                                        "JOIN Option ON Option.optionSet = OptionSet.uid " +
-                                        "where OptionSet.uid = ? and Option.displayName like '%" + text + "%' " +
-                                        "AND Option.uid NOT IN (" + formattedOptionsToHide + ") " + pageQuery :
-                                "select Option.* from OptionSet " +
-                                        "JOIN Option ON Option.optionSet = OptionSet.uid " +
-                                        "where OptionSet.uid = ? " +
-                                        "AND Option.uid NOT IN (" + formattedOptionsToHide + ") " + pageQuery;
-
-                        return briteDatabase.createQuery(OptionSetModel.TABLE, optionQuery, idOptionSet)
-                                .mapToList(OptionModel::create);
-                    } else {
-                        Iterator<OptionModel> iterator = list.iterator();
-                        while (iterator.hasNext()) {
-                            OptionModel option = iterator.next();
-                            if (optionsToHide.contains(option.uid()))
-                                iterator.remove();
-                            if (!option.displayName().contains(text))
-                                iterator.remove();
+                .map(optionList -> {
+                    Iterator<OptionModel> iterator = optionList.iterator();
+                    while (iterator.hasNext()) {
+                        OptionModel option = iterator.next();
+                        List<String> optionGroupUids = new ArrayList<>();
+                        try (Cursor optionGroupCursor = briteDatabase.query("SELECT OptionGroup.* FROM OptionGroup " +
+                                "LEFT JOIN OptionGroupOptionLink ON OptionGroupOptionLink.optionGroup = OptionGroup.uid WHERE OptionGroupOptionLink.option = ?", option.uid())) {
+                            if (optionGroupCursor.moveToFirst()) {
+                                for (int i = 0; i < optionGroupCursor.getCount(); i++) {
+                                    optionGroupUids.add(OptionGroup.create(optionGroupCursor).uid());
+                                    optionGroupCursor.moveToNext();
+                                }
+                            }
                         }
-                        return Observable.just(list);
+                        boolean remove = false;
+                        for (String group : optionGroupUids)
+                            if (optionsGroupsToHide.contains(group))
+                                remove = true;
+
+                        if (remove)
+                            iterator.remove();
+
                     }
-                });*/
+                    int from = page * 15;
+                    int to = page * 15 + 15 > optionList.size() ? optionList.size() : page * 15 + 15;
+                    if (to > from)
+                        return optionList.subList(from, to);
+                    else
+                        return new ArrayList<>();
+                });
+/*
+        return briteDatabase.createQuery(OptionModel.TABLE, options, idOptionSet)
+                .mapToList(OptionModel::create);*/
     }
 }

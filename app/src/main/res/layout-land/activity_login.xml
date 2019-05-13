@@ -329,7 +329,7 @@
 
         <include
             android:id="@+id/pin_layout"
-            layout="@layout/pin_layout"
+            layout="@layout/layout_pin"
             android:visibility="gone" />
 
     </RelativeLayout>
