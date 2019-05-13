@@ -148,15 +148,19 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     private final BriteDatabase briteDatabase;
     private final String eventUid;
+    @NonNull
     private final Event currentEvent;
     private final FormRepository formRepository;
     private final D2 d2;
-    private boolean accessDataWrite;
+    private final boolean isEventExpired;
+    @NonNull
+    private final ProgramStage currentProgramStage;
     private String lastUpdatedUid;
     private RuleEvent.Builder eventBuilder;
     private Map<String, List<Rule>> dataElementRules = new HashMap<>();
     private List<ProgramRule> mandatoryRules;
     private List<ProgramRule> rules;
+
 
     public EventCaptureRepositoryImpl(Context context, BriteDatabase briteDatabase, FormRepository formRepository, String eventUid, D2 d2) {
         this.briteDatabase = briteDatabase;
@@ -165,13 +169,13 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         this.d2 = d2;
 
         currentEvent = d2.eventModule().events.uid(eventUid).withAllChildren().get();
-        ProgramStage programStage = d2.programModule().programStages.uid(currentEvent.programStage()).withAllChildren().get();
+        currentProgramStage = d2.programModule().programStages.uid(currentEvent.programStage()).withAllChildren().get();
         OrganisationUnit ou = d2.organisationUnitModule().organisationUnits.uid(currentEvent.organisationUnit()).withAllChildren().get();
 
         eventBuilder = RuleEvent.builder()
                 .event(currentEvent.uid())
                 .programStage(currentEvent.programStage())
-                .programStageName(programStage.displayName())
+                .programStageName(currentProgramStage.displayName())
                 .status(RuleEvent.Status.valueOf(currentEvent.status().name()))
                 .eventDate(currentEvent.eventDate())
                 .dueDate(currentEvent.dueDate() != null ? currentEvent.dueDate() : currentEvent.eventDate())
@@ -190,6 +194,8 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 context.getString(R.string.choose_date));
 
         loadDataElementRules(currentEvent);
+
+        isEventExpired = isEventExpired(eventUid);
     }
 
     private void loadDataElementRules(Event event) {
@@ -336,8 +342,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     @Override
     public Flowable<String> programStageName() {
-        return Flowable.just(d2.eventModule().events.uid(eventUid).get())
-                .map(event -> d2.programModule().programStages.uid(event.programStage()).get().displayName());
+        return Flowable.just(currentProgramStage.displayName());
     }
 
     @Override
@@ -377,8 +382,6 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     @NonNull
     @Override
     public Flowable<List<FieldViewModel>> list(String sectionUid) {
-        accessDataWrite = getAccessDataWrite();
-        long time;
         return briteDatabase
                 .createQuery(TrackedEntityDataValueModel.TABLE, prepareStatement(sectionUid, eventUid))
                 .mapToList(this::transform)
@@ -544,7 +547,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
             fieldViewModelList.add(fieldFactory.create(uid, formName == null ? displayName : formName,
                     valueType, mandatory, optionSet, dataValue,
                     programStageSection, allowFurureDates,
-                    !isEventExpired(eventUid),
+                    !isEventExpired,
                     renderingType, description, fieldRendering, optionCount, objectStyle));
 
         }
@@ -602,7 +605,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 fieldViewModelList.add(fieldFactory.create(uid, formName == null ? displayName : formName,
                         valueType, mandatory, optionSet, dataValue,
                         programStageSection, allowFurureDates,
-                        !isEventExpired(eventUid),
+                        !isEventExpired,
                         renderingType, description, fieldRendering, optionCount, objectStyle));
 
             }
@@ -704,7 +707,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         return fieldFactory.create(uid, formName == null ? displayName : formName,
                 ValueType.valueOf(valueTypeName), mandatory, optionSet, dataValue,
                 programStageSection, allowFurureDates,
-                !isEventExpired(eventUid),
+                !isEventExpired,
                 renderingType, description, fieldRendering, optionCount, objectStyle);
     }
 
