@@ -9,18 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 
-import com.google.gson.Gson;
-
-import org.dhis2.R;
-import org.dhis2.data.tuples.Pair;
-import org.dhis2.databinding.ErrorDialogBinding;
-import org.hisp.dhis.android.core.imports.TrackerImportConflict;
-import org.hisp.dhis.android.core.maintenance.D2Error;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
@@ -28,6 +16,18 @@ import androidx.databinding.ObservableArrayList;
 import androidx.databinding.ObservableBoolean;
 import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
+
+import com.google.gson.Gson;
+
+import org.dhis2.R;
+import org.dhis2.data.tuples.Pair;
+import org.dhis2.databinding.ErrorDialogBinding;
+import org.hisp.dhis.android.core.imports.TrackerImportConflict;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.processors.FlowableProcessor;
@@ -48,7 +48,7 @@ public class ErrorDialog extends DialogFragment {
     private String shareMessageTitle;
     private ObservableBoolean sharing = new ObservableBoolean(false);
     private CompositeDisposable disposable;
-    private ObservableArrayList<D2Error> shareData;
+    private ObservableArrayList<TrackerImportConflict> shareData;
 
     public ErrorDialog setData(List<TrackerImportConflict> data) {
         this.data = data;
@@ -113,7 +113,7 @@ public class ErrorDialog extends DialogFragment {
         return binding.getRoot();
     }
 
-    private void subscribeToErrors(FlowableProcessor<Pair<Boolean, D2Error>> pairFlowableProcessor) {
+    private void subscribeToErrors(FlowableProcessor<Pair<Boolean, TrackerImportConflict>> pairFlowableProcessor) {
         if (disposable == null)
             disposable = new CompositeDisposable();
         disposable.add(pairFlowableProcessor

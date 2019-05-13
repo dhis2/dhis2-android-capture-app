@@ -21,7 +21,6 @@ import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.imports.TrackerImportConflict;
-import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.option.OptionGroup;
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
@@ -435,13 +434,11 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     @Override
     public List<TrackerImportConflict> getSyncErrors() {
         List<TrackerImportConflict> conflicts = new ArrayList<>();
-        try (Cursor cursor = briteDatabase.query("SELECT * FROM TrackerImportConflict ORDER BY created DESC LIMIT 20")) {
+        try (Cursor cursor = briteDatabase.query("SELECT * FROM TrackerImportConflict ORDER BY created DESC")) {
             if (cursor != null && cursor.moveToFirst()) {
                 for (int i = 0; i < cursor.getCount(); i++) {
                     TrackerImportConflict conflict = TrackerImportConflict.create(cursor);
-                    if (conflict.tableReference().equals("TrackedEntityInstance")){
-                        conflicts.add(conflict);
-                    }
+                    conflicts.add(conflict);
                     cursor.moveToNext();
                 }
             }
