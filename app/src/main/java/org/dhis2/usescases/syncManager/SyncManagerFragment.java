@@ -16,6 +16,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.NotificationCompat;
+import androidx.core.widget.NestedScrollView;
+import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.Fragment;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import com.google.android.material.snackbar.Snackbar;
 import com.jakewharton.rxbinding2.widget.RxTextView;
 
@@ -28,7 +36,7 @@ import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.SyncUtils;
-import org.hisp.dhis.android.core.maintenance.D2Error;
+import org.hisp.dhis.android.core.imports.TrackerImportConflict;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -37,13 +45,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.core.app.NotificationCompat;
-import androidx.core.widget.NestedScrollView;
-import androidx.databinding.DataBindingUtil;
-import androidx.fragment.app.Fragment;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Consumer;
@@ -439,14 +440,14 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     }
 
     @Override
-    public void showSyncErrors(List<D2Error> data) {
+    public void showSyncErrors(List<TrackerImportConflict> data) {
         new ErrorDialog().setData(data).show(getChildFragmentManager().beginTransaction(), ErrorDialog.TAG);
     }
 
     @Override
     public void showLocalDataDeleted(boolean error) {
 
-        if(!error) {
+        if (!error) {
             binding.eventCurrentData.setText(String.valueOf(0));
             binding.teiCurrentData.setText(String.valueOf(0));
         }

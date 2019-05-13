@@ -20,6 +20,7 @@ import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.imports.TrackerImportConflict;
 import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.option.OptionGroup;
 import org.hisp.dhis.android.core.option.OptionModel;
@@ -432,21 +433,22 @@ public class MetadataRepositoryImpl implements MetadataRepository {
 
 
     @Override
-    public List<D2Error> getSyncErrors() {
-        List<D2Error> d2Errors = new ArrayList<>();
-        try (Cursor cursor = briteDatabase.query("SELECT * FROM D2Error ORDER BY created DESC LIMIT 20")) {
+    public List<TrackerImportConflict> getSyncErrors() {
+        List<TrackerImportConflict> conflicts = new ArrayList<>();
+        try (Cursor cursor = briteDatabase.query("SELECT * FROM TrackerImportConflict ORDER BY created DESC LIMIT 20")) {
             if (cursor != null && cursor.moveToFirst()) {
                 for (int i = 0; i < cursor.getCount(); i++) {
-                    D2Error d2Error = D2Error.create(cursor);
-                    if (d2Error.url() == null || !d2Error.url().contains("api/trackedEntityInstances/query"))
-                        d2Errors.add(D2Error.create(cursor));
+                    TrackerImportConflict conflict = TrackerImportConflict.create(cursor);
+                    if (conflict.tableReference().equals("TrackedEntityInstance")){
+                        conflicts.add(conflict);
+                    }
                     cursor.moveToNext();
                 }
             }
         } catch (Exception e) {
             Timber.e(e);
         }
-        return d2Errors;
+        return conflicts;
     }
 
     @Override

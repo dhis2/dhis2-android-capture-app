@@ -9,14 +9,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ObservableInt;
+import androidx.fragment.app.Fragment;
+
 import com.andrognito.pinlockview.PinLockListener;
 
 import org.dhis2.App;
-import org.dhis2.BuildConfig;
 import org.dhis2.R;
 import org.dhis2.databinding.ActivityMainBinding;
 import org.dhis2.usescases.about.AboutFragment;
-import org.dhis2.usescases.development.DevelopmentActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.jira.JiraFragment;
 import org.dhis2.usescases.main.program.ProgramFragment;
@@ -25,17 +28,13 @@ import org.dhis2.usescases.syncManager.ErrorDialog;
 import org.dhis2.usescases.syncManager.SyncManagerFragment;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.SharedPreferenceBooleanLiveData;
-import org.hisp.dhis.android.core.maintenance.D2Error;
+import org.hisp.dhis.android.core.imports.TrackerImportConflict;
 
 import java.util.List;
 import java.util.Objects;
 
 import javax.inject.Inject;
 
-import androidx.annotation.NonNull;
-import androidx.databinding.DataBindingUtil;
-import androidx.databinding.ObservableInt;
-import androidx.fragment.app.Fragment;
 import io.reactivex.functions.Consumer;
 
 
@@ -246,7 +245,7 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
     }
 
     @Override
-    public void showSyncErrors(List<D2Error> data) {
+    public void showSyncErrors(List<TrackerImportConflict> data) {
         new ErrorDialog().setData(data).show(getSupportFragmentManager().beginTransaction(), ErrorDialog.TAG);
     }
 

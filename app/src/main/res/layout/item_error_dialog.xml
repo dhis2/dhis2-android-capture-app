@@ -31,6 +31,7 @@
             android:id="@+id/parentLayout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/selected">
 
@@ -80,7 +81,8 @@
                 app:layout_constraintBottom_toBottomOf="@id/errorMessage"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/errorMessage"
-                app:srcCompat="@drawable/ic_arrow_down" />
+                app:srcCompat="@drawable/ic_arrow_down"
+                tools:ignore="ContentDescription" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <TextView

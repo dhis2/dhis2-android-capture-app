@@ -14,7 +14,9 @@ import com.google.gson.Gson;
 import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ErrorDialogBinding;
+import org.hisp.dhis.android.core.imports.TrackerImportConflict;
 import org.hisp.dhis.android.core.maintenance.D2Error;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +41,7 @@ import timber.log.Timber;
 public class ErrorDialog extends DialogFragment {
 
     private String title;
-    private List<D2Error> data = new ArrayList<>();
+    private List<TrackerImportConflict> data = new ArrayList<>();
     private DividerItemDecoration divider;
     public static String TAG = "ERROR_DIALOG";
     private String shareTitle;
@@ -48,24 +50,19 @@ public class ErrorDialog extends DialogFragment {
     private CompositeDisposable disposable;
     private ObservableArrayList<D2Error> shareData;
 
-    public ErrorDialog setData(List<D2Error> data) {
+    public ErrorDialog setData(List<TrackerImportConflict> data) {
         this.data = data;
         return this;
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NotNull Context context) {
         super.onAttach(context);
         this.title = context.getString(R.string.error_dialog_title);
         this.shareTitle = context.getString(R.string.share_with);
         this.shareMessageTitle = context.getString(R.string.sync_error_title);
         this.divider = new DividerItemDecoration(context, DividerItemDecoration.VERTICAL);
         this.shareData = new ObservableArrayList<>();
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
     }
 
     @Override
