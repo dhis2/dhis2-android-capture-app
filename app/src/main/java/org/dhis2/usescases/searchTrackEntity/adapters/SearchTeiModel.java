@@ -37,7 +37,7 @@ public class SearchTeiModel {
         this.isOnline = true;
     }
 
-    public SearchTeiModel(){
+    public SearchTeiModel() {
         this.tei = null;
         this.attributeValueModels = new ArrayList<>();
         this.enrollmentModels = new ArrayList<>();
@@ -101,7 +101,7 @@ public class SearchTeiModel {
         return enrollmentsInfo;
     }
 
-    public void toLocalTei(TrackedEntityInstanceModel localTei){
+    public void toLocalTei(TrackedEntityInstanceModel localTei) {
         this.teiModel = localTei;
     }
 
@@ -110,8 +110,9 @@ public class SearchTeiModel {
     }
 
 
-
-    public void setTei(TrackedEntityInstance tei) { this.tei = tei; }
+    public void setTei(TrackedEntityInstance tei) {
+        this.tei = tei;
+    }
 
     public TrackedEntityInstance getTei() {
         return tei;

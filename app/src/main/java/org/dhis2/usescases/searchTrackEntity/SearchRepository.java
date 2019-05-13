@@ -36,8 +36,8 @@ public interface SearchRepository {
 
     @NonNull
     LiveData<PagedList<SearchTeiModel>> searchTrackedEntitiesOffline(@NonNull ProgramModel selectedProgram,
-                                                                            @NonNull List<String> orgUnits,
-                                                                            @Nullable HashMap<String, String> queryData);
+                                                                     @NonNull List<String> orgUnits,
+                                                                     @Nullable HashMap<String, String> queryData);
 
     @NonNull
     LiveData<PagedList<SearchTeiModel>> searchTrackedEntitiesAll(@NonNull ProgramModel selectedProgram,

@@ -48,9 +48,7 @@ import java.util.Set;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.arch.core.util.Function;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Transformations;
 import androidx.paging.DataSource;
 import androidx.paging.LivePagedListBuilder;
 import androidx.paging.PagedList;
@@ -194,11 +192,13 @@ public class SearchRepositoryImpl implements SearchRepository {
     public LiveData<PagedList<SearchTeiModel>> searchTrackedEntitiesOffline(@Nullable ProgramModel selectedProgram,
                                                                             @NonNull List<String> orgUnits,
                                                                             @Nullable HashMap<String, String> queryData) {
-        TrackedEntityInstanceQuery.Builder queryBuilder = setQueryBuilder(selectedProgram.uid(), orgUnits);
+
+        TrackedEntityInstanceQuery.Builder queryBuilder = setQueryBuilder(selectedProgram, orgUnits);
         if (queryData != null && !isEmpty(queryData.get(Constants.ENROLLMENT_DATE_UID))) {
-            try{
+            try {
                 Date enrollmentDate = DateUtils.uiDateFormat().parse(queryData.get(Constants.ENROLLMENT_DATE_UID));
                 queryBuilder.programStartDate(enrollmentDate);
+                queryBuilder.programEndDate(enrollmentDate);
             } catch (ParseException ex) {
                 Timber.d(ex.getMessage());
             }
@@ -215,7 +215,7 @@ public class SearchRepositoryImpl implements SearchRepository {
             public DataSource create() {
                 return dataSource;
             }
-        }, 20).build();
+        }, 10).build();
     }
 
     @NonNull
@@ -224,11 +224,12 @@ public class SearchRepositoryImpl implements SearchRepository {
                                                                         @NonNull List<String> orgUnits,
                                                                         @Nullable HashMap<String, String> queryData) {
 
-        TrackedEntityInstanceQuery.Builder queryBuilder = setQueryBuilder(selectedProgram.uid(), orgUnits);
+        TrackedEntityInstanceQuery.Builder queryBuilder = setQueryBuilder(selectedProgram, orgUnits);
         if (queryData != null && !isEmpty(queryData.get(Constants.ENROLLMENT_DATE_UID))) {
-            try{
+            try {
                 Date enrollmentDate = DateUtils.uiDateFormat().parse(queryData.get(Constants.ENROLLMENT_DATE_UID));
                 queryBuilder.programStartDate(enrollmentDate);
+                queryBuilder.programEndDate(enrollmentDate);
             } catch (ParseException ex) {
                 Timber.d(ex.getMessage());
             }
@@ -245,9 +246,8 @@ public class SearchRepositoryImpl implements SearchRepository {
             public DataSource create() {
                 return dataSource;
             }
-        }, 20).build();
+        }, 10).build();
     }
-
 
 
     @NonNull
@@ -489,14 +489,16 @@ public class SearchRepositoryImpl implements SearchRepository {
     }
 
     // Private Region Start //
-    private TrackedEntityInstanceQuery.Builder setQueryBuilder(@Nullable String selectedProgram, @NonNull List<String> orgUnits) {
-        return TrackedEntityInstanceQuery.builder()
-                .orgUnits(orgUnits)
-                .orgUnitMode(OuMode.ACCESSIBLE)
-                .pageSize(50)
-                .program(selectedProgram == null ? "" : selectedProgram)
-                .page(1)
-                .paging(true);
+    private TrackedEntityInstanceQuery.Builder setQueryBuilder(@Nullable ProgramModel selectedProgram, @NonNull List<String> orgUnits) {
+        TrackedEntityInstanceQuery.Builder builder = TrackedEntityInstanceQuery.builder();
+        if (selectedProgram != null)
+            builder.program(selectedProgram.uid());
+        builder.orgUnits(orgUnits);
+        builder.orgUnitMode(OuMode.ACCESSIBLE);
+        builder.pageSize(50);
+        builder.page(1);
+        builder.paging(true);
+        return builder;
     }
 
     private List<QueryItem> formatQueryData(@Nullable HashMap<String, String> queryData, TrackedEntityInstanceQuery.Builder queryBuilder) {
@@ -520,10 +522,14 @@ public class SearchRepositoryImpl implements SearchRepository {
     private SearchTeiModel transform(TrackedEntityInstance tei, @Nullable ProgramModel selectedProgram) {
 
         SearchTeiModel searchTei = new SearchTeiModel();
-        if (d2.trackedEntityModule().trackedEntityInstances.byUid().eq(tei.uid()).one().exists()){
+        if (d2.trackedEntityModule().trackedEntityInstances.byUid().eq(tei.uid()).one().exists()) {
             TrackedEntityInstance localTei = d2.trackedEntityModule().trackedEntityInstances.byUid().eq(tei.uid()).one().get();
             searchTei.setTei(localTei);
-            searchTei.setOnline(false);
+            if (selectedProgram != null)
+                if (d2.enrollmentModule().enrollments.byTrackedEntityInstance().eq(localTei.uid()).byProgram().eq(selectedProgram.uid()).one().exists())
+                    searchTei.setOnline(false);
+                else if (d2.enrollmentModule().enrollments.byTrackedEntityInstance().eq(localTei.uid()).one().exists())
+                    searchTei.setOnline(false);
             setEnrollmentInfo(searchTei);
             setAttributesInfo(searchTei, selectedProgram);
             setOverdueEvents(searchTei, selectedProgram);

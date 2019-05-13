@@ -10,18 +10,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.DatePicker;
 
-import androidx.appcompat.app.AlertDialog;
-
 import org.dhis2.R;
 import org.dhis2.data.forms.FormActivity;
 import org.dhis2.data.forms.FormViewArguments;
 import org.dhis2.data.metadata.MetadataRepository;
-import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
-import org.dhis2.utils.Constants;
-import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.NetworkUtils;
 import org.dhis2.utils.custom_views.OrgUnitDialog;
 import org.hisp.dhis.android.core.D2;
@@ -29,10 +24,6 @@ import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeModel;
 
 import java.util.ArrayList;
@@ -41,13 +32,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nullable;
 
-import androidx.lifecycle.LiveData;
-import androidx.paging.PagedList;
 import androidx.appcompat.app.AlertDialog;
+import androidx.paging.PagedList;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -80,9 +69,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private HashMap<String, String> queryData;
     private Map<String, String> queryDataEQ;
 
-    private List<OrganisationUnitModel> orgUnits;
     private List<String> orgUnitsUid = new ArrayList<>();
-    private Integer currentPage;
     private Date selectedEnrollmentDate;
 
     private FlowableProcessor<HashMap<String, String>> queryProcessor;
@@ -140,8 +127,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         .observeOn(Schedulers.io())
                         .subscribe(
                                 orgUnits -> {
-                                    this.orgUnits = orgUnits;
-                                    for (OrganisationUnitModel orgUnit: orgUnits) {
+                                    for (OrganisationUnitModel orgUnit : orgUnits) {
                                         this.orgUnitsUid.add(orgUnit.uid());
                                     }
                                 },
@@ -171,7 +157,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                 else
                                     queryData.remove(data.id());
                                 queryProcessor.onNext(queryData);
-                                //getTrakedEntities();
                             }
                         },
                         Timber::d)
@@ -192,7 +177,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         compositeDisposable.add(
                 queryProcessor
                         .map(map -> {
-                            if(!NetworkUtils.isOnline(view.getContext()) || selectedProgram == null || Build.VERSION.SDK_INT <= 19)
+                            if (!NetworkUtils.isOnline(view.getContext()) || selectedProgram == null || Build.VERSION.SDK_INT <= 19)
                                 return searchRepository.searchTrackedEntitiesOffline(selectedProgram, orgUnitsUid, map);
                             else
                                 return searchRepository.searchTrackedEntitiesAll(selectedProgram, orgUnitsUid, map);
@@ -225,46 +210,39 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
             if (selectedProgram != null && selectedProgram.minAttributesRequiredToSearch() == 0 && queryData.size() == 0) {
                 messageId = view.getContext().getString(R.string.search_attr);
                 canRegister = false;
-            }if (selectedProgram != null && selectedProgram.minAttributesRequiredToSearch() > queryData.size()) {
+            }
+            if (selectedProgram != null && selectedProgram.minAttributesRequiredToSearch() > queryData.size()) {
                 messageId = String.format(view.getContext().getString(R.string.search_min_num_attr), selectedProgram.minAttributesRequiredToSearch());
-            else if (selectedProgram.maxTeiCountToReturn() != 0 && size > selectedProgram.maxTeiCountToReturn())
-                canRegister = false;
+            } else if (selectedProgram.maxTeiCountToReturn() != 0 && size > selectedProgram.maxTeiCountToReturn()) {
                 messageId = String.format(view.getContext().getString(R.string.search_max_tei_reached), selectedProgram.maxTeiCountToReturn());
                 canRegister = false;
-            }else if (teiList.isEmpty() && !queryData.isEmpty())
-            else if (size == 0 && !queryData.isEmpty())
+            } else if (size == 0 && !queryData.isEmpty())
                 messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
-            else if (size == 0)
-            else if (teiList.isEmpty()) {
+            else if (size == 0) {
                 messageId = view.getContext().getString(R.string.search_init);
                 canRegister = false;
             }
         } else if (selectedProgram == null) {
             if (queryData.isEmpty() && view.fromRelationshipTEI() == null) {
                 messageId = view.getContext().getString(R.string.search_init);
-            else if (size == 0)
                 canRegister = false;
-            }else if (teiList.isEmpty()) {
+            } else if (size == 0) {
                 messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
                 canRegister = true;
-            }else if (teiList.size() > MAX_NO_SELECTED_PROGRAM_RESULTS && view.fromRelationshipTEI() == null) {
-            else if (size > MAX_NO_SELECTED_PROGRAM_RESULTS && view.fromRelationshipTEI() == null) {
+            } else if (size > MAX_NO_SELECTED_PROGRAM_RESULTS && view.fromRelationshipTEI() == null) {
                 messageId = String.format(view.getContext().getString(R.string.search_max_tei_reached), MAX_NO_SELECTED_PROGRAM_RESULTS);
                 canRegister = false;
             }
         } else {
-            if (size == 0 && !queryData.isEmpty())
-            if (teiList.isEmpty() && !queryData.isEmpty()) {
+            if (size == 0 && !queryData.isEmpty()) {
                 messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
-            else if (size == 0)
                 canRegister = true;
-            }else if (teiList.isEmpty()) {
+            } else if (size == 0) {
                 messageId = view.getContext().getString(R.string.search_init);
                 canRegister = false;
             }
         }
-
-        return Trio.create(teiList, messageId, canRegister);
+        return Trio.create(list, messageId, canRegister);
     }
 
     private void handleError(Throwable throwable) {
@@ -345,7 +323,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     @Override
     public void onClearClick() {
         queryData.clear();
-        this.currentPage = 0;
         setProgram(selectedProgram);
     }
 

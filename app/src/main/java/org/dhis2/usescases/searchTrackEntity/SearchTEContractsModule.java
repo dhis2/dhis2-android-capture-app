@@ -1,7 +1,6 @@
 package org.dhis2.usescases.searchTrackEntity;
 
 import org.dhis2.data.forms.dataentry.fields.RowAction;
-import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
@@ -20,7 +19,6 @@ import androidx.lifecycle.LiveData;
 import androidx.paging.PagedList;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
-import io.reactivex.functions.Consumer;
 
 /**
  * QUADRAM. Created by ppajuelo on 02/11/2017.
@@ -90,6 +88,6 @@ public class SearchTEContractsModule {
 
         Observable<List<OrganisationUnitLevel>> getOrgUnitLevels();
 
-        Trio<PagedList<SearchTeiModel>, String> getMessage(PagedList<SearchTeiModel> list);
+        Trio<PagedList<SearchTeiModel>, String, Boolean> getMessage(PagedList<SearchTeiModel> list);
     }
 }

@@ -19,15 +19,6 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Spinner;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.databinding.BindingMethod;
-import androidx.databinding.BindingMethods;
-import androidx.databinding.DataBindingUtil;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.RecyclerView;
-
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.dhis2.App;
@@ -40,15 +31,12 @@ import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.ActivitySearchBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.searchTrackEntity.adapters.FormAdapter;
-import org.dhis2.usescases.searchTrackEntity.adapters.SearchRelationshipAdapter;
-import org.dhis2.usescases.searchTrackEntity.adapters.SearchTEAdapter;
+import org.dhis2.usescases.searchTrackEntity.adapters.RelationshipLiveAdapter;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiLiveAdapter;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.EndlessRecyclerViewScrollListener;
 import org.dhis2.utils.HelpManager;
-import org.dhis2.utils.NetworkUtils;
 import org.dhis2.utils.custom_views.OptionSetDialog;
 import org.dhis2.utils.custom_views.OptionSetPopUp;
 import org.hisp.dhis.android.core.option.OptionModel;
@@ -57,15 +45,21 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
 import javax.inject.Inject;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.databinding.BindingMethod;
+import androidx.databinding.BindingMethods;
+import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.LiveData;
+import androidx.paging.PagedList;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import io.reactivex.Flowable;
-import io.reactivex.functions.Consumer;
-import io.reactivex.processors.PublishProcessor;
 import me.toptas.fancyshowcase.FancyShowCaseView;
 import me.toptas.fancyshowcase.FocusShape;
 import timber.log.Timber;
@@ -86,8 +80,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     private String initialProgram;
     private String tEType;
-    private SearchTEAdapter searchTEAdapter;
-    private SearchRelationshipAdapter searchRelationshipAdapter;
 
     private boolean fromRelationship = false;
     private String fromRelationshipTeiUid;
@@ -98,13 +90,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
         }
     };
-    private ProgramModel program;
-    private static PublishProcessor<Integer> onlinePagerProcessor;
-    private PublishProcessor<Integer> offlinePagerProcessor;
-    private EndlessRecyclerViewScrollListener endlessRecyclerViewScrollListener;
-    LiveData<PagedList<SearchTeiModel>> liveData = new MutableLiveData<>();
 
     private SearchTeiLiveAdapter liveAdapter;
+    private RelationshipLiveAdapter relationshipLiveAdapter;
     //---------------------------------------------------------------------------------------------
     //region LIFECYCLE
 
@@ -128,8 +116,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         }
 
         if (fromRelationship) {
-            searchRelationshipAdapter = new SearchRelationshipAdapter(presenter, metadataRepository, false);
-            binding.scrollView.setAdapter(searchRelationshipAdapter);
+            relationshipLiveAdapter = new RelationshipLiveAdapter(presenter);
+            binding.scrollView.setAdapter(relationshipLiveAdapter);
         } else {
             liveAdapter = new SearchTeiLiveAdapter(presenter);
             binding.scrollView.setAdapter(liveAdapter);
@@ -138,27 +126,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         binding.scrollView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
         binding.formRecycler.setAdapter(new FormAdapter(getSupportFragmentManager(), LayoutInflater.from(this), presenter.getOrgUnits(), this, presenter.getOrgUnitLevels()));
-
-        onlinePagerProcessor = PublishProcessor.create();
-        offlinePagerProcessor = PublishProcessor.create();
-        /*endlessRecyclerViewScrollListener = new EndlessRecyclerViewScrollListener(binding.scrollView.getLayoutManager(), 2,
-                NetworkUtils.isOnline(this) ? 1 : 0) {
-            @Override
-            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                if (NetworkUtils.isOnline(SearchTEActivity.this))
-                    onlinePagerProcessor.onNext(page);
-                *//*else {
-                    if(program != null)
-                        if(program.maxTeiCountToReturn() != 0 && totalItemsCount >= program.maxTeiCountToReturn())
-                            offlinePagerProcessor.onNext(page);
-                    else
-                        if(totalItemsCount >= 20)
-                            offlinePagerProcessor.onNext(page);
-                }*//*
-            }
-        };*/
-        //binding.scrollView.addOnScrollListener(endlessRecyclerViewScrollListener);
-
     }
 
     @Override
@@ -167,7 +134,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         presenter.init(this, tEType, initialProgram);
         registerReceiver(networkReceiver, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
     }
-
 
     @Override
     protected void onPause() {
@@ -183,8 +149,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     public void setForm(List<TrackedEntityAttributeModel> trackedEntityAttributeModels, @Nullable ProgramModel program, HashMap<String, String> queryData) {
-
-        this.program = program;
 
         if (!HelpManager.getInstance().isTutorialReadyForScreen(getClass().getName()))
             setTutorial();
@@ -209,8 +173,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     public void clearData() {
         binding.progressLayout.setVisibility(View.VISIBLE);
-        if (fromRelationship)
-            searchRelationshipAdapter.clear();
     }
 
     @Override
@@ -266,8 +228,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         binding.progressLayout.setVisibility(View.GONE);
         if (!fromRelationship) {
             liveData.observeForever(searchTeiModels -> {
-                Trio<PagedList<SearchTeiModel>, String> data = presenter.getMessage(searchTeiModels);
-                if(data.val1().isEmpty()){
+                Trio<PagedList<SearchTeiModel>, String, Boolean> data = presenter.getMessage(searchTeiModels);
+                if (data.val1().isEmpty()) {
                     binding.messageContainer.setVisibility(View.GONE);
                     liveAdapter.submitList(data.val0());
                 } else {
@@ -279,18 +241,17 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             });
         } else {
             liveData.observeForever(searchTeiModels -> {
-                Trio<PagedList<SearchTeiModel>, String> data = presenter.getMessage(searchTeiModels);
+                Trio<PagedList<SearchTeiModel>, String, Boolean> data = presenter.getMessage(searchTeiModels);
                 if (data.val1().isEmpty()) {
                     binding.messageContainer.setVisibility(View.GONE);
-                    searchRelationshipAdapter.setItems(data.val0().snapshot());
-                } else if (searchTEAdapter.getItemCount() == 0) {
+                    relationshipLiveAdapter.submitList(data.val0());
+                } else {
                     binding.messageContainer.setVisibility(View.VISIBLE);
                     binding.message.setText(data.val1());
                 }
             });
         }
     }
-
 
     @Override
     public void clearList(String uid) {
