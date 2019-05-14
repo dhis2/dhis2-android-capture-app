@@ -47,7 +47,6 @@
                 android:id="@+id/input_layout"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/renderImage"
                 android:layout_weight="1"
                 android:hint='@{label}'
                 android:textColorHint="@drawable/edit_text_hint_accent"
@@ -57,13 +56,14 @@
                 <org.dhis2.utils.custom_views.TextInputAutoCompleteTextView
                     android:id="@+id/input_editText"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:enabled="@{isEditable.get()}"
+                    android:gravity="start"
                     android:imeOptions="actionNext"
-                    android:textAlignment="textStart"
                     android:textColor="?colorAccent"
+                    android:maxLines="1"
                     android:textSize="15sp"
-                    tools:text="hello" />
+                    tools:text="@string/lorem" />
 
             </com.google.android.material.textfield.TextInputLayout>
 

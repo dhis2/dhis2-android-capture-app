@@ -102,7 +102,7 @@ public class FormBottomDialog extends BottomSheetDialogFragment {
 
     //This is necessary to show the bottomSheet dialog with full height on landscape
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         view.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
             BottomSheetDialog dialog = (BottomSheetDialog) getDialog();

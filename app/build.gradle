@@ -245,7 +245,6 @@ dependencies {
 
     //GSON
     implementation 'com.google.code.gson:gson:2.8.2'
-//    implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
 
     //JOB SCHEDULER
     implementation("android.arch.work:work-runtime:1.0.0-alpha10") {

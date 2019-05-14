@@ -7,8 +7,13 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
@@ -16,13 +21,10 @@ import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.Style;
 
+import org.dhis2.BuildConfig;
 import org.dhis2.R;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.jetbrains.annotations.NotNull;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
 
 
 /**
@@ -47,6 +49,7 @@ public class MapSelectorActivity extends ActivityGlobalAbstract {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Mapbox.getInstance(this, BuildConfig.MAPBOX_ACCESS_TOKEN);
         setContentView(R.layout.activity_map_selector);
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         findViewById(R.id.back).setOnClickListener(v -> finish());
