@@ -1,6 +1,7 @@
 package org.dhis2.utils;
 
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
+import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel;
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.ValueType;
@@ -61,7 +62,7 @@ public class RulesUtilsProviderImpl implements RulesUtilsProvider {
             else if (ruleAction instanceof RuleActionDisplayText)
                 displayText((RuleActionDisplayText) ruleAction, ruleEffect, fieldViewModels);
             else if (ruleAction instanceof RuleActionDisplayKeyValuePair)
-                displayKeyValuePair((RuleActionDisplayKeyValuePair) ruleAction, ruleEffect, rulesActionCallbacks);
+                displayKeyValuePair((RuleActionDisplayKeyValuePair) ruleAction, ruleEffect, fieldViewModels, rulesActionCallbacks);
             else if (ruleAction instanceof RuleActionHideSection)
                 hideSection((RuleActionHideSection) ruleAction, fieldViewModels, rulesActionCallbacks);
             else if (ruleAction instanceof RuleActionAssign)
@@ -133,17 +134,22 @@ public class RulesUtilsProviderImpl implements RulesUtilsProvider {
                              Map<String, FieldViewModel> fieldViewModels) {
         String uid = displayText.content();
 
-        EditTextViewModel textViewModel = EditTextViewModel.create(uid,
-                displayText.content(), false, ruleEffect.data(), "Information", 1,
-                ValueType.TEXT, null, false, null, null, ObjectStyleModel.builder().build());
-
-        fieldViewModels.put(uid, textViewModel);
+        DisplayViewModel displayViewModel = DisplayViewModel.create(uid, "",
+                ruleEffect.data(), "Display");
+        fieldViewModels.put(uid, displayViewModel);
     }
 
     private void displayKeyValuePair(RuleActionDisplayKeyValuePair displayKeyValuePair,
                                      RuleEffect ruleEffect,
+                                     Map<String, FieldViewModel> fieldViewModels,
                                      RulesActionCallbacks rulesActionCallbacks) {
+        String uid = displayKeyValuePair.content();
+
+        DisplayViewModel displayViewModel = DisplayViewModel.create(uid, displayKeyValuePair.content(),
+                ruleEffect.data(), "Display");
+        fieldViewModels.put(uid, displayViewModel);
         rulesActionCallbacks.setDisplayKeyValue(displayKeyValuePair.content(), ruleEffect.data());
+
     }
 
     private void hideSection(RuleActionHideSection hideSection,
