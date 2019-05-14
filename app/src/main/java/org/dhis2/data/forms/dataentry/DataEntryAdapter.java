@@ -8,6 +8,7 @@ import androidx.databinding.ObservableBoolean;
 import androidx.databinding.ObservableField;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.Adapter;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
@@ -60,6 +61,7 @@ public final class DataEntryAdapter extends Adapter {
     private static final int ORG_UNIT = 10;
     private static final int IMAGE = 11;
     private static final int UNSUPPORTED = 12;
+    private static final int LONG_TEXT = 13;
 
 
     @NonNull
@@ -82,6 +84,21 @@ public final class DataEntryAdapter extends Adapter {
 
     private final Observable<List<OrganisationUnitLevel>> levels;
 
+    private final RecyclerView.AdapterDataObserver adapterDataObserver = new RecyclerView.AdapterDataObserver() {
+        @Override
+        public void onItemRangeInserted(int positionStart, int itemCount) {
+            super.onItemRangeInserted(positionStart, itemCount);
+            focusPosition = positionStart;
+        }
+
+        @Override
+        public void onItemRangeRemoved(int positionStart, int itemCount) {
+            super.onItemRangeRemoved(positionStart, itemCount);
+            focusPosition = positionStart;
+        }
+    };
+    private int focusPosition = -1;
+
     public DataEntryAdapter(@NonNull LayoutInflater layoutInflater,
                             @NonNull FragmentManager fragmentManager,
                             @NonNull DataEntryArguments dataEntryArguments,
@@ -98,7 +115,7 @@ public final class DataEntryAdapter extends Adapter {
         this.dataEntryArguments = dataEntryArguments;
         this.levels = levels;
 
-        rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType(), isEditable));
+        rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType(), isEditable, false));
         rows.add(BUTTON, new FileRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
         rows.add(CHECKBOX, new RadioButtonRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
         rows.add(SPINNER, new SpinnerRow(layoutInflater, processor, currentPosition, processorOptionSet, true, dataEntryArguments.renderType()));
@@ -111,6 +128,9 @@ public final class DataEntryAdapter extends Adapter {
         rows.add(ORG_UNIT, new OrgUnitRow(fragmentManager, layoutInflater, processor, currentPosition, true, orgUnits, dataEntryArguments.renderType(), levels));
         rows.add(IMAGE, new ImageRow(layoutInflater, processor, currentPosition, dataEntryArguments.renderType()));
         rows.add(UNSUPPORTED, new UnsupportedRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
+        rows.add(LONG_TEXT, new EditTextRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType(), isEditable, true));
+
+        registerAdapterDataObserver(adapterDataObserver);
 
     }
 
@@ -132,7 +152,7 @@ public final class DataEntryAdapter extends Adapter {
         this.dataEntryArguments = dataEntryArguments;
         this.levels = levels;
 
-        rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType(), isEditable));
+        rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType(), isEditable, false));
         rows.add(BUTTON, new FileRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
         rows.add(CHECKBOX, new RadioButtonRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
         rows.add(SPINNER, new SpinnerRow(layoutInflater, processor, currentPosition, processorOptionSet, true, dataEntryArguments.renderType()));
@@ -145,6 +165,9 @@ public final class DataEntryAdapter extends Adapter {
         rows.add(ORG_UNIT, new OrgUnitRow(fragmentManager, layoutInflater, processor, currentPosition, true, orgUnits, dataEntryArguments.renderType(), levels));
         rows.add(IMAGE, new ImageRow(layoutInflater, processor, currentPosition, dataEntryArguments.renderType()));
         rows.add(UNSUPPORTED, new UnsupportedRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
+        rows.add(LONG_TEXT, new EditTextRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType(), isEditable, true));
+
+        registerAdapterDataObserver(adapterDataObserver);
 
     }
 
@@ -161,6 +184,9 @@ public final class DataEntryAdapter extends Adapter {
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         rows.get(holder.getItemViewType()).onBind(holder,
                 viewModels.get(holder.getAdapterPosition()));
+
+        if(position == focusPosition)
+            holder.itemView.requestFocus();
     }
 
     @Override
@@ -173,7 +199,10 @@ public final class DataEntryAdapter extends Adapter {
 
         FieldViewModel viewModel = viewModels.get(position);
         if (viewModel instanceof EditTextModel) {
-            return EDITTEXT;
+            if (((EditTextModel) viewModel).valueType() != ValueType.LONG_TEXT)
+                return EDITTEXT;
+            else
+                return LONG_TEXT;
         } else if (viewModel instanceof RadioButtonViewModel) {
             return CHECKBOX;
         } else if (viewModel instanceof SpinnerViewModel) {
@@ -270,6 +299,6 @@ public final class DataEntryAdapter extends Adapter {
         viewModels.addAll(helperModels);
 
         diffResult.dispatchUpdatesTo(this);
-
     }
+
 }

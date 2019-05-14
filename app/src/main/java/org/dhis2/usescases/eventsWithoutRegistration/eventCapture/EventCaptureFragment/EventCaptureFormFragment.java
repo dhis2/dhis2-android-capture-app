@@ -189,6 +189,13 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
     }
 
     public void updateAdapter(RowAction rowAction) {
-        activity.runOnUiThread(() -> dataEntryAdapter.notifyChanges(rowAction));
+        activity.runOnUiThread(() -> {
+            dataEntryAdapter.notifyChanges(rowAction);
+            if (rowAction.lastFocusPosition() != -1)
+                if (rowAction.lastFocusPosition() >= dataEntryAdapter.getItemCount())
+                    binding.formRecycler.smoothScrollToPosition(rowAction.lastFocusPosition());
+                else
+                    binding.formRecycler.smoothScrollToPosition(rowAction.lastFocusPosition() + 1);
+        });
     }
 }
