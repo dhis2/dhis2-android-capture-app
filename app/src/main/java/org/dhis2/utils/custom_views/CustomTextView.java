@@ -12,7 +12,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.databinding.DataBindingUtil;
@@ -44,6 +43,7 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
 
     private LayoutInflater inflater;
     private TextInputLayout inputLayout;
+    private boolean isLongText;
 
     public CustomTextView(Context context) {
         super(context);
@@ -70,10 +70,14 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
     }
 
     private void setLayout() {
-        if (isBgTransparent)
+        if (isBgTransparent && !isLongText)
             binding = DataBindingUtil.inflate(inflater, R.layout.custom_text_view, this, true);
-        else
+        else if (!isBgTransparent && !isLongText)
             binding = DataBindingUtil.inflate(inflater, R.layout.custom_text_view_accent, this, true);
+        else if (isBgTransparent && isLongText)
+            binding = DataBindingUtil.inflate(inflater, R.layout.custom_long_text_view, this, true);
+        else
+            binding = DataBindingUtil.inflate(inflater, R.layout.custom_long_text_view_accent, this, true);
 
         inputLayout = findViewById(R.id.input_layout);
         editText = findViewById(R.id.input_editText);
@@ -154,9 +158,9 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
         binding.executePendingBindings();
     }
 
-
-    public void setIsBgTransparent(boolean mIsBgTransparent) {
-        isBgTransparent = mIsBgTransparent;
+    public void setLayoutData(boolean isBgTransparent, boolean isLongText) {
+        this.isBgTransparent = isBgTransparent;
+        this.isLongText = isLongText;
         setLayout();
     }
 
@@ -279,4 +283,6 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
     public void setOnEditorActionListener(TextView.OnEditorActionListener actionListener) {
         editText.setOnEditorActionListener(actionListener);
     }
+
+
 }
