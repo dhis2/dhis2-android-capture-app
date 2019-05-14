@@ -6,6 +6,8 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
 
+import androidx.annotation.NonNull;
+
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.R;
@@ -37,6 +39,7 @@ import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.relationship.RelationshipTypeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
 import java.util.ArrayList;
@@ -48,7 +51,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import androidx.annotation.NonNull;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -63,8 +65,8 @@ import static org.hisp.dhis.android.core.utils.StoreUtils.sqLiteBind;
 public class DashboardRepositoryImpl implements DashboardRepository {
 
     private static final String INSERT_NOTE = "INSERT INTO Note ( " +
-            "uid, enrollment, value, storedBy, storedDate" +
-            ") VALUES (?, ?, ?, ?, ?);";
+            "uid, enrollment, value, storedBy, storedDate, state" +
+            ") VALUES (?, ?, ?, ?, ?,?);";
     private static final String SELECT_NOTES = "SELECT " +
             "Note.* FROM Note\n" +
             "JOIN Enrollment ON Enrollment.uid = Note.enrollment\n" +
@@ -401,6 +403,14 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     }
 
     @Override
+    public String relationshipTeiSync(String teiUidToUpdate) {
+        ContentValues cv = new ContentValues();
+        cv.put(TrackedEntityInstanceModel.Columns.STATE, State.SYNCED.name());
+        briteDatabase.update(TrackedEntityInstanceModel.TABLE, cv, "uid = ?", teiUidToUpdate);
+        return teiUidToUpdate;
+    }
+
+    @Override
     public Integer getObjectStyle(Context context, String uid) {
         String GET_OBJECT_STYLE = "SELECT * FROM ObjectStyle WHERE uid = ?";
         try (Cursor objectStyleCurosr = briteDatabase.query(GET_OBJECT_STYLE, uid)) {
@@ -548,14 +558,22 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                     SQLiteStatement insetNoteStatement = briteDatabase.getWritableDatabase()
                             .compileStatement(INSERT_NOTE);
 
-
                     sqLiteBind(insetNoteStatement, 1, codeGenerator.generate()); //enrollment
                     sqLiteBind(insetNoteStatement, 2, enrollmentUid == null ? "" : enrollmentUid); //enrollment
                     sqLiteBind(insetNoteStatement, 3, stringBooleanPair.val0() == null ? "" : stringBooleanPair.val0()); //value
                     sqLiteBind(insetNoteStatement, 4, userName == null ? "" : userName); //storeBy
                     sqLiteBind(insetNoteStatement, 5, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime())); //storeDate
+                    sqLiteBind(insetNoteStatement, 6, State.TO_POST.name()); //state
 
-                    briteDatabase.executeInsert(NoteModel.TABLE, insetNoteStatement);
+                    long inserted = briteDatabase.executeInsert(NoteModel.TABLE, insetNoteStatement);
+
+                    if (inserted != -1) {
+                        TrackedEntityInstance tei = d2.trackedEntityModule().trackedEntityInstances.uid(teiUid).get();
+                        ContentValues cv = new ContentValues();
+                        cv.put(TrackedEntityInstance.Columns.STATE, tei.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
+                        briteDatabase.update(TrackedEntityInstanceModel.TABLE, cv, "uid = ?", teiUid);
+                        briteDatabase.update(EnrollmentModel.TABLE, cv, "uid = ?", enrollmentUid);
+                    }
 
                     insetNoteStatement.clearBindings();
                 }
@@ -585,6 +603,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                 sqLiteBind(insetNoteStatement, 3, stringBooleanPair.val0()); //value
                 sqLiteBind(insetNoteStatement, 4, userName == null ? "" : userName); //storeBy
                 sqLiteBind(insetNoteStatement, 5, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime())); //storeDate
+                sqLiteBind(insetNoteStatement, 6, State.TO_POST.name()); //storeDate
 
                 long success = briteDatabase.executeInsert(NoteModel.TABLE, insetNoteStatement);
 

@@ -36,7 +36,6 @@ import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.ProgramAdapter;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.metadata.MetadataRepository;
-import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.ActivitySearchBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
@@ -134,7 +133,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
         binding.scrollView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
-        binding.formRecycler.setAdapter(new FormAdapter(getSupportFragmentManager(), LayoutInflater.from(this), presenter.getOrgUnits(), this));
+        binding.formRecycler.setAdapter(new FormAdapter(getSupportFragmentManager(), LayoutInflater.from(this), presenter.getOrgUnits(), this, presenter.getOrgUnitLevels()));
 
         onlinePagerProcessor = PublishProcessor.create();
         offlinePagerProcessor = PublishProcessor.create();
@@ -274,7 +273,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     //region TEI LIST
 
     @Override
-    public Consumer<Pair<List<SearchTeiModel>, String>> swapTeiListData() {
+    public Consumer<Trio<List<SearchTeiModel>, String, Boolean>> swapTeiListData() {
         return data -> {
             List<SearchTeiModel> searchTeiModels = data.val0();
             Collections.sort(searchTeiModels, (o1, o2) -> Boolean.compare(o1.isOnline(), o2.isOnline()));
@@ -288,6 +287,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     binding.messageContainer.setVisibility(View.VISIBLE);
                     binding.message.setText(data.val1());
                 }
+
+                binding.enrollmentButton.setVisibility(data.val2() ? View.VISIBLE : View.GONE);
 
 
             } else {

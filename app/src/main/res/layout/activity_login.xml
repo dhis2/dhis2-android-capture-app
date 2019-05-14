@@ -288,7 +288,7 @@
             <LinearLayout
                 android:id="@+id/unlock_layout"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="16dp"
@@ -299,7 +299,7 @@
                     android:id="@+id/logout"
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_marginEnd="10dp"
                     android:layout_weight="1"
                     android:onClick="onLogoutClick"
@@ -311,7 +311,7 @@
                     android:id="@+id/unlock"
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_marginStart="10dp"
                     android:layout_weight="1"
                     android:onClick="onUnlockClick"
@@ -326,7 +326,7 @@
 
         <include
             android:id="@+id/pin_layout"
-            layout="@layout/pin_layout"
+            layout="@layout/layout_pin"
             android:visibility="gone" />
 
     </RelativeLayout>

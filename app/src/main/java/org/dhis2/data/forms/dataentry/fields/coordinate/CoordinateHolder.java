@@ -17,8 +17,8 @@ import static android.text.TextUtils.isEmpty;
 public class CoordinateHolder extends FormViewHolder {
 
     private final FlowableProcessor<RowAction> processor;
-    CustomFormCoordinateBinding binding;
-    CoordinateViewModel model;
+    private CustomFormCoordinateBinding binding;
+    private CoordinateViewModel model;
 
     @SuppressLint("CheckResult")
     CoordinateHolder(CustomFormCoordinateBinding binding, FlowableProcessor<RowAction> processor) {
@@ -26,11 +26,11 @@ public class CoordinateHolder extends FormViewHolder {
         this.processor = processor;
         this.binding = binding;
         binding.formCoordinates.setCurrentLocationListener((latitude, longitude) -> {
+                    closeKeyboard(binding.formCoordinates);
                     processor.onNext(
                             RowAction.create(model.uid(),
                                     String.format(Locale.US,
                                             "[%.5f,%.5f]", latitude, longitude)));
-//                    binding.formCoordinates.nextFocus(binding.formCoordinates);
                 }
         );
         binding.formCoordinates.setMapListener(

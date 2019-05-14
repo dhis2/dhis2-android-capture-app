@@ -3,6 +3,11 @@ package org.dhis2.data.forms.dataentry.fields.orgUnit;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ViewDataBinding;
+import androidx.fragment.app.FragmentManager;
+
 import org.dhis2.BR;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.Row;
@@ -13,10 +18,6 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.databinding.DataBindingUtil;
-import androidx.databinding.ViewDataBinding;
-import androidx.fragment.app.FragmentManager;
 import io.reactivex.Observable;
 import io.reactivex.processors.FlowableProcessor;
 
@@ -37,7 +38,8 @@ public class OrgUnitRow implements Row<OrgUnitHolder, OrgUnitViewModel> {
     private Observable<List<OrganisationUnitLevel>> levels;
 
     public OrgUnitRow(FragmentManager fm, LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor,
-                      boolean isBgTransparent, Observable<List<OrganisationUnitModel>> orgUnits) {
+                      boolean isBgTransparent, Observable<List<OrganisationUnitModel>> orgUnits,
+                      Observable<List<OrganisationUnitLevel>> levels) {
         this.inflater = layoutInflater;
         this.processor = processor;
         this.isBgTransparent = isBgTransparent;
@@ -45,6 +47,7 @@ public class OrgUnitRow implements Row<OrgUnitHolder, OrgUnitViewModel> {
         this.orgUnits = orgUnits;
         this.renderType = null;
         this.isSearchMode = true;
+        this.levels = levels;
     }
 
     public OrgUnitRow(FragmentManager fm, LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor,

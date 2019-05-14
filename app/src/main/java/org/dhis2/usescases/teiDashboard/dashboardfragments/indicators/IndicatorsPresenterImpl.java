@@ -109,7 +109,7 @@ public class IndicatorsPresenterImpl implements IndicatorsContracts.Presenter {
                 indicators.add(indicator);
             } else if (ruleAction instanceof RuleActionDisplayText) {
                 Trio<ProgramIndicatorModel, String, String> indicator = Trio.create(null,
-                        ruleEffect.data(), "");
+                        ((RuleActionDisplayText) ruleAction).content()+ruleEffect.data(), "");
                 indicators.add(indicator);
             }
         }

@@ -6,6 +6,7 @@ import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.hisp.dhis.android.core.option.OptionModel;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
@@ -28,7 +29,7 @@ public class SearchTEContractsModule {
     public interface View extends AbstractActivityContracts.View {
         void setForm(List<TrackedEntityAttributeModel> trackedEntityAttributeModels, @Nullable ProgramModel program, HashMap<String, String> queryData);
 
-        Consumer<Pair<List<SearchTeiModel>, String>> swapTeiListData();
+        Consumer<Trio<List<SearchTeiModel>, String, Boolean>> swapTeiListData();
 
         void setPrograms(List<ProgramModel> programModels);
 
@@ -90,5 +91,7 @@ public class SearchTEContractsModule {
         Observable<List<OrganisationUnitModel>> getOrgUnits();
 
         String getProgramColor(String uid);
+
+        Observable<List<OrganisationUnitLevel>> getOrgUnitLevels();
     }
 }

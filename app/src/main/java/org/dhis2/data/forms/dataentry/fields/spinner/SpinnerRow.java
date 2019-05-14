@@ -3,14 +3,15 @@ package org.dhis2.data.forms.dataentry.fields.spinner;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.databinding.DataBindingUtil;
+
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.Row;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.tuples.Trio;
+import org.dhis2.databinding.FormOptionSetBinding;
 
-import androidx.annotation.NonNull;
-import androidx.databinding.DataBindingUtil;
-import androidx.databinding.ViewDataBinding;
 import io.reactivex.processors.FlowableProcessor;
 
 /**
@@ -49,8 +50,9 @@ public class SpinnerRow implements Row<SpinnerHolder, SpinnerViewModel> {
     @NonNull
     @Override
     public SpinnerHolder onCreate(@NonNull ViewGroup parent) {
-        ViewDataBinding binding = DataBindingUtil.inflate(inflater, isBackgroundTransparent ? R.layout.form_spinner : R.layout.form_spinner_accent, parent, false);
-        return new SpinnerHolder(binding, processor, processorOptionSet, renderType, isSearchMode);
+        FormOptionSetBinding binding = DataBindingUtil.inflate(inflater, R.layout.form_option_set, parent, false);
+        binding.optionSetView.setLayoutData(isBackgroundTransparent, renderType);
+        return new SpinnerHolder(binding, processor, processorOptionSet, isSearchMode);
     }
 
     @Override
