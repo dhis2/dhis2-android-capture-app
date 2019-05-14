@@ -50,6 +50,7 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
     private Fragment formFragment;
     private String section;
     private ProgressBar progressBar;
+
     @NonNull
     public static DataEntryFragment create(@NonNull DataEntryArguments arguments) {
         Bundle bundle = new Bundle();
@@ -202,7 +203,14 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
 
     @Override
     public void updateAdapter(RowAction rowAction) {
-        getActivity().runOnUiThread(() -> dataEntryAdapter.notifyChanges(rowAction));
+        getActivity().runOnUiThread(() -> {
+            dataEntryAdapter.notifyChanges(rowAction);
+            if (rowAction.lastFocusPosition() != -1)
+                if (rowAction.lastFocusPosition() >= dataEntryAdapter.getItemCount())
+                    recyclerView.smoothScrollToPosition(rowAction.lastFocusPosition());
+                else
+                    recyclerView.smoothScrollToPosition(rowAction.lastFocusPosition() + 1);
+        });
 
     }
 }

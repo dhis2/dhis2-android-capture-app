@@ -1,6 +1,7 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
 import android.os.Handler;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -46,6 +47,7 @@ import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
+import static android.view.View.FOCUS_DOWN;
 
 /**
  * QUADRAM. Created by ppajuelo on 19/11/2018.
@@ -78,6 +80,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private boolean isSubscribed;
     private long ruleInitTime;
     private List<OrganisationUnitLevel> levels;
+    private int lastAdapterPosition;
 
     public EventCapturePresenterImpl(String eventUid, EventCaptureContract.EventCaptureRepository eventCaptureRepository, MetadataRepository metadataRepository, RulesUtilsProvider rulesUtils, DataEntryStore dataEntryStore) {
         this.eventUid = eventUid;
@@ -402,6 +405,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                 eventCaptureRepository.setLastUpdated(action.id());
                                 ruleInitTime = System.currentTimeMillis();
                                 EventCaptureFormFragment.getInstance().updateAdapter(action);
+                                this.lastAdapterPosition = action.lastFocusPosition();
                                 return dataEntryStore.save(action.id(), action.value());
                             }
                     ).subscribe(result -> Timber.d("SAVED VALUE AT %s", System.currentTimeMillis()),

@@ -45,16 +45,20 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/input_layout"
-                style="@style/ValueType_Text"
-                android:theme="@style/loginInputText"
+                style="@style/ValueType_LongText"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:hint='@{label}'
                 android:textColorHint="@color/text_black_808"
+                android:theme="@style/loginInputText"
                 tools:hint="hint">
 
                 <org.dhis2.utils.custom_views.TextInputAutoCompleteTextView
+                    android:paddingTop="32dp"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:paddingBottom="5dp"
                     android:id="@+id/input_editText"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"

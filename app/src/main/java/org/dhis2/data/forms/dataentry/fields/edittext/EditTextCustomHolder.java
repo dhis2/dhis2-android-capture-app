@@ -47,10 +47,10 @@ final class EditTextCustomHolder extends FormViewHolder {
                 if (!isEmpty(binding.customEdittext.getEditText().getText())) {
                     checkAutocompleteRendering();
                     editTextModel.withValue(binding.customEdittext.getEditText().getText().toString());
-                    processor.onNext(RowAction.create(editTextModel.uid(), binding.customEdittext.getEditText().getText().toString()));
+                    processor.onNext(RowAction.create(editTextModel.uid(), binding.customEdittext.getEditText().getText().toString(),getAdapterPosition()));
 
                 } else {
-                    processor.onNext(RowAction.create(editTextModel.uid(), null));
+                    processor.onNext(RowAction.create(editTextModel.uid(), null,getAdapterPosition()));
                 }
             }
         });
