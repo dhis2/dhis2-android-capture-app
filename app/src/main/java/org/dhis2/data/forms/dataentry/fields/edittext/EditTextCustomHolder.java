@@ -57,6 +57,7 @@ final class EditTextCustomHolder extends FormViewHolder {
         binding.customEdittext.setOnEditorActionListener((v, actionId, event) -> {
             binding.customEdittext.getEditText().clearFocus();
             closeKeyboard(binding.customEdittext.getEditText());
+            binding.customEdittext.nextFocus(v);
             return false;
         });
     }

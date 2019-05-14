@@ -8,6 +8,7 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.DatePicker;
+import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -174,6 +175,7 @@ public class DateView extends FieldLayout implements View.OnClickListener {
                     String result = DateUtils.uiDateFormat().format(selectedDate);
                     editText.setText(result);
                     listener.onDateSelected(selectedDate);
+                    nextFocus(this);
                 }),
                 year,
                 month,
@@ -230,6 +232,7 @@ public class DateView extends FieldLayout implements View.OnClickListener {
                     String result = DateUtils.uiDateFormat().format(selectedDate);
                     editText.setText(result);
                     listener.onDateSelected(selectedDate);
+                    nextFocus(this);
                 })
                 .setNegativeButton(getContext().getString(R.string.date_dialog_clear), (dialog, which) -> {
                     editText.setText(null);

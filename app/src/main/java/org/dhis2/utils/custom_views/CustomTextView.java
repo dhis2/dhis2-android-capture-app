@@ -31,7 +31,7 @@ import static android.text.TextUtils.isEmpty;
  * QUADRAM. Created by frodriguez on 1/17/2018.
  */
 
-public class CustomTextView extends RelativeLayout implements View.OnFocusChangeListener {
+public class CustomTextView extends FieldLayout implements View.OnFocusChangeListener {
 
     private boolean isBgTransparent;
     private TextInputAutoCompleteTextView editText;
@@ -60,8 +60,13 @@ public class CustomTextView extends RelativeLayout implements View.OnFocusChange
         init(context);
     }
 
-    private void init(Context context) {
+    public void init(Context context) {
         inflater = LayoutInflater.from(context);
+    }
+
+    @Override
+    public void performOnFocusAction() {
+        editText.performClick();
     }
 
     private void setLayout() {
@@ -183,6 +188,7 @@ public class CustomTextView extends RelativeLayout implements View.OnFocusChange
     }
 
     public void setLabel(String label) {
+        this.label = label;
         binding.setVariable(BR.label, label);
         binding.executePendingBindings();
     }
