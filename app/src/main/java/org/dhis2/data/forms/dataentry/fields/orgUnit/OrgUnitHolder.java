@@ -48,29 +48,12 @@ public class OrgUnitHolder extends FormViewHolder {
 
         this.editText.setOnClickListener(view -> {
             editText.setEnabled(false);
-            orgUnitDialog = new OrgUnitCascadeDialog()
-                    .setTitle(model.label())
-                    .setOrgUnits(this.orgUnits)
-                    .setSelectedOrgUnit(selectedOrgUnit)
-                    .setLevels(this.levels)
-                    .setCallbacks(new OrgUnitCascadeDialog.CascadeOrgUnitCallbacks() {
-                        @Override
-                        public void textChangedConsumer(String selectedOrgUnitUid, String selectedOrgUnitName) {
-                            selectedOrgUnit = selectedOrgUnitUid;
-                            processor.onNext(RowAction.create(model.uid(), selectedOrgUnitUid));
-                            editText.setText(selectedOrgUnitName);
-                            orgUnitDialog.dismiss();
-                            editText.setEnabled(true);
-                        }
+            if(OrgUnitCascadeDialog.getInstance() != null && editText.getText().toString().isEmpty())
+                OrgUnitCascadeDialog.getInstance().setSelectedOrgUnit("");
 
-                        @Override
-                        public void onDialogCancelled() {
-                            editText.setEnabled(true);
-                        }
-                    });
+            orgUnitDialog = OrgUnitCascadeDialog.newInstance(model, this.orgUnits, this.levels, processor, editText);
 
-            if (!orgUnitDialog.isAdded())
-                orgUnitDialog.show(fm, model.label());
+            orgUnitDialog.show(fm, model.label());
         });
 
 

@@ -16,8 +16,11 @@ import android.view.Window;
 import com.jakewharton.rxbinding2.widget.RxTextView;
 
 import org.dhis2.R;
+import org.dhis2.data.forms.dataentry.fields.RowAction;
+import org.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitViewModel;
 import org.dhis2.data.tuples.Quintet;
 import org.dhis2.databinding.DialogCascadeOrgunitBinding;
+import org.dhis2.utils.custom_views.TextInputAutoCompleteTextView;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 
@@ -28,6 +31,7 @@ import java.util.concurrent.TimeUnit;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
@@ -43,9 +47,45 @@ public class OrgUnitCascadeDialog extends DialogFragment {
     private CompositeDisposable disposable;
     private List<Quintet<String, String, String, Integer, Boolean>> orgUnits;
     private OrgUnitCascadeAdapter adapter;
-    private String selectedOrgUnit;
+    private static String selectedOrgUnit;
     private HashMap<String, String> paths;
     private List<OrganisationUnitLevel> levels;
+    private static OrgUnitCascadeDialog instance;
+
+    public static OrgUnitCascadeDialog getInstance(){
+        if(instance != null)
+            return instance;
+
+        return null;
+    }
+
+    public static OrgUnitCascadeDialog newInstance(OrgUnitViewModel model, List<OrganisationUnitModel> orgUnits,
+                                                  List<OrganisationUnitLevel> levels, FlowableProcessor<RowAction> processor,
+                                                  TextInputAutoCompleteTextView editText) {
+        if(instance == null)
+            instance = new OrgUnitCascadeDialog();
+
+        instance.setTitle(model.label())
+            .setOrgUnits(orgUnits)
+            .setLevels(levels)
+            .setCallbacks(new OrgUnitCascadeDialog.CascadeOrgUnitCallbacks() {
+                @Override
+                public void textChangedConsumer(String selectedOrgUnitUid, String selectedOrgUnitName) {
+                    selectedOrgUnit = selectedOrgUnitUid;
+                    processor.onNext(RowAction.create(model.uid(), selectedOrgUnitUid));
+                    editText.setText(selectedOrgUnitName);
+                    instance.dismiss();
+                    editText.setEnabled(true);
+                }
+
+                @Override
+                public void onDialogCancelled() {
+                    editText.setEnabled(true);
+                }
+            });
+
+        return instance;
+    }
 
     public OrgUnitCascadeDialog setTitle(String title) {
         this.title = title;
@@ -57,9 +97,8 @@ public class OrgUnitCascadeDialog extends DialogFragment {
         return this;
     }
 
-    public OrgUnitCascadeDialog setSelectedOrgUnit(String orgUnitUid){
-        this.selectedOrgUnit = orgUnitUid;
-        return this;
+    public static void setSelectedOrgUnit(String orgUnitUid){
+        selectedOrgUnit = orgUnitUid;
     }
 
     public OrgUnitCascadeDialog setLevels(List<OrganisationUnitLevel> levels){
@@ -125,6 +164,8 @@ public class OrgUnitCascadeDialog extends DialogFragment {
         binding.orgUnitEditText.setHint(title);
         binding.acceptButton.setOnClickListener(view -> {
             if (binding.recycler.getAdapter() != null) {
+                binding.orgUnitEditText.getText().clear();
+                showChips(new ArrayList<>());
                 String selectedOrgUnitUid = ((OrgUnitCascadeAdapter) binding.recycler.getAdapter()).getSelectedOrgUnit();
                 for (Quintet<String, String, String, Integer, Boolean> orgUnit : orgUnits) {
                     if (orgUnit.val0().equals(selectedOrgUnitUid) && orgUnit.val4()) {
@@ -198,7 +239,16 @@ public class OrgUnitCascadeDialog extends DialogFragment {
         for (Quintet<String, String, String, Integer, Boolean> trio : data) {
             if (trio.val4() && getContext() != null) { //Only shows selectable orgUnits
                 Chip chip = new Chip(getContext());
-                chip.setText(trio.val1());
+                String level = "";
+                for(OrganisationUnitLevel orgLevel: levels){
+                    if(trio.val3().intValue() == orgLevel.level()){
+                        level = orgLevel.displayName() + " : ";
+                    }
+                }
+                if(level.isEmpty())
+                    level = "Lvl. " + trio.val3() + " : ";
+
+                chip.setText(level + "" + trio.val1());
                 chip.setOnClickListener(view -> {
                     callbacks.textChangedConsumer(trio.val0(), trio.val1());
                     dismiss();
@@ -216,6 +266,7 @@ public class OrgUnitCascadeDialog extends DialogFragment {
 
     @Override
     public void dismiss() {
+        binding.orgUnitEditText.getText().clear();
         disposable.clear();
         super.dismiss();
     }

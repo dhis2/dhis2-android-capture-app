@@ -24,7 +24,7 @@
                 android:id="@+id/title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/colorGreyDefault">
+                android:background="@android:color/transparent">
 
                 <EditText
                     android:id="@+id/orgUnitEditText"
@@ -39,6 +39,8 @@
                     android:drawableTint="@color/icon_color"
                     android:paddingEnd="8dp"
                     android:paddingStart="8dp"
+                    android:paddingBottom="10dp"
+                    android:paddingTop="10dp"
                     android:textColor="@color/colorGreyDefault"
                     android:textStyle="bold"
                     android:lines="1"
@@ -88,11 +90,12 @@
                 android:layout_height="40dp"
                 android:layout_gravity="end"
                 android:layout_margin="5dp"
+                android:layout_marginEnd="8dp"
                 android:background="@android:color/transparent"
                 android:text="@string/clear"
                 android:textColor="@color/colorGreyDefault"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
+                app:layout_constraintEnd_toStartOf="@+id/cancel_button" />
 
 
             <Button
@@ -106,8 +109,7 @@
                 android:text="@string/cancel"
                 android:textColor="@color/colorGreyDefault"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/accept_button"
-                app:layout_constraintStart_toEndOf="@id/clear_button" />
+                app:layout_constraintEnd_toStartOf="@id/accept_button" />
 
             <Button
                 android:id="@+id/accept_button"
@@ -119,7 +121,7 @@
                 android:background="@android:color/transparent"
                 android:text="@string/action_accept"
                 android:visibility="invisible"
-                android:textColor="@color/colorGreyDefault"
+                android:textColor="@color/blue_4fa"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>

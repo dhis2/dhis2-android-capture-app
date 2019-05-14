@@ -1,6 +1,7 @@
 package org.dhis2.data.forms.dataentry.fields.edittext;
 
 
+import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
