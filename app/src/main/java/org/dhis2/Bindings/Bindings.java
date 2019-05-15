@@ -412,11 +412,7 @@ public class Bindings {
         if (state != null) {
             switch (state) {
                 case TO_POST:
-                    imageView.setImageResource(R.drawable.ic_sync_problem_grey);
-                    break;
                 case TO_UPDATE:
-                    imageView.setImageResource(R.drawable.ic_sync_problem_grey);
-                    break;
                 case TO_DELETE:
                     imageView.setImageResource(R.drawable.ic_sync_problem_grey);
                     break;
@@ -425,6 +421,13 @@ public class Bindings {
                     break;
                 case SYNCED:
                     imageView.setImageResource(R.drawable.ic_sync);
+                    break;
+                case WARNING:
+                    imageView.setImageResource(R.drawable.ic_sync_warning);
+                    break;
+                case SENT_VIA_SMS:
+                case SYNCED_VIA_SMS:
+                    imageView.setImageResource(R.drawable.ic_sync_sms);
                     break;
                 default:
                     break;

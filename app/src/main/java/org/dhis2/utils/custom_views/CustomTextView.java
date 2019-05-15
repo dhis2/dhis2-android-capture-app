@@ -7,10 +7,11 @@ import android.text.TextUtils;
 import android.text.method.DigitsKeyListener;
 import android.util.AttributeSet;
 import android.util.Patterns;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.databinding.DataBindingUtil;
@@ -29,7 +30,7 @@ import static android.text.TextUtils.isEmpty;
  * QUADRAM. Created by frodriguez on 1/17/2018.
  */
 
-public class CustomTextView extends RelativeLayout implements View.OnFocusChangeListener {
+public class CustomTextView extends FieldLayout implements View.OnFocusChangeListener {
 
     private boolean isBgTransparent;
     private TextInputAutoCompleteTextView editText;
@@ -42,6 +43,7 @@ public class CustomTextView extends RelativeLayout implements View.OnFocusChange
 
     private LayoutInflater inflater;
     private TextInputLayout inputLayout;
+    private boolean isLongText;
 
     public CustomTextView(Context context) {
         super(context);
@@ -58,15 +60,24 @@ public class CustomTextView extends RelativeLayout implements View.OnFocusChange
         init(context);
     }
 
-    private void init(Context context) {
+    public void init(Context context) {
         inflater = LayoutInflater.from(context);
     }
 
+    @Override
+    public void performOnFocusAction() {
+        editText.performClick();
+    }
+
     private void setLayout() {
-        if (isBgTransparent)
+        if (isBgTransparent && !isLongText)
             binding = DataBindingUtil.inflate(inflater, R.layout.custom_text_view, this, true);
-        else
+        else if (!isBgTransparent && !isLongText)
             binding = DataBindingUtil.inflate(inflater, R.layout.custom_text_view_accent, this, true);
+        else if (isBgTransparent && isLongText)
+            binding = DataBindingUtil.inflate(inflater, R.layout.custom_long_text_view, this, true);
+        else
+            binding = DataBindingUtil.inflate(inflater, R.layout.custom_long_text_view_accent, this, true);
 
         inputLayout = findViewById(R.id.input_layout);
         editText = findViewById(R.id.input_editText);
@@ -77,6 +88,11 @@ public class CustomTextView extends RelativeLayout implements View.OnFocusChange
     private void configureViews() {
 
         editText.setFilters(new InputFilter[]{});
+
+        TextInputLayout.LayoutParams lp = new TextInputLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        inputLayout.setLayoutParams(lp);
+        editText.setMaxLines(1);
+        editText.setVerticalScrollBarEnabled(false);
 
         if (valueType != null)
             switch (valueType) {
@@ -93,9 +109,12 @@ public class CustomTextView extends RelativeLayout implements View.OnFocusChange
                     editText.setEllipsize(TextUtils.TruncateAt.END);
                     break;
                 case LONG_TEXT:
-                    editText.setInputType(InputType.TYPE_CLASS_TEXT);
-                    editText.setLines(1);
-                    editText.setEllipsize(TextUtils.TruncateAt.END);
+                    inputLayout.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 93, getResources().getDisplayMetrics());
+                    editText.setMaxLines(Integer.MAX_VALUE);
+                    editText.setEllipsize(null);
+                    editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+                    editText.setVerticalScrollBarEnabled(true);
+                    editText.setScrollBarStyle(View.SCROLLBARS_INSIDE_INSET);
                     break;
                 case LETTER:
                     editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
@@ -139,9 +158,9 @@ public class CustomTextView extends RelativeLayout implements View.OnFocusChange
         binding.executePendingBindings();
     }
 
-
-    public void setIsBgTransparent(boolean mIsBgTransparent) {
-        isBgTransparent = mIsBgTransparent;
+    public void setLayoutData(boolean isBgTransparent, boolean isLongText) {
+        this.isBgTransparent = isBgTransparent;
+        this.isLongText = isLongText;
         setLayout();
     }
 
@@ -173,6 +192,7 @@ public class CustomTextView extends RelativeLayout implements View.OnFocusChange
     }
 
     public void setLabel(String label) {
+        this.label = label;
         binding.setVariable(BR.label, label);
         binding.executePendingBindings();
     }
@@ -263,4 +283,6 @@ public class CustomTextView extends RelativeLayout implements View.OnFocusChange
     public void setOnEditorActionListener(TextView.OnEditorActionListener actionListener) {
         editText.setOnEditorActionListener(actionListener);
     }
+
+
 }

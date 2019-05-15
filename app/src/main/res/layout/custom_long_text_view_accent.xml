@@ -44,6 +44,7 @@
             android:orientation="horizontal">
 
             <com.google.android.material.textfield.TextInputLayout
+                style="@style/ValueType_LongText"
                 android:id="@+id/input_layout"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -60,8 +61,8 @@
                     android:enabled="@{isEditable.get()}"
                     android:gravity="start"
                     android:imeOptions="actionNext"
-                    android:textColor="?colorAccent"
                     android:maxLines="1"
+                    android:textColor="?colorAccent"
                     android:textSize="15sp"
                     tools:text="@string/lorem" />
 

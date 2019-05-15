@@ -7,6 +7,8 @@
 
         <import type="android.view.View" />
 
+        <import type="org.hisp.dhis.android.core.common.State" />
+
         <variable
             name="presenter"
             type="org.dhis2.usescases.main.program.ProgramContract.Presenter" />
@@ -25,24 +27,40 @@
         android:layout_height="wrap_content"
         android:background="@android:color/white"
         android:onClick="@{()->presenter.onItemClick(program,currentPeriod)}"
-        android:padding="16dp">
+        android:paddingStart="16dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="8dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/imageLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="?attr/colorPrimaryLight"
+            android:onClick="@{()->presenter.showDescription(program.description())}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
                 android:id="@+id/program_image"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:ignore="ContentDescription"
                 tools:src="@drawable/ic_with_registration" />
+
+
+            <ImageView
+                android:id="@+id/info"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:background="@drawable/ic_circle_white"
+                android:visibility="@{program.description()==null?View.GONE:View.VISIBLE}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:srcCompat="@drawable/ic_info_layer"
+                tools:ignore="ContentDescription" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -56,9 +74,9 @@
             android:gravity="center"
             android:text="@{program.count().toString()}"
             android:textColor="@color/text_black_333"
-            android:textSize="18sp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:textSize="12sp"
             app:layout_constraintStart_toEndOf="@id/imageLayout"
+            app:layout_constraintTop_toBottomOf="@id/program_name"
             tools:text="155" />
 
         <TextView
@@ -71,9 +89,9 @@
             android:gravity="center"
             android:text="@{program.typeName()}"
             android:textColor="@color/text_black_333"
-            android:textSize="18sp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:textSize="12sp"
             app:layout_constraintStart_toEndOf="@id/count"
+            app:layout_constraintTop_toBottomOf="@id/program_name"
             tools:text="Events" />
 
         <TextView
@@ -86,40 +104,24 @@
             android:maxLines="2"
             android:text="@{program.title()}"
             android:textColor="@color/text_black_333"
-            android:textSize="18sp"
+            android:textSize="14sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toStartOf="@id/sync_status"
             app:layout_constraintStart_toEndOf="@id/imageLayout"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="Child Program" />
+            tools:text="Child Programgsdgfsdgsdfgsdfgs\nihgsfoidhjodfishlsdfgkjglikdsfjgolksjhgsdofjhgodfhgsiujhsdgf\njlkasdljksdaflkjsdf" />
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/hor_guideline"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.5" />
-
-        <ImageView
-            android:id="@+id/info"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:onClick="@{()->presenter.showDescription(program.description())}"
-            android:visibility="@{program.description()==null?View.GONE:View.VISIBLE}"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_info_outline"
-            app:tint="?colorPrimary"
-            tools:ignore="ContentDescription" />
 
         <ImageView
             android:id="@+id/sync_status"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_margin="10dp"
+            android:onClick="@{()->presenter.onSyncStatusClick(program)}"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintRight_toLeftOf="@id/info"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:stateIcon="@{program.getState()}"
+            tools:src="@drawable/ic_sync" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
