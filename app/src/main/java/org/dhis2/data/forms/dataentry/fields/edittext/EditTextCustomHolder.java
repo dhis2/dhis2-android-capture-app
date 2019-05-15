@@ -1,10 +1,8 @@
 package org.dhis2.data.forms.dataentry.fields.edittext;
 
 
+import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
-
-import androidx.annotation.NonNull;
-
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -14,12 +12,14 @@ import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.FormEditTextCustomBinding;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.Preconditions;
+import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
 
 import java.lang.reflect.Type;
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import io.reactivex.processors.FlowableProcessor;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -69,7 +69,10 @@ final class EditTextCustomHolder extends FormViewHolder {
         descriptionText = editTextModel.description();
         binding.customEdittext.setValueType(editTextModel.valueType());
         binding.customEdittext.setEditable(model.editable());
-
+        if(editTextModel.valueType() == ValueType.LONG_TEXT) {
+            binding.customEdittext.getInputLayout().getEditText().setSingleLine(false);
+            binding.customEdittext.getInputLayout().getEditText().setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
+        }
         label = new StringBuilder(editTextModel.label());
         if (editTextModel.mandatory())
             label.append("*");
