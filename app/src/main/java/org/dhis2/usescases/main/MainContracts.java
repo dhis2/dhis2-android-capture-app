@@ -47,5 +47,9 @@ public final class MainContracts {
         void changeFragment(int id);
 
         void getErrors();
+
+        boolean dataHasErrors();
+
+        boolean dataHasWarnings();
     }
 }

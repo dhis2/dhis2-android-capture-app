@@ -120,20 +120,11 @@
                     android:id="@+id/errorText"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/errors_during_sync"
                     android:textColor="@color/colorGreyDefault"
-                    app:layout_constraintEnd_toStartOf="@id/errorMark"
-                    app:layout_constraintStart_toStartOf="parent" />
-
-                <ImageView
-                    android:id="@+id/errorMark"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:tint="@color/red_060"
-                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_error" />
+                    app:layout_constraintStart_toStartOf="parent"
+                    tools:text="@string/errors_during_sync" />
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <FrameLayout
