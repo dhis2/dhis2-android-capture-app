@@ -1,9 +1,11 @@
 package org.dhis2.data.forms.dataentry.fields.orgUnit;
 
-import androidx.databinding.ViewDataBinding;
-import com.google.android.material.textfield.TextInputLayout;
-import androidx.fragment.app.FragmentManager;
 import android.view.View;
+
+import androidx.databinding.ViewDataBinding;
+import androidx.fragment.app.FragmentManager;
+
+import com.google.android.material.textfield.TextInputLayout;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
@@ -33,7 +35,6 @@ public class OrgUnitHolder extends FormViewHolder {
     private OrgUnitCascadeDialog orgUnitDialog;
     private CompositeDisposable compositeDisposable;
     private OrgUnitViewModel model;
-    private String selectedOrgUnit;
     private Observable<List<OrganisationUnitLevel>> levelsObservable;
     private List<OrganisationUnitLevel> levels;
 
@@ -48,10 +49,20 @@ public class OrgUnitHolder extends FormViewHolder {
 
         this.editText.setOnClickListener(view -> {
             editText.setEnabled(false);
-            if(OrgUnitCascadeDialog.getInstance() != null && editText.getText().toString().isEmpty())
-                OrgUnitCascadeDialog.getInstance().setSelectedOrgUnit("");
 
-            orgUnitDialog = OrgUnitCascadeDialog.newInstance(model, this.orgUnits, this.levels, processor, editText);
+            orgUnitDialog = new OrgUnitCascadeDialog(model.label(), model.value(), new OrgUnitCascadeDialog.CascadeOrgUnitCallbacks() {
+                @Override
+                public void textChangedConsumer(String selectedOrgUnitUid, String selectedOrgUnitName) {
+                    processor.onNext(RowAction.create(model.uid(), selectedOrgUnitUid));
+                    editText.setText(selectedOrgUnitName);
+                    editText.setEnabled(true);
+                }
+
+                @Override
+                public void onDialogCancelled() {
+                    editText.setEnabled(true);
+                }
+            });
 
             orgUnitDialog.show(fm, model.label());
         });
@@ -82,7 +93,7 @@ public class OrgUnitHolder extends FormViewHolder {
         if (viewModel.warning() != null) {
             inputLayout.setErrorTextAppearance(R.style.warning_appearance);
             inputLayout.setError(viewModel.warning());
-        } else if (viewModel.error() != null){
+        } else if (viewModel.error() != null) {
             inputLayout.setErrorTextAppearance(R.style.error_appearance);
             inputLayout.setError(viewModel.error());
         } else
@@ -127,7 +138,7 @@ public class OrgUnitHolder extends FormViewHolder {
         );
     }
 
-    private void getLevels(){
+    private void getLevels() {
         compositeDisposable.add(levelsObservable
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
