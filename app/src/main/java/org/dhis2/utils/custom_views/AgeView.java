@@ -9,6 +9,10 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.DatePicker;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.databinding.ViewDataBinding;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -22,8 +26,6 @@ import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-import androidx.appcompat.app.AlertDialog;
-import androidx.databinding.ViewDataBinding;
 import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
@@ -46,7 +48,6 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
 
     private OnAgeSet listener;
     private String label;
-    private String description;
     private TextInputLayout inputLayout;
 
     public AgeView(Context context) {
@@ -71,7 +72,6 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
 
     public void setLabel(String label, String description) {
         this.label = label;
-        this.description = description;
         if (binding instanceof AgeCustomViewAccentBinding) {
             ((AgeCustomViewAccentBinding) binding).setLabel(label);
             ((AgeCustomViewAccentBinding) binding).setDescription(description);
@@ -200,7 +200,7 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
         if (!result.equals(date.getText().toString())) {
             date.setText(result);
             listener.onAgeSet(selectedCalendar.getTime());
-//            nextFocus(view);
+            nextFocus(view);
         }
     }
 
@@ -263,6 +263,20 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
         month.setFilters(new InputFilter[]{new InputFilter.LengthFilter(2)});
         year.setFilters(new InputFilter[]{new InputFilter.LengthFilter(4)});
 
+        day.setOnEditorActionListener((v, actionId, event) -> {
+            nextFocus(v);
+            return true;
+        });
+
+        month.setOnEditorActionListener((v, actionId, event) -> {
+            day.requestFocus();
+            return true;
+        });
+
+        year.setOnEditorActionListener((v, actionId, event) -> {
+            month.requestFocus();
+            return true;
+        });
         day.setOnFocusChangeListener(this);
         month.setOnFocusChangeListener(this);
         year.setOnFocusChangeListener(this);

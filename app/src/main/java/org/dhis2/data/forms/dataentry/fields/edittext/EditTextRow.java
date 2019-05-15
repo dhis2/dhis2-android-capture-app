@@ -27,35 +27,37 @@ public class EditTextRow implements Row<EditTextCustomHolder, EditTextModel> {
     private final boolean isBgTransparent;
     private final String renderType;
     private final ObservableBoolean isEditable;
+    private final boolean isLongText;
     private boolean isSearchMode = false;
 
     //Search form constructor
-    public EditTextRow(@NonNull LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor, boolean isBgTransparent) {
+    public EditTextRow(@NonNull LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor, boolean isBgTransparent, boolean isLongText) {
         this.inflater = layoutInflater;
         this.processor = processor;
         this.isBgTransparent = isBgTransparent;
         this.renderType = null;
         this.isEditable = new ObservableBoolean(true);
         this.isSearchMode = true;
+        this.isLongText = isLongText;
     }
 
     //Data entryconstructor
     public EditTextRow(@NonNull LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor,
                        @NonNull FlowableProcessor<Integer> currentPosition,
-                       boolean isBgTransparent, String renderType, ObservableBoolean isEditable) {
+                       boolean isBgTransparent, String renderType, ObservableBoolean isEditable, boolean isLongText) {
         this.inflater = layoutInflater;
         this.processor = processor;
         this.isBgTransparent = isBgTransparent;
         this.renderType = renderType;
         this.isEditable = isEditable;
+        this.isLongText = isLongText;
     }
 
     @NonNull
     @Override
     public EditTextCustomHolder onCreate(@NonNull ViewGroup viewGroup) {
-        FormEditTextCustomBinding binding = DataBindingUtil.inflate(inflater,
-                R.layout.form_edit_text_custom, viewGroup, false);
-        binding.customEdittext.setIsBgTransparent(isBgTransparent);
+        FormEditTextCustomBinding binding = DataBindingUtil.inflate(inflater, R.layout.form_edit_text_custom, viewGroup, false);
+        binding.customEdittext.setLayoutData(isBgTransparent,isLongText);
         binding.customEdittext.setRenderType(renderType);
         return new EditTextCustomHolder(binding, processor, isSearchMode);
     }

@@ -105,6 +105,7 @@
     <string name="state_to_delete">To delete</string>
     <string name="state_error">Error</string>
     <string name="action_sync">SYNC</string>
+    <string name="action_sync_sms">SYNC SMS</string>
 
     <!--Completion-->
     <string name="completion">Completion</string>
@@ -441,5 +442,8 @@
     <string name="sectionSelectorEnd">END</string>
     <string name="resource_not_found">%s not found</string>
     <string name="relationship_not_found_message">The record you are trying to access is not available. Would you like to search for it?</string>
+    <string name="sync_by_sms">Synced by SMS</string>
+    <string name="state_warning">Warning</string>
+    <string name="no_conflicts_message">There are no conflicts for this program</string>
 
 </resources>

@@ -24,12 +24,14 @@ import org.dhis2.data.forms.dataentry.fields.edittext.EditTextRow;
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
 import org.dhis2.data.forms.dataentry.fields.file.FileRow;
 import org.dhis2.data.forms.dataentry.fields.file.FileViewModel;
+import org.dhis2.data.forms.dataentry.fields.image.ImageRow;
 import org.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitRow;
 import org.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitViewModel;
 import org.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonRow;
 import org.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerRow;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
+import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedRow;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.utils.Constants;
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
@@ -69,6 +71,9 @@ public class FormAdapter extends RecyclerView.Adapter {
     private final int AGEVIEW = 8;
     private final int YES_NO = 9;
     private final int ORG_UNIT = 10;
+    private static final int IMAGE = 11;
+    private static final int UNSUPPORTED = 12;
+    private static final int LONG_TEXT = 13;
     private int programData = 0;
     private List<TrackedEntityAttributeModel> attributeList;
     private ProgramModel programModel;
@@ -91,7 +96,7 @@ public class FormAdapter extends RecyclerView.Adapter {
         attributeList = new ArrayList<>();
         rows = new ArrayList<>();
 
-        rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, false));
+        rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, false, false));
         rows.add(BUTTON, new FileRow(layoutInflater, processor, false));
         rows.add(CHECKBOX, new RadioButtonRow(layoutInflater, processor, false));
         rows.add(SPINNER, new SpinnerRow(layoutInflater, processor, processorOptionSet, false));
@@ -102,6 +107,9 @@ public class FormAdapter extends RecyclerView.Adapter {
         rows.add(AGEVIEW, new AgeRow(layoutInflater, processor, false));
         rows.add(YES_NO, new RadioButtonRow(layoutInflater, processor, false));
         rows.add(ORG_UNIT, new OrgUnitRow(fm, layoutInflater, processor, false, orgUnits, levels));
+        rows.add(IMAGE, new ImageRow(layoutInflater, processor, null,null));
+        rows.add(UNSUPPORTED, new UnsupportedRow(layoutInflater, processor, false));
+        rows.add(LONG_TEXT, new EditTextRow(layoutInflater, processor, false,true));
     }
 
     @Override
@@ -202,7 +210,6 @@ public class FormAdapter extends RecyclerView.Adapter {
                 case NUMBER:
                 case INTEGER:
                 case USERNAME:
-                case LONG_TEXT:
                 case PERCENTAGE:
                 case PHONE_NUMBER:
                 case INTEGER_NEGATIVE:
@@ -211,6 +218,8 @@ public class FormAdapter extends RecyclerView.Adapter {
                 case UNIT_INTERVAL:
                 case URL:
                     return EDITTEXT;
+                case LONG_TEXT:
+                    return LONG_TEXT;
                 case TIME:
                     return TIME;
                 case DATE:
