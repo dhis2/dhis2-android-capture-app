@@ -5,11 +5,16 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.DynamicDrawableSpan;
+import android.text.style.ImageSpan;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ObservableInt;
 import androidx.fragment.app.Fragment;
@@ -199,6 +204,7 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
         binding.navView.setCheckedItem(id);
         Fragment fragment = null;
         String tag = null;
+
         switch (id) {
             case R.id.sync_manager:
                 fragment = new SyncManagerFragment();
@@ -242,6 +248,11 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
             binding.title.setText(tag);
         }
         binding.drawerLayout.closeDrawers();
+
+        if (id == R.id.sync_manager)
+            binding.errorLayout.setVisibility(View.GONE);
+        else
+            checkSyncStatus();
     }
 
     @Override
@@ -272,9 +283,30 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
             if (metaNoNetwork)
                 binding.errorText.setText(getString(R.string.error_no_network_during_sync));
             else
-                binding.errorText.setText(getString(R.string.errors_during_sync));
+                binding.errorText.setText(getString(R.string.metadata_sync_error));
             binding.errorLayout.setVisibility(View.VISIBLE);
         } else
             binding.errorLayout.setVisibility(View.GONE);
+
+        if (presenter.dataHasErrors()) {
+            String src = getString(R.string.data_sync_error);
+            SpannableString str = new SpannableString(src);
+            int wIndex = src.indexOf('@');
+            int eIndex = src.indexOf('$');
+            new ImageSpan(this, R.drawable.ic_sync_warning);
+            str.setSpan(new ImageSpan(this, R.drawable.ic_sync_warning, DynamicDrawableSpan.ALIGN_BOTTOM), wIndex, wIndex + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            str.setSpan(new ImageSpan(this, R.drawable.ic_sync_problem_red, DynamicDrawableSpan.ALIGN_BOTTOM), eIndex, eIndex + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            binding.errorText.setText(str);
+            binding.errorText.setTextColor(ContextCompat.getColor(this, R.color.red_060));
+            binding.errorLayout.setVisibility(View.VISIBLE);
+        } else if (presenter.dataHasWarnings()) {
+            String src = getString(R.string.data_sync_warning);
+            SpannableString str = new SpannableString(src);
+            int wIndex = src.indexOf('@');
+            str.setSpan(new ImageSpan(this, R.drawable.ic_sync_warning, DynamicDrawableSpan.ALIGN_BOTTOM), wIndex, wIndex + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            binding.errorText.setText(str);
+            binding.errorText.setTextColor(ContextCompat.getColor(this, R.color.colorPrimaryOrange));
+            binding.errorLayout.setVisibility(View.VISIBLE);
+        }
     }
 }

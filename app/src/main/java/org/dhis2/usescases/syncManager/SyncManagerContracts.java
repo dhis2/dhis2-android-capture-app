@@ -61,5 +61,9 @@ public class SyncManagerContracts {
         void checkData();
 
         void cancelPendingWork(String meta);
+
+        boolean dataHasErrors();
+
+        boolean dataHasWarnings();
     }
 }
