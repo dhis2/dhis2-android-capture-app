@@ -445,5 +445,7 @@
     <string name="sync_by_sms">Synced by SMS</string>
     <string name="state_warning">Warning</string>
     <string name="no_conflicts_message">There are no conflicts for this program</string>
+    <string name="network_unavailable_sms">Network connection is not available, but it looks like there is phone services - you can use SMS.</string>
+    <string name="network_unavailable">Network connection is not available.</string>
 
 </resources>

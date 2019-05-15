@@ -11,6 +11,7 @@ import android.widget.FrameLayout;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -43,6 +44,7 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
     private final CompositeDisposable compositeDisposable;
     private D2 d2;
     private SyncBottomDialogBinding binding;
+    private SyncConflictAdapter adapter;
 
     public SyncStatusDialog(String programUid) {
         this.programUid = programUid;
@@ -59,6 +61,11 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.sync_bottom_dialog, container, false);
+
+        adapter = new SyncConflictAdapter(new ArrayList<>());
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        binding.synsStatusRecycler.setLayoutManager(layoutManager);
+        binding.synsStatusRecycler.setAdapter(adapter);
 
         compositeDisposable.add(
                 Observable.fromCallable(() -> d2.programModule().programs.uid(programUid).get())
@@ -101,7 +108,7 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
                                     if (conflicts.isEmpty())
                                         setNoConflictMessage();
                                     else
-                                        prepareConflictAdapter();
+                                        prepareConflictAdapter(conflicts);
                                 },
                                 error -> dismiss()
                         )
@@ -136,7 +143,7 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
                                 state -> {
                                     Bindings.setStateIcon(binding.syncIcon, state);
                                     binding.syncStatusName.setText(getTextByState(state));
-                                    binding.syncStatusBar.setBackgroundColor(getColorForState(state));
+                                    binding.syncStatusBar.setBackgroundResource(getColorForState(state));
                                 },
                                 error -> dismiss()
                         )
@@ -149,12 +156,12 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
     private void setNetworkMessage() {
         if (!NetworkUtils.isOnline(getContext())) {
             if (/*Check SMS Services*/true) {
-                binding.connectionMessage.setText("Network connection is not available, but it looks like there is phone services - you can use SMS.");
+                binding.connectionMessage.setText(R.string.network_unavailable_sms);
                 binding.syncButton.setText(R.string.action_sync_sms);
                 binding.syncButton.setVisibility(View.VISIBLE);
 
             } else {
-                binding.connectionMessage.setText("Network connection is not available.");
+                binding.connectionMessage.setText(R.string.network_unavailable);
                 binding.syncButton.setVisibility(View.INVISIBLE);
             }
         } else {
@@ -165,17 +172,14 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
 
     }
 
-    private void prepareConflictAdapter() {
-        binding.syncButton.setVisibility(View.VISIBLE);
+    private void prepareConflictAdapter(List<TrackerImportConflict> conflicts) {
         binding.synsStatusRecycler.setVisibility(View.VISIBLE);
         binding.noConflictMessage.setVisibility(View.GONE);
-        //TODO: Create adapter
+        adapter.addItems(conflicts);
         setNetworkMessage();
-
     }
 
     private void setNoConflictMessage() {
-        binding.syncButton.setVisibility(View.INVISIBLE);
         binding.synsStatusRecycler.setVisibility(View.GONE);
         binding.noConflictMessage.setVisibility(View.VISIBLE);
         setNetworkMessage();

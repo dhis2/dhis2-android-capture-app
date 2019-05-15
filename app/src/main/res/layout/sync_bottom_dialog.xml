@@ -3,17 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/syncStatusBar"
             android:layout_width="match_parent"
             android:layout_height="56dp"
-            android:background="?colorPrimaryLight"
-            app:layout_constraintTop_toTopOf="parent">
+            tools:background="@color/state_synced">
 
             <ImageView
                 android:id="@+id/syncIcon"
@@ -73,14 +72,9 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/synsStatusRecycler"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="120dp"
             android:layout_margin="16dp"
-            android:visibility="gone"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintBottom_toTopOf="@id/syncButton"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/syncStatusBar" />
+            tools:listitem="@layout/item_sync_conflict" />
 
         <TextView
             android:id="@+id/noConflictMessage"
@@ -93,29 +87,35 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/syncStatusBar" />
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-        <Button
-            android:id="@+id/syncButton"
-            style="?borderlessButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:layout_gravity="end"
-            android:layout_margin="5dp"
-            android:background="@android:color/transparent"
-            android:text="@string/action_sync"
-            android:textColor="@color/blue_4fa"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            <Button
+                android:id="@+id/syncButton"
+                style="?borderlessButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_gravity="end"
+                android:layout_marginStart="24dp"
+                android:layout_marginEnd="24dp"
+                android:layout_marginBottom="14dp"
+                android:background="@android:color/transparent"
+                android:text="@string/action_sync"
+                android:textColor="@color/blue_4fa"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
 
-        <TextView
-            android:id="@+id/connectionMessage"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:textColor="#BA4E4E"
-            android:layout_margin="16dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/syncButton"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:text="No wifi available, but it looks like there is phone services - you can use SMS" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <TextView
+                android:id="@+id/connectionMessage"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:textColor="#BA4E4E"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/syncButton"
+                app:layout_constraintStart_toStartOf="parent"
+                tools:text="No wifi available, but it looks like there is phone services - you can use SMS" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 </layout>
