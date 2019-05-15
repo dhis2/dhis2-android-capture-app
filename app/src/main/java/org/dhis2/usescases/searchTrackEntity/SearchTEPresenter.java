@@ -188,7 +188,29 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     //region DATA
     @Override
     public void getTrakedEntities(boolean offlineOnly) {
-        if (offlineOnly || !NetworkUtils.isOnline(view.getContext()) || selectedProgram == null || Build.VERSION.SDK_INT <= 19)
+        //TODO: MERGE WITH SEARCH BRANCH (IMPORTANT)
+        compositeDisposable.add(
+                view.offlinePage()
+                        .startWith(0)
+                        .flatMap(page -> {
+                            this.currentPage = page;
+                            return searchRepository.trackedEntityInstances(trackedEntity.uid(), selectedProgram, queryData, page).toFlowable(BackpressureStrategy.BUFFER);
+                        })
+                        .debounce(500, TimeUnit.MILLISECONDS, Schedulers.io())
+                        .map(trackedEntityInstanceModels -> {
+                            List<SearchTeiModel> teiModels = new ArrayList<>();
+                            for (TrackedEntityInstanceModel tei : trackedEntityInstanceModels)
+                                if (view.fromRelationshipTEI() == null || !tei.uid().equals(view.fromRelationshipTEI())) //If fetching for relationship, discard selected TEI
+                                    teiModels.add(new SearchTeiModel(tei, new ArrayList<>()));
+                            return teiModels;
+                        })
+                        .flatMap(list -> searchRepository.transformIntoModel(list, selectedProgram))
+                        .map(this::getMessage)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(view.swapTeiListData(), Timber::d)
+        );
+        /*if (offlineOnly || !NetworkUtils.isOnline(view.getContext()) || selectedProgram == null || Build.VERSION.SDK_INT <= 19)
             compositeDisposable.add(
                     view.offlinePage()
                             .startWith(0)
@@ -329,7 +351,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(view.swapTeiListData(), Timber::d)
-            );
+            );*/
     }
 
     private Trio<List<SearchTeiModel>, String, Boolean> getMessage(List<SearchTeiModel> teiList) {

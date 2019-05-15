@@ -16,6 +16,11 @@ import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import androidx.core.content.ContextCompat;
+import androidx.databinding.BindingAdapter;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import org.dhis2.R;
 import org.dhis2.usescases.programEventDetail.ProgramEventViewModel;
 import org.dhis2.utils.CatComboAdapter;
@@ -27,6 +32,7 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.imports.ImportStatus;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
@@ -36,10 +42,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import androidx.core.content.ContextCompat;
-import androidx.databinding.BindingAdapter;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import timber.log.Timber;
 
 /**
@@ -307,6 +309,26 @@ public class Bindings {
         }
     }
 
+    @BindingAdapter("statusColor")
+    public static void setStatusColor(ImageView view, ImportStatus status) {
+        Drawable icon;
+        switch (status) {
+            case ERROR:
+                icon = ContextCompat.getDrawable(view.getContext(), R.drawable.red_circle);
+                break;
+            case SUCCESS:
+                icon = ContextCompat.getDrawable(view.getContext(), R.drawable.green_circle);
+                break;
+            case WARNING:
+                icon = ContextCompat.getDrawable(view.getContext(), R.drawable.yellow_circle);
+                break;
+            default:
+                icon = null;
+                break;
+        }
+        view.setImageDrawable(icon);
+    }
+
     @BindingAdapter("eventWithoutRegistrationStatusText")
     public static void setEventWithoutRegistrationStatusText(TextView textView, ProgramEventViewModel event) {
         switch (event.eventStatus()) {
@@ -390,11 +412,7 @@ public class Bindings {
         if (state != null) {
             switch (state) {
                 case TO_POST:
-                    imageView.setImageResource(R.drawable.ic_sync_problem_grey);
-                    break;
                 case TO_UPDATE:
-                    imageView.setImageResource(R.drawable.ic_sync_problem_grey);
-                    break;
                 case TO_DELETE:
                     imageView.setImageResource(R.drawable.ic_sync_problem_grey);
                     break;
@@ -403,6 +421,13 @@ public class Bindings {
                     break;
                 case SYNCED:
                     imageView.setImageResource(R.drawable.ic_sync);
+                    break;
+                case WARNING:
+                    imageView.setImageResource(R.drawable.ic_sync_warning);
+                    break;
+                case SENT_VIA_SMS:
+                case SYNCED_VIA_SMS:
+                    imageView.setImageResource(R.drawable.ic_sync_sms);
                     break;
                 default:
                     break;
@@ -478,7 +503,7 @@ public class Bindings {
         if (objectStyle.color() != null) {
             String color = objectStyle.color().startsWith("#") ? objectStyle.color() : "#" + objectStyle.color();
             int colorRes;
-            if(color.length() == 4)
+            if (color.length() == 4)
                 colorRes = ContextCompat.getColor(view.getContext(), R.color.colorPrimary);
             else
                 colorRes = Color.parseColor(color);

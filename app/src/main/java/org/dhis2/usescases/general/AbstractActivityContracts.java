@@ -3,10 +3,11 @@ package org.dhis2.usescases.general;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityOptionsCompat;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.ActivityOptionsCompat;
 
 import org.dhis2.utils.OnDialogClickListener;
 
@@ -30,8 +31,11 @@ public class AbstractActivityContracts {
         void back();
 
         void displayMessage(String message);
+
         void showInfoDialog(String title, String message);
+
         AlertDialog showInfoDialog(String title, String message, OnDialogClickListener dialogListener);
+
         void setTutorial();
 
         void showTutorial(boolean shaked);
@@ -49,6 +53,8 @@ public class AbstractActivityContracts {
         void showDescription(String description);
 
         SharedPreferences getSharedPreferences();
+
+        void showSyncDialog(String programUid);
     }
 
     public interface Presenter {

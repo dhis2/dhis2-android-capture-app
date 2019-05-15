@@ -17,6 +17,15 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityOptionsCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.widget.ContentLoadingProgressBar;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import com.crashlytics.android.Crashlytics;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
@@ -26,6 +35,7 @@ import org.dhis2.BuildConfig;
 import org.dhis2.R;
 import org.dhis2.usescases.login.LoginActivity;
 import org.dhis2.usescases.main.MainActivity;
+import org.dhis2.usescases.main.program.SyncStatusDialog;
 import org.dhis2.usescases.map.MapSelectorActivity;
 import org.dhis2.usescases.splash.SplashActivity;
 import org.dhis2.utils.ColorUtils;
@@ -41,14 +51,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityOptionsCompat;
-import androidx.core.content.ContextCompat;
-import androidx.core.widget.ContentLoadingProgressBar;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import rx.Observable;
 import rx.subjects.BehaviorSubject;
 import timber.log.Timber;
@@ -328,8 +330,8 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
             //BODY
             final View msgView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_body, null);
             ((TextView) msgView.findViewById(R.id.dialogBody)).setText(message);
-            ((Button)msgView.findViewById(R.id.dialogAccept)).setText(positiveButtonText);
-            ((Button)msgView.findViewById(R.id.dialogCancel)).setText(negativeButtonText);
+            ((Button) msgView.findViewById(R.id.dialogAccept)).setText(positiveButtonText);
+            ((Button) msgView.findViewById(R.id.dialogCancel)).setText(negativeButtonText);
             msgView.findViewById(R.id.dialogAccept).setOnClickListener(view -> {
                 clickListener.onPossitiveClick(alertDialog);
                 alertDialog.dismiss();
@@ -392,5 +394,11 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
                 progressBar.setVisibility(View.VISIBLE);
             else progressBar.setVisibility(View.GONE);
         }
+    }
+
+    @Override
+    public void showSyncDialog(String programUid) {
+        new SyncStatusDialog(programUid)
+                .show(getSupportFragmentManager(), programUid);
     }
 }
