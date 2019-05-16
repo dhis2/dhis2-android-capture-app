@@ -8,11 +8,15 @@
         <import type="android.view.View" />
 
         <variable
-            name="indicator"
-            type="org.hisp.dhis.android.core.program.ProgramIndicatorModel" />
+            name="label"
+            type="java.lang.String" />
 
         <variable
             name="value"
+            type="java.lang.String" />
+
+        <variable
+            name="description"
             type="java.lang.String" />
 
         <variable
@@ -49,7 +53,7 @@
                 android:gravity="center|start"
                 android:maxLines="2"
                 android:padding="5dp"
-                android:text='@{indicator.displayName()}'
+                android:text='@{label}'
                 android:textColor="#787878"
                 android:textSize="18sp"
                 android:textStyle="bold"
@@ -85,7 +89,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:tint="?colorPrimary"
-                android:visibility="@{indicator.displayDescription()!=null? View.VISIBLE: View.GONE}"
+                android:visibility="@{description!=null? View.VISIBLE: View.GONE}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/indicator_value"
                 app:srcCompat="@drawable/ic_info_outline" />

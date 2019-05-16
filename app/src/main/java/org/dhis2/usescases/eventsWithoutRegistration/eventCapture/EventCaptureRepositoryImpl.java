@@ -47,6 +47,7 @@ import org.hisp.dhis.android.core.program.ProgramStageSection;
 import org.hisp.dhis.android.core.program.ProgramStageSectionDeviceRendering;
 import org.hisp.dhis.android.core.program.ProgramStageSectionModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
+import org.hisp.dhis.android.core.program.ProgramType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
@@ -256,7 +257,21 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 rule.displayName());
     }
 
+
+    private List<ProgramRule> filterRules(List<ProgramRule> rules){
+        Program program = d2.programModule().programs.uid(currentEvent.program()).withAllChildren().get();
+        if(program.programType().equals(ProgramType.WITH_REGISTRATION)) {
+            Iterator<ProgramRule> iterator = rules.iterator();
+            while (iterator.hasNext()) {
+                if (iterator.next().programStage() == null)
+                    iterator.remove();
+            }
+        }
+        return rules;
+    }
+
     private List<Rule> trasformToRule(List<ProgramRule> rules) {
+        filterRules(rules);
         List<Rule> finalRules = new ArrayList<>();
         for (ProgramRule rule : rules) {
             finalRules.add(Rule.create(
@@ -732,7 +747,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                                         return Flowable.fromCallable(ruleEngine.evaluate(event, trasformToRule(rules)));
                                     else
                                         return Flowable.just(dataElementRules.get(lastUpdatedUid) != null ? dataElementRules.get(lastUpdatedUid) : new ArrayList<Rule>())
-                                                .map(rules -> rules.isEmpty() ? trasformToRule(mandatoryRules) : rules)
+                                                .map(updatedRules -> updatedRules.isEmpty() ? trasformToRule(rules) : updatedRules)
                                                 .flatMap(rules -> Flowable.fromCallable(ruleEngine.evaluate(event, rules)));
                                 })
                                 .map(Result::success)

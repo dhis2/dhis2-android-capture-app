@@ -14,6 +14,7 @@ import org.dhis2.data.forms.dataentry.DataEntryArguments;
 import org.dhis2.data.forms.dataentry.DataEntryStore;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
+import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.tuples.Quartet;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureFragment.EventCaptureFormFragment;
@@ -32,6 +33,7 @@ import org.hisp.dhis.rules.models.RuleEffect;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -472,7 +474,15 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         Map<String, FieldViewModel> fieldViewModels = toMap(viewModels);
         rulesUtils.applyRuleEffects(fieldViewModels, calcResult, this);
 
-        Timber.d("RULE EFFECTS TOOK %s ms to execute, final count is %s viewmodels", System.currentTimeMillis() - currentTime, fieldViewModels.values().size());
+        //Display the DisplayViewModels only in the last section
+        if(!isEmpty(currentSection.get()) && !currentSection.get().equals(sectionList.get(sectionList.size()-1).sectionUid())) {
+            Iterator<Map.Entry<String, FieldViewModel>> iter = fieldViewModels.entrySet().iterator();
+            while(iter.hasNext())
+                if (iter.next().getValue() instanceof DisplayViewModel)
+                    iter.remove();
+        }
+
+        Timber.d("RULE EFFECTS TOOK %s ms to execute", System.currentTimeMillis() - currentTime);
         return new ArrayList<>(fieldViewModels.values());
     }
 

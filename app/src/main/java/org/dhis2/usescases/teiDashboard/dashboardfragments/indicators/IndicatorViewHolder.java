@@ -31,8 +31,10 @@ public class IndicatorViewHolder extends RecyclerView.ViewHolder {
             ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) binding.guideline.getLayoutParams();
             params.guidePercent = 0;
             binding.guideline.setLayoutParams(params);
-        }else
-            binding.setVariable(BR.indicator, programIndicatorModel.val0());
+        }else {
+            binding.setVariable(BR.label, programIndicatorModel.val0().displayName());
+            binding.setVariable(BR.description, programIndicatorModel.val0().displayDescription());
+        }
 
         binding.setVariable(BR.value, programIndicatorModel.val1());
         binding.setVariable(BR.colorBg, programIndicatorModel.val2().isEmpty() ? -1 : Color.parseColor(programIndicatorModel.val2()));

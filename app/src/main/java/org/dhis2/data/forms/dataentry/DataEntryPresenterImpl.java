@@ -247,20 +247,6 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
                 RuleActionHideField hideField = (RuleActionHideField) ruleAction;
                 fieldViewModels.remove(hideField.field());
                 save(hideField.field(), null);
-            } else if (ruleAction instanceof RuleActionDisplayText) {
-                RuleActionDisplayText displayText = (RuleActionDisplayText) ruleAction;
-                String uid = displayText.content();
-
-                EditTextViewModel textViewModel = EditTextViewModel.create(uid,
-                        displayText.content(), false, ruleEffect.data(), "Information", 1, ValueType.TEXT, null, false, null, null, ObjectStyleModel.builder().build());
-
-                if (this.currentFieldViewModels == null ||
-                        !this.currentFieldViewModels.containsKey(uid)) {
-                    fieldViewModels.put(uid, textViewModel);
-                } else if (this.currentFieldViewModels.containsKey(uid) &&
-                        !currentFieldViewModels.get(uid).value().equals(textViewModel.value())) {
-                    fieldViewModels.put(uid, textViewModel);
-                }
             } else if (ruleAction instanceof RuleActionHideSection) {
                 RuleActionHideSection hideSection = (RuleActionHideSection) ruleAction;
                 dataEntryView.removeSection(hideSection.programStageSection());

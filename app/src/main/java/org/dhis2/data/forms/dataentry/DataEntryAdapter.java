@@ -21,6 +21,8 @@ import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateRow;
 import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel;
 import org.dhis2.data.forms.dataentry.fields.datetime.DateTimeRow;
 import org.dhis2.data.forms.dataentry.fields.datetime.DateTimeViewModel;
+import org.dhis2.data.forms.dataentry.fields.display.DisplayRow;
+import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel;
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextModel;
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextRow;
 import org.dhis2.data.forms.dataentry.fields.file.FileRow;
@@ -62,6 +64,7 @@ public final class DataEntryAdapter extends Adapter {
     private static final int IMAGE = 11;
     private static final int UNSUPPORTED = 12;
     private static final int LONG_TEXT = 13;
+    private static final int DISPLAY = 14;
 
 
     @NonNull
@@ -129,6 +132,7 @@ public final class DataEntryAdapter extends Adapter {
         rows.add(IMAGE, new ImageRow(layoutInflater, processor, currentPosition, dataEntryArguments.renderType()));
         rows.add(UNSUPPORTED, new UnsupportedRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
         rows.add(LONG_TEXT, new EditTextRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType(), isEditable, true));
+        rows.add(DISPLAY, new DisplayRow(layoutInflater));
 
         registerAdapterDataObserver(adapterDataObserver);
 
@@ -166,6 +170,7 @@ public final class DataEntryAdapter extends Adapter {
         rows.add(IMAGE, new ImageRow(layoutInflater, processor, currentPosition, dataEntryArguments.renderType()));
         rows.add(UNSUPPORTED, new UnsupportedRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
         rows.add(LONG_TEXT, new EditTextRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType(), isEditable, true));
+        rows.add(DISPLAY, new DisplayRow(layoutInflater));
 
         registerAdapterDataObserver(adapterDataObserver);
 
@@ -227,6 +232,8 @@ public final class DataEntryAdapter extends Adapter {
             return IMAGE;
         } else if (viewModel instanceof UnsupportedViewModel) {
             return UNSUPPORTED;
+        } else if (viewModel instanceof DisplayViewModel) {
+            return DISPLAY;
         } else {
             throw new IllegalStateException("Unsupported view model type: "
                     + viewModel.getClass());
