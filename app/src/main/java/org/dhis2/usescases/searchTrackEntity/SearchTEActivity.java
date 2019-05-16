@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -56,6 +57,7 @@ import androidx.core.content.ContextCompat;
 import androidx.databinding.BindingMethod;
 import androidx.databinding.BindingMethods;
 import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ObservableBoolean;
 import androidx.lifecycle.LiveData;
 import androidx.paging.PagedList;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -91,6 +93,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         }
     };
 
+    ObservableBoolean needsSearch = new ObservableBoolean(true);
+
     private SearchTeiLiveAdapter liveAdapter;
     private RelationshipLiveAdapter relationshipLiveAdapter;
     //---------------------------------------------------------------------------------------------
@@ -107,6 +111,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         binding = DataBindingUtil.setContentView(this, R.layout.activity_search);
         binding.setPresenter(presenter);
         initialProgram = getIntent().getStringExtra("PROGRAM_UID");
+        binding.setNeedsSearch(needsSearch);
 
         try {
             fromRelationship = getIntent().getBooleanExtra("FROM_RELATIONSHIP", false);
@@ -126,6 +131,17 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         binding.scrollView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
         binding.formRecycler.setAdapter(new FormAdapter(getSupportFragmentManager(), LayoutInflater.from(this), presenter.getOrgUnits(), this, presenter.getOrgUnitLevels()));
+
+        binding.enrollmentButton.setOnTouchListener((v, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                v.requestFocus();
+            }
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                v.clearFocus();
+                v.performClick();
+            }
+            return true;
+        });
     }
 
     @Override
@@ -236,7 +252,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     binding.messageContainer.setVisibility(View.VISIBLE);
                     binding.message.setText(data.val1());
                 }
-                binding.enrollmentButton.setVisibility(data.val2() ? View.VISIBLE : View.GONE);
+
+                if (!presenter.getQueryData().isEmpty() && data.val2())
+                    needsSearch.set(false);
 
             });
         } else {
@@ -288,10 +306,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     ProgramModel selectedProgram = (ProgramModel) adapterView.getItemAtPosition(pos - 1);
                     setProgramColor(presenter.getProgramColor(selectedProgram.uid()));
                     presenter.setProgram((ProgramModel) adapterView.getItemAtPosition(pos - 1));
-                    binding.enrollmentButton.setVisibility(View.VISIBLE);
                 } else {
                     presenter.setProgram(null);
-                    binding.enrollmentButton.setVisibility(View.GONE);
                 }
             }
 
@@ -373,5 +389,10 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             OptionSetDialog.newInstance().setOptions(options);
         else if (OptionSetPopUp.isCreated())
             OptionSetPopUp.getInstance().setOptions(options);
+    }
+
+    @Override
+    public void setFabIcon(boolean needsSearch) {
+        this.needsSearch.set(needsSearch);
     }
 }
