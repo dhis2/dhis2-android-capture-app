@@ -212,6 +212,8 @@
     <string name="missing_mandatory_fields_text">Some mandatory fields are missing. If you want to go back now, all saved information will be deleted.</string>
     <string name="missing_mandatory_fields_text_not_delete">Some mandatory fields are missing. If you want to go back, please fill them.</string>
     <string name="missing_mandatory_fields_events">Some mandatory fields are missing. You can go back now, but this event won\'t be able to be completed.</string>
+    <string name="title_delete_go_back">Your data is not saved</string>
+    <string name="delete_go_back">If you go back now all information entered will be deleted.</string>
     <string name="missing_mandatory_fields_events_2.0">Some mandatory fields are missing:\n%s\nYou can go back now, but this event won\'t be able to be completed.</string>
     <string name="missing_mandatory_fields_go_back">Delete and go back</string>
 
