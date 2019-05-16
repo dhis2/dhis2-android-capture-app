@@ -392,8 +392,6 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 })
                 .toFlowable(BackpressureStrategy.LATEST)
                 .doOnSubscribe(subscription -> Timber.d("LIST SUBSCRIBED! at %s", System.currentTimeMillis()))
-                .doOnNext(onNext -> Timber.d("LIST ON NEXT! at %s", System.currentTimeMillis()))
-                .doOnComplete(() -> Timber.d("LIST COMPLETE! at %s", System.currentTimeMillis()))
                 ;
     }
 
@@ -714,8 +712,6 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         }
 
         ProgramStageSectionRenderingType renderingType = renderingType(programStageSection);
-
-        Timber.d("TRANSFORM TIME IS %s", System.currentTimeMillis() - transformInitTime);
 
         return fieldFactory.create(uid, formName == null ? displayName : formName,
                 ValueType.valueOf(valueTypeName), mandatory, optionSet, dataValue,
