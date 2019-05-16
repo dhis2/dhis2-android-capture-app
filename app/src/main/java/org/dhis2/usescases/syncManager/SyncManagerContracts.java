@@ -2,6 +2,7 @@ package org.dhis2.usescases.syncManager;
 
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.general.AbstractActivityContracts;
+import org.hisp.dhis.android.core.imports.TrackerImportConflict;
 import org.hisp.dhis.android.core.maintenance.D2Error;
 
 import java.util.List;
@@ -24,7 +25,7 @@ public class SyncManagerContracts {
 
         void showTutorial();
 
-        void showSyncErrors(List<D2Error> data);
+        void showSyncErrors(List<TrackerImportConflict> data);
 
         void showLocalDataDeleted(boolean error);
     }
@@ -60,5 +61,9 @@ public class SyncManagerContracts {
         void checkData();
 
         void cancelPendingWork(String meta);
+
+        boolean dataHasErrors();
+
+        boolean dataHasWarnings();
     }
 }

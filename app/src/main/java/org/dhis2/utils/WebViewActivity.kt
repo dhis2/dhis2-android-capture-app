@@ -2,6 +2,7 @@ package org.dhis2.utils
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.view.View
 import androidx.databinding.DataBindingUtil
 import org.dhis2.R
 import org.dhis2.databinding.ActivityWebviewBinding
@@ -25,5 +26,13 @@ class WebViewActivity : ActivityGlobalAbstract() {
             binding.webView.settings.javaScriptEnabled = true
             binding.webView.loadUrl(it)
         }
+    }
+
+    fun backToLogin(view: View) {
+        finish()
+    }
+
+    override fun onBackPressed() {
+        finish()
     }
 }

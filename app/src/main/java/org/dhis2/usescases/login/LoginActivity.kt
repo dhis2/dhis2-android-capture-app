@@ -367,8 +367,8 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
     override fun openAccountRecovery() {
         val intent = Intent(this, WebViewActivity::class.java)
-        intent.putExtra(WEB_VIEW_URL, binding.serverUrlEdit.text.toString() + ACCOUNT_RECOVERY);
-        startActivity(intent);
+        intent.putExtra(WEB_VIEW_URL, binding.serverUrlEdit.text.toString() + ACCOUNT_RECOVERY)
+        startActivity(intent)
     }
 
     override fun displayAlertDialog(titleResource: Int, descriptionResource: Int, negativeResource: Int?, positiveResource: Int) {

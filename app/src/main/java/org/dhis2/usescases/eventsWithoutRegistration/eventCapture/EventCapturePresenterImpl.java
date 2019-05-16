@@ -457,7 +457,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private List<FieldViewModel> applyEffects(
             @NonNull List<FieldViewModel> viewModels,
             @NonNull Result<RuleEffect> calcResult) {
-        Timber.d("RULE EFFECTS INIT TOOK %s ms to execute for %s viewmodels", System.currentTimeMillis() - ruleInitTime, viewModels.size());
         long currentTime = System.currentTimeMillis();
 
         if (calcResult.error() != null) {

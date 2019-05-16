@@ -74,6 +74,8 @@ public class ProgramContract {
 
         void updateOrgUnitFilter(List<String> orgUnitList);
 
+        void onSyncStatusClick(ProgramViewModel program);
+
         boolean areFiltersApplied();
     }
 }

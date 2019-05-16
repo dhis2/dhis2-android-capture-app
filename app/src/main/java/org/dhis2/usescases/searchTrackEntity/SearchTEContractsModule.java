@@ -1,7 +1,6 @@
 package org.dhis2.usescases.searchTrackEntity;
 
 import org.dhis2.data.forms.dataentry.fields.RowAction;
-import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
@@ -16,9 +15,10 @@ import java.util.HashMap;
 import java.util.List;
 
 import androidx.annotation.Nullable;
+import androidx.lifecycle.LiveData;
+import androidx.paging.PagedList;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
-import io.reactivex.functions.Consumer;
 
 /**
  * QUADRAM. Created by ppajuelo on 02/11/2017.
@@ -29,8 +29,6 @@ public class SearchTEContractsModule {
     public interface View extends AbstractActivityContracts.View {
         void setForm(List<TrackedEntityAttributeModel> trackedEntityAttributeModels, @Nullable ProgramModel program, HashMap<String, String> queryData);
 
-        Consumer<Trio<List<SearchTeiModel>, String, Boolean>> swapTeiListData();
-
         void setPrograms(List<ProgramModel> programModels);
 
         void clearList(String uid);
@@ -38,10 +36,6 @@ public class SearchTEContractsModule {
         Flowable<RowAction> rowActionss();
 
         Flowable<Trio<String, String, Integer>> optionSetActions();
-
-        Flowable<Integer> onlinePage();
-
-        Flowable<Integer> offlinePage();
 
         void clearData();
 
@@ -52,6 +46,8 @@ public class SearchTEContractsModule {
         String fromRelationshipTEI();
 
         void setListOptions(List<OptionModel> options);
+
+        void setLiveData(LiveData<PagedList<SearchTeiModel>> liveData);
     }
 
     public interface Presenter {
@@ -74,8 +70,6 @@ public class SearchTEContractsModule {
 
         void onTEIClick(String TEIuid, boolean isOnline);
 
-        void getTrakedEntities(boolean offlineOnly);
-
         TrackedEntityTypeModel getTrackedEntityName();
 
         ProgramModel getProgramModel();
@@ -93,5 +87,7 @@ public class SearchTEContractsModule {
         String getProgramColor(String uid);
 
         Observable<List<OrganisationUnitLevel>> getOrgUnitLevels();
+
+        Trio<PagedList<SearchTeiModel>, String, Boolean> getMessage(PagedList<SearchTeiModel> list);
     }
 }
