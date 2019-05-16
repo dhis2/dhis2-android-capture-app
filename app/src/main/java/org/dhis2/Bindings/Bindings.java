@@ -21,6 +21,8 @@ import androidx.databinding.BindingAdapter;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import org.dhis2.R;
 import org.dhis2.usescases.programEventDetail.ProgramEventViewModel;
 import org.dhis2.utils.CatComboAdapter;
@@ -528,5 +530,17 @@ public class Bindings {
 
         imageView.setBackground(drawable);
 
+    }
+
+    @BindingAdapter("searchOrAdd")
+    public static void setFabIcoin(FloatingActionButton fab, boolean needSearch){
+        Drawable drawable;
+        if(needSearch) {
+            drawable = ContextCompat.getDrawable(fab.getContext(), R.drawable.ic_search);
+        } else{
+            drawable = ContextCompat.getDrawable(fab.getContext(), R.drawable.ic_add);
+        }
+        fab.setColorFilter(Color.WHITE);
+        fab.setImageDrawable(drawable);
     }
 }

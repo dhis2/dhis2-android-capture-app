@@ -48,6 +48,8 @@ public class SearchTEContractsModule {
         void setListOptions(List<OptionModel> options);
 
         void setLiveData(LiveData<PagedList<SearchTeiModel>> liveData);
+
+        void setFabIcon(boolean needsSearch);
     }
 
     public interface Presenter {
@@ -62,7 +64,7 @@ public class SearchTEContractsModule {
 
         void onClearClick();
 
-        void onFabClick(android.view.View view);
+        void onFabClick(android.view.View view, boolean needsSearch);
 
         void onEnrollClick(android.view.View view);
 
@@ -89,5 +91,7 @@ public class SearchTEContractsModule {
         Observable<List<OrganisationUnitLevel>> getOrgUnitLevels();
 
         Trio<PagedList<SearchTeiModel>, String, Boolean> getMessage(PagedList<SearchTeiModel> list);
+
+        HashMap<String, String> getQueryData();
     }
 }
