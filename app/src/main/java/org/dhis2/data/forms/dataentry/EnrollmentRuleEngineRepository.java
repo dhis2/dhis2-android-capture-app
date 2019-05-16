@@ -99,6 +99,7 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
     private Map<String, RuleAttributeValue> ruleAttributeValueMap;
     private Map<String, List<Rule>> attributeRules = new HashMap<>();
     private String lastUpdatedAttr = null;
+    private boolean getIndicators = false;
     private List<ProgramRule> mandatoryRules;
 
     public EnrollmentRuleEngineRepository(
@@ -227,7 +228,8 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
     private List<Rule> trasformToRule(List<ProgramRule> rules) {
         List<Rule> finalRules = new ArrayList<>();
         for (ProgramRule rule : rules) {
-            finalRules.add(Rule.create(
+            if(rule.programStage()==null)
+                finalRules.add(Rule.create(
                     rule.programStage() != null ? rule.programStage().uid() : null,
                     rule.priority(),
                     rule.condition(),
@@ -315,7 +317,7 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
                 .map(attrs -> ruleEnrollmentBuilder.attributeValues(attrs).build())
                 .switchMap(enrollment -> formRepository.ruleEngine()
                         .switchMap(ruleEngine -> {
-                            if (isEmpty(lastUpdatedAttr))
+                            if (isEmpty(lastUpdatedAttr) && !getIndicators)
                                 return Flowable.fromCallable(ruleEngine.evaluate(enrollment));
                             else
                                 return Flowable.just(attributeRules.get(lastUpdatedAttr) != null ? attributeRules.get(lastUpdatedAttr) : trasformToRule(mandatoryRules))
@@ -330,6 +332,7 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
     @Override
     public Flowable<Result<RuleEffect>> reCalculate() {
         initData();
+        getIndicators =true;
         return calculate();
     }
 

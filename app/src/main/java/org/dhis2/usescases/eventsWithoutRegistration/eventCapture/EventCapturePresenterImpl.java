@@ -475,7 +475,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         rulesUtils.applyRuleEffects(fieldViewModels, calcResult, this);
 
         //Display the DisplayViewModels only in the last section
-        if(currentSection.get()!=null && !currentSection.get().isEmpty() && !currentSection.get().equals(sectionList.get(sectionList.size()-1).sectionUid())) {
+        if(!isEmpty(currentSection.get()) && !currentSection.get().equals(sectionList.get(sectionList.size()-1).sectionUid())) {
             Iterator<Map.Entry<String, FieldViewModel>> iter = fieldViewModels.entrySet().iterator();
             while(iter.hasNext())
                 if (iter.next().getValue() instanceof DisplayViewModel)
