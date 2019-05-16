@@ -68,7 +68,8 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     private final String ACTIVE_TEI_PROGRAMS = String.format(
             " SELECT %s.* FROM %s " +
                     "JOIN %s ON %s.%s = %s.%s " +
-                    "WHERE %s.%s = ?",
+                    "WHERE %s.%s = ? " +
+                    "and Enrollment.status = 'ACTIVE'",
             ProgramModel.TABLE,
             ProgramModel.TABLE,
             EnrollmentModel.TABLE, EnrollmentModel.TABLE, EnrollmentModel.Columns.PROGRAM, ProgramModel.TABLE, ProgramModel.Columns.UID,
