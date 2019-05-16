@@ -141,22 +141,25 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(data -> {
                             Map<String, String> queryDataBU = new HashMap<>(queryData);
+                            view.setFabIcon(true);
                             if (!isEmpty(data.value())) {
                                 queryData.put(data.id(), data.value());
                                 if (data.requiresExactMatch())
-                                    queryDataEQ.put(data.id(), data.value());
+                                    if (data.value().equals("null_os_null")) {
+                                        queryData.remove(data.id());
+                                        queryDataEQ.remove(data.id());
+                                    } else
+                                        queryDataEQ.put(data.id(), data.value());
                             } else {
                                 queryData.remove(data.id());
                                 queryDataEQ.remove(data.id());
                             }
 
                             if (!queryData.equals(queryDataBU)) { //Only when queryData has changed
-                                view.clearData();
                                 if (!isEmpty(data.value()))
                                     queryData.put(data.id(), data.value());
                                 else
                                     queryData.remove(data.id());
-                                queryProcessor.onNext(queryData);
                             }
                         },
                         Timber::d)
@@ -204,44 +207,41 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         int size = list.size();
 
         String messageId = "";
-        boolean canRegister = true;
+        boolean canRegister = false;
 
         if (selectedProgram != null && !selectedProgram.displayFrontPageList()) {
             if (selectedProgram != null && selectedProgram.minAttributesRequiredToSearch() == 0 && queryData.size() == 0) {
                 messageId = view.getContext().getString(R.string.search_attr);
-                canRegister = false;
             }
             if (selectedProgram != null && selectedProgram.minAttributesRequiredToSearch() > queryData.size()) {
                 messageId = String.format(view.getContext().getString(R.string.search_min_num_attr), selectedProgram.minAttributesRequiredToSearch());
             } else if (selectedProgram.maxTeiCountToReturn() != 0 && size > selectedProgram.maxTeiCountToReturn()) {
                 messageId = String.format(view.getContext().getString(R.string.search_max_tei_reached), selectedProgram.maxTeiCountToReturn());
-                canRegister = false;
-            } else if (size == 0 && !queryData.isEmpty())
-                messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
-            else if (size == 0) {
-                messageId = view.getContext().getString(R.string.search_init);
-                canRegister = false;
-            }
-        } else if (selectedProgram == null) {
-            if (queryData.isEmpty() && view.fromRelationshipTEI() == null) {
-                messageId = view.getContext().getString(R.string.search_init);
-                canRegister = false;
-            } else if (size == 0) {
+            } else if (size == 0 && !queryData.isEmpty()) {
                 messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
                 canRegister = true;
-            } else if (size > MAX_NO_SELECTED_PROGRAM_RESULTS && view.fromRelationshipTEI() == null) {
-                messageId = String.format(view.getContext().getString(R.string.search_max_tei_reached), MAX_NO_SELECTED_PROGRAM_RESULTS);
-                canRegister = false;
+            } else if (size == 0) {
+                messageId = view.getContext().getString(R.string.search_init);
             }
+        } else if (selectedProgram == null) {
+            if (queryData.isEmpty() && view.fromRelationshipTEI() == null)
+                messageId = view.getContext().getString(R.string.search_init);
+            else if (size == 0) {
+                messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
+                canRegister = true;
+            } else if (size > MAX_NO_SELECTED_PROGRAM_RESULTS && view.fromRelationshipTEI() == null)
+                messageId = String.format(view.getContext().getString(R.string.search_max_tei_reached), MAX_NO_SELECTED_PROGRAM_RESULTS);
         } else {
             if (size == 0 && !queryData.isEmpty()) {
                 messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
                 canRegister = true;
-            } else if (size == 0) {
+            } else if (size == 0)
                 messageId = view.getContext().getString(R.string.search_init);
-                canRegister = false;
-            }
         }
+
+        if (messageId.isEmpty())
+            canRegister = true;
+
         return Trio.create(list, messageId, canRegister);
     }
 
@@ -310,6 +310,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         selectedProgram = programSelected;
         view.clearList(programSelected == null ? null : programSelected.uid());
         view.clearData();
+        view.setFabIcon(true);
 
         if (selectedProgram == null)
             getTrackedEntityAttributes();
@@ -335,8 +336,21 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     }
 
     @Override
-    public void onFabClick(View view) {
-        onEnrollClick(view);
+    public void onFabClick(View view, boolean needsSearch) {
+        if (!needsSearch)
+            onEnrollClick(view);
+        else {
+            List<String> optionSetIds = new ArrayList<>();
+            for (Map.Entry<String, String> entry : queryData.entrySet()) {
+                if (entry.getValue().equals("null_os_null"))
+                    optionSetIds.add(entry.getKey());
+            }
+            for (String id : optionSetIds) {
+                queryData.remove(id);
+            }
+            this.view.clearData();
+            queryProcessor.onNext(queryData);
+        }
     }
 
     @Override
@@ -599,5 +613,10 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     @Override
     public Observable<List<OrganisationUnitLevel>> getOrgUnitLevels() {
         return Observable.just(d2.organisationUnitModule().organisationUnitLevels.get());
+    }
+
+    @Override
+    public HashMap<String, String> getQueryData() {
+        return queryData;
     }
 }
