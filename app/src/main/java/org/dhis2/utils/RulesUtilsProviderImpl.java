@@ -135,7 +135,7 @@ public class RulesUtilsProviderImpl implements RulesUtilsProvider {
         String uid = displayText.content();
 
         DisplayViewModel displayViewModel = DisplayViewModel.create(uid, "",
-                ruleEffect.data(), "Display");
+                displayText.content()+ruleEffect.data(), "Display");
         fieldViewModels.put(uid, displayViewModel);
     }
 

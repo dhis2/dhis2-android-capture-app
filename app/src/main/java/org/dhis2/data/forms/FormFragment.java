@@ -631,7 +631,34 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
 
     @Override
     public void onBackPressed() {
-        formPresenter.checkMandatoryFields();
+        String description = isEnrollment ? getAbstracContext().getString(R.string.delete_go_back) :
+                getAbstracContext().getString(R.string.missing_mandatory_fields_events);
+        String buttonAccept = isEnrollment ? getAbstracContext().getString(R.string.missing_mandatory_fields_go_back) :
+                getAbstracContext().getString(R.string.button_ok);
+        new CustomDialog(
+                getAbstracContext(),
+                getAbstracContext().getString(R.string.title_delete_go_back),
+                description,
+                getAbstracContext().getString(R.string.cancel),
+                buttonAccept,
+                RC_GO_BACK,
+                new DialogClickListener() {
+                    @Override
+                    public void onPositive() {
+                        // do nothing
+                    }
+
+                    @Override
+                    public void onNegative() {
+                        if (mandatoryDelete)
+                            if (isEnrollment)
+                                deleteAllSavedDataAndGoBack();
+                            else if (getActivity() != null && isAdded()) {
+                                getActivity().finish();
+                            }
+                    }
+                })
+                .show();
     }
 
     public void onBackPressed(boolean delete) {
