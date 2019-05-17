@@ -68,8 +68,7 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     private final String ACTIVE_TEI_PROGRAMS = String.format(
             " SELECT %s.* FROM %s " +
                     "JOIN %s ON %s.%s = %s.%s " +
-                    "WHERE %s.%s = ? " +
-                    "and Enrollment.status = 'ACTIVE'",
+                    "WHERE %s.%s = ? ",
             ProgramModel.TABLE,
             ProgramModel.TABLE,
             EnrollmentModel.TABLE, EnrollmentModel.TABLE, EnrollmentModel.Columns.PROGRAM, ProgramModel.TABLE, ProgramModel.Columns.UID,
@@ -325,8 +324,12 @@ public class MetadataRepositoryImpl implements MetadataRepository {
 
 
     @Override
-    public Observable<List<ProgramModel>> getTeiActivePrograms(String teiUid) {
-        return briteDatabase.createQuery(ACTIVE_TEI_PROGRAMS_TABLES, ACTIVE_TEI_PROGRAMS, teiUid == null ? "" : teiUid)
+    public Observable<List<ProgramModel>> getTeiActivePrograms(String teiUid, boolean showOnlyActive) {
+        String query = ACTIVE_TEI_PROGRAMS;
+        if(showOnlyActive)
+            query = query + " and Enrollment.status = 'ACTIVE'";
+
+        return briteDatabase.createQuery(ACTIVE_TEI_PROGRAMS_TABLES, query, teiUid == null ? "" : teiUid)
                 .mapToList(ProgramModel::create);
     }
 
