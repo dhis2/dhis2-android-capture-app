@@ -32,7 +32,9 @@
     <string name="sync_error_text">An error has occurred during synchronisation. Please retry.</string>
     <string name="metadata_sync_error">FAIL: Something went wrong in the sync process. If you have connection please try again. If the error persist, contact your administrator.</string>
     <string name="data_sync_warning">WARNING: Most of your data is synced but some fields presented conflicts. Sync your configuration and try again. Check their sync status: programs, TEI\'s and events with conflicts are marked as @.</string>
+    <string name="data_sync_warning_program">WARNING: Most of your data is synced but some fields presented conflicts. Sync your configuration and try again. If warning persists, check their sync status: programs, TEI\'s and events with conflicts are marked as @.</string>
     <string name="data_sync_error">ERROR: Some of your data failed to sync. Check their sync status: programs with errors are marked as @, TEI\'s and events as $".</string>
+    <string name="data_sync_error_program">ERROR: Some of your data failed to sync. Check their sync status: TEI\'s and events with conflicts are marked as $".</string>
 
     <string name="search_result_text">%s results found</string>
     <string name="add_new">Add new</string>

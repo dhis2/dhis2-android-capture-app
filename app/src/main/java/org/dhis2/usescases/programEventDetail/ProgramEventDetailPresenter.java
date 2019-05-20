@@ -2,12 +2,15 @@ package org.dhis2.usescases.programEventDetail;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+
 import com.unnamed.b.atv.model.TreeNode;
 
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
+import org.dhis2.usescases.main.program.SyncStatusDialog;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.OrgUnitUtils;
 import org.dhis2.utils.Period;
@@ -21,7 +24,6 @@ import org.hisp.dhis.android.core.program.ProgramModel;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.NonNull;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -185,6 +187,11 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     public void onExpandOrgUnitNode(TreeNode treeNode, String parentUid) {
         parentOrgUnit.onNext(Pair.create(treeNode, parentUid));
 
+    }
+
+    @Override
+    public void onSyncIconClick(String uid) {
+        view.showSyncDialog(uid, SyncStatusDialog.ConflictType.EVENT);
     }
 
     @Override

@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import org.dhis2.usescases.main.program.SyncStatusDialog;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.OnDialogClickListener;
 
@@ -127,7 +128,7 @@ public abstract class FragmentGlobalAbstract extends Fragment implements Abstrac
     }
 
     @Override
-    public void showSyncDialog(String programUid) {
-        getAbstractActivity().showSyncDialog(programUid);
+    public void showSyncDialog(String programUid, SyncStatusDialog.ConflictType conflictType) {
+        getAbstractActivity().showSyncDialog(programUid,conflictType);
     }
 }
