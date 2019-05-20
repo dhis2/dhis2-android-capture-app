@@ -44,6 +44,7 @@ import org.hisp.dhis.rules.models.RuleActionShowError;
 import org.hisp.dhis.rules.models.RuleActionWarningOnCompletion;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -108,6 +109,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     private boolean mandatoryDelete = true;
     private Context context;
     private ProgressBar progressBar;
+    private DataEntryFragment enrollmentFragment;
 
     public View getDatesLayout() {
         return datesLayout;
@@ -308,6 +310,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
             if (viewPager.getAdapter() != null && viewPager.getCurrentItem() == viewPager.getAdapter().getCount() - 1) {
                 ((Button) nextButton).setText(getString(R.string.save));
             }
+            enrollmentFragment = ((DataEntryFragment)getChildFragmentManager().getFragments().get(0));
         };
     }
 
@@ -536,10 +539,13 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
                     eventCreationIntent.putExtras(EventCaptureActivity.getActivityBundle(enrollmentTrio.val2(), enrollmentTrio.val1()));
                     eventCreationIntent.putExtra(Constants.TRACKED_ENTITY_INSTANCE, enrollmentTrio.val0());
                     startActivityForResult(eventCreationIntent, RQ_EVENT);
-                } else { //val0 is program uid, val1 is trackedEntityInstance, val2 is empty
+                } else if(!enrollmentFragment.checkErrors()){ //val0 is program uid, val1 is trackedEntityInstance, val2 is empty
                     this.programUid = enrollmentTrio.val1();
                     this.teiUid = enrollmentTrio.val0();
                     openDashboard(null);
+                }else{
+                    progressBar.setVisibility(View.GONE);
+                    showErrorsDialog();
                 }
             } else {
                 checkAction();
@@ -578,6 +584,18 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
                 getActivity().finish(); //TODO: ASK IF USER WANTS TO DELETE RECORD
             }
         }
+    }
+
+    private void showErrorsDialog() {
+        new CustomDialog(
+                getAbstracContext(),
+                getAbstracContext().getString(R.string.error_fields_title),
+                String.format(getString(R.string.error_fields), enrollmentFragment.getErrorFields()),
+                getAbstracContext().getString(R.string.button_ok),
+                null,
+                RC_GO_BACK,
+                null)
+                .show();
     }
 
     @Override
