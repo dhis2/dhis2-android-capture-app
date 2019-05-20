@@ -104,7 +104,8 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                             dashboardModel -> {
                                 this.dashboardProgramModel = dashboardModel;
                                 this.dashboardProgramModelLiveData.setValue(dashboardModel);
-                                this.programWritePermission = dashboardProgramModel.getCurrentProgram().accessDataWrite();
+                                if (dashboardProgramModel.getCurrentProgram() != null)
+                                    this.programWritePermission = dashboardProgramModel.getCurrentProgram().accessDataWrite();
                                 this.teType = dashboardProgramModel.getTei().trackedEntityType();
                                 view.setData(dashboardProgramModel);
                             },

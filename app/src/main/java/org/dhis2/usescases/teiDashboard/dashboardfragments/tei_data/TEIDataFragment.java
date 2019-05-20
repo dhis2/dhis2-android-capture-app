@@ -144,7 +144,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
         if (nprogram != null && nprogram.getCurrentEnrollment() != null) {
             SharedPreferences prefs = context.getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE);
-            hasCatComb = !nprogram.getCurrentProgram().categoryCombo().equals(prefs.getString(Constants.DEFAULT_CAT_COMBO, ""));
+            hasCatComb = nprogram.getCurrentProgram() != null && !nprogram.getCurrentProgram().categoryCombo().equals(prefs.getString(Constants.DEFAULT_CAT_COMBO, ""));
             List<EventModel> events = new ArrayList<>();
             adapter = new EventAdapter(presenter, nprogram.getProgramStages(), events, nprogram.getCurrentEnrollment(), nprogram.getCurrentProgram());
             binding.teiRecycler.setLayoutManager(new LinearLayoutManager(getAbstracContext()));
