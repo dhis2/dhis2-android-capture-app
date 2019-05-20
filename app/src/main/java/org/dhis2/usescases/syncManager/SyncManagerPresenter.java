@@ -3,18 +3,6 @@ package org.dhis2.usescases.syncManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import org.dhis2.data.metadata.MetadataRepository;
-import org.dhis2.data.service.SyncDataWorker;
-import org.dhis2.data.service.SyncMetadataWorker;
-import org.dhis2.usescases.login.LoginActivity;
-import org.dhis2.usescases.reservedValue.ReservedValueActivity;
-import org.dhis2.utils.Constants;
-import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.android.core.maintenance.D2Error;
-
-import java.io.File;
-import java.util.concurrent.TimeUnit;
-
 import androidx.work.Constraints;
 import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.ExistingWorkPolicy;
@@ -22,6 +10,20 @@ import androidx.work.NetworkType;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
+
+import org.dhis2.data.metadata.MetadataRepository;
+import org.dhis2.data.service.SyncDataWorker;
+import org.dhis2.data.service.SyncMetadataWorker;
+import org.dhis2.usescases.login.LoginActivity;
+import org.dhis2.usescases.reservedValue.ReservedValueActivity;
+import org.dhis2.utils.Constants;
+import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.common.State;
+import org.hisp.dhis.android.core.maintenance.D2Error;
+
+import java.io.File;
+import java.util.concurrent.TimeUnit;
+
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.processors.FlowableProcessor;
@@ -139,6 +141,16 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
     @Override
     public void cancelPendingWork(String tag) {
         WorkManager.getInstance().cancelAllWorkByTag(tag);
+    }
+
+    @Override
+    public boolean dataHasErrors() {
+        return !d2.eventModule().events.byState().in(State.ERROR).get().isEmpty() || !d2.trackedEntityModule().trackedEntityInstances.byState().in(State.ERROR).get().isEmpty();
+    }
+
+    @Override
+    public boolean dataHasWarnings() {
+        return !d2.eventModule().events.byState().in(State.WARNING).get().isEmpty() || !d2.trackedEntityModule().trackedEntityInstances.byState().in(State.WARNING).get().isEmpty();
     }
 
     @Override

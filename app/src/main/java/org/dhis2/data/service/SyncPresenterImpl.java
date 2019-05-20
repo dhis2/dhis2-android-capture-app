@@ -9,7 +9,6 @@ import org.dhis2.utils.Constants;
 import org.hisp.dhis.android.core.D2;
 
 import io.reactivex.Completable;
-import io.reactivex.disposables.CompositeDisposable;
 import timber.log.Timber;
 
 final class SyncPresenterImpl implements SyncPresenter {
@@ -17,11 +16,8 @@ final class SyncPresenterImpl implements SyncPresenter {
     @NonNull
     private final D2 d2;
 
-    private CompositeDisposable disposable;
-
     SyncPresenterImpl(@NonNull D2 d2) {
         this.d2 = d2;
-        this.disposable = new CompositeDisposable();
     }
 
     @Override
@@ -46,9 +42,7 @@ final class SyncPresenterImpl implements SyncPresenter {
         boolean limitByOU = prefs.getBoolean(Constants.LIMIT_BY_ORG_UNIT, false);
         boolean limitByProgram = prefs.getBoolean(Constants.LIMIT_BY_PROGRAM, false);
         Completable.fromObservable(d2.trackedEntityModule()
-                // TODO: REPLACE THIS LINE WHEN SDK ADDS LIMITBYPROGRAM
-//                .downloadTrackedEntityInstances(teiLimit, limitByOU, limitByProgram)
-                .downloadTrackedEntityInstances(teiLimit, limitByOU)
+                .downloadTrackedEntityInstances(teiLimit, limitByOU, limitByProgram)
                 .asObservable()
                 .doOnNext(data -> Timber.d(data.percentage() + "% " + data.doneCalls().size() + "/" + data.totalCalls())))
                 .blockingAwait();

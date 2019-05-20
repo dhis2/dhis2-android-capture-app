@@ -32,8 +32,6 @@ class LoginContracts {
 
         fun goToNextScreen()
 
-        fun switchPasswordVisibility()
-
         fun setUrl(url: String)
 
         fun setUser(user: String)
@@ -60,8 +58,6 @@ class LoginContracts {
         fun logIn(serverUrl: String, userName: String, pass: String)
 
         fun onQRClick(v: android.view.View)
-
-        fun onVisibilityClick(v: android.view.View)
 
         fun unlockSession(pin: String)
 

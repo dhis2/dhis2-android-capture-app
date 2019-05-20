@@ -30,6 +30,9 @@
 
     <string name="sync_error_title">Sync Error</string>
     <string name="sync_error_text">An error has occurred during synchronisation. Please retry.</string>
+    <string name="metadata_sync_error">FAIL: Something went wrong in the sync process. If you have connection please try again. If the error persist, contact your administrator.</string>
+    <string name="data_sync_warning">WARNING: Most of your data is synced but some fields presented conflicts. Sync your configuration and try again. Check their sync status: programs, TEI\'s and events with conflicts are marked as @.</string>
+    <string name="data_sync_error">ERROR: Some of your data failed to sync. Check their sync status: programs with errors are marked as @, TEI\'s and events as $".</string>
 
     <string name="search_result_text">%s results found</string>
     <string name="add_new">Add new</string>
@@ -105,6 +108,7 @@
     <string name="state_to_delete">To delete</string>
     <string name="state_error">Error</string>
     <string name="action_sync">SYNC</string>
+    <string name="action_sync_sms">SYNC SMS</string>
 
     <!--Completion-->
     <string name="completion">Completion</string>
@@ -208,6 +212,8 @@
     <string name="missing_mandatory_fields_text">Some mandatory fields are missing. If you want to go back now, all saved information will be deleted.</string>
     <string name="missing_mandatory_fields_text_not_delete">Some mandatory fields are missing. If you want to go back, please fill them.</string>
     <string name="missing_mandatory_fields_events">Some mandatory fields are missing. You can go back now, but this event won\'t be able to be completed.</string>
+    <string name="title_delete_go_back">Your data is not saved</string>
+    <string name="delete_go_back">If you go back now all information entered will be deleted.</string>
     <string name="missing_mandatory_fields_events_2.0">Some mandatory fields are missing:\n%s\nYou can go back now, but this event won\'t be able to be completed.</string>
     <string name="missing_mandatory_fields_go_back">Delete and go back</string>
 
@@ -437,5 +443,15 @@
     <string name="action_agree">Agree</string>
     <string name="login_server_info_title">Server url</string>
     <string name="login_server_info_message">"Enter the DHIS 2 server url for your organisation as provided by your system administrator.\n\nAlternatively, you can scan a QR code containing the URL of your server"</string>
+    <string name="forgot_your_code">Forgot your code?</string>
+    <string name="event_form_end_options_title">What would you like to do for this event?</string>
+    <string name="sectionSelectorEnd">END</string>
+    <string name="resource_not_found">%s not found</string>
+    <string name="relationship_not_found_message">The record you are trying to access is not available. Would you like to search for it?</string>
+    <string name="sync_by_sms">Synced by SMS</string>
+    <string name="state_warning">Warning</string>
+    <string name="no_conflicts_message">There are no conflicts for this program</string>
+    <string name="network_unavailable_sms">Network connection is not available, but it looks like there is phone services - you can use SMS.</string>
+    <string name="network_unavailable">Network connection is not available.</string>
 
 </resources>

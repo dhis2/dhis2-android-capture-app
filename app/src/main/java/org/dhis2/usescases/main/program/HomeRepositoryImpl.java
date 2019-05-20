@@ -6,9 +6,11 @@ import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
+import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.period.DatePeriod;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Flowable;
@@ -52,6 +54,7 @@ class HomeRepositoryImpl implements HomeRepository {
                         typeName = "DataSets";
 
                     int count;
+                    State state = State.SYNCED;
                     if (program.programType() == WITHOUT_REGISTRATION) {
                         if (!dateFilter.isEmpty()) {
                             if (!orgUnitFilter.isEmpty()) {
@@ -76,6 +79,14 @@ class HomeRepositoryImpl implements HomeRepository {
                                     .byProgramUid().eq(program.uid())
                                     .count();
                         }
+
+                        if (!d2.eventModule().events.byProgramUid().eq(program.uid()).byState().in(State.ERROR, State.WARNING).get().isEmpty())
+                            state = State.WARNING;
+                        else if (!d2.eventModule().events.byProgramUid().eq(program.uid()).byState().in(State.SENT_VIA_SMS, State.SYNCED_VIA_SMS).get().isEmpty())
+                            state = State.SENT_VIA_SMS;
+                        else if (!d2.eventModule().events.byProgramUid().eq(program.uid()).byState().in(State.TO_UPDATE, State.TO_POST, State.TO_DELETE).get().isEmpty())
+                            state = State.TO_UPDATE;
+
                     } else {
                         if (!dateFilter.isEmpty()) {
                             if (!orgUnitFilter.isEmpty()) {
@@ -100,7 +111,17 @@ class HomeRepositoryImpl implements HomeRepository {
                                     .byProgramUid().eq(program.uid())
                                     .countTrackedEntityInstances();
                         }
+
+                        List<String> programUids = new ArrayList<>();
+                        programUids.add(program.uid());
+                        if (!d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().in(State.ERROR, State.WARNING).get().isEmpty())
+                            state = State.WARNING;
+                        else if (!d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().in(State.SENT_VIA_SMS, State.SYNCED_VIA_SMS).get().isEmpty())
+                            state = State.SENT_VIA_SMS;
+                        else if (!d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().in(State.TO_UPDATE, State.TO_POST, State.TO_DELETE).get().isEmpty())
+                            state = State.TO_UPDATE;
                     }
+
 
                     return ProgramViewModel.create(
                             program.uid(),
@@ -113,7 +134,8 @@ class HomeRepositoryImpl implements HomeRepository {
                             program.programType() != null ? program.programType().name() : null,
                             program.displayDescription(),
                             true,
-                            true
+                            true,
+                            state.name()
                     );
                 }).toList().toFlowable();
     }

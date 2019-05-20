@@ -31,6 +31,8 @@
             android:id="@+id/parentLayout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:paddingBottom="16dp"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/selected">
 
@@ -45,15 +47,15 @@
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="2010-10-01 23:45" />
 
-            <TextView
+            <ImageView
                 android:id="@+id/errorCode"
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
                 android:layout_marginStart="16dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/errorDate"
-                tools:text="409" />
+                tools:ignore="ContentDescription" />
 
 
             <TextView
@@ -62,38 +64,15 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="32dp"
                 android:layout_marginEnd="16dp"
+                android:layout_marginTop="12dp"
                 android:gravity="center|start"
                 android:textColor="@color/colorGreyDefault"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                app:layout_constraintEnd_toStartOf="@id/image"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/errorCode"
                 app:layout_constraintTop_toBottomOf="@id/errorDate"
                 tools:text="Error Message Title" />
-
-            <ImageView
-                android:id="@+id/image"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
-                android:tint="@color/colorGreyDefault"
-                app:layout_constraintBottom_toBottomOf="@id/errorMessage"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/errorMessage"
-                app:srcCompat="@drawable/ic_arrow_down" />
         </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <TextView
-            android:id="@+id/errorDescription"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:visibility="gone"
-            app:layout_constraintTop_toBottomOf="@id/parentLayout"
-            tools:text="@string/lorem"
-            tools:visibility="visible" />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 </layout>

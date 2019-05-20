@@ -7,6 +7,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.databinding.ObservableBoolean;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import org.dhis2.App;
 import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
@@ -27,14 +36,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.databinding.ObservableBoolean;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import io.reactivex.Flowable;
 import io.reactivex.functions.Consumer;
 
@@ -49,6 +50,7 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
     private Fragment formFragment;
     private String section;
     private ProgressBar progressBar;
+
     @NonNull
     public static DataEntryFragment create(@NonNull DataEntryArguments arguments) {
         Bundle bundle = new Bundle();
@@ -201,6 +203,14 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
 
     @Override
     public void updateAdapter(RowAction rowAction) {
-        dataEntryAdapter.notifyChanges(rowAction);
+        getActivity().runOnUiThread(() -> {
+            dataEntryAdapter.notifyChanges(rowAction);
+            if (rowAction.lastFocusPosition() != -1)
+                if (rowAction.lastFocusPosition() >= dataEntryAdapter.getItemCount())
+                    recyclerView.smoothScrollToPosition(rowAction.lastFocusPosition());
+                else
+                    recyclerView.smoothScrollToPosition(rowAction.lastFocusPosition() + 1);
+        });
+
     }
 }

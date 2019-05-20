@@ -8,7 +8,6 @@ import android.text.Editable
 import android.text.TextUtils.isEmpty
 import android.text.TextWatcher
 import android.util.Patterns
-import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
 import android.webkit.URLUtil
@@ -78,6 +77,8 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         binding.loginModel = loginViewModel
         setLoginVisibility(false)
 
+        binding.pinLayout.forgotCode.visibility = View.VISIBLE
+        binding.pinLayout.forgotCode.setOnClickListener { binding.pinLayout.root.visibility = View.GONE }
 
         loginViewModel.isDataComplete.observe(this, Observer<Boolean> { this.setLoginVisibility(it) })
         loginViewModel.isTestingEnvironment.observe(this, Observer<Trio<String, String, String>> { testingEnvironment ->
@@ -105,6 +106,9 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         })
 
         binding.serverUrlEdit.onRightDrawableClicked { presenter.onQRClick(binding.serverUrl) }
+
+        binding.clearPassButton.setOnClickListener { binding.userPassEdit.text = null }
+        binding.clearUserNameButton.setOnClickListener { binding.userNameEdit.text = null }
 
         setTestingCredentials()
         setAutocompleteAdapters()
@@ -161,30 +165,6 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
             startActivity(SyncActivity::class.java, null, true, true, null)
         } else
             startActivity(MainActivity::class.java, null, true, true, null)
-    }
-
-    override fun switchPasswordVisibility() {
-        /*if (binding.userPassEdit.inputType == InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD) {
-            ContextCompat.getDrawable(this, R.drawable.ic_visibility)?.let {
-                binding.visibilityButton.setImageDrawable(
-                        ColorUtils.tintDrawableWithColor(
-                                it,
-                                ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY)))
-            }
-            binding.userPassEdit.inputType = InputType.TYPE_CLASS_TEXT
-        } else {
-            ContextCompat.getDrawable(this, R.drawable.ic_visibility_off)?.let {
-                binding.visibilityButton.setImageDrawable(
-                        ColorUtils.tintDrawableWithColor(
-                                it,
-                                ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY)))
-                binding.userPassEdit.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
-            }
-        }
-
-        binding.userPassEdit.text?.let {
-            binding.userPassEdit.setSelection(it.length)
-        }*/
     }
 
     override fun setUrl(url: String) {
@@ -272,6 +252,9 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     }
 
     override fun setAutocompleteAdapters() {
+
+        binding.serverUrlEdit.dropDownWidth = resources.displayMetrics.widthPixels
+        binding.userNameEdit.dropDownWidth = resources.displayMetrics.widthPixels
 
         urls = getListFromPreference(Constants.PREFS_URLS)
         users = getListFromPreference(Constants.PREFS_USERS)
@@ -384,16 +367,16 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
     override fun openAccountRecovery() {
         val intent = Intent(this, WebViewActivity::class.java)
-        intent.putExtra(WEB_VIEW_URL, binding.serverUrlEdit.text.toString() + ACCOUNT_RECOVERY);
-        startActivity(intent);
+        intent.putExtra(WEB_VIEW_URL, binding.serverUrlEdit.text.toString() + ACCOUNT_RECOVERY)
+        startActivity(intent)
     }
 
     override fun displayAlertDialog(titleResource: Int, descriptionResource: Int, negativeResource: Int?, positiveResource: Int) {
-       MaterialAlertDialogBuilder(this, R.style.DhisMaterialDialog)
-               .setTitle(titleResource)
-               .setMessage(descriptionResource)
-               .setPositiveButton(positiveResource,null)
-               .show()
+        MaterialAlertDialogBuilder(this, R.style.DhisMaterialDialog)
+                .setTitle(titleResource)
+                .setMessage(descriptionResource)
+                .setPositiveButton(positiveResource, null)
+                .show()
     }
 
 }

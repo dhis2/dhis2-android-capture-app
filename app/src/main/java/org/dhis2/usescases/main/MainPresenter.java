@@ -8,6 +8,7 @@ import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.usescases.login.LoginActivity;
 import org.dhis2.utils.Constants;
 import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.user.User;
 
 import androidx.annotation.NonNull;
@@ -101,6 +102,16 @@ final class MainPresenter implements MainContracts.Presenter {
     @Override
     public void getErrors() {
         view.showSyncErrors(metadataRepository.getSyncErrors());
+    }
+
+    @Override
+    public boolean dataHasErrors() {
+        return !d2.eventModule().events.byState().in(State.ERROR).get().isEmpty() || !d2.trackedEntityModule().trackedEntityInstances.byState().in(State.ERROR).get().isEmpty();
+    }
+
+    @Override
+    public boolean dataHasWarnings() {
+        return !d2.eventModule().events.byState().in(State.WARNING).get().isEmpty() || !d2.trackedEntityModule().trackedEntityInstances.byState().in(State.WARNING).get().isEmpty();
     }
 
     @Override

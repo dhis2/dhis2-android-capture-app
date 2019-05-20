@@ -55,7 +55,6 @@ public class ProgramModelAdapter extends RecyclerView.Adapter<ProgramModelHolder
     }
 
     public void setData(List<ProgramViewModel> data) {
-//        Collections.sort(data, (o1, o2) -> o2.count() - o1.count()); //TODO: ADD ORDER TO QUERY (BY NAME OR COUNT)
         this.programList.clear();
         this.programList.addAll(data);
         notifyDataSetChanged();

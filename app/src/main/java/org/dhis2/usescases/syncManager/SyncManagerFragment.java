@@ -11,10 +11,22 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ImageSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.widget.NestedScrollView;
+import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.Fragment;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.jakewharton.rxbinding2.widget.RxTextView;
@@ -28,7 +40,7 @@ import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.SyncUtils;
-import org.hisp.dhis.android.core.maintenance.D2Error;
+import org.hisp.dhis.android.core.imports.TrackerImportConflict;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -37,13 +49,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.core.app.NotificationCompat;
-import androidx.core.widget.NestedScrollView;
-import androidx.databinding.DataBindingUtil;
-import androidx.fragment.app.Fragment;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Consumer;
@@ -216,10 +221,30 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         } else {
             binding.dataLastSync.setText(getString(R.string.sync_error_text));
         }
+
+        if (presenter.dataHasErrors()) {
+            String src = getString(R.string.data_sync_error);
+            SpannableString str = new SpannableString(src);
+            int wIndex = src.indexOf('@');
+            int eIndex = src.indexOf('$');
+            str.setSpan(new ImageSpan(getContext(), R.drawable.ic_sync_warning), wIndex, wIndex + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            str.setSpan(new ImageSpan(getContext(), R.drawable.ic_sync_problem_red), eIndex, eIndex + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            binding.dataLastSync.setText(str);
+            binding.dataLastSync.setTextColor(ContextCompat.getColor(getContext(),R.color.red_060));
+
+        } else if (presenter.dataHasWarnings()) {
+            String src = getString(R.string.data_sync_warning);
+            SpannableString str = new SpannableString(src);
+            int wIndex = src.indexOf('@');
+            str.setSpan(new ImageSpan(getContext(), R.drawable.ic_sync_warning), wIndex, wIndex + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            binding.dataLastSync.setText(str);
+            binding.dataLastSync.setTextColor(ContextCompat.getColor(getContext(),R.color.colorPrimaryOrange));
+        }
+
         if (metaStatus)
             binding.metadataLastSync.setText(String.format(getString(R.string.last_data_sync_date), prefs.getString(Constants.LAST_META_SYNC, "-")));
         else
-            binding.metadataLastSync.setText(getString(R.string.sync_error_text));
+            binding.metadataLastSync.setText(getString(R.string.metadata_sync_error));
 
     }
 
@@ -441,14 +466,14 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     }
 
     @Override
-    public void showSyncErrors(List<D2Error> data) {
+    public void showSyncErrors(List<TrackerImportConflict> data) {
         new ErrorDialog().setData(data).show(getChildFragmentManager().beginTransaction(), ErrorDialog.TAG);
     }
 
     @Override
     public void showLocalDataDeleted(boolean error) {
 
-        if(!error) {
+        if (!error) {
             binding.eventCurrentData.setText(String.valueOf(0));
             binding.teiCurrentData.setText(String.valueOf(0));
         }

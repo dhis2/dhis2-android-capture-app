@@ -65,6 +65,20 @@
         <item name="colorControlActivated">@color/text_black_333</item>
     </style>
 
+    <style name="ValueType_LongText" parent="Widget.MaterialComponents.TextInputLayout.FilledBox">
+        <item name="android:textColorHint">@color/text_black_808</item>
+        <item name="colorAccent">@color/text_black_333</item>
+        <item name="colorControlNormal">@color/text_black_333</item>
+        <item name="colorControlActivated">@color/text_black_333</item>
+    </style>
+
+    <style name="ValueType_Text">
+        <item name="android:textColorHint">@color/text_black_808</item>
+        <item name="colorAccent">@color/text_black_333</item>
+        <item name="colorControlNormal">@color/text_black_333</item>
+        <item name="colorControlActivated">@color/text_black_333</item>
+    </style>
+
     <style name="boxedInputText" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
         <item name="android:textColorHint">?colorPrimaryLight</item>
         <item name="colorAccent">?colorPrimaryLight</item>

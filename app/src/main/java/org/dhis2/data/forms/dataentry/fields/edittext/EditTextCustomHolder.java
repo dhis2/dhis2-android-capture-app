@@ -1,6 +1,7 @@
 package org.dhis2.data.forms.dataentry.fields.edittext;
 
 
+import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -11,7 +12,7 @@ import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.FormEditTextCustomBinding;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.Preconditions;
-import org.dhis2.utils.custom_views.TextInputAutoCompleteTextView;
+import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
 
@@ -36,19 +37,28 @@ final class EditTextCustomHolder extends FormViewHolder {
     private FormEditTextCustomBinding binding;
     private EditTextViewModel editTextModel;
 
-    EditTextCustomHolder(FormEditTextCustomBinding binding, FlowableProcessor<RowAction> processor){
+    EditTextCustomHolder(FormEditTextCustomBinding binding, FlowableProcessor<RowAction> processor, boolean isSearchMode) {
         super(binding);
         this.binding = binding;
         binding.customEdittext.setFocusChangedListener((v, hasFocus) -> {
-            if (!hasFocus && editTextModel != null && editTextModel.editable() && valueHasChanged()) {
+            if(hasFocus)
+                openKeyboard(binding.customEdittext.getEditText());
+            if (isSearchMode || (!hasFocus && editTextModel != null && editTextModel.editable() && valueHasChanged())) {
                 if (!isEmpty(binding.customEdittext.getEditText().getText())) {
                     checkAutocompleteRendering();
-                    processor.onNext(RowAction.create(editTextModel.uid(), binding.customEdittext.getEditText().getText().toString()));
+                    editTextModel.withValue(binding.customEdittext.getEditText().getText().toString());
+                    processor.onNext(RowAction.create(editTextModel.uid(), binding.customEdittext.getEditText().getText().toString(),getAdapterPosition()));
 
                 } else {
-                    processor.onNext(RowAction.create(editTextModel.uid(), null));
+                    processor.onNext(RowAction.create(editTextModel.uid(), null,getAdapterPosition()));
                 }
             }
+        });
+        binding.customEdittext.setOnEditorActionListener((v, actionId, event) -> {
+            binding.customEdittext.getEditText().clearFocus();
+            closeKeyboard(binding.customEdittext.getEditText());
+            binding.customEdittext.nextFocus(v);
+            return false;
         });
     }
 
@@ -59,7 +69,10 @@ final class EditTextCustomHolder extends FormViewHolder {
         descriptionText = editTextModel.description();
         binding.customEdittext.setValueType(editTextModel.valueType());
         binding.customEdittext.setEditable(model.editable());
-
+        if(editTextModel.valueType() == ValueType.LONG_TEXT) {
+            binding.customEdittext.getInputLayout().getEditText().setSingleLine(false);
+            binding.customEdittext.getInputLayout().getEditText().setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
+        }
         label = new StringBuilder(editTextModel.label());
         if (editTextModel.mandatory())
             label.append("*");
@@ -120,7 +133,6 @@ final class EditTextCustomHolder extends FormViewHolder {
 
         return gson.fromJson(json, type);
     }
-
 
 
     public void dispose() {

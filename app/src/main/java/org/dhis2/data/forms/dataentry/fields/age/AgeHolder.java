@@ -15,8 +15,8 @@ import static android.text.TextUtils.isEmpty;
 
 public class AgeHolder extends FormViewHolder {
 
-    FormAgeCustomBinding binding;
-    AgeViewModel ageViewModel;
+    private FormAgeCustomBinding binding;
+    private AgeViewModel ageViewModel;
 
     AgeHolder(FormAgeCustomBinding binding, FlowableProcessor<RowAction> processor) {
         super(binding);
@@ -31,7 +31,6 @@ public class AgeHolder extends FormViewHolder {
 
 
     public void update(AgeViewModel ageViewModel) {
-//        model.onNext(viewModel);
         this.ageViewModel = ageViewModel;
 
         descriptionText = ageViewModel.description();
