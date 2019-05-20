@@ -107,7 +107,7 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <!--<androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/errorLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -125,7 +125,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     tools:text="@string/errors_during_sync" />
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>-->
 
             <FrameLayout
                 android:id="@+id/fragment_container"

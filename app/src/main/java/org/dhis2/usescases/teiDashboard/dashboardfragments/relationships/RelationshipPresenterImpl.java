@@ -58,7 +58,7 @@ public class RelationshipPresenterImpl implements RelationshipContracts.Presente
         this.dashboardRepository = dashboardRepository;
         this.updateRelationships = PublishProcessor.create();
 
-        teiType = d2.trackedEntityModule().trackedEntityInstances.uid(teiUid).withAllChildren().get().trackedEntityType();
+        teiType = d2.trackedEntityModule().trackedEntityInstances.byUid().eq(teiUid).withAllChildren().one().get().trackedEntityType();
     }
 
     @Override
@@ -150,7 +150,7 @@ public class RelationshipPresenterImpl implements RelationshipContracts.Presente
 
     @Override
     public void openDashboard(String teiUid) {
-        if (d2.trackedEntityModule().trackedEntityInstances.uid(teiUid).get().state() != State.RELATIONSHIP) {
+        if (d2.trackedEntityModule().trackedEntityInstances.byUid().eq(teiUid).one().get().state() != State.RELATIONSHIP) {
             Intent intent = new Intent(view.getContext(), TeiDashboardMobileActivity.class);
             Bundle bundle = new Bundle();
             bundle.putString("TEI_UID", teiUid);
