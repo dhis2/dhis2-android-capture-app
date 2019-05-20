@@ -93,5 +93,7 @@ public class SearchTEContractsModule {
         Trio<PagedList<SearchTeiModel>, String, Boolean> getMessage(PagedList<SearchTeiModel> list);
 
         HashMap<String, String> getQueryData();
+
+        void initSearch(SearchTEContractsModule.View view);
     }
 }

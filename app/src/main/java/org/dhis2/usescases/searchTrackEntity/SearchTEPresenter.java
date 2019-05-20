@@ -135,6 +135,10 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         )
         );
 
+    }
+
+    @Override
+    public void initSearch(SearchTEContractsModule.View view) {
 
         compositeDisposable.add(view.rowActionss()
                 .subscribeOn(AndroidSchedulers.mainThread())
@@ -180,6 +184,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         compositeDisposable.add(
                 queryProcessor
                         .map(map -> {
+                            view.clearData();
                             if (!NetworkUtils.isOnline(view.getContext()) || selectedProgram == null || Build.VERSION.SDK_INT <= 19)
                                 return searchRepository.searchTrackedEntitiesOffline(selectedProgram, orgUnitsUid, map);
                             else
@@ -190,7 +195,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(view::setLiveData, Timber::d)
         );
-
     }
 
     @Override
@@ -340,6 +344,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         if (!needsSearch)
             onEnrollClick(view);
         else {
+            this.view.clearData();
             List<String> optionSetIds = new ArrayList<>();
             for (Map.Entry<String, String> entry : queryData.entrySet()) {
                 if (entry.getValue().equals("null_os_null"))
@@ -348,7 +353,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
             for (String id : optionSetIds) {
                 queryData.remove(id);
             }
-            this.view.clearData();
             queryProcessor.onNext(queryData);
         }
     }
