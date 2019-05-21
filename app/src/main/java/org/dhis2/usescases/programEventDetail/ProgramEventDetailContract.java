@@ -88,5 +88,7 @@ public class ProgramEventDetailContract {
         List<OrganisationUnitModel> getOrgUnits();
 
         void onExpandOrgUnitNode(TreeNode node, String uid);
+
+        void onSyncIconClick(String uid);
     }
 }
