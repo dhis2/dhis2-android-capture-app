@@ -140,9 +140,9 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
     public void setData(DashboardProgramModel nprogram) {
         this.dashboardModel = nprogram;
-        presenter.setDashboardProgram(this.dashboardModel);
 
         if (nprogram != null && nprogram.getCurrentEnrollment() != null) {
+            presenter.setDashboardProgram(this.dashboardModel);
             SharedPreferences prefs = context.getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE);
             hasCatComb = nprogram.getCurrentProgram() != null && !nprogram.getCurrentProgram().categoryCombo().equals(prefs.getString(Constants.DEFAULT_CAT_COMBO, ""));
             List<EventModel> events = new ArrayList<>();
