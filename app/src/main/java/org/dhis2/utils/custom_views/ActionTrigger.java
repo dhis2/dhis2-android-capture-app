@@ -10,6 +10,7 @@ import io.reactivex.subjects.BehaviorSubject;
  * QUADRAM. Created by ppajuelo on 15/01/2018.
  */
 
+@SuppressWarnings("squid:S00115")
 public class ActionTrigger<T> {
     private BehaviorSubject<Object> triggerConfirmationDialog = BehaviorSubject.create();
 

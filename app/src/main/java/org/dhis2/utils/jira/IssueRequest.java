@@ -30,11 +30,9 @@ public class IssueRequest {
             this.issuetype = new Issue("Bug");
             this.components = new ArrayList<>();
             this.components.add(new Component("AndroidApp"));
-            this.fixVersions = new ArrayList<FixVersion>();
+            this.fixVersions = new ArrayList<>();
             this.fixVersions.add(new FixVersion());
         }
-
-
     }
 
     private class Project {

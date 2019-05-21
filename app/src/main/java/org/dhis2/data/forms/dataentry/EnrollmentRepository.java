@@ -5,6 +5,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
 
+import androidx.annotation.NonNull;
+
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.R;
@@ -17,7 +19,6 @@ import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.maintenance.D2Error;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
@@ -26,8 +27,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import timber.log.Timber;
 
@@ -107,7 +106,7 @@ final class EnrollmentRepository implements DataEntryRepository {
     }
 
     @Override
-    public Observable<List<OrganisationUnitLevel>> getOrgUnitLevels(){
+    public Observable<List<OrganisationUnitLevel>> getOrgUnitLevels() {
         return Observable.just(d2.organisationUnitModule().organisationUnitLevels.get());
     }
 
@@ -187,23 +186,22 @@ final class EnrollmentRepository implements DataEntryRepository {
                             dataValue = d2.trackedEntityModule().reservedValueManager.getValue(uid, pattern == null || pattern.contains("OU") ? null : orgUnitUid);
                         }
 
-                    String INSERT = "INSERT INTO TrackedEntityAttributeValue\n" +
+                    String insert = "INSERT INTO TrackedEntityAttributeValue\n" +
                             "(lastUpdated, value, trackedEntityAttribute, trackedEntityInstance)\n" +
                             "VALUES (?,?,?,?)";
                     SQLiteStatement updateStatement = briteDatabase.getWritableDatabase()
-                            .compileStatement(INSERT);
+                            .compileStatement(insert);
                     sqLiteBind(updateStatement, 1, BaseIdentifiableObject.DATE_FORMAT
                             .format(Calendar.getInstance().getTime()));
                     sqLiteBind(updateStatement, 2, dataValue == null ? "" : dataValue);
                     sqLiteBind(updateStatement, 3, uid == null ? "" : uid);
                     sqLiteBind(updateStatement, 4, teiUid == null ? "" : teiUid);
 
-                    long insert = briteDatabase.executeInsert(
+                    briteDatabase.executeInsert(
                             TrackedEntityAttributeValueModel.TABLE, updateStatement);
                     updateStatement.clearBindings();
                 }
             } catch (D2Error e) {
-                //Timber.e(e);
                 warning = context.getString(R.string.no_reserved_values);
             }
         }
@@ -227,12 +225,12 @@ final class EnrollmentRepository implements DataEntryRepository {
 
         if (warning != null) {
             return fieldFactory.create(uid,
-                    formName != null && !formName.isEmpty()? formName: label, valueType, mandatory, optionSet, dataValue, null, allowFutureDates,
+                    formName != null && !formName.isEmpty() ? formName : label, valueType, mandatory, optionSet, dataValue, null, allowFutureDates,
                     false, null, description, fieldRendering, optionCount, objectStyle)
                     .withWarning(warning);
         } else {
             return fieldFactory.create(uid,
-                    formName != null && !formName.isEmpty()? formName: label, valueType, mandatory, optionSet, dataValue, null, allowFutureDates,
+                    formName != null && !formName.isEmpty() ? formName : label, valueType, mandatory, optionSet, dataValue, null, allowFutureDates,
                     !generated && enrollmentStatus == EnrollmentStatus.ACTIVE, null, description, fieldRendering, optionCount, objectStyle);
         }
     }

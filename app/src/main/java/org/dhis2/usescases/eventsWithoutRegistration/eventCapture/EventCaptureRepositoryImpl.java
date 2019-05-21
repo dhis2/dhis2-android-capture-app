@@ -225,10 +225,9 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         Iterator<ProgramRuleVariable> variableIterator = variables.iterator();
         while (variableIterator.hasNext()) {
             ProgramRuleVariable variable = variableIterator.next();
-            if (variable.programStage() != null && variable.programStage().uid().equals(event.programStage()))
+            if ((variable.programStage() != null && variable.programStage().uid().equals(event.programStage())) || (variable.dataElement() == null)) {
                 variableIterator.remove();
-            else if (variable.dataElement() == null)
-                variableIterator.remove();
+            }
         }
         for (ProgramRuleVariable variable : variables) {
             if (variable.dataElement() != null && !dataElementRules.containsKey(variable.dataElement().uid()))
@@ -437,7 +436,9 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                                     fieldViewModel.uid() + "." + uid, //fist
                                     displayName + "-" + optionCode, ValueType.TEXT, false,
                                     fieldViewModel.optionSet(), fieldViewModel.value(), fieldViewModel.programStageSection(),
-                                    fieldViewModel.allowFutureDate(), fieldViewModel.editable() == null ? false : fieldViewModel.editable(), renderingType, fieldViewModel.description(), fieldRendering, optionCount, objectStyle));
+                                    fieldViewModel.allowFutureDate(),
+                                    fieldViewModel.editable() != null && fieldViewModel.editable(),
+                                    renderingType, fieldViewModel.description(), fieldRendering, optionCount, objectStyle));
 
                             cursor.moveToNext();
                         }
@@ -647,10 +648,10 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     }
 
     private void updateEnrollment(String enrollmentUid) {
-        String SELECT_ENROLLMENT = "SELECT *\n" +
+        String selectEnrollment = "SELECT *\n" +
                 "FROM Enrollment\n" +
                 "WHERE uid = ? LIMIT 1;";
-        try (Cursor enrollmentCursor = briteDatabase.query(SELECT_ENROLLMENT, enrollmentUid)) {
+        try (Cursor enrollmentCursor = briteDatabase.query(selectEnrollment, enrollmentUid)) {
             if (enrollmentCursor != null && enrollmentCursor.moveToFirst()) {
                 EnrollmentModel enrollmentModel = EnrollmentModel.create(enrollmentCursor);
 

@@ -47,22 +47,22 @@ public class DashboardPagerAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 1:
-                if (indicatorsFragment == null){
+                if (indicatorsFragment == null) {
                     indicatorsFragment = new IndicatorsFragment();
                 }
                 return indicatorsFragment;
             case 2:
-                if (relationshipFragment == null){
+                if (relationshipFragment == null) {
                     relationshipFragment = new RelationshipFragment();
                 }
                 return relationshipFragment;
             case 3:
-                if (notesFragment == null){
+                if (notesFragment == null) {
                     notesFragment = new NotesFragment();
                 }
                 return notesFragment;
             default:
-                if (teiDataFragment == null){
+                if (teiDataFragment == null) {
                     teiDataFragment = new TEIDataFragment();
                 }
                 return teiDataFragment;
@@ -77,14 +77,14 @@ public class DashboardPagerAdapter extends FragmentStatePagerAdapter {
     @Override
     public CharSequence getPageTitle(int position) {
         switch (position) {
-            default:
-                return context.getString(R.string.dashboard_overview);
             case 1:
                 return context.getString(R.string.dashboard_indicators);
             case 2:
                 return context.getString(R.string.dashboard_relationships);
             case 3:
                 return context.getString(R.string.dashboard_notes);
+            default:
+                return context.getString(R.string.dashboard_overview);
         }
     }
 }

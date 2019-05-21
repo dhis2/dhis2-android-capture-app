@@ -9,6 +9,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.Fragment;
+
 import com.google.gson.Gson;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.Result;
@@ -34,13 +42,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.databinding.DataBindingUtil;
-import androidx.fragment.app.Fragment;
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
 import timber.log.Timber;
 
@@ -56,7 +57,7 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
 
     private ZXingScannerView mScannerView;
     private Context context;
-    FragmentQrBinding binding;
+    private FragmentQrBinding binding;
     private boolean isPermissionRequested = false;
 
     @Inject

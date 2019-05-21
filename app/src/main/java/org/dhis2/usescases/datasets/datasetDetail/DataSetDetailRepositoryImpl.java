@@ -2,6 +2,8 @@ package org.dhis2.usescases.datasets.datasetDetail;
 
 import android.database.Cursor;
 
+import androidx.annotation.NonNull;
+
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.utils.DateUtils;
@@ -14,14 +16,13 @@ import org.hisp.dhis.android.core.period.PeriodType;
 import java.util.List;
 import java.util.Locale;
 
-import androidx.annotation.NonNull;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 
 public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
 
-    private final static String GET_DATA_SETS = "SELECT " +
+    private static final String GET_DATA_SETS = "SELECT " +
             "DataValue.organisationUnit, " +
             "DataValue.period, " +
             "DataValue.attributeOptionCombo " +
@@ -31,8 +32,7 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
             "WHERE DataSetDataElementLink.dataSet = ? %s " +
             "GROUP BY DataValue.period,DataValue.organisationUnit,DataValue.categoryOptionCombo";
 
-    private final static String DATA_SETS_ORG_UNIT_FILTER = "AND DataValue.organisationUnit IN (%s) ";
-    private final static String DATA_SETS_PERIOD_FILTER = "AND DataValue.period = ? ";
+    private static final String DATA_SETS_ORG_UNIT_FILTER = "AND DataValue.organisationUnit IN (%s) ";
 
     private final BriteDatabase briteDatabase;
 
@@ -44,14 +44,14 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
     @NonNull
     @Override
     public Observable<List<OrganisationUnitModel>> orgUnits() {
-        String SELECT_ORG_UNITS = "SELECT * FROM " + OrganisationUnitModel.TABLE;
-        return briteDatabase.createQuery(OrganisationUnitModel.TABLE, SELECT_ORG_UNITS)
+        String selectOrgUnits = "SELECT * FROM " + OrganisationUnitModel.TABLE;
+        return briteDatabase.createQuery(OrganisationUnitModel.TABLE, selectOrgUnits)
                 .mapToList(OrganisationUnitModel::create);
     }
 
     @Override
     public Flowable<List<DataSetDetailModel>> dataSetGroups(String dataSetUid, List<String> orgUnits, PeriodType selectedPeriodType, int page) {
-        String SQL = GET_DATA_SETS;
+        String sql = GET_DATA_SETS;
         String orgUnitFilter = "";
         if (orgUnits != null && !orgUnits.isEmpty()) {
             StringBuilder orgUnitUids = new StringBuilder("");
@@ -64,9 +64,9 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
             orgUnitFilter = String.format(DATA_SETS_ORG_UNIT_FILTER, orgUnitFilter);
         }
 
-        SQL = String.format(SQL, orgUnitFilter);
+        sql = String.format(sql, orgUnitFilter);
 
-        return briteDatabase.createQuery(DataValueModel.TABLE, SQL, dataSetUid)
+        return briteDatabase.createQuery(DataValueModel.TABLE, sql, dataSetUid)
                 .mapToList(cursor -> {
                     String organisationUnitUid = cursor.getString(0);
                     String period = cursor.getString(1);
@@ -114,6 +114,8 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
                                         break;
                                     case TO_UPDATE:
                                         toUpdate = State.TO_UPDATE;
+                                        break;
+                                    default:
                                         break;
                                 }
                                 cursor.moveToNext();

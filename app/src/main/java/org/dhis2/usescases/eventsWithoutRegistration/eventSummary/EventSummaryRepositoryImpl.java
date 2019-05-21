@@ -305,7 +305,6 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
             if (cursor != null && cursor.moveToNext()) {
 
                 EventModel event = EventModel.create(cursor);
-                cursor.close();
 
                 ContentValues values = event.toContentValues();
                 switch (event.status()) {

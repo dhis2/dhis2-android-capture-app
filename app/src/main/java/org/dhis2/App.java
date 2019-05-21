@@ -210,7 +210,8 @@ public class App extends MultiDexApplication implements Components {
     @NonNull
     @Override
     public LoginComponent createLoginComponent() {
-        return (loginComponent = appComponent.plus(new LoginModule()));
+        loginComponent = appComponent.plus(new LoginModule());
+        return loginComponent;
     }
 
     @Nullable

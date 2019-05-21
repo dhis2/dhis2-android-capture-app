@@ -72,14 +72,12 @@ public class QRActivity extends ActivityGlobalAbstract implements ZXingScannerVi
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case 101: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    initScanner();
-                } else {
-                    finish();
-                }
+        // If request is cancelled, the result arrays are empty.
+        if (requestCode == 101) {
+            if (grantResults.length > 0 && grantResults[0] == PERMISSION_GRANTED) {
+                initScanner();
+            } else {
+                finish();
             }
         }
     }

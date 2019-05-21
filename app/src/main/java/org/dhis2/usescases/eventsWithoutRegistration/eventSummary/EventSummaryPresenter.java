@@ -5,12 +5,11 @@ import androidx.annotation.Nullable;
 
 /**
  * Created by Cristian on 01/03/2018.
- *
  */
 
 public class EventSummaryPresenter implements EventSummaryContract.Presenter {
 
-    static private EventSummaryContract.View view;
+    private EventSummaryContract.View view;
     private final EventSummaryContract.Interactor interactor;
 
 
@@ -19,8 +18,8 @@ public class EventSummaryPresenter implements EventSummaryContract.Presenter {
     }
 
     @Override
-    public void init(@NonNull EventSummaryContract.View mview, @NonNull String programId, @NonNull String eventId) {
-        view = mview;
+    public void init(@NonNull EventSummaryContract.View view, @NonNull String programId, @NonNull String eventId) {
+        this.view = view;
         interactor.init(view, programId, eventId);
     }
 

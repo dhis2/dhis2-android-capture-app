@@ -65,15 +65,15 @@ class LoginViewModel : ViewModel() {
             Constants.URL_TEST_229, Constants.URL_TEST_230 -> isTestingEnvironment.setValue(Trio.create(serverUrl, "android", "Android123"))
             else -> if (testingCredentials!!.containsKey(serverUrl) && testingCredentials!![serverUrl] != null)
                 isTestingEnvironment.value = Trio.create(serverUrl,
-                        testingCredentials!![serverUrl]!!.user_name,
-                        testingCredentials!![serverUrl]!!.user_pass)
+                        testingCredentials!![serverUrl]!!.userName,
+                        testingCredentials!![serverUrl]!!.userPass)
         }
     }
 
     fun setTestingCredentials(testingCredentials: List<TestingCredential>) {
         this.testingCredentials = HashMap()
         for (testingCredential in testingCredentials) {
-            this.testingCredentials!![testingCredential.server_url] = testingCredential
+            this.testingCredentials!![testingCredential.getServerUrl()] = testingCredential
         }
     }
 }

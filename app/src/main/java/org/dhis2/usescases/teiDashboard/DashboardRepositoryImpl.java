@@ -398,13 +398,12 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
     @Override
     public Integer getObjectStyle(Context context, String uid) {
-        String GET_OBJECT_STYLE = "SELECT * FROM ObjectStyle WHERE uid = ?";
-        try (Cursor objectStyleCurosr = briteDatabase.query(GET_OBJECT_STYLE, uid)) {
+        String getObjectStyle = "SELECT * FROM ObjectStyle WHERE uid = ?";
+        try (Cursor objectStyleCurosr = briteDatabase.query(getObjectStyle, uid)) {
             if (objectStyleCurosr != null && objectStyleCurosr.moveToNext()) {
                 String iconName = objectStyleCurosr.getString(objectStyleCurosr.getColumnIndex("icon"));
                 Resources resources = context.getResources();
                 iconName = iconName.startsWith("ic_") ? iconName : "ic_" + iconName;
-                objectStyleCurosr.close();
                 return resources.getIdentifier(iconName, "drawable", context.getPackageName());
             } else
                 return R.drawable.ic_person;
@@ -413,7 +412,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
     @Override
     public Observable<List<Pair<RelationshipTypeModel, String>>> relationshipsForTeiType(String teType) {
-        String RELATIONSHIP_QUERY =
+        String relationshipQuery =
                 "SELECT FROMTABLE.*, TOTABLE.trackedEntityType AS toTeiType FROM " +
                         "(SELECT RelationshipType.*,RelationshipConstraint.* FROM RelationshipType " +
                         "JOIN RelationshipConstraint ON RelationshipConstraint.relationshipType = RelationshipType.uid WHERE constraintType = 'FROM') " +
@@ -424,16 +423,16 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                         "AS TOTABLE " +
                         "ON TOTABLE.relationshipType = FROMTABLE.relationshipType " +
                         "WHERE FROMTABLE.trackedEntityType = ?";
-        String RELATIONSHIP_QUEY_29 =
+        String relationshipQuey29 =
                 "SELECT RelationshipType.* FROM RelationshipType";
         return briteDatabase.createQuery("SystemInfo", "SELECT version FROM SystemInfo")
                 .mapToOne(cursor -> cursor.getString(0))
                 .flatMap(version -> {
                     if (version.equals("2.29"))
-                        return briteDatabase.createQuery(RelationshipTypeModel.TABLE, RELATIONSHIP_QUEY_29)
+                        return briteDatabase.createQuery(RelationshipTypeModel.TABLE, relationshipQuey29)
                                 .mapToList(cursor -> Pair.create(RelationshipTypeModel.create(cursor), teType));
                     else
-                        return briteDatabase.createQuery(RelationshipTypeModel.TABLE, RELATIONSHIP_QUERY, teType)
+                        return briteDatabase.createQuery(RelationshipTypeModel.TABLE, relationshipQuery, teType)
                                 .mapToList(cursor -> Pair.create(RelationshipTypeModel.create(cursor), cursor.getString(cursor.getColumnIndex("toTeiType"))));
                 });
 
@@ -615,12 +614,12 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
     private long update(String uid, EnrollmentStatus value) {
         this.enrollmentUid = uid;
-        String UPDATE = "UPDATE Enrollment\n" +
+        String update = "UPDATE Enrollment\n" +
                 "SET lastUpdated = ?, status = ?\n" +
                 "WHERE uid = ?;";
 
         SQLiteStatement updateStatement = briteDatabase.getWritableDatabase()
-                .compileStatement(UPDATE);
+                .compileStatement(update);
         sqLiteBind(updateStatement, 1, BaseIdentifiableObject.DATE_FORMAT
                 .format(Calendar.getInstance().getTime()));
         sqLiteBind(updateStatement, 2, value);
@@ -637,14 +636,14 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
     @NonNull
     private Flowable<Long> updateEnrollment(long status) {
-        String SELECT_TEI = "SELECT *\n" +
+        String selectTei = "SELECT *\n" +
                 "FROM TrackedEntityInstance\n" +
                 "WHERE uid IN (\n" +
                 "  SELECT trackedEntityInstance\n" +
                 "  FROM Enrollment\n" +
                 "  WHERE Enrollment.uid = ?\n" +
                 ") LIMIT 1;";
-        return briteDatabase.createQuery(TrackedEntityInstanceModel.TABLE, SELECT_TEI, enrollmentUid == null ? "" : enrollmentUid)
+        return briteDatabase.createQuery(TrackedEntityInstanceModel.TABLE, selectTei, enrollmentUid == null ? "" : enrollmentUid)
                 .mapToOne(TrackedEntityInstanceModel::create).take(1).toFlowable(BackpressureStrategy.LATEST)
                 .switchMap(tei -> {
                     if (tei != null && (State.SYNCED.equals(tei.state()) || State.TO_DELETE.equals(tei.state()) ||

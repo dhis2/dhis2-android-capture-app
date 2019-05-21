@@ -104,7 +104,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
         compositeDisposable.add(
                 programQueries
                         .startWith(Trio.create(new ArrayList<>(), new ArrayList<>(), new ArrayList<>()))
-                        .map(dates_ou_coc -> eventRepository.filteredProgramEvents(dates_ou_coc.val0(), dates_ou_coc.val1(), dates_ou_coc.val2()))
+                        .map(datesOuCoc -> eventRepository.filteredProgramEvents(datesOuCoc.val0(), datesOuCoc.val1(), datesOuCoc.val2()))
                         .subscribeOn(Schedulers.computation())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
@@ -196,12 +196,12 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
 
     @Override
     public void onCatComboSelected(CategoryOptionComboModel categoryOptionComboModel) {
-
+        // unused
     }
 
     @Override
     public void clearCatComboFilters() {
-
+        // unused
     }
 
     @Override

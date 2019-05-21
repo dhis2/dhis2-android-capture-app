@@ -22,7 +22,7 @@ public abstract class EndlessRecyclerViewScrollListener extends RecyclerView.OnS
     // Sets the starting page index
     private int startingPageIndex = 0;
 
-    RecyclerView.LayoutManager mLayoutManager;
+    private RecyclerView.LayoutManager mLayoutManager;
 
     public EndlessRecyclerViewScrollListener(LinearLayoutManager layoutManager) {
         this.mLayoutManager = layoutManager;
@@ -46,7 +46,6 @@ public abstract class EndlessRecyclerViewScrollListener extends RecyclerView.OnS
             visibleThreshold = visibleThreshold * ((GridLayoutManager) layoutManager).getSpanCount();
         if (layoutManager instanceof StaggeredGridLayoutManager)
             visibleThreshold = visibleThreshold * ((StaggeredGridLayoutManager) layoutManager).getSpanCount();
-
     }
 
     public EndlessRecyclerViewScrollListener(RecyclerView.LayoutManager layoutManager, int visibleThreshold) {
@@ -63,9 +62,7 @@ public abstract class EndlessRecyclerViewScrollListener extends RecyclerView.OnS
     public int getLastVisibleItem(int[] lastVisibleItemPositions) {
         int maxSize = 0;
         for (int i = 0; i < lastVisibleItemPositions.length; i++) {
-            if (i == 0) {
-                maxSize = lastVisibleItemPositions[i];
-            } else if (lastVisibleItemPositions[i] > maxSize) {
+            if ((i == 0) || (lastVisibleItemPositions[i] > maxSize)) {
                 maxSize = lastVisibleItemPositions[i];
             }
         }

@@ -42,8 +42,8 @@ import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import io.reactivex.Observable;
 import io.reactivex.processors.FlowableProcessor;
@@ -85,7 +85,7 @@ public class FormAdapter extends RecyclerView.Adapter {
     private final List<Row> rows;
 
     private Context context;
-    private HashMap<String, String> queryData;
+    private Map<String, String> queryData;
 
     public FormAdapter(FragmentManager fm, LayoutInflater layoutInflater, Observable<List<OrganisationUnitModel>> orgUnits, Context context,
                        Observable<List<OrganisationUnitLevel>> levels) {
@@ -247,7 +247,7 @@ public class FormAdapter extends RecyclerView.Adapter {
 
     }
 
-    public void setList(List<TrackedEntityAttributeModel> modelList, ProgramModel programModel, HashMap<String, String> queryData) {
+    public void setList(List<TrackedEntityAttributeModel> modelList, ProgramModel programModel, Map<String, String> queryData) {
         this.queryData = queryData;
         if (programModel != null) {
             this.programModel = programModel;

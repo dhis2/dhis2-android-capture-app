@@ -115,7 +115,7 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
 
     @Override
     public void onDataSetClick(String eventId, String orgUnit) {
-
+        // unused
     }
 
     @Override
@@ -134,23 +134,14 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
         this.fromDate = fromDate;
         this.toDate = toDate;
         lastSearchType = LastSearchType.DATES;
-        /*Observable.just(dataSetDetailRepository.filteredDataSet(programId,
-                DateUtils.getInstance().formatDate(fromDate),
-                DateUtils.getInstance().formatDate(toDate),
-                categoryOptionComboModel)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        list ->view.setData(getPeriodFromType(list)),
-                        Timber::e));*/
     }
 
     @Override
     public void getOrgUnits(Date date) {
         compositeDisposable.add(dataSetDetailRepository.orgUnits()
-                .map(orgUnits -> {
-                    this.orgUnits = orgUnits;
-                    return OrgUnitUtils.renderTree(view.getContext(), orgUnits, true);
+                .map(orgUnitsResult -> {
+                    this.orgUnits = orgUnitsResult;
+                    return OrgUnitUtils.renderTree(view.getContext(), orgUnitsResult, true);
                 })
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())

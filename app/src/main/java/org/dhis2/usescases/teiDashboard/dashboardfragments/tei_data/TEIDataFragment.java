@@ -154,7 +154,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
             binding.setProgram(nprogram.getCurrentProgram());
             binding.setDashboardModel(nprogram);
             presenter.getTEIEvents();
-            followUp.set(nprogram.getCurrentEnrollment().followUp() != null ? nprogram.getCurrentEnrollment().followUp() : false);
+            followUp.set(nprogram.getCurrentEnrollment().followUp() != null && nprogram.getCurrentEnrollment().followUp());
             binding.setFollowup(followUp);
 
         } else if (nprogram != null) {

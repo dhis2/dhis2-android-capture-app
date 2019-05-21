@@ -19,6 +19,13 @@ import android.view.View;
 import android.widget.DatePicker;
 import android.widget.PopupMenu;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.view.GravityCompat;
+import androidx.core.view.ViewCompat;
+import androidx.databinding.DataBindingUtil;
+
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
@@ -70,12 +77,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.core.view.GravityCompat;
-import androidx.core.view.ViewCompat;
-import androidx.databinding.DataBindingUtil;
 import io.reactivex.functions.Consumer;
 import me.toptas.fancyshowcase.FancyShowCaseView;
 import timber.log.Timber;
@@ -137,6 +138,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     private ArrayList<String> sectionsToHide;
     private Boolean accessData;
 
+    @SuppressWarnings("squid:S00107")
     public static Bundle getBundle(String programUid, String eventUid, String eventCreationType,
                                    String teiUid, PeriodType eventPeriodType, String orgUnit, String stageUid,
                                    String enrollmentUid, int eventScheduleInterval, EnrollmentStatus enrollmentStatus) {
@@ -395,13 +397,13 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             else
                 new PeriodDialog()
                         .setPeriod(periodType)
-                        .setPossitiveListener(selectedDate -> {
-                            this.selectedDate = selectedDate;
-                            binding.date.setText(DateUtils.getInstance().getPeriodUIString(periodType, selectedDate, Locale.getDefault()));
+                        .setPossitiveListener(selectedDateResult -> {
+                            this.selectedDate = selectedDateResult;
+                            binding.date.setText(DateUtils.getInstance().getPeriodUIString(periodType, selectedDateResult, Locale.getDefault()));
                             binding.date.clearFocus();
                             if (!fixedOrgUnit)
                                 binding.orgUnit.setText("");
-                            presenter.filterOrgUnits(DateUtils.uiDateFormat().format(selectedDate));
+                            presenter.filterOrgUnits(DateUtils.uiDateFormat().format(selectedDateResult));
                         })
                         .show(getSupportFragmentManager(), PeriodDialog.class.getSimpleName());
         });
@@ -721,14 +723,11 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case EventInitialPresenter.ACCESS_COARSE_LOCATION_PERMISSION_REQUEST: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    presenter.onLocationClick();
-                }
-            }
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        // If request is cancelled, the result arrays are empty.
+        if ((requestCode == EventInitialPresenter.ACCESS_COARSE_LOCATION_PERMISSION_REQUEST) &&
+                (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+            presenter.onLocationClick();
         }
     }
 

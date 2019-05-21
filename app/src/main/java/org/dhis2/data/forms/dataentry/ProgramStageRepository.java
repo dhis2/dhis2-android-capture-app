@@ -3,6 +3,9 @@ package org.dhis2.data.forms.dataentry;
 import android.content.ContentValues;
 import android.database.Cursor;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
@@ -25,10 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import timber.log.Timber;
 
@@ -187,7 +187,9 @@ final class ProgramStageRepository implements DataEntryRepository {
                                         fieldViewModel.uid() + "." + uid, //fist
                                         displayName + "-" + optionCode, ValueType.TEXT, false,
                                         fieldViewModel.optionSet(), fieldViewModel.value(), fieldViewModel.programStageSection(),
-                                        fieldViewModel.allowFutureDate(), fieldViewModel.editable() == null ? false : fieldViewModel.editable(), renderingType, fieldViewModel.description(), null, optionCount, objectStyle));
+                                        fieldViewModel.allowFutureDate(),
+                                        fieldViewModel.editable() != null && fieldViewModel.editable(),
+                                        renderingType, fieldViewModel.description(), null, optionCount, objectStyle));
 
                                 cursor.moveToNext();
                             }

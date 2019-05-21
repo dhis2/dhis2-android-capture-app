@@ -1,5 +1,8 @@
 package org.dhis2.utils;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.period.DatePeriod;
@@ -15,9 +18,6 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nonnull;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 /**
  * QUADRAM. Created by ppajuelo on 16/01/2018.
@@ -239,7 +239,6 @@ public class DateUtils {
 
     /**********************
      COMPARE DATES REGION*/
-    @Deprecated
     public boolean hasExpired(@NonNull EventModel event, int expiryDays, int completeEventExpiryDays, @Nullable PeriodType expiryPeriodType) {
         Calendar expiredDate = Calendar.getInstance();
 
@@ -1029,14 +1028,16 @@ public class DateUtils {
      */
     public Boolean isEventExpired(Date eventDate, Date completeDate, EventStatus status, int compExpDays, PeriodType programPeriodType, int expDays) {
         if (status == EventStatus.COMPLETED && completeDate == null)
-//            throw new NullPointerException("completeDate can't be null if status of event is COMPLETED");
             return false;
 
         boolean expiredBecouseOfPeriod;
-        boolean expiredBecouseOfCompletion = false;
+        boolean expiredBecouseOfCompletion;
 
-        expiredBecouseOfCompletion = status == EventStatus.COMPLETED ?
-                isEventExpired(null, eventDate, compExpDays) : false;
+        if (status == EventStatus.COMPLETED) {
+            expiredBecouseOfCompletion = isEventExpired(null, eventDate, compExpDays);
+        } else {
+            expiredBecouseOfCompletion = false;
+        }
 
         if (programPeriodType != null) {
             Date expDate = getNextPeriod(programPeriodType, eventDate, 1); //Initial date of next period

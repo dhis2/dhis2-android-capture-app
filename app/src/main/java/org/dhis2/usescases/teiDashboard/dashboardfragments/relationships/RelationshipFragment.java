@@ -121,20 +121,23 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
         }
     }
 
+    private void onClick(RFACLabelItem item) {
+        Pair<RelationshipTypeModel, String> pair = (Pair<RelationshipTypeModel, String>) item.getWrapper();
+        goToRelationShip(pair.val0(), pair.val1());
+    }
+
     private void initFab(List<Trio<RelationshipTypeModel, String, Integer>> relationshipTypes) {
 
         RapidFloatingActionContentLabelList rfaContent = new RapidFloatingActionContentLabelList(getAbstracContext());
         rfaContent.setOnRapidFloatingActionContentLabelListListener(new RapidFloatingActionContentLabelList.OnRapidFloatingActionContentLabelListListener() {
             @Override
             public void onRFACItemLabelClick(int position, RFACLabelItem item) {
-                Pair<RelationshipTypeModel, String> pair = (Pair<RelationshipTypeModel, String>) item.getWrapper();
-                goToRelationShip(pair.val0(), pair.val1());
+                onClick(item);
             }
 
             @Override
             public void onRFACItemIconClick(int position, RFACLabelItem item) {
-                Pair<RelationshipTypeModel, String> pair = (Pair<RelationshipTypeModel, String>) item.getWrapper();
-                goToRelationShip(pair.val0(), pair.val1());
+                onClick(item);
             }
         });
         List<RFACLabelItem> items = new ArrayList<>();

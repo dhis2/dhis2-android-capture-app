@@ -174,6 +174,8 @@ public class ProgramPresenter implements ProgramContract.Presenter {
                 case YEARLY:
                     dates.addAll(view.getChosenDateYear());
                     break;
+                default:
+                    break;
             }
 
             view.startActivity(ProgramEventDetailActivity.class,

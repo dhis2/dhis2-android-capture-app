@@ -20,7 +20,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,10 +55,6 @@ public class QRCodeGenerator implements QRInterface {
     private static final String TEI_ENROLLMENTS = "SELECT * FROM " + EnrollmentModel.TABLE + " WHERE " + EnrollmentModel.TABLE + "." + EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE + " = ?";
 
     private static final String TEI_EVENTS = "SELECT * FROM " + EventModel.TABLE + " WHERE " + EventModel.TABLE + "." + EventModel.Columns.ENROLLMENT + " =?";
-
-   /* private static final String TEI_RELATIONSHIPS = "SELECT * FROM " + RelationshipModel.TABLE + " WHERE " + RelationshipModel.TABLE + "." + RelationshipModel.Columns.TRACKED_ENTITY_INSTANCE_A + " = ? OR " +
-            RelationshipModel.TABLE + "." + RelationshipModel.Columns.TRACKED_ENTITY_INSTANCE_B + " = ?";*/
-
 
     QRCodeGenerator(BriteDatabase briteDatabase) {
         this.briteDatabase = briteDatabase;
@@ -193,13 +189,8 @@ public class QRCodeGenerator implements QRInterface {
     public static Bitmap transform(String type, String info) {
         byte[] data;
         String encoded;
-        try {
-            data = info.getBytes("UTF-8");
-            encoded = Base64.encodeToString(data, Base64.DEFAULT);
-        } catch (UnsupportedEncodingException e) {
-            Timber.e(e);
-            encoded = e.getLocalizedMessage();
-        }
+        data = info.getBytes(StandardCharsets.UTF_8);
+        encoded = Base64.encodeToString(data, Base64.DEFAULT);
 
         MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
         Bitmap bitmap = null;

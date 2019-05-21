@@ -21,7 +21,7 @@ import io.reactivex.Observable;
 
 public class DataSetTableRepositoryImpl implements DataSetTableRepository {
 
-    private final String DATA_ELEMENTS = "SELECT " +
+    private static final String DATA_ELEMENTS = "SELECT " +
             "DataElement.*," +
             "DataSetSection.sectionName," +
             "DataSetSection.sectionOrder " +
@@ -39,12 +39,12 @@ public class DataSetTableRepositoryImpl implements DataSetTableRepository {
             "WHERE DataSetDataElementLink.dataSet = ? " +
             "ORDER BY DataSetSection.sectionOrder";
 
-    private final String PERIOD_CODE = "SELECT Period.* FROM Period WHERE Period.periodType = ? AND Period.startDate = ? LIMIT 1";
-    private final String DATA_VALUES = "SELECT * FROM DataValue " +
+    private static final String PERIOD_CODE = "SELECT Period.* FROM Period WHERE Period.periodType = ? AND Period.startDate = ? LIMIT 1";
+    private static final String DATA_VALUES = "SELECT * FROM DataValue " +
             "WHERE DataValue.organisationUnit = ? " +
             "AND DataValue.categoryOptionCombo = ? " +
             "AND DataValue.period = ?";
-    private final String DATA_SET = "SELECT DataSet.* FROM DataSet WHERE DataSet.uid = ?";
+    private static final String DATA_SET = "SELECT DataSet.* FROM DataSet WHERE DataSet.uid = ?";
 
     private final BriteDatabase briteDatabase;
     private final String dataSetUid;

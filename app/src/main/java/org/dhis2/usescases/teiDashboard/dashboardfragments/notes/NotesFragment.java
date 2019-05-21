@@ -7,6 +7,10 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
+
 import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.databinding.FragmentNotesBinding;
@@ -18,9 +22,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.databinding.DataBindingUtil;
 import io.reactivex.functions.Consumer;
 
 /**
@@ -57,10 +58,8 @@ public class NotesFragment extends FragmentGlobalAbstract implements NotesContra
         binding.editNote.setOnTouchListener((v, event) -> {
             if (v.getId() == R.id.edit_note) {
                 v.getParent().requestDisallowInterceptTouchEvent(true);
-                switch (event.getAction() & MotionEvent.ACTION_MASK) {
-                    case MotionEvent.ACTION_UP:
-                        v.getParent().requestDisallowInterceptTouchEvent(false);
-                        break;
+                if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_UP) {
+                    v.getParent().requestDisallowInterceptTouchEvent(false);
                 }
             }
             return false;

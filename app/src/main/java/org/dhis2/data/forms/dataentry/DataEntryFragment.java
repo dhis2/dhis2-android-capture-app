@@ -110,11 +110,6 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
         dataEntryPresenter.onDetach();
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-    }
-
     @NonNull
     @Override
     public Flowable<RowAction> rowActions() {

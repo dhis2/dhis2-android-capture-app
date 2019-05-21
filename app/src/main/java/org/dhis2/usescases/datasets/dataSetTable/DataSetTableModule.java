@@ -25,13 +25,13 @@ public class DataSetTableModule {
 
     @Provides
     @PerActivity
-    DataSetTableContract.Presenter providesPresenter(DataSetTableRepository DataSetTableRepository) {
-        return new DataSetTablePresenter(DataSetTableRepository);
+    DataSetTableContract.Presenter providesPresenter(DataSetTableRepository dataSetTableRepository) {
+        return new DataSetTablePresenter(dataSetTableRepository);
     }
 
     @Provides
     @PerActivity
-    DataSetTableRepository DataSetTableRepository(BriteDatabase briteDatabase) {
+    DataSetTableRepository dataSetTableRepository(BriteDatabase briteDatabase) {
         return new DataSetTableRepositoryImpl(briteDatabase, dataSetUid);
     }
 

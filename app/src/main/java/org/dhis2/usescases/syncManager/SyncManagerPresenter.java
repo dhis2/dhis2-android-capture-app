@@ -232,7 +232,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
         checkData.onNext(true);
     }
 
-
+    @SuppressWarnings("squid:S4042")
     private static boolean deleteDir(File dir) {
         if (dir != null && dir.isDirectory()) {
             String[] children = dir.list();

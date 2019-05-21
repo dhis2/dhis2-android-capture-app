@@ -10,6 +10,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.DatePicker;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.Fragment;
+
 import org.dhis2.R;
 import org.dhis2.data.forms.FormFragment;
 import org.dhis2.data.forms.dataentry.DataEntryFragment;
@@ -29,8 +32,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import androidx.appcompat.app.AlertDialog;
-import androidx.fragment.app.Fragment;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -167,7 +168,7 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
 
                                         @Override
                                         public void onNegativeClick(AlertDialog alertDialog) {
-
+                                            // unused
                                         }
                                     });
                                     dialog.show();
@@ -307,12 +308,11 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
         if (futureOnly)
             dateDialog.getDatePicker().setMinDate(c.getTimeInMillis());
 
-        if (eventDetailModel.getProgram().expiryPeriodType() != null) {// eventDetailModel.orgUnitOpeningDate() != null) {
+        if (eventDetailModel.getProgram().expiryPeriodType() != null) {
             Date minDate = DateUtils.getInstance().expDate(null,
                     eventDetailModel.getProgram().expiryDays() != null ? eventDetailModel.getProgram().expiryDays() : 0,
                     eventDetailModel.getProgram().expiryPeriodType());
             dateDialog.getDatePicker().setMinDate(minDate.getTime());
-            //dateDialog.getDatePicker().setMinDate(eventDetailModel.orgUnitOpeningDate().getTime());
         }
 
         if (eventDetailModel.orgUnitClosingDate() != null)
@@ -372,7 +372,7 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
         if (futureOnly)
             datePicker.setMinDate(c.getTimeInMillis());
 
-        if (eventDetailModel.getProgram().expiryPeriodType() != null) {// eventDetailModel.orgUnitOpeningDate() != null) {
+        if (eventDetailModel.getProgram().expiryPeriodType() != null) {
             Date minDate = DateUtils.getInstance().expDate(null,
                     eventDetailModel.getProgram().expiryDays() != null ? eventDetailModel.getProgram().expiryDays() : 0,
                     eventDetailModel.getProgram().expiryPeriodType());

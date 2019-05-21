@@ -7,9 +7,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.DatePicker;
 
+import androidx.appcompat.app.AlertDialog;
+
 import org.dhis2.R;
 import org.dhis2.usescases.main.program.ProgramViewModel;
-import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.custom_views.OrgUnitDialog;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -19,7 +20,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import androidx.appcompat.app.AlertDialog;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -71,7 +71,6 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
                     selectedCalendar.set(Calendar.SECOND, 0);
                     selectedCalendar.set(Calendar.MILLISECOND, 0);
                     selectedEnrollmentDate = selectedCalendar.getTime();
-                    String enrollmentDate = DateUtils.uiDateFormat().format(selectedEnrollmentDate);
 
                     compositeDisposable.add(getOrgUnits(programUid)
                             .subscribeOn(Schedulers.io())
@@ -148,7 +147,6 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
                     selectedCalendar.set(Calendar.SECOND, 0);
                     selectedCalendar.set(Calendar.MILLISECOND, 0);
                     selectedEnrollmentDate = selectedCalendar.getTime();
-                    String enrollmentDate = DateUtils.uiDateFormat().format(selectedEnrollmentDate);
 
                     compositeDisposable.add(getOrgUnits(programUid)
                             .subscribeOn(Schedulers.io())

@@ -85,24 +85,6 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         gestureScanner = new GestureDetector(this, this);
 
         presenter.init(this);
-
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-    }
-
-    @Override
-    protected void onStop() {
-
-        super.onStop();
     }
 
     @Override

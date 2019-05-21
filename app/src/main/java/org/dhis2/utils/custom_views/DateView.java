@@ -61,11 +61,6 @@ public class DateView extends FieldLayout implements View.OnClickListener {
     }
 
     @Override
-    public void init(Context context) {
-        super.init(context);
-    }
-
-    @Override
     public void performOnFocusAction() {
         editText.performClick();
     }

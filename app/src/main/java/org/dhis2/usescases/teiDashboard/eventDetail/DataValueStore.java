@@ -2,6 +2,9 @@ package org.dhis2.usescases.teiDashboard.eventDetail;
 
 import android.content.ContentValues;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.user.UserRepository;
@@ -18,8 +21,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 
@@ -59,7 +60,6 @@ final class DataValueStore implements DataEntryStore {
                         updateTEi();
                         return Flowable.just(updated);
                     }
-
                     return Flowable.just(insert(uid, value, userCredentialsResult.username()));
                 })
                 .switchMap(this::updateEvent);
@@ -76,9 +76,6 @@ final class DataValueStore implements DataEntryStore {
             String eventStatus = null;
             switch (eventModel.status()) {
                 case COMPLETED:
-                    eventStatus = EventStatus.ACTIVE.name(); //TODO: should check if visited/skiped/overdue
-                    contentValues.putNull(EventModel.Columns.COMPLETE_DATE);
-                    break;
                 case SCHEDULE:
                     eventStatus = EventStatus.ACTIVE.name();
                     contentValues.putNull(EventModel.Columns.COMPLETE_DATE);

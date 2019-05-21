@@ -3,6 +3,9 @@ package org.dhis2.data.forms.dataentry;
 import android.content.ContentValues;
 import android.database.Cursor;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.tuples.Pair;
@@ -23,8 +26,6 @@ import java.util.Objects;
 
 import javax.annotation.Nonnull;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 
@@ -63,7 +64,7 @@ public final class DataValueStore implements DataEntryStore {
                     String currentValue = currentValue(uid, userCredentialAndType.val1());
                     return !Objects.equals(currentValue, value);
                 })
-                .switchMap((userCredentialAndType) -> {
+                .switchMap(userCredentialAndType -> {
                     if (value == null)
                         return Flowable.just(delete(uid, userCredentialAndType.val1()));
 

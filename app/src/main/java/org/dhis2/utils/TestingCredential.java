@@ -15,17 +15,17 @@ public class TestingCredential {
     private String user_pass;
 
     @NonNull
-    public String getServer_url() {
+    public String getServerUrl() {
         return server_url;
     }
 
     @NonNull
-    public String getUser_name() {
+    public String getUserName() {
         return user_name;
     }
 
     @NonNull
-    public String getUser_pass() {
+    public String getUserPass() {
         return user_pass;
     }
 }

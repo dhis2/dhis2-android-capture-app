@@ -1,14 +1,12 @@
 package org.dhis2.utils.custom_views;
 
 import android.content.Context;
-import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
 
@@ -43,11 +41,6 @@ public class YesNoView extends FieldLayout implements RadioGroup.OnCheckedChange
     public YesNoView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context);
-    }
-
-    @Override
-    public void init(Context context) {
-        super.init(context);
     }
 
     @Override
@@ -111,12 +104,5 @@ public class YesNoView extends FieldLayout implements RadioGroup.OnCheckedChange
 
     public View getClearButton() {
         return clearButton;
-    }
-
-    @Override
-    protected void onFocusChanged(boolean gainFocus, int direction, @Nullable Rect previouslyFocusedRect) {
-        super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
-
-
     }
 }

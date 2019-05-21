@@ -200,17 +200,15 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
                     binding.actionButton.setVisibility(canWrite ? View.VISIBLE : View.GONE);
                     break;
                 case SKIPPED:
-                    binding.actionButton.setVisibility(View.GONE);
-                    break;
                 case VISITED:
-                    binding.actionButton.setVisibility(View.GONE); //TODO: Can this happen?
-                    break;
                 case SCHEDULE:
                     binding.actionButton.setVisibility(View.GONE); //TODO: Can this happen?
                     break;
                 case COMPLETED:
                     binding.actionButton.setText(getString(R.string.re_open));
                     binding.actionButton.setVisibility(canWrite ? View.VISIBLE : View.GONE);
+                    break;
+                default:
                     break;
             }
         }

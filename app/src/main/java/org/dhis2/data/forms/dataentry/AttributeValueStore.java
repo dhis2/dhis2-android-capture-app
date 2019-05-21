@@ -4,6 +4,9 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.tuples.Pair;
@@ -21,8 +24,6 @@ import java.util.Objects;
 
 import javax.annotation.Nonnull;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 
@@ -189,8 +190,7 @@ public final class AttributeValueStore implements DataEntryStore {
     private long insert(@NonNull String attribute, @NonNull String value, valueType valueType) {
         if (valueType == ATTR) {
             Date date = Calendar.getInstance().getTime();
-            String created = BaseIdentifiableObject.DATE_FORMAT.format(date);
-/*
+/*           String created = BaseIdentifiableObject.DATE_FORMAT.format(date);
 
             sqLiteBind(insertStatement, 1, created == null ? "" : created);
             sqLiteBind(insertStatement, 2, created == null ? "" : created);

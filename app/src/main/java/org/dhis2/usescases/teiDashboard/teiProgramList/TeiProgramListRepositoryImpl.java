@@ -44,7 +44,7 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
         this.codeGenerator = codeGenerator;
     }
 
-    public final String PROGRAM_COLOR_QUERY = String.format(
+    private static final String PROGRAM_COLOR_QUERY = String.format(
             "SELECT %s FROM %S " +
                     "WHERE %s = 'Program' AND %s = ?",
             ObjectStyleModel.Columns.COLOR, ObjectStyleModel.TABLE,
@@ -55,7 +55,7 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
     @NonNull
     @Override
     public Observable<List<EnrollmentViewModel>> activeEnrollments(String trackedEntityId) {
-        String SELECT_ACTIVE_ENROLLMENT_WITH_TEI_ID = "SELECT " +
+        String selectActiveEnrollmentWithTeiId = "SELECT " +
                 "Enrollment.uid," +
                 "Enrollment.enrollmentDate," +
                 "Enrollment.followup," +
@@ -68,16 +68,16 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
                 "JOIN Program ON Program.uid = Enrollment.program " +
                 "JOIN OrganisationUnit ON OrganisationUnit.uid = Enrollment.organisationUnit " +
                 "WHERE Enrollment.trackedEntityInstance = ? AND Enrollment.status = 'ACTIVE'";
-        String[] TABLE_NAMES = new String[]{ProgramModel.TABLE, ObjectStyleModel.TABLE, OrganisationUnitProgramLinkModel.TABLE};
-        Set<String> TABLE_SET = new HashSet<>(Arrays.asList(TABLE_NAMES));
-        return briteDatabase.createQuery(TABLE_SET, SELECT_ACTIVE_ENROLLMENT_WITH_TEI_ID, trackedEntityId == null ? "" : trackedEntityId)
+        String[] tableNames = new String[]{ProgramModel.TABLE, ObjectStyleModel.TABLE, OrganisationUnitProgramLinkModel.TABLE};
+        Set<String> tableSet = new HashSet<>(Arrays.asList(tableNames));
+        return briteDatabase.createQuery(tableSet, selectActiveEnrollmentWithTeiId, trackedEntityId == null ? "" : trackedEntityId)
                 .mapToList(EnrollmentViewModel::fromCursor);
     }
 
     @NonNull
     @Override
     public Observable<List<EnrollmentViewModel>> otherEnrollments(String trackedEntityId) {
-        String SELECT_ACTIVE_ENROLLMENT_WITH_TEI_ID = "SELECT " +
+        String selectActiveEnrollmentWithTeiId = "SELECT " +
                 "Enrollment.uid," +
                 "Enrollment.enrollmentDate," +
                 "Enrollment.followup," +
@@ -90,14 +90,14 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
                 "JOIN Program ON Program.uid = Enrollment.program " +
                 "JOIN OrganisationUnit ON OrganisationUnit.uid = Enrollment.organisationUnit " +
                 "WHERE Enrollment.trackedEntityInstance = ? AND Enrollment.status != 'ACTIVE'";
-        String[] TABLE_NAMES = new String[]{ProgramModel.TABLE, ObjectStyleModel.TABLE, OrganisationUnitProgramLinkModel.TABLE};
-        Set<String> TABLE_SET = new HashSet<>(Arrays.asList(TABLE_NAMES));
-        return briteDatabase.createQuery(TABLE_SET, SELECT_ACTIVE_ENROLLMENT_WITH_TEI_ID, trackedEntityId == null ? "" : trackedEntityId)
+        String[] tableNames = new String[]{ProgramModel.TABLE, ObjectStyleModel.TABLE, OrganisationUnitProgramLinkModel.TABLE};
+        Set<String> tableSet = new HashSet<>(Arrays.asList(tableNames));
+        return briteDatabase.createQuery(tableSet, selectActiveEnrollmentWithTeiId, trackedEntityId == null ? "" : trackedEntityId)
                 .mapToList(EnrollmentViewModel::fromCursor);
     }
 
 
-    private final static String PROGRAM_MODELS_FOR_TEI = "SELECT " +
+    private static final String PROGRAM_MODELS_FOR_TEI = "SELECT " +
             "Program.uid, " +
             "Program.displayName, " +
             "ObjectStyle.color, " +
@@ -136,10 +136,10 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
     @NonNull
     @Override
     public Observable<List<ProgramModel>> alreadyEnrolledPrograms(String trackedEntityId) {
-        String SELECT_ENROLLED_PROGRAMS_WITH_TEI_ID = "SELECT * FROM " + ProgramModel.TABLE + " JOIN " + EnrollmentModel.TABLE +
+        String selectEnrolledProgramsWithTeiId = "SELECT * FROM " + ProgramModel.TABLE + " JOIN " + EnrollmentModel.TABLE +
                 " ON " + EnrollmentModel.TABLE + "." + EnrollmentModel.Columns.PROGRAM + "=" + ProgramModel.TABLE + "." + ProgramModel.Columns.UID +
                 " WHERE " + EnrollmentModel.TABLE + "." + EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE + "='%s' GROUP BY " + ProgramModel.TABLE + "." + ProgramModel.Columns.UID;
-        return briteDatabase.createQuery(EnrollmentModel.TABLE, String.format(SELECT_ENROLLED_PROGRAMS_WITH_TEI_ID, trackedEntityId == null ? "" : trackedEntityId))
+        return briteDatabase.createQuery(EnrollmentModel.TABLE, String.format(selectEnrolledProgramsWithTeiId, trackedEntityId == null ? "" : trackedEntityId))
                 .mapToList(ProgramModel::create);
     }
 

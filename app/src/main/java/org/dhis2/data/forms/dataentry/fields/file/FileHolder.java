@@ -3,8 +3,6 @@ package org.dhis2.data.forms.dataentry.fields.file;
 import android.view.View;
 import android.widget.Button;
 
-import androidx.databinding.ViewDataBinding;
-
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.databinding.FormButtonBinding;
 
@@ -20,7 +18,7 @@ public class FileHolder extends FormViewHolder {
         super(binding);
         Button button = binding.formButton;
         button.setOnFocusChangeListener((v, hasFocus) -> {
-            if(hasFocus){
+            if (hasFocus) {
                 View nextView;
                 if ((nextView = v.focusSearch(FOCUS_DOWN)) != null)
                     nextView.requestFocus();
@@ -31,11 +29,6 @@ public class FileHolder extends FormViewHolder {
 
     @Override
     public void dispose() {
-
+        // unused
     }
-
-   /* @Override
-    public void bind(SearchTEContractsModule.Presenter presenter, TrackedEntityAttributeModel bindableOnject) {
-
-    }*/
 }

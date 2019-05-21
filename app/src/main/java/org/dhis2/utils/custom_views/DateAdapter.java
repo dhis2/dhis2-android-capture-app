@@ -1,10 +1,11 @@
 package org.dhis2.utils.custom_views;
 
-import androidx.databinding.DataBindingUtil;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+
+import androidx.core.content.ContextCompat;
+import androidx.databinding.DataBindingUtil;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.dhis2.R;
 import org.dhis2.databinding.ItemDateBinding;
@@ -73,6 +74,8 @@ public class DateAdapter extends RecyclerView.Adapter<DateViewHolder> {
                     datesNames.add(date);
                     dates.add(calendar.getTime());
                     calendar.add(Calendar.YEAR, -1);
+                    break;
+                default:
                     break;
             }
 

@@ -37,6 +37,7 @@ class LoginPresenter internal constructor(private val configurationRepository: C
 
     private var canHandleBiometrics: Boolean? = null
 
+    @SuppressWarnings("kotlin:S1125")
     override fun init(view: LoginContracts.View) {
         this.view = view
         this.disposable = CompositeDisposable()

@@ -7,6 +7,7 @@ import javax.annotation.Nonnull;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+@SuppressWarnings("squid:S1610")
 public abstract class FieldViewModel {
 
     @NonNull

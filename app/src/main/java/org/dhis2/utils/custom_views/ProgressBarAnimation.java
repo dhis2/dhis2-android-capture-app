@@ -39,8 +39,7 @@ public class ProgressBarAnimation extends Animation {
     @Override
     protected void applyTransformation(float interpolatedTime, Transformation t) {
         super.applyTransformation(interpolatedTime, t);
-//        float value = initialFrom + from + (to - from) * interpolatedTime;
-        float value = initialFrom + (to - initialFrom)*interpolatedTime;
+        float value = initialFrom + (to - initialFrom) * interpolatedTime;
         progressBar.setProgress((int) value);
 
         if (rotate) {
@@ -48,10 +47,7 @@ public class ProgressBarAnimation extends Animation {
             progressBar.setRotation(rotationValue);
         }
 
-        if ((int) initialFrom == 0)
-            listener.onUpdate(false, value);
-        else
-            listener.onUpdate(true, value);
+        listener.onUpdate(initialFrom != 0, value);
     }
 
     public interface OnUpdate {

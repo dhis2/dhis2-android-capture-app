@@ -7,6 +7,13 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 
+import androidx.annotation.NonNull;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.work.Worker;
+import androidx.work.WorkerParameters;
+
 import com.google.firebase.perf.metrics.AddTrace;
 
 import org.dhis2.App;
@@ -19,12 +26,6 @@ import java.util.Objects;
 
 import javax.inject.Inject;
 
-import androidx.annotation.NonNull;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.work.Worker;
-import androidx.work.WorkerParameters;
 import timber.log.Timber;
 
 /**
@@ -33,8 +34,8 @@ import timber.log.Timber;
 
 public class SyncDataWorker extends Worker {
 
-    private final static String data_channel = "sync_data_notification";
-    private final static int SYNC_DATA_ID = 8071986;
+    private static final String DATA_CHANNEL = "sync_data_notification";
+    private static final int SYNC_DATA_ID = 8071986;
 
     @Inject
     SyncPresenter presenter;
@@ -89,19 +90,22 @@ public class SyncDataWorker extends Worker {
         NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel mChannel = new NotificationChannel(data_channel, "DataSync", NotificationManager.IMPORTANCE_HIGH);
-            notificationManager.createNotificationChannel(mChannel);
+            NotificationChannel mChannel = new NotificationChannel(DATA_CHANNEL, "DataSync", NotificationManager.IMPORTANCE_HIGH);
+            if (notificationManager != null) {
+                notificationManager.createNotificationChannel(mChannel);
+            }
         }
 
         NotificationCompat.Builder notificationBuilder =
-                new NotificationCompat.Builder(getApplicationContext(), data_channel)
+                new NotificationCompat.Builder(getApplicationContext(), DATA_CHANNEL)
                         .setSmallIcon(R.drawable.ic_sync)
                         .setContentTitle(title)
                         .setContentText(content)
                         .setAutoCancel(false)
                         .setPriority(NotificationCompat.PRIORITY_DEFAULT);
-
-        notificationManager.notify(SyncDataWorker.SYNC_DATA_ID, notificationBuilder.build());
+        if (notificationManager != null) {
+            notificationManager.notify(SyncDataWorker.SYNC_DATA_ID, notificationBuilder.build());
+        }
     }
 
     private void cancelNotification() {

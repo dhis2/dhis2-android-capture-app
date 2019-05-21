@@ -10,7 +10,6 @@ import androidx.annotation.Nullable;
 import androidx.databinding.ViewDataBinding;
 import androidx.fragment.app.FragmentManager;
 
-import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
 import org.dhis2.Bindings.Bindings;
@@ -24,7 +23,6 @@ import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 import static android.text.TextUtils.isEmpty;
 
 public class OrgUnitView extends FieldLayout implements OrgUnitCascadeDialog.CascadeOrgUnitCallbacks {
-    private ViewDataBinding binding;
 
     private ImageView iconView;
     private AutoCompleteTextView editText;
@@ -50,6 +48,7 @@ public class OrgUnitView extends FieldLayout implements OrgUnitCascadeDialog.Cas
     }
 
     public void setLayoutData(boolean isBgTransparent, String renderType) {
+        ViewDataBinding binding;
         if (isBgTransparent)
             binding = CustomTextViewBinding.inflate(inflater, this, true);
         else
@@ -146,7 +145,7 @@ public class OrgUnitView extends FieldLayout implements OrgUnitCascadeDialog.Cas
 
     @Override
     public void onDialogCancelled() {
-
+        // unused
     }
 
     public void setListener(OnDataChanged listener) {

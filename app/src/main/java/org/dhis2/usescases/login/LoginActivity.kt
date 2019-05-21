@@ -236,11 +236,11 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
             }
 
             override fun onEmpty() {
-
+                // unused
             }
 
             override fun onPinChange(pinLength: Int, intermediatePin: String) {
-
+                // unused
             }
         })
         binding.pinLayout.root.visibility = View.VISIBLE
@@ -265,8 +265,8 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
             if (!it.contains(Constants.URL_TEST_230))
                 it.add(Constants.URL_TEST_230)
             for (testingCredential in testingCredentials) {
-                if (!it.contains(testingCredential.server_url))
-                    it.add(testingCredential.server_url)
+                if (!it.contains(testingCredential.getServerUrl()))
+                    it.add(testingCredential.getServerUrl())
             }
         }
 
@@ -290,6 +290,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         }
     }
 
+    @SuppressWarnings("kotlin:S1125")
     override fun saveUsersData() {
         urls?.let {
             if (!it.contains(binding.serverUrlEdit.text.toString())) {

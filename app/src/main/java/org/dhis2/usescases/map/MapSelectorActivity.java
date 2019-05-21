@@ -155,16 +155,14 @@ public class MapSelectorActivity extends ActivityGlobalAbstract {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode) {
-            case ACCESS_COARSE_LOCATION_PERMISSION_REQUEST: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    centerMapOnCurrentLocation();
-                } else {
-                    // TODO CRIS
-                }
+        // If request is cancelled, the result arrays are empty.
+        if (requestCode == ACCESS_COARSE_LOCATION_PERMISSION_REQUEST) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                centerMapOnCurrentLocation();
+            } else {
+                // TODO CRIS
             }
         }
     }

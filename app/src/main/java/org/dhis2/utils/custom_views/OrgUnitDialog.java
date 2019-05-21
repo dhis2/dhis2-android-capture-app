@@ -2,15 +2,16 @@ package org.dhis2.utils.custom_views;
 
 import android.app.Dialog;
 import android.content.Context;
-import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.DialogFragment;
 
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
@@ -31,7 +32,7 @@ public class OrgUnitDialog extends DialogFragment {
     DialogOrgunitBinding binding;
     AndroidTreeView treeView;
     boolean isMultiSelection = false;
-    static OrgUnitDialog instace;
+    private static OrgUnitDialog instace;
     private View.OnClickListener possitiveListener;
     private View.OnClickListener negativeListener;
     private String title;
@@ -46,7 +47,6 @@ public class OrgUnitDialog extends DialogFragment {
     }
 
     public OrgUnitDialog() {
-        instace = null;
         isMultiSelection = false;
         possitiveListener = null;
         negativeListener = null;
@@ -140,14 +140,18 @@ public class OrgUnitDialog extends DialogFragment {
     }
 
     public OrganisationUnitModel getSelectedOrgUnitModel() {
-        if(treeView.getSelected().size() == 0)
+        if (treeView.getSelected().isEmpty())
             return null;
         return ((OrganisationUnitModel) treeView.getSelected().get(0).getValue());
     }
 
     @Override
     public void dismiss() {
-        instace = null;
+        destroyInstance();
         super.dismiss();
+    }
+
+    private static void destroyInstance() {
+        instace = null;
     }
 }

@@ -7,6 +7,10 @@ import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
+
 import org.dhis2.R;
 import org.dhis2.databinding.CatComboDialogBinding;
 import org.dhis2.databinding.CatComboDialogNewBinding;
@@ -23,10 +27,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.databinding.DataBindingUtil;
 
 /**
  * QUADRAM. Created by frodriguez on 5/4/2018.
@@ -91,7 +91,7 @@ public class CategoryComboDialog extends AlertDialog {
 
     @Override
     public void show() {
-        if(categoryCombo == null)
+        if (categoryCombo == null)
             setLegacyDialog();
         else
             setDialog();
@@ -102,7 +102,7 @@ public class CategoryComboDialog extends AlertDialog {
 
     private void setDialog() {
         Builder builder = new Builder(context);
-        CatComboDialogNewBinding binding = CatComboDialogNewBinding.inflate(LayoutInflater.from(context),null,false);
+        CatComboDialogNewBinding binding = CatComboDialogNewBinding.inflate(LayoutInflater.from(context), null, false);
         builder.setCancelable(false);
         builder.setView(binding.getRoot());
         dialog = builder.create();
@@ -144,7 +144,7 @@ public class CategoryComboDialog extends AlertDialog {
         return attrOptionComb;
     }
 
-    private void setLegacyDialog(){
+    private void setLegacyDialog() {
         Builder builder = new Builder(context);
         LayoutInflater inflater = LayoutInflater.from(context);
         CatComboDialogBinding binding = DataBindingUtil.inflate(inflater, R.layout.cat_combo_dialog, null, false);
@@ -175,7 +175,7 @@ public class CategoryComboDialog extends AlertDialog {
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-
+                // unused
             }
         });
     }
@@ -194,7 +194,7 @@ public class CategoryComboDialog extends AlertDialog {
         void onCatOptionSelected(CategoryOptionComboModel selectedOption);
     }
 
-    public interface OnCatOptionComboSelected{
+    public interface OnCatOptionComboSelected {
         void onCatOptionComboSelected(String categoryOptionComboUid);
     }
 }

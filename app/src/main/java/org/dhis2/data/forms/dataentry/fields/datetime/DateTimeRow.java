@@ -1,10 +1,11 @@
 package org.dhis2.data.forms.dataentry.fields.datetime;
 
-import androidx.databinding.DataBindingUtil;
-import androidx.databinding.ViewDataBinding;
-import androidx.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ViewDataBinding;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.Row;
@@ -21,9 +22,9 @@ import io.reactivex.processors.FlowableProcessor;
 
 public class DateTimeRow implements Row<DateTimeHolder, DateTimeViewModel> {
 
-    private final int TIME = 5;
-    private final int DATE = 6;
-    private final int DATETIME = 7;
+    private static final int TIME = 5;
+    private static final int DATE = 6;
+    private static final int DATETIME = 7;
     private final LayoutInflater inflater;
     private final FlowableProcessor<RowAction> processor;
     private final boolean isBgTransparent;
@@ -44,7 +45,7 @@ public class DateTimeRow implements Row<DateTimeHolder, DateTimeViewModel> {
     }
 
     public DateTimeRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor,
-                       @NonNull FlowableProcessor<Integer> currentPosition,int viewType, boolean isBgTransparent, String renderType) {
+                       @NonNull FlowableProcessor<Integer> currentPosition, int viewType, boolean isBgTransparent, String renderType) {
         this.processor = processor;
         this.inflater = layoutInflater;
         this.viewType = viewType;
