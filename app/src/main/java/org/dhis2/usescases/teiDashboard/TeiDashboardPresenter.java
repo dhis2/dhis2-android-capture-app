@@ -96,7 +96,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                     metadataRepository.getProgramTrackedEntityAttributes(programUid),
                     dashboardRepository.getTEIAttributeValues(programUid, teUid),
                     metadataRepository.getTeiOrgUnit(teUid, programUid),
-                    metadataRepository.getTeiActivePrograms(teUid),
+                    metadataRepository.getTeiActivePrograms(teUid, false),
                     DashboardProgramModel::new)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -118,7 +118,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                     metadataRepository.getProgramTrackedEntityAttributes(null),
                     dashboardRepository.getTEIAttributeValues(null, teUid),
                     metadataRepository.getTeiOrgUnit(teUid),
-                    metadataRepository.getTeiActivePrograms(teUid),
+                    metadataRepository.getTeiActivePrograms(teUid, true),
                     metadataRepository.getTEIEnrollments(teUid),
                     DashboardProgramModel::new)
                     .flatMap(dashboardProgramModel1 -> metadataRepository.getObjectStylesForPrograms(dashboardProgramModel1.getEnrollmentProgramModels())
