@@ -245,6 +245,7 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
     @Override
     public void setDashboardProgram(DashboardProgramModel dashboardModel) {
         this.dashboardModel = dashboardModel;
+        this.programUid = dashboardModel.getCurrentProgram().uid();
     }
 
     @Override
