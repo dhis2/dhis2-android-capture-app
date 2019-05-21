@@ -98,7 +98,7 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
 
     @Override
     public void onClick(View view) {
-        showNativeCalendar(view);
+        showCustomCalendar(view);
     }
 
     private void showNativeCalendar(View view) {

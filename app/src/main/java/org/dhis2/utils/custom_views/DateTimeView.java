@@ -146,7 +146,7 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
 
     @Override
     public void onClick(View view) {
-        showNativeCalendar(view);
+        showCustomCalendar(view);
     }
 
     private void showNativeCalendar(View view) {

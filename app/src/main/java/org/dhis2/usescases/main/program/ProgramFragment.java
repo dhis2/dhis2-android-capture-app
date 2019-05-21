@@ -201,7 +201,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                     }
                 }, Timber::d);
             } else if (currentPeriod == DAILY) {
-                showNativeCalendar(calendar);
+                showCustomCalendar(calendar);
             }
         }
     }

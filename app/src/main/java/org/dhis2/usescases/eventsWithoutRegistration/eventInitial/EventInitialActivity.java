@@ -637,7 +637,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void showDateDialog(DatePickerDialog.OnDateSetListener listener) {
-        showNativeCalendar(listener);
+        showCustomCalendar(listener);
     }
 
     private void showNativeCalendar(DatePickerDialog.OnDateSetListener listener) {
