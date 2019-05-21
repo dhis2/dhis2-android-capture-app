@@ -289,6 +289,7 @@
     <string name="current">CURRENT</string>
     <string name="tei">TEI</string>
     <string name="limit_by_organisation_unit">Limit by organisation unit</string>
+    <string name="limit_by_program">Limit by program</string>
     <string name="programs_list">Program list</string>
     <string name="wipe_data">Reset app data &amp; configuration</string>
     <string name="add_relationship_error">It\'s not possible to add this relationship</string>
