@@ -7,6 +7,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.databinding.DataBindingUtil;
+
 import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionHelper;
 import com.wangjie.rapidfloatingactionbutton.contentimpl.labellist.RFACLabelItem;
 import com.wangjie.rapidfloatingactionbutton.contentimpl.labellist.RapidFloatingActionContentLabelList;
@@ -31,10 +36,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.databinding.DataBindingUtil;
 import io.reactivex.functions.Consumer;
 
 import static android.app.Activity.RESULT_OK;
@@ -114,13 +115,9 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == Constants.REQ_ADD_RELATIONSHIP) {
-            if (resultCode == RESULT_OK) {
-                if (data != null) {
-                    String tei_a = data.getStringExtra("TEI_A_UID");
-                    presenter.addRelationship(tei_a, relationshipType.uid());
-                }
-            }
+        if (requestCode == Constants.REQ_ADD_RELATIONSHIP && resultCode == RESULT_OK && data != null) {
+            String teiAUid = data.getStringExtra("TEI_A_UID");
+            presenter.addRelationship(teiAUid, relationshipType.uid());
         }
     }
 
@@ -142,15 +139,15 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
         });
         List<RFACLabelItem> items = new ArrayList<>();
         for (Trio<RelationshipTypeModel, String, Integer> trio : relationshipTypes) {
-            RelationshipTypeModel relationshipType = trio.val0();
+            RelationshipTypeModel relationshipTypeAux = trio.val0();
             int resource = trio.val2();
             items.add(new RFACLabelItem<Pair<RelationshipTypeModel, String>>()
-                    .setLabel(relationshipType.displayName())
+                    .setLabel(relationshipTypeAux.displayName())
                     .setResId(resource)
                     .setLabelTextBold(true)
                     .setLabelBackgroundDrawable(ContextCompat.getDrawable(getAbstracContext(), R.drawable.bg_chip))
                     .setIconNormalColor(ColorUtils.getPrimaryColor(getAbstracContext(), ColorUtils.ColorType.PRIMARY_DARK))
-                    .setWrapper(Pair.create(relationshipType, trio.val1()))
+                    .setWrapper(Pair.create(relationshipTypeAux, trio.val1()))
             );
         }
 

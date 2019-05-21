@@ -3,6 +3,9 @@ package org.dhis2.data.forms;
 import android.content.ContentValues;
 import android.database.Cursor;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.squareup.sqlbrite2.BriteDatabase;
 
@@ -38,8 +41,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -92,13 +93,6 @@ public class EventRepository implements FormRepository {
             "  JOIN ProgramStage ON Event.programStage = ProgramStage.uid\n" +
             "  LEFT OUTER JOIN ProgramStageSection ON ProgramStageSection.programStage = Event.programStage\n" +
             "WHERE Event.uid = ? ORDER BY ProgramStageSection.sortOrder";
-
-    private static final String SELECT_EVENT_DATE = "SELECT\n" +
-            "  Event.eventDate, ProgramStage.periodType\n" +
-            "FROM Event\n" +
-            "JOIN ProgramStage ON ProgramStage.uid = Event.programStage\n" +
-            "WHERE Event.uid = ? " +
-            "LIMIT 1";
 
     private static final String SELECT_EVENT_STATUS = "SELECT\n" +
             "  Event.status\n" +
@@ -206,7 +200,7 @@ public class EventRepository implements FormRepository {
 
     @Override
     public Flowable<RuleEngine> restartRuleEngine() {
-        return this.cachedRuleEngineFlowable = eventProgram()
+        this.cachedRuleEngineFlowable = eventProgram()
                 .switchMap(program -> Flowable.zip(
                         rulesRepository.rulesNew(program),
                         rulesRepository.ruleVariables(program),
@@ -229,6 +223,7 @@ public class EventRepository implements FormRepository {
                             return builder.build();
                         }))
                 .cacheWithInitialCapacity(1);
+        return this.cachedRuleEngineFlowable;
     }
 
     @NonNull
@@ -466,8 +461,7 @@ public class EventRepository implements FormRepository {
 
         int optionCount = 0;
         try (Cursor countCursor = briteDatabase.query("SELECT COUNT (uid) FROM Option WHERE optionSet = ?", optionSetUid)) {
-            if (countCursor != null) {
-                if (countCursor.moveToFirst())
+            if (countCursor != null && countCursor.moveToFirst()) {
                     optionCount = countCursor.getInt(0);
             }
         } catch (Exception e) {

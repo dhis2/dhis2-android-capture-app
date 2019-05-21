@@ -30,7 +30,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Created by Cristian on 15/03/2018.
  */
-
+@SuppressWarnings("squid:MaximumInheritanceDepth")
 public class MapSelectorActivity extends ActivityGlobalAbstract {
 
     private MapView mapView;

@@ -41,16 +41,15 @@ public class OrgUnitItem {
             finalOuRepo = finalOuRepo.byParentUid().eq(parentUid);
 
         List<OrganisationUnit> orgUnitList = finalOuRepo.get();
-        if(orgUnitList.isEmpty())//When parent is set and list is empty the ou has not been downloaded, we have to get it from the uidPath
+        if (orgUnitList.isEmpty())//When parent is set and list is empty the ou has not been downloaded, we have to get it from the uidPath
             orgUnitList = ouRepo.get();
-        List<OrganisationUnit> captureOrgUnits = finalOuRepo.byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).get();
 
         Map<String, Trio<String, String, Boolean>> menuOrgUnits = new HashMap<>();
         for (OrganisationUnit ou : orgUnitList) {
             String[] uidPath = ou.path().replaceFirst("/", "").split("/");
             String[] namePath = ou.displayNamePath().replaceFirst("/", "").split("/");
             if (uidPath.length >= level && !menuOrgUnits.containsKey(uidPath[level - 1]) && (isEmpty(parentUid) || (level > 1 && uidPath[level - 2].equals(parentUid)))) {
-                boolean canCapture = ouRepo.byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).uid(uidPath[level-1]).exists();
+                boolean canCapture = ouRepo.byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).uid(uidPath[level - 1]).exists();
                 menuOrgUnits.put(uidPath[level - 1],
                         Trio.create(
                                 uidPath[level - 1],

@@ -185,10 +185,8 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQ_DETAILS) {
-            if (resultCode == RESULT_OK) {
-                activity.getPresenter().getData();
-            }
+        if (requestCode == REQ_DETAILS && resultCode == RESULT_OK) {
+            activity.getPresenter().getData();
         }
         if (requestCode == REQ_EVENT && resultCode == RESULT_OK) {
             presenter.getTEIEvents();
@@ -206,19 +204,17 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
         return events -> {
             if (events.isEmpty()) {
                 binding.emptyTeis.setVisibility(View.VISIBLE);
-                if (binding.fab.getVisibility() == View.VISIBLE){
+                if (binding.fab.getVisibility() == View.VISIBLE) {
                     binding.emptyTeis.setText(R.string.empty_tei_add);
-                }
-                else{
+                } else {
                     binding.emptyTeis.setText(R.string.empty_tei_no_add);
                 }
             } else {
                 binding.emptyTeis.setVisibility(View.GONE);
                 adapter.swapItems(events);
                 for (EventModel event : events) {
-                    if (event.eventDate() != null) {
-                        if (event.eventDate().after(DateUtils.getInstance().getToday()))
-                            binding.teiRecycler.scrollToPosition(events.indexOf(event));
+                    if (event.eventDate() != null && event.eventDate().after(DateUtils.getInstance().getToday())) {
+                        binding.teiRecycler.scrollToPosition(events.indexOf(event));
                     }
                     if (hasCatComb && event.attributeOptionCombo() == null && !catComboShowed.contains(event)) {
                         presenter.getCatComboOptions(event);
@@ -324,11 +320,11 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
     @Override
     public void showCatComboDialog(String eventId, CategoryCombo categoryCombo) {
-        CategoryComboDialog dialog = new CategoryComboDialog(getAbstracContext(), categoryCombo, 123,
+        CategoryComboDialog dialog2 = new CategoryComboDialog(getAbstracContext(), categoryCombo, 123,
                 selectedOption -> presenter.changeCatOption(eventId, selectedOption), categoryCombo.displayName());
-        dialog.setCancelable(false);
-        dialog.setCanceledOnTouchOutside(false);
-        dialog.show();
+        dialog2.setCancelable(false);
+        dialog2.setCanceledOnTouchOutside(false);
+        dialog2.show();
     }
 
     @Override

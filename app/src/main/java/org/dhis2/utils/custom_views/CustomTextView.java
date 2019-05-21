@@ -32,16 +32,13 @@ import static android.text.TextUtils.isEmpty;
 
 public class CustomTextView extends FieldLayout implements View.OnFocusChangeListener {
 
-    private boolean isBgTransparent;
     private TextInputAutoCompleteTextView editText;
     private ImageView icon;
-    private String label;
     private ValueType valueType;
     private ViewDataBinding binding;
 
     private OnFocusChangeListener listener;
 
-    private LayoutInflater inflater;
     private TextInputLayout inputLayout;
     private boolean isLongText;
 
@@ -60,6 +57,7 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
         init(context);
     }
 
+    @Override
     public void init(Context context) {
         inflater = LayoutInflater.from(context);
     }
@@ -74,7 +72,7 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
             binding = DataBindingUtil.inflate(inflater, R.layout.custom_text_view, this, true);
         else if (!isBgTransparent && !isLongText)
             binding = DataBindingUtil.inflate(inflater, R.layout.custom_text_view_accent, this, true);
-        else if (isBgTransparent && isLongText)
+        else if (isBgTransparent)
             binding = DataBindingUtil.inflate(inflater, R.layout.custom_long_text_view, this, true);
         else
             binding = DataBindingUtil.inflate(inflater, R.layout.custom_long_text_view_accent, this, true);

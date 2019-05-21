@@ -97,9 +97,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 metadataRepository.getTrackedEntity(trackedEntityType)
                         .subscribeOn(Schedulers.io())
                         .observeOn(Schedulers.io())
-                        .flatMap(trackedEntity ->
-                        {
-                            this.trackedEntity = trackedEntity;
+                        .flatMap(trackedEntityResult -> {
+                            this.trackedEntity = trackedEntityResult;
                             return searchRepository.programsWithRegistration(trackedEntityType);
                         })
                         .subscribeOn(AndroidSchedulers.mainThread())
@@ -212,10 +211,10 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         boolean canRegister = false;
 
         if (selectedProgram != null && !selectedProgram.displayFrontPageList()) {
-            if (selectedProgram != null && selectedProgram.minAttributesRequiredToSearch() == 0 && queryData.size() == 0) {
+            if (selectedProgram.minAttributesRequiredToSearch() == 0 && queryData.size() == 0) {
                 messageId = view.getContext().getString(R.string.search_attr);
             }
-            if (selectedProgram != null && selectedProgram.minAttributesRequiredToSearch() > queryData.size()) {
+            if (selectedProgram.minAttributesRequiredToSearch() > queryData.size()) {
                 messageId = String.format(view.getContext().getString(R.string.search_min_num_attr), selectedProgram.minAttributesRequiredToSearch());
             } else if (selectedProgram.maxTeiCountToReturn() != 0 && size > selectedProgram.maxTeiCountToReturn()) {
                 messageId = String.format(view.getContext().getString(R.string.search_max_tei_reached), selectedProgram.maxTeiCountToReturn());
@@ -263,10 +262,10 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 case API_UNSUCCESSFUL_RESPONSE:
                     view.displayMessage(view.getContext().getString(R.string.online_search_response_error));
                     break;
+                default:
+                    break;
             }
         }
-
-//        Crashlytics.logException(throwable);
     }
 
     private void getTrackedEntityAttributes() {
@@ -522,16 +521,16 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     }
 
     @Override
-    public void onTEIClick(String TEIuid, boolean isOnline) {
+    public void onTEIClick(String teiuid, boolean isOnline) {
         if (!isOnline) {
-            openDashboard(TEIuid);
+            openDashboard(teiuid);
         } else
-            downloadTei(TEIuid);
+            downloadTei(teiuid);
 
     }
 
     @Override
-    public void addRelationship(String TEIuid, String relationshipTypeUid, boolean online) {
+    public void addRelationship(String teiuid, String relationshipTypeUid, boolean online) {
         if (!online) {
             String relationshipType;
             if (relationshipTypeUid == null)
@@ -540,24 +539,24 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 relationshipType = relationshipTypeUid;
 
             Intent intent = new Intent();
-            intent.putExtra("TEI_A_UID", TEIuid);
+            intent.putExtra("TEI_A_UID", teiuid);
             intent.putExtra("RELATIONSHIP_TYPE_UID", relationshipType);
             view.getAbstractActivity().setResult(RESULT_OK, intent);
             view.getAbstractActivity().finish();
         } else {
-            downloadTeiForRelationship(TEIuid, relationshipTypeUid);
+            downloadTeiForRelationship(teiuid, relationshipTypeUid);
         }
     }
 
     @Override
-    public void addRelationship(String TEIuid, boolean online) {
+    public void addRelationship(String teiuid, boolean online) {
         if (!online) {
             Intent intent = new Intent();
-            intent.putExtra("TEI_A_UID", TEIuid);
+            intent.putExtra("TEI_A_UID", teiuid);
             view.getAbstractActivity().setResult(RESULT_OK, intent);
             view.getAbstractActivity().finish();
         } else {
-            downloadTeiForRelationship(TEIuid, null);
+            downloadTeiForRelationship(teiuid, null);
         }
     }
 
@@ -577,9 +576,9 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     }
 
     @Override
-    public void downloadTeiForRelationship(String TEIuid, @Nullable String relationshipTypeUid) {
+    public void downloadTeiForRelationship(String teiuid, @Nullable String relationshipTypeUid) {
         List<String> teiUids = new ArrayList<>();
-        teiUids.add(TEIuid);
+        teiUids.add(teiuid);
         compositeDisposable.add(
                 Flowable.fromCallable(d2.trackedEntityModule().downloadTrackedEntityInstancesByUid(teiUids))
                         .subscribeOn(Schedulers.io())
@@ -587,9 +586,9 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         .subscribe(
                                 data -> {
                                     if (relationshipTypeUid == null)
-                                        addRelationship(TEIuid, false);
+                                        addRelationship(teiuid, false);
                                     else
-                                        addRelationship(TEIuid, relationshipTypeUid, false);
+                                        addRelationship(teiuid, relationshipTypeUid, false);
                                 },
                                 Timber::d)
         );
@@ -600,9 +599,9 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         return searchRepository.getOrgUnits(selectedProgram != null ? selectedProgram.uid() : null);
     }
 
-    private void openDashboard(String TEIuid) {
+    private void openDashboard(String teiuid) {
         Bundle bundle = new Bundle();
-        bundle.putString("TEI_UID", TEIuid);
+        bundle.putString("TEI_UID", teiuid);
         bundle.putString("PROGRAM_UID", selectedProgram != null ? selectedProgram.uid() : null);
         view.startActivity(TeiDashboardMobileActivity.class, bundle, false, false, null);
     }

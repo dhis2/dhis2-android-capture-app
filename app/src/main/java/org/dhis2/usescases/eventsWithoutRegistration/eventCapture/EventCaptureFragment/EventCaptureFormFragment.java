@@ -32,6 +32,7 @@ import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import io.reactivex.Flowable;
 import io.reactivex.processors.FlowableProcessor;
@@ -161,8 +162,8 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
             for (FieldViewModel fieldViewModel : updates) {
                 fields.put(fieldViewModel.optionSet() == null ? fieldViewModel.uid() : fieldViewModel.optionSet(), !isEmpty(fieldViewModel.value()));
             }
-            for (String key : fields.keySet())
-                if (fields.get(key))
+            for (Map.Entry<String, Boolean> entry : fields.entrySet())
+                if (entry.getValue())
                     completedValues++;
             binding.currentSectionTitle.sectionValues.setText(String.format("%s/%s", completedValues, fields.keySet().size()));
         }

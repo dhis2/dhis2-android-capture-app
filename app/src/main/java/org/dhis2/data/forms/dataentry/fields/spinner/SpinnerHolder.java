@@ -10,9 +10,6 @@ import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.FormOptionSetBinding;
 import org.dhis2.utils.custom_views.OptionSetDialog;
 import org.dhis2.utils.custom_views.OptionSetPopUp;
-import org.hisp.dhis.android.core.option.OptionModel;
-
-import java.util.Map;
 
 import io.reactivex.processors.FlowableProcessor;
 
@@ -22,14 +19,14 @@ import io.reactivex.processors.FlowableProcessor;
 
 public class SpinnerHolder extends FormViewHolder implements View.OnClickListener {
 
-    private FormOptionSetBinding binding;
+    private FormOptionSetBinding formOptionSetBinding;
     private final FlowableProcessor<Trio<String, String, Integer>> processorOptionSet;
 
     private SpinnerViewModel viewModel;
 
     SpinnerHolder(FormOptionSetBinding binding, FlowableProcessor<RowAction> processor, FlowableProcessor<Trio<String, String, Integer>> processorOptionSet, boolean isSearchMode) {
         super(binding);
-        this.binding = binding;
+        this.formOptionSetBinding = binding;
 
         this.processorOptionSet = processorOptionSet;
 
@@ -45,40 +42,41 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
 
     public void update(SpinnerViewModel viewModel) {
         this.viewModel = viewModel;
-        binding.optionSetView.setNumberOfOptions(viewModel.numberOfOptions());
-        binding.optionSetView.setObjectStyle(viewModel.objectStyle());
-        binding.optionSetView.updateEditable(viewModel.editable());
-        binding.optionSetView.setValue(viewModel.value());
-        binding.optionSetView.setWarning(viewModel.warning(), viewModel.error());
-        binding.optionSetView.setLabel(viewModel.label(), viewModel.mandatory());
+        formOptionSetBinding.optionSetView.setNumberOfOptions(viewModel.numberOfOptions());
+        formOptionSetBinding.optionSetView.setObjectStyle(viewModel.objectStyle());
+        formOptionSetBinding.optionSetView.updateEditable(viewModel.editable());
+        formOptionSetBinding.optionSetView.setValue(viewModel.value());
+        formOptionSetBinding.optionSetView.setWarning(viewModel.warning(), viewModel.error());
+        formOptionSetBinding.optionSetView.setLabel(viewModel.label(), viewModel.mandatory());
         descriptionText = viewModel.description();
-        binding.optionSetView.setDescription(descriptionText);
-        binding.optionSetView.setOnClickListener(this);
+        formOptionSetBinding.optionSetView.setDescription(descriptionText);
+        formOptionSetBinding.optionSetView.setOnClickListener(this);
     }
 
     public void dispose() {
+        // unused
     }
 
     @Override
     public void onClick(View v) {
         closeKeyboard(v);
-        if (binding.optionSetView.openOptionDialog()) {
+        if (formOptionSetBinding.optionSetView.openOptionDialog()) {
             OptionSetDialog dialog = OptionSetDialog.newInstance();
             dialog
                     .setProcessor(processorOptionSet)
                     .setOptionSetUid(viewModel)
-                    .setOnClick(binding.optionSetView)
+                    .setOnClick(formOptionSetBinding.optionSetView)
                     .setCancelListener(view -> dialog.dismiss())
                     .setClearListener(view -> {
-                                binding.optionSetView.deleteSelectedOption();
+                                formOptionSetBinding.optionSetView.deleteSelectedOption();
                                 dialog.dismiss();
                             }
-                    ).show(((FragmentActivity) binding.getRoot().getContext()).getSupportFragmentManager(), null);
+                    ).show(((FragmentActivity) formOptionSetBinding.getRoot().getContext()).getSupportFragmentManager(), null);
         } else {
             OptionSetPopUp.getInstance()
                     .setOptionSetUid(viewModel)
                     .setProcessor(processorOptionSet)
-                    .setOnClick(binding.optionSetView)
+                    .setOnClick(formOptionSetBinding.optionSetView)
                     .show(itemView.getContext(), v);
         }
     }

@@ -27,8 +27,8 @@ import org.dhis2.usescases.qrReader.QrReaderFragment;
 import org.dhis2.usescases.syncManager.ErrorDialog;
 import org.dhis2.usescases.syncManager.SyncManagerFragment;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.SharedPreferenceBooleanLiveData;
 import org.hisp.dhis.android.core.imports.TrackerImportConflict;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Objects;
@@ -37,10 +37,10 @@ import javax.inject.Inject;
 
 import io.reactivex.functions.Consumer;
 
-
+@SuppressWarnings("squid:MaximumInheritanceDepth")
 public class MainActivity extends ActivityGlobalAbstract implements MainContracts.View {
 
-    public ActivityMainBinding binding;
+    private ActivityMainBinding binding;
     @Inject
     MainContracts.Presenter presenter;
 
@@ -75,12 +75,12 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
 
             @Override
             public void onEmpty() {
-
+                // unused
             }
 
             @Override
             public void onPinChange(int pinLength, String intermediatePin) {
-
+                // unused
             }
         });
 
@@ -96,14 +96,10 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
 
         prefs = getAbstracContext().getSharedPreferences(
                 Constants.SHARE_PREFS, Context.MODE_PRIVATE);
-
-        SharedPreferenceBooleanLiveData lastMetaSyncStatus = new SharedPreferenceBooleanLiveData(prefs, Constants.LAST_META_SYNC_STATUS, true);
-        SharedPreferenceBooleanLiveData lastMetaNoNetWork = new SharedPreferenceBooleanLiveData(prefs, Constants.LAST_META_SYNC_NO_NETWORK, false);
-
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(@NotNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt("Fragment", fragId);
     }

@@ -58,7 +58,7 @@ import timber.log.Timber;
 /**
  * QUADRAM. Created by Javi on 28/07/2017.
  */
-
+@SuppressWarnings("squid:MaximumInheritanceDepth")
 public abstract class ActivityGlobalAbstract extends AppCompatActivity implements AbstractActivityContracts.View, CoordinatesView.OnMapPositionClick {
 
     private BehaviorSubject<Status> lifeCycleObservable = BehaviorSubject.create();

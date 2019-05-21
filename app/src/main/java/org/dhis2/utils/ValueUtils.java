@@ -14,6 +14,10 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel
 
 public class ValueUtils {
 
+    private ValueUtils() {
+        // hide public constructor
+    }
+
     /**
      * @param briteDatabase access to database
      * @param cursor        cursor of the original TEAV

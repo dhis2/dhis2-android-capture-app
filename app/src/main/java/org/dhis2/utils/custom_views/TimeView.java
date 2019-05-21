@@ -6,7 +6,9 @@ import android.content.DialogInterface;
 import android.text.format.DateFormat;
 import android.util.AttributeSet;
 import android.view.View;
-import android.widget.Toast;
+
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ViewDataBinding;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -22,8 +24,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-import androidx.databinding.DataBindingUtil;
-import androidx.databinding.ViewDataBinding;
 import timber.log.Timber;
 
 /**
@@ -38,8 +38,6 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
 
     private OnDateSelected listener;
 
-    private String label;
-    private String description;
     private Date date;
 
     public TimeView(Context context) {
@@ -84,7 +82,6 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
     }
 
     public void setDescription(String description) {
-        this.description = description;
         binding.setVariable(BR.description, description);
         binding.executePendingBindings();
     }
@@ -159,10 +156,6 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
         });
 
         dialog.show();
-    }
-
-    public TextInputEditText getEditText() {
-        return editText;
     }
 
     public void setEditable(Boolean editable) {

@@ -13,6 +13,11 @@ import android.view.View;
 import android.widget.DatePicker;
 import android.widget.PopupMenu;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.databinding.DataBindingUtil;
+
 import com.google.android.material.snackbar.Snackbar;
 
 import org.dhis2.App;
@@ -37,10 +42,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.databinding.DataBindingUtil;
 import io.reactivex.functions.Consumer;
 import timber.log.Timber;
 
@@ -49,6 +50,7 @@ import static org.dhis2.utils.Constants.PROGRAM_UID;
 /**
  * QUADRAM. Created by ppajuelo on 19/11/2018.
  */
+@SuppressWarnings("squid:MaximumInheritanceDepth")
 public class EventCaptureActivity extends ActivityGlobalAbstract implements EventCaptureContract.View, View.OnTouchListener, GestureDetector.OnGestureListener {
 
     private static final int SWIPE_THRESHOLD = 100;
@@ -237,14 +239,14 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                 reschedule();
                 break;
             case FINISH:
-                default:
+            default:
                 finishDataEntry();
                 break;
         }
     }
 
     private void reschedule() {
-
+        // unused
     }
 
     private void showNativeCalendar() {
@@ -469,13 +471,11 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         try {
             float diffY = e2.getY() - e1.getY();
             float diffX = e2.getX() - e1.getX();
-            if (Math.abs(diffX) > Math.abs(diffY)) {
-                if (Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
-                    if (diffX > 0) {
-                        onSwipeRight();
-                    } else {
-                        onSwipeLeft();
-                    }
+            if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
+                if (diffX > 0) {
+                    onSwipeRight();
+                } else {
+                    onSwipeLeft();
                 }
             }
         } catch (Exception exception) {

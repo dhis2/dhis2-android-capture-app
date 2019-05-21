@@ -9,6 +9,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.DividerItemDecoration;
+
 import com.google.gson.Gson;
 
 import org.dhis2.R;
@@ -18,16 +24,13 @@ import org.dhis2.utils.NetworkUtils;
 import org.dhis2.utils.jira.JiraIssue;
 import org.dhis2.utils.jira.JiraIssueListResponse;
 import org.dhis2.utils.jira.OnJiraIssueClick;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.databinding.DataBindingUtil;
-import androidx.lifecycle.ViewModelProviders;
-import androidx.recyclerview.widget.DividerItemDecoration;
+import timber.log.Timber;
 
 import static org.hisp.dhis.android.core.utils.support.StringUtils.isEmpty;
 
@@ -42,7 +45,7 @@ public class JiraFragment extends FragmentGlobalAbstract implements OnJiraIssueC
     private JiraIssueAdapter adapter = new JiraIssueAdapter(this);
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NotNull Context context) {
         super.onAttach(context);
         this.context = context;
     }
@@ -61,7 +64,7 @@ public class JiraFragment extends FragmentGlobalAbstract implements OnJiraIssueC
                     JiraIssueListResponse jiraIssueListRes = new Gson().fromJson(response.body().string(), JiraIssueListResponse.class);
                     issueList = jiraIssueListRes.getIssues();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    Timber.e(e);
                 }
                 adapter.addItems(issueList);
             } else

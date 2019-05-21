@@ -11,6 +11,14 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.fragment.app.Fragment;
+import androidx.viewpager.widget.ViewPager;
+
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.textfield.TextInputEditText;
@@ -50,13 +58,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.fragment.app.Fragment;
-import androidx.viewpager.widget.ViewPager;
 import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.subjects.PublishSubject;
@@ -414,24 +415,20 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
         });
 
         reportDate.setOnFocusChangeListener((v, hasFocus) -> {
-            if (hasFocus) {
-                if (getFragmentManager() != null) {
-                    DatePickerDialogFragment dialog = DatePickerDialogFragment.create(reportAllowFutureDates);
-                    dialog.setOpeningClosingDates(openingDate, closingDate);
-                    dialog.show(getFragmentManager());
-                    dialog.setFormattedOnDateSetListener(publishReportDateChange());
-                }
+            if (hasFocus && getFragmentManager() != null) {
+                DatePickerDialogFragment dialog = DatePickerDialogFragment.create(reportAllowFutureDates);
+                dialog.setOpeningClosingDates(openingDate, closingDate);
+                dialog.show(getFragmentManager());
+                dialog.setFormattedOnDateSetListener(publishReportDateChange());
             }
         });
 
         incidentDate.setOnFocusChangeListener((v, hasFocus) -> {
-            if (hasFocus) {
-                if (getFragmentManager() != null) {
-                    DatePickerDialogFragment dialog = DatePickerDialogFragment.create(incidentAllowFutureDates);
-                    dialog.setOpeningClosingDates(openingDate, closingDate);
-                    dialog.show(getFragmentManager());
-                    dialog.setFormattedOnDateSetListener(publishIncidentDateChange());
-                }
+            if (hasFocus && getFragmentManager() != null) {
+                DatePickerDialogFragment dialog = DatePickerDialogFragment.create(incidentAllowFutureDates);
+                dialog.setOpeningClosingDates(openingDate, closingDate);
+                dialog.show(getFragmentManager());
+                dialog.setFormattedOnDateSetListener(publishIncidentDateChange());
             }
         });
     }

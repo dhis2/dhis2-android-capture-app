@@ -30,7 +30,7 @@ import static org.dhis2.data.qr.QRjson.TEI_JSON;
 /**
  * QUADRAM. Created by ppajuelo on 21/06/2018.
  */
-
+@SuppressWarnings("squid:MaximumInheritanceDepth")
 public class QrActivity extends ActivityGlobalAbstract implements QrContracts.View {
 
     @Inject

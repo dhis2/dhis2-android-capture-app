@@ -2,6 +2,8 @@ package org.dhis2.usescases.reservedValue;
 
 import android.os.Bundle;
 
+import androidx.databinding.DataBindingUtil;
+
 import org.dhis2.App;
 import org.dhis2.BR;
 import org.dhis2.R;
@@ -14,8 +16,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import androidx.databinding.DataBindingUtil;
-
+@SuppressWarnings("squid:MaximumInheritanceDepth")
 public class ReservedValueActivity extends ActivityGlobalAbstract implements ReservedValueContracts.View {
 
     private ActivityReservedValueBinding reservedBinding;

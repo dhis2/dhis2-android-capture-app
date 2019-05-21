@@ -7,6 +7,10 @@ import org.hisp.dhis.android.core.maintenance.D2Error;
 
 public class D2ErrorUtils {
 
+    private D2ErrorUtils() {
+        // hide public constructor
+    }
+
     public static String getErrorMessage(Context context, Throwable throwable) {
         if (throwable instanceof D2Error)
             return handleD2Error(context, (D2Error) throwable);

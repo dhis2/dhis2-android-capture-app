@@ -17,14 +17,14 @@ import static android.text.TextUtils.isEmpty;
 public class CoordinateHolder extends FormViewHolder {
 
     private final FlowableProcessor<RowAction> processor;
-    private CustomFormCoordinateBinding binding;
+    private CustomFormCoordinateBinding customFormCoordinateBinding;
     private CoordinateViewModel model;
 
     @SuppressLint("CheckResult")
     CoordinateHolder(CustomFormCoordinateBinding binding, FlowableProcessor<RowAction> processor) {
         super(binding);
         this.processor = processor;
-        this.binding = binding;
+        this.customFormCoordinateBinding = binding;
         binding.formCoordinates.setCurrentLocationListener((latitude, longitude) -> {
                     closeKeyboard(binding.formCoordinates);
                     processor.onNext(
@@ -40,7 +40,7 @@ public class CoordinateHolder extends FormViewHolder {
     }
 
     void update(CoordinateViewModel coordinateViewModel) {
-        binding.formCoordinates.setProcessor(coordinateViewModel.uid(), processor);
+        customFormCoordinateBinding.formCoordinates.setProcessor(coordinateViewModel.uid(), processor);
 
         model = coordinateViewModel;
 
@@ -48,25 +48,26 @@ public class CoordinateHolder extends FormViewHolder {
         label = new StringBuilder(coordinateViewModel.label());
         if (coordinateViewModel.mandatory())
             label.append("*");
-        binding.formCoordinates.setLabel(label.toString());
-        binding.formCoordinates.setDescription(descriptionText);
+        customFormCoordinateBinding.formCoordinates.setLabel(label.toString());
+        customFormCoordinateBinding.formCoordinates.setDescription(descriptionText);
 
         if (!isEmpty(coordinateViewModel.value()))
-            binding.formCoordinates.setInitialValue(coordinateViewModel.value());
+            customFormCoordinateBinding.formCoordinates.setInitialValue(coordinateViewModel.value());
 
         if (coordinateViewModel.warning() != null)
-            binding.formCoordinates.setWarning(coordinateViewModel.warning());
+            customFormCoordinateBinding.formCoordinates.setWarning(coordinateViewModel.warning());
         else if (coordinateViewModel.error() != null)
-            binding.formCoordinates.setError(coordinateViewModel.error());
+            customFormCoordinateBinding.formCoordinates.setError(coordinateViewModel.error());
         else
-            binding.formCoordinates.setError(null);
+            customFormCoordinateBinding.formCoordinates.setError(null);
 
-        binding.formCoordinates.setEditable(coordinateViewModel.editable());
+        customFormCoordinateBinding.formCoordinates.setEditable(coordinateViewModel.editable());
 
-        binding.executePendingBindings();
+        customFormCoordinateBinding.executePendingBindings();
     }
 
     @Override
     public void dispose() {
+        // unused
     }
 }

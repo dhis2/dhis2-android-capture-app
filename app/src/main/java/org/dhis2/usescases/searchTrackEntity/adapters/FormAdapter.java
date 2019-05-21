@@ -57,20 +57,20 @@ import static android.text.TextUtils.isEmpty;
 
 public class FormAdapter extends RecyclerView.Adapter {
 
-    private long ENROLLMENT_DATE_ID = 1;
-    private long INCIDENT_DATE_ID = 2;
+    private static final long ENROLLMENT_DATE_ID = 1;
+    private static final long INCIDENT_DATE_ID = 2;
 
-    private final int EDITTEXT = 0;
-    private final int BUTTON = 1;
-    private final int CHECKBOX = 2;
-    private final int SPINNER = 3;
-    private final int COORDINATES = 4;
-    private final int TIME = 5;
-    private final int DATE = 6;
-    private final int DATETIME = 7;
-    private final int AGEVIEW = 8;
-    private final int YES_NO = 9;
-    private final int ORG_UNIT = 10;
+    private static final int EDITTEXT = 0;
+    private static final int BUTTON = 1;
+    private static final int CHECKBOX = 2;
+    private static final int SPINNER = 3;
+    private static final int COORDINATES = 4;
+    private static final int TIME = 5;
+    private static final int DATE = 6;
+    private static final int DATETIME = 7;
+    private static final int AGEVIEW = 8;
+    private static final int YES_NO = 9;
+    private static final int ORG_UNIT = 10;
     private static final int IMAGE = 11;
     private static final int UNSUPPORTED = 12;
     private static final int LONG_TEXT = 13;
@@ -107,9 +107,9 @@ public class FormAdapter extends RecyclerView.Adapter {
         rows.add(AGEVIEW, new AgeRow(layoutInflater, processor, false));
         rows.add(YES_NO, new RadioButtonRow(layoutInflater, processor, false));
         rows.add(ORG_UNIT, new OrgUnitRow(fm, layoutInflater, processor, false, orgUnits, levels));
-        rows.add(IMAGE, new ImageRow(layoutInflater, processor, null,null));
+        rows.add(IMAGE, new ImageRow(layoutInflater, processor, null, null));
         rows.add(UNSUPPORTED, new UnsupportedRow(layoutInflater, processor, false));
-        rows.add(LONG_TEXT, new EditTextRow(layoutInflater, processor, false,true));
+        rows.add(LONG_TEXT, new EditTextRow(layoutInflater, processor, false, true));
     }
 
     @Override
@@ -121,11 +121,16 @@ public class FormAdapter extends RecyclerView.Adapter {
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         FieldViewModel viewModel;
         if (position < programData) {
+
+            String enrollmentDate = !isEmpty(programModel.enrollmentDateLabel()) ? programModel.enrollmentDateLabel() : context.getString(R.string.enrollmment_date);
+            String incidentDate = !isEmpty(programModel.incidentDateLabel()) ? programModel.incidentDateLabel() : context.getString(R.string.incident_date);
+            String positionText = holder.getAdapterPosition() == 0 ?
+                    enrollmentDate :
+                    incidentDate;
+
             viewModel = DateTimeViewModel.create(
                     position == 0 ? Constants.ENROLLMENT_DATE_UID : Constants.INCIDENT_DATE_UID,
-                    holder.getAdapterPosition() == 0 ?
-                            !isEmpty(programModel.enrollmentDateLabel()) ? programModel.enrollmentDateLabel() : context.getString(R.string.enrollmment_date) :
-                            !isEmpty(programModel.incidentDateLabel()) ? programModel.incidentDateLabel() : context.getString(R.string.incident_date),
+                    positionText,
                     false,
                     ValueType.DATE,
                     null,
@@ -135,7 +140,6 @@ public class FormAdapter extends RecyclerView.Adapter {
 
         } else {
             TrackedEntityAttributeModel attr = attributeList.get(holder.getAdapterPosition() - programData);
-            //String label = attr.displayShortName() != null ? attr.displayShortName() : attr.displayName();
             String label = attr.displayName();
             switch (holder.getItemViewType()) {
                 case EDITTEXT:

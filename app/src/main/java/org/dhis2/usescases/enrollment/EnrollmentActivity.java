@@ -17,6 +17,7 @@ import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import io.reactivex.functions.Consumer;
 
+@SuppressWarnings("squid:MaximumInheritanceDepth")
 public class EnrollmentActivity extends ActivityGlobalAbstract implements EnrollmentContracts.View {
 
     EnrollmentActivityBinding binding;

@@ -23,15 +23,12 @@ import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
-import org.hisp.dhis.android.core.dataelement.DataElement;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
-import org.hisp.dhis.android.core.option.Option;
-import org.hisp.dhis.android.core.option.OptionSet;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
 import org.hisp.dhis.android.core.program.Program;
@@ -41,14 +38,10 @@ import org.hisp.dhis.android.core.program.ProgramRuleAction;
 import org.hisp.dhis.android.core.program.ProgramRuleActionType;
 import org.hisp.dhis.android.core.program.ProgramRuleVariable;
 import org.hisp.dhis.android.core.program.ProgramStage;
-import org.hisp.dhis.android.core.program.ProgramStageDataElement;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
-import org.hisp.dhis.android.core.program.ProgramStageSection;
 import org.hisp.dhis.android.core.program.ProgramStageSectionDeviceRendering;
 import org.hisp.dhis.android.core.program.ProgramStageSectionModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
-import org.hisp.dhis.android.core.program.ProgramType;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 import org.hisp.dhis.rules.models.Rule;
@@ -150,16 +143,19 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     private final BriteDatabase briteDatabase;
     private final String eventUid;
+    @NonNull
     private final Event currentEvent;
     private final FormRepository formRepository;
     private final D2 d2;
-    private final boolean isEventEditable;
-    private boolean accessDataWrite;
+    private final boolean isEventExpired;
+    @NonNull
+    private final ProgramStage currentProgramStage;
     private String lastUpdatedUid;
     private RuleEvent.Builder eventBuilder;
     private Map<String, List<Rule>> dataElementRules = new HashMap<>();
     private List<ProgramRule> mandatoryRules;
     private List<ProgramRule> rules;
+
 
     public EventCaptureRepositoryImpl(Context context, BriteDatabase briteDatabase, FormRepository formRepository, String eventUid, D2 d2) {
         this.briteDatabase = briteDatabase;
@@ -168,13 +164,13 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         this.d2 = d2;
 
         currentEvent = d2.eventModule().events.uid(eventUid).withAllChildren().get();
-        ProgramStage programStage = d2.programModule().programStages.uid(currentEvent.programStage()).withAllChildren().get();
+        currentProgramStage = d2.programModule().programStages.uid(currentEvent.programStage()).withAllChildren().get();
         OrganisationUnit ou = d2.organisationUnitModule().organisationUnits.uid(currentEvent.organisationUnit()).withAllChildren().get();
 
         eventBuilder = RuleEvent.builder()
                 .event(currentEvent.uid())
                 .programStage(currentEvent.programStage())
-                .programStageName(programStage.displayName())
+                .programStageName(currentProgramStage.displayName())
                 .status(RuleEvent.Status.valueOf(currentEvent.status().name()))
                 .eventDate(currentEvent.eventDate())
                 .dueDate(currentEvent.dueDate() != null ? currentEvent.dueDate() : currentEvent.eventDate())
@@ -194,7 +190,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
         loadDataElementRules(currentEvent);
 
-        isEventEditable = isEventExpired(eventUid);
+        isEventExpired = isEventExpired(eventUid);
     }
 
     private void loadDataElementRules(Event event) {
@@ -210,16 +206,17 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 ruleIterator.remove();
             else
                 for (ProgramRuleAction action : rule.programRuleActions())
-                    if (action.programRuleActionType() == ProgramRuleActionType.HIDEFIELD ||
+                    if ((action.programRuleActionType() == ProgramRuleActionType.HIDEFIELD ||
                             action.programRuleActionType() == ProgramRuleActionType.HIDESECTION ||
                             action.programRuleActionType() == ProgramRuleActionType.ASSIGN ||
                             action.programRuleActionType() == ProgramRuleActionType.SHOWWARNING ||
                             action.programRuleActionType() == ProgramRuleActionType.SHOWERROR ||
                             action.programRuleActionType() == ProgramRuleActionType.HIDEOPTIONGROUP ||
                             action.programRuleActionType() == ProgramRuleActionType.HIDEOPTION ||
-                            action.programRuleActionType() == ProgramRuleActionType.SETMANDATORYFIELD)
-                        if (!mandatoryRules.contains(rule))
-                            mandatoryRules.add(rule);
+                            action.programRuleActionType() == ProgramRuleActionType.SETMANDATORYFIELD) &&
+                            (!mandatoryRules.contains(rule))) {
+                        mandatoryRules.add(rule);
+                    }
         }
 
         List<ProgramRuleVariable> variables = d2.programModule().programRuleVariables
@@ -257,21 +254,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 rule.displayName());
     }
 
-
-    private List<ProgramRule> filterRules(List<ProgramRule> rules){
-        Program program = d2.programModule().programs.uid(currentEvent.program()).withAllChildren().get();
-        if(program.programType().equals(ProgramType.WITH_REGISTRATION)) {
-            Iterator<ProgramRule> iterator = rules.iterator();
-            while (iterator.hasNext()) {
-                if (iterator.next().programStage() == null)
-                    iterator.remove();
-            }
-        }
-        return rules;
-    }
-
     private List<Rule> trasformToRule(List<ProgramRule> rules) {
-        filterRules(rules);
         List<Rule> finalRules = new ArrayList<>();
         for (ProgramRule rule : rules) {
             finalRules.add(Rule.create(
@@ -355,8 +338,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     @Override
     public Flowable<String> programStageName() {
-        return Flowable.just(d2.eventModule().events.uid(eventUid).get())
-                .map(event -> d2.programModule().programStages.uid(event.programStage()).get().displayName());
+        return Flowable.just(currentProgramStage.displayName());
     }
 
     @Override
@@ -396,8 +378,6 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     @NonNull
     @Override
     public Flowable<List<FieldViewModel>> list(String sectionUid) {
-        accessDataWrite = getAccessDataWrite();
-        long time;
         return briteDatabase
                 .createQuery(TrackedEntityDataValueModel.TABLE, prepareStatement(sectionUid, eventUid))
                 .mapToList(this::transform)
@@ -407,6 +387,8 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 })
                 .toFlowable(BackpressureStrategy.LATEST)
                 .doOnSubscribe(subscription -> Timber.d("LIST SUBSCRIBED! at %s", System.currentTimeMillis()))
+                .doOnNext(onNext -> Timber.d("LIST ON NEXT! at %s", System.currentTimeMillis()))
+                .doOnComplete(() -> Timber.d("LIST COMPLETE! at %s", System.currentTimeMillis()))
                 ;
     }
 
@@ -500,6 +482,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
             return fieldViewModelList;
         }).map(this::checkRenderType);*/
+
         return briteDatabase
                 .createQuery(TrackedEntityDataValueModel.TABLE, prepareStatement(eventUid))
                 .mapToList(this::transform)
@@ -509,139 +492,6 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 ;
     }
 
-    private List<FieldViewModel> getFieldViewModelFor(List<ProgramStageDataElement> programStageDataElementList) {
-        List<FieldViewModel> fieldViewModelList = new ArrayList<>();
-        long init = System.currentTimeMillis();
-
-        String programStageSection = null;
-        for (ProgramStageDataElement programStageDataElement : programStageDataElementList) {
-
-            DataElement dataElement = d2.dataElementModule().dataElements.uid(programStageDataElement.dataElement().uid()).withAllChildren().get();
-
-            String uid = dataElement.uid();
-            String displayName = dataElement.displayName();
-            ValueType valueType = dataElement.valueType();
-            boolean mandatory = programStageDataElement.compulsory();
-            String optionSet = dataElement.optionSetUid();
-
-            boolean allowFurureDates = programStageDataElement.allowFutureDate();
-            String formName = dataElement.displayFormName();
-            String description = dataElement.displayDescription();
-
-
-            int optionCount = 0;
-            String dataValue = null;
-            TrackedEntityDataValue teDataValue = d2.trackedEntityModule().trackedEntityDataValues.byEvent().eq(eventUid).byDataElement().eq(dataElement.uid()).withAllChildren().one().get();
-            if (teDataValue != null) {
-                dataValue = teDataValue.value();
-                if (optionSet != null) {
-                    OptionSet optionSet1 = d2.optionModule().optionSets.uid(optionSet).withAllChildren().get();
-                    optionCount = optionSet1.options().size();
-                    for (Option option : optionSet1.options())
-                        if (option.code().equals(dataValue))
-                            dataValue = option.displayName();
-                }
-            }
-            Timber.d("OptionSet check is %s", System.currentTimeMillis() - init);
-
-
-            ValueTypeDeviceRenderingModel fieldRendering = null;
-            try (Cursor rendering = briteDatabase.query("SELECT ValueTypeDeviceRendering.* FROM ValueTypeDeviceRendering" +
-                    " JOIN ProgramStageDataElement ON ProgramStageDataElement.uid = ValueTypeDeviceRendering.uid" +
-                    " WHERE ProgramStageDataElement.dataElement = ? LIMIT 1", uid)) {
-                if (rendering != null && rendering.moveToFirst())
-                    fieldRendering = ValueTypeDeviceRenderingModel.create(rendering);
-            }
-            Timber.d("ValueTypeDeviceRendering check is %s", System.currentTimeMillis() - init);
-
-            ObjectStyleModel objectStyle = ObjectStyleModel.builder().build();
-            try (Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", uid)) {
-                if (objStyleCursor != null && objStyleCursor.moveToFirst())
-                    objectStyle = ObjectStyleModel.create(objStyleCursor);
-            }
-            Timber.d("ObjectStyle check is %s", System.currentTimeMillis() - init);
-
-            ProgramStageSectionRenderingType renderingType = renderingType(programStageSection);
-            Timber.d("ProgramStageSectionRendering check is %s", System.currentTimeMillis() - init);
-
-            fieldViewModelList.add(fieldFactory.create(uid, formName == null ? displayName : formName,
-                    valueType, mandatory, optionSet, dataValue,
-                    programStageSection, allowFurureDates,
-                    !isEventEditable,
-                    renderingType, description, fieldRendering, optionCount, objectStyle));
-            Timber.d("Field creation check is %s", System.currentTimeMillis() - init);
-
-        }
-        Timber.d("FIELD TIME for %s fields is %s", fieldViewModelList.size(), System.currentTimeMillis() - init);
-
-        return fieldViewModelList;
-    }
-
-    private List<FieldViewModel> getFieldViewModelForSection(List<ProgramStageSection> sections, Map<String, ProgramStageDataElement> programStageDataElementList) {
-        List<FieldViewModel> fieldViewModelList = new ArrayList<>();
-        long init = System.currentTimeMillis();
-        for (ProgramStageSection section : sections) {
-            String programStageSection = section.uid();
-            for (DataElement dataElement : section.dataElements()) {
-
-                ProgramStageDataElement programStageDataElement = programStageDataElementList.get(dataElement.uid());
-
-                String uid = dataElement.uid();
-                String displayName = dataElement.displayName();
-                ValueType valueType = dataElement.valueType();
-                boolean mandatory = programStageDataElement.compulsory();
-                String optionSet = dataElement.optionSetUid();
-
-                boolean allowFurureDates = programStageDataElement.allowFutureDate();
-                String formName = dataElement.displayFormName();
-                String description = dataElement.displayDescription();
-
-
-                int optionCount = 0;
-                String dataValue = null;
-                TrackedEntityDataValue teDataValue = d2.trackedEntityModule().trackedEntityDataValues.byEvent().eq(eventUid).byDataElement().eq(dataElement.uid()).withAllChildren().one().get();
-                if (teDataValue != null) {
-                    dataValue = teDataValue.value();
-                    if (optionSet != null) {
-                        OptionSet optionSet1 = d2.optionModule().optionSets.uid(optionSet).withAllChildren().get();
-                        optionCount = optionSet1.options().size();
-                        for (Option option : optionSet1.options())
-                            if (option.code().equals(dataValue))
-                                dataValue = option.displayName();
-                    }
-                }
-
-                ValueTypeDeviceRenderingModel fieldRendering = null;
-                try (Cursor rendering = briteDatabase.query("SELECT ValueTypeDeviceRendering.* FROM ValueTypeDeviceRendering" +
-                        " JOIN ProgramStageDataElement ON ProgramStageDataElement.uid = ValueTypeDeviceRendering.uid" +
-                        " WHERE ProgramStageDataElement.dataElement = ? LIMIT 1", uid)) {
-                    if (rendering != null && rendering.moveToFirst())
-                        fieldRendering = ValueTypeDeviceRenderingModel.create(rendering);
-                }
-                ObjectStyleModel objectStyle = ObjectStyleModel.builder().build();
-                try (Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", uid)) {
-                    if (objStyleCursor != null && objStyleCursor.moveToFirst())
-                        objectStyle = ObjectStyleModel.create(objStyleCursor);
-                }
-
-                ProgramStageSectionRenderingType renderingType = renderingType(programStageSection);
-
-                fieldViewModelList.add(fieldFactory.create(uid, formName == null ? displayName : formName,
-                        valueType, mandatory, optionSet, dataValue,
-                        programStageSection, allowFurureDates,
-                        !isEventEditable,
-                        renderingType, description, fieldRendering, optionCount, objectStyle));
-
-            }
-
-
-        }
-
-        Timber.d("FIELD TIME for %s fields is %s", fieldViewModelList.size(), System.currentTimeMillis() - init);
-        return fieldViewModelList;
-    }
-
-
     @NonNull
     @SuppressFBWarnings("VA_FORMAT_STRING_USES_NEWLINE")
     private String prepareStatement(String sectionUid, String eventUid) {
@@ -650,7 +500,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
             where = String.format(Locale.US, "WHERE Event.uid = '%s'", eventUid == null ? "" : eventUid);
         } else {
             where = String.format(Locale.US, "WHERE Event.uid = '%s' AND " +
-                    "Field.section = '%s'", eventUid == null ? "" : eventUid, sectionUid == null ? "" : sectionUid);
+                    "Field.section = '%s'", eventUid == null ? "" : eventUid, sectionUid);
         }
 
         return String.format(Locale.US, QUERY, where);
@@ -728,10 +578,12 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
         ProgramStageSectionRenderingType renderingType = renderingType(programStageSection);
 
+        Timber.d("TRANSFORM TIME IS %s", System.currentTimeMillis() - transformInitTime);
+
         return fieldFactory.create(uid, formName == null ? displayName : formName,
                 ValueType.valueOf(valueTypeName), mandatory, optionSet, dataValue,
                 programStageSection, allowFurureDates,
-                !isEventEditable,
+                !isEventExpired,
                 renderingType, description, fieldRendering, optionCount, objectStyle);
     }
 
@@ -747,8 +599,8 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                                         return Flowable.fromCallable(ruleEngine.evaluate(event, trasformToRule(rules)));
                                     else
                                         return Flowable.just(dataElementRules.get(lastUpdatedUid) != null ? dataElementRules.get(lastUpdatedUid) : new ArrayList<Rule>())
-                                                .map(updatedRules -> updatedRules.isEmpty() ? trasformToRule(rules) : updatedRules)
-                                                .flatMap(rules -> Flowable.fromCallable(ruleEngine.evaluate(event, rules)));
+                                                .map(rulesResult1 -> rulesResult1.isEmpty() ? trasformToRule(mandatoryRules) : rulesResult1)
+                                                .flatMap(rulesResult2 -> Flowable.fromCallable(ruleEngine.evaluate(event, rulesResult2)));
                                 })
                                 .map(Result::success)
                                 .onErrorReturn(error -> Result.failure(new Exception(error)))
@@ -778,11 +630,11 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         Event event = d2.eventModule().events.uid(eventUid).withAllChildren().get();
         long status;
         if (event.state() == State.TO_POST) {
-            String DELETE_WHERE = String.format(
+            String deleteWhere = String.format(
                     "%s.%s = ?",
                     EventModel.TABLE, EventModel.Columns.UID
             );
-            status = briteDatabase.delete(EventModel.TABLE, DELETE_WHERE, eventUid);
+            status = briteDatabase.delete(EventModel.TABLE, deleteWhere, eventUid);
         } else {
             ContentValues contentValues = event.toContentValues();
             contentValues.put(EventModel.Columns.STATE, State.TO_DELETE.name());
@@ -898,7 +750,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                     String programStage = cursor.getString(1);
                     String dataElement = cursor.getString(2);
                     String value = cursor.getString(3);
-                    Boolean useCode = cursor.getInt(4) == 1;
+                    boolean useCode = cursor.getInt(4) == 1;
                     String optionCode = cursor.getString(5);
                     String optionName = cursor.getString(6);
                     if (!isEmpty(optionCode) && !isEmpty(optionName))
@@ -909,12 +761,8 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     }
 
     @NonNull
-    private static Date parseDate(@NonNull String date) {
-        try {
-            return BaseIdentifiableObject.DATE_FORMAT.parse(date);
-        } catch (ParseException parseException) {
-            throw new RuntimeException(parseException);
-        }
+    private static Date parseDate(@NonNull String date) throws ParseException {
+        return BaseIdentifiableObject.DATE_FORMAT.parse(date);
     }
 
     @NonNull

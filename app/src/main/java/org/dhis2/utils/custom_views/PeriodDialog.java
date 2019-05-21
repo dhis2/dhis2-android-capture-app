@@ -2,15 +2,16 @@ package org.dhis2.utils.custom_views;
 
 import android.app.Dialog;
 import android.content.Context;
-import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.DialogFragment;
 
 import org.dhis2.R;
 import org.dhis2.databinding.DialogPeriodBinding;
@@ -98,12 +99,12 @@ public class PeriodDialog extends DialogFragment {
         binding.periodSubtitle.setText(period.name());
         if (minDate == null || currentDate.after(minDate))
             currentDate = DateUtils.getInstance().getNextPeriod(period, currentDate, 0);
-        else if (minDate != null && currentDate.before(minDate))
+        else if (currentDate.before(minDate))
             currentDate = DateUtils.getInstance().getNextPeriod(period, minDate, 0);
         else
             currentDate = DateUtils.getInstance().getNextPeriod(period, currentDate, 0);
 
-        binding.selectedPeriod.setText(DateUtils.getInstance().getPeriodUIString(period,currentDate, Locale.getDefault()));
+        binding.selectedPeriod.setText(DateUtils.getInstance().getPeriodUIString(period, currentDate, Locale.getDefault()));
 
         binding.periodBefore.setOnClickListener(view -> {
             previousPeriod();
@@ -131,17 +132,17 @@ public class PeriodDialog extends DialogFragment {
         binding.selectedPeriod.setText(DateUtils.getInstance().getPeriodUIString(period, currentDate, Locale.getDefault()));
     }
 
+    private boolean beforeEnabled() {
+        return minDate == null || !minDate.equals(currentDate);
+    }
+
+    private boolean nextEnabled() {
+        return maxDate == null || !maxDate.equals(currentDate);
+    }
+
     private void checkConstraintDates() {
-
-        if (minDate != null && minDate.equals(currentDate))
-            binding.periodBefore.setEnabled(false);
-        else
-            binding.periodBefore.setEnabled(true);
-
-        if (maxDate != null && maxDate.equals(currentDate))
-            binding.periodNext.setEnabled(false);
-        else
-            binding.periodNext.setEnabled(true);
+        binding.periodBefore.setEnabled(beforeEnabled());
+        binding.periodNext.setEnabled(nextEnabled());
     }
 
     public PeriodDialog setMinDate(Date minDate) {

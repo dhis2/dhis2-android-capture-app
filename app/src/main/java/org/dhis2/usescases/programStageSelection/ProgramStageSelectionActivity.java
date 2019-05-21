@@ -35,7 +35,7 @@ import static org.dhis2.utils.Constants.TRACKED_ENTITY_INSTANCE;
 /**
  * QUADRAM. Created by ppajuelo on 31/10/2017.
  */
-
+@SuppressWarnings("squid:MaximumInheritanceDepth")
 public class ProgramStageSelectionActivity extends ActivityGlobalAbstract implements ProgramStageSelectionContract.View {
 
     ActivityProgramStageSelectionBinding binding;

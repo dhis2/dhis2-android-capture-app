@@ -20,6 +20,17 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Spinner;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.databinding.BindingMethod;
+import androidx.databinding.BindingMethods;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ObservableBoolean;
+import androidx.lifecycle.LiveData;
+import androidx.paging.PagedList;
+import androidx.recyclerview.widget.DividerItemDecoration;
+
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.dhis2.App;
@@ -51,16 +62,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.databinding.BindingMethod;
-import androidx.databinding.BindingMethods;
-import androidx.databinding.DataBindingUtil;
-import androidx.databinding.ObservableBoolean;
-import androidx.lifecycle.LiveData;
-import androidx.paging.PagedList;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import io.reactivex.Flowable;
 import me.toptas.fancyshowcase.FancyShowCaseView;
 import me.toptas.fancyshowcase.FocusShape;
@@ -72,6 +73,7 @@ import timber.log.Timber;
 @BindingMethods({
         @BindingMethod(type = FloatingActionButton.class, attribute = "app:srcCompat", method = "setImageDrawable")
 })
+@SuppressWarnings("squid:MaximumInheritanceDepth")
 public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTEContractsModule.View {
 
     ActivitySearchBinding binding;
@@ -89,7 +91,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     private BroadcastReceiver networkReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-
+            // unused
         }
     };
 
@@ -227,7 +229,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
 
             if (!prefs.getBoolean("TUTO_SEARCH_SHOWN", false) && !BuildConfig.DEBUG) {
-                HelpManager.getInstance().showHelp();/* getAbstractActivity().fancyShowCaseQueue.show();*/
+                HelpManager.getInstance().showHelp();
                 prefs.edit().putBoolean("TUTO_SEARCH_SHOWN", true).apply();
             }
 
@@ -313,7 +315,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
-
+                // unused
             }
         });
     }

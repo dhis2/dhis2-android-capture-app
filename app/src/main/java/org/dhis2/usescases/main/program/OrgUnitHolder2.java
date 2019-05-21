@@ -8,6 +8,8 @@ import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.core.content.ContextCompat;
+
 import com.unnamed.b.atv.model.TreeNode;
 
 import org.dhis2.R;
@@ -15,13 +17,11 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 
 import java.util.Locale;
 
-import androidx.core.content.ContextCompat;
-
 /**
  * QUADRAM. Created by ppajuelo on 19/10/2017.
  */
 
-public class OrgUnitHolder_2 extends TreeNode.BaseNodeViewHolder<OrganisationUnit> {
+public class OrgUnitHolder2 extends TreeNode.BaseNodeViewHolder<OrganisationUnit> {
 
     private final Boolean isMultiSelection;
     private TextView textView;
@@ -31,7 +31,7 @@ public class OrgUnitHolder_2 extends TreeNode.BaseNodeViewHolder<OrganisationUni
     private OrganisationUnit value;
     private int numberOfSelections;
 
-    public OrgUnitHolder_2(Context context, Boolean isMultiSelection) {
+    public OrgUnitHolder2(Context context, Boolean isMultiSelection) {
         super(context);
         this.isMultiSelection = isMultiSelection;
     }
@@ -48,7 +48,7 @@ public class OrgUnitHolder_2 extends TreeNode.BaseNodeViewHolder<OrganisationUni
         textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
         textView.setText(value.displayName());
         checkBox = view.findViewById(R.id.checkbox);
-        checkBox.setChecked(isMultiSelection & node.isSelectable());
+        checkBox.setChecked(isMultiSelection && node.isSelectable());
 
         imageView.setOnClickListener(v -> {
             if (node.isExpanded())
@@ -60,7 +60,7 @@ public class OrgUnitHolder_2 extends TreeNode.BaseNodeViewHolder<OrganisationUni
         checkBox.setOnClickListener(v -> {
             if (!isMultiSelection)
                 for (TreeNode treeNode : node.getViewHolder().getTreeView().getSelected())
-                    ((OrgUnitHolder_2) treeNode.getViewHolder()).update();
+                    ((OrgUnitHolder2) treeNode.getViewHolder()).update();
             update();
         });
 
@@ -108,9 +108,9 @@ public class OrgUnitHolder_2 extends TreeNode.BaseNodeViewHolder<OrganisationUni
         numberOfSelections = 0;
         if (node != null) {
             for (TreeNode n : node.getChildren()) {
-                if (n.getViewHolder() instanceof OrgUnitHolder_2) {
+                if (n.getViewHolder() instanceof OrgUnitHolder2) {
                     numberOfSelections += n.isSelected() ? 1 : 0;
-                    numberOfSelections += ((OrgUnitHolder_2) n.getViewHolder()).numberOfSelections;
+                    numberOfSelections += ((OrgUnitHolder2) n.getViewHolder()).numberOfSelections;
                 }
             }
 
@@ -119,8 +119,8 @@ public class OrgUnitHolder_2 extends TreeNode.BaseNodeViewHolder<OrganisationUni
             else
                 textView.setText(String.format(Locale.getDefault(), "%s (%d)", value.displayName(), numberOfSelections));
 
-            if (node.getLevel() > 1 && node.getParent().getViewHolder() instanceof OrgUnitHolder_2) {
-                ((OrgUnitHolder_2) node.getParent().getViewHolder()).setSelectedSizeText();
+            if (node.getLevel() > 1 && node.getParent().getViewHolder() instanceof OrgUnitHolder2) {
+                ((OrgUnitHolder2) node.getParent().getViewHolder()).setSelectedSizeText();
             }
         }
     }

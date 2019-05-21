@@ -94,7 +94,7 @@ import static org.dhis2.utils.Constants.TRACKED_ENTITY_INSTANCE;
 /**
  * QUADRAM. Created by Cristian on 01/03/2018.
  */
-
+@SuppressWarnings("squid:MaximumInheritanceDepth")
 public class EventInitialActivity extends ActivityGlobalAbstract implements EventInitialContract.View, DatePickerDialog.OnDateSetListener, ProgressBarAnimation.OnUpdate {
 
     private static final int PROGRESS_TIME = 2000;

@@ -74,7 +74,7 @@ import static org.dhis2.utils.Period.YEARLY;
 /**
  * QUADRAM. Created by Cristian on 13/02/2018.
  */
-
+@SuppressWarnings("squid:MaximumInheritanceDepth")
 public class ProgramEventDetailActivity extends ActivityGlobalAbstract implements ProgramEventDetailContract.View {
 
     private ActivityProgramEventDetailBinding binding;

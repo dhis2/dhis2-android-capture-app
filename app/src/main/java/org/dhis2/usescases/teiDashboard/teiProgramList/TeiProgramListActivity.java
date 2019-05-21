@@ -29,7 +29,7 @@ import androidx.databinding.DataBindingUtil;
 /**
  * QUADRAM. Created by Cristian on 13/02/2018.
  */
-
+@SuppressWarnings("squid:MaximumInheritanceDepth")
 public class TeiProgramListActivity extends ActivityGlobalAbstract implements TeiProgramListContract.View {
 
     private ActivityTeiProgramListBinding binding;
@@ -87,7 +87,7 @@ public class TeiProgramListActivity extends ActivityGlobalAbstract implements Te
 
     @Override
     public void goToEnrollmentScreen(String enrollmentUid, String programUid) {
-        SetProgramTheme(presenter.getProgramColor(programUid));
+        setProgramTheme(presenter.getProgramColor(programUid));
         Intent data = new Intent();
         data.putExtra("GO_TO_ENROLLMENT", enrollmentUid);
         setResult(RESULT_OK, data);
@@ -98,7 +98,7 @@ public class TeiProgramListActivity extends ActivityGlobalAbstract implements Te
     @Override
     public void changeCurrentProgram(String program) {
         if (program != null)
-            SetProgramTheme(presenter.getProgramColor(program));
+            setProgramTheme(presenter.getProgramColor(program));
         Intent data = new Intent();
         data.putExtra("CHANGE_PROGRAM", program);
         setResult(RESULT_OK, data);
@@ -106,7 +106,7 @@ public class TeiProgramListActivity extends ActivityGlobalAbstract implements Te
         finish();
     }
 
-    private void SetProgramTheme(String color) {
+    private void setProgramTheme(String color) {
         int programTheme = ColorUtils.getThemeFromColor(color);
         int programColor = ColorUtils.getColorFrom(color,
                 ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY));

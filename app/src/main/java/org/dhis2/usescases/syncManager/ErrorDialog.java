@@ -43,7 +43,7 @@ public class ErrorDialog extends DialogFragment {
     private String title;
     private List<TrackerImportConflict> data = new ArrayList<>();
     private DividerItemDecoration divider;
-    public static String TAG = "ERROR_DIALOG";
+    public static final String TAG = "ERROR_DIALOG";
     private String shareTitle;
     private String shareMessageTitle;
     private ObservableBoolean sharing = new ObservableBoolean(false);
@@ -72,7 +72,9 @@ public class ErrorDialog extends DialogFragment {
         if (dialog != null) {
             int width = ViewGroup.LayoutParams.MATCH_PARENT;
             int height = ViewGroup.LayoutParams.MATCH_PARENT;
-            dialog.getWindow().setLayout(width, height);
+            if (dialog.getWindow() != null) {
+                dialog.getWindow().setLayout(width, height);
+            }
         }
     }
 
@@ -80,9 +82,10 @@ public class ErrorDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Dialog dialog = super.onCreateDialog(savedInstanceState);
-        dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        }
         return dialog;
     }
 

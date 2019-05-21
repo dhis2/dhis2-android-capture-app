@@ -21,7 +21,7 @@ import timber.log.Timber;
  */
 
 public class OrgUnitHolder extends FormViewHolder {
-    private final FormOrgUnitBinding binding;
+    private final FormOrgUnitBinding formOrgUnitBinding;
     private final Observable<List<OrganisationUnitModel>> orgUnitsObservable;
     private List<OrganisationUnitModel> orgUnits;
     private CompositeDisposable compositeDisposable;
@@ -29,7 +29,7 @@ public class OrgUnitHolder extends FormViewHolder {
 
     OrgUnitHolder(FragmentManager fm, FormOrgUnitBinding binding, FlowableProcessor<RowAction> processor, Observable<List<OrganisationUnitModel>> orgUnits, Observable<List<OrganisationUnitLevel>> levels) {
         super(binding);
-        this.binding = binding;
+        this.formOrgUnitBinding = binding;
         compositeDisposable = new CompositeDisposable();
 
         this.orgUnitsObservable = orgUnits;
@@ -48,13 +48,13 @@ public class OrgUnitHolder extends FormViewHolder {
 
     public void update(OrgUnitViewModel viewModel) {
         this.model = viewModel;
-        binding.orgUnitView.setObjectStyle(viewModel.objectStyle());
-        binding.orgUnitView.setLabel(viewModel.label(), viewModel.mandatory());
+        formOrgUnitBinding.orgUnitView.setObjectStyle(viewModel.objectStyle());
+        formOrgUnitBinding.orgUnitView.setLabel(viewModel.label(), viewModel.mandatory());
         descriptionText = viewModel.description();
-        binding.orgUnitView.setDescription(descriptionText);
-        binding.orgUnitView.setWarning(viewModel.warning(), viewModel.error());
-        binding.orgUnitView.setValue(viewModel.value(), getOrgUnitName(viewModel.value()));
-        binding.orgUnitView.updateEditable(viewModel.editable());
+        formOrgUnitBinding.orgUnitView.setDescription(descriptionText);
+        formOrgUnitBinding.orgUnitView.setWarning(viewModel.warning(), viewModel.error());
+        formOrgUnitBinding.orgUnitView.setValue(viewModel.value(), getOrgUnitName(viewModel.value()));
+        formOrgUnitBinding.orgUnitView.updateEditable(viewModel.editable());
 
 
     }
@@ -79,9 +79,6 @@ public class OrgUnitHolder extends FormViewHolder {
                         {
                             this.orgUnits = orgUnitViewModels;
                             if (model.value() != null) {
-                                /*this.inputLayout.setHintAnimationEnabled(false);
-                                this.editText.setText(getOrgUnitName(model.value()));
-                                this.inputLayout.setHintAnimationEnabled(true);*/
                                 update(model);
                             }
                         },

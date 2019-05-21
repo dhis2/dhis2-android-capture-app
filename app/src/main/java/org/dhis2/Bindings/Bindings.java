@@ -52,6 +52,10 @@ import timber.log.Timber;
 
 public class Bindings {
 
+    private Bindings() {
+        // hide public constructor
+    }
+
     @BindingAdapter("elevation")
     public static void setElevation(View view, float elevation) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -91,9 +95,8 @@ public class Bindings {
     public static void setDrawableEnd(TextView textView, Drawable drawable) {
         textView.setCompoundDrawablesWithIntrinsicBounds(null, null, drawable, null);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            if (drawable instanceof AnimatedVectorDrawable)
-                ((AnimatedVectorDrawable) drawable).start();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && drawable instanceof AnimatedVectorDrawable) {
+            ((AnimatedVectorDrawable) drawable).start();
         }
     }
 
@@ -519,25 +522,22 @@ public class Bindings {
     public static void setImageBackground(ImageView imageView, Drawable drawable) {
 
         TypedValue typedValue = new TypedValue();
-        TypedArray a = imageView.getContext().obtainStyledAttributes(typedValue.data, new int[]{R.attr.colorPrimaryDark});
-        TypedArray b = imageView.getContext().obtainStyledAttributes(typedValue.data, new int[]{R.attr.colorPrimaryLight});
-        int colorPrimaryDark = a.getColor(0, 0);
-        int colorPrimaryLight = b.getColor(0, 0);
-
-        int px = (int) (1 * Resources.getSystem().getDisplayMetrics().density);
-        ((GradientDrawable) drawable.mutate()).setStroke(px, colorPrimaryDark);
-        //((GradientDrawable) drawable.mutate()).setColor(colorPrimaryLight);
-
+        if (imageView.getContext() != null) {
+            TypedArray a = imageView.getContext().obtainStyledAttributes(typedValue.data, new int[]{R.attr.colorPrimaryDark});
+            int colorPrimaryDark = a.getColor(0, 0);
+            int px = (int) (1 * Resources.getSystem().getDisplayMetrics().density);
+            ((GradientDrawable) drawable.mutate()).setStroke(px, colorPrimaryDark);
+        }
         imageView.setBackground(drawable);
 
     }
 
     @BindingAdapter("searchOrAdd")
-    public static void setFabIcoin(FloatingActionButton fab, boolean needSearch){
+    public static void setFabIcoin(FloatingActionButton fab, boolean needSearch) {
         Drawable drawable;
-        if(needSearch) {
+        if (needSearch) {
             drawable = ContextCompat.getDrawable(fab.getContext(), R.drawable.ic_search);
-        } else{
+        } else {
             drawable = ContextCompat.getDrawable(fab.getContext(), R.drawable.ic_add);
         }
         fab.setColorFilter(Color.WHITE);

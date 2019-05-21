@@ -7,7 +7,6 @@ import android.content.pm.PackageManager;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
 import androidx.databinding.DataBindingUtil;
@@ -65,6 +64,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
         init(context);
     }
 
+    @Override
     public void init(Context context) {
         super.init(context);
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getContext());
@@ -145,6 +145,8 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
                     listener.onMapPositionClick(this);
                 else
                     ((OnMapPositionClick) getContext()).onMapPositionClick(this);
+                break;
+            default:
                 break;
         }
     }

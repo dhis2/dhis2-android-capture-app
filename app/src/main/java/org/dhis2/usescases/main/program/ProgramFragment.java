@@ -14,6 +14,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.DatePicker;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.GravityCompat;
+import androidx.databinding.DataBindingUtil;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.DividerItemDecoration;
+
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
@@ -40,14 +49,6 @@ import java.util.Locale;
 
 import javax.inject.Inject;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.core.content.ContextCompat;
-import androidx.core.view.GravityCompat;
-import androidx.databinding.DataBindingUtil;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import io.reactivex.functions.Consumer;
 import me.toptas.fancyshowcase.DismissListener;
 import me.toptas.fancyshowcase.FancyShowCaseView;
@@ -194,6 +195,8 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                             case YEARLY:
                                 text = yearFormat.format(date.get(0));
                                 chosenDateYear = date;
+                                break;
+                            default:
                                 break;
                         }
                         binding.buttonPeriodText.setText(text);
@@ -377,7 +380,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                 if (treeView != null) {
                     treeView.selectAll(false);
                     for (TreeNode node : treeView.getSelected()) {
-                        ((OrgUnitHolder_2) node.getViewHolder()).check();
+                        ((OrgUnitHolder2) node.getViewHolder()).check();
                     }
                 }
             });
@@ -385,8 +388,8 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
             binding.orgUnitUnselectAll.setOnClickListener(view -> {
                 if (treeView != null) {
                     for (TreeNode node : treeView.getSelected()) {
-                        ((OrgUnitHolder_2) node.getViewHolder()).uncheck();
-                        ((OrgUnitHolder_2) node.getViewHolder()).update();
+                        ((OrgUnitHolder2) node.getViewHolder()).uncheck();
+                        ((OrgUnitHolder2) node.getViewHolder()).update();
                     }
                     treeView.deselectAll();
                 }
@@ -403,10 +406,8 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
 
             treeView.setDefaultNodeClickListener((node, value) -> {
                 if (isAdded()) {
-                    if (treeView != null) {
-                        if ((treeView.getSelected().size() == 1 && !node.isSelected()) || treeView.getSelected().size() > 1) {
-                            binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
-                        }
+                    if (treeView != null && ((treeView.getSelected().size() == 1 && !node.isSelected()) || treeView.getSelected().size() > 1)) {
+                        binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
                     }
                     if (node.getChildren().isEmpty())
                         presenter.onExpandOrgUnitNode(node, ((OrganisationUnit) node.getValue()).uid());
@@ -473,11 +474,11 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                 binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
                 List<String> orgUnitsUids = new ArrayList<>();
-                for (TreeNode treeNode : treeView.getSelected()) {
-                    orgUnitsUids.add(((OrganisationUnit) treeNode.getValue()).uid());
+                for (TreeNode treeNodeAux : treeView.getSelected()) {
+                    orgUnitsUids.add(((OrganisationUnit) treeNodeAux.getValue()).uid());
                 }
 
-                if (treeView.getSelected().size() >= 1) {
+                if (!treeView.getSelected().isEmpty()) {
                     binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
                 }
 

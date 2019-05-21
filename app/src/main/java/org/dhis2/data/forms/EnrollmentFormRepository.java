@@ -3,6 +3,8 @@ package org.dhis2.data.forms;
 import android.content.ContentValues;
 import android.database.Cursor;
 
+import androidx.annotation.NonNull;
+
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.squareup.sqlbrite2.BriteDatabase;
 
@@ -28,7 +30,6 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 import org.hisp.dhis.rules.RuleEngine;
@@ -42,7 +43,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import androidx.annotation.NonNull;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -100,43 +100,6 @@ public class EnrollmentFormRepository implements FormRepository {
             "  JOIN Program ON Enrollment.program = Program.uid\n" +
             "  JOIN ProgramStage ON Program.uid = ProgramStage.program \n" +
             "WHERE Enrollment.uid = ? AND ProgramStage.autoGenerateEvent = 1";
-
-    private static final String GET_FIRST_STAGE = "SELECT " +
-            "ProgramStage.* FROM ProgramStage " +
-            "WHERE ProgramStage.program = ? " +
-            "AND ProgramStage.sortOrder != 0 " +
-            "ORDER BY ProgramStage.sortOrder ASC LIMIT 1";
-    private static final String CHECK_IF_FIRST_STAGE_EVENT_EXIST_IN_ENROLLMENT = "SELECT " +
-            "Event.uid, " +
-            "Program.trackedEntityType " +
-            "FROM Event " +
-            "JOIN Enrollment ON Enrollment.uid = Event.enrollment " +
-            "JOIN Program ON Program.uid = Enrollment.program " +
-            "WHERE Event.programStage = ? AND Enrollment.uid = ?";
-
-    private static final String SELECT_USE_FIRST_STAGE =
-            "SELECT ProgramStage.uid, " +
-                    "ProgramStage.program, " +
-                    "Enrollment.organisationUnit, " +
-                    "Program.trackedEntityType, " +
-                    "Event.uid\n" +
-                    "FROM Enrollment\n" +
-                    "  JOIN Program ON Enrollment.program = Program.uid\n" +
-                    "  JOIN ProgramStage ON Program.uid = ProgramStage.program\n" +
-                    "  JOIN Event ON event.enrollment = Enrollment.uid\n" +
-                    "WHERE Enrollment.uid = ? AND (Program.useFirstStageDuringRegistration  = 1 OR ProgramStage.openAfterEnrollment = 1) " +
-                    "ORDER BY ProgramStage.sortOrder ASC LIMIT 1";
-
-    private static final String SELECT_USE_FIRST_STAGE_WITHOUT_AUTOGENERATE_EVENT =
-            "SELECT ProgramStage.uid, " +
-                    "ProgramStage.program, " +
-                    "Enrollment.organisationUnit, " +
-                    "Program.trackedEntityType\n" +
-                    "FROM Enrollment\n" +
-                    "  JOIN Program ON Enrollment.program = Program.uid\n" +
-                    "  JOIN ProgramStage ON Program.uid = ProgramStage.program\n" +
-                    "WHERE Enrollment.uid = ? AND (Program.useFirstStageDuringRegistration  = 1 OR ProgramStage.openAfterEnrollment = 1) " +
-                    "ORDER BY ProgramStage.sortOrder ASC";
 
     private static final String SELECT_PROGRAM = "SELECT \n" +
             "  program\n" +
@@ -246,7 +209,7 @@ public class EnrollmentFormRepository implements FormRepository {
 
     @Override
     public Flowable<RuleEngine> restartRuleEngine() {
-        return this.cachedRuleEngineFlowable = enrollmentProgram()
+        this.cachedRuleEngineFlowable = enrollmentProgram()
                 .switchMap(program -> Flowable.zip(
                         rulesRepository.rulesNew(program),
                         rulesRepository.ruleVariables(program),
@@ -265,6 +228,7 @@ public class EnrollmentFormRepository implements FormRepository {
                             return builder.build();
                         }))
                 .cacheWithInitialCapacity(1);
+        return this.cachedRuleEngineFlowable;
     }
 
     @NonNull
@@ -528,18 +492,18 @@ public class EnrollmentFormRepository implements FormRepository {
 
     @Override
     public void deleteTrackedEntityAttributeValues(@NonNull String trackedEntityInstanceId) {
-        String DELETE_WHERE_RELATIONSHIP = String.format(
+        String deleteWhereRelationship = String.format(
                 "%s.%s = ",
                 TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_INSTANCE);
-        briteDatabase.delete(TrackedEntityAttributeValueModel.TABLE, DELETE_WHERE_RELATIONSHIP + "'" + trackedEntityInstanceId + "'");
+        briteDatabase.delete(TrackedEntityAttributeValueModel.TABLE, deleteWhereRelationship + "'" + trackedEntityInstanceId + "'");
     }
 
     @Override
     public void deleteEnrollment(@NonNull String trackedEntityInstanceId) {
-        String DELETE_WHERE_RELATIONSHIP = String.format(
+        String deleteWhereRelationship = String.format(
                 "%s.%s = ",
                 EnrollmentModel.TABLE, EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE);
-        briteDatabase.delete(EnrollmentModel.TABLE, DELETE_WHERE_RELATIONSHIP + "'" + trackedEntityInstanceId + "'");
+        briteDatabase.delete(EnrollmentModel.TABLE, deleteWhereRelationship + "'" + trackedEntityInstanceId + "'");
     }
 
     @Override
@@ -549,21 +513,21 @@ public class EnrollmentFormRepository implements FormRepository {
 
     @Override
     public void deleteTrackedEntityInstance(@NonNull String trackedEntityInstanceId) {
-        String DELETE_WHERE_RELATIONSHIP = String.format(
+        String deleteWhereRelationship = String.format(
                 "%s.%s = ",
                 TrackedEntityInstanceModel.TABLE, TrackedEntityInstanceModel.Columns.UID);
-        briteDatabase.delete(TrackedEntityInstanceModel.TABLE, DELETE_WHERE_RELATIONSHIP + "'" + trackedEntityInstanceId + "'");
+        briteDatabase.delete(TrackedEntityInstanceModel.TABLE, deleteWhereRelationship + "'" + trackedEntityInstanceId + "'");
     }
 
     @NonNull
     @Override
     public Observable<String> getTrackedEntityInstanceUid() {
-        String SELECT_TE = "SELECT " + EnrollmentModel.TABLE + "." + EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE +
+        String selectTe = "SELECT " + EnrollmentModel.TABLE + "." + EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE +
                 " FROM " + EnrollmentModel.TABLE +
                 " WHERE " + EnrollmentModel.Columns.UID + " = ?" +
                 " LIMIT 1";
 
-        return briteDatabase.createQuery(EnrollmentModel.TABLE, SELECT_TE, enrollmentUid == null ? "" : enrollmentUid).mapToOne(cursor -> cursor.getString(0));
+        return briteDatabase.createQuery(EnrollmentModel.TABLE, selectTe, enrollmentUid == null ? "" : enrollmentUid).mapToOne(cursor -> cursor.getString(0));
     }
 
     @Override
@@ -573,7 +537,7 @@ public class EnrollmentFormRepository implements FormRepository {
 
     @Override
     public void saveCategoryOption(CategoryOptionComboModel selectedOption) {
-
+        // unused
     }
 
     @Override
@@ -698,13 +662,13 @@ public class EnrollmentFormRepository implements FormRepository {
                         }
                     } else { //open Dashboard
                         try (Cursor tetCursor = briteDatabase.query(SELECT_TE_TYPE, enrollmentUid)) {
-                            String programUid = "";
+                            String programUidAux = "";
                             String teiUid = "";
                             if (tetCursor != null && tetCursor.moveToFirst()) {
-                                programUid = tetCursor.getString(0);
+                                programUidAux = tetCursor.getString(0);
                                 teiUid = tetCursor.getString(1);
                             }
-                            return Trio.create(teiUid, programUid, "");
+                            return Trio.create(teiUid, programUidAux, "");
                         }
                     }
                 });

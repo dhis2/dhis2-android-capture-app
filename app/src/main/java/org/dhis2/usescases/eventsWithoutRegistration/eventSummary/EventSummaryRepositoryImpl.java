@@ -4,6 +4,9 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.R;
@@ -39,8 +42,6 @@ import java.util.Locale;
 
 import javax.annotation.Nonnull;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
@@ -143,15 +144,6 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
             "WHERE Event.uid = ?\n" +
             "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'\n" +
             "LIMIT 1;";
-
-   /* private static final String QUERY_VALUES = "SELECT " +
-            "  eventDate," +
-            "  programStage," +
-            "  dataElement," +
-            "  value" +
-            " FROM TrackedEntityDataValue " +
-            "  INNER JOIN Event ON TrackedEntityDataValue.event = Event.uid " +
-            " WHERE event = ? AND value IS NOT NULL AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "';";*/
 
     private static final String QUERY_VALUES = "SELECT " +
             "  Event.eventDate," +
@@ -318,23 +310,16 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
                 ContentValues values = event.toContentValues();
                 switch (event.status()) {
                     case ACTIVE:
-                        values.put(EventModel.Columns.STATUS, EventStatus.COMPLETED.name());
-                        values.put(EventModel.Columns.COMPLETE_DATE, lastUpdated);
-                        break;
                     case SKIPPED:
-                        values.put(EventModel.Columns.STATUS, EventStatus.COMPLETED.name()); //TODO: Can this happen?
-                        values.put(EventModel.Columns.COMPLETE_DATE, lastUpdated);
-                        break;
                     case VISITED:
-                        values.put(EventModel.Columns.STATUS, EventStatus.COMPLETED.name()); //TODO: Can this happen?
-                        values.put(EventModel.Columns.COMPLETE_DATE, lastUpdated);
-                        break;
                     case SCHEDULE:
                         values.put(EventModel.Columns.STATUS, EventStatus.COMPLETED.name()); //TODO: Can this happen?
                         values.put(EventModel.Columns.COMPLETE_DATE, lastUpdated);
                         break;
                     case COMPLETED:
                         values.put(EventModel.Columns.STATUS, EventStatus.ACTIVE.name()); //TODO: This should check dates?
+                        break;
+                    default:
                         break;
                 }
 
@@ -386,7 +371,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
     private Flowable<RuleEvent> queryEvent(@NonNull List<RuleDataValue> dataValues) {
         return briteDatabase.createQuery(EventModel.TABLE, QUERY_EVENT, eventUid == null ? "" : eventUid)
                 .mapToOne(cursor -> {
-                    String eventUid = cursor.getString(0);
+                    String eventUidAux = cursor.getString(0);
                     String programStageUid = cursor.getString(1);
                     Date eventDate = parseDate(cursor.getString(3));
                     Date dueDate = cursor.isNull(4) ? eventDate : parseDate(cursor.getString(4));
@@ -396,7 +381,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
                     RuleEvent.Status status = RuleEvent.Status.valueOf(cursor.getString(2));
 
                     return RuleEvent.builder()
-                            .event(eventUid)
+                            .event(eventUidAux)
                             .programStage(programStageUid)
                             .programStageName(programStageName)
                             .status(status)
@@ -440,11 +425,8 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
     }
 
     @NonNull
-    private static Date parseDate(@NonNull String date) {
-        try {
-            return BaseIdentifiableObject.DATE_FORMAT.parse(date);
-        } catch (ParseException parseException) {
-            throw new RuntimeException(parseException);
-        }
+    private static Date parseDate(@NonNull String date) throws ParseException {
+        return BaseIdentifiableObject.DATE_FORMAT.parse(date);
+
     }
 }

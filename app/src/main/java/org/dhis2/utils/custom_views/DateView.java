@@ -8,7 +8,10 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.DatePicker;
-import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ViewDataBinding;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -22,9 +25,6 @@ import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 
-import androidx.appcompat.app.AlertDialog;
-import androidx.databinding.DataBindingUtil;
-import androidx.databinding.ViewDataBinding;
 import timber.log.Timber;
 
 /**
@@ -41,9 +41,7 @@ public class DateView extends FieldLayout implements View.OnClickListener {
 
     private OnDateSelected listener;
 
-    private String label;
     private boolean allowFutureDates;
-    private String description;
     private Date date;
     private TextInputLayout inputLayout;
 
@@ -62,6 +60,7 @@ public class DateView extends FieldLayout implements View.OnClickListener {
         init(context);
     }
 
+    @Override
     public void init(Context context) {
         super.init(context);
     }
@@ -98,7 +97,6 @@ public class DateView extends FieldLayout implements View.OnClickListener {
     }
 
     public void setDescription(String description) {
-        this.description = description;
         binding.setVariable(BR.description, description);
         binding.executePendingBindings();
     }
@@ -192,7 +190,7 @@ public class DateView extends FieldLayout implements View.OnClickListener {
             listener.onDateSelected(null);
         });
 
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP){
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
             dateDialog.setButton(DialogInterface.BUTTON_NEUTRAL, getContext().getResources().getString(R.string.change_calendar), (dialog, which) -> {
                 dateDialog.dismiss();
                 showCustomCalendar();

@@ -2,6 +2,8 @@ package org.dhis2.data.forms;
 
 import android.database.Cursor;
 
+import androidx.annotation.NonNull;
+
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.tuples.Pair;
@@ -14,7 +16,6 @@ import org.hisp.dhis.android.core.constant.Constant;
 import org.hisp.dhis.android.core.constant.ConstantTableInfo;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
-import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramRuleActionModel;
 import org.hisp.dhis.android.core.program.ProgramRuleActionType;
@@ -62,7 +63,6 @@ import java.util.Objects;
 
 import javax.annotation.Nonnull;
 
-import androidx.annotation.NonNull;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -465,6 +465,7 @@ public final class RulesRepository {
         return create(actionType, programStage, section, attribute, dataElement, location, content, data, option, optionGroup);
     }
 
+    @SuppressWarnings("squid:S00107")
     @NonNull
     public static RuleAction create(ProgramRuleActionType actionType, String programStage, String section, String attribute,
                                     String dataElement, String location, String content, String data, String option, String optionGroup) {
@@ -478,11 +479,13 @@ public final class RulesRepository {
 
         switch (actionType) {
             case DISPLAYTEXT:
-                if(location!=null)
+                if (location != null)
                     return createDisplayTextAction(content, data, location);
+                break;
             case DISPLAYKEYVALUEPAIR:
-                if(location!=null)
+                if (location != null)
                     return createDisplayKeyValuePairAction(content, data, location);
+                break;
             case HIDEFIELD:
                 return RuleActionHideField.create(content,
                         isEmpty(attribute) ? field : attribute);
@@ -521,6 +524,7 @@ public final class RulesRepository {
             default:
                 return RuleActionUnsupported.create("UNSUPPORTED RULE ACTION TYPE", actionType.name());
         }
+        return RuleActionUnsupported.create("UNSUPPORTED RULE ACTION TYPE", actionType.name());
     }
 
     @NonNull
@@ -590,10 +594,10 @@ public final class RulesRepository {
 
                                                 Calendar calendar = Calendar.getInstance();
                                                 calendar.setTime(eventDate);
-                                                calendar.add(Calendar.SECOND,count);
+                                                calendar.add(Calendar.SECOND, count);
                                                 eventDate = calendar.getTime();
                                                 calendar.setTime(dueDate);
-                                                calendar.add(Calendar.SECOND,count);
+                                                calendar.add(Calendar.SECOND, count);
                                                 dueDate = calendar.getTime();
                                                 count--;
 

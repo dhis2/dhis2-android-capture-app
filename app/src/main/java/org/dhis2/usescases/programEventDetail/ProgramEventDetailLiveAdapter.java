@@ -20,7 +20,7 @@ public class ProgramEventDetailLiveAdapter extends PagedListAdapter<ProgramEvent
     private static final DiffUtil.ItemCallback<ProgramEventViewModel> DIFF_CALLBACK = new DiffUtil.ItemCallback<ProgramEventViewModel>() {
         @Override
         public boolean areItemsTheSame(@NonNull ProgramEventViewModel oldItem, @NonNull ProgramEventViewModel newItem) {
-            return oldItem.uid() == newItem.uid();
+            return oldItem.uid().equals(newItem.uid());
         }
 
         @Override
@@ -51,24 +51,4 @@ public class ProgramEventDetailLiveAdapter extends PagedListAdapter<ProgramEvent
     public void onBindViewHolder(@NonNull ProgramEventDetailViewHolder holder, int position) {
         holder.bind(presenter, getItem(position));
     }
-
-   /* @Override
-    public int getItemCount() {
-        return events != null ? events.size() : 0;
-    }*/
-
-  /*  public void setEvents(List<ProgramEventViewModel> events, int currentPage) {
-
-        if (currentPage == 0)
-            this.events = new ArrayList<>();
-
-        this.events.addAll(events);
-
-        notifyDataSetChanged();
-
-    }*/
-
-   /* public void clearData() {
-        this.events.clear();
-    }*/
 }

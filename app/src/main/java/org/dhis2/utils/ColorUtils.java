@@ -9,12 +9,12 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.RippleDrawable;
 import android.util.TypedValue;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.dhis2.R;
 
 import java.util.ArrayList;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -40,7 +40,7 @@ public class ColorUtils {
 
         int colorToReturn = Color.BLACK;
 
-        if (!isEmpty(hexColor)) {
+        if (hexColor != null && !isEmpty(hexColor)) {
             if (hexColor.length() == 4) {//Color is formatted as #fff
                 char r = hexColor.charAt(1);
                 char g = hexColor.charAt(2);
@@ -73,29 +73,30 @@ public class ColorUtils {
         rgb.add(Color.green(color) / 255.0d);
         rgb.add(Color.blue(color) / 255.0d);
 
-        Double r = null;
-        Double g = null;
-        Double b = null;
+        Double r = 0.0;
+        Double g = 0.0;
+        Double b = 0.0;
         for (Double c : rgb) {
             if (c <= 0.03928d)
                 c = c / 12.92d;
             else
                 c = Math.pow(((c + 0.055d) / 1.055d), 2.4d);
 
-            if (r == null)
+            if (r == 0.0)
                 r = c;
-            else if (g == null)
+            else if (g == 0.0)
                 g = c;
             else
                 b = c;
         }
 
-        double L = 0.2126d * r + 0.7152d * g + 0.0722d * b;
+        double l = 0.2126d * r + 0.7152d * g + 0.0722d * b;
 
 
-        return (L > 0.179d) ? Color.BLACK : Color.WHITE;
+        return (l > 0.179d) ? Color.BLACK : Color.WHITE;
     }
 
+    @SuppressWarnings("squid:S1479")
     public static int getThemeFromColor(String color) {
 
         if (color == null)
@@ -232,7 +233,6 @@ public class ColorUtils {
                 return R.style.colorPrimary_374;
             default:
                 return -1;
-
         }
     }
 

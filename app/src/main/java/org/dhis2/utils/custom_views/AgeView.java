@@ -9,7 +9,6 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.DatePicker;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.databinding.ViewDataBinding;
@@ -38,16 +37,15 @@ import static android.text.TextUtils.isEmpty;
 public class AgeView extends FieldLayout implements View.OnClickListener, View.OnFocusChangeListener {
 
     private TextInputEditText date;
-    private TextInputEditText day;
-    private TextInputEditText month;
-    private TextInputEditText year;
-    private ViewDataBinding binding;
+    private TextInputEditText dayEditText;
+    private TextInputEditText monthEditText;
+    private TextInputEditText yearEditText;
+    private ViewDataBinding viewDataBinding;
 
     private Calendar selectedCalendar;
     private DateFormat dateFormat;
 
     private OnAgeSet listener;
-    private String label;
     private TextInputLayout inputLayout;
 
     public AgeView(Context context) {
@@ -72,12 +70,12 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
 
     public void setLabel(String label, String description) {
         this.label = label;
-        if (binding instanceof AgeCustomViewAccentBinding) {
-            ((AgeCustomViewAccentBinding) binding).setLabel(label);
-            ((AgeCustomViewAccentBinding) binding).setDescription(description);
+        if (viewDataBinding instanceof AgeCustomViewAccentBinding) {
+            ((AgeCustomViewAccentBinding) viewDataBinding).setLabel(label);
+            ((AgeCustomViewAccentBinding) viewDataBinding).setDescription(description);
         } else {
-            ((AgeCustomViewBinding) binding).setLabel(label);
-            ((AgeCustomViewBinding) binding).setDescription(description);
+            ((AgeCustomViewBinding) viewDataBinding).setLabel(label);
+            ((AgeCustomViewBinding) viewDataBinding).setDescription(description);
         }
     }
 
@@ -159,6 +157,8 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
                 case R.id.input_year:
                     handleSingleInputs();
                     break;
+                default:
+                    break;
             }
     }
 
@@ -166,9 +166,9 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
 
         Calendar calendar = Calendar.getInstance();
 
-        calendar.add(Calendar.DAY_OF_MONTH, isEmpty(day.getText().toString()) ? 0 : -Integer.valueOf(day.getText().toString()));
-        calendar.add(Calendar.MONTH, isEmpty(month.getText().toString()) ? 0 : -Integer.valueOf(month.getText().toString()));
-        calendar.add(Calendar.YEAR, isEmpty(year.getText().toString()) ? 0 : -Integer.valueOf(year.getText().toString()));
+        calendar.add(Calendar.DAY_OF_MONTH, isEmpty(dayEditText.getText().toString()) ? 0 : -Integer.valueOf(dayEditText.getText().toString()));
+        calendar.add(Calendar.MONTH, isEmpty(monthEditText.getText().toString()) ? 0 : -Integer.valueOf(monthEditText.getText().toString()));
+        calendar.add(Calendar.YEAR, isEmpty(yearEditText.getText().toString()) ? 0 : -Integer.valueOf(yearEditText.getText().toString()));
         calendar.set(Calendar.HOUR_OF_DAY, 0);
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
@@ -193,9 +193,9 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
         String result = dateFormat.format(selectedCalendar.getTime());
 
         int[] dateDifference = DateUtils.getDifference(selectedCalendar.getTime(), Calendar.getInstance().getTime());
-        day.setText(String.valueOf(dateDifference[2]));
-        month.setText(String.valueOf(dateDifference[1]));
-        year.setText(String.valueOf(dateDifference[0]));
+        dayEditText.setText(String.valueOf(dateDifference[2]));
+        monthEditText.setText(String.valueOf(dateDifference[1]));
+        yearEditText.setText(String.valueOf(dateDifference[0]));
 
         if (!result.equals(date.getText().toString())) {
             date.setText(result);
@@ -224,9 +224,9 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
         String result = dateFormat.format(initialDate);
 
         int[] dateDifference = DateUtils.getDifference(initialDate, Calendar.getInstance().getTime());
-        day.setText(String.valueOf(dateDifference[2]));
-        month.setText(String.valueOf(dateDifference[1]));
-        year.setText(String.valueOf(dateDifference[0]));
+        dayEditText.setText(String.valueOf(dateDifference[2]));
+        monthEditText.setText(String.valueOf(dateDifference[1]));
+        yearEditText.setText(String.valueOf(dateDifference[0]));
 
         date.setText(result);
     }
@@ -235,15 +235,15 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
     public void setIsBgTransparent(Boolean isBgTransparent) {
 
         if (!isBgTransparent)
-            binding = AgeCustomViewAccentBinding.inflate(inflater, this, true);
+            viewDataBinding = AgeCustomViewAccentBinding.inflate(inflater, this, true);
         else
-            binding = AgeCustomViewBinding.inflate(inflater, this, true);
+            viewDataBinding = AgeCustomViewBinding.inflate(inflater, this, true);
 
         inputLayout = findViewById(R.id.inputLayout);
         date = findViewById(R.id.date_picker);
-        day = findViewById(R.id.input_days);
-        month = findViewById(R.id.input_month);
-        year = findViewById(R.id.input_year);
+        dayEditText = findViewById(R.id.input_days);
+        monthEditText = findViewById(R.id.input_month);
+        yearEditText = findViewById(R.id.input_year);
         selectedCalendar = Calendar.getInstance();
         dateFormat = DateUtils.uiDateFormat();
 
@@ -252,41 +252,41 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
         date.setOnFocusChangeListener(this::onFocusChanged);
         date.setOnClickListener(this);
 
-        day.setFocusable(true);
-        day.setClickable(true);
-        month.setFocusable(true);
-        month.setClickable(true);
-        year.setFocusable(true);
-        year.setClickable(true);
+        dayEditText.setFocusable(true);
+        dayEditText.setClickable(true);
+        monthEditText.setFocusable(true);
+        monthEditText.setClickable(true);
+        yearEditText.setFocusable(true);
+        yearEditText.setClickable(true);
 
-        day.setFilters(new InputFilter[]{new InputFilter.LengthFilter(2)});
-        month.setFilters(new InputFilter[]{new InputFilter.LengthFilter(2)});
-        year.setFilters(new InputFilter[]{new InputFilter.LengthFilter(4)});
+        dayEditText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(2)});
+        monthEditText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(2)});
+        yearEditText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(4)});
 
-        day.setOnEditorActionListener((v, actionId, event) -> {
+        dayEditText.setOnEditorActionListener((v, actionId, event) -> {
             nextFocus(v);
             return true;
         });
 
-        month.setOnEditorActionListener((v, actionId, event) -> {
-            day.requestFocus();
+        monthEditText.setOnEditorActionListener((v, actionId, event) -> {
+            dayEditText.requestFocus();
             return true;
         });
 
-        year.setOnEditorActionListener((v, actionId, event) -> {
-            month.requestFocus();
+        yearEditText.setOnEditorActionListener((v, actionId, event) -> {
+            monthEditText.requestFocus();
             return true;
         });
-        day.setOnFocusChangeListener(this);
-        month.setOnFocusChangeListener(this);
-        year.setOnFocusChangeListener(this);
+        dayEditText.setOnFocusChangeListener(this);
+        monthEditText.setOnFocusChangeListener(this);
+        yearEditText.setOnFocusChangeListener(this);
     }
 
     public void setEditable(Boolean editable) {
         date.setEnabled(editable);
-        day.setEnabled(editable);
-        month.setEnabled(editable);
-        year.setEnabled(editable);
+        dayEditText.setEnabled(editable);
+        monthEditText.setEnabled(editable);
+        yearEditText.setEnabled(editable);
     }
 
     public interface OnAgeSet {

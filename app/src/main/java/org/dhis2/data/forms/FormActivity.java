@@ -14,6 +14,7 @@ import org.dhis2.usescases.general.ActivityGlobalAbstract;
 
 import static org.dhis2.utils.Preconditions.isNull;
 
+@SuppressWarnings("squid:MaximumInheritanceDepth")
 public class FormActivity extends ActivityGlobalAbstract {
     private static final String ARGUMENTS = "formViewArguments";
     private static final String IS_ENROLLMENT = "isEnrollment";

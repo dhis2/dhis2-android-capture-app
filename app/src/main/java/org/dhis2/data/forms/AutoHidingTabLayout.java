@@ -14,6 +14,7 @@ import androidx.viewpager.widget.ViewPager;
 /**
  * A TabLayout that automatically hides when the attached adapter has less than 2 elements
  */
+@SuppressWarnings("squid:MaximumInheritanceDepth")
 public class AutoHidingTabLayout extends TabLayout {
     private ViewPager mViewPager;
 

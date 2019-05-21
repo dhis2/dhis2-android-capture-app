@@ -13,7 +13,7 @@ import androidx.appcompat.widget.AppCompatAutoCompleteTextView;
 /**
  * QUADRAM. Created by ppajuelo on 15/01/2018.
  */
-
+@SuppressWarnings("squid:MaximumInheritanceDepth")
 public class TextInputAutoCompleteTextView extends AppCompatAutoCompleteTextView {
 
     public TextInputAutoCompleteTextView(Context context) {

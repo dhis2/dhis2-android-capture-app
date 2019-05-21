@@ -9,6 +9,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
+
 import org.dhis2.App;
 import org.dhis2.BuildConfig;
 import org.dhis2.R;
@@ -22,7 +26,6 @@ import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.custom_views.CustomDialog;
 import org.dhis2.utils.custom_views.ProgressBarAnimation;
 import org.hisp.dhis.android.core.event.EventModel;
-import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramModel;
 
 import java.util.ArrayList;
@@ -32,9 +35,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.databinding.DataBindingUtil;
 import io.reactivex.functions.Consumer;
 import me.toptas.fancyshowcase.FancyShowCaseView;
 import me.toptas.fancyshowcase.FocusShape;
@@ -44,7 +44,7 @@ import static android.text.TextUtils.isEmpty;
 /**
  * QUADRAM. Created by Cristian on 01/03/2018.
  */
-
+@SuppressWarnings("squid:MaximumInheritanceDepth")
 public class EventSummaryActivity extends ActivityGlobalAbstract implements EventSummaryContract.View, ProgressBarAnimation.OnUpdate {
 
     private static final int PROGRESS_TIME = 2000;
@@ -191,10 +191,9 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
     @Override
     public void accessDataWrite(Boolean canWrite) {
 
-        if (DateUtils.getInstance().isEventExpired(null, eventModel.completedDate(), programModel.completeEventsExpiryDays())){
+        if (DateUtils.getInstance().isEventExpired(null, eventModel.completedDate(), programModel.completeEventsExpiryDays())) {
             binding.actionButton.setVisibility(View.GONE);
-        }
-        else {
+        } else {
             switch (eventModel.status()) {
                 case ACTIVE:
                     binding.actionButton.setText(getString(R.string.complete_and_close));
@@ -261,12 +260,12 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
 
                 StringBuilder missingString = new StringBuilder(missingMandatoryFields.isEmpty() ? "" : "These fields are mandatory. Please check their values to be able to complete the event.");
                 for (String missinField : missingMandatoryFields) {
-                    missingString.append(String.format("\n- %s", missinField));
+                    missingString.append(String.format("%n- %s", missinField));
                 }
 
                 StringBuilder errorString = new StringBuilder(errorFields.isEmpty() ? "" : "These fields contain errors. Please check their values to be able to complete the event.");
                 for (String errorField : errorFields) {
-                    errorString.append(String.format("\n- %s", errorField));
+                    errorString.append(String.format("%n- %s", errorField));
                 }
 
                 String finalMessage = missingString.append("\n").append(errorString.toString()).toString();

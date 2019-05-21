@@ -1,19 +1,19 @@
 package org.dhis2.usescases.sync;
 
-import org.dhis2.data.metadata.MetadataRepository;
-import org.dhis2.data.service.ReservedValuesWorker;
-import org.dhis2.data.service.SyncDataWorker;
-import org.dhis2.data.service.SyncMetadataWorker;
-import org.hisp.dhis.android.core.D2;
-
-import java.util.concurrent.TimeUnit;
-
 import androidx.work.Constraints;
 import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.NetworkType;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
+
+import org.dhis2.data.metadata.MetadataRepository;
+import org.dhis2.data.service.ReservedValuesWorker;
+import org.dhis2.data.service.SyncDataWorker;
+import org.dhis2.data.service.SyncMetadataWorker;
+
+import java.util.concurrent.TimeUnit;
+
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;

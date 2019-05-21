@@ -36,12 +36,12 @@ import static java.lang.String.valueOf;
 final class EditTextCustomHolder extends FormViewHolder {
 
     private List<String> autoCompleteValues;
-    private FormEditTextCustomBinding binding;
+    private FormEditTextCustomBinding formEditTextCustomBinding;
     private EditTextViewModel editTextModel;
 
     EditTextCustomHolder(FormEditTextCustomBinding binding, FlowableProcessor<RowAction> processor, boolean isSearchMode) {
         super(binding);
-        this.binding = binding;
+        this.formEditTextCustomBinding = binding;
         binding.customEdittext.setFocusChangedListener((v, hasFocus) -> {
             if (hasFocus)
                 openKeyboard(binding.customEdittext.getEditText());
@@ -70,67 +70,67 @@ final class EditTextCustomHolder extends FormViewHolder {
         this.editTextModel = (EditTextViewModel) model;
 
         descriptionText = editTextModel.description();
-        binding.customEdittext.setValueType(editTextModel.valueType());
-        binding.customEdittext.setEditable(model.editable());
+        formEditTextCustomBinding.customEdittext.setValueType(editTextModel.valueType());
+        formEditTextCustomBinding.customEdittext.setEditable(model.editable());
         if (editTextModel.valueType() == ValueType.LONG_TEXT) {
-            binding.customEdittext.getInputLayout().getEditText().setSingleLine(false);
-            binding.customEdittext.getInputLayout().getEditText().setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
+            formEditTextCustomBinding.customEdittext.getInputLayout().getEditText().setSingleLine(false);
+            formEditTextCustomBinding.customEdittext.getInputLayout().getEditText().setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
         }
         label = new StringBuilder(editTextModel.label());
         if (editTextModel.mandatory())
             label.append("*");
-        binding.customEdittext.setLabel(label.toString());
+        formEditTextCustomBinding.customEdittext.setLabel(label.toString());
 
         if (editTextModel.warning() != null)
-            binding.customEdittext.setWarning(editTextModel.warning());
+            formEditTextCustomBinding.customEdittext.setWarning(editTextModel.warning());
         else if (editTextModel.error() != null)
-            binding.customEdittext.setError(editTextModel.error());
+            formEditTextCustomBinding.customEdittext.setError(editTextModel.error());
         else
-            binding.customEdittext.setError(null);
+            formEditTextCustomBinding.customEdittext.setError(null);
 
 
         if (editTextModel.value() != null)
-            binding.customEdittext.setText(editTextModel.value());
+            formEditTextCustomBinding.customEdittext.setText(editTextModel.value());
         else
-            binding.customEdittext.setText(null);
+            formEditTextCustomBinding.customEdittext.setText(null);
 
         setRenderingType(editTextModel.fieldRendering());
 
-        binding.executePendingBindings();
+        formEditTextCustomBinding.executePendingBindings();
     }
 
     private void checkAutocompleteRendering() {
         if (editTextModel.fieldRendering() != null &&
                 editTextModel.fieldRendering().type() == ValueTypeRenderingType.AUTOCOMPLETE &&
-                !autoCompleteValues.contains(binding.customEdittext.getEditText().getText().toString())) {
-            autoCompleteValues.add(binding.customEdittext.getEditText().getText().toString());
+                !autoCompleteValues.contains(formEditTextCustomBinding.customEdittext.getEditText().getText().toString())) {
+            autoCompleteValues.add(formEditTextCustomBinding.customEdittext.getEditText().getText().toString());
             saveListToPreference(editTextModel.uid(), autoCompleteValues);
         }
     }
 
     @NonNull
     private Boolean valueHasChanged() {
-        return !Preconditions.equals(isEmpty(binding.customEdittext.getEditText().getText()) ? "" : binding.customEdittext.getEditText().getText().toString(),
+        return !Preconditions.equals(isEmpty(formEditTextCustomBinding.customEdittext.getEditText().getText()) ? "" : formEditTextCustomBinding.customEdittext.getEditText().getText().toString(),
                 editTextModel.value() == null ? "" : valueOf(editTextModel.value()));
     }
 
     private void setRenderingType(ValueTypeDeviceRenderingModel renderingType) {
         if (renderingType != null && renderingType.type() == ValueTypeRenderingType.AUTOCOMPLETE) {
             autoCompleteValues = getListFromPreference(editTextModel.uid());
-            ArrayAdapter<String> autoCompleteAdapter = new ArrayAdapter<>(binding.customEdittext.getContext(), android.R.layout.simple_dropdown_item_1line, autoCompleteValues);
-            binding.customEdittext.getEditText().setAdapter(autoCompleteAdapter);
+            ArrayAdapter<String> autoCompleteAdapter = new ArrayAdapter<>(formEditTextCustomBinding.customEdittext.getContext(), android.R.layout.simple_dropdown_item_1line, autoCompleteValues);
+            formEditTextCustomBinding.customEdittext.getEditText().setAdapter(autoCompleteAdapter);
         }
     }
 
     private void saveListToPreference(String key, List<String> list) {
         Gson gson = new Gson();
         String json = gson.toJson(list);
-        binding.customEdittext.getContext().getSharedPreferences(Constants.SHARE_PREFS, MODE_PRIVATE).edit().putString(key, json).apply();
+        formEditTextCustomBinding.customEdittext.getContext().getSharedPreferences(Constants.SHARE_PREFS, MODE_PRIVATE).edit().putString(key, json).apply();
     }
 
     private List<String> getListFromPreference(String key) {
         Gson gson = new Gson();
-        String json = binding.customEdittext.getContext().getSharedPreferences(Constants.SHARE_PREFS, MODE_PRIVATE).getString(key, "[]");
+        String json = formEditTextCustomBinding.customEdittext.getContext().getSharedPreferences(Constants.SHARE_PREFS, MODE_PRIVATE).getString(key, "[]");
         Type type = new TypeToken<List<String>>() {
         }.getType();
 
@@ -139,6 +139,6 @@ final class EditTextCustomHolder extends FormViewHolder {
 
 
     public void dispose() {
-
+        // unused
     }
 }

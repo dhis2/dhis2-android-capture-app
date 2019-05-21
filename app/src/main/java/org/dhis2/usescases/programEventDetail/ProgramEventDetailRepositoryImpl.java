@@ -73,7 +73,6 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
                 return dataSource;
             }
         }, 20).build();
-//        return Transformations.switchMap(eventRepo.byState().notIn(State.TO_DELETE).orderByEventDate(RepositoryScope.OrderByDirection.DESC).withAllChildren().getPaged(20), events -> transform(events));Transformations.switchMap(eventRepo.byState().notIn(State.TO_DELETE).orderByEventDate(RepositoryScope.OrderByDirection.DESC).withAllChildren().getPaged(20), events -> transform(events));
     }
 
     private ProgramEventViewModel transformToProgramEventModel(Event event) {
@@ -105,18 +104,6 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     @Override
     public Observable<Program> program() {
         return Observable.just(d2.programModule().programs.uid(programUid).withAllChildren().get());
-    }
-
-    private LiveData<PagedList<ProgramEventViewModel>> transform(PagedList<Event> events) {
-
-        DataSource dataSource = events.getDataSource().map(this::transformToProgramEventModel);
-
-        return new LivePagedListBuilder(new DataSource.Factory() {
-            @Override
-            public DataSource create() {
-                return dataSource;
-            }
-        }, 20).build();
     }
 
     private boolean isExpired(Event event) {
@@ -177,22 +164,22 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     @NonNull
     @Override
     public Observable<List<OrganisationUnitModel>> orgUnits() {
-        String SELECT_ORG_UNITS = "SELECT * FROM " + OrganisationUnitModel.TABLE + " " +
+        String selectOrgUnits = "SELECT * FROM " + OrganisationUnitModel.TABLE + " " +
                 "WHERE uid IN (SELECT UserOrganisationUnit.organisationUnit FROM UserOrganisationUnit " +
                 "WHERE UserOrganisationUnit.organisationUnitScope = 'SCOPE_DATA_CAPTURE')";
-        return briteDatabase.createQuery(OrganisationUnitModel.TABLE, SELECT_ORG_UNITS)
+        return briteDatabase.createQuery(OrganisationUnitModel.TABLE, selectOrgUnits)
                 .mapToList(OrganisationUnitModel::create);
     }
 
     @NonNull
     @Override
     public Observable<List<OrganisationUnitModel>> orgUnits(String parentUid) {
-        String SELECT_ORG_UNITS_BY_PARENT = "SELECT OrganisationUnit.* FROM OrganisationUnit " +
+        String selectOrgUnitsByParent = "SELECT OrganisationUnit.* FROM OrganisationUnit " +
                 "JOIN UserOrganisationUnit ON UserOrganisationUnit.organisationUnit = OrganisationUnit.uid " +
                 "WHERE OrganisationUnit.parent = ? AND UserOrganisationUnit.organisationUnitScope = 'SCOPE_DATA_CAPTURE' " +
                 "ORDER BY OrganisationUnit.displayName ASC";
 
-        return briteDatabase.createQuery(OrganisationUnitModel.TABLE, SELECT_ORG_UNITS_BY_PARENT, parentUid)
+        return briteDatabase.createQuery(OrganisationUnitModel.TABLE, selectOrgUnitsByParent, parentUid)
                 .mapToList(OrganisationUnitModel::create);
     }
 

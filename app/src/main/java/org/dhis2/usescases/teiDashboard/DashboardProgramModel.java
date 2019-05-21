@@ -1,6 +1,7 @@
 package org.dhis2.usescases.teiDashboard;
 
-import org.hisp.dhis.android.core.common.ObjectStyle;
+import androidx.databinding.BaseObservable;
+
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
@@ -13,8 +14,6 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
 import java.util.List;
 import java.util.Map;
-
-import androidx.databinding.BaseObservable;
 
 /**
  * QUADRAM. Created by ppajuelo on 04/12/2017.
@@ -32,6 +31,7 @@ public class DashboardProgramModel extends BaseObservable {
     private List<EnrollmentModel> teiEnrollments;
     private Map<String, ObjectStyleModel> programObjectStyles;
 
+    @SuppressWarnings("squid:S00107")
     public DashboardProgramModel(
             TrackedEntityInstanceModel tei,
             EnrollmentModel currentEnrollment,
@@ -86,10 +86,9 @@ public class DashboardProgramModel extends BaseObservable {
     public String getAttributeBySortOrder(int sortOrder) {
         TrackedEntityAttributeValueModel attributeValue = null;
         sortOrder--;
-        if (sortOrder < trackedEntityAttributesModel.size())
+        if (trackedEntityAttributesModel != null && sortOrder < trackedEntityAttributesModel.size())
             for (TrackedEntityAttributeValueModel attribute : trackedEntityAttributeValues)
-                if (trackedEntityAttributesModel != null &&
-                        attribute.trackedEntityAttribute().equals(trackedEntityAttributesModel.get(sortOrder).trackedEntityAttribute()))
+                if (attribute.trackedEntityAttribute().equals(trackedEntityAttributesModel.get(sortOrder).trackedEntityAttribute()))
                     attributeValue = attribute;
 
 

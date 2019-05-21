@@ -25,6 +25,7 @@ import androidx.appcompat.widget.PopupMenu;
 import androidx.databinding.DataBindingUtil;
 import io.reactivex.functions.Consumer;
 
+@SuppressWarnings("squid:MaximumInheritanceDepth")
 public class TeiDataDetailActivity extends ActivityGlobalAbstract implements TeiDataDetailContracts.View {
     ActivityTeidataDetailBinding binding;
 

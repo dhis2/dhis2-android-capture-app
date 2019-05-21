@@ -31,7 +31,6 @@ import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.legendset.LegendModel;
 import org.hisp.dhis.android.core.legendset.ProgramIndicatorLegendSetLinkModel;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramIndicatorModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
@@ -73,31 +72,18 @@ public class DashboardRepositoryImpl implements DashboardRepository {
             "WHERE Enrollment.trackedEntityInstance = ? AND Enrollment.program = ?\n" +
             "ORDER BY Note.storedDate DESC";
 
-    private final String PROGRAM_QUERY = String.format("SELECT %s.* FROM %s WHERE %s.%s = ",
-            ProgramModel.TABLE, ProgramModel.TABLE, ProgramModel.TABLE, ProgramModel.Columns.UID);
-
-    private final String PROGRAM_INDICATORS_QUERY = String.format("SELECT %s.* FROM %s WHERE %s.%s = ",
+    private static final String PROGRAM_INDICATORS_QUERY = String.format("SELECT %s.* FROM %s WHERE %s.%s = ",
             ProgramIndicatorModel.TABLE, ProgramIndicatorModel.TABLE, ProgramIndicatorModel.TABLE, ProgramIndicatorModel.Columns.PROGRAM);
 
-    private final String ATTRIBUTES_QUERY = String.format("SELECT %s.* FROM %s INNER JOIN %s ON %s.%s = %s.%s WHERE %s.%s = ",
-            TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.TABLE,
-            ProgramTrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.Columns.UID,
-            ProgramTrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.Columns.TRACKED_ENTITY_ATTRIBUTE,
-            ProgramTrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.Columns.PROGRAM);
-
-    private final String ORG_UNIT_QUERY = String.format("SELECT * FROM %s WHERE %s.%s = ",
-            OrganisationUnitModel.TABLE, OrganisationUnitModel.TABLE, OrganisationUnitModel.Columns.UID
-    );
-
-    private final String ENROLLMENT_QUERY = String.format("SELECT * FROM %s WHERE %s.%s = ? AND %s.%s = ? ORDER BY %s DESC LIMIT 1",
+    private static final String ENROLLMENT_QUERY = String.format("SELECT * FROM %s WHERE %s.%s = ? AND %s.%s = ? ORDER BY %s DESC LIMIT 1",
             EnrollmentModel.TABLE, EnrollmentModel.TABLE, EnrollmentModel.Columns.PROGRAM,
             EnrollmentModel.TABLE, EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE,
             EnrollmentModel.Columns.CREATED);
 
-    private final String PROGRAM_STAGE_QUERY = String.format("SELECT * FROM %s WHERE %s.%s = ",
+    private static final String PROGRAM_STAGE_QUERY = String.format("SELECT * FROM %s WHERE %s.%s = ",
             ProgramStageModel.TABLE, ProgramStageModel.TABLE, ProgramStageModel.Columns.PROGRAM);
 
-    private final String PROGRAM_STAGE_FROM_EVENT = String.format(
+    private static final String PROGRAM_STAGE_FROM_EVENT = String.format(
             "SELECT %s.* FROM %s JOIN %s " +
                     "ON %s.%s = %s.%s " +
                     "WHERE %s.%s = ? " +
@@ -106,11 +92,11 @@ public class DashboardRepositoryImpl implements DashboardRepository {
             ProgramStageModel.TABLE, ProgramStageModel.Columns.UID, EventModel.TABLE, EventModel.Columns.PROGRAM_STAGE,
             EventModel.TABLE, EventModel.Columns.UID);
 
-    private final String GET_EVENT_FROM_UID = String.format(
+    private static final String GET_EVENT_FROM_UID = String.format(
             "SELECT * FROM %s WHERE %s.%s = ? LIMIT 1",
             EventModel.TABLE, EventModel.TABLE, EventModel.Columns.UID);
 
-    private final String EVENTS_QUERY = String.format(
+    private static final String EVENTS_QUERY = String.format(
             "SELECT DISTINCT %s.* FROM %s " +
                     "JOIN %s ON %s.%s = %s.%s " +
                     "WHERE %s.%s = " +
@@ -133,7 +119,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
             EventModel.TABLE, EventModel.Columns.DUE_DATE,
             EventModel.TABLE, EventModel.Columns.EVENT_DATE, ProgramStageModel.TABLE, ProgramStageModel.Columns.SORT_ORDER);
 
-    private final String EVENTS_DISPLAY_BOX = String.format(
+    private static final String EVENTS_DISPLAY_BOX = String.format(
             "SELECT Event.* FROM %s " +
                     "JOIN %s ON %s.%s = %s.%s " +
                     "JOIN %s ON %s.%s = %s.%s " +
@@ -151,7 +137,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     private static final Set<String> EVENTS_TABLE = new HashSet<>(Arrays.asList(EventModel.TABLE, EnrollmentModel.TABLE));
     private static final Set<String> EVENTS_PROGRAM_STAGE_TABLE = new HashSet<>(Arrays.asList(EventModel.TABLE, EnrollmentModel.TABLE, ProgramStageModel.TABLE));
 
-    private final String ATTRIBUTE_VALUES_QUERY = String.format(
+    private static final String ATTRIBUTE_VALUES_QUERY = String.format(
             "SELECT TrackedEntityAttributeValue.*, TrackedEntityAttribute.valueType, TrackedEntityAttribute.optionSet FROM %s " +
                     "JOIN %s ON %s.%s = %s.%s " +
                     "JOIN %s ON %s.%s = %s.%s " +
@@ -166,7 +152,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
             TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_INSTANCE,
             ProgramTrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.Columns.DISPLAY_IN_LIST,
             ProgramTrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.Columns.SORT_ORDER);
-    private final String ATTRIBUTE_VALUES_NO_PROGRAM_QUERY = String.format(
+    private static final String ATTRIBUTE_VALUES_NO_PROGRAM_QUERY = String.format(
             "SELECT %s.*, TrackedEntityAttribute.valueType, TrackedEntityAttribute.optionSet FROM %s " +
                     "JOIN %s ON %s.%s = %s.%s " +
                     "JOIN %s ON %s.%s = %s.%s " +
@@ -553,13 +539,13 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                     String userName = cursor.getString(0);
 
                     cursor1.moveToFirst();
-                    String enrollmentUid = cursor1.getString(0);
+                    String enrollmentUidAux = cursor1.getString(0);
 
                     SQLiteStatement insetNoteStatement = briteDatabase.getWritableDatabase()
                             .compileStatement(INSERT_NOTE);
 
                     sqLiteBind(insetNoteStatement, 1, codeGenerator.generate()); //enrollment
-                    sqLiteBind(insetNoteStatement, 2, enrollmentUid == null ? "" : enrollmentUid); //enrollment
+                    sqLiteBind(insetNoteStatement, 2, enrollmentUidAux == null ? "" : enrollmentUidAux); //enrollment
                     sqLiteBind(insetNoteStatement, 3, stringBooleanPair.val0() == null ? "" : stringBooleanPair.val0()); //value
                     sqLiteBind(insetNoteStatement, 4, userName == null ? "" : userName); //storeBy
                     sqLiteBind(insetNoteStatement, 5, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime())); //storeDate
@@ -572,7 +558,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                         ContentValues cv = new ContentValues();
                         cv.put(TrackedEntityInstance.Columns.STATE, tei.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
                         briteDatabase.update(TrackedEntityInstanceModel.TABLE, cv, "uid = ?", teiUid);
-                        briteDatabase.update(EnrollmentModel.TABLE, cv, "uid = ?", enrollmentUid);
+                        briteDatabase.update(EnrollmentModel.TABLE, cv, "uid = ?", enrollmentUidAux);
                     }
 
                     insetNoteStatement.clearBindings();
@@ -661,18 +647,16 @@ public class DashboardRepositoryImpl implements DashboardRepository {
         return briteDatabase.createQuery(TrackedEntityInstanceModel.TABLE, SELECT_TEI, enrollmentUid == null ? "" : enrollmentUid)
                 .mapToOne(TrackedEntityInstanceModel::create).take(1).toFlowable(BackpressureStrategy.LATEST)
                 .switchMap(tei -> {
-                    if (State.SYNCED.equals(tei.state()) || State.TO_DELETE.equals(tei.state()) ||
-                            State.ERROR.equals(tei.state())) {
+                    if (tei != null && (State.SYNCED.equals(tei.state()) || State.TO_DELETE.equals(tei.state()) ||
+                            State.ERROR.equals(tei.state()))) {
                         ContentValues values = tei.toContentValues();
                         values.put(TrackedEntityInstanceModel.Columns.STATE, State.TO_UPDATE.toString());
 
-                        if (tei != null && tei.uid() != null) {
-                            if (briteDatabase.update(TrackedEntityInstanceModel.TABLE, values,
-                                    TrackedEntityInstanceModel.Columns.UID + " = ?", tei.uid()) <= 0) {
+                        if (tei.uid() != null && briteDatabase.update(TrackedEntityInstanceModel.TABLE, values,
+                                TrackedEntityInstanceModel.Columns.UID + " = ?", tei.uid()) <= 0) {
 
-                                throw new IllegalStateException(String.format(Locale.US, "Tei=[%s] " +
-                                        "has not been successfully updated", tei.uid()));
-                            }
+                            throw new IllegalStateException(String.format(Locale.US, "Tei=[%s] " +
+                                    "has not been successfully updated", tei.uid()));
                         }
                     }
                     return Flowable.just(status);

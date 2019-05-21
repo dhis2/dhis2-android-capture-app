@@ -2,6 +2,7 @@ package org.dhis2.utils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import de.adorsys.android.securestoragelibrary.SecurePreferences;
 
 import static android.text.TextUtils.isEmpty;
@@ -10,6 +11,10 @@ import static android.text.TextUtils.isEmpty;
  * QUADRAM. Created by ppajuelo on 24/01/2019.
  */
 public class BiometricStorage {
+
+    private BiometricStorage() {
+        // hide public constructor
+    }
 
     public static void saveUserCredentials(String serverUrl, String userName, String pass) {
         SecurePreferences.setValue(Constants.SECURE_CREDENTIALS, true);
@@ -34,7 +39,6 @@ public class BiometricStorage {
         return String.format("Basic %s", jiraAuth);
     }
 
-    @NonNull
     public static void saveJiraUser(@NonNull String jiraUser) {
         SecurePreferences.setValue(Constants.JIRA_USER, jiraUser);
     }

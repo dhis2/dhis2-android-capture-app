@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import org.dhis2.R;
 
-
+@SuppressWarnings("squid:MaximumInheritanceDepth")
 public class DataEntryActivity extends AppCompatActivity {
     private static final String ARGS = "args";
 

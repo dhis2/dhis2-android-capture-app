@@ -1,6 +1,7 @@
 package org.dhis2.data.database;
 
 import android.content.Context;
+
 import androidx.annotation.Nullable;
 
 import com.squareup.sqlbrite2.BriteDatabase;
@@ -47,9 +48,7 @@ public class DbModule {
     @Singleton
     BriteDatabase briteDatabase(DbOpenHelper dbOpenHelper,
                                 SqlBrite sqlBrite, SchedulerProvider schedulerProvider) {
-        BriteDatabase briteDatabase = sqlBrite.wrapDatabaseHelper(dbOpenHelper, schedulerProvider.io());
-//        briteDatabase.setLoggingEnabled(true);
-        return briteDatabase;
+        return sqlBrite.wrapDatabaseHelper(dbOpenHelper, schedulerProvider.io());
     }
 
     @Provides

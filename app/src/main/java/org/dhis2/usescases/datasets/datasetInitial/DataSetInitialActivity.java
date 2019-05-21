@@ -6,6 +6,9 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.PopupMenu;
 
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
+
 import com.google.android.material.textfield.TextInputEditText;
 
 import org.dhis2.App;
@@ -27,12 +30,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.inject.Inject;
 
-import androidx.annotation.Nullable;
-import androidx.databinding.DataBindingUtil;
-
+@SuppressWarnings("squid:MaximumInheritanceDepth")
 public class DataSetInitialActivity extends ActivityGlobalAbstract implements DataSetInitialContract.View {
 
     private ActivityDatasetInitialBinding binding;
@@ -69,7 +71,7 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
 
     @Override
     public void setAccessDataWrite(Boolean canWrite) {
-
+        // unused
     }
 
     @Override
@@ -102,7 +104,7 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
                 .setPossitiveListener(v -> {
                     if (orgUnitDialog.getSelectedOrgUnit() != null && !orgUnitDialog.getSelectedOrgUnit().isEmpty()) {
                         selectedOrgUnit = orgUnitDialog.getSelectedOrgUnitModel();
-                        if(selectedOrgUnit == null)
+                        if (selectedOrgUnit == null)
                             orgUnitDialog.dismiss();
                         binding.dataSetOrgUnitEditText.setText(selectedOrgUnit.displayName());
                         binding.dataSetPeriodEditText.setText("");
@@ -188,8 +190,8 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
             visible = false;
         if (selectedPeriod == null)
             visible = false;
-        for (String key : selectedCatOptions.keySet()) {
-            if (selectedCatOptions.get(key) == null)
+        for (Map.Entry<String, CategoryOptionModel> entry : selectedCatOptions.entrySet()) {
+            if (entry.getValue() == null)
                 visible = false;
         }
 

@@ -16,6 +16,10 @@ import timber.log.Timber;
 
 public class NetworkUtils {
 
+    private NetworkUtils() {
+        // hide public constructor
+    }
+
     /**
      * Check if network available or not
      *
@@ -39,10 +43,8 @@ public class NetworkUtils {
     public static void isGooglePlayServicesAvailable(Activity activity) {
         GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
         int status = googleApiAvailability.isGooglePlayServicesAvailable(activity);
-        if (status != ConnectionResult.SUCCESS) {
-            if (googleApiAvailability.isUserResolvableError(status)) {
-                googleApiAvailability.getErrorDialog(activity, status, 2404).show();
-            }
+        if (status != ConnectionResult.SUCCESS && googleApiAvailability.isUserResolvableError(status)) {
+            googleApiAvailability.getErrorDialog(activity, status, 2404).show();
         }
     }
 }

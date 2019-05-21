@@ -9,6 +9,11 @@ import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.util.TypedValue;
 
+import androidx.core.content.ContextCompat;
+import androidx.databinding.DataBindingUtil;
+import androidx.work.State;
+import androidx.work.WorkManager;
+
 import com.airbnb.lottie.LottieDrawable;
 
 import org.dhis2.App;
@@ -22,13 +27,9 @@ import org.dhis2.utils.Constants;
 
 import javax.inject.Inject;
 
-import androidx.core.content.ContextCompat;
-import androidx.databinding.DataBindingUtil;
-import androidx.work.State;
-import androidx.work.WorkManager;
 import timber.log.Timber;
 
-
+@SuppressWarnings("squid:MaximumInheritanceDepth")
 public class SyncActivity extends ActivityGlobalAbstract implements SyncContracts.View {
 
     ActivitySynchronizationBinding binding;
@@ -38,7 +39,6 @@ public class SyncActivity extends ActivityGlobalAbstract implements SyncContract
     private boolean metadataRunning;
     private boolean metadataDone;
     private boolean dataRunning;
-    private boolean dataDone;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +51,7 @@ public class SyncActivity extends ActivityGlobalAbstract implements SyncContract
         super.onCreate(savedInstanceState);
 
         WorkManager.getInstance().getStatusesForUniqueWorkLiveData(Constants.META).observe(this, status -> {
-            if (status != null && !status.isEmpty()){
+            if (status != null && !status.isEmpty()) {
                 Timber.d("WORK %s WITH STATUS %s", Constants.META, status.get(0).getState().name());
                 handleMetaState(status.get(0).getState());
             }
@@ -84,6 +84,8 @@ public class SyncActivity extends ActivityGlobalAbstract implements SyncContract
                     presenter.syncData(getSharedPreferences().getInt(Constants.TIME_DATA, Constants.TIME_DAILY), Constants.DATA);
                 }
                 break;
+            default:
+                break;
         }
     }
 
@@ -97,12 +99,13 @@ public class SyncActivity extends ActivityGlobalAbstract implements SyncContract
                 break;
             case ENQUEUED:
                 if (dataRunning && metadataDone) {
-                    dataDone = true;
                     binding.eventsText.setText(getString(R.string.data_ready));
                     Bindings.setDrawableEnd(binding.eventsText, ContextCompat.getDrawable(this, R.drawable.animator_done));
                     presenter.syncReservedValues();
                     startMain();
                 }
+                break;
+            default:
                 break;
         }
     }
