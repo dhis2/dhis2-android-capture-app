@@ -175,6 +175,10 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
         return dataEntryAdapter.hasError();
     }
 
+    public String getErrorFields(){
+        return dataEntryAdapter.getErrorFieldNames();
+    }
+
     @Override
     public void setListOptions(List<OptionModel> options) {
         if (OptionSetDialog.isCreated())

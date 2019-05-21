@@ -289,6 +289,19 @@ public final class DataEntryAdapter extends Adapter {
         return hasError;
     }
 
+    public String getErrorFieldNames() {
+        StringBuilder errorFieldNames = new StringBuilder();
+        for (FieldViewModel fieldViewModel : viewModels) {
+            if(fieldViewModel.error() != null) {
+                if(errorFieldNames.length()==0)
+                    errorFieldNames.append(fieldViewModel.label());
+                else
+                    errorFieldNames.append(", ").append(fieldViewModel.label());
+            }
+        }
+        return errorFieldNames.toString();
+    }
+
     public void notifyChanges(RowAction rowAction) {
         List<FieldViewModel> helperModels = new ArrayList<>();
         for (FieldViewModel field : viewModels) {
