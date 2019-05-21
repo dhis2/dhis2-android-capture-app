@@ -109,7 +109,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             finish();
         } else {
             orientation = Resources.getSystem().getConfiguration().orientation;
-            init(teiUid, programUid);
+            restoreAdapter(programUid);
         }
     }
 
@@ -239,6 +239,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void setDataWithOutProgram(DashboardProgramModel program) {
+        dashboardViewModel.updateDashboard(program);
 
         binding.setDashboardModel(program);
         binding.setTrackEntity(program.getTei());
