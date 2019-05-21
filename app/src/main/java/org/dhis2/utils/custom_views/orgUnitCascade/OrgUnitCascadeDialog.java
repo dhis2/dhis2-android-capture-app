@@ -25,6 +25,7 @@ import org.dhis2.utils.ColorUtils;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,12 +44,11 @@ import static android.text.TextUtils.isEmpty;
  */
 
 public class OrgUnitCascadeDialog extends DialogFragment {
-    DialogCascadeOrgunitBinding binding;
+    private DialogCascadeOrgunitBinding binding;
 
     private String title;
     private CascadeOrgUnitCallbacks callbacks;
     private CompositeDisposable disposable;
-    private OrgUnitCascadeAdapter adapter;
     private String selectedOrgUnit;
     private D2 d2;
     private List<OrgUnitItem> initialData;
@@ -66,7 +66,7 @@ public class OrgUnitCascadeDialog extends DialogFragment {
     }
 
     @Override
-    public void onCancel(DialogInterface dialog) {
+    public void onCancel(@NotNull DialogInterface dialog) {
         super.onCancel(dialog);
         callbacks.onDialogCancelled();
     }
@@ -147,7 +147,7 @@ public class OrgUnitCascadeDialog extends DialogFragment {
 
     private void setAdapter(List<OrgUnitItem> data) {
         initialData = data;
-        adapter = new OrgUnitCascadeAdapter(data, selectedOrgUnit, canBeSelected -> {
+        OrgUnitCascadeAdapter adapter = new OrgUnitCascadeAdapter(data, selectedOrgUnit, canBeSelected -> {
             if (canBeSelected) {
                 binding.acceptButton.setVisibility(View.VISIBLE);
             } else {

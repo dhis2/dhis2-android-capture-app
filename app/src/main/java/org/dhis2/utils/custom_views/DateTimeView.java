@@ -83,7 +83,7 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
             try {
                 date = DateUtils.databaseDateFormat().parse(data);
             } catch (ParseException e) {
-                Timber.e(e);
+                Timber.w(e);
             }
 
             if (date == null)

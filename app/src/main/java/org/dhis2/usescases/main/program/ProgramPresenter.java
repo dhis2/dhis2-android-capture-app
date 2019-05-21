@@ -125,7 +125,7 @@ public class ProgramPresenter implements ProgramContract.Presenter {
 
     @Override
     public void onSyncStatusClick(ProgramViewModel program) {
-        view.showSyncDialog(program.id());
+        view.showSyncDialog(program.id(), SyncStatusDialog.ConflictType.PROGRAM);
     }
 
     @Override
