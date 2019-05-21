@@ -227,7 +227,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
         compositeDisposable.add(
                 sectionProcessor
-                        .flatMap(section -> getFieldFlowable(section)
+                        .switchMap(section -> getFieldFlowable(section)
                                 .map(fields -> {
                                     HashMap<String, List<FieldViewModel>> fieldMap = new HashMap<>();
                                     for (FieldViewModel fieldViewModel : fields) {

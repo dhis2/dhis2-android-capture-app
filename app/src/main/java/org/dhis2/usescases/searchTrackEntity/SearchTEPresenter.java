@@ -10,11 +10,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.DatePicker;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.paging.PagedList;
+
 import org.dhis2.R;
 import org.dhis2.data.forms.FormActivity;
 import org.dhis2.data.forms.FormViewArguments;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.tuples.Trio;
+import org.dhis2.usescases.main.program.SyncStatusDialog;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
 import org.dhis2.utils.NetworkUtils;
@@ -35,8 +39,6 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
-import androidx.appcompat.app.AlertDialog;
-import androidx.paging.PagedList;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -622,5 +624,10 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     @Override
     public HashMap<String, String> getQueryData() {
         return queryData;
+    }
+
+    @Override
+    public void onSyncIconClick(String teiUid) {
+        view.showSyncDialog(teiUid, SyncStatusDialog.ConflictType.TEI);
     }
 }
