@@ -81,7 +81,7 @@ public class DataEntryModule {
     DataEntryRepository dataEntryRepository(@NonNull BriteDatabase briteDatabase, @NonNull D2 d2) {
         if (!isEmpty(arguments.event())) { // NOPMD
             return new ProgramStageRepository(briteDatabase, modelFactory,
-                    arguments.event(), arguments.section());
+                    arguments.event(), arguments.section(), d2);
         } else if (!isEmpty(arguments.enrollment())) { //NOPMD
             return new EnrollmentRepository(context, briteDatabase, modelFactory, arguments.enrollment(), d2);
         } else {

@@ -3,6 +3,9 @@ package org.dhis2.usescases.main.program;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ImageSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +31,6 @@ import org.hisp.dhis.android.core.imports.TrackerImportConflict;
 import org.hisp.dhis.android.core.program.ProgramType;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import io.reactivex.Observable;
@@ -36,18 +38,22 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 
-import static org.hisp.dhis.android.core.utils.support.StringUtils.isEmpty;
-
 public class SyncStatusDialog extends BottomSheetDialogFragment {
 
-    private final String programUid;
+    private final String recordUid;
     private final CompositeDisposable compositeDisposable;
+    private final ConflictType conflictType;
     private D2 d2;
     private SyncBottomDialogBinding binding;
     private SyncConflictAdapter adapter;
 
-    public SyncStatusDialog(String programUid) {
-        this.programUid = programUid;
+    public enum ConflictType {
+        PROGRAM, TEI, EVENT
+    }
+
+    public SyncStatusDialog(String recordUid, ConflictType conflictType) {
+        this.recordUid = recordUid;
+        this.conflictType = conflictType;
         this.compositeDisposable = new CompositeDisposable();
     }
 
@@ -67,55 +73,77 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
         binding.synsStatusRecycler.setLayoutManager(layoutManager);
         binding.synsStatusRecycler.setAdapter(adapter);
 
+        switch (conflictType) {
+            case PROGRAM:
+                configureForProgram();
+                break;
+            case TEI:
+                configureForTei();
+                break;
+            case EVENT:
+                configureForEvent();
+                break;
+        }
+
+
+        return binding.getRoot();
+    }
+
+
+    private void configureForProgram() {
+
         compositeDisposable.add(
-                Observable.fromCallable(() -> d2.programModule().programs.uid(programUid).get())
+                Observable.fromCallable(() -> d2.programModule().programs.uid(recordUid).get())
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                program -> {
-                                    binding.programName.setText(program.displayName());
-                                },
+                                program -> binding.programName.setText(program.displayName()),
                                 error -> dismiss()
                         )
         );
 
         compositeDisposable.add(
-                Observable.fromCallable(() -> d2.importModule().trackerImportConflicts.get())
-                        .map(conflicts -> {
-                            Iterator<TrackerImportConflict> iterator = conflicts.iterator();
-                            while (iterator.hasNext()) {
-                                TrackerImportConflict conflict = iterator.next();
-                                if (!isEmpty(conflict.enrollment())) {
-                                    if (d2.enrollmentModule().enrollments.uid(conflict.enrollment()).get().program().equals(programUid))
-                                        iterator.remove();
-                                } else if (!isEmpty(conflict.trackedEntityInstance())) {
-                                    List<String> programs = new ArrayList<>();
-                                    programs.add(programUid);
-                                    if (d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programs).byUid().eq(conflict.trackedEntityInstance()).get().isEmpty())
-                                        iterator.remove();
-                                } else if (!isEmpty(conflict.event())) {
-                                    if (d2.eventModule().events.uid(conflict.event()).get().program().equals(programUid))
-                                        iterator.remove();
-                                } else
-                                    iterator.remove();
+                Observable.fromCallable(() -> d2.programModule().programs.uid(recordUid).get())
+                        .map(program -> {
+                            State state = State.SYNCED;
+                            if (program.programType() == ProgramType.WITHOUT_REGISTRATION) {
+                                if (!d2.eventModule().events.byProgramUid().eq(program.uid()).byState().in(State.ERROR).get().isEmpty())
+                                    state = State.ERROR;
+                                else if (!d2.eventModule().events.byProgramUid().eq(program.uid()).byState().in(State.WARNING).get().isEmpty())
+                                    state = State.WARNING;
+                                else if (!d2.eventModule().events.byProgramUid().eq(program.uid()).byState().in(State.SENT_VIA_SMS, State.SYNCED_VIA_SMS).get().isEmpty())
+                                    state = State.SENT_VIA_SMS;
+                                else if (!d2.eventModule().events.byProgramUid().eq(program.uid()).byState().in(State.TO_UPDATE, State.TO_POST, State.TO_DELETE).get().isEmpty())
+                                    state = State.TO_UPDATE;
+                            } else {
+                                List<String> programUids = new ArrayList<>();
+                                programUids.add(program.uid());
+                                if (!d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().in(State.ERROR).get().isEmpty())
+                                    state = State.ERROR;
+                                else if (!d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().in(State.WARNING).get().isEmpty())
+                                    state = State.WARNING;
+                                else if (!d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().in(State.SENT_VIA_SMS, State.SYNCED_VIA_SMS).get().isEmpty())
+                                    state = State.SENT_VIA_SMS;
+                                else if (!d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().in(State.TO_UPDATE, State.TO_POST, State.TO_DELETE).get().isEmpty())
+                                    state = State.TO_UPDATE;
                             }
-                            return conflicts;
+                            return state;
                         })
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                conflicts -> {
-                                    if (conflicts.isEmpty())
+                                state -> {
+                                    if (state != State.WARNING && state != State.ERROR)
                                         setNoConflictMessage();
                                     else
-                                        prepareConflictAdapter(conflicts);
+                                        setProgramConflictMessage(state);
                                 },
                                 error -> dismiss()
                         )
         );
 
         compositeDisposable.add(
-                Observable.fromCallable(() -> d2.programModule().programs.uid(programUid).get())
+                Observable.fromCallable(() -> d2.programModule().programs.uid(recordUid).get())
                         .map(program -> {
                             State state = State.SYNCED;
                             if (program.programType() == ProgramType.WITH_REGISTRATION) {
@@ -149,27 +177,119 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
                         )
         );
 
+    }
 
-        return binding.getRoot();
+
+    private void configureForTei() {
+
+        compositeDisposable.add(
+                Observable.fromCallable(() -> d2.trackedEntityModule().trackedEntityTypes
+                        .uid(d2.trackedEntityModule().trackedEntityInstances.uid(recordUid).get().trackedEntityType())
+                        .get())
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                trackedEntityType -> binding.programName.setText(String.format("%s : %s", trackedEntityType.displayName(), recordUid)),
+                                error -> dismiss()
+                        )
+        );
+
+        compositeDisposable.add(
+                Observable.fromCallable(() -> d2.importModule().trackerImportConflicts.byTrackedEntityInstanceUid().eq(recordUid).get())
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                conflicts -> {
+                                    if (conflicts.isEmpty())
+                                        setNoConflictMessage();
+                                    else
+                                        prepareConflictAdapter(conflicts);
+                                },
+                                error -> dismiss()
+                        )
+        );
+
+        compositeDisposable.add(
+                Observable.fromCallable(() -> d2.trackedEntityModule().trackedEntityInstances.uid(recordUid).get().state())
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                state -> {
+                                    Bindings.setStateIcon(binding.syncIcon, state);
+                                    binding.syncStatusName.setText(getTextByState(state));
+                                    binding.syncStatusBar.setBackgroundResource(getColorForState(state));
+                                },
+                                error -> dismiss()
+                        )
+        );
+    }
+
+    private void configureForEvent() {
+        compositeDisposable.add(
+                Observable.fromCallable(() -> d2.programModule().programStages
+                        .uid(d2.eventModule().events.uid(recordUid).get().programStage())
+                        .get())
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                stage -> binding.programName.setText(String.format("%s : %s", stage.displayName(), recordUid)),
+                                error -> dismiss()
+                        )
+        );
+
+        compositeDisposable.add(
+                Observable.fromCallable(() -> d2.importModule().trackerImportConflicts.byEventUid().eq(recordUid).get())
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                conflicts -> {
+                                    if (conflicts.isEmpty())
+                                        setNoConflictMessage();
+                                    else
+                                        prepareConflictAdapter(conflicts);
+                                },
+                                error -> dismiss()
+                        )
+        );
+
+        compositeDisposable.add(
+                Observable.fromCallable(() -> d2.eventModule().events.uid(recordUid).get().state())
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                state -> {
+                                    Bindings.setStateIcon(binding.syncIcon, state);
+                                    binding.syncStatusName.setText(getTextByState(state));
+                                    binding.syncStatusBar.setBackgroundResource(getColorForState(state));
+                                },
+                                error -> dismiss()
+                        )
+        );
     }
 
     private void setNetworkMessage() {
         if (!NetworkUtils.isOnline(getContext())) {
-            if (/*Check SMS Services*/true) {
+            if (/*Check SMS Services*/false) { //TODO: Add sms check
                 binding.connectionMessage.setText(R.string.network_unavailable_sms);
                 binding.syncButton.setText(R.string.action_sync_sms);
                 binding.syncButton.setVisibility(View.VISIBLE);
+                binding.syncButton.setOnClickListener(view -> {
+                    //TODO: sync by sms
+                });
 
             } else {
                 binding.connectionMessage.setText(R.string.network_unavailable);
                 binding.syncButton.setVisibility(View.INVISIBLE);
+                binding.syncButton.setOnClickListener(null);
             }
         } else {
             binding.connectionMessage.setText(null);
             binding.syncButton.setText(R.string.action_sync);
-            binding.syncButton.setVisibility(View.VISIBLE);
+            binding.syncButton.setVisibility(View.GONE);//TODO: SWITCH TO VISIBLE FOR GRANULAR SYNC
+            binding.syncButton.setOnClickListener(view -> {
+                //TODO: sync program
+            });
         }
-
     }
 
     private void prepareConflictAdapter(List<TrackerImportConflict> conflicts) {
@@ -184,6 +304,24 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
         binding.noConflictMessage.setVisibility(View.VISIBLE);
         setNetworkMessage();
 
+    }
+
+
+    private void setProgramConflictMessage(State state) {
+        binding.synsStatusRecycler.setVisibility(View.GONE);
+        binding.noConflictMessage.setVisibility(View.VISIBLE);
+
+        String src = getString(state == State.WARNING ? R.string.data_sync_warning_program : R.string.data_sync_error_program);
+        SpannableString str = new SpannableString(src);
+        int wIndex = src.indexOf('@');
+        int eIndex = src.indexOf('$');
+        if (wIndex > -1)
+            str.setSpan(new ImageSpan(getContext(), R.drawable.ic_sync_warning), wIndex, wIndex + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        if (eIndex > -1)
+            str.setSpan(new ImageSpan(getContext(), R.drawable.ic_sync_problem_red), eIndex, eIndex + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        binding.noConflictMessage.setText(str);
+        setNetworkMessage();
     }
 
     private int getTextByState(State state) {
