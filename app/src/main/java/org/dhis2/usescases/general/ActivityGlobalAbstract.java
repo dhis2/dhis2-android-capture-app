@@ -371,7 +371,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
                 getAbstracContext(),
                 getString(R.string.info),
                 description,
-                getString(R.string.action_accept),
+                getString(R.string.action_close),
                 null,
                 Constants.DESCRIPTION_DIALOG,
                 null
