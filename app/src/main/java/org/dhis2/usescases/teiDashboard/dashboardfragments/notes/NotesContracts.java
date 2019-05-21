@@ -14,14 +14,14 @@ import io.reactivex.functions.Consumer;
  */
 public class NotesContracts {
 
-    public interface View extends AbstractActivityContracts.View {
+    public interface NotesView extends AbstractActivityContracts.View {
 
         Consumer<List<NoteModel>> swapNotes();
     }
 
-    public interface Presenter extends AbstractActivityContracts.Presenter {
+    public interface NotesPresenter extends AbstractActivityContracts.Presenter {
 
-        void init(View view);
+        void init(NotesView view);
 
         void setNoteProcessor(Flowable<Pair<String, Boolean>> noteProcessor);
 

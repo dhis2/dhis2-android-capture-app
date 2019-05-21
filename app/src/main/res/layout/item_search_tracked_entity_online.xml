@@ -15,7 +15,7 @@
 
         <variable
             name="presenter"
-            type="org.dhis2.usescases.searchTrackEntity.SearchTEContractsModule.Presenter" />
+            type="org.dhis2.usescases.searchTrackEntity.SearchTEContractsModule.SearchTEPresenter" />
 
         <variable
             name="tei"

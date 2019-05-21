@@ -25,12 +25,12 @@ import timber.log.Timber;
 public class EventAdapter extends RecyclerView.Adapter<EventViewHolder> {
 
     private final List<ProgramStageModel> programStageList;
-    private final TEIDataContracts.Presenter presenter;
+    private final TEIDataContracts.TEIDataPresenter presenter;
     private final EnrollmentModel enrollment;
     private final ProgramModel program;
     private List<EventModel> events;
 
-    public EventAdapter(TEIDataContracts.Presenter presenter, List<ProgramStageModel> programStageList, List<EventModel> eventList, EnrollmentModel currentEnrollment, ProgramModel currentProgram) {
+    public EventAdapter(TEIDataContracts.TEIDataPresenter presenter, List<ProgramStageModel> programStageList, List<EventModel> eventList, EnrollmentModel currentEnrollment, ProgramModel currentProgram) {
         this.events = eventList;
         this.enrollment = currentEnrollment;
         this.programStageList = programStageList;

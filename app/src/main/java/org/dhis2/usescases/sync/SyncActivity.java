@@ -30,12 +30,12 @@ import javax.inject.Inject;
 import timber.log.Timber;
 
 @SuppressWarnings("squid:MaximumInheritanceDepth")
-public class SyncActivity extends ActivityGlobalAbstract implements SyncContracts.View {
+public class SyncActivity extends ActivityGlobalAbstract implements SyncContracts.SyncView {
 
     ActivitySynchronizationBinding binding;
 
     @Inject
-    SyncContracts.Presenter presenter;
+    SyncContracts.SyncPresenter presenter;
     private boolean metadataRunning;
     private boolean metadataDone;
     private boolean dataRunning;

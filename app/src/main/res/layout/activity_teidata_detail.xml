@@ -19,7 +19,7 @@
 
         <variable
             name="presenter"
-            type="org.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailContracts.Presenter" />
+            type="org.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailContracts.TeiDataDetailPresenter" />
 
         <variable
             name="enrollmentStatus"

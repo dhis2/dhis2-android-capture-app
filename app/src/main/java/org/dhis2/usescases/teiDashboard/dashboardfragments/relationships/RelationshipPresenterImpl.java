@@ -38,7 +38,7 @@ import timber.log.Timber;
 /**
  * QUADRAM. Created by ppajuelo on 09/04/2019.
  */
-public class RelationshipPresenterImpl implements RelationshipContracts.Presenter {
+public class RelationshipPresenterImpl implements RelationshipContracts.RelationshipPresenter {
 
     private final D2 d2;
     private final CompositeDisposable compositeDisposable;
@@ -46,7 +46,7 @@ public class RelationshipPresenterImpl implements RelationshipContracts.Presente
     private final String teiUid;
     private final String teiType;
     private final String programUid;
-    private RelationshipContracts.View view;
+    private RelationshipContracts.RelationshipView view;
     private FlowableProcessor<Boolean> updateRelationships;
 
 
@@ -62,7 +62,7 @@ public class RelationshipPresenterImpl implements RelationshipContracts.Presente
     }
 
     @Override
-    public void init(RelationshipContracts.View view) {
+    public void init(RelationshipContracts.RelationshipView view) {
         this.view = view;
 
         compositeDisposable.add(

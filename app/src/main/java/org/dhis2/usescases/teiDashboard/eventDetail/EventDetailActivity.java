@@ -50,11 +50,11 @@ import timber.log.Timber;
  * QUADRAM. Created by Cristian E. on 18/12/2017.
  */
 @SuppressWarnings("squid:MaximumInheritanceDepth")
-public class EventDetailActivity extends ActivityGlobalAbstract implements EventDetailContracts.View {
+public class EventDetailActivity extends ActivityGlobalAbstract implements EventDetailContracts.EventDetailView {
 
     ActivityEventDetailBinding binding;
     @Inject
-    EventDetailContracts.Presenter presenter;
+    EventDetailContracts.EventDetailPresenter presenter;
 
     EventDetailModel eventDetailModel;
     private String eventUid;

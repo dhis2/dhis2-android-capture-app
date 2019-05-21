@@ -25,7 +25,7 @@ public class IndicatorsModule {
 
     @Provides
     @PerFragment
-    IndicatorsContracts.Presenter providesPresenter(D2 d2, DashboardRepository dashboardRepository, RuleEngineRepository ruleEngineRepository) {
+    IndicatorsContracts.IndicatorsPresenter providesPresenter(D2 d2, DashboardRepository dashboardRepository, RuleEngineRepository ruleEngineRepository) {
         return new IndicatorsPresenterImpl(d2, programUid, teiUid, dashboardRepository, ruleEngineRepository);
     }
 

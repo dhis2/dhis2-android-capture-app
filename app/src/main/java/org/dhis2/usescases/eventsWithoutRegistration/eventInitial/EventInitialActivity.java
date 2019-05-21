@@ -96,11 +96,11 @@ import static org.dhis2.utils.Constants.TRACKED_ENTITY_INSTANCE;
  * QUADRAM. Created by Cristian on 01/03/2018.
  */
 @SuppressWarnings("squid:MaximumInheritanceDepth")
-public class EventInitialActivity extends ActivityGlobalAbstract implements EventInitialContract.View, DatePickerDialog.OnDateSetListener, ProgressBarAnimation.OnUpdate {
+public class EventInitialActivity extends ActivityGlobalAbstract implements EventInitialContract.EventInitialView, DatePickerDialog.OnDateSetListener, ProgressBarAnimation.OnUpdate {
 
     private static final int PROGRESS_TIME = 2000;
     @Inject
-    EventInitialContract.Presenter presenter;
+    EventInitialContract.EventInitialPresenter presenter;
 
     private EventModel eventModel;
 
@@ -696,9 +696,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             datePicker.setMaxDate(System.currentTimeMillis() - 1000);
 
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(getContext(), R.style.DatePickerTheme)
-                .setPositiveButton(R.string.action_accept, (dialog, which) -> {
-                    listener.onDateSet(datePicker, datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
-                })
+                .setPositiveButton(R.string.action_accept, (dialog, which) ->
+                        listener.onDateSet(datePicker, datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth()))
                 .setNeutralButton(getContext().getResources().getString(R.string.change_calendar), (dialog, which) -> showNativeCalendar(listener));
 
         alertDialog.setView(datePickerView);
@@ -725,7 +724,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         // If request is cancelled, the result arrays are empty.
-        if ((requestCode == EventInitialPresenter.ACCESS_COARSE_LOCATION_PERMISSION_REQUEST) &&
+        if ((requestCode == org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter.ACCESS_COARSE_LOCATION_PERMISSION_REQUEST) &&
                 (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
             presenter.onLocationClick();
         }

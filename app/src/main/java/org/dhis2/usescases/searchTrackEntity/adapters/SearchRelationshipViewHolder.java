@@ -21,7 +21,7 @@ public class SearchRelationshipViewHolder extends RecyclerView.ViewHolder {
         this.binding = binding;
     }
 
-    public void bind(SearchTEContractsModule.Presenter presenter, SearchTeiModel teiModel) {
+    public void bind(SearchTEContractsModule.SearchTEPresenter presenter, SearchTeiModel teiModel) {
         binding.setPresenter(presenter);
 
         setTEIData(teiModel.getAttributeValueModels());

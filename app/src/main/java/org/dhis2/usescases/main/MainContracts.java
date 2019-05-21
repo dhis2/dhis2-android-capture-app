@@ -6,7 +6,6 @@ import androidx.annotation.UiThread;
 
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.hisp.dhis.android.core.imports.TrackerImportConflict;
-import org.hisp.dhis.android.core.maintenance.D2Error;
 
 import java.util.List;
 
@@ -14,7 +13,7 @@ import io.reactivex.functions.Consumer;
 
 public final class MainContracts {
 
-    interface View extends AbstractActivityContracts.View {
+    interface MainView extends AbstractActivityContracts.View {
 
         @NonNull
         @UiThread
@@ -31,8 +30,8 @@ public final class MainContracts {
         void showSyncErrors(List<TrackerImportConflict> data);
     }
 
-    public interface Presenter {
-        void init(View view);
+    public interface MainPresenter {
+        void init(MainView view);
 
         void onDetach();
 

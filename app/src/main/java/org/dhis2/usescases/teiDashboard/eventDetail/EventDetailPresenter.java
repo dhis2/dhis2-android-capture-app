@@ -45,12 +45,12 @@ import static android.text.TextUtils.isEmpty;
  * QUADRAM. Created by ppajuelo on 19/12/2017.
  */
 
-public class EventDetailPresenter implements EventDetailContracts.Presenter {
+public class EventDetailPresenter implements EventDetailContracts.EventDetailPresenter {
 
     private final EventDetailRepository eventDetailRepository;
     private final MetadataRepository metadataRepository;
     private final DataEntryStore dataEntryStore;
-    private EventDetailContracts.View view;
+    private EventDetailContracts.EventDetailView view;
     private CompositeDisposable disposable;
     private EventDetailModel eventDetailModel;
 
@@ -65,7 +65,7 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
     }
 
     @Override
-    public void init(EventDetailContracts.View view) {
+    public void init(EventDetailContracts.EventDetailView view) {
         this.view = view;
     }
 

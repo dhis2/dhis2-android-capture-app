@@ -39,10 +39,10 @@ public class EventCaptureModule {
 
     @Provides
     @PerActivity
-    EventCaptureContract.Presenter providePresenter(@NonNull EventCaptureContract.EventCaptureRepository eventCaptureRepository,
-                                                    @NonNull MetadataRepository metadataRepository,
-                                                    @NonNull RulesUtilsProvider ruleUtils,
-                                                    @NonNull DataEntryStore dataEntryStore) {
+    EventCaptureContract.EventCapturePresenter providePresenter(@NonNull EventCaptureContract.EventCaptureRepository eventCaptureRepository,
+                                                                @NonNull MetadataRepository metadataRepository,
+                                                                @NonNull RulesUtilsProvider ruleUtils,
+                                                                @NonNull DataEntryStore dataEntryStore) {
         return new EventCapturePresenterImpl(eventUid, eventCaptureRepository, metadataRepository, ruleUtils, dataEntryStore);
     }
 

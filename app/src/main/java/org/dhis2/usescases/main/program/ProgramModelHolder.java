@@ -25,7 +25,7 @@ public class ProgramModelHolder extends RecyclerView.ViewHolder {
         this.binding = binding;
     }
 
-    public void bind(ProgramContract.Presenter presenter, ProgramViewModel programViewModel, Period currentPeriod) {
+    public void bind(ProgramContract.ProgramPresenter presenter, ProgramViewModel programViewModel, Period currentPeriod) {
         binding.setProgram(programViewModel);
         binding.setPresenter(presenter);
         binding.setCurrentPeriod(currentPeriod);

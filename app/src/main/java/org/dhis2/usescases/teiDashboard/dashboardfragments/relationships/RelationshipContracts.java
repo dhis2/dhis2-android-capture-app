@@ -20,7 +20,7 @@ import io.reactivex.functions.Consumer;
  */
 public class RelationshipContracts {
 
-    public interface View extends AbstractActivityContracts.View {
+    public interface RelationshipView extends AbstractActivityContracts.View {
 
         Consumer<List<Pair<Relationship, RelationshipType>>> setRelationships();
 
@@ -29,15 +29,15 @@ public class RelationshipContracts {
         void goToAddRelationship(Intent intent);
     }
 
-    public interface Presenter extends AbstractActivityContracts.Presenter {
+    public interface RelationshipPresenter extends AbstractActivityContracts.Presenter {
 
-        void init(View view);
+        void init(RelationshipView view);
 
         void goToAddRelationship(String teiTypeToAdd);
 
         void deleteRelationship(Relationship relationship);
 
-        void addRelationship(String trackEntityInstance_A, String relationshipType);
+        void addRelationship(String trackEntityInstanceA, String relationshipType);
 
         void openDashboard(String teiUid);
 

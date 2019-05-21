@@ -24,7 +24,7 @@ public class NotesModule {
 
     @Provides
     @PerFragment
-    NotesContracts.Presenter providesPresenter(D2 d2, DashboardRepository dashboardRepository) {
+    NotesContracts.NotesPresenter providesPresenter(D2 d2, DashboardRepository dashboardRepository) {
         return new NotesPresenterImpl(d2, dashboardRepository, programUid, teiUid);
     }
 

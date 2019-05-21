@@ -56,13 +56,13 @@ import static android.text.TextUtils.isEmpty;
  * QUADRAM. Created by ppajuelo on 02/11/2017.
  */
 
-public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
+public class SearchTEPresenter implements SearchTEContractsModule.SearchTEPresenter {
 
     private static final int MAX_NO_SELECTED_PROGRAM_RESULTS = 5;
     private final MetadataRepository metadataRepository;
     private final SearchRepository searchRepository;
     private final D2 d2;
-    private SearchTEContractsModule.View view;
+    private SearchTEContractsModule.SearchTEView view;
 
     private ProgramModel selectedProgram;
 
@@ -89,7 +89,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     //region LIFECYCLE
 
     @Override
-    public void init(SearchTEContractsModule.View view, String trackedEntityType, String initialProgram) {
+    public void init(SearchTEContractsModule.SearchTEView view, String trackedEntityType, String initialProgram) {
         this.view = view;
         compositeDisposable = new CompositeDisposable();
 
@@ -437,9 +437,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         }
 
         dateDialog.setTitle(selectedProgram.enrollmentDateLabel());
-        dateDialog.setButton(DialogInterface.BUTTON_NEGATIVE, view.getContext().getString(R.string.date_dialog_clear), (dialog, which) -> {
-            dialog.dismiss();
-        });
+        dateDialog.setButton(DialogInterface.BUTTON_NEGATIVE, view.getContext().getString(R.string.date_dialog_clear), (dialog, which) -> dialog.dismiss());
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
             dateDialog.setButton(DialogInterface.BUTTON_NEUTRAL, view.getContext().getResources().getString(R.string.change_calendar), (dialog, which) -> {

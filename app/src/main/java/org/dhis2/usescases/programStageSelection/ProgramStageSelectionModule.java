@@ -31,14 +31,14 @@ public class ProgramStageSelectionModule {
 
     @Provides
     @PerActivity
-    ProgramStageSelectionContract.View providesView(@NonNull ProgramStageSelectionActivity activity) {
+    ProgramStageSelectionContract.ProgramStageSelectionView providesView(@NonNull ProgramStageSelectionActivity activity) {
         return activity;
     }
 
     @Provides
     @PerActivity
-    ProgramStageSelectionContract.Presenter providesPresenter(@NonNull ProgramStageSelectionRepository programStageSelectionRepository,
-                                                              @NonNull RulesUtilsProvider ruleUtils) {
+    ProgramStageSelectionContract.ProgramStageSelectionPresenter providesPresenter(@NonNull ProgramStageSelectionRepository programStageSelectionRepository,
+                                                                                   @NonNull RulesUtilsProvider ruleUtils) {
         return new ProgramStageSelectionPresenter(programStageSelectionRepository, ruleUtils);
     }
 

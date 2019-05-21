@@ -18,7 +18,7 @@ public class DataSetDetailViewHolder extends RecyclerView.ViewHolder{
         disposable = new CompositeDisposable();
     }
 
-    public void bind(DataSetDetailContract.Presenter presenter, DataSetDetailModel dataset) {
+    public void bind(DataSetDetailContract.DataSetDetailPresenter presenter, DataSetDetailModel dataset) {
         binding.setVariable(BR.presenter, presenter);
         binding.setVariable(BR.dataset, dataset);
         binding.executePendingBindings();

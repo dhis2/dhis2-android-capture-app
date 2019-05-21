@@ -15,10 +15,10 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
-public class DataSetTablePresenter implements DataSetTableContract.Presenter {
+public class DataSetTablePresenter implements DataSetTableContract.DataSetTablePresenter {
 
     private final DataSetTableRepository tableRepository;
-    DataSetTableContract.View view;
+    DataSetTableContract.DataSetTableView view;
     private CompositeDisposable compositeDisposable;
     private Pair<Map<String, List<DataElementModel>>, Map<String, List<CategoryOptionComboModel>>> tableData;
 
@@ -32,7 +32,7 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
     }
 
     @Override
-    public void init(DataSetTableContract.View view, String orgUnitUid, String periodTypeName, String periodInitialDate, String catCombo) {
+    public void init(DataSetTableContract.DataSetTableView view, String orgUnitUid, String periodTypeName, String periodInitialDate, String catCombo) {
         this.view = view;
         compositeDisposable = new CompositeDisposable();
 

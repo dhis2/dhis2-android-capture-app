@@ -8,7 +8,7 @@ import io.reactivex.functions.Consumer;
 
 public class EnrollmentContracts {
 
-    public interface View extends AbstractActivityContracts.View {
+    public interface EnrollmentView extends AbstractActivityContracts.View {
         void renderEnrollmentDate(String s, String date);
 
         void renderIncidentDate(String s, String date);
@@ -18,8 +18,8 @@ public class EnrollmentContracts {
         Consumer<FieldViewModel> showFields();
     }
 
-    public interface Presenter extends AbstractActivityContracts.Presenter {
-        void init(View view);
+    public interface EnrollmentPresenter extends AbstractActivityContracts.Presenter {
+        void init(EnrollmentView view);
 
         void onNextClick();
     }

@@ -26,11 +26,11 @@ import androidx.databinding.DataBindingUtil;
 import io.reactivex.functions.Consumer;
 
 @SuppressWarnings("squid:MaximumInheritanceDepth")
-public class TeiDataDetailActivity extends ActivityGlobalAbstract implements TeiDataDetailContracts.View {
+public class TeiDataDetailActivity extends ActivityGlobalAbstract implements TeiDataDetailContracts.TeiDataDetailView {
     ActivityTeidataDetailBinding binding;
 
     @Inject
-    TeiDataDetailContracts.Presenter presenter;
+    TeiDataDetailContracts.TeiDataDetailPresenter presenter;
 
     private DashboardProgramModel dashboardProgramModel;
     private EnrollmentStatus enrollmentStatus;
@@ -125,11 +125,11 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
 
     @Override
     public Consumer<EnrollmentStatus> handleStatus() {
-        return enrollmentStatus -> {
-            this.enrollmentStatus = enrollmentStatus;
-            Bindings.setEnrolmentIcon(binding.programLock, enrollmentStatus);
-            Bindings.setEnrolmentText(binding.programLockText, enrollmentStatus);
-            binding.setEnrollmentStatus(enrollmentStatus);
+        return enrollmentStatusResult -> {
+            this.enrollmentStatus = enrollmentStatusResult;
+            Bindings.setEnrolmentIcon(binding.programLock, enrollmentStatusResult);
+            Bindings.setEnrolmentText(binding.programLockText, enrollmentStatusResult);
+            binding.setEnrollmentStatus(enrollmentStatusResult);
             binding.executePendingBindings();
             initForm();
         };

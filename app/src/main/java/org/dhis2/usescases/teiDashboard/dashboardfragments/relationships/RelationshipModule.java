@@ -24,7 +24,7 @@ public class RelationshipModule {
 
     @Provides
     @PerFragment
-    RelationshipContracts.Presenter providesPresenter(D2 d2, DashboardRepository dashboardRepository) {
+    RelationshipContracts.RelationshipPresenter providesPresenter(D2 d2, DashboardRepository dashboardRepository) {
         return new RelationshipPresenterImpl(d2, programUid, teiUid, dashboardRepository);
     }
 

@@ -34,9 +34,7 @@ public class OrgUnitHolder extends FormViewHolder {
 
         this.orgUnitsObservable = orgUnits;
 
-        binding.orgUnitView.setListener(orgUnitUid -> {
-            processor.onNext(RowAction.create(model.uid(), orgUnitUid));
-        });
+        binding.orgUnitView.setListener(orgUnitUid -> processor.onNext(RowAction.create(model.uid(), orgUnitUid)));
 
         getOrgUnits();
     }

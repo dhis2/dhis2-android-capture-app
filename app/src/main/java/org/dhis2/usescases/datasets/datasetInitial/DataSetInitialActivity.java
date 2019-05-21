@@ -35,12 +35,12 @@ import java.util.Map;
 import javax.inject.Inject;
 
 @SuppressWarnings("squid:MaximumInheritanceDepth")
-public class DataSetInitialActivity extends ActivityGlobalAbstract implements DataSetInitialContract.View {
+public class DataSetInitialActivity extends ActivityGlobalAbstract implements DataSetInitialContract.DataSetInitialView {
 
     private ActivityDatasetInitialBinding binding;
     View selectedView;
     @Inject
-    DataSetInitialContract.Presenter presenter;
+    DataSetInitialContract.DataSetInitialPresenter presenter;
 
     private HashMap<String, CategoryOptionModel> selectedCatOptions;
     private OrganisationUnitModel selectedOrgUnit;

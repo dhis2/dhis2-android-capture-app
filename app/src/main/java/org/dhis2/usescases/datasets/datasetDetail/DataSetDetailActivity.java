@@ -55,7 +55,7 @@ import static org.dhis2.utils.Period.WEEKLY;
 import static org.dhis2.utils.Period.YEARLY;
 
 @SuppressWarnings("squid:MaximumInheritanceDepth")
-public class DataSetDetailActivity extends ActivityGlobalAbstract implements DataSetDetailContract.View {
+public class DataSetDetailActivity extends ActivityGlobalAbstract implements DataSetDetailContract.DataSetDetailView {
 
     private ActivityDatasetDetailBinding binding;
     private ArrayList<Date> chosenDateWeek = new ArrayList<>();
@@ -71,7 +71,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
     private AndroidTreeView treeView;
     private boolean isFilteredByCatCombo = false;
     @Inject
-    DataSetDetailContract.Presenter presenter;
+    DataSetDetailContract.DataSetDetailPresenter presenter;
 
     private PublishProcessor<Integer> currentPage;
     DataSetDetailAdapter adapter;

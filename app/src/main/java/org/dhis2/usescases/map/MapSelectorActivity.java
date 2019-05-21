@@ -72,9 +72,7 @@ public class MapSelectorActivity extends ActivityGlobalAbstract {
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(mapboxMap -> {
             map = mapboxMap;
-            mapboxMap.setStyle(Style.MAPBOX_STREETS, style -> {
-                centerMapOnCurrentLocation();
-            });
+            mapboxMap.setStyle(Style.MAPBOX_STREETS, style -> centerMapOnCurrentLocation());
             map.addOnCameraIdleListener(() -> {
                 if (map.getCameraPosition().target != null) {
                     String latLonText = map.getCameraPosition().target.getLatitude() + " : " + map.getCameraPosition().target.getLongitude();

@@ -10,16 +10,16 @@ import java.util.Map;
 
 public class DataSetTableContract {
 
-    public interface View extends AbstractActivityContracts.View {
+    public interface DataSetTableView extends AbstractActivityContracts.View {
 
         void setDataElements(Map<String, List<DataElementModel>> data, Map<String, List<CategoryOptionComboModel>> stringListMap);
 
         void setDataSet(DataSetModel data);
     }
 
-    public interface Presenter extends AbstractActivityContracts.Presenter {
+    public interface DataSetTablePresenter extends AbstractActivityContracts.Presenter {
         void onBackClick();
-        void init(View view, String orgUnitUid, String periodTypeName, String periodInitialDate, String catCombo);
+        void init(DataSetTableView view, String orgUnitUid, String periodTypeName, String periodInitialDate, String catCombo);
 
         List<DataElementModel> getDataElements(String string);
 

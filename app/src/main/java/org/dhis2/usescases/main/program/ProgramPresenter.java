@@ -38,9 +38,9 @@ import static android.text.TextUtils.isEmpty;
  * Created by ppajuelo on 18/10/2017.f
  */
 
-public class ProgramPresenter implements ProgramContract.Presenter {
+public class ProgramPresenter implements ProgramContract.ProgramPresenter {
 
-    private ProgramContract.View view;
+    private ProgramContract.ProgramView view;
     private final HomeRepository homeRepository;
     private CompositeDisposable compositeDisposable;
 
@@ -56,7 +56,7 @@ public class ProgramPresenter implements ProgramContract.Presenter {
     }
 
     @Override
-    public void init(ProgramContract.View view) {
+    public void init(ProgramContract.ProgramView view) {
         this.view = view;
         this.currentOrgUnitFilter = new ArrayList<>();
         this.currentDateFilter = new ArrayList<>();

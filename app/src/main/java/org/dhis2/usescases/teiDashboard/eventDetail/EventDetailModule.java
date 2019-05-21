@@ -28,13 +28,13 @@ public class EventDetailModule {
 
     @Provides
     @PerActivity
-    EventDetailContracts.View provideView(EventDetailActivity mobileActivity) {
+    EventDetailContracts.EventDetailView provideView(EventDetailActivity mobileActivity) {
         return mobileActivity;
     }
 
     @Provides
     @PerActivity
-    EventDetailContracts.Presenter providePresenter(EventDetailRepository eventDetailRepository, MetadataRepository metadataRepository, DataEntryStore dataEntryStore) {
+    EventDetailContracts.EventDetailPresenter providePresenter(EventDetailRepository eventDetailRepository, MetadataRepository metadataRepository, DataEntryStore dataEntryStore) {
         return new EventDetailPresenter(eventDetailRepository, metadataRepository, dataEntryStore);
     }
 

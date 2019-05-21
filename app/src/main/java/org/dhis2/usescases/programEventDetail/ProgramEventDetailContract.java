@@ -6,7 +6,6 @@ import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.utils.Period;
 import org.hisp.dhis.android.core.category.Category;
-import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
@@ -15,7 +14,6 @@ import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramModel;
 
 import java.util.List;
-import java.util.Map;
 
 import androidx.lifecycle.LiveData;
 import androidx.paging.PagedList;
@@ -27,7 +25,7 @@ import io.reactivex.functions.Consumer;
 
 public class ProgramEventDetailContract {
 
-    public interface View extends AbstractActivityContracts.View {
+    public interface ProgramEventDetailView extends AbstractActivityContracts.View {
 
         void addTree(TreeNode treeNode);
 
@@ -56,8 +54,8 @@ public class ProgramEventDetailContract {
         void setLiveData(LiveData<PagedList<ProgramEventViewModel>> pagedListLiveData);
     }
 
-    public interface Presenter extends AbstractActivityContracts.Presenter {
-        void init(View view, Period period);
+    public interface ProgramEventDetailPresenter extends AbstractActivityContracts.Presenter {
+        void init(ProgramEventDetailView view, Period period);
 
         void updateDateFilter(List<DatePeriod> datePeriodList);
 

@@ -38,21 +38,21 @@ public class EventSummaryModule {
 
     @Provides
     @PerActivity
-    EventSummaryContract.View provideView(EventSummaryContract.View activity) {
+    EventSummaryContract.EventSummaryView provideView(EventSummaryContract.EventSummaryView activity) {
         return activity;
     }
 
     @Provides
     @PerActivity
-    EventSummaryContract.Presenter providesPresenter(EventSummaryContract.Interactor interactor) {
+    EventSummaryContract.EventSummaryPresenter providesPresenter(EventSummaryContract.EventSummaryInteractor interactor) {
         return new EventSummaryPresenter(interactor);
     }
 
     @Provides
     @PerActivity
-    EventSummaryContract.Interactor provideInteractor(@NonNull EventSummaryRepository eventSummaryRepository,
-                                                      @NonNull MetadataRepository metadataRepository,
-                                                      @NonNull SchedulerProvider schedulerProvider) {
+    EventSummaryContract.EventSummaryInteractor provideInteractor(@NonNull EventSummaryRepository eventSummaryRepository,
+                                                                  @NonNull MetadataRepository metadataRepository,
+                                                                  @NonNull SchedulerProvider schedulerProvider) {
         return new EventSummaryInteractor(eventSummaryRepository, metadataRepository, schedulerProvider);
     }
 

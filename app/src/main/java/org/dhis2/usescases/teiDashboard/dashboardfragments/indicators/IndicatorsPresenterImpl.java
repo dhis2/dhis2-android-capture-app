@@ -28,7 +28,7 @@ import static android.text.TextUtils.isEmpty;
 /**
  * QUADRAM. Created by ppajuelo on 09/04/2019.
  */
-public class IndicatorsPresenterImpl implements IndicatorsContracts.Presenter {
+public class IndicatorsPresenterImpl implements IndicatorsContracts.IndicatorsPresenter {
 
     private final D2 d2;
     private CompositeDisposable compositeDisposable;
@@ -36,7 +36,7 @@ public class IndicatorsPresenterImpl implements IndicatorsContracts.Presenter {
     private final String enrollmentUid;
     private final DashboardRepository dashboardRepository;
     private final RuleEngineRepository ruleEngineRepository;
-    private IndicatorsContracts.View view;
+    private IndicatorsContracts.IndicatorsView view;
 
 
     IndicatorsPresenterImpl(D2 d2, String programUid, String teiUid, DashboardRepository dashboardRepository,
@@ -55,7 +55,7 @@ public class IndicatorsPresenterImpl implements IndicatorsContracts.Presenter {
     }
 
     @Override
-    public void init(IndicatorsContracts.View view) {
+    public void init(IndicatorsContracts.IndicatorsView view) {
         this.view = view;
         this.compositeDisposable = new CompositeDisposable();
 

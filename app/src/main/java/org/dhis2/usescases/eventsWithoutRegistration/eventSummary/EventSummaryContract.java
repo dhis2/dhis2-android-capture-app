@@ -20,7 +20,7 @@ import io.reactivex.functions.Consumer;
 
 public class EventSummaryContract {
 
-    public interface View extends AbstractActivityContracts.View {
+    public interface EventSummaryView extends AbstractActivityContracts.View {
 
         void setProgram(@NonNull ProgramModel program);
 
@@ -43,8 +43,8 @@ public class EventSummaryContract {
         void setHideSection(String sectionUid);
     }
 
-    public interface Presenter extends AbstractActivityContracts.Presenter {
-        void init(@NonNull EventSummaryContract.View view, @NonNull String programId, @NonNull String eventId);
+    public interface EventSummaryPresenter extends AbstractActivityContracts.Presenter {
+        void init(@NonNull EventSummaryView view, @NonNull String programId, @NonNull String eventId);
 
         void onBackClick();
 
@@ -55,9 +55,9 @@ public class EventSummaryContract {
         void doOnComple();
     }
 
-    public interface Interactor extends AbstractActivityContracts.Interactor {
+    public interface EventSummaryInteractor extends AbstractActivityContracts.Interactor {
 
-        void init(@NonNull EventSummaryContract.View view, @NonNull String programId, @NonNull String eventId);
+        void init(@NonNull EventSummaryView view, @NonNull String programId, @NonNull String eventId);
 
         void getProgram(@NonNull String programUid);
 

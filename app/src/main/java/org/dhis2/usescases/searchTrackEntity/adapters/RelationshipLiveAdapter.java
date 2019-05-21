@@ -29,9 +29,9 @@ public class RelationshipLiveAdapter extends PagedListAdapter<SearchTeiModel, Se
         }
     };
 
-    private SearchTEContractsModule.Presenter presenter;
+    private SearchTEContractsModule.SearchTEPresenter presenter;
 
-    public RelationshipLiveAdapter(SearchTEContractsModule.Presenter presenter) {
+    public RelationshipLiveAdapter(SearchTEContractsModule.SearchTEPresenter presenter) {
         super(DIFF_CALLBACK);
         this.presenter = presenter;
     }

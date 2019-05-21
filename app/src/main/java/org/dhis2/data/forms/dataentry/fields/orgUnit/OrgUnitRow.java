@@ -5,14 +5,11 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
-import androidx.databinding.ViewDataBinding;
 import androidx.fragment.app.FragmentManager;
 
-import org.dhis2.BR;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.Row;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
-import org.dhis2.databinding.FormButtonBinding;
 import org.dhis2.databinding.FormOrgUnitBinding;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
@@ -34,8 +31,6 @@ public class OrgUnitRow implements Row<OrgUnitHolder, OrgUnitViewModel> {
     private final FragmentManager fm;
     private final Observable<List<OrganisationUnitModel>> orgUnits;
     private final String renderType;
-    private FormButtonBinding binding;
-    private boolean isSearchMode = false;
     private Observable<List<OrganisationUnitLevel>> levels;
 
     public OrgUnitRow(FragmentManager fm, LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor,
@@ -47,7 +42,6 @@ public class OrgUnitRow implements Row<OrgUnitHolder, OrgUnitViewModel> {
         this.fm = fm;
         this.orgUnits = orgUnits;
         this.renderType = null;
-        this.isSearchMode = true;
         this.levels = levels;
     }
 
@@ -81,7 +75,7 @@ public class OrgUnitRow implements Row<OrgUnitHolder, OrgUnitViewModel> {
         binding.getRoot().findViewById(R.id.input_editText).setFocusable(false); //Makes editText
         binding.getRoot().findViewById(R.id.input_editText).setClickable(true);//  but clickable*/
 
-       binding.orgUnitView.setFragmentManager(fm);
+        binding.orgUnitView.setFragmentManager(fm);
         return new OrgUnitHolder(fm, binding, processor, orgUnits, levels);
     }
 

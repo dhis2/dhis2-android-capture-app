@@ -17,10 +17,10 @@ import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 
 public class DashboardProgramAdapter extends RecyclerView.Adapter<DashboardProgramViewHolder> {
 
-    private final TEIDataContracts.Presenter presenter;
+    private final TEIDataContracts.TEIDataPresenter presenter;
     private DashboardProgramModel dashboardProgramModel;
 
-    public DashboardProgramAdapter(TEIDataContracts.Presenter presenter, DashboardProgramModel program) {
+    public DashboardProgramAdapter(TEIDataContracts.TEIDataPresenter presenter, DashboardProgramModel program) {
         this.dashboardProgramModel = program;
         this.presenter = presenter;
     }

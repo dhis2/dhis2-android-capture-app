@@ -30,7 +30,7 @@ import io.reactivex.functions.Consumer;
 
 public class EventInitialContract {
 
-    public interface View extends AbstractActivityContracts.View {
+    public interface EventInitialView extends AbstractActivityContracts.View {
         void checkActionButtonVisibility();
 
         void setProgram(@NonNull ProgramModel program);
@@ -79,8 +79,8 @@ public class EventInitialContract {
         void renderObjectStyle(ObjectStyleModel objectStyleModel);
     }
 
-    public interface Presenter extends AbstractActivityContracts.Presenter {
-        void init(EventInitialContract.View view, String programId, String eventId, String orgUnitId, String programStageId);
+    public interface EventInitialPresenter extends AbstractActivityContracts.Presenter {
+        void init(EventInitialView view, String programId, String eventId, String orgUnitId, String programStageId);
 
         void getProgramStage(String programStageUid);
 

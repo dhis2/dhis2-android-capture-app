@@ -49,9 +49,7 @@ public class OptionSetPopUp {
                 optionsMap.put(optionModel.displayName(), optionModel);
                 menu.getMenu().add(Menu.NONE, Menu.NONE, options.indexOf(optionModel) + 1, optionModel.displayName());
             }
-            menu.setOnDismissListener(menu -> {
-                dismiss();
-            });
+            menu.setOnDismissListener(menuResult -> dismiss());
             menu.show();
         }
     }
@@ -82,7 +80,7 @@ public class OptionSetPopUp {
         return this;
     }
 
-    public void dismiss() {
+    public static void dismiss() {
         instance = null;
     }
 }

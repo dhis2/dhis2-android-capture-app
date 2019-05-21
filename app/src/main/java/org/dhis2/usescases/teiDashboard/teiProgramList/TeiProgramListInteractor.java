@@ -30,9 +30,9 @@ import timber.log.Timber;
  * QUADRAM. Created by Cristian on 06/03/2018.
  */
 
-public class TeiProgramListInteractor implements TeiProgramListContract.Interactor {
+public class TeiProgramListInteractor implements TeiProgramListContract.TeiProgramListInteractor {
 
-    private TeiProgramListContract.View view;
+    private TeiProgramListContract.TeiProgramListView view;
     private String trackedEntityId;
     private CompositeDisposable compositeDisposable;
     private final TeiProgramListRepository teiProgramListRepository;
@@ -43,7 +43,7 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
     }
 
     @Override
-    public void init(TeiProgramListContract.View view, String trackedEntityId) {
+    public void init(TeiProgramListContract.TeiProgramListView view, String trackedEntityId) {
         this.view = view;
         this.trackedEntityId = trackedEntityId;
         compositeDisposable = new CompositeDisposable();
@@ -111,9 +111,7 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
         if (selectedProgram != null) {
             dateDialog.setTitle(selectedProgram.enrollmentDateLabel());
         }
-        dateDialog.setButton(DialogInterface.BUTTON_NEGATIVE, view.getContext().getString(R.string.date_dialog_clear), (dialog, which) -> {
-            dialog.dismiss();
-        });
+        dateDialog.setButton(DialogInterface.BUTTON_NEGATIVE, view.getContext().getString(R.string.date_dialog_clear), (dialog, which) -> dialog.dismiss());
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
             dateDialog.setButton(DialogInterface.BUTTON_NEUTRAL, view.getContext().getResources().getString(R.string.change_calendar), (dialog, which) -> {
@@ -177,9 +175,7 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
                 })
                 .setNeutralButton(view.getContext().getResources().getString(R.string.change_calendar),
                         (dialog, which) -> showNativeCalendar(programUid, uid, orgUnitDialog))
-                .setNegativeButton(view.getContext().getString(R.string.date_dialog_clear), (dialog, which) -> {
-                    dialog.dismiss();
-                });
+                .setNegativeButton(view.getContext().getString(R.string.date_dialog_clear), (dialog, which) -> dialog.dismiss());
 
         ProgramModel selectedProgram = getProgramFromUid(programUid);
         if (selectedProgram != null && !selectedProgram.selectEnrollmentDatesInFuture()) {
@@ -220,9 +216,8 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
                 teiProgramListRepository.saveToEnroll(orgUnitUid, programUid, teiUid, enrollmentDate)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(enrollmentUid -> {
-                                    view.goToEnrollmentScreen(enrollmentUid, programUid);
-                                },
+                        .subscribe(enrollmentUid ->
+                                        view.goToEnrollmentScreen(enrollmentUid, programUid),
                                 Timber::d)
         );
     }

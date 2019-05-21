@@ -19,10 +19,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class ProgramStageSelectionAdapter extends RecyclerView.Adapter<ProgramStageSelectionViewHolder> {
 
-    private ProgramStageSelectionContract.Presenter presenter;
+    private ProgramStageSelectionContract.ProgramStageSelectionPresenter presenter;
     private List<ProgramStage> programStages;
 
-    ProgramStageSelectionAdapter(@NonNull ProgramStageSelectionContract.Presenter presenter) {
+    ProgramStageSelectionAdapter(@NonNull ProgramStageSelectionContract.ProgramStageSelectionPresenter presenter) {
         this.presenter = presenter;
     }
 

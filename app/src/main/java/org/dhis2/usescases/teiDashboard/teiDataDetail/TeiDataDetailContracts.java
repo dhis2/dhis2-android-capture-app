@@ -2,14 +2,13 @@ package org.dhis2.usescases.teiDashboard.teiDataDetail;
 
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
-
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 
 import io.reactivex.functions.Consumer;
 
 public class TeiDataDetailContracts {
 
-    public interface View extends AbstractActivityContracts.View {
+    public interface TeiDataDetailView extends AbstractActivityContracts.View {
         void init(String teUid, String programUid, String enrollmentUid);
 
         void setData(DashboardProgramModel program);
@@ -19,8 +18,8 @@ public class TeiDataDetailContracts {
         void setLocation(double latitude, double longitude);
     }
 
-    public interface Presenter {
-        void init(View view, String uid, String programUid, String enrollmentUid);
+    public interface TeiDataDetailPresenter {
+        void init(TeiDataDetailView view, String uid, String programUid, String enrollmentUid);
 
         void onBackPressed();
 

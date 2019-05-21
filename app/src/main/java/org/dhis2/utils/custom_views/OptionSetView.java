@@ -107,7 +107,7 @@ public class OptionSetView extends FieldLayout implements PopupMenu.OnMenuItemCl
             if (selectedOption != null) {
                 setValueOption(selectedOption.displayName(), selectedOption.code());
             }
-            OptionSetPopUp.getInstance().dismiss();
+            OptionSetPopUp.dismiss();
         }
         return false;
     }

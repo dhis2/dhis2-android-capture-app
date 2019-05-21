@@ -21,13 +21,13 @@ public class ReservedValueModule {
 
     @PerActivity
     @Provides
-    ReservedValueContracts.View provideView(ReservedValueActivity activity) {
+    ReservedValueContracts.ReservedValueView provideView(ReservedValueActivity activity) {
         return activity;
     }
 
     @PerActivity
     @Provides
-    ReservedValueContracts.Presenter providePresenter(ReservedValueRepository repository, D2 d2) {
+    ReservedValueContracts.ReservedValuePresenter providePresenter(ReservedValueRepository repository, D2 d2) {
         return new ReservedValuePresenter(repository, d2);
     }
 

@@ -2,16 +2,13 @@ package org.dhis2.usescases.teiDashboard;
 
 import android.os.Bundle;
 
+import androidx.lifecycle.LiveData;
+
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.TEIDataFragment;
-import org.hisp.dhis.android.core.category.CategoryCombo;
-import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 
 import java.util.Calendar;
-
-import androidx.fragment.app.FragmentStatePagerAdapter;
-import androidx.lifecycle.LiveData;
 
 /**
  * QUADRAM. Created by ppajuelo on 30/11/2017.
@@ -19,7 +16,7 @@ import androidx.lifecycle.LiveData;
 
 public class TeiDashboardContracts {
 
-    public interface View extends AbstractActivityContracts.View {
+    public interface TeiDashboardView extends AbstractActivityContracts.View {
 
         void init(String teUid, String programUid);
 
@@ -29,21 +26,15 @@ public class TeiDashboardContracts {
 
         String getToolbarTitle();
 
-//        FragmentStatePagerAdapter getAdapter();
-
-//        void showQR();
-
         void goToEnrollmentList(Bundle extras);
 
         void restoreAdapter(String programUid);
-
-//        void showCatComboDialog(String eventId, CategoryCombo catCombo);
     }
 
-    public interface Presenter {
+    public interface TeiDashboardPresenter {
         LiveData<DashboardProgramModel> observeDashboardModel();
 
-        void init(View view, String uid, String programUid);
+        void init(TeiDashboardView view, String uid, String programUid);
 
         void showDescription(String description);
 
@@ -51,15 +42,7 @@ public class TeiDashboardContracts {
 
         void onEnrollmentSelectorClick();
 
-//        void onShareQRClick();
-
         void setProgram(ProgramModel program);
-
-//        void seeDetails(android.view.View view, DashboardProgramModel dashboardProgramModel);
-
-//        void onEventSelected(String uid, android.view.View view);
-
-//        void onFollowUp(DashboardProgramModel dashboardProgramModel);
 
         void onDettach();
 
@@ -72,7 +55,6 @@ public class TeiDashboardContracts {
         void areEventsCompleted(TEIDataFragment teiDataFragment);
 
         //Data Fragment
-//        void onShareClick(android.view.View view);
 
         String getTeUid();
 
@@ -80,20 +62,8 @@ public class TeiDashboardContracts {
 
         Boolean hasProgramWritePermission();
 
-//        void completeEnrollment(TEIDataFragment teiDataFragment);
-
-//        void displayGenerateEvent(TEIDataFragment teiDataFragment, String eventUid);
-
         void generateEvent(String lastModifiedEventUid, Integer integer);
 
         void generateEventFromDate(String lastModifiedEventUid, Calendar chosenDate);
-
-//        void onScheduleSelected(String uid, android.view.View sharedView);
-
-//        void getCatComboOptions(EventModel event);
-
-//        void changeCatOption(String eventUid, String catOptComboUid);
-
-//        void setDefaultCatOptCombToEvent(String eventUid);
     }
 }

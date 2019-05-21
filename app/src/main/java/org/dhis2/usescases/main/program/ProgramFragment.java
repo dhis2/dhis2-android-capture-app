@@ -65,11 +65,11 @@ import static org.dhis2.utils.Period.YEARLY;
  * Created by ppajuelo on 18/10/2017.f
  */
 
-public class ProgramFragment extends FragmentGlobalAbstract implements ProgramContract.View, OrgUnitInterface {
+public class ProgramFragment extends FragmentGlobalAbstract implements ProgramContract.ProgramView, OrgUnitInterface {
 
     private FragmentProgramBinding binding;
     @Inject
-    ProgramContract.Presenter presenter;
+    ProgramContract.ProgramPresenter presenter;
 
     private Period currentPeriod = NONE;
     private StringBuilder orgUnitFilter = new StringBuilder();

@@ -1,7 +1,6 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
 import androidx.databinding.DataBindingUtil;
-import androidx.databinding.ObservableField;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -20,12 +19,12 @@ import io.reactivex.processors.PublishProcessor;
  * QUADRAM. Created by ppajuelo on 20/11/2018.
  */
 public class SectionSelectorAdapter extends RecyclerView.Adapter<EventSectionHolder> {
-    private final EventCaptureContract.Presenter presenter;
+    private final EventCaptureContract.EventCapturePresenter presenter;
     List<EventSectionModel> items;
     private float percentage;
     private FlowableProcessor<Float> percentageFlowable;
 
-    public SectionSelectorAdapter(EventCaptureContract.Presenter presenter) {
+    public SectionSelectorAdapter(EventCaptureContract.EventCapturePresenter presenter) {
         this.presenter = presenter;
         this.items = new ArrayList<>();
         percentage = 0;

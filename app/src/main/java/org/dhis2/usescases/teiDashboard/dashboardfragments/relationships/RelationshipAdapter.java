@@ -22,10 +22,10 @@ import java.util.List;
 
 public class RelationshipAdapter extends RecyclerView.Adapter<RelationshipViewHolder> {
 
-    private RelationshipContracts.Presenter presenter;
+    private RelationshipContracts.RelationshipPresenter presenter;
     private List<Pair<Relationship, RelationshipType>> relationships;
 
-    public RelationshipAdapter(RelationshipContracts.Presenter presenter) {
+    public RelationshipAdapter(RelationshipContracts.RelationshipPresenter presenter) {
         this.presenter = presenter;
         this.relationships = new ArrayList<>();
     }

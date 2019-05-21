@@ -15,10 +15,10 @@ import java.util.List;
 
 public class DataSetDetailAdapter extends RecyclerView.Adapter<DataSetDetailViewHolder> {
 
-    private DataSetDetailContract.Presenter presenter;
+    private DataSetDetailContract.DataSetDetailPresenter presenter;
     private List<DataSetDetailModel> datasets;
 
-    public DataSetDetailAdapter(DataSetDetailContract.Presenter presenter) {
+    public DataSetDetailAdapter(DataSetDetailContract.DataSetDetailPresenter presenter) {
         this.presenter = presenter;
         this.datasets = new ArrayList<>();
     }

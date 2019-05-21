@@ -5,6 +5,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.utils.CodeGenerator;
@@ -35,8 +38,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -371,9 +372,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
             if (trackedEntityInstance != null)
                 updateTei(trackedEntityInstance);
         }
-        return event(eventUid).map(eventModel1 -> {
-            return eventModel1;
-        });
+        return event(eventUid).map(eventModel1 -> eventModel1);
     }
 
     @NonNull

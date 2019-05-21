@@ -28,10 +28,10 @@ import io.reactivex.functions.Consumer;
  * QUADRAM. Created by ppajuelo on 29/11/2017.
  */
 
-public class NotesFragment extends FragmentGlobalAbstract implements NotesContracts.View {
+public class NotesFragment extends FragmentGlobalAbstract implements NotesContracts.NotesView {
 
     @Inject
-    NotesContracts.Presenter presenter;
+    NotesContracts.NotesPresenter presenter;
 
     FragmentNotesBinding binding;
     private NotesAdapter noteAdapter;

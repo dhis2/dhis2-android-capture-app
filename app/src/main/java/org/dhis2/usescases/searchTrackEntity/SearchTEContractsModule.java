@@ -1,5 +1,9 @@
 package org.dhis2.usescases.searchTrackEntity;
 
+import androidx.annotation.Nullable;
+import androidx.lifecycle.LiveData;
+import androidx.paging.PagedList;
+
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.general.AbstractActivityContracts;
@@ -14,9 +18,6 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeModel;
 import java.util.HashMap;
 import java.util.List;
 
-import androidx.annotation.Nullable;
-import androidx.lifecycle.LiveData;
-import androidx.paging.PagedList;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 
@@ -26,7 +27,7 @@ import io.reactivex.Observable;
 
 public class SearchTEContractsModule {
 
-    public interface View extends AbstractActivityContracts.View {
+    public interface SearchTEView extends AbstractActivityContracts.View {
         void setForm(List<TrackedEntityAttributeModel> trackedEntityAttributeModels, @Nullable ProgramModel program, HashMap<String, String> queryData);
 
         void setPrograms(List<ProgramModel> programModels);
@@ -52,9 +53,9 @@ public class SearchTEContractsModule {
         void setFabIcon(boolean needsSearch);
     }
 
-    public interface Presenter {
+    public interface SearchTEPresenter {
 
-        void init(View view, String trackedEntityType, String initialProgram);
+        void init(SearchTEView view, String trackedEntityType, String initialProgram);
 
         void onDestroy();
 

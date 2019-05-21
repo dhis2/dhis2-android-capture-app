@@ -66,7 +66,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
         if (!catOptCombList.isEmpty())
             for (CategoryOptionCombo catOptComb : catOptCombList)
                 eventRepo = eventRepo.byAttributeOptionComboUid().eq(catOptComb.uid());
-        DataSource dataSource = eventRepo.byState().notIn(State.TO_DELETE).orderByEventDate(RepositoryScope.OrderByDirection.DESC).withAllChildren().getDataSource().map(event -> transformToProgramEventModel(event));
+        DataSource dataSource = eventRepo.byState().notIn(State.TO_DELETE).orderByEventDate(RepositoryScope.OrderByDirection.DESC).withAllChildren().getDataSource().map(this::transformToProgramEventModel);
         return new LivePagedListBuilder(new DataSource.Factory() {
             @Override
             public DataSource create() {

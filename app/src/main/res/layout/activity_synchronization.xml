@@ -9,7 +9,7 @@
 
         <variable
             name="presenter"
-            type="org.dhis2.usescases.sync.SyncContracts.Presenter" />
+            type="org.dhis2.usescases.sync.SyncContracts.SyncPresenter" />
 
     </data>
 

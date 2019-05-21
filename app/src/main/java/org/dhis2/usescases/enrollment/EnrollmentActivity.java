@@ -18,11 +18,11 @@ import androidx.databinding.DataBindingUtil;
 import io.reactivex.functions.Consumer;
 
 @SuppressWarnings("squid:MaximumInheritanceDepth")
-public class EnrollmentActivity extends ActivityGlobalAbstract implements EnrollmentContracts.View {
+public class EnrollmentActivity extends ActivityGlobalAbstract implements EnrollmentContracts.EnrollmentView {
 
     EnrollmentActivityBinding binding;
     @Inject
-    EnrollmentContracts.Presenter presenter;
+    EnrollmentContracts.EnrollmentPresenter presenter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

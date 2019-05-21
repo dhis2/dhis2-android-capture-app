@@ -45,7 +45,7 @@ import static android.text.TextUtils.isEmpty;
  * QUADRAM. Created by Cristian on 01/03/2018.
  */
 @SuppressWarnings("squid:MaximumInheritanceDepth")
-public class EventSummaryActivity extends ActivityGlobalAbstract implements EventSummaryContract.View, ProgressBarAnimation.OnUpdate {
+public class EventSummaryActivity extends ActivityGlobalAbstract implements EventSummaryContract.EventSummaryView, ProgressBarAnimation.OnUpdate {
 
     private static final int PROGRESS_TIME = 2000;
 
@@ -55,7 +55,7 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
     private Map<String, View> sections = new HashMap<>();
 
     @Inject
-    EventSummaryContract.Presenter presenter;
+    EventSummaryContract.EventSummaryPresenter presenter;
     private ActivityEventSummaryBinding binding;
     private int completionPercent;
     private int totalFields;

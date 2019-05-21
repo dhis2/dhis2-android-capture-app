@@ -74,11 +74,11 @@ import timber.log.Timber;
         @BindingMethod(type = FloatingActionButton.class, attribute = "app:srcCompat", method = "setImageDrawable")
 })
 @SuppressWarnings("squid:MaximumInheritanceDepth")
-public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTEContractsModule.View {
+public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTEContractsModule.SearchTEView {
 
     ActivitySearchBinding binding;
     @Inject
-    SearchTEContractsModule.Presenter presenter;
+    SearchTEContractsModule.SearchTEPresenter presenter;
     @Inject
     MetadataRepository metadataRepository;
 

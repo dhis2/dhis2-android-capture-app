@@ -36,14 +36,14 @@ import timber.log.Timber;
 /**
  * QUADRAM. Created by ppajuelo on 09/04/2019.
  */
-class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
+class TEIDataPresenterImpl implements TEIDataContracts.TEIDataPresenter {
 
     private final D2 d2;
     private final DashboardRepository dashboardRepository;
     private String programUid;
     private final String teiUid;
     private final MetadataRepository metadataRepository;
-    private TEIDataContracts.View view;
+    private TEIDataContracts.TEIDataView view;
     private CompositeDisposable compositeDisposable;
     private DashboardProgramModel dashboardModel;
 
@@ -57,7 +57,7 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
     }
 
     @Override
-    public void init(TEIDataContracts.View view) {
+    public void init(TEIDataContracts.TEIDataView view) {
         this.view = view;
         this.compositeDisposable = new CompositeDisposable();
     }

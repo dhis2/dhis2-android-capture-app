@@ -28,9 +28,9 @@ public class SearchTeiLiveAdapter extends PagedListAdapter<SearchTeiModel, Searc
             return oldItem.getTei().uid().equals(newItem.getTei().uid());
         }
     };
-    private SearchTEContractsModule.Presenter presenter;
+    private SearchTEContractsModule.SearchTEPresenter presenter;
 
-    public SearchTeiLiveAdapter(SearchTEContractsModule.Presenter presenter) {
+    public SearchTeiLiveAdapter(SearchTEContractsModule.SearchTEPresenter presenter) {
         super(DIFF_CALLBACK);
         this.presenter = presenter;
     }

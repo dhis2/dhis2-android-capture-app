@@ -487,7 +487,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         return briteDatabase
                 .createQuery(TrackedEntityDataValueModel.TABLE, prepareStatement(eventUid))
                 .mapToList(this::transform)
-                .map(fieldViewModels -> checkRenderType(fieldViewModels))
+                .map(this::checkRenderType)
                 .toFlowable(BackpressureStrategy.BUFFER)
                 .doOnNext(onNext -> Timber.d("LIST ON NEXT! at %s", System.currentTimeMillis()))
                 ;

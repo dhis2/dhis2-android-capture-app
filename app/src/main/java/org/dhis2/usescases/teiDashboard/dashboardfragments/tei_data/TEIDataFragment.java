@@ -57,7 +57,7 @@ import static org.dhis2.utils.Constants.TRACKED_ENTITY_INSTANCE;
  * -Created by ppajuelo on 29/11/2017.
  */
 
-public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataContracts.View, DialogClickListener {
+public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataContracts.TEIDataView, DialogClickListener {
 
     private static final int REQ_DETAILS = 1001;
     private static final int REQ_EVENT = 2001;
@@ -69,7 +69,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     private FragmentTeiDataBinding binding;
 
     @Inject
-    TEIDataContracts.Presenter presenter;
+    TEIDataContracts.TEIDataPresenter presenter;
 
     private EventAdapter adapter;
     private CustomDialog dialog;

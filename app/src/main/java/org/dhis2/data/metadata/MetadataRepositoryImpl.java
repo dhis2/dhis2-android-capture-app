@@ -41,7 +41,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -326,7 +325,7 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     @Override
     public Observable<List<ProgramModel>> getTeiActivePrograms(String teiUid, boolean showOnlyActive) {
         String query = ACTIVE_TEI_PROGRAMS;
-        if(showOnlyActive)
+        if (showOnlyActive)
             query = query + " and Enrollment.status = 'ACTIVE'";
 
         return briteDatabase.createQuery(ACTIVE_TEI_PROGRAMS_TABLES, query, teiUid == null ? "" : teiUid)
@@ -454,10 +453,7 @@ public class MetadataRepositoryImpl implements MetadataRepository {
 
     @Override
     public Observable<List<OptionModel>> searchOptions(String text, String idOptionSet, int page, List<String> optionsToHide, List<String> optionsGroupsToHide) {
-        String pageQuery = String.format(Locale.US, "GROUP BY Option.uid ORDER BY sortOrder LIMIT %d,%d", page * 15, 15);
         String formattedOptionsToHide = "'" + join("','", optionsToHide) + "'";
-        String formattedOptionGroupsToHide = "'" + join("','", optionsGroupsToHide) + "'";
-
         String optionQuery = "SELECT Option.* FROM Option WHERE Option.optionSet = ? " +
                 (!optionsToHide.isEmpty() ? "AND Option.uid NOT IN (" + formattedOptionsToHide + ") " : "") +
                 (!isEmpty(text) ? "AND Option.displayName LIKE '%" + text + "%' " : "");

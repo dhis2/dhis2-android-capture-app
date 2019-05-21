@@ -28,13 +28,13 @@ public class SearchTEModule {
 
     @Provides
     @PerActivity
-    SearchTEContractsModule.View provideView(SearchTEActivity searchTEActivity) {
+    SearchTEContractsModule.SearchTEView provideView(SearchTEActivity searchTEActivity) {
         return searchTEActivity;
     }
 
     @Provides
     @PerActivity
-    SearchTEContractsModule.Presenter providePresenter(D2 d2, SearchRepository searchRepository, MetadataRepository metadataRepository) {
+    SearchTEContractsModule.SearchTEPresenter providePresenter(D2 d2, SearchRepository searchRepository, MetadataRepository metadataRepository) {
         return new SearchTEPresenter(searchRepository, metadataRepository,d2);
     }
 

@@ -37,15 +37,15 @@ public class TeiDashboardModule {
 
     @Provides
     @PerActivity
-    TeiDashboardContracts.View provideView(TeiDashboardMobileActivity mobileActivity) {
+    TeiDashboardContracts.TeiDashboardView provideView(TeiDashboardMobileActivity mobileActivity) {
         return mobileActivity;
     }
 
     @Provides
     @PerActivity
-    TeiDashboardContracts.Presenter providePresenter(D2 d2, DashboardRepository dashboardRepository,
-                                                     MetadataRepository metadataRepository,
-                                                     RuleEngineRepository ruleRepository) {
+    TeiDashboardContracts.TeiDashboardPresenter providePresenter(D2 d2, DashboardRepository dashboardRepository,
+                                                                 MetadataRepository metadataRepository,
+                                                                 RuleEngineRepository ruleRepository) {
         return new TeiDashboardPresenter(d2, dashboardRepository, metadataRepository, ruleRepository);
     }
 

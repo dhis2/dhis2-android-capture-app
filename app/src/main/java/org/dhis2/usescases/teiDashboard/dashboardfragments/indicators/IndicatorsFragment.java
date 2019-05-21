@@ -29,10 +29,10 @@ import io.reactivex.functions.Consumer;
  * QUADRAM. Created by ppajuelo on 29/11/2017.
  */
 
-public class IndicatorsFragment extends FragmentGlobalAbstract implements IndicatorsContracts.View {
+public class IndicatorsFragment extends FragmentGlobalAbstract implements IndicatorsContracts.IndicatorsView {
 
     @Inject
-    IndicatorsContracts.Presenter presenter;
+    IndicatorsContracts.IndicatorsPresenter presenter;
     private FragmentIndicatorsBinding binding;
     private IndicatorsAdapter adapter;
 

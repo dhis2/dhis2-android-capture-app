@@ -4,13 +4,13 @@ import android.content.Context;
 import android.view.Menu;
 import android.view.View;
 
+import androidx.appcompat.widget.PopupMenu;
+
 import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryOption;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import androidx.appcompat.widget.PopupMenu;
 
 /**
  * QUADRAM. Created by ppajuelo on 20/02/2019.
@@ -63,10 +63,6 @@ public class CategoryOptionPopUp {
     public CategoryOptionPopUp setOnClick(OnCatOptionClick listener) {
         this.listener = listener;
         return this;
-    }
-
-    public void dismiss() {
-        instance = null;
     }
 
     public interface OnCatOptionClick {

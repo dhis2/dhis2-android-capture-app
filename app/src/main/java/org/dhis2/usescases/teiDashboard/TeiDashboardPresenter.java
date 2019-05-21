@@ -1,37 +1,24 @@
 package org.dhis2.usescases.teiDashboard;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.View;
 
-import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.RuleEngineRepository;
 import org.dhis2.data.metadata.MetadataRepository;
-import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.TEIDataFragment;
-import org.dhis2.usescases.teiDashboard.eventDetail.EventDetailActivity;
-import org.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity;
 import org.dhis2.utils.DateUtils;
-import org.dhis2.utils.EventCreationType;
 import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 
 import java.util.Calendar;
 import java.util.List;
 
-import androidx.appcompat.widget.PopupMenu;
-import androidx.core.app.ActivityOptionsCompat;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import io.reactivex.Flowable;
+
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -42,13 +29,13 @@ import timber.log.Timber;
  * QUADRAM. Created by ppajuelo on 30/11/2017.
  */
 
-public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
+public class TeiDashboardPresenter implements TeiDashboardContracts.TeiDashboardPresenter {
 
     private final DashboardRepository dashboardRepository;
     private final MetadataRepository metadataRepository;
     private final D2 d2;
     private final RuleEngineRepository ruleRepository;
-    private TeiDashboardContracts.View view;
+    private TeiDashboardContracts.TeiDashboardView view;
 
     private String teUid;
     private String teType;
@@ -74,7 +61,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     }
 
     @Override
-    public void init(TeiDashboardContracts.View view, String teiUid, String programUid) {
+    public void init(TeiDashboardContracts.TeiDashboardView view, String teiUid, String programUid) {
         this.view = view;
         this.teUid = teiUid;
         this.programUid = programUid;
@@ -225,7 +212,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
 
  /*   @Override
-    public void onShareClick(View mView) {
+    public void onShareClick(DataSetTableView mView) {
         PopupMenu menu = new PopupMenu(view.getContext(), mView);
 
         menu.getMenu().add(Menu.NONE, Menu.NONE, 0, "QR");
@@ -267,7 +254,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     }
 
     /*@Override
-    public void seeDetails(View sharedView, DashboardProgramModel dashboardProgramModel) {
+    public void seeDetails(DataSetTableView sharedView, DashboardProgramModel dashboardProgramModel) {
         Fragment teiFragment = TEIDataFragment.getInstance();
         Intent intent = new Intent(view.getContext(), TeiDataDetailActivity.class);
         Bundle extras = new Bundle();
@@ -281,7 +268,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     }*/
 
    /* @Override
-    public void onEventSelected(String uid, View sharedView) {
+    public void onEventSelected(String uid, DataSetTableView sharedView) {
         Fragment teiFragment = TEIDataFragment.getInstance();
         if (teiFragment != null && teiFragment.getContext() != null && teiFragment.isAdded()) {
             Intent intent = new Intent(teiFragment.getContext(), EventInitialActivity.class);
@@ -293,7 +280,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     }*/
 
     /*@Override
-    public void onScheduleSelected(String uid, View sharedView) {
+    public void onScheduleSelected(String uid, DataSetTableView sharedView) {
         Fragment teiFragment = TEIDataFragment.getInstance();
         if (teiFragment != null && teiFragment.getContext() != null && teiFragment.isAdded()) {
             Intent intent = new Intent(teiFragment.getContext(), EventDetailActivity.class);

@@ -1,16 +1,17 @@
 package org.dhis2.utils.custom_views;
 
 import android.app.Dialog;
-import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.DialogFragment;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.jakewharton.rxbinding2.widget.RxTextView;
 
@@ -20,6 +21,7 @@ import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.DialogOptionSetBinding;
 import org.dhis2.utils.EndlessRecyclerViewScrollListener;
 import org.hisp.dhis.android.core.option.OptionModel;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,16 +56,18 @@ public class OptionSetDialog extends DialogFragment {
         return instace;
     }
 
-    public static Boolean isCreated(){
+    public static Boolean isCreated() {
         return instace != null;
     }
 
+    @NotNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Dialog dialog = super.onCreateDialog(savedInstanceState);
-        dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        }
         return dialog;
     }
 
@@ -107,9 +111,13 @@ public class OptionSetDialog extends DialogFragment {
 
     @Override
     public void dismiss() {
-        instace = null;
+        destroyInstance();
         disposable.clear();
         super.dismiss();
+    }
+
+    private static void destroyInstance() {
+        instace = null;
     }
 
     public OptionSetDialog setOnClick(OptionSetOnClickListener listener) {
@@ -118,8 +126,8 @@ public class OptionSetDialog extends DialogFragment {
     }
 
     public OptionSetDialog setOptions(List<OptionModel> options) {
-        adapter.setOptions(options,endlessScrollListener.getCurrentPage());
-        if(options.isEmpty() && adapter.isLastItemLoading(adapter.getItemCount())) {
+        adapter.setOptions(options, endlessScrollListener.getCurrentPage());
+        if (options.isEmpty() && adapter.isLastItemLoading(adapter.getItemCount())) {
             adapter.remove();
         }
         return this;

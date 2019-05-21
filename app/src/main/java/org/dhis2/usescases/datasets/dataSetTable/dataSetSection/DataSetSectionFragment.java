@@ -29,7 +29,7 @@ import java.util.List;
 public class DataSetSectionFragment extends FragmentGlobalAbstract {
 
     FragmentDatasetSectionBinding binding;
-    private DataSetTableContract.Presenter presenter;
+    private DataSetTableContract.DataSetTablePresenter presenter;
     private ActivityGlobalAbstract activity;
     private DataSetTableAdapter adapter;
 

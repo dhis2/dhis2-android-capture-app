@@ -3,7 +3,6 @@ package org.dhis2.usescases.programEventDetail;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.dagger.PerActivity;
-import org.dhis2.data.metadata.MetadataRepository;
 import org.hisp.dhis.android.core.D2;
 
 import androidx.annotation.NonNull;
@@ -26,20 +25,20 @@ public class ProgramEventDetailModule {
 
     @Provides
     @PerActivity
-    ProgramEventDetailContract.View provideView(ProgramEventDetailActivity activity) {
+    ProgramEventDetailContract.ProgramEventDetailView provideView(ProgramEventDetailActivity activity) {
         return activity;
     }
 
     @Provides
     @PerActivity
-    ProgramEventDetailContract.Presenter providesPresenter(
+    ProgramEventDetailContract.ProgramEventDetailPresenter providesPresenter(
                                                            @NonNull ProgramEventDetailRepository programEventDetailRepository) {
         return new ProgramEventDetailPresenter(programUid,programEventDetailRepository);
     }
 
     @Provides
     @PerActivity
-    ProgramEventDetailAdapter provideProgramEventDetailAdapter(ProgramEventDetailContract.Presenter presenter) {
+    ProgramEventDetailAdapter provideProgramEventDetailAdapter(ProgramEventDetailContract.ProgramEventDetailPresenter presenter) {
         return new ProgramEventDetailAdapter(presenter);
     }
 

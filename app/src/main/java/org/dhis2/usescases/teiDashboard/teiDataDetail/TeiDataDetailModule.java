@@ -29,13 +29,13 @@ public class TeiDataDetailModule {
 
     @Provides
     @PerActivity
-    TeiDataDetailContracts.View provideView(TeiDataDetailActivity detailActivity) {
+    TeiDataDetailContracts.TeiDataDetailView provideView(TeiDataDetailActivity detailActivity) {
         return detailActivity;
     }
 
     @Provides
     @PerActivity
-    TeiDataDetailContracts.Presenter providePresenter(DashboardRepository dashboardRepository, MetadataRepository metadataRepository, EnrollmentStatusStore enrollmentStatusStore) {
+    TeiDataDetailContracts.TeiDataDetailPresenter providePresenter(DashboardRepository dashboardRepository, MetadataRepository metadataRepository, EnrollmentStatusStore enrollmentStatusStore) {
         return new TeiDataDetailPresenter(dashboardRepository, metadataRepository, enrollmentStatusStore);
     }
 

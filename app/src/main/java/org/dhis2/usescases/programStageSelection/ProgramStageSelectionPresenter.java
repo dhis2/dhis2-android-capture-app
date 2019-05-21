@@ -21,10 +21,10 @@ import timber.log.Timber;
  * QUADRAM. Created by ppajuelo on 31/10/2017.
  */
 
-public class ProgramStageSelectionPresenter implements ProgramStageSelectionContract.Presenter {
+public class ProgramStageSelectionPresenter implements ProgramStageSelectionContract.ProgramStageSelectionPresenter {
 
     private final RulesUtilsProvider ruleUtils;
-    private ProgramStageSelectionContract.View view;
+    private ProgramStageSelectionContract.ProgramStageSelectionView view;
     private CompositeDisposable compositeDisposable;
     private ProgramStageSelectionRepository programStageSelectionRepository;
 
@@ -41,7 +41,7 @@ public class ProgramStageSelectionPresenter implements ProgramStageSelectionCont
     }
 
     @Override
-    public void getProgramStages(String programId, @NonNull String uid, @NonNull ProgramStageSelectionContract.View view) {
+    public void getProgramStages(String programId, @NonNull String uid, @NonNull ProgramStageSelectionContract.ProgramStageSelectionView view) {
         this.view = view;
 
         Flowable<List<ProgramStage>> stagesFlowable = programStageSelectionRepository.enrollmentProgramStages(programId, uid);

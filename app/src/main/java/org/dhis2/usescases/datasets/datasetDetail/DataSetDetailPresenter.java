@@ -25,10 +25,10 @@ import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 
-public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
+public class DataSetDetailPresenter implements DataSetDetailContract.DataSetDetailPresenter {
 
     private DataSetDetailRepository dataSetDetailRepository;
-    private DataSetDetailContract.View view;
+    private DataSetDetailContract.DataSetDetailView view;
     private CategoryOptionComboModel categoryOptionComboModel;
     private MetadataRepository metadataRepository;
     private int lastSearchType;
@@ -56,7 +56,7 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
     }
 
     @Override
-    public void init(DataSetDetailContract.View view) {
+    public void init(DataSetDetailContract.DataSetDetailView view) {
         this.view = view;
         getOrgUnits(null);
         compositeDisposable.add(

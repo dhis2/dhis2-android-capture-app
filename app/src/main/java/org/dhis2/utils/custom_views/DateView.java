@@ -231,9 +231,7 @@ public class DateView extends FieldLayout implements View.OnClickListener {
                     editText.setText(null);
                     listener.onDateSelected(null);
                 })
-                .setNeutralButton(getContext().getResources().getString(R.string.change_calendar), (dialog, which) -> {
-                    showNativeCalendar();
-                });
+                .setNeutralButton(getContext().getResources().getString(R.string.change_calendar), (dialog, which) -> showNativeCalendar());
 
         alertDialog.setView(datePickerView);
         Dialog dialog = alertDialog.create();

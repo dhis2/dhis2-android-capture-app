@@ -16,7 +16,7 @@ public final class SyncManagerModule {
 
     @Provides
     @PerFragment
-    SyncManagerContracts.Presenter providePresenter(MetadataRepository metadataRepository, D2 d2) {
+    SyncManagerContracts.SyncManagerPresenter providePresenter(MetadataRepository metadataRepository, D2 d2) {
         return new SyncManagerPresenter(metadataRepository, d2);
     }
 }

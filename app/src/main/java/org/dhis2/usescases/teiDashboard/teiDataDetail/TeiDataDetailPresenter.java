@@ -3,7 +3,6 @@ package org.dhis2.usescases.teiDashboard.teiDataDetail;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.util.Log;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -28,13 +27,13 @@ import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventIn
  * QUADRAM. Created by frodriguez on 12/13/2017.
  */
 
-public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter {
+public class TeiDataDetailPresenter implements TeiDataDetailContracts.TeiDataDetailPresenter {
 
     private final DashboardRepository dashboardRepository;
     private final MetadataRepository metadataRepository;
     private final CompositeDisposable disposable;
     private final EnrollmentStatusStore enrollmentStore;
-    private TeiDataDetailContracts.View view;
+    private TeiDataDetailContracts.TeiDataDetailView view;
     private FusedLocationProviderClient mFusedLocationClient;
 
     TeiDataDetailPresenter(DashboardRepository dashboardRepository, MetadataRepository metadataRepository, EnrollmentStatusStore enrollmentStatusStore) {
@@ -45,7 +44,7 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
     }
 
     @Override
-    public void init(TeiDataDetailContracts.View view, String uid, String programUid, String enrollmentUid) {
+    public void init(TeiDataDetailContracts.TeiDataDetailView view, String uid, String programUid, String enrollmentUid) {
         this.view = view;
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(view.getContext());
 

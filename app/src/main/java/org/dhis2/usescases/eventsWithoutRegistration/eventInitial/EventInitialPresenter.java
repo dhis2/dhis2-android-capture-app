@@ -59,10 +59,10 @@ import timber.log.Timber;
  * QUADRAM. Created by Cristian on 01/03/2018.
  */
 
-public class EventInitialPresenter implements EventInitialContract.Presenter {
+public class EventInitialPresenter implements EventInitialContract.EventInitialPresenter {
 
     public static final int ACCESS_COARSE_LOCATION_PERMISSION_REQUEST = 101;
-    private EventInitialContract.View view;
+    private EventInitialContract.EventInitialView view;
     private final MetadataRepository metadataRepository;
     private final EventInitialRepository eventInitialRepository;
     private final EventSummaryRepository eventSummaryRepository;
@@ -89,7 +89,7 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     }
 
     @Override
-    public void init(EventInitialContract.View mview, String programId, String eventId, String orgInitId, String programStageId) {
+    public void init(EventInitialContract.EventInitialView mview, String programId, String eventId, String orgInitId, String programStageId) {
         view = mview;
         this.eventId = eventId;
         this.programId = programId;
@@ -319,7 +319,7 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        (eventModel) -> view.onEventUpdated(eventModel.uid()),
+                        eventModel -> view.onEventUpdated(eventModel.uid()),
                         error -> displayMessage(error.getLocalizedMessage())
 
                 ));

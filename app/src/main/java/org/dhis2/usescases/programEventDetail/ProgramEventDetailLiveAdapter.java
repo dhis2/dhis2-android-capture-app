@@ -32,9 +32,9 @@ public class ProgramEventDetailLiveAdapter extends PagedListAdapter<ProgramEvent
                     oldItem.eventDisplayData().size() == newItem.eventDisplayData().size();
         }
     };
-    private ProgramEventDetailContract.Presenter presenter;
+    private ProgramEventDetailContract.ProgramEventDetailPresenter presenter;
 
-    public ProgramEventDetailLiveAdapter(ProgramEventDetailContract.Presenter presenter) {
+    public ProgramEventDetailLiveAdapter(ProgramEventDetailContract.ProgramEventDetailPresenter presenter) {
         super(DIFF_CALLBACK);
         this.presenter = presenter;
     }

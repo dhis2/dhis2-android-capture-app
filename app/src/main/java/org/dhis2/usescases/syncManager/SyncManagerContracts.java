@@ -3,7 +3,6 @@ package org.dhis2.usescases.syncManager;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.hisp.dhis.android.core.imports.TrackerImportConflict;
-import org.hisp.dhis.android.core.maintenance.D2Error;
 
 import java.util.List;
 
@@ -15,7 +14,7 @@ import io.reactivex.functions.Consumer;
 
 public class SyncManagerContracts {
 
-    interface View extends AbstractActivityContracts.View {
+    interface SyncManagerView extends AbstractActivityContracts.View {
 
         Consumer<Pair<Integer, Integer>> setSyncData();
 
@@ -30,9 +29,9 @@ public class SyncManagerContracts {
         void showLocalDataDeleted(boolean error);
     }
 
-    public interface Presenter {
+    public interface SyncManagerPresenter {
 
-        void init(SyncManagerContracts.View view);
+        void init(SyncManagerView view);
 
         void syncData(int seconds, String scheduleTag);
 

@@ -11,9 +11,9 @@ import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
-public class ReservedValuePresenter implements ReservedValueContracts.Presenter {
+public class ReservedValuePresenter implements ReservedValueContracts.ReservedValuePresenter {
 
-    private ReservedValueContracts.View view;
+    private ReservedValueContracts.ReservedValueView view;
     private CompositeDisposable disposable;
     private ReservedValueRepository repository;
     private D2 d2;
@@ -26,7 +26,7 @@ public class ReservedValuePresenter implements ReservedValueContracts.Presenter 
     }
 
     @Override
-    public void init(ReservedValueContracts.View view) {
+    public void init(ReservedValueContracts.ReservedValueView view) {
         this.view = view;
         disposable = new CompositeDisposable();
 

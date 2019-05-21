@@ -6,7 +6,6 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.period.PeriodType;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 public class DataSetInitialContract {
@@ -17,7 +16,7 @@ public class DataSetInitialContract {
         ACTION_CHECK
     }
 
-    public interface View extends AbstractActivityContracts.View {
+    public interface DataSetInitialView extends AbstractActivityContracts.View {
 
         void setAccessDataWrite(Boolean canWrite);
 
@@ -37,8 +36,8 @@ public class DataSetInitialContract {
         String getPeriodType();
     }
 
-    public interface Presenter extends AbstractActivityContracts.Presenter {
-        void init(View view);
+    public interface DataSetInitialPresenter extends AbstractActivityContracts.Presenter {
+        void init(DataSetInitialView view);
 
         void onBackClick();
 

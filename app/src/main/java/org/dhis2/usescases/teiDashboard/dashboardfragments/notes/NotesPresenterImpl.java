@@ -13,12 +13,12 @@ import timber.log.Timber;
 /**
  * QUADRAM. Created by ppajuelo on 09/04/2019.
  */
-public class NotesPresenterImpl implements NotesContracts.Presenter {
+public class NotesPresenterImpl implements NotesContracts.NotesPresenter {
     private final DashboardRepository dashboardRepository;
     private final String programUid;
     private final String teiUid;
     private final D2 d2;
-    private NotesContracts.View view;
+    private NotesContracts.NotesView view;
     private CompositeDisposable compositeDisposable;
 
     NotesPresenterImpl(D2 d2, DashboardRepository dashboardRepository, String programUid, String teiUid) {
@@ -29,7 +29,7 @@ public class NotesPresenterImpl implements NotesContracts.Presenter {
     }
 
     @Override
-    public void init(NotesContracts.View view) {
+    public void init(NotesContracts.NotesView view) {
         this.view = view;
         this.compositeDisposable = new CompositeDisposable();
     }

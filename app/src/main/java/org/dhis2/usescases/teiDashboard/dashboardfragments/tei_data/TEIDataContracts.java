@@ -22,7 +22,7 @@ import io.reactivex.functions.Consumer;
  */
 public class TEIDataContracts {
 
-    public interface View extends AbstractActivityContracts.View {
+    public interface TEIDataView extends AbstractActivityContracts.View {
 
         Consumer<List<EventModel>> setEvents();
 
@@ -51,9 +51,9 @@ public class TEIDataContracts {
         void openEventCapture(Intent intent);
     }
 
-    public interface Presenter extends AbstractActivityContracts.Presenter {
+    public interface TEIDataPresenter extends AbstractActivityContracts.Presenter {
 
-        void init(View view);
+        void init(TEIDataView view);
 
         void getTEIEvents();
 
@@ -64,8 +64,6 @@ public class TEIDataContracts {
         void changeCatOption(String eventUid, String catOptionComboUid);
 
         void areEventsCompleted();
-
-//        void displayGenerateEvent(String eventUid);
 
         void displayGenerateEvent(String eventUid);
 

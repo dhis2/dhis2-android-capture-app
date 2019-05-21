@@ -2,7 +2,6 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
-import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.event.EventStatus;
@@ -26,11 +25,11 @@ import io.reactivex.processors.FlowableProcessor;
  */
 public class EventCaptureContract {
 
-    public interface View extends AbstractActivityContracts.View {
+    public interface EventCaptureView extends AbstractActivityContracts.View {
 
         void renderInitialInfo(String stageName, String eventDate, String orgUnit, String catOption);
 
-        EventCaptureContract.Presenter getPresenter();
+        EventCapturePresenter getPresenter();
 
         void setUp();
 
@@ -65,8 +64,8 @@ public class EventCaptureContract {
         void setProgramStage(String programStageUid);
     }
 
-    public interface Presenter extends AbstractActivityContracts.Presenter {
-        void init(EventCaptureContract.View view);
+    public interface EventCapturePresenter extends AbstractActivityContracts.Presenter {
+        void init(EventCaptureView view);
 
         void onBackClick();
 

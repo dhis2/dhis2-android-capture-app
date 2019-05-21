@@ -47,10 +47,10 @@ import me.toptas.fancyshowcase.FocusShape;
  * QUADRAM. Created by ppajuelo on 29/11/2017.
  */
 @SuppressWarnings("squid:MaximumInheritanceDepth")
-public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implements TeiDashboardContracts.View {
+public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implements TeiDashboardContracts.TeiDashboardView {
 
     @Inject
-    public TeiDashboardContracts.Presenter presenter;
+    public TeiDashboardContracts.TeiDashboardPresenter presenter;
 
     protected DashboardProgramModel programModel;
 
@@ -284,7 +284,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         return binding.toolbarTitle.getText().toString();
     }
 
-    public TeiDashboardContracts.Presenter getPresenter() {
+    public TeiDashboardContracts.TeiDashboardPresenter getPresenter() {
         return presenter;
     }
 

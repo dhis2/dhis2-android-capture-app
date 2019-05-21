@@ -37,11 +37,11 @@ import javax.inject.Inject;
 import io.reactivex.functions.Consumer;
 
 @SuppressWarnings("squid:MaximumInheritanceDepth")
-public class MainActivity extends ActivityGlobalAbstract implements MainContracts.View {
+public class MainActivity extends ActivityGlobalAbstract implements MainContracts.MainView {
 
     private ActivityMainBinding binding;
     @Inject
-    MainContracts.Presenter presenter;
+    MainContracts.MainPresenter presenter;
 
     private ProgramFragment programFragment;
 

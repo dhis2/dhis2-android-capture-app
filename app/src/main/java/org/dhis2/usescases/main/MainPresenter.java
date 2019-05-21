@@ -21,10 +21,10 @@ import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
 
-final class MainPresenter implements MainContracts.Presenter {
+final class MainPresenter implements MainContracts.MainPresenter {
 
     private final MetadataRepository metadataRepository;
-    private MainContracts.View view;
+    private MainContracts.MainView view;
     private CompositeDisposable compositeDisposable;
 
 
@@ -36,7 +36,7 @@ final class MainPresenter implements MainContracts.Presenter {
     }
 
     @Override
-    public void init(MainContracts.View view) {
+    public void init(MainContracts.MainView view) {
         this.view = view;
         this.compositeDisposable = new CompositeDisposable();
 

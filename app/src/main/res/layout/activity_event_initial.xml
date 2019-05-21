@@ -23,7 +23,7 @@
 
         <variable
             name="presenter"
-            type="org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialContract.Presenter" />
+            type="org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialContract.EventInitialPresenter" />
     </data>
 
     <LinearLayout

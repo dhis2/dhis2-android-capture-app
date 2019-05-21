@@ -7,18 +7,18 @@ import androidx.annotation.Nullable;
  * Created by Cristian on 01/03/2018.
  */
 
-public class EventSummaryPresenter implements EventSummaryContract.Presenter {
+public class EventSummaryPresenter implements EventSummaryContract.EventSummaryPresenter {
 
-    private EventSummaryContract.View view;
-    private final EventSummaryContract.Interactor interactor;
+    private EventSummaryContract.EventSummaryView view;
+    private final EventSummaryContract.EventSummaryInteractor interactor;
 
 
-    EventSummaryPresenter(EventSummaryContract.Interactor interactor) {
+    EventSummaryPresenter(EventSummaryContract.EventSummaryInteractor interactor) {
         this.interactor = interactor;
     }
 
     @Override
-    public void init(@NonNull EventSummaryContract.View view, @NonNull String programId, @NonNull String eventId) {
+    public void init(@NonNull EventSummaryContract.EventSummaryView view, @NonNull String programId, @NonNull String eventId) {
         this.view = view;
         interactor.init(view, programId, eventId);
     }

@@ -18,7 +18,7 @@ public class ProgramEventDetailViewHolder extends RecyclerView.ViewHolder {
         this.binding = binding;
     }
 
-    public void bind(ProgramEventDetailContract.Presenter presenter, ProgramEventViewModel event) {
+    public void bind(ProgramEventDetailContract.ProgramEventDetailPresenter presenter, ProgramEventViewModel event) {
         binding.setVariable(BR.presenter, presenter);
         binding.setVariable(BR.event, event);
         binding.executePendingBindings();

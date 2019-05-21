@@ -37,17 +37,17 @@ public class EventInitialModule {
 
     @Provides
     @PerActivity
-    EventInitialContract.View provideView(EventInitialContract.View activity) {
+    EventInitialContract.EventInitialView provideView(EventInitialContract.EventInitialView activity) {
         return activity;
     }
 
     @Provides
     @PerActivity
-    EventInitialContract.Presenter providesPresenter(@NonNull EventSummaryRepository eventSummaryRepository,
-                                                     @NonNull EventInitialRepository eventInitialRepository,
-                                                     @NonNull MetadataRepository metadataRepository,
-                                                     @NonNull SchedulerProvider schedulerProvider,
-                                                     @NonNull D2 d2) {
+    EventInitialContract.EventInitialPresenter providesPresenter(@NonNull EventSummaryRepository eventSummaryRepository,
+                                                                 @NonNull EventInitialRepository eventInitialRepository,
+                                                                 @NonNull MetadataRepository metadataRepository,
+                                                                 @NonNull SchedulerProvider schedulerProvider,
+                                                                 @NonNull D2 d2) {
         return new EventInitialPresenter(eventSummaryRepository, eventInitialRepository, metadataRepository, schedulerProvider, d2);
     }
 

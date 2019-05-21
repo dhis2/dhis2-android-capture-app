@@ -44,10 +44,10 @@ import static android.app.Activity.RESULT_OK;
  * QUADRAM. Created by ppajuelo on 29/11/2017.
  */
 
-public class RelationshipFragment extends FragmentGlobalAbstract implements RelationshipContracts.View {
+public class RelationshipFragment extends FragmentGlobalAbstract implements RelationshipContracts.RelationshipView {
 
     @Inject
-    RelationshipContracts.Presenter presenter;
+    RelationshipContracts.RelationshipPresenter presenter;
 
     private FragmentRelationshipsBinding binding;
 

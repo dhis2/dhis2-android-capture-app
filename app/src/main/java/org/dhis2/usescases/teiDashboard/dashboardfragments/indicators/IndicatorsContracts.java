@@ -13,14 +13,14 @@ import io.reactivex.functions.Consumer;
  */
 public class IndicatorsContracts {
 
-    public interface View extends AbstractActivityContracts.View {
+    public interface IndicatorsView extends AbstractActivityContracts.View {
 
         Consumer<List<Trio<ProgramIndicatorModel, String, String>>> swapIndicators();
     }
 
-    public interface Presenter extends AbstractActivityContracts.Presenter {
+    public interface IndicatorsPresenter extends AbstractActivityContracts.Presenter {
 
-        void init(View view);
+        void init(IndicatorsView view);
 
     }
 

@@ -12,13 +12,13 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
-public class EnrollmentPresenterImpl implements EnrollmentContracts.Presenter {
+public class EnrollmentPresenterImpl implements EnrollmentContracts.EnrollmentPresenter {
 
     private final EnrollmentRepository enrollmentRepository;
     private final CompositeDisposable compositeDisposable;
     private final D2 d2;
     private final String enrollmentUid;
-    private EnrollmentContracts.View view;
+    private EnrollmentContracts.EnrollmentView view;
 
     EnrollmentPresenterImpl(String enrollmentUid, EnrollmentRepository enrollmentRepository, D2 d2) {
         this.enrollmentUid = enrollmentUid;
@@ -29,7 +29,7 @@ public class EnrollmentPresenterImpl implements EnrollmentContracts.Presenter {
 
 
     @Override
-    public void init(EnrollmentContracts.View view) {
+    public void init(EnrollmentContracts.EnrollmentView view) {
         compositeDisposable.add(
                 Observable.just(d2.enrollmentModule().enrollments.uid(enrollmentUid).get())
                         .flatMap(enrollment -> Observable.just(d2.programModule().programs.uid(enrollment.program()).get())
