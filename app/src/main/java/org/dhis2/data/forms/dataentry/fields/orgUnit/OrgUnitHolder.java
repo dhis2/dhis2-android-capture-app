@@ -1,17 +1,10 @@
 package org.dhis2.data.forms.dataentry.fields.orgUnit;
 
-import android.view.View;
-
-import androidx.databinding.ViewDataBinding;
 import androidx.fragment.app.FragmentManager;
 
-import com.google.android.material.textfield.TextInputLayout;
-
-import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
-import org.dhis2.utils.custom_views.TextInputAutoCompleteTextView;
-import org.dhis2.utils.custom_views.orgUnitCascade.OrgUnitCascadeDialog;
+import org.dhis2.databinding.FormOrgUnitBinding;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 
@@ -28,48 +21,24 @@ import timber.log.Timber;
  */
 
 public class OrgUnitHolder extends FormViewHolder {
-    private final TextInputAutoCompleteTextView editText;
-    private final TextInputLayout inputLayout;
+    private final FormOrgUnitBinding binding;
     private final Observable<List<OrganisationUnitModel>> orgUnitsObservable;
     private List<OrganisationUnitModel> orgUnits;
-    private OrgUnitCascadeDialog orgUnitDialog;
     private CompositeDisposable compositeDisposable;
     private OrgUnitViewModel model;
-    private Observable<List<OrganisationUnitLevel>> levelsObservable;
-    private List<OrganisationUnitLevel> levels;
 
-    OrgUnitHolder(FragmentManager fm, ViewDataBinding binding, FlowableProcessor<RowAction> processor, Observable<List<OrganisationUnitModel>> orgUnits, Observable<List<OrganisationUnitLevel>> levels) {
+    OrgUnitHolder(FragmentManager fm, FormOrgUnitBinding binding, FlowableProcessor<RowAction> processor, Observable<List<OrganisationUnitModel>> orgUnits, Observable<List<OrganisationUnitLevel>> levels) {
         super(binding);
+        this.binding = binding;
         compositeDisposable = new CompositeDisposable();
-        this.editText = binding.getRoot().findViewById(R.id.input_editText);
-        this.inputLayout = binding.getRoot().findViewById(R.id.input_layout);
-        this.description = binding.getRoot().findViewById(R.id.descriptionLabel);
+
         this.orgUnitsObservable = orgUnits;
-        this.levelsObservable = levels;
 
-        this.editText.setOnClickListener(view -> {
-            editText.setEnabled(false);
-
-            orgUnitDialog = new OrgUnitCascadeDialog(model.label(), model.value(), new OrgUnitCascadeDialog.CascadeOrgUnitCallbacks() {
-                @Override
-                public void textChangedConsumer(String selectedOrgUnitUid, String selectedOrgUnitName) {
-                    processor.onNext(RowAction.create(model.uid(), selectedOrgUnitUid));
-                    editText.setText(selectedOrgUnitName);
-                    editText.setEnabled(true);
-                }
-
-                @Override
-                public void onDialogCancelled() {
-                    editText.setEnabled(true);
-                }
-            });
-
-            orgUnitDialog.show(fm, model.label());
+        binding.orgUnitView.setListener(orgUnitUid -> {
+            processor.onNext(RowAction.create(model.uid(), orgUnitUid));
         });
 
-
         getOrgUnits();
-        getLevels();
     }
 
     @Override
@@ -78,33 +47,15 @@ public class OrgUnitHolder extends FormViewHolder {
     }
 
     public void update(OrgUnitViewModel viewModel) {
-
-        descriptionText = viewModel.description();
-        label = new StringBuilder(viewModel.label());
-        if (viewModel.mandatory())
-            label.append("*");
-        this.inputLayout.setHint(label.toString());
-
-        if (label.length() > 16 || viewModel.description() != null)
-            description.setVisibility(View.VISIBLE);
-        else
-            description.setVisibility(View.GONE);
-
-        if (viewModel.warning() != null) {
-            inputLayout.setErrorTextAppearance(R.style.warning_appearance);
-            inputLayout.setError(viewModel.warning());
-        } else if (viewModel.error() != null) {
-            inputLayout.setErrorTextAppearance(R.style.error_appearance);
-            inputLayout.setError(viewModel.error());
-        } else
-            inputLayout.setError(null);
-
-        if (viewModel.value() != null) {
-            editText.post(() -> editText.setText(getOrgUnitName(viewModel.value())));
-        }
-        editText.setEnabled(viewModel.editable());
-
         this.model = viewModel;
+        binding.orgUnitView.setObjectStyle(viewModel.objectStyle());
+        binding.orgUnitView.setLabel(viewModel.label(), viewModel.mandatory());
+        descriptionText = viewModel.description();
+        binding.orgUnitView.setDescription(descriptionText);
+        binding.orgUnitView.setWarning(viewModel.warning(), viewModel.error());
+        binding.orgUnitView.setValue(viewModel.value(), getOrgUnitName(viewModel.value()));
+        binding.orgUnitView.updateEditable(viewModel.editable());
+
 
     }
 
@@ -128,21 +79,14 @@ public class OrgUnitHolder extends FormViewHolder {
                         {
                             this.orgUnits = orgUnitViewModels;
                             if (model.value() != null) {
-                                this.inputLayout.setHintAnimationEnabled(false);
+                                /*this.inputLayout.setHintAnimationEnabled(false);
                                 this.editText.setText(getOrgUnitName(model.value()));
-                                this.inputLayout.setHintAnimationEnabled(true);
+                                this.inputLayout.setHintAnimationEnabled(true);*/
+                                update(model);
                             }
                         },
                         Timber::d
                 )
         );
-    }
-
-    private void getLevels() {
-        compositeDisposable.add(levelsObservable
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
-                .subscribe(data -> this.levels = data,
-                        Timber::e));
     }
 }

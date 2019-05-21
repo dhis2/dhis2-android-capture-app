@@ -371,7 +371,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
                 getAbstracContext(),
                 getString(R.string.info),
                 description,
-                getString(R.string.action_accept),
+                getString(R.string.action_close),
                 null,
                 Constants.DESCRIPTION_DIALOG,
                 null
@@ -397,8 +397,8 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
     }
 
     @Override
-    public void showSyncDialog(String programUid) {
-        new SyncStatusDialog(programUid)
+    public void showSyncDialog(String programUid, SyncStatusDialog.ConflictType conflictType) {
+        new SyncStatusDialog(programUid, conflictType)
                 .show(getSupportFragmentManager(), programUid);
     }
 }

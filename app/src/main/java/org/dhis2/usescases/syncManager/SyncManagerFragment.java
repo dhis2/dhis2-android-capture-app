@@ -180,6 +180,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 ));
 
         binding.limitByOrgUnit.setOnCheckedChangeListener((buttonView, isChecked) -> prefs.edit().putBoolean(Constants.LIMIT_BY_ORG_UNIT, isChecked).apply());
+        binding.limitByProgram.setOnCheckedChangeListener((buttonView, isChecked) -> prefs.edit().putBoolean(Constants.LIMIT_BY_PROGRAM, isChecked).apply());
 
         setLastSyncDate();
     }
@@ -207,6 +208,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
             binding.eventCurrentData.setText(String.valueOf(syncParameters.val0()));
             binding.teiCurrentData.setText(String.valueOf(syncParameters.val1()));
             binding.limitByOrgUnit.setChecked(prefs.getBoolean(Constants.LIMIT_BY_ORG_UNIT, false));
+            binding.limitByProgram.setChecked(prefs.getBoolean(Constants.LIMIT_BY_PROGRAM, false));
         };
     }
 
