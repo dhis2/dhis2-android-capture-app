@@ -119,6 +119,9 @@ public class OptionSetDialog extends DialogFragment {
 
     public OptionSetDialog setOptions(List<OptionModel> options) {
         adapter.setOptions(options,endlessScrollListener.getCurrentPage());
+        if(options.isEmpty() && adapter.isLastItemLoading(adapter.getItemCount())) {
+            adapter.remove();
+        }
         return this;
     }
 

@@ -470,6 +470,14 @@ public class MetadataRepositoryImpl implements MetadataRepository {
         return briteDatabase.createQuery(OptionModel.TABLE, optionQuery, idOptionSet)
                 .mapToList(OptionModel::create)
                 .map(optionList -> {
+                    int from = page * 15;
+                    int to = page * 15 + 15 > optionList.size() ? optionList.size() : page * 15 + 15;
+                    if (to > from)
+                        return optionList.subList(from, to);
+                    else
+                        return new ArrayList<OptionModel>();
+                })
+                .map(optionList -> {
                     Iterator<OptionModel> iterator = optionList.iterator();
                     while (iterator.hasNext()) {
                         OptionModel option = iterator.next();
@@ -492,15 +500,7 @@ public class MetadataRepositoryImpl implements MetadataRepository {
                             iterator.remove();
 
                     }
-                    int from = page * 15;
-                    int to = page * 15 + 15 > optionList.size() ? optionList.size() : page * 15 + 15;
-                    if (to > from)
-                        return optionList.subList(from, to);
-                    else
-                        return new ArrayList<>();
+                    return optionList;
                 });
-/*
-        return briteDatabase.createQuery(OptionModel.TABLE, options, idOptionSet)
-                .mapToList(OptionModel::create);*/
     }
 }
