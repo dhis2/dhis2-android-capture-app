@@ -66,7 +66,7 @@ public class ServerModule {
     @PerServer
     OkHttpClient okHttpClient(Authenticator authenticator, Context context) {
         String userAgent = String.format("%s/%s/%s/Android_%s",
-                "Dhis2", //App name
+                context.getString(R.string.app_name), //App name
                 BuildConfig.VERSION_NAME,//SDK version
                 org.dhis2.BuildConfig.VERSION_NAME, //App version
                 Build.VERSION.SDK_INT //Android Version

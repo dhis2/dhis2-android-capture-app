@@ -132,7 +132,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                             dashboardModel -> {
                                 this.dashboardProgramModel = dashboardModel;
                                 this.teType = dashboardProgramModel.getTei().trackedEntityType();
-                                view.setData(dashboardProgramModel);
+                                view.setDataWithOutProgram(dashboardProgramModel);
                             },
                             Timber::e)
             );
