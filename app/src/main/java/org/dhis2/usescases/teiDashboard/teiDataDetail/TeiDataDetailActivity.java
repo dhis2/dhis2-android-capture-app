@@ -32,6 +32,7 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
     TeiDataDetailContracts.Presenter presenter;
 
     private DashboardProgramModel dashboardProgramModel;
+    private EnrollmentStatus enrollmentStatus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,11 +71,11 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
         });// to implement on click event on items of menu
         MenuInflater inflater = popup.getMenuInflater();
         int menuId = 0;
-        if (dashboardProgramModel.getCurrentEnrollment().enrollmentStatus() == EnrollmentStatus.ACTIVE) {
+        if (enrollmentStatus == EnrollmentStatus.ACTIVE) {
             menuId = R.menu.tei_detail_options_active;
-        } else if (dashboardProgramModel.getCurrentEnrollment().enrollmentStatus() == EnrollmentStatus.CANCELLED) {
+        } else if (enrollmentStatus == EnrollmentStatus.CANCELLED) {
             menuId = R.menu.tei_detail_options_cancelled;
-        } else if (dashboardProgramModel.getCurrentEnrollment().enrollmentStatus() == EnrollmentStatus.COMPLETED) {
+        } else if (enrollmentStatus == EnrollmentStatus.COMPLETED) {
             menuId = R.menu.tei_detail_options_completed;
         }
         if (menuId != 0) {
@@ -92,6 +93,7 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
     @Override
     public void setData(DashboardProgramModel program) {
         this.dashboardProgramModel = program;
+        this.enrollmentStatus = program.getCurrentEnrollment().enrollmentStatus();
         binding.setDashboardModel(program);
         binding.setProgram(program.getCurrentProgram());
         binding.setEnrollmentStatus(program.getCurrentEnrollment().enrollmentStatus());
@@ -123,6 +125,7 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
     @Override
     public Consumer<EnrollmentStatus> handleStatus() {
         return enrollmentStatus -> {
+            this.enrollmentStatus = enrollmentStatus;
             Bindings.setEnrolmentIcon(binding.programLock, enrollmentStatus);
             Bindings.setEnrolmentText(binding.programLockText, enrollmentStatus);
             binding.setEnrollmentStatus(enrollmentStatus);
