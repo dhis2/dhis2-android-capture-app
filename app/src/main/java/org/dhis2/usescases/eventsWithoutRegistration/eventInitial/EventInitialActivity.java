@@ -263,7 +263,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             binding.temp.setVisibility(View.GONE);
         }
 
-        if (eventCreationType == EventCreationType.ADDNEW || eventCreationType == EventCreationType.SCHEDULE) {
+        if (eventCreationType == EventCreationType.SCHEDULE) {
             fixedOrgUnit = true;
             binding.orgUnitLayout.setVisibility(View.GONE);
         } else {
@@ -353,7 +353,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         if (eventCreationType == EventCreationType.REFERAL) {
             activityTitle = program.displayName() + " - " + getString(R.string.referral);
         } else {
-            if (eventModel != null && !isEmpty(eventModel.enrollment())) {
+            if (eventModel != null && !isEmpty(eventModel.enrollment()) && eventCreationType != EventCreationType.ADDNEW) {
                 binding.orgUnit.setEnabled(false);
                 binding.orgUnitLayout.setVisibility(View.GONE);
             }
@@ -383,7 +383,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
             binding.date.setText(selectedDateString);
         } else {
-            if (!isEmpty(eventModel.enrollment())) {
+            if (!isEmpty(eventModel.enrollment()) && eventCreationType != EventCreationType.ADDNEW) {
                 binding.orgUnit.setEnabled(false);
                 binding.orgUnitLayout.setVisibility(View.GONE);
             }

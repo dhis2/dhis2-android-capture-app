@@ -96,7 +96,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                     metadataRepository.getProgramTrackedEntityAttributes(programUid),
                     dashboardRepository.getTEIAttributeValues(programUid, teUid),
                     metadataRepository.getTeiOrgUnit(teUid, programUid),
-                    metadataRepository.getTeiActivePrograms(teUid),
+                    metadataRepository.getTeiActivePrograms(teUid, false),
                     DashboardProgramModel::new)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -104,7 +104,8 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                             dashboardModel -> {
                                 this.dashboardProgramModel = dashboardModel;
                                 this.dashboardProgramModelLiveData.setValue(dashboardModel);
-                                this.programWritePermission = dashboardProgramModel.getCurrentProgram().accessDataWrite();
+                                if (dashboardProgramModel.getCurrentProgram() != null)
+                                    this.programWritePermission = dashboardProgramModel.getCurrentProgram().accessDataWrite();
                                 this.teType = dashboardProgramModel.getTei().trackedEntityType();
                                 view.setData(dashboardProgramModel);
                             },
@@ -118,7 +119,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                     metadataRepository.getProgramTrackedEntityAttributes(null),
                     dashboardRepository.getTEIAttributeValues(null, teUid),
                     metadataRepository.getTeiOrgUnit(teUid),
-                    metadataRepository.getTeiActivePrograms(teUid),
+                    metadataRepository.getTeiActivePrograms(teUid, true),
                     metadataRepository.getTEIEnrollments(teUid),
                     DashboardProgramModel::new)
                     .flatMap(dashboardProgramModel1 -> metadataRepository.getObjectStylesForPrograms(dashboardProgramModel1.getEnrollmentProgramModels())
