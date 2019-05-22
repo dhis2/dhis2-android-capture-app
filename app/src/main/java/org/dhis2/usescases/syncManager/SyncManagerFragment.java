@@ -26,7 +26,11 @@ import androidx.core.content.ContextCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.work.State;
+import androidx.work.WorkManager;
+import androidx.work.WorkStatus;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.jakewharton.rxbinding2.widget.RxTextView;
@@ -58,6 +62,8 @@ import me.toptas.fancyshowcase.FancyShowCaseView;
 import me.toptas.fancyshowcase.FocusShape;
 import timber.log.Timber;
 
+import static org.dhis2.utils.Constants.DATA_NOW;
+import static org.dhis2.utils.Constants.META_NOW;
 import static org.dhis2.utils.Constants.TIME_15M;
 import static org.dhis2.utils.Constants.TIME_DAILY;
 import static org.dhis2.utils.Constants.TIME_HOURLY;
@@ -84,24 +90,6 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     public SyncManagerFragment() {
         // Required empty public constructor
     }
-
-    private BroadcastReceiver syncReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent.getAction() != null && intent.getAction().equals("action_sync")) {
-                if (SyncUtils.isSyncRunning() && getAbstractActivity().getProgressBar().getVisibility() == View.VISIBLE) {
-                    binding.buttonSyncData.setEnabled(false);
-                    binding.buttonSyncMeta.setEnabled(false);
-                } else {
-                    binding.buttonSyncData.setEnabled(true);
-                    binding.buttonSyncMeta.setEnabled(true);
-
-                    setLastSyncDate();
-                    presenter.checkData();
-                }
-            }
-        }
-    };
 
     @Override
     public void onAttach(@NotNull Context context) {
@@ -153,8 +141,27 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     @Override
     public void onResume() {
         super.onResume();
+        WorkManager.getInstance().getStatusesByTagLiveData(META_NOW).observe(this, workStatuses -> {
+            if(!workStatuses.isEmpty() && workStatuses.get(0).getState() == State.RUNNING) {
+                binding.metadataLastSync.setText(R.string.syncing_configuration);
+                binding.buttonSyncMeta.setEnabled(false);
+            }else{
+                binding.buttonSyncMeta.setEnabled(true);
+                setLastSyncDate();
+                presenter.checkData();
+            }
+        });
+        WorkManager.getInstance().getStatusesByTagLiveData(DATA_NOW).observe(this, workStatuses -> {
+            if(!workStatuses.isEmpty() && workStatuses.get(0).getState() == State.RUNNING) {
+                binding.dataLastSync.setText(R.string.syncing_configuration);
+                binding.buttonSyncData.setEnabled(false);
+            }else{
+                binding.buttonSyncData.setEnabled(true);
+                setLastSyncDate();
+                presenter.checkData();
+            }
+        });
         presenter.init(this);
-        LocalBroadcastManager.getInstance(getAbstractActivity().getApplicationContext()).registerReceiver(syncReceiver, new IntentFilter("action_sync"));
 
         if (SyncUtils.isSyncRunning()) {
             binding.buttonSyncData.setEnabled(false);
@@ -189,7 +196,6 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     public void onPause() {
         super.onPause();
         listenerDisposable.clear();
-        LocalBroadcastManager.getInstance(getAbstractActivity().getApplicationContext()).unregisterReceiver(syncReceiver);
         presenter.disponse();
     }
 
@@ -482,5 +488,15 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 error ? R.string.delete_local_data_error : R.string.delete_local_data_done,
                 Snackbar.LENGTH_SHORT);
         deleteDataSnack.show();
+    }
+
+    @Override
+    public void syncData() {
+        binding.dataLastSync.setText(R.string.syncing_data);
+    }
+
+    @Override
+    public void syncMeta() {
+        binding.metadataLastSync.setText(R.string.syncing_configuration);
     }
 }
