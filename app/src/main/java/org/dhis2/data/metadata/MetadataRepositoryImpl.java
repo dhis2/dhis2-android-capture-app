@@ -456,30 +456,14 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     public Observable<List<OptionModel>> searchOptions(String text, String idOptionSet, int page, List<String> optionsToHide, List<String> optionsGroupsToHide) {
         String pageQuery = String.format(Locale.US, "GROUP BY Option.uid ORDER BY sortOrder LIMIT %d,%d", page * 15, 15);
         String formattedOptionsToHide = "'" + join("','", optionsToHide) + "'";
-        String formattedOptionGroupsToHide = "'" + join("','", optionsGroupsToHide) + "'";
-
-        String options = "SELECT Option.*, OptionGroupOptionLink.optionGroup FROM Option " +
-                "LEFT JOIN OptionGroupOptionLink ON OptionGroupOptionLink.option = Option.uid " +
-                "WHERE Option.optionSet = ? " +
-                (!optionsGroupsToHide.isEmpty() ? "AND (OptionGroupOptionLink.optionGroup IS NULL OR OptionGroupOptionLink.optionGroup NOT IN (" + formattedOptionGroupsToHide + ")) " : "") +
-                (!optionsToHide.isEmpty() ? "AND Option.uid NOT IN (" + formattedOptionsToHide + ") " : "") +
-                (!isEmpty(text) ? "AND Option.displayName LIKE '%" + text + "%' " : "") +
-                pageQuery;
 
         String optionQuery = "SELECT Option.* FROM Option WHERE Option.optionSet = ? " +
-                (!optionsToHide.isEmpty() ? "AND Option.uid NOT IN (" + formattedOptionsToHide + ") " : "") +
-                (!isEmpty(text) ? "AND Option.displayName LIKE '%" + text + "%' " : "");
+                (!optionsToHide.isEmpty() ? "AND Option.uid NOT IN (" + formattedOptionsToHide + ") " : " ") +
+                (!isEmpty(text) ? "AND Option.displayName LIKE '%" + text + "%' " : " ") +
+                pageQuery;
 
         return briteDatabase.createQuery(OptionModel.TABLE, optionQuery, idOptionSet)
                 .mapToList(OptionModel::create)
-                .map(optionList -> {
-                    int from = page * 15;
-                    int to = page * 15 + 15 > optionList.size() ? optionList.size() : page * 15 + 15;
-                    if (to > from)
-                        return optionList.subList(from, to);
-                    else
-                        return new ArrayList<OptionModel>();
-                })
                 .map(optionList -> {
                     Iterator<OptionModel> iterator = optionList.iterator();
                     while (iterator.hasNext()) {

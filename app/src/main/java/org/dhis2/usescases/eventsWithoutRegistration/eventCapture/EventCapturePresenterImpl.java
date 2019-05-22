@@ -376,7 +376,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private void subscribeToActions() {
         compositeDisposable.add(
                 EventCaptureFormFragment.getInstance().optionSetActions()
-                        .flatMap(
+                        .switchMap(
                                 data -> metadataRepository.searchOptions(data.val0(), data.val1(), data.val2(), optionsToHide, optionsGroupsToHide).toFlowable(BackpressureStrategy.LATEST)
                         )
                         .subscribeOn(Schedulers.io())

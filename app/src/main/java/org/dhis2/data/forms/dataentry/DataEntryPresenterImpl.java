@@ -151,7 +151,7 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
 
         disposable.add(
                 dataEntryView.optionSetActions()
-                        .flatMap(
+                        .switchMap(
                                 data -> metadataRepository.searchOptions(data.val0(), data.val1(), data.val2(), optionsToHide, optionsGroupsToHide).toFlowable(BackpressureStrategy.LATEST)
                         )
                         .subscribeOn(Schedulers.io())
