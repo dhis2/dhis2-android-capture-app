@@ -94,6 +94,8 @@ public class SearchTEContractsModule {
 
         HashMap<String, String> getQueryData();
 
+        void initSearch(SearchTEContractsModule.View view);
+
         void onSyncIconClick(String teiUid);
     }
 }
