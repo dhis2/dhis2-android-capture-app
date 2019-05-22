@@ -477,10 +477,10 @@ public class Bindings {
                 b = c;
         }
 
-        double L = 0.2126d * r + 0.7152d * g + 0.0722d * b;
+        double l = 0.2126d * r + 0.7152d * g + 0.0722d * b;
 
 
-        if (L > 0.179d)
+        if (l > 0.179d)
             tintedColor = "#000000"; // bright colors - black font
         else
             tintedColor = "#FFFFFF"; // dark colors - white font

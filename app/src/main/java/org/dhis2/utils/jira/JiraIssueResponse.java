@@ -3,6 +3,7 @@ package org.dhis2.utils.jira;
 /**
  * QUADRAM. Created by ppajuelo on 11/04/2019.
  */
+@SuppressWarnings("squid:S1068")
 public class JiraIssueResponse {
     private String id;
     private String key;

@@ -20,6 +20,7 @@ public abstract class DateTimeViewModel extends FieldViewModel {
     @NonNull
     public abstract ValueType valueType();
 
+    @SuppressWarnings("squid:S00107")
     public static FieldViewModel create(String id, String label, Boolean mandatory, ValueType type, String value, String section, Boolean allowFutureDates, Boolean editable, String description, ObjectStyleModel objectStyle) {
         return new AutoValue_DateTimeViewModel(id, label, mandatory, value,section, allowFutureDates,editable,null,null,null,description,objectStyle, type);
     }

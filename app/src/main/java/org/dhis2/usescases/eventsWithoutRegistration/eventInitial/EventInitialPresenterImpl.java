@@ -28,7 +28,6 @@ import org.dhis2.usescases.map.MapSelectorActivity;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.OrgUnitUtils;
 import org.dhis2.utils.Result;
-import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
@@ -59,7 +58,7 @@ import timber.log.Timber;
  * QUADRAM. Created by Cristian on 01/03/2018.
  */
 
-public class EventInitialPresenter implements EventInitialContract.EventInitialPresenter {
+public class EventInitialPresenterImpl implements EventInitialContract.EventInitialPresenter {
 
     public static final int ACCESS_COARSE_LOCATION_PERMISSION_REQUEST = 101;
     private EventInitialContract.EventInitialView view;
@@ -77,10 +76,10 @@ public class EventInitialPresenter implements EventInitialContract.EventInitialP
     private String programStageId;
     private List<OrganisationUnitModel> orgUnits;
 
-    public EventInitialPresenter(@NonNull EventSummaryRepository eventSummaryRepository,
-                                 @NonNull EventInitialRepository eventInitialRepository,
-                                 @NonNull MetadataRepository metadataRepository,
-                                 @NonNull SchedulerProvider schedulerProvider, D2 d2) {
+    public EventInitialPresenterImpl(@NonNull EventSummaryRepository eventSummaryRepository,
+                                     @NonNull EventInitialRepository eventInitialRepository,
+                                     @NonNull MetadataRepository metadataRepository,
+                                     @NonNull SchedulerProvider schedulerProvider) {
 
         this.metadataRepository = metadataRepository;
         this.eventInitialRepository = eventInitialRepository;
@@ -296,8 +295,8 @@ public class EventInitialPresenter implements EventInitialContract.EventInitialP
 
     @Override
     public void scheduleEventPermanent(String enrollmentUid, String trackedEntityInstanceUid, String programStageModel, Date dueDate, String orgUnitUid,
-                              String categoryOptionComboUid, String categoryOptionsUid,
-                              String latitude, String longitude) {
+                                       String categoryOptionComboUid, String categoryOptionsUid,
+                                       String latitude, String longitude) {
         if (programModel != null)
             compositeDisposable.add(
                     eventInitialRepository.scheduleEvent(enrollmentUid, null, view.getContext(), programModel.uid(),
@@ -306,7 +305,7 @@ public class EventInitialPresenter implements EventInitialContract.EventInitialP
                             latitude, longitude)
                             .subscribeOn(Schedulers.io())
                             .switchMap(
-                                    eventId -> eventInitialRepository.updateTrackedEntityInstance(eventId, trackedEntityInstanceUid, orgUnitUid)
+                                    eventIdResult -> eventInitialRepository.updateTrackedEntityInstance(eventIdResult, trackedEntityInstanceUid, orgUnitUid)
                             )
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(view::onEventCreated, t -> view.renderError(t.getMessage()))

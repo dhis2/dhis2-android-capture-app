@@ -1,7 +1,5 @@
 package org.dhis2.utils.custom_views;
 
-import android.app.AlertDialog;
-
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.Period;
 
@@ -45,7 +43,7 @@ public class RxDateDialog {
             dialog.dismiss();
         });
 
-        if(activity.getSupportFragmentManager().findFragmentByTag("dialog") == null){
+        if (activity.getSupportFragmentManager().findFragmentByTag("dialog") == null) {
             activity.getSupportFragmentManager().beginTransaction().add(dialog, "dialog").commit();
         }
 

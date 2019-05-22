@@ -57,7 +57,6 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
     @Inject
     EventSummaryContract.EventSummaryPresenter presenter;
     private ActivityEventSummaryBinding binding;
-    private int completionPercent;
     private int totalFields;
     private int totalCompletedFields;
     private int fieldsToCompleteBeforeClosing;
@@ -110,7 +109,7 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void onUpdate(boolean lost, float value) {
-        String text = String.valueOf((int) value) + "%";
+        String text = (int) value + "%";
         binding.progress.setText(text);
     }
 
@@ -277,7 +276,7 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
 
         binding.summaryHeader.setText(String.format(getString(R.string.event_summary_header), String.valueOf(totalCompletedFields), String.valueOf(totalFields)));
         float completionPerone = (float) totalCompletedFields / (float) totalFields;
-        completionPercent = (int) (completionPerone * 100);
+        int completionPercent = (int) (completionPerone * 100);
         ProgressBarAnimation gainAnim = new ProgressBarAnimation(binding.progressGains, 0, completionPercent, false, this);
         gainAnim.setDuration(PROGRESS_TIME);
         binding.progressGains.startAnimation(gainAnim);

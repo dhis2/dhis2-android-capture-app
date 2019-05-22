@@ -2,8 +2,6 @@ package org.dhis2.usescases.main.program;
 
 import androidx.annotation.NonNull;
 
-import com.squareup.sqlbrite2.BriteDatabase;
-
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
 import org.hisp.dhis.android.core.common.State;
@@ -21,12 +19,9 @@ import static org.hisp.dhis.android.core.program.ProgramType.WITH_REGISTRATION;
 
 class HomeRepositoryImpl implements HomeRepository {
 
-
-    private final BriteDatabase briteDatabase;
     private final D2 d2;
 
-    HomeRepositoryImpl(BriteDatabase briteDatabase, D2 d2) {
-        this.briteDatabase = briteDatabase;
+    HomeRepositoryImpl(D2 d2) {
         this.d2 = d2;
     }
 
@@ -150,13 +145,6 @@ class HomeRepositoryImpl implements HomeRepository {
                         .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
                         .get()
         ));
-        /*String SELECT_ORG_UNITS_BY_PARENT = "SELECT OrganisationUnit.* FROM OrganisationUnit " +
-                "JOIN UserOrganisationUnit ON UserOrganisationUnit.organisationUnit = OrganisationUnit.uid " +
-                "WHERE OrganisationUnit.parent = ? AND UserOrganisationUnit.organisationUnitScope = 'SCOPE_DATA_CAPTURE' " +
-                "ORDER BY OrganisationUnit.displayName ASC";
-
-        return briteDatabase.createQuery(OrganisationUnitModel.TABLE, SELECT_ORG_UNITS_BY_PARENT, parentUid)
-                .mapToList(OrganisationUnitModel::create);*/
     }
 
 

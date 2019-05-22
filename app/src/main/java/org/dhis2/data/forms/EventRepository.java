@@ -373,11 +373,11 @@ public class EventRepository implements FormRepository {
 
     @Override
     public void deleteEvent() {
-        String DELETE_WHERE_RELATIONSHIP = String.format(
+        String deleteWhereRelationship = String.format(
                 "%s.%s = ",
                 EventModel.TABLE, EventModel.Columns.UID);
         String id = eventUid == null ? "" : eventUid;
-        briteDatabase.delete(EventModel.TABLE, DELETE_WHERE_RELATIONSHIP + "'" + id + "'");
+        briteDatabase.delete(EventModel.TABLE, deleteWhereRelationship + "'" + id + "'");
     }
 
     @Override
@@ -388,10 +388,10 @@ public class EventRepository implements FormRepository {
     @NonNull
     @Override
     public Observable<String> getTrackedEntityInstanceUid() {
-        String SELECT_TE = "SELECT " + EventModel.TABLE + "." + EventModel.Columns.TRACKED_ENTITY_INSTANCE +
+        String selectTe = "SELECT " + EventModel.TABLE + "." + EventModel.Columns.TRACKED_ENTITY_INSTANCE +
                 " FROM " + EventModel.TABLE +
                 " WHERE " + EventModel.Columns.UID + " = ? LIMIT 1";
-        return briteDatabase.createQuery(EnrollmentModel.TABLE, SELECT_TE, eventUid == null ? "" : eventUid).mapToOne(cursor -> cursor.getString(0));
+        return briteDatabase.createQuery(EnrollmentModel.TABLE, selectTe, eventUid == null ? "" : eventUid).mapToOne(cursor -> cursor.getString(0));
     }
 
     @Override
@@ -521,6 +521,7 @@ public class EventRepository implements FormRepository {
         }
     }
 
+    @SuppressWarnings({"squid:CommentedOutCodeLine", "squid:S1172"})
     private void updateProgramTable(Date lastUpdated, String programUid) {
         /*ContentValues program = new ContentValues();TODO: Crash if active
         program.put(EnrollmentModel.Columns.LAST_UPDATED, BaseIdentifiableObject.DATE_FORMAT.format(lastUpdated));

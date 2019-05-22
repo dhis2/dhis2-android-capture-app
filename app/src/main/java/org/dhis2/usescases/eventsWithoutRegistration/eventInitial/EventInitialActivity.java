@@ -740,7 +740,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         // If request is cancelled, the result arrays are empty.
-        if ((requestCode == org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter.ACCESS_COARSE_LOCATION_PERMISSION_REQUEST) &&
+        if ((requestCode == EventInitialPresenterImpl.ACCESS_COARSE_LOCATION_PERMISSION_REQUEST) &&
                 (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
             presenter.onLocationClick();
         }

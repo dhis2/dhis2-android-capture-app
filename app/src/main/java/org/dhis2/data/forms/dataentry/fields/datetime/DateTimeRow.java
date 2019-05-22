@@ -24,33 +24,27 @@ public class DateTimeRow implements Row<DateTimeHolder, DateTimeViewModel> {
 
     private static final int TIME = 5;
     private static final int DATE = 6;
-    private static final int DATETIME = 7;
     private final LayoutInflater inflater;
     private final FlowableProcessor<RowAction> processor;
     private final boolean isBgTransparent;
-    private final String renderType;
     private final FlowableProcessor<Integer> currentPosition;
 
     private int viewType;
-    private boolean isSearchMode = false;
 
     public DateTimeRow(LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor, int viewType, boolean isBgTransparent) {
         this.processor = processor;
         this.inflater = layoutInflater;
         this.viewType = viewType;
         this.isBgTransparent = isBgTransparent;
-        this.renderType = null;
         this.currentPosition = null;
-        this.isSearchMode = true;
     }
 
     public DateTimeRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor,
-                       @NonNull FlowableProcessor<Integer> currentPosition, int viewType, boolean isBgTransparent, String renderType) {
+                       @NonNull FlowableProcessor<Integer> currentPosition, int viewType, boolean isBgTransparent) {
         this.processor = processor;
         this.inflater = layoutInflater;
         this.viewType = viewType;
         this.isBgTransparent = isBgTransparent;
-        this.renderType = renderType;
         this.currentPosition = currentPosition;
     }
 

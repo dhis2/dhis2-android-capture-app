@@ -10,7 +10,6 @@ import android.widget.ProgressBar;
 
 public class ProgressBarAnimation extends Animation {
     private ProgressBar progressBar;
-    private float from;
     private float to;
     private float initialFrom;
     private boolean rotate;
@@ -20,7 +19,6 @@ public class ProgressBarAnimation extends Animation {
         super();
         this.progressBar = progressBar;
         this.initialFrom = from;
-        this.from = 0;
         this.to = to - from;
         this.rotate = rotate;
         this.listener = listener;
@@ -30,7 +28,6 @@ public class ProgressBarAnimation extends Animation {
         super();
         this.progressBar = progressBar;
         this.initialFrom = initial;
-        this.from = 0;
         this.to = to - from;
         this.rotate = rotate;
         this.listener = listener;

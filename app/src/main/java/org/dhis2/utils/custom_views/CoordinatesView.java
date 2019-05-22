@@ -30,7 +30,7 @@ import java.util.Locale;
 
 import io.reactivex.processors.FlowableProcessor;
 
-import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter.ACCESS_COARSE_LOCATION_PERMISSION_REQUEST;
+import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenterImpl.ACCESS_COARSE_LOCATION_PERMISSION_REQUEST;
 
 /**
  * QUADRAM. Created by Administrador on 21/03/2018.
@@ -42,7 +42,6 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
     private TextInputEditText latLong;
     private TextInputLayout inputLayout;
     private FusedLocationProviderClient mFusedLocationClient;
-    private LocationRequest locationRequest;
     private LocationCallback locationCallback;
     private OnMapPositionClick listener;
     private OnCurrentLocationClick listener2;
@@ -218,7 +217,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
     }
 
     private void startRequestingLocation() {
-        locationRequest = new LocationRequest();
+        LocationRequest locationRequest = new LocationRequest();
         locationRequest.setInterval(5000);
         locationRequest.setFastestInterval(1000);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);

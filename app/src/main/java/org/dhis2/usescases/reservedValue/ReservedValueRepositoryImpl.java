@@ -3,7 +3,6 @@ package org.dhis2.usescases.reservedValue;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
-import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 
 import java.util.List;
@@ -22,11 +21,9 @@ public class ReservedValueRepositoryImpl implements ReservedValueRepository {
             "ORDER BY TEA.displayName";
 
     private final BriteDatabase briteDatabase;
-    private final D2 d2;
 
-    public ReservedValueRepositoryImpl(BriteDatabase briteDatabase, D2 d2) {
+    public ReservedValueRepositoryImpl(BriteDatabase briteDatabase) {
         this.briteDatabase = briteDatabase;
-        this.d2 = d2;
     }
 
     @Override

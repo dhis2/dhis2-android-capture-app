@@ -18,8 +18,8 @@ public class EnrollmentModule {
 
     @Provides
     @PerActivity
-    EnrollmentContracts.EnrollmentPresenter providePresenter(EnrollmentRepository enrollmentRepository, D2 d2) {
-        return new EnrollmentPresenterImpl(enrollmentUid, enrollmentRepository, d2);
+    EnrollmentContracts.EnrollmentPresenter providePresenter(D2 d2) {
+        return new EnrollmentPresenterImpl(enrollmentUid, d2);
     }
 
     @Provides

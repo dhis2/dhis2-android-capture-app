@@ -373,8 +373,8 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
     @Override
     public void updateTeiState() {
-        String GET_TEI = "SELECT * FROM TrackedEntityInstance WHERE uid = ? LIMIT 1";
-        try (Cursor teiCursor = briteDatabase.query(GET_TEI, teiUid)) {
+        String getTei = "SELECT * FROM TrackedEntityInstance WHERE uid = ? LIMIT 1";
+        try (Cursor teiCursor = briteDatabase.query(getTei, teiUid)) {
             if (teiCursor != null && teiCursor.moveToFirst()) {
                 TrackedEntityInstanceModel tei = TrackedEntityInstanceModel.create(teiCursor);
                 ContentValues contentValues = tei.toContentValues();
@@ -495,7 +495,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
         ContentValues contentValues = new ContentValues();
         contentValues.put(EnrollmentModel.Columns.FOLLOW_UP, followUp ? "0" : "1");
 
-        int update = briteDatabase.update(EnrollmentModel.TABLE, contentValues, EnrollmentModel.Columns.UID + " = ?", enrollmentUid == null ? "" : enrollmentUid);
+        briteDatabase.update(EnrollmentModel.TABLE, contentValues, EnrollmentModel.Columns.UID + " = ?", enrollmentUid == null ? "" : enrollmentUid);
 
         return !followUp;
     }
@@ -662,6 +662,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                 });
     }
 
+    @SuppressWarnings({"squid:S1172", "squid:CommentedOutCodeLine"})
     private void updateProgramTable(Date lastUpdated, String programUid) {
         /*ContentValues program = new ContentValues();TODO: Crash if active
         program.put(EnrollmentModel.Columns.LAST_UPDATED, BaseIdentifiableObject.DATE_FORMAT.format(lastUpdated));

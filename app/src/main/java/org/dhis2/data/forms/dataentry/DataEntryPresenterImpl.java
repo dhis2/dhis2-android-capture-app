@@ -1,21 +1,19 @@
 package org.dhis2.data.forms.dataentry;
 
+import androidx.annotation.NonNull;
+
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
-import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.utils.Result;
-import org.hisp.dhis.android.core.common.ObjectStyleModel;
-import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.rules.models.RuleAction;
 import org.hisp.dhis.rules.models.RuleActionAssign;
 import org.hisp.dhis.rules.models.RuleActionCreateEvent;
-import org.hisp.dhis.rules.models.RuleActionDisplayText;
 import org.hisp.dhis.rules.models.RuleActionErrorOnCompletion;
 import org.hisp.dhis.rules.models.RuleActionHideField;
 import org.hisp.dhis.rules.models.RuleActionHideOption;
@@ -33,7 +31,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import androidx.annotation.NonNull;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -69,8 +66,6 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
     private Map<String, FieldViewModel> currentFieldViewModels;
     private FlowableProcessor<RowAction> assignProcessor;
     private FlowableProcessor<Boolean> requestListProcessor;
-
-    private List<OrganisationUnitLevel> levels;
 
     DataEntryPresenterImpl(@NonNull DataEntryStore dataEntryStore,
                            @NonNull DataEntryRepository dataEntryRepository,
@@ -112,16 +107,17 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
         disposable.add(dataEntryView.rowActions().distinctUntilChanged()
                 .subscribeOn(schedulerProvider.computation())
                 .observeOn(schedulerProvider.ui())
-                .switchMap(action ->{
-                        ruleEngineRepository.updateRuleAttributeMap(action.id(),action.value());
-                        return dataEntryStore.save(action.id(), action.value()).
-                                map(result -> {
-                                    if (result == 5)
-                                        dataEntryStore.save(action.id(), null);
+                .switchMap(action -> {
+                            ruleEngineRepository.updateRuleAttributeMap(action.id(), action.value());
+                            return dataEntryStore.save(action.id(), action.value()).
+                                    map(result -> {
+                                        if (result == 5)
+                                            dataEntryStore.save(action.id(), null);
 
-                                    dataEntryView.updateAdapter(action);
-                                    return Trio.create(result, action.id(), action.value());
-                                });}
+                                        dataEntryView.updateAdapter(action);
+                                        return Trio.create(result, action.id(), action.value());
+                                    });
+                        }
                 ).subscribe(resultUidValue -> {
                             if (resultUidValue.val0() == -5)
                                 dataEntryView.showMessage(R.string.unique_warning);
@@ -160,14 +156,6 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
                                 dataEntryView::setListOptions,
                                 Timber::e
                         ));
-
-        disposable.add(dataEntryRepository.getOrgUnitLevels()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        data -> levels = data,
-                        Timber::e
-                ));
     }
 
     private void save(String uid, String value) {
@@ -248,8 +236,7 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
                 fieldViewModels.remove(hideField.field());
                 save(hideField.field(), null);
             } else if (ruleAction instanceof RuleActionHideSection) {
-                RuleActionHideSection hideSection = (RuleActionHideSection) ruleAction;
-                dataEntryView.removeSection(hideSection.programStageSection());
+                dataEntryView.removeSection();
             } else if (ruleAction instanceof RuleActionAssign) {
                 RuleActionAssign assign = (RuleActionAssign) ruleAction;
 
@@ -289,7 +276,7 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
                 optionsGroupsToHide.add(hideOptionGroup.optionGroup());
             }
 
-            dataEntryView.removeSection(null);
+            dataEntryView.removeSection();
 
         }
     }

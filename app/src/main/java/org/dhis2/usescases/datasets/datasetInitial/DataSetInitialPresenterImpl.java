@@ -11,13 +11,13 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
-public class DataSetInitialPresenter implements DataSetInitialContract.DataSetInitialPresenter {
+public class DataSetInitialPresenterImpl implements DataSetInitialContract.DataSetInitialPresenter {
 
     private CompositeDisposable compositeDisposable;
     private DataSetInitialRepository dataSetInitialRepository;
     private DataSetInitialContract.DataSetInitialView view;
 
-    public DataSetInitialPresenter(DataSetInitialRepository dataSetInitialRepository) {
+    public DataSetInitialPresenterImpl(DataSetInitialRepository dataSetInitialRepository) {
         this.dataSetInitialRepository = dataSetInitialRepository;
     }
 

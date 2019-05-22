@@ -45,7 +45,7 @@ import static android.text.TextUtils.isEmpty;
  * QUADRAM. Created by ppajuelo on 19/12/2017.
  */
 
-public class EventDetailPresenter implements EventDetailContracts.EventDetailPresenter {
+public class EventDetailPresenterImpl implements EventDetailContracts.EventDetailPresenter {
 
     private final EventDetailRepository eventDetailRepository;
     private final MetadataRepository metadataRepository;
@@ -56,7 +56,7 @@ public class EventDetailPresenter implements EventDetailContracts.EventDetailPre
 
     private boolean changedEventStatus = false;
 
-    EventDetailPresenter(EventDetailRepository eventDetailRepository, MetadataRepository metadataRepository, DataEntryStore dataEntryStore) {
+    EventDetailPresenterImpl(EventDetailRepository eventDetailRepository, MetadataRepository metadataRepository, DataEntryStore dataEntryStore) {
         this.metadataRepository = metadataRepository;
         this.eventDetailRepository = eventDetailRepository;
         this.dataEntryStore = dataEntryStore;

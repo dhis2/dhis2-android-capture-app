@@ -1,5 +1,7 @@
 package org.dhis2.usescases.teiDashboard;
 
+import androidx.annotation.NonNull;
+
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.dagger.PerActivity;
@@ -14,7 +16,6 @@ import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.enrollment.EnrollmentCollectionRepository;
 import org.hisp.dhis.rules.RuleExpressionEvaluator;
 
-import androidx.annotation.NonNull;
 import dagger.Module;
 import dagger.Provides;
 
@@ -43,10 +44,9 @@ public class TeiDashboardModule {
 
     @Provides
     @PerActivity
-    TeiDashboardContracts.TeiDashboardPresenter providePresenter(D2 d2, DashboardRepository dashboardRepository,
-                                                                 MetadataRepository metadataRepository,
-                                                                 RuleEngineRepository ruleRepository) {
-        return new TeiDashboardPresenter(d2, dashboardRepository, metadataRepository, ruleRepository);
+    TeiDashboardContracts.TeiDashboardPresenter providePresenter(DashboardRepository dashboardRepository,
+                                                                 MetadataRepository metadataRepository) {
+        return new TeiDashboardPresenterImpl(dashboardRepository, metadataRepository);
     }
 
     @Provides

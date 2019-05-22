@@ -33,7 +33,7 @@ public class ProgramEventDetailModule {
     @PerActivity
     ProgramEventDetailContract.ProgramEventDetailPresenter providesPresenter(
                                                            @NonNull ProgramEventDetailRepository programEventDetailRepository) {
-        return new ProgramEventDetailPresenter(programUid,programEventDetailRepository);
+        return new ProgramEventDetailPresenterImpl(programUid,programEventDetailRepository);
     }
 
     @Provides

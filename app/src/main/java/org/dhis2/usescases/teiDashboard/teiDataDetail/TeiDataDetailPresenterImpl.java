@@ -21,13 +21,13 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
-import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter.ACCESS_COARSE_LOCATION_PERMISSION_REQUEST;
+import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenterImpl.ACCESS_COARSE_LOCATION_PERMISSION_REQUEST;
 
 /**
  * QUADRAM. Created by frodriguez on 12/13/2017.
  */
 
-public class TeiDataDetailPresenter implements TeiDataDetailContracts.TeiDataDetailPresenter {
+public class TeiDataDetailPresenterImpl implements TeiDataDetailContracts.TeiDataDetailPresenter {
 
     private final DashboardRepository dashboardRepository;
     private final MetadataRepository metadataRepository;
@@ -36,7 +36,7 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.TeiDataDet
     private TeiDataDetailContracts.TeiDataDetailView view;
     private FusedLocationProviderClient mFusedLocationClient;
 
-    TeiDataDetailPresenter(DashboardRepository dashboardRepository, MetadataRepository metadataRepository, EnrollmentStatusStore enrollmentStatusStore) {
+    TeiDataDetailPresenterImpl(DashboardRepository dashboardRepository, MetadataRepository metadataRepository, EnrollmentStatusStore enrollmentStatusStore) {
         this.dashboardRepository = dashboardRepository;
         this.metadataRepository = metadataRepository;
         this.enrollmentStore = enrollmentStatusStore;

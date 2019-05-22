@@ -73,7 +73,6 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
     private EventAdapter adapter;
     private CustomDialog dialog;
-    private String lastModifiedEventUid;
     private ProgramStageModel programStageFromEvent;
     private ObservableBoolean followUp = new ObservableBoolean(false);
 
@@ -191,7 +190,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
         if (requestCode == REQ_EVENT && resultCode == RESULT_OK) {
             presenter.getTEIEvents();
             if (data != null) {
-                lastModifiedEventUid = data.getStringExtra(Constants.EVENT_UID);
+                String lastModifiedEventUid = data.getStringExtra(Constants.EVENT_UID);
                 if (lastModifiedEventUid != null)
                     presenter.displayGenerateEvent(lastModifiedEventUid);
             }

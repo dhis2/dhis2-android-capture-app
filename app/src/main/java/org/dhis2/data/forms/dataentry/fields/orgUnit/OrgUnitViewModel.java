@@ -15,6 +15,7 @@ import javax.annotation.Nonnull;
 @AutoValue
 public abstract class OrgUnitViewModel extends FieldViewModel {
 
+    @SuppressWarnings("squid:S00107")
     public static FieldViewModel create(String id, String label, Boolean mandatory, String value, String section, Boolean editable, String description, ObjectStyleModel objectStyle) {
         return new AutoValue_OrgUnitViewModel(id, label, mandatory, value,section, null,editable,null,null,null,description, objectStyle);
     }

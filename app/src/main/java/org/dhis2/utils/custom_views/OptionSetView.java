@@ -25,7 +25,6 @@ import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 import static android.text.TextUtils.isEmpty;
 
 public class OptionSetView extends FieldLayout implements PopupMenu.OnMenuItemClickListener, OptionSetOnClickListener {
-    private ViewDataBinding binding;
 
     private ImageView iconView;
     private TextInputEditText editText;
@@ -51,6 +50,7 @@ public class OptionSetView extends FieldLayout implements PopupMenu.OnMenuItemCl
     }
 
     public void setLayoutData(boolean isBgTransparent, String renderType) {
+        ViewDataBinding binding;
         if (isBgTransparent)
             binding = FormSpinnerBinding.inflate(inflater, this, true);
         else

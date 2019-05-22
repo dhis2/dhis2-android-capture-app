@@ -53,7 +53,6 @@ import org.hisp.dhis.rules.models.RuleActionShowError;
 import org.hisp.dhis.rules.models.RuleActionWarningOnCompletion;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -90,7 +89,6 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     private TextInputLayout reportDateLayout;
     private TextInputEditText reportDate;
     private PublishSubject<ReportStatus> undoObservable;
-    private PublishSubject<EnrollmentStatus> undoSaveObservable;
     private CoordinatorLayout coordinatorLayout;
     private TextInputLayout incidentDateLayout;
     private TextInputEditText incidentDate;
@@ -110,7 +108,6 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     private Date openingDate;
     private Date closingDate;
     private boolean mandatoryDelete = true;
-    private Context context;
     private ProgressBar progressBar;
     private View saveButton;
     private DataEntryFragment enrollmentFragment;
@@ -148,7 +145,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
         return fragment;
     }
 
-    public void setSaveButtonTEIDetail(View view){
+    public void setSaveButtonTEIDetail(View view) {
         this.saveButton = view;
     }
 
@@ -259,7 +256,6 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     @Override
     public void onAttach(@NotNull Context context) {
         super.onAttach(context);
-        this.context = context;
         if (getArguments() != null && getActivity() != null) {
             FormViewArguments arguments = getArguments().getParcelable(FORM_VIEW_ARGUMENTS);
             if (arguments != null) {
@@ -273,16 +269,10 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     }
 
     @Override
-    public void onDetach() {
-        context = null;
-        super.onDetach();
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
         formPresenter.onAttach(this);
-        if(saveButton != null)
+        if (saveButton != null)
             formPresenter.initializeSaveObservable();
     }
 
@@ -320,7 +310,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
             if (viewPager.getAdapter() != null && viewPager.getCurrentItem() == viewPager.getAdapter().getCount() - 1) {
                 ((Button) nextButton).setText(getString(R.string.save));
             }
-            enrollmentFragment = ((DataEntryFragment)getChildFragmentManager().getFragments().get(0));
+            enrollmentFragment = ((DataEntryFragment) getChildFragmentManager().getFragments().get(0));
         };
     }
 
@@ -514,7 +504,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
         }
     }
 
-    public void hideSections(String uid) {
+    public void hideSections() {
         formPresenter.checkSections();
     }
 
@@ -545,11 +535,11 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
                     eventCreationIntent.putExtras(EventCaptureActivity.getActivityBundle(enrollmentTrio.val2(), enrollmentTrio.val1()));
                     eventCreationIntent.putExtra(Constants.TRACKED_ENTITY_INSTANCE, enrollmentTrio.val0());
                     startActivityForResult(eventCreationIntent, RQ_EVENT);
-                } else if(!enrollmentFragment.checkErrors()){ //val0 is program uid, val1 is trackedEntityInstance, val2 is empty
+                } else if (!enrollmentFragment.checkErrors()) { //val0 is program uid, val1 is trackedEntityInstance, val2 is empty
                     this.programUid = enrollmentTrio.val1();
                     this.teiUid = enrollmentTrio.val0();
                     openDashboard(null);
-                }else{
+                } else {
                     progressBar.setVisibility(View.GONE);
                     showErrorsDialog();
                 }
@@ -685,8 +675,8 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
                 .show();
     }
 
-    public Observable<EnrollmentStatus> onObservableBackPressed(){
-        undoSaveObservable = PublishSubject.create();
+    public Observable<EnrollmentStatus> onObservableBackPressed() {
+        PublishSubject<EnrollmentStatus> undoSaveObservable = PublishSubject.create();
         return undoSaveObservable.mergeWith(RxView.clicks(saveButton).map(o -> {
             mandatoryDelete = false;
             return getEnrollmentStatusFromButton();

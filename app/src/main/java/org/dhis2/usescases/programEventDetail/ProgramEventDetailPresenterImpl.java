@@ -41,7 +41,7 @@ import static org.dhis2.utils.Constants.PROGRAM_UID;
  * QUADRAM. Created by Cristian on 13/02/2018.
  */
 
-public class ProgramEventDetailPresenter implements ProgramEventDetailContract.ProgramEventDetailPresenter {
+public class ProgramEventDetailPresenterImpl implements ProgramEventDetailContract.ProgramEventDetailPresenter {
 
     private final ProgramEventDetailRepository eventRepository;
     private ProgramEventDetailContract.ProgramEventDetailView view;
@@ -57,7 +57,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     private List<String> currentOrgUnitFilter;
     private List<CategoryOptionCombo> currentCatOptionCombo;
 
-    ProgramEventDetailPresenter(
+    ProgramEventDetailPresenterImpl(
             @NonNull String programUid, @NonNull ProgramEventDetailRepository programEventDetailRepository) {
         this.eventRepository = programEventDetailRepository;
         this.programId = programUid;

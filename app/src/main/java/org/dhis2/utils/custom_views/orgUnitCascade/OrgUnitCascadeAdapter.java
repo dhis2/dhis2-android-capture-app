@@ -29,7 +29,6 @@ public class OrgUnitCascadeAdapter extends RecyclerView.Adapter<OrgUnitCascadeHo
     private List<OrgUnitItem> items; //OrgUnit uid, orgUnit name, paretUid, canBe selected
     private ObservableInt level = new ObservableInt(1);
     private HashMap<Integer, String> selectedParent = new HashMap<>();
-    private OrgUnitItem selectedOrgUnit;
     private OrgUnitCascadeAdapterInterface orgUnitCascadeAdapterInterface;
 
     public interface OrgUnitCascadeAdapterInterface {
@@ -63,7 +62,7 @@ public class OrgUnitCascadeAdapter extends RecyclerView.Adapter<OrgUnitCascadeHo
     @Override
     public OrgUnitCascadeHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
         OrgUnitCascadeLevelItemBinding binding = DataBindingUtil.inflate(LayoutInflater.from(viewGroup.getContext()), R.layout.org_unit_cascade_level_item, viewGroup, false);
-        return new OrgUnitCascadeHolder(binding,this);
+        return new OrgUnitCascadeHolder(binding, this);
     }
 
     @Override
@@ -78,7 +77,6 @@ public class OrgUnitCascadeAdapter extends RecyclerView.Adapter<OrgUnitCascadeHo
     }
 
     void setSelectedLevel(int level, String selectedUid, Boolean canBeSelected) {
-        this.selectedOrgUnit = null;
         selectedParent.put(level, selectedUid);//Set selected orgUnit for level
         reorderSelectedParent(level);
         this.level.set(level);
@@ -87,12 +85,9 @@ public class OrgUnitCascadeAdapter extends RecyclerView.Adapter<OrgUnitCascadeHo
         notifyDataSetChanged();
     }
 
-    public void setSelectedParent(int level, String selectedUid, Boolean canBeSelected) {
-        this.selectedOrgUnit = null;
+    public void setSelectedParent(int level, String selectedUid) {
         selectedParent.put(level, selectedUid);//Set selected orgUnit for level
         this.level.set(level);
-        /*if (orgUnitCascadeAdapterInterface != null)
-            orgUnitCascadeAdapterInterface.onNewLevelSelected(canBeSelected);*/
     }
 
     public void reorderSelectedParent(int fromLevel) {
@@ -102,13 +97,6 @@ public class OrgUnitCascadeAdapter extends RecyclerView.Adapter<OrgUnitCascadeHo
             items.get(i - 1).setName(null);
             items.get(i - 1).setParentUid(null);
         }
-    }
-
-    public void setOrgUnit(OrgUnitItem orgUnit, String path) {
-        String[] parentUids = path.replaceFirst("/", "").split("/");
-        for (int i = 1; i <= parentUids.length; i++)
-            setSelectedLevel(i, parentUids[i - 1], true);
-        this.selectedOrgUnit = orgUnit;
     }
 
     @Nullable

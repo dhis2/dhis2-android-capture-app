@@ -375,7 +375,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
                         presenter.clearCatComboFilters(orgUnitFilter.toString());
                     } else {
                         isFilteredByCatCombo = true;
-                        presenter.onCatComboSelected(adapter2.getItem(position - 1), orgUnitFilter.toString());
+                        presenter.onCatComboSelected(orgUnitFilter.toString());
                     }
                 }
 

@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 
 public interface FieldViewModelFactory {
 
+    @SuppressWarnings("squid:S00107")
     @NonNull
     FieldViewModel create(@NonNull String id,
                           @NonNull String label,
@@ -18,7 +19,7 @@ public interface FieldViewModelFactory {
                           @Nullable String optionSet,
                           @Nullable String value,
                           @Nullable String programStageSection,
-                          @Nullable Boolean AllowFutureDate,
+                          @Nullable Boolean allowFutureDate,
                           @NonNull Boolean editable,
                           @Nullable ProgramStageSectionRenderingType renderingType,
                           @Nullable String description,

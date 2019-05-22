@@ -14,15 +14,13 @@ import timber.log.Timber;
 
 public class EnrollmentPresenterImpl implements EnrollmentContracts.EnrollmentPresenter {
 
-    private final EnrollmentRepository enrollmentRepository;
     private final CompositeDisposable compositeDisposable;
     private final D2 d2;
     private final String enrollmentUid;
     private EnrollmentContracts.EnrollmentView view;
 
-    EnrollmentPresenterImpl(String enrollmentUid, EnrollmentRepository enrollmentRepository, D2 d2) {
+    EnrollmentPresenterImpl(String enrollmentUid, D2 d2) {
         this.enrollmentUid = enrollmentUid;
-        this.enrollmentRepository = enrollmentRepository;
         this.compositeDisposable = new CompositeDisposable();
         this.d2 = d2;
     }

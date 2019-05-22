@@ -11,6 +11,8 @@ import androidx.annotation.NonNull;
 
 @AutoValue
 public abstract class UnsupportedViewModel extends FieldViewModel {
+
+    @SuppressWarnings("squid:S00107")
     public static FieldViewModel create(String id, String label, Boolean mandatory, String value, String section, Boolean editable, String description, ObjectStyleModel objectStyle) {
         return new AutoValue_UnsupportedViewModel(id, label, false, value, section, null, editable, null, null, null, description, objectStyle);
     }

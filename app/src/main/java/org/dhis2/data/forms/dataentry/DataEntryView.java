@@ -20,7 +20,7 @@ interface DataEntryView {
     @NonNull
     Consumer<List<FieldViewModel>> showFields();
 
-    void removeSection(String sectionUid);
+    void removeSection();
 
     void messageOnComplete(String message, boolean canComplete);
 

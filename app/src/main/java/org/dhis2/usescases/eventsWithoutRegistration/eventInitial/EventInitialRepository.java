@@ -35,12 +35,14 @@ public interface EventInitialRepository {
     @NonNull
     Observable<List<OrganisationUnitModel>> filteredOrgUnits(String date, String programId);
 
+    @SuppressWarnings("squid:S00107")
     Observable<String> createEvent(String enrollmentUid, @Nullable String trackedEntityInstanceUid,
                                    @NonNull Context context, @NonNull String program,
                                    @NonNull String programStage, @NonNull Date date,
                                    @NonNull String orgUnitUid, @NonNull String catComboUid,
                                    @NonNull String catOptionUid, @NonNull String latitude, @NonNull String longitude);
 
+    @SuppressWarnings("squid:S00107")
     Observable<String> scheduleEvent(String enrollmentUid, @Nullable String trackedEntityInstanceUid,
                                      @NonNull Context context, @NonNull String program,
                                      @NonNull String programStage, @NonNull Date dueDate,
@@ -58,6 +60,7 @@ public interface EventInitialRepository {
     @NonNull
     Observable<ProgramStageModel> programStageWithId(String programStageUid);
 
+    @SuppressWarnings("squid:S00107")
     @NonNull
     Observable<EventModel> editEvent(String trackedEntityInstance, String eventUid, String date, String orgUnitUid, String catComboUid, String catOptionCombo, String latitude, String longitude);
 

@@ -2,15 +2,13 @@ package org.dhis2.usescases.datasets.datasetDetail;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+
 import androidx.annotation.IntDef;
 
-import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialActivity;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.OrgUnitUtils;
 import org.dhis2.utils.Period;
-import org.hisp.dhis.android.core.category.CategoryComboModel;
-import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.period.PeriodType;
 
@@ -25,12 +23,10 @@ import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 
-public class DataSetDetailPresenter implements DataSetDetailContract.DataSetDetailPresenter {
+public class DataSetDetailPresenterImpl implements DataSetDetailContract.DataSetDetailPresenter {
 
     private DataSetDetailRepository dataSetDetailRepository;
     private DataSetDetailContract.DataSetDetailView view;
-    private CategoryOptionComboModel categoryOptionComboModel;
-    private MetadataRepository metadataRepository;
     private int lastSearchType;
     private Date fromDate;
     private Date toDate;
@@ -38,7 +34,6 @@ public class DataSetDetailPresenter implements DataSetDetailContract.DataSetDeta
     private List<Date> dates;
     private CompositeDisposable compositeDisposable;
     private List<OrganisationUnitModel> orgUnits;
-    private CategoryComboModel mCatCombo;
     private List<String> selectedOrgUnits;
     private PeriodType selectedPeriodType;
 
@@ -49,9 +44,8 @@ public class DataSetDetailPresenter implements DataSetDetailContract.DataSetDeta
         int DATE_RANGES = 32;
     }
 
-    public DataSetDetailPresenter(DataSetDetailRepository dataSetDetailRepository, MetadataRepository metadataRepository) {
+    public DataSetDetailPresenterImpl(DataSetDetailRepository dataSetDetailRepository) {
         this.dataSetDetailRepository = dataSetDetailRepository;
-        this.metadataRepository = metadataRepository;
         compositeDisposable = new CompositeDisposable();
     }
 
@@ -93,7 +87,7 @@ public class DataSetDetailPresenter implements DataSetDetailContract.DataSetDeta
         Bundle bundle = new Bundle();
         bundle.putString(Constants.DATA_SET_UID, view.dataSetUid());
 
-        view.startActivity(DataSetInitialActivity.class,bundle,false,false,null);
+        view.startActivity(DataSetInitialActivity.class, bundle, false, false, null);
     }
 
     @Override
@@ -103,14 +97,13 @@ public class DataSetDetailPresenter implements DataSetDetailContract.DataSetDeta
     }
 
     @Override
-    public void onCatComboSelected(CategoryOptionComboModel categoryOptionComboModel, String
-            orgUnitQuery) {
-        updateFilters(categoryOptionComboModel, orgUnitQuery);
+    public void onCatComboSelected(String orgUnitQuery) {
+        updateFilters(orgUnitQuery);
     }
 
     @Override
     public void clearCatComboFilters(String orgUnitQuery) {
-        updateFilters(null, orgUnitQuery);
+        updateFilters(orgUnitQuery);
     }
 
     @Override
@@ -151,9 +144,7 @@ public class DataSetDetailPresenter implements DataSetDetailContract.DataSetDeta
                 ));
     }
 
-    private void updateFilters(CategoryOptionComboModel categoryOptionComboModel, String
-            orgUnitQuery) {
-        this.categoryOptionComboModel = categoryOptionComboModel;
+    private void updateFilters(String orgUnitQuery) {
         switch (lastSearchType) {
             case LastSearchType.DATES:
                 getDataSets(this.fromDate, this.toDate, orgUnitQuery);

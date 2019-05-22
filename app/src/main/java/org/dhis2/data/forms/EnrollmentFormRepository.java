@@ -114,10 +114,6 @@ public class EnrollmentFormRepository implements FormRepository {
             "JOIN Enrollment ON Enrollment.program = Program.uid\n" +
             "WHERE Enrollment.uid = ? LIMIT 1";
 
-    private static final String SELECT_VALUES = "SELECT TrackedEntityAttributeValue.value FROM TrackedEntityAttributeValue " +
-            "JOIN TrackedEntityInstance ON TrackedEntityInstance.uid = TrackedEntityAttributeValue.trackedEntityInstance " +
-            "JOIN Enrollment ON Enrollment.trackedEntityInstance = TrackedEntityInstance.uid WHERE Enrollment.uid = ?";
-
     private static final String QUERY = "SELECT \n" +
             "  Field.id,\n" +
             "  Field.label,\n" +

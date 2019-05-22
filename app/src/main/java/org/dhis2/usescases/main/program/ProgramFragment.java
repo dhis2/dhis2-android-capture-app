@@ -72,7 +72,6 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
     ProgramContract.ProgramPresenter presenter;
 
     private Period currentPeriod = NONE;
-    private StringBuilder orgUnitFilter = new StringBuilder();
 
     private AndroidTreeView treeView;
 
@@ -136,10 +135,6 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
     }
 
     //endregion
-
-    public void setOrgUnitFilter(StringBuilder orgUnitFilter) {
-        this.orgUnitFilter = orgUnitFilter;
-    }
 
     @SuppressLint({"CheckResult", "RxLeakedSubscription"})
     @Override

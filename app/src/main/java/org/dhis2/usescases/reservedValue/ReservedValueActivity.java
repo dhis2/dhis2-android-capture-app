@@ -26,7 +26,7 @@ public class ReservedValueActivity extends ActivityGlobalAbstract implements Res
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        ((App) getApplicationContext()).userComponent().plus(new ReservedValueModule(this)).inject(this);
+        ((App) getApplicationContext()).userComponent().plus(new ReservedValueModule()).inject(this);
         super.onCreate(savedInstanceState);
 
         reservedBinding = DataBindingUtil.setContentView(this, R.layout.activity_reserved_value);

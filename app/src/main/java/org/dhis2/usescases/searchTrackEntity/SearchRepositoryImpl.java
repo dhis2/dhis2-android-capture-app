@@ -131,8 +131,6 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     private static final String[] TABLE_NAMES = new String[]{TrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.TABLE};
     private static final Set<String> TABLE_SET = new HashSet<>(Arrays.asList(TABLE_NAMES));
-    private static final String[] TEI_TABLE_NAMES = new String[]{TrackedEntityInstanceModel.TABLE,
-            EnrollmentModel.TABLE, TrackedEntityAttributeValueModel.TABLE};
     private final CodeGenerator codeGenerator;
     private final String teiType;
     private final D2 d2;
@@ -197,7 +195,7 @@ public class SearchRepositoryImpl implements SearchRepository {
             queryData.remove(Constants.ENROLLMENT_DATE_UID);
         }
 
-        List<QueryItem> filterList = formatQueryData(queryData, queryBuilder);
+        List<QueryItem> filterList = formatQueryData(queryData);
 
         TrackedEntityInstanceQuery query = queryBuilder.filter(filterList).build();
         DataSource dataSource = d2.trackedEntityModule().trackedEntityInstanceQuery.offlineOnly().query(query).getDataSource().map(tei -> transform(tei, selectedProgram));
@@ -228,7 +226,7 @@ public class SearchRepositoryImpl implements SearchRepository {
             queryData.remove(Constants.ENROLLMENT_DATE_UID);
         }
 
-        List<QueryItem> filterList = formatQueryData(queryData, queryBuilder);
+        List<QueryItem> filterList = formatQueryData(queryData);
 
         TrackedEntityInstanceQuery query = queryBuilder.filter(filterList).build();
         DataSource dataSource = d2.trackedEntityModule().trackedEntityInstanceQuery.offlineFirst().query(query).getDataSource().map(tei -> transform(tei, selectedProgram));
@@ -494,7 +492,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         return builder;
     }
 
-    private List<QueryItem> formatQueryData(@Nullable HashMap<String, String> queryData, TrackedEntityInstanceQuery.Builder queryBuilder) {
+    private List<QueryItem> formatQueryData(@Nullable HashMap<String, String> queryData) {
         List<QueryItem> filterItems = new ArrayList<>();
         if (queryData != null) {
             for (int i = 0; i < queryData.keySet().size(); i++) {
@@ -546,41 +544,6 @@ public class SearchRepositoryImpl implements SearchRepository {
             searchTei.setAttributeValueModels(attributeModels);
             return searchTei;
         }
-
-        /*DataSource dataSource = teiList.getDataSource().mapByPage(new Function<List<TrackedEntityInstance>, List<SearchTeiModel>>() {
-            @Override
-            public List<SearchTeiModel> apply(List<TrackedEntityInstance> list) {
-                List<SearchTeiModel> result = new ArrayList<>();
-                for (TrackedEntityInstance tei : list) {
-                    SearchTeiModel searchTei = new SearchTeiModel();
-                    if(d2.trackedEntityModule().trackedEntityInstances.byUid().eq(tei.uid()).one().exists()){
-                        TrackedEntityInstance localTei = d2.trackedEntityModule().trackedEntityInstances.byUid().eq(tei.uid()).one().get();
-                        searchTei.setTei(localTei);
-                        searchTei.setOnline(false);
-                        setEnrollmentInfo(searchTei);
-                        setAttributesInfo(searchTei, selectedProgram);
-                        setOverdueEvents(searchTei, selectedProgram);
-                    } else {
-                        searchTei.setTei(tei);
-                        List<TrackedEntityAttributeValueModel> attributeModels = new ArrayList<>();
-                        if (tei.trackedEntityAttributeValues() != null) {
-                            TrackedEntityAttributeValueModel.Builder attrValueBuilder = TrackedEntityAttributeValueModel.builder();
-                            for (TrackedEntityAttributeValue attrValue : tei.trackedEntityAttributeValues()) {
-                                attrValueBuilder.value(attrValue.value())
-                                        .created(attrValue.created())
-                                        .lastUpdated(attrValue.lastUpdated())
-                                        .trackedEntityAttribute(attrValue.trackedEntityAttribute())
-                                        .trackedEntityInstance(tei.uid());
-                                attributeModels.add(attrValueBuilder.build());
-                            }
-                        }
-                        searchTei.setAttributeValueModels(attributeModels);
-                    }
-                    result.add(searchTei);
-                }
-                return result;
-            }
-        });*/
     }
 
     // Private Region End//

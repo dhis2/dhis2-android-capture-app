@@ -13,6 +13,7 @@ import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
+import org.jetbrains.annotations.NotNull;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -49,6 +50,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
     @NonNull
     private final String hintChooseDate;
 
+    @SuppressWarnings("squid:S00107")
     public FieldViewModelFactoryImpl(@NonNull String hintEnterText, @NonNull String hintEnterLongText,
                                      @NonNull String hintEnterNumber, @NonNull String hintEnterInteger,
                                      @NonNull String hintEnterIntegerPositive, @NonNull String hintEnterIntegerNegative,
@@ -74,7 +76,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
     public FieldViewModel create(@NonNull String id, @NonNull String label, @NonNull ValueType type,
                                  @NonNull Boolean mandatory, @Nullable String optionSet, @Nullable String value,
                                  @Nullable String section, @Nullable Boolean allowFutureDates, @NonNull Boolean editable, @Nullable ProgramStageSectionRenderingType renderingType,
-                                 @Nullable String description, @Nullable ValueTypeDeviceRenderingModel fieldRendering, @Nullable Integer optionCount, ObjectStyleModel objectStyle) {
+                                 @Nullable String description, @Nullable ValueTypeDeviceRenderingModel fieldRendering, @Nullable Integer optionCount, @NotNull ObjectStyleModel objectStyle) {
         isNull(type, "type must be supplied");
 
         if (!isEmpty(optionSet)) {

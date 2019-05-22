@@ -30,7 +30,7 @@ import timber.log.Timber;
  * QUADRAM. Created by Cristian on 06/03/2018.
  */
 
-public class TeiProgramListInteractor implements TeiProgramListContract.TeiProgramListInteractor {
+public class TeiProgramListInteractorImpl implements TeiProgramListContract.TeiProgramListInteractor {
 
     private TeiProgramListContract.TeiProgramListView view;
     private String trackedEntityId;
@@ -38,7 +38,7 @@ public class TeiProgramListInteractor implements TeiProgramListContract.TeiProgr
     private final TeiProgramListRepository teiProgramListRepository;
     private Date selectedEnrollmentDate;
 
-    TeiProgramListInteractor(TeiProgramListRepository teiProgramListRepository) {
+    TeiProgramListInteractorImpl(TeiProgramListRepository teiProgramListRepository) {
         this.teiProgramListRepository = teiProgramListRepository;
     }
 

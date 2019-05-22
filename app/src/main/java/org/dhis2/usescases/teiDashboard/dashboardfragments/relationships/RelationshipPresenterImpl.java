@@ -137,9 +137,9 @@ public class RelationshipPresenterImpl implements RelationshipContracts.Relation
     }
 
     @Override
-    public void addRelationship(String trackEntityInstance_A, String relationshipType) {
+    public void addRelationship(String trackEntityInstanceA, String relationshipType) {
         try {
-            Relationship relationship = RelationshipHelper.teiToTeiRelationship(teiUid, trackEntityInstance_A, relationshipType);
+            Relationship relationship = RelationshipHelper.teiToTeiRelationship(teiUid, trackEntityInstanceA, relationshipType);
             d2.relationshipModule().relationships.add(relationship);
         } catch (D2Error e) {
             view.displayMessage(e.errorDescription());

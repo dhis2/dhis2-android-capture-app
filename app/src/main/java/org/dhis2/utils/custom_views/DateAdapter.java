@@ -28,23 +28,21 @@ public class DateAdapter extends RecyclerView.Adapter<DateViewHolder> {
     private List<String> datesNames = new ArrayList<>();
     private List<Date> dates = new ArrayList<>();
     private List<Date> selectedDates = new ArrayList<>();
-    private Period currentPeriod = Period.WEEKLY;
-    private SimpleDateFormat dayFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
-    private SimpleDateFormat weeklyFormat = new SimpleDateFormat("'Week' w", Locale.getDefault());
-    private String weeklyFormatWithDates = "%s, %s / %s";
-    private SimpleDateFormat monthFormat = new SimpleDateFormat("MMMM yyyy", Locale.getDefault());
-    private SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy", Locale.getDefault());
 
 
     public DateAdapter(Period period) {
-        currentPeriod = period;
         Calendar calendar = DateUtils.getInstance().getCalendar();
         calendar.add(Calendar.YEAR, 1); //let's the user select dates in the next year
         int year = calendar.get(Calendar.YEAR);
 
         do {
-            String date = null;
+            String date;
 
+            SimpleDateFormat dayFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+            SimpleDateFormat weeklyFormat = new SimpleDateFormat("'Week' w", Locale.getDefault());
+            String weeklyFormatWithDates = "%s, %s / %s";
+            SimpleDateFormat monthFormat = new SimpleDateFormat("MMMM yyyy", Locale.getDefault());
+            SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy", Locale.getDefault());
             switch (period) {
                 case WEEKLY:
                     date = weeklyFormat.format(calendar.getTime()); //Get current week

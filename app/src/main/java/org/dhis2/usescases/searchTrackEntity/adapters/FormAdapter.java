@@ -37,9 +37,9 @@ import org.dhis2.utils.Constants;
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -87,7 +87,7 @@ public class FormAdapter extends RecyclerView.Adapter {
     private Context context;
     private Map<String, String> queryData;
 
-    public FormAdapter(FragmentManager fm, LayoutInflater layoutInflater, Observable<List<OrganisationUnitModel>> orgUnits, Context context,
+    public FormAdapter(FragmentManager fm, LayoutInflater layoutInflater, Context context,
                        Observable<List<OrganisationUnitLevel>> levels) {
         setHasStableIds(true);
         this.processor = PublishProcessor.create();
@@ -97,7 +97,7 @@ public class FormAdapter extends RecyclerView.Adapter {
         rows = new ArrayList<>();
 
         rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, false, false));
-        rows.add(BUTTON, new FileRow(layoutInflater, processor, false));
+        rows.add(BUTTON, new FileRow(layoutInflater, false));
         rows.add(CHECKBOX, new RadioButtonRow(layoutInflater, processor, false));
         rows.add(SPINNER, new SpinnerRow(layoutInflater, processor, processorOptionSet, false));
         rows.add(COORDINATES, new CoordinateRow(layoutInflater, processor, false));
@@ -106,14 +106,15 @@ public class FormAdapter extends RecyclerView.Adapter {
         rows.add(DATETIME, new DateTimeRow(layoutInflater, processor, DATETIME, false));
         rows.add(AGEVIEW, new AgeRow(layoutInflater, processor, false));
         rows.add(YES_NO, new RadioButtonRow(layoutInflater, processor, false));
-        rows.add(ORG_UNIT, new OrgUnitRow(fm, layoutInflater, processor, false, levels));
-        rows.add(IMAGE, new ImageRow(layoutInflater, processor, null, null));
-        rows.add(UNSUPPORTED, new UnsupportedRow(layoutInflater, processor, false));
+        rows.add(ORG_UNIT, new OrgUnitRow(fm, layoutInflater, processor, false));
+        rows.add(IMAGE, new ImageRow(layoutInflater, processor, null));
+        rows.add(UNSUPPORTED, new UnsupportedRow(layoutInflater));
         rows.add(LONG_TEXT, new EditTextRow(layoutInflater, processor, false, true));
     }
 
+    @NotNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(@NotNull ViewGroup parent, int viewType) {
         return rows.get(viewType).onCreate(parent);
     }
 

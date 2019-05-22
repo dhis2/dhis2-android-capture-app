@@ -1,7 +1,6 @@
 package org.dhis2.utils.custom_views;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,10 +28,8 @@ import java.util.Locale;
 public class PeriodDialog extends DialogFragment {
     DialogPeriodBinding binding;
     private OnDateSet possitiveListener;
-    private View.OnClickListener negativeListener;
     private String title;
 
-    private Context context;
     private Date currentDate;
     private PeriodType period;
     private Date minDate;
@@ -41,7 +38,6 @@ public class PeriodDialog extends DialogFragment {
 
     public PeriodDialog() {
         possitiveListener = null;
-        negativeListener = null;
         title = null;
         currentDate = Calendar.getInstance().getTime();
     }
@@ -56,30 +52,20 @@ public class PeriodDialog extends DialogFragment {
         return this;
     }
 
-    public PeriodDialog setNegativeListener(View.OnClickListener listener) {
-        this.negativeListener = listener;
-        return this;
-    }
-
 
     public PeriodDialog setTitle(String title) {
         this.title = title;
         return this;
     }
 
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        this.context = context;
-    }
-
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Dialog dialog = super.onCreateDialog(savedInstanceState);
-        dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        }
         return dialog;
     }
 

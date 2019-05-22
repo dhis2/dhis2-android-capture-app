@@ -38,7 +38,7 @@ import static android.text.TextUtils.isEmpty;
  * Created by ppajuelo on 18/10/2017.f
  */
 
-public class ProgramPresenter implements ProgramContract.ProgramPresenter {
+public class ProgramPresenterImpl implements ProgramContract.ProgramPresenter {
 
     private ProgramContract.ProgramView view;
     private final HomeRepository homeRepository;
@@ -51,7 +51,7 @@ public class ProgramPresenter implements ProgramContract.ProgramPresenter {
     private List<DatePeriod> currentDateFilter;
     private List<String> currentOrgUnitFilter;
 
-    ProgramPresenter(HomeRepository homeRepository) {
+    ProgramPresenterImpl(HomeRepository homeRepository) {
         this.homeRepository = homeRepository;
     }
 

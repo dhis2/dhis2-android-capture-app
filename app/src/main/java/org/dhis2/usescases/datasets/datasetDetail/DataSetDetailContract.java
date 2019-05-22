@@ -56,7 +56,7 @@ public class DataSetDetailContract {
 
         void onBackClick();
 
-        void onCatComboSelected(CategoryOptionComboModel categoryOptionComboModel, String orgUnitQuery);
+        void onCatComboSelected(String orgUnitQuery);
 
         void clearCatComboFilters(String orgUnitQuery);
 

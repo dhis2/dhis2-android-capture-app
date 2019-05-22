@@ -1,12 +1,10 @@
 package org.dhis2.utils;
 
+import androidx.annotation.NonNull;
+
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel;
-import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
-import org.hisp.dhis.android.core.common.ObjectStyleModel;
-import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.program.ProgramStage;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.rules.models.RuleAction;
 import org.hisp.dhis.rules.models.RuleActionAssign;
 import org.hisp.dhis.rules.models.RuleActionCreateEvent;
@@ -24,26 +22,14 @@ import org.hisp.dhis.rules.models.RuleActionShowWarning;
 import org.hisp.dhis.rules.models.RuleActionWarningOnCompletion;
 import org.hisp.dhis.rules.models.RuleEffect;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-
-import androidx.annotation.NonNull;
 
 /**
  * QUADRAM. Created by ppajuelo on 13/06/2018.
  */
 
 public class RulesUtilsProviderImpl implements RulesUtilsProvider {
-
-    private final CodeGenerator codeGenerator;
-
-    private HashMap<String, FieldViewModel> currentFieldViewModels;
-
-
-    public RulesUtilsProviderImpl(CodeGenerator codeGenerator) {
-        this.codeGenerator = codeGenerator;
-    }
 
     @Override
     public void applyRuleEffects(Map<String, FieldViewModel> fieldViewModels,
@@ -85,11 +71,6 @@ public class RulesUtilsProviderImpl implements RulesUtilsProvider {
                 rulesActionCallbacks.unsupportedRuleAction();
 
         }
-
-        if (currentFieldViewModels == null)
-            currentFieldViewModels = new HashMap<>();
-        currentFieldViewModels.clear();
-        currentFieldViewModels.putAll(fieldViewModels);
     }
 
     @Override
@@ -135,7 +116,7 @@ public class RulesUtilsProviderImpl implements RulesUtilsProvider {
         String uid = displayText.content();
 
         DisplayViewModel displayViewModel = DisplayViewModel.create(uid, "",
-                displayText.content()+ruleEffect.data(), "Display");
+                displayText.content() + ruleEffect.data(), "Display");
         fieldViewModels.put(uid, displayViewModel);
     }
 
@@ -180,9 +161,11 @@ public class RulesUtilsProviderImpl implements RulesUtilsProvider {
         }
     }
 
+    @SuppressWarnings("squid:S1172")
     private void createEvent(RuleActionCreateEvent createEvent, Map<String, FieldViewModel> fieldViewModels, RulesActionCallbacks rulesActionCallbacks) {
         //TODO: Create Event
     }
+
 
     private void setMandatory(RuleActionSetMandatoryField mandatoryField, Map<String, FieldViewModel> fieldViewModels) {
         FieldViewModel model = fieldViewModels.get(mandatoryField.field());

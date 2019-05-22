@@ -7,15 +7,16 @@ import org.dhis2.databinding.ItemDatasetBinding;
 
 import io.reactivex.disposables.CompositeDisposable;
 
+@SuppressWarnings("squid:CommentedOutCodeLine")
 public class DataSetDetailViewHolder extends RecyclerView.ViewHolder{
 
     private ItemDatasetBinding binding;
-    private CompositeDisposable disposable;
+//    private CompositeDisposable disposable;
 
     public DataSetDetailViewHolder(ItemDatasetBinding binding) {
         super(binding.getRoot());
         this.binding = binding;
-        disposable = new CompositeDisposable();
+//        disposable = new CompositeDisposable();
     }
 
     public void bind(DataSetDetailContract.DataSetDetailPresenter presenter, DataSetDetailModel dataset) {

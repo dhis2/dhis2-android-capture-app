@@ -215,9 +215,7 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
                     editText.setText(null);
                     listener.onDateSelected(null);
                 })
-                .setNeutralButton(getContext().getResources().getString(R.string.change_calendar), (dialog, which) -> {
-                    showNativeCalendar(view);
-                });
+                .setNeutralButton(getContext().getResources().getString(R.string.change_calendar), (dialog, which) -> showNativeCalendar(view));
 
         alertDialog.setView(datePickerView);
         Dialog dialog = alertDialog.create();

@@ -35,7 +35,7 @@ public class EventDetailModule {
     @Provides
     @PerActivity
     EventDetailContracts.EventDetailPresenter providePresenter(EventDetailRepository eventDetailRepository, MetadataRepository metadataRepository, DataEntryStore dataEntryStore) {
-        return new EventDetailPresenter(eventDetailRepository, metadataRepository, dataEntryStore);
+        return new EventDetailPresenterImpl(eventDetailRepository, metadataRepository, dataEntryStore);
     }
 
     @Provides

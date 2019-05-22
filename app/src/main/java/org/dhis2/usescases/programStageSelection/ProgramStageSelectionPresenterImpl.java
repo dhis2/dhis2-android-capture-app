@@ -21,14 +21,14 @@ import timber.log.Timber;
  * QUADRAM. Created by ppajuelo on 31/10/2017.
  */
 
-public class ProgramStageSelectionPresenter implements ProgramStageSelectionContract.ProgramStageSelectionPresenter {
+public class ProgramStageSelectionPresenterImpl implements ProgramStageSelectionContract.ProgramStageSelectionPresenter {
 
     private final RulesUtilsProvider ruleUtils;
     private ProgramStageSelectionContract.ProgramStageSelectionView view;
     private CompositeDisposable compositeDisposable;
     private ProgramStageSelectionRepository programStageSelectionRepository;
 
-    ProgramStageSelectionPresenter(ProgramStageSelectionRepository programStageSelectionRepository, RulesUtilsProvider ruleUtils) {
+    ProgramStageSelectionPresenterImpl(ProgramStageSelectionRepository programStageSelectionRepository, RulesUtilsProvider ruleUtils) {
         this.programStageSelectionRepository = programStageSelectionRepository;
         this.ruleUtils = ruleUtils;
         compositeDisposable = new CompositeDisposable();

@@ -11,6 +11,7 @@ import org.dhis2.data.forms.dataentry.fields.Row;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.FormOptionSetBinding;
+import org.jetbrains.annotations.NotNull;
 
 import io.reactivex.processors.FlowableProcessor;
 
@@ -29,7 +30,8 @@ public class SpinnerRow implements Row<SpinnerHolder, SpinnerViewModel> {
     private final LayoutInflater inflater;
     private boolean isSearchMode = false;
 
-    public SpinnerRow(LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor, FlowableProcessor<Trio<String, String, Integer>> processorOptionSet, boolean isBackgroundTransparent) {
+    public SpinnerRow(LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor,
+                      FlowableProcessor<Trio<String, String, Integer>> processorOptionSet, boolean isBackgroundTransparent) {
         this.processor = processor;
         this.isBackgroundTransparent = isBackgroundTransparent;
         this.renderType = null;
@@ -38,8 +40,9 @@ public class SpinnerRow implements Row<SpinnerHolder, SpinnerViewModel> {
         this.isSearchMode = true;
     }
 
-    public SpinnerRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor,
-                      @NonNull FlowableProcessor<Integer> currentPosition, FlowableProcessor<Trio<String, String, Integer>> processorOptionSet, boolean isBackgroundTransparent, String renderType) {
+    public SpinnerRow(LayoutInflater layoutInflater, @NotNull FlowableProcessor<RowAction> processor,
+                      FlowableProcessor<Trio<String, String, Integer>> processorOptionSet,
+                      boolean isBackgroundTransparent, String renderType) {
         this.processor = processor;
         this.isBackgroundTransparent = isBackgroundTransparent;
         this.renderType = renderType;

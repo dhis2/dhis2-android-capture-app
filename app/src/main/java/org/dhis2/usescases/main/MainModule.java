@@ -22,7 +22,7 @@ public final class MainModule {
     @Provides
     @PerActivity
     MainContracts.MainPresenter homePresenter(D2 d2, @NonNull MetadataRepository metadataRepository) {
-        return new MainPresenter(d2, metadataRepository);
+        return new MainPresenterImpl(d2, metadataRepository);
     }
 
 }

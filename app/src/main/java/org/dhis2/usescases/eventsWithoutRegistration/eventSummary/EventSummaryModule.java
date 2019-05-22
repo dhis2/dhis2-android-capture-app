@@ -45,7 +45,7 @@ public class EventSummaryModule {
     @Provides
     @PerActivity
     EventSummaryContract.EventSummaryPresenter providesPresenter(EventSummaryContract.EventSummaryInteractor interactor) {
-        return new EventSummaryPresenter(interactor);
+        return new EventSummaryPresenterImpl(interactor);
     }
 
     @Provides
@@ -53,7 +53,7 @@ public class EventSummaryModule {
     EventSummaryContract.EventSummaryInteractor provideInteractor(@NonNull EventSummaryRepository eventSummaryRepository,
                                                                   @NonNull MetadataRepository metadataRepository,
                                                                   @NonNull SchedulerProvider schedulerProvider) {
-        return new EventSummaryInteractor(eventSummaryRepository, metadataRepository, schedulerProvider);
+        return new EventSummaryInteractorImpl(eventSummaryRepository, metadataRepository, schedulerProvider);
     }
 
     @Provides

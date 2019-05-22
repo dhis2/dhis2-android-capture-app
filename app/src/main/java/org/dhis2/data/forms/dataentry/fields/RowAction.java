@@ -1,7 +1,5 @@
 package org.dhis2.data.forms.dataentry.fields;
 
-import android.view.View;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 

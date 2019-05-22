@@ -7,6 +7,7 @@ import java.util.ArrayList;
 /**
  * QUADRAM. Created by ppajuelo on 11/04/2019.
  */
+@SuppressWarnings("squid:S1068")
 public class IssueRequest {
 
     private Fields fields;

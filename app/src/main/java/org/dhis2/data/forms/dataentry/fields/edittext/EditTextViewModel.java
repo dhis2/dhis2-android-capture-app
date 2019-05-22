@@ -23,6 +23,7 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
     @Nullable
     public abstract ValueTypeDeviceRenderingModel fieldRendering();
 
+    @SuppressWarnings("squid:S00107")
     @NonNull
     public static EditTextViewModel create(@NonNull String uid, @NonNull String label,
                                            @NonNull Boolean mandatory, @Nullable String value, @NonNull String hint,

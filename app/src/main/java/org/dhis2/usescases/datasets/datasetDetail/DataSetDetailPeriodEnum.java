@@ -5,6 +5,7 @@ import org.joda.time.DateTimeConstants;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings({"squid:S1488", "squid:CommentedOutCodeLine"})
 public enum DataSetDetailPeriodEnum {
 
     DAILY("Daily") {
@@ -131,6 +132,7 @@ public enum DataSetDetailPeriodEnum {
 
     public abstract List<DataSetDetailModel> getListDataSetWithPeriods(int year, DataSetDetailModel dataset);
 
+    @SuppressWarnings("squid:S1172")
     public static List<DataSetDetailModel> getListDataSetWithPeriodsWeeks(int year, DataSetDetailModel dataset, int day) {
         List<DataSetDetailModel> listDataSet = new ArrayList<>();
         /*if(year <= maxDate().year().get()){
@@ -150,6 +152,7 @@ public enum DataSetDetailPeriodEnum {
         return listDataSet;
     }
 
+    @SuppressWarnings("squid:S1172")
     public static List<DataSetDetailModel> getListDataSetWithPeriodsMonth(int year, DataSetDetailModel dataset, int startMonth, int period) {
         List<DataSetDetailModel> listDataSet = new ArrayList<>();
         /*if(year <= maxDate().year().get()){

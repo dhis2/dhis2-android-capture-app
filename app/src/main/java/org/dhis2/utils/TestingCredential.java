@@ -9,26 +9,26 @@ import androidx.annotation.Nullable;
 public class TestingCredential {
 
     @NonNull
-    private String server_url;
+    private String serverUrl;
     @NonNull
-    private String user_name;
+    private String userName;
     @NonNull
-    private String user_pass;
+    private String userPass;
     @Nullable
-    private String server_version;
+    private String serverVersion;
 
     @NonNull
     public String getServerUrl() {
-        return server_url;
+        return serverUrl;
     }
 
     @NonNull
     public String getUserName() {
-        return user_name;
+        return userName;
     }
 
     @NonNull
     public String getUserPass() {
-        return user_pass;
+        return userPass;
     }
 }

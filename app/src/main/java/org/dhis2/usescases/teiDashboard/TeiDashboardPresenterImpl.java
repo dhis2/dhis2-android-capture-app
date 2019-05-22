@@ -3,11 +3,12 @@ package org.dhis2.usescases.teiDashboard;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 
-import org.dhis2.data.forms.dataentry.RuleEngineRepository;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.TEIDataFragment;
 import org.dhis2.utils.DateUtils;
-import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -15,9 +16,6 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel
 
 import java.util.Calendar;
 import java.util.List;
-
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -29,16 +27,13 @@ import timber.log.Timber;
  * QUADRAM. Created by ppajuelo on 30/11/2017.
  */
 
-public class TeiDashboardPresenter implements TeiDashboardContracts.TeiDashboardPresenter {
+public class TeiDashboardPresenterImpl implements TeiDashboardContracts.TeiDashboardPresenter {
 
     private final DashboardRepository dashboardRepository;
     private final MetadataRepository metadataRepository;
-    private final D2 d2;
-    private final RuleEngineRepository ruleRepository;
     private TeiDashboardContracts.TeiDashboardView view;
 
     private String teUid;
-    private String teType;
     private String programUid;
     private boolean programWritePermission;
 
@@ -47,11 +42,9 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.TeiDashboard
 
     private MutableLiveData<DashboardProgramModel> dashboardProgramModelLiveData = new MutableLiveData<>();
 
-    TeiDashboardPresenter(D2 d2, DashboardRepository dashboardRepository, MetadataRepository metadataRepository, RuleEngineRepository formRepository) {
-        this.d2 = d2;
+    TeiDashboardPresenterImpl(DashboardRepository dashboardRepository, MetadataRepository metadataRepository) {
         this.dashboardRepository = dashboardRepository;
         this.metadataRepository = metadataRepository;
-        this.ruleRepository = formRepository;
         compositeDisposable = new CompositeDisposable();
     }
 
@@ -93,7 +86,6 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.TeiDashboard
                                 this.dashboardProgramModelLiveData.setValue(dashboardModel);
                                 if (dashboardProgramModel.getCurrentProgram() != null)
                                     this.programWritePermission = dashboardProgramModel.getCurrentProgram().accessDataWrite();
-                                this.teType = dashboardProgramModel.getTei().trackedEntityType();
                                 view.setData(dashboardProgramModel);
                             },
                             Timber::e
@@ -119,7 +111,6 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.TeiDashboard
                     .subscribe(
                             dashboardModel -> {
                                 this.dashboardProgramModel = dashboardModel;
-                                this.teType = dashboardProgramModel.getTei().trackedEntityType();
                                 view.setDataWithOutProgram(dashboardProgramModel);
                             },
                             Timber::e)
@@ -318,9 +309,6 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.TeiDashboard
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
-
-
-
 
 
     @Override

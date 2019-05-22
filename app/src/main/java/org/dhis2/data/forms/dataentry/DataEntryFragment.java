@@ -132,9 +132,9 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
     }
 
     @Override
-    public void removeSection(String sectionUid) {
+    public void removeSection() {
         if (formFragment instanceof FormFragment) {
-            ((FormFragment) formFragment).hideSections(sectionUid);
+            ((FormFragment) formFragment).hideSections();
         }
     }
 
@@ -150,8 +150,8 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
     private void setUpRecyclerView() {
         DataEntryArguments arguments = getArguments().getParcelable(ARGUMENTS);
         dataEntryAdapter = new DataEntryAdapter(LayoutInflater.from(getActivity()),
-                getChildFragmentManager(), arguments,
-                dataEntryPresenter.getOrgUnits(),
+                getChildFragmentManager(),
+                arguments,
                 new ObservableBoolean(true),
                 dataEntryPresenter.getLevels());
 
@@ -170,7 +170,7 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
         return dataEntryAdapter.hasError();
     }
 
-    public String getErrorFields(){
+    public String getErrorFields() {
         return dataEntryAdapter.getErrorFieldNames();
     }
 

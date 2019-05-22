@@ -25,6 +25,7 @@ public abstract class SpinnerViewModel extends FieldViewModel {
     @NonNull
     public abstract Integer numberOfOptions();
 
+    @SuppressWarnings("squid:S00107")
     public static SpinnerViewModel create(String id, String label, String hintFilterOptions, Boolean mandatory,
                                           String optionSet, String value, String section, Boolean editable, String description, Integer numberOfOptions, ObjectStyleModel objectStyle) {
         return new AutoValue_SpinnerViewModel(id, label, mandatory, value, section, null, editable, null, null, description, objectStyle, hintFilterOptions, optionSet, numberOfOptions == null ? 0 : numberOfOptions);

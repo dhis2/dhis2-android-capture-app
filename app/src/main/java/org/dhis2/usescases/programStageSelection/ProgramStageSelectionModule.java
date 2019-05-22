@@ -39,7 +39,7 @@ public class ProgramStageSelectionModule {
     @PerActivity
     ProgramStageSelectionContract.ProgramStageSelectionPresenter providesPresenter(@NonNull ProgramStageSelectionRepository programStageSelectionRepository,
                                                                                    @NonNull RulesUtilsProvider ruleUtils) {
-        return new ProgramStageSelectionPresenter(programStageSelectionRepository, ruleUtils);
+        return new ProgramStageSelectionPresenterImpl(programStageSelectionRepository, ruleUtils);
     }
 
     @Provides

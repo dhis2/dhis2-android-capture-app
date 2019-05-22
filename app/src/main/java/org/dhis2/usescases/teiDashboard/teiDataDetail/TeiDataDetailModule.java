@@ -36,7 +36,7 @@ public class TeiDataDetailModule {
     @Provides
     @PerActivity
     TeiDataDetailContracts.TeiDataDetailPresenter providePresenter(DashboardRepository dashboardRepository, MetadataRepository metadataRepository, EnrollmentStatusStore enrollmentStatusStore) {
-        return new TeiDataDetailPresenter(dashboardRepository, metadataRepository, enrollmentStatusStore);
+        return new TeiDataDetailPresenterImpl(dashboardRepository, metadataRepository, enrollmentStatusStore);
     }
 
     @Provides

@@ -15,14 +15,14 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
-public class DataSetTablePresenter implements DataSetTableContract.DataSetTablePresenter {
+public class DataSetTablePresenterImpl implements DataSetTableContract.DataSetTablePresenter {
 
     private final DataSetTableRepository tableRepository;
-    DataSetTableContract.DataSetTableView view;
+    private DataSetTableContract.DataSetTableView view;
     private CompositeDisposable compositeDisposable;
     private Pair<Map<String, List<DataElementModel>>, Map<String, List<CategoryOptionComboModel>>> tableData;
 
-    public DataSetTablePresenter(DataSetTableRepository dataSetTableRepository) {
+    public DataSetTablePresenterImpl(DataSetTableRepository dataSetTableRepository) {
         this.tableRepository = dataSetTableRepository;
     }
 
@@ -82,7 +82,7 @@ public class DataSetTablePresenter implements DataSetTableContract.DataSetTableP
 
     @Override
     public List<CategoryOptionComboModel> getCatOptionCombos(String key) {
-        return tableData.val1().get( tableData.val0().get(key).get(0).categoryCombo());
+        return tableData.val1().get(tableData.val0().get(key).get(0).categoryCombo());
     }
 
     @Override

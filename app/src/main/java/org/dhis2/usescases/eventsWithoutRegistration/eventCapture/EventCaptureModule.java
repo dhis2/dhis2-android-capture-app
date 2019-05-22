@@ -2,6 +2,8 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
+
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.dagger.PerActivity;
@@ -16,7 +18,6 @@ import org.dhis2.utils.RulesUtilsProvider;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.rules.RuleExpressionEvaluator;
 
-import androidx.annotation.NonNull;
 import dagger.Module;
 import dagger.Provides;
 
@@ -28,13 +29,10 @@ import dagger.Provides;
 @Module
 public class EventCaptureModule {
 
-
     private final String eventUid;
-    private final String programUid;
 
-    public EventCaptureModule(String eventUid, String programUid) {
+    public EventCaptureModule(String eventUid) {
         this.eventUid = eventUid;
-        this.programUid = programUid;
     }
 
     @Provides
@@ -51,7 +49,7 @@ public class EventCaptureModule {
     EventCaptureContract.EventCaptureRepository provideRepository(Context context,
                                                                   @NonNull BriteDatabase briteDatabase,
                                                                   FormRepository formRepository, D2 d2) {
-        return new EventCaptureRepositoryImpl(context, briteDatabase, formRepository, eventUid,d2);
+        return new EventCaptureRepositoryImpl(context, briteDatabase, formRepository, eventUid, d2);
     }
 
     @Provides
@@ -66,7 +64,7 @@ public class EventCaptureModule {
                                   @NonNull RuleExpressionEvaluator evaluator,
                                   @NonNull RulesRepository rulesRepository,
                                   @NonNull D2 d2) {
-        return new EventRepository(briteDatabase, evaluator, rulesRepository, eventUid,d2);
+        return new EventRepository(briteDatabase, evaluator, rulesRepository, eventUid, d2);
     }
 
     @Provides

@@ -2,8 +2,13 @@ package org.dhis2.usescases.qrScanner;
 
 import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.databinding.DataBindingUtil;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.Result;
@@ -15,11 +20,6 @@ import org.dhis2.utils.Constants;
 
 import java.util.ArrayList;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.databinding.DataBindingUtil;
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;

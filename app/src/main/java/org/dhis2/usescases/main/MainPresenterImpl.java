@@ -21,7 +21,7 @@ import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
 
-final class MainPresenter implements MainContracts.MainPresenter {
+final class MainPresenterImpl implements MainContracts.MainPresenter {
 
     private final MetadataRepository metadataRepository;
     private MainContracts.MainView view;
@@ -30,7 +30,7 @@ final class MainPresenter implements MainContracts.MainPresenter {
 
     private final D2 d2;
 
-    MainPresenter(@NonNull D2 d2, MetadataRepository metadataRepository) {
+    MainPresenterImpl(@NonNull D2 d2, MetadataRepository metadataRepository) {
         this.d2 = d2;
         this.metadataRepository = metadataRepository;
     }

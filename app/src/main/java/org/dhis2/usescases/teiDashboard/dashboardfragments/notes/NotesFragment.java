@@ -54,7 +54,7 @@ public class NotesFragment extends FragmentGlobalAbstract implements NotesContra
         noteAdapter = new NotesAdapter();
         binding.notesRecycler.setAdapter(noteAdapter);
         binding.buttonAdd.setOnClickListener(this::addNote);
-        binding.buttonDelete.setOnClickListener(this::clearNote);
+        binding.buttonDelete.setOnClickListener(v -> clearNote());
         binding.editNote.setOnTouchListener((v, event) -> {
             if (v.getId() == R.id.edit_note) {
                 v.getParent().requestDisallowInterceptTouchEvent(true);
@@ -84,12 +84,12 @@ public class NotesFragment extends FragmentGlobalAbstract implements NotesContra
     public void addNote(View view) {
         if (presenter.hasProgramWritePermission()) {
             noteAdapter.addNote(binding.editNote.getText().toString());
-            clearNote(view);
+            clearNote();
         } else
             displayMessage(getString(R.string.search_access_error));
     }
 
-    public void clearNote(View view) {
+    public void clearNote() {
         binding.editNote.getText().clear();
     }
 

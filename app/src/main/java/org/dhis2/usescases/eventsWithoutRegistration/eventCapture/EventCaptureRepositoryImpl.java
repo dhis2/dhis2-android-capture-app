@@ -546,7 +546,6 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         String optionCodeName = cursor.getString(6);
         String programStageSection = cursor.getString(7);
         boolean allowFurureDates = cursor.getInt(8) == 1;
-        EventStatus eventStatus = EventStatus.valueOf(cursor.getString(9));
         String formName = cursor.getString(10);
         String description = cursor.getString(11);
 

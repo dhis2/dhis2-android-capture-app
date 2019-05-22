@@ -1,11 +1,12 @@
 package org.dhis2.data.forms.dataentry.fields.image;
 
-import androidx.databinding.DataBindingUtil;
-import androidx.databinding.ObservableField;
-import androidx.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ObservableField;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.Row;
@@ -27,7 +28,6 @@ public class ImageRow implements Row<ImageHolder, ImageViewModel> {
     private final LayoutInflater inflater;
 
     public ImageRow(LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor,
-                    FlowableProcessor<Integer> currentPosition,
                     String renderType) {
         this.inflater = layoutInflater;
         this.processor = processor;
@@ -47,9 +47,9 @@ public class ImageRow implements Row<ImageHolder, ImageViewModel> {
 
         Integer height = null;
         Integer parentHeight = parent.getMeasuredHeight() != 0 ? parent.getMeasuredHeight() : parent.getHeight();
-        if (renderType!=null && renderType.equals(ProgramStageSectionRenderingType.SEQUENTIAL.name())) {
+        if (renderType != null && renderType.equals(ProgramStageSectionRenderingType.SEQUENTIAL.name())) {
             height = parentHeight / (count > 2 ? 3 : count);
-        } else if (renderType!=null && renderType.equals(ProgramStageSectionRenderingType.MATRIX.name())) {
+        } else if (renderType != null && renderType.equals(ProgramStageSectionRenderingType.MATRIX.name())) {
             height = parentHeight / (count > 2 ? 2 : count);
         }
 

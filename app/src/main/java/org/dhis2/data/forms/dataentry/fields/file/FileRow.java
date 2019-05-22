@@ -9,11 +9,7 @@ import androidx.databinding.DataBindingUtil;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.Row;
-import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.FormButtonBinding;
-import org.jetbrains.annotations.NotNull;
-
-import io.reactivex.processors.FlowableProcessor;
 
 /**
  * QUADRAM. Created by ppajuelo on 19/03/2018.
@@ -23,21 +19,11 @@ public class FileRow implements Row<FileHolder, FileViewModel> {
     private FormButtonBinding binding;
     @NonNull
     private final LayoutInflater inflater;
-    @NonNull
-    private final FlowableProcessor<RowAction> processor;
     private final boolean isBgTransparent;
 
 
-    public FileRow(@NonNull LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor, boolean isBgTransparent) {
+    public FileRow(@NonNull LayoutInflater layoutInflater, boolean isBgTransparent) {
         this.inflater = layoutInflater;
-        this.processor = processor;
-        this.isBgTransparent = isBgTransparent;
-    }
-
-    public FileRow(@NotNull LayoutInflater layoutInflater, @NotNull FlowableProcessor<RowAction> processor,
-                   @NonNull FlowableProcessor<Integer> currentPosition, boolean isBgTransparent, String renderType) {
-        this.inflater = layoutInflater;
-        this.processor = processor;
         this.isBgTransparent = isBgTransparent;
     }
 

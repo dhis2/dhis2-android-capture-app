@@ -15,6 +15,7 @@ import javax.annotation.Nonnull;
 @AutoValue
 public abstract class ImageViewModel extends FieldViewModel {
 
+    @SuppressWarnings("squid:S00107")
     public static ImageViewModel create(String id, String label, String optionSet, String value, String section, Boolean editable, Boolean mandatory, String description, ObjectStyleModel objectStyle) {
         return new AutoValue_ImageViewModel(id, label, mandatory, value, section, true, editable, optionSet, null, null, description,objectStyle);
     }

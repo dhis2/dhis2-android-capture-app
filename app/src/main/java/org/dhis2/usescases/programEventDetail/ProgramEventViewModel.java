@@ -43,6 +43,7 @@ public abstract class ProgramEventViewModel {
     @NonNull
     public abstract String attributeOptionComboName();
 
+    @SuppressWarnings("squid:S00107")
     @NonNull
     public static ProgramEventViewModel create(@NonNull String uid, @NonNull String orgUnitUid, @NonNull String orgUnitName, @NonNull Date date,
                                                @NonNull State eventState, @NonNull List<Pair<String, String>> data, @NonNull EventStatus status,

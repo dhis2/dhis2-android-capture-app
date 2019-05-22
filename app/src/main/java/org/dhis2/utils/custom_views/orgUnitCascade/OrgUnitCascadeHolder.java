@@ -80,8 +80,7 @@ class OrgUnitCascadeHolder extends RecyclerView.ViewHolder {
             ouItem.setUid(selectedOu.val0());
             adapter.setSelectedParent(
                     getAdapterPosition() + 1,
-                    selectedOrgUnit,
-                    selectedOu.val2());
+                    selectedOrgUnit);
             binding.levelText.setEnabled(false);
             binding.levelText.setClickable(false);
         } else {

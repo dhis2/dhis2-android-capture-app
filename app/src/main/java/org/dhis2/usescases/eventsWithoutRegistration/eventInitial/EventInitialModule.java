@@ -47,9 +47,8 @@ public class EventInitialModule {
     EventInitialContract.EventInitialPresenter providesPresenter(@NonNull EventSummaryRepository eventSummaryRepository,
                                                                  @NonNull EventInitialRepository eventInitialRepository,
                                                                  @NonNull MetadataRepository metadataRepository,
-                                                                 @NonNull SchedulerProvider schedulerProvider,
-                                                                 @NonNull D2 d2) {
-        return new EventInitialPresenter(eventSummaryRepository, eventInitialRepository, metadataRepository, schedulerProvider, d2);
+                                                                 @NonNull SchedulerProvider schedulerProvider) {
+        return new EventInitialPresenterImpl(eventSummaryRepository, eventInitialRepository, metadataRepository, schedulerProvider);
     }
 
 

@@ -1,11 +1,11 @@
 package org.dhis2.usescases.teiDashboard.teiDataDetail;
 
+import androidx.annotation.NonNull;
+
 import org.dhis2.data.tuples.Pair;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 
-import androidx.annotation.NonNull;
 import io.reactivex.Flowable;
-import io.reactivex.Observable;
 
 public interface EnrollmentStatusEntryStore {
 

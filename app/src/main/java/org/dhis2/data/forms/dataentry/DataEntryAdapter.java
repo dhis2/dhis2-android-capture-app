@@ -81,7 +81,6 @@ public final class DataEntryAdapter extends Adapter {
 
     @NonNull
     private final List<Row> rows;
-    private final DataEntryArguments dataEntryArguments;
 
     private final FlowableProcessor<Trio<String, String, Integer>> processorOptionSet;
 
@@ -105,7 +104,6 @@ public final class DataEntryAdapter extends Adapter {
     public DataEntryAdapter(@NonNull LayoutInflater layoutInflater,
                             @NonNull FragmentManager fragmentManager,
                             @NonNull DataEntryArguments dataEntryArguments,
-                            @NonNull Observable<List<OrganisationUnitModel>> orgUnits,
                             ObservableBoolean isEditable,
                             Observable<List<OrganisationUnitLevel>> levels) { //TODO: Add isEditable to all fields and test if can be changed on the fly
         setHasStableIds(true);
@@ -115,29 +113,29 @@ public final class DataEntryAdapter extends Adapter {
         imageSelector = new ObservableField<>("");
         currentPosition = PublishProcessor.create();
         this.processorOptionSet = PublishProcessor.create();
-        this.dataEntryArguments = dataEntryArguments;
         this.levels = levels;
 
-        rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType(), isEditable, false));
-        rows.add(BUTTON, new FileRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
-        rows.add(CHECKBOX, new RadioButtonRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
-        rows.add(SPINNER, new SpinnerRow(layoutInflater, processor, currentPosition, processorOptionSet, true, dataEntryArguments.renderType()));
-        rows.add(COORDINATES, new CoordinateRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
-        rows.add(TIME, new DateTimeRow(layoutInflater, processor, currentPosition, TIME, true, dataEntryArguments.renderType()));
-        rows.add(DATE, new DateTimeRow(layoutInflater, processor, currentPosition, DATE, true, dataEntryArguments.renderType()));
-        rows.add(DATETIME, new DateTimeRow(layoutInflater, processor, currentPosition, DATETIME, true, dataEntryArguments.renderType()));
-        rows.add(AGEVIEW, new AgeRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
-        rows.add(YES_NO, new RadioButtonRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
-        rows.add(ORG_UNIT, new OrgUnitRow(fragmentManager, layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType(), levels));
-        rows.add(IMAGE, new ImageRow(layoutInflater, processor, currentPosition, dataEntryArguments.renderType()));
-        rows.add(UNSUPPORTED, new UnsupportedRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
-        rows.add(LONG_TEXT, new EditTextRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType(), isEditable, true));
+        rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, true, dataEntryArguments.renderType(), false));
+        rows.add(BUTTON, new FileRow(layoutInflater, true));
+        rows.add(CHECKBOX, new RadioButtonRow(layoutInflater, processor, true));
+        rows.add(SPINNER, new SpinnerRow(layoutInflater, processor, processorOptionSet, true, dataEntryArguments.renderType()));
+        rows.add(COORDINATES, new CoordinateRow(layoutInflater, processor, true));
+        rows.add(TIME, new DateTimeRow(layoutInflater, processor, currentPosition, TIME, true));
+        rows.add(DATE, new DateTimeRow(layoutInflater, processor, currentPosition, DATE, true));
+        rows.add(DATETIME, new DateTimeRow(layoutInflater, processor, currentPosition, DATETIME, true));
+        rows.add(AGEVIEW, new AgeRow(layoutInflater, processor, true));
+        rows.add(YES_NO, new RadioButtonRow(layoutInflater, processor, true));
+        rows.add(ORG_UNIT, new OrgUnitRow(fragmentManager, layoutInflater, processor, true, dataEntryArguments.renderType()));
+        rows.add(IMAGE, new ImageRow(layoutInflater, processor, dataEntryArguments.renderType()));
+        rows.add(UNSUPPORTED, new UnsupportedRow(layoutInflater));
+        rows.add(LONG_TEXT, new EditTextRow(layoutInflater, processor, true, dataEntryArguments.renderType(), true));
         rows.add(DISPLAY, new DisplayRow(layoutInflater));
 
         registerAdapterDataObserver(adapterDataObserver);
 
     }
 
+    @SuppressWarnings("squid:S00107")
     public DataEntryAdapter(@NonNull LayoutInflater layoutInflater,
                             @NonNull FragmentManager fragmentManager,
                             @NonNull DataEntryArguments dataEntryArguments,
@@ -153,23 +151,22 @@ public final class DataEntryAdapter extends Adapter {
         imageSelector = new ObservableField<>("");
         currentPosition = PublishProcessor.create();
         this.processorOptionSet = processorOptSet;
-        this.dataEntryArguments = dataEntryArguments;
         this.levels = levels;
 
-        rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType(), isEditable, false));
-        rows.add(BUTTON, new FileRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
-        rows.add(CHECKBOX, new RadioButtonRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
-        rows.add(SPINNER, new SpinnerRow(layoutInflater, processor, currentPosition, processorOptionSet, true, dataEntryArguments.renderType()));
-        rows.add(COORDINATES, new CoordinateRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
-        rows.add(TIME, new DateTimeRow(layoutInflater, processor, currentPosition, TIME, true, dataEntryArguments.renderType()));
-        rows.add(DATE, new DateTimeRow(layoutInflater, processor, currentPosition, DATE, true, dataEntryArguments.renderType()));
-        rows.add(DATETIME, new DateTimeRow(layoutInflater, processor, currentPosition, DATETIME, true, dataEntryArguments.renderType()));
-        rows.add(AGEVIEW, new AgeRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
-        rows.add(YES_NO, new RadioButtonRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
-        rows.add(ORG_UNIT, new OrgUnitRow(fragmentManager, layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType(), levels));
-        rows.add(IMAGE, new ImageRow(layoutInflater, processor, currentPosition, dataEntryArguments.renderType()));
-        rows.add(UNSUPPORTED, new UnsupportedRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
-        rows.add(LONG_TEXT, new EditTextRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType(), isEditable, true));
+        rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, true, dataEntryArguments.renderType(), false));
+        rows.add(BUTTON, new FileRow(layoutInflater, true));
+        rows.add(CHECKBOX, new RadioButtonRow(layoutInflater, processor, true));
+        rows.add(SPINNER, new SpinnerRow(layoutInflater, processor, processorOptionSet, true, dataEntryArguments.renderType()));
+        rows.add(COORDINATES, new CoordinateRow(layoutInflater, processor, true));
+        rows.add(TIME, new DateTimeRow(layoutInflater, processor, currentPosition, TIME, true));
+        rows.add(DATE, new DateTimeRow(layoutInflater, processor, currentPosition, DATE, true));
+        rows.add(DATETIME, new DateTimeRow(layoutInflater, processor, currentPosition, DATETIME, true));
+        rows.add(AGEVIEW, new AgeRow(layoutInflater, processor, true));
+        rows.add(YES_NO, new RadioButtonRow(layoutInflater, processor, true));
+        rows.add(ORG_UNIT, new OrgUnitRow(fragmentManager, layoutInflater, processor, true, dataEntryArguments.renderType()));
+        rows.add(IMAGE, new ImageRow(layoutInflater, processor, dataEntryArguments.renderType()));
+        rows.add(UNSUPPORTED, new UnsupportedRow(layoutInflater));
+        rows.add(LONG_TEXT, new EditTextRow(layoutInflater, processor, true, dataEntryArguments.renderType(), true));
         rows.add(DISPLAY, new DisplayRow(layoutInflater));
 
         registerAdapterDataObserver(adapterDataObserver);
@@ -190,7 +187,7 @@ public final class DataEntryAdapter extends Adapter {
         rows.get(holder.getItemViewType()).onBind(holder,
                 viewModels.get(holder.getAdapterPosition()));
 
-        if(position!=0 && position == focusPosition)
+        if (position != 0 && position == focusPosition)
             holder.itemView.requestFocus();
     }
 
@@ -292,8 +289,8 @@ public final class DataEntryAdapter extends Adapter {
     public String getErrorFieldNames() {
         StringBuilder errorFieldNames = new StringBuilder();
         for (FieldViewModel fieldViewModel : viewModels) {
-            if(fieldViewModel.error() != null) {
-                if(errorFieldNames.length()==0)
+            if (fieldViewModel.error() != null) {
+                if (errorFieldNames.length() == 0)
                     errorFieldNames.append(fieldViewModel.label());
                 else
                     errorFieldNames.append(", ").append(fieldViewModel.label());
@@ -302,6 +299,7 @@ public final class DataEntryAdapter extends Adapter {
         return errorFieldNames.toString();
     }
 
+    @SuppressWarnings({"squid:CommentedOutCodeLine", "squid:S1172"})
     public void notifyChanges(RowAction rowAction) {
        /* List<FieldViewModel> helperModels = new ArrayList<>();
         for (FieldViewModel field : viewModels) {

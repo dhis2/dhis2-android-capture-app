@@ -37,20 +37,20 @@ public class DotsIndicator extends LinearLayout {
 
     public DotsIndicator(Context context) {
         super(context);
-        init(context, null);
+        init(null);
     }
 
     public DotsIndicator(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init(context, attrs);
+        init(attrs);
     }
 
     public DotsIndicator(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init(context, attrs);
+        init(attrs);
     }
 
-    private void init(Context context, AttributeSet attrs) {
+    private void init(AttributeSet attrs) {
         dots = new ArrayList<>();
         setOrientation(HORIZONTAL);
 
