@@ -262,14 +262,15 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
             });
         } else {
-            binding.progressLayout.setVisibility(View.GONE);
             liveData.observeForever(searchTeiModels -> {
                 Trio<PagedList<SearchTeiModel>, String, Boolean> data = presenter.getMessage(searchTeiModels);
                 if (data.val1().isEmpty()) {
                     binding.messageContainer.setVisibility(View.GONE);
                     binding.scrollView.setVisibility(View.VISIBLE);
                     relationshipLiveAdapter.submitList(data.val0());
+                    binding.progressLayout.setVisibility(View.GONE);
                 } else {
+                    binding.progressLayout.setVisibility(View.GONE);
                     binding.messageContainer.setVisibility(View.VISIBLE);
                     binding.message.setText(data.val1());
                 }
