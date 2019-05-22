@@ -204,7 +204,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.SearchTEPresen
     //region DATA
     @Override
     public Trio<PagedList<SearchTeiModel>, String, Boolean> getMessage(PagedList<SearchTeiModel> list) {
-
         int size = list.size();
 
         String messageId = "";
