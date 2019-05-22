@@ -142,13 +142,12 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             }
             return true;
         });
-
-        presenter.init(this, tEType, initialProgram);
 }
 
     @Override
     protected void onResume() {
         super.onResume();
+        presenter.init(this, tEType, initialProgram);
         presenter.initSearch(this);
         registerReceiver(networkReceiver, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
     }

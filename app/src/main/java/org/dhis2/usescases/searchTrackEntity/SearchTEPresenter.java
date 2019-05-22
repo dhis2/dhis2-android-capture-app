@@ -185,18 +185,26 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
         compositeDisposable.add(
                 queryProcessor
-                        .map(map -> {
-                            view.clearData();
+                        .switchMap(map -> {
                             if (!NetworkUtils.isOnline(view.getContext()) || selectedProgram == null || Build.VERSION.SDK_INT <= 19)
-                                return searchRepository.searchTrackedEntitiesOffline(selectedProgram, orgUnitsUid, map);
+                                return Flowable.fromCallable(() -> searchRepository.searchTrackedEntitiesOffline(selectedProgram, orgUnitsUid, map));
                             else
-                                return searchRepository.searchTrackedEntitiesAll(selectedProgram, orgUnitsUid, map);
+                                return Flowable.fromCallable(() -> searchRepository.searchTrackedEntitiesAll(selectedProgram, orgUnitsUid, map));
                         })
                         .doOnError(this::handleError)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(view::setLiveData, Timber::d)
         );
+
+        compositeDisposable.add(
+                queryProcessor
+                        .startWith(queryData)
+                        .subscribeOn(AndroidSchedulers.mainThread())
+                        .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(data->view.clearData(),Timber::d)
+        );
+
     }
 
     @Override
@@ -313,6 +321,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public void setProgram(ProgramModel programSelected) {
+        boolean otherProgramSelected = selectedProgram == programSelected;
         selectedProgram = programSelected;
         view.clearList(programSelected == null ? null : programSelected.uid());
         view.clearData();
@@ -323,7 +332,13 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         else
             getProgramTrackedEntityAttributes();
 
-        queryProcessor.onNext(new HashMap<>());
+        if(!otherProgramSelected)
+            queryData.clear();
+
+        if(queryData.isEmpty())
+            queryProcessor.onNext(new HashMap<>());
+        else
+            queryProcessor.onNext(queryData);
 
     }
 

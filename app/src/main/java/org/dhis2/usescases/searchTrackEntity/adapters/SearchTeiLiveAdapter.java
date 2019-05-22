@@ -25,7 +25,15 @@ public class SearchTeiLiveAdapter extends PagedListAdapter<SearchTeiModel, Searc
 
         @Override
         public boolean areContentsTheSame(@NonNull SearchTeiModel oldItem, @NonNull SearchTeiModel newItem) {
-            return oldItem.getTei().uid().equals(newItem.getTei().uid());
+            if (oldItem.isOnline() && oldItem.getTei().state() == null)
+                return oldItem.getTei().uid().equals(newItem.getTei().uid()) &&
+                        (oldItem.getTei().state() == null && newItem.getTei().state() == null) &&
+                        oldItem.getAttributeValueModels().equals(newItem.getAttributeValueModels());
+            else {
+                return oldItem.getTei().uid().equals(newItem.getTei().uid()) &&
+                        oldItem.getTei().state().equals(newItem.getTei().state()) &&
+                        oldItem.getAttributeValueModels().equals(newItem.getAttributeValueModels());
+            }
         }
     };
     private SearchTEContractsModule.Presenter presenter;
