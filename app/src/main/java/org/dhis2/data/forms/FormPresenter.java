@@ -20,4 +20,6 @@ interface FormPresenter {
     void deleteCascade();
 
     void saveCategoryOption(CategoryOptionComboModel selectedOption);
+
+    void initializeSaveObservable();
 }

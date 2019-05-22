@@ -1,6 +1,7 @@
 package org.dhis2.utils.custom_views;
 
 import android.content.Context;
+import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
@@ -10,7 +11,6 @@ import androidx.annotation.Nullable;
 import androidx.databinding.ViewDataBinding;
 import androidx.fragment.app.FragmentManager;
 
-import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
 import org.dhis2.Bindings.Bindings;
@@ -27,7 +27,7 @@ public class OrgUnitView extends FieldLayout implements OrgUnitCascadeDialog.Cas
     private ViewDataBinding binding;
 
     private ImageView iconView;
-    private AutoCompleteTextView editText;
+    private TextInputAutoCompleteTextView editText;
     private TextInputLayout inputLayout;
     private View descriptionLabel;
     private OnDataChanged listener;
@@ -109,8 +109,12 @@ public class OrgUnitView extends FieldLayout implements OrgUnitCascadeDialog.Cas
 
     public void setValue(String valueUid, String valueName) {
         value = valueUid;
-        editText.setText(valueName);
+        new Handler().postDelayed(() -> editText.setText(valueName), 100);
 
+    }
+
+    public TextInputAutoCompleteTextView getEditText() {
+        return editText;
     }
 
     public void setWarning(String warning, String error) {

@@ -41,7 +41,7 @@ public class DatePickerDialogFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(@NonNull Bundle savedInstanceState) {
-        return showNativeCalendar();
+        return showCustomCalendar();
     }
 
     private DatePickerDialog showNativeCalendar() {
@@ -76,14 +76,14 @@ public class DatePickerDialogFragment extends DialogFragment {
             datePickerDialog.setButton(DialogInterface.BUTTON_NEUTRAL,
                     getContext().getResources().getString(R.string.change_calendar), (dialog, which) -> {
                         datePickerDialog.dismiss();
-                        showCustomCalendar();
+                        showCustomCalendar().show();
                     });
         }
 
         return datePickerDialog;
     }
 
-    private void showCustomCalendar() {
+    private Dialog showCustomCalendar() {
         LayoutInflater layoutInflater = LayoutInflater.from(getContext());
         View datePickerView = layoutInflater.inflate(R.layout.widget_datepicker, null);
         final DatePicker datePicker = datePickerView.findViewById(R.id.widget_datepicker);
@@ -122,8 +122,7 @@ public class DatePickerDialogFragment extends DialogFragment {
         }
 
         alertDialog.setView(datePickerView);
-        Dialog dialog = alertDialog.create();
-        dialog.show();
+        return alertDialog.create();
     }
 
     public void show(@NonNull FragmentManager fragmentManager) {

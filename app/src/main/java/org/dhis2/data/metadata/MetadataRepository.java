@@ -34,7 +34,7 @@ import io.reactivex.Observable;
 public interface MetadataRepository {
 
     /*PROGRAMS*/
-    Observable<List<ProgramModel>> getTeiActivePrograms(String teiUid);
+    Observable<List<ProgramModel>> getTeiActivePrograms(String teiUid, boolean showOnlyActive);
 
     Observable<ProgramModel> getProgramWithId(String programUid);
 

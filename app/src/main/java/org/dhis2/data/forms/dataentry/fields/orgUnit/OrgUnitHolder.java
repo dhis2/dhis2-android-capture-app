@@ -16,6 +16,8 @@ import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
+import static android.text.TextUtils.isEmpty;
+
 /**
  * QUADRAM. Created by ppajuelo on 19/03/2018.
  */
@@ -38,7 +40,7 @@ public class OrgUnitHolder extends FormViewHolder {
             processor.onNext(RowAction.create(model.uid(), orgUnitUid));
         });
 
-        getOrgUnits();
+//        getOrgUnits();
     }
 
     @Override
@@ -48,12 +50,21 @@ public class OrgUnitHolder extends FormViewHolder {
 
     public void update(OrgUnitViewModel viewModel) {
         this.model = viewModel;
+        String uid_value_name = viewModel.value();
+        String ouUid = null;
+        String ouName = null;
+        if (!isEmpty(uid_value_name)) {
+            ouUid = uid_value_name.split("_ou_")[0];
+            ouName = uid_value_name.split("_ou_")[1];
+        }
+
         binding.orgUnitView.setObjectStyle(viewModel.objectStyle());
         binding.orgUnitView.setLabel(viewModel.label(), viewModel.mandatory());
         descriptionText = viewModel.description();
         binding.orgUnitView.setDescription(descriptionText);
         binding.orgUnitView.setWarning(viewModel.warning(), viewModel.error());
-        binding.orgUnitView.setValue(viewModel.value(), getOrgUnitName(viewModel.value()));
+        binding.orgUnitView.setValue(ouUid, ouName);
+        binding.orgUnitView.getEditText().setText(ouName);
         binding.orgUnitView.updateEditable(viewModel.editable());
 
 

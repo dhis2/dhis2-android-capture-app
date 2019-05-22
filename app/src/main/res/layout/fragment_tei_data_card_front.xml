@@ -258,10 +258,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
-                    android:text='@{@string/text_plus_colon(program.incidentDateLabel()!=null?program.incidentDateLabel():@string/incident_date)}'
+                    android:text='@{@string/text_plus_colon((program != null &amp;&amp; program.incidentDateLabel()!=null)?program.incidentDateLabel():@string/incident_date)}'
                     android:textColor="@color/icon_color"
                     android:textSize="14sp"
-                    android:visibility="@{(dashboardModel.currentEnrollment.incidentDate()!=null &amp;&amp; program.displayIncidentDate()) ? View.VISIBLE : View.GONE}"
+                    android:visibility="@{(dashboardModel.currentEnrollment.incidentDate()!=null &amp;&amp; program != null &amp;&amp; program.displayIncidentDate()) ? View.VISIBLE : View.GONE}"
                     app:layout_constraintTop_toTopOf="parent"
                     tools:text="Date of diagnosis:" />
 
@@ -270,7 +270,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
-                    android:text='@{@string/text_plus_colon(program.enrollmentDateLabel()!=null?program.enrollmentDateLabel():@string/enrollmment_date)}'
+                    android:text='@{@string/text_plus_colon(program != null &amp;&amp; program.enrollmentDateLabel()!=null?program.enrollmentDateLabel():@string/enrollmment_date)}'
                     android:textColor="@color/icon_color"
                     android:textSize="14sp"
                     android:visibility="@{dashboardModel.currentEnrollment.enrollmentDate()==null?View.GONE:View.VISIBLE}"
@@ -295,7 +295,7 @@
                     android:gravity="end"
                     android:textColor="@color/gray_444"
                     android:textSize="14sp"
-                    android:visibility="@{(dashboardModel.currentEnrollment.incidentDate()!=null &amp;&amp; program.displayIncidentDate()) ? View.VISIBLE : View.GONE}"
+                    android:visibility="@{(dashboardModel.currentEnrollment.incidentDate()!=null &amp;&amp; program != null &amp;&amp; program.displayIncidentDate()) ? View.VISIBLE : View.GONE}"
                     app:date="@{dashboardModel.currentEnrollment.incidentDate ()}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/incident_date_label"

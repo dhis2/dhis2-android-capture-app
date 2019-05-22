@@ -38,12 +38,14 @@ import org.dhis2.utils.custom_views.CustomDialog;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
+import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.rules.models.RuleActionErrorOnCompletion;
 import org.hisp.dhis.rules.models.RuleActionShowError;
 import org.hisp.dhis.rules.models.RuleActionWarningOnCompletion;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -87,6 +89,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     private TextInputLayout reportDateLayout;
     private TextInputEditText reportDate;
     private PublishSubject<ReportStatus> undoObservable;
+    private PublishSubject<EnrollmentStatus> undoSaveObservable;
     private CoordinatorLayout coordinatorLayout;
     private TextInputLayout incidentDateLayout;
     private TextInputEditText incidentDate;
@@ -108,6 +111,8 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     private boolean mandatoryDelete = true;
     private Context context;
     private ProgressBar progressBar;
+    private View saveButton;
+    private DataEntryFragment enrollmentFragment;
 
     public View getDatesLayout() {
         return datesLayout;
@@ -140,6 +145,10 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
         args.putBoolean(FORM_VIEW_TABLAYOUT, showTabLayout);
         fragment.setArguments(args);
         return fragment;
+    }
+
+    public void setSaveButtonTEIDetail(View view){
+        this.saveButton = view;
     }
 
     @Override
@@ -272,6 +281,8 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     public void onResume() {
         super.onResume();
         formPresenter.onAttach(this);
+        if(saveButton != null)
+            formPresenter.initializeSaveObservable();
     }
 
     @Override
@@ -308,6 +319,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
             if (viewPager.getAdapter() != null && viewPager.getCurrentItem() == viewPager.getAdapter().getCount() - 1) {
                 ((Button) nextButton).setText(getString(R.string.save));
             }
+            enrollmentFragment = ((DataEntryFragment)getChildFragmentManager().getFragments().get(0));
         };
     }
 
@@ -536,10 +548,13 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
                     eventCreationIntent.putExtras(EventCaptureActivity.getActivityBundle(enrollmentTrio.val2(), enrollmentTrio.val1()));
                     eventCreationIntent.putExtra(Constants.TRACKED_ENTITY_INSTANCE, enrollmentTrio.val0());
                     startActivityForResult(eventCreationIntent, RQ_EVENT);
-                } else { //val0 is program uid, val1 is trackedEntityInstance, val2 is empty
+                } else if(!enrollmentFragment.checkErrors()){ //val0 is program uid, val1 is trackedEntityInstance, val2 is empty
                     this.programUid = enrollmentTrio.val1();
                     this.teiUid = enrollmentTrio.val0();
                     openDashboard(null);
+                }else{
+                    progressBar.setVisibility(View.GONE);
+                    showErrorsDialog();
                 }
             } else {
                 checkAction();
@@ -578,6 +593,18 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
                 getActivity().finish(); //TODO: ASK IF USER WANTS TO DELETE RECORD
             }
         }
+    }
+
+    private void showErrorsDialog() {
+        new CustomDialog(
+                getAbstracContext(),
+                getAbstracContext().getString(R.string.error_fields_title),
+                String.format(getString(R.string.error_fields), enrollmentFragment.getErrorFields()),
+                getAbstracContext().getString(R.string.button_ok),
+                null,
+                RC_GO_BACK,
+                null)
+                .show();
     }
 
     @Override
@@ -659,6 +686,19 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
                     }
                 })
                 .show();
+    }
+
+    public Observable<EnrollmentStatus> onObservableBackPressed(){
+        undoSaveObservable = PublishSubject.create();
+        return undoSaveObservable.mergeWith(RxView.clicks(saveButton).map(o -> {
+            mandatoryDelete = false;
+            return getEnrollmentStatusFromButton();
+        }).debounce(500, TimeUnit.MILLISECONDS));
+    }
+
+    private EnrollmentStatus getEnrollmentStatusFromButton() {
+        datesLayout.requestFocus();
+        return saveButton.isActivated() ? EnrollmentStatus.ACTIVE : EnrollmentStatus.COMPLETED;
     }
 
     public void onBackPressed(boolean delete) {

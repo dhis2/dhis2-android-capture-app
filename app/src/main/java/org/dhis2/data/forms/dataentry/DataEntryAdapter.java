@@ -190,7 +190,7 @@ public final class DataEntryAdapter extends Adapter {
         rows.get(holder.getItemViewType()).onBind(holder,
                 viewModels.get(holder.getAdapterPosition()));
 
-        if(position == focusPosition)
+        if(position!=0 && position == focusPosition)
             holder.itemView.requestFocus();
     }
 
@@ -289,8 +289,21 @@ public final class DataEntryAdapter extends Adapter {
         return hasError;
     }
 
+    public String getErrorFieldNames() {
+        StringBuilder errorFieldNames = new StringBuilder();
+        for (FieldViewModel fieldViewModel : viewModels) {
+            if(fieldViewModel.error() != null) {
+                if(errorFieldNames.length()==0)
+                    errorFieldNames.append(fieldViewModel.label());
+                else
+                    errorFieldNames.append(", ").append(fieldViewModel.label());
+            }
+        }
+        return errorFieldNames.toString();
+    }
+
     public void notifyChanges(RowAction rowAction) {
-        List<FieldViewModel> helperModels = new ArrayList<>();
+       /* List<FieldViewModel> helperModels = new ArrayList<>();
         for (FieldViewModel field : viewModels) {
             FieldViewModel toAdd = field;
             if (field.uid().equals(rowAction.id()))
@@ -305,7 +318,7 @@ public final class DataEntryAdapter extends Adapter {
         viewModels.clear();
         viewModels.addAll(helperModels);
 
-        diffResult.dispatchUpdatesTo(this);
+        diffResult.dispatchUpdatesTo(this);*/
     }
 
 }

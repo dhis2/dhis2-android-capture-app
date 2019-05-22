@@ -568,7 +568,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                     long inserted = briteDatabase.executeInsert(NoteModel.TABLE, insetNoteStatement);
 
                     if (inserted != -1) {
-                        TrackedEntityInstance tei = d2.trackedEntityModule().trackedEntityInstances.uid(teiUid).get();
+                        TrackedEntityInstance tei = d2.trackedEntityModule().trackedEntityInstances.byUid().eq(teiUid).one().get();
                         ContentValues cv = new ContentValues();
                         cv.put(TrackedEntityInstance.Columns.STATE, tei.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
                         briteDatabase.update(TrackedEntityInstanceModel.TABLE, cv, "uid = ?", teiUid);

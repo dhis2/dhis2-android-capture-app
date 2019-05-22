@@ -68,8 +68,7 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     private final String ACTIVE_TEI_PROGRAMS = String.format(
             " SELECT %s.* FROM %s " +
                     "JOIN %s ON %s.%s = %s.%s " +
-                    "WHERE %s.%s = ? " +
-                    "and Enrollment.status = 'ACTIVE'",
+                    "WHERE %s.%s = ? ",
             ProgramModel.TABLE,
             ProgramModel.TABLE,
             EnrollmentModel.TABLE, EnrollmentModel.TABLE, EnrollmentModel.Columns.PROGRAM, ProgramModel.TABLE, ProgramModel.Columns.UID,
@@ -325,8 +324,12 @@ public class MetadataRepositoryImpl implements MetadataRepository {
 
 
     @Override
-    public Observable<List<ProgramModel>> getTeiActivePrograms(String teiUid) {
-        return briteDatabase.createQuery(ACTIVE_TEI_PROGRAMS_TABLES, ACTIVE_TEI_PROGRAMS, teiUid == null ? "" : teiUid)
+    public Observable<List<ProgramModel>> getTeiActivePrograms(String teiUid, boolean showOnlyActive) {
+        String query = ACTIVE_TEI_PROGRAMS;
+        if(showOnlyActive)
+            query = query + " and Enrollment.status = 'ACTIVE'";
+
+        return briteDatabase.createQuery(ACTIVE_TEI_PROGRAMS_TABLES, query, teiUid == null ? "" : teiUid)
                 .mapToList(ProgramModel::create);
     }
 
@@ -470,6 +473,14 @@ public class MetadataRepositoryImpl implements MetadataRepository {
         return briteDatabase.createQuery(OptionModel.TABLE, optionQuery, idOptionSet)
                 .mapToList(OptionModel::create)
                 .map(optionList -> {
+                    int from = page * 15;
+                    int to = page * 15 + 15 > optionList.size() ? optionList.size() : page * 15 + 15;
+                    if (to > from)
+                        return optionList.subList(from, to);
+                    else
+                        return new ArrayList<OptionModel>();
+                })
+                .map(optionList -> {
                     Iterator<OptionModel> iterator = optionList.iterator();
                     while (iterator.hasNext()) {
                         OptionModel option = iterator.next();
@@ -492,15 +503,7 @@ public class MetadataRepositoryImpl implements MetadataRepository {
                             iterator.remove();
 
                     }
-                    int from = page * 15;
-                    int to = page * 15 + 15 > optionList.size() ? optionList.size() : page * 15 + 15;
-                    if (to > from)
-                        return optionList.subList(from, to);
-                    else
-                        return new ArrayList<>();
+                    return optionList;
                 });
-/*
-        return briteDatabase.createQuery(OptionModel.TABLE, options, idOptionSet)
-                .mapToList(OptionModel::create);*/
     }
 }

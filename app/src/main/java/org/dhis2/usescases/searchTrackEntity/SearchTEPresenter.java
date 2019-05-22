@@ -509,7 +509,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
 
     private void showEnrollmentDatePicker(OrganisationUnitModel selectedOrgUnitModel, String programUid, String uid) {
-        showNativeCalendar(selectedOrgUnitModel, programUid, uid);
+        showCustomCalendar(selectedOrgUnitModel, programUid, uid);
     }
 
     private void enrollInOrgUnit(String orgUnitUid, String programUid, String uid, Date enrollmentDate) {

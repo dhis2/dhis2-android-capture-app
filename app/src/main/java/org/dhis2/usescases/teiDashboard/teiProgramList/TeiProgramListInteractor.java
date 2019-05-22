@@ -210,7 +210,7 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
                 })
                 .setNegativeListener(v -> orgUnitDialog.dismiss());
 
-        showNativeCalendar(programUid, uid, orgUnitDialog);
+        showCustomCalendar(programUid, uid, orgUnitDialog);
     }
 
     private ProgramModel getProgramFromUid(String programUid) {
