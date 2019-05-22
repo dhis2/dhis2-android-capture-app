@@ -32,9 +32,10 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
 
         binding.optionSetView.setOnSelectedOptionListener((optionName, optionCode) -> {
             processor.onNext(
-                    RowAction.create(viewModel.uid(), isSearchMode ? optionName + "_os_" + optionCode : optionCode, true)
+                    RowAction.create(viewModel.uid(), isSearchMode ? optionName + "_os_" + optionCode : optionCode, true, optionCode, optionName)
             );
-            viewModel.withValue(isSearchMode ? optionName : optionCode);
+            if (isSearchMode)
+                viewModel.withValue(optionName);
         });
 
     }

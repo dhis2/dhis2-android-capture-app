@@ -136,6 +136,10 @@ public class SearchTEPresenter implements SearchTEContractsModule.SearchTEPresen
                         )
         );
 
+    }
+
+    @Override
+    public void initSearch(SearchTEContractsModule.SearchTEView view) {
 
         compositeDisposable.add(view.rowActionss()
                 .subscribeOn(AndroidSchedulers.mainThread())
@@ -180,16 +184,24 @@ public class SearchTEPresenter implements SearchTEContractsModule.SearchTEPresen
 
         compositeDisposable.add(
                 queryProcessor
-                        .map(map -> {
+                        .switchMap(map -> {
                             if (!NetworkUtils.isOnline(view.getContext()) || selectedProgram == null || Build.VERSION.SDK_INT <= 19)
-                                return searchRepository.searchTrackedEntitiesOffline(selectedProgram, orgUnitsUid, map);
+                                return Flowable.fromCallable(() -> searchRepository.searchTrackedEntitiesOffline(selectedProgram, orgUnitsUid, map));
                             else
-                                return searchRepository.searchTrackedEntitiesAll(selectedProgram, orgUnitsUid, map);
+                                return Flowable.fromCallable(() -> searchRepository.searchTrackedEntitiesAll(selectedProgram, orgUnitsUid, map));
                         })
                         .doOnError(this::handleError)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(view::setLiveData, Timber::d)
+        );
+
+        compositeDisposable.add(
+                queryProcessor
+                        .startWith(queryData)
+                        .subscribeOn(AndroidSchedulers.mainThread())
+                        .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(data->view.clearData(),Timber::d)
         );
 
     }
@@ -307,6 +319,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.SearchTEPresen
 
     @Override
     public void setProgram(ProgramModel programSelected) {
+        boolean otherProgramSelected = selectedProgram == programSelected;
         selectedProgram = programSelected;
         view.clearList(programSelected == null ? null : programSelected.uid());
         view.clearData();
@@ -317,7 +330,13 @@ public class SearchTEPresenter implements SearchTEContractsModule.SearchTEPresen
         else
             getProgramTrackedEntityAttributes();
 
-        queryProcessor.onNext(new HashMap<>());
+        if(!otherProgramSelected)
+            queryData.clear();
+
+        if(queryData.isEmpty())
+            queryProcessor.onNext(new HashMap<>());
+        else
+            queryProcessor.onNext(queryData);
 
     }
 
@@ -340,6 +359,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.SearchTEPresen
         if (!needsSearch)
             onEnrollClick(view);
         else {
+            this.view.clearData();
             List<String> optionSetIds = new ArrayList<>();
             for (Map.Entry<String, String> entry : queryData.entrySet()) {
                 if (entry.getValue().equals("null_os_null"))
@@ -348,7 +368,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.SearchTEPresen
             for (String id : optionSetIds) {
                 queryData.remove(id);
             }
-            this.view.clearData();
             queryProcessor.onNext(queryData);
         }
     }
@@ -501,7 +520,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.SearchTEPresen
 
 
     private void showEnrollmentDatePicker(OrganisationUnitModel selectedOrgUnitModel, String programUid, String uid) {
-        showNativeCalendar(selectedOrgUnitModel, programUid, uid);
+        showCustomCalendar(selectedOrgUnitModel, programUid, uid);
     }
 
     private void enrollInOrgUnit(String orgUnitUid, String programUid, String uid, Date enrollmentDate) {

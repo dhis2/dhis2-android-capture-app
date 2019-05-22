@@ -221,7 +221,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                     },
                     Timber::d);
         } else if (currentPeriod == DAILY) {
-            showNativeCalendar(calendar);
+            showCustomCalendar(calendar);
         }
     }
 

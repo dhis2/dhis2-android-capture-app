@@ -60,8 +60,8 @@ public class EventSummaryModule {
     @PerActivity
     EventSummaryRepository eventSummaryRepository(@NonNull Context context,
                                                   @NonNull BriteDatabase briteDatabase,
-                                                  @NonNull FormRepository formRepository) {
-        return new EventSummaryRepositoryImpl(context, briteDatabase, formRepository, eventUid);
+                                                  @NonNull FormRepository formRepository,D2 d2) {
+        return new EventSummaryRepositoryImpl(context, briteDatabase, formRepository, eventUid,d2);
     }
 
     @Provides

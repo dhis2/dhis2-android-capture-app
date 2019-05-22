@@ -291,7 +291,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
                     },
                     Timber::d);
         } else if (currentPeriod == DAILY) {
-            showNativeCalendar(calendar);
+            showCustomCalendar(calendar);
         }
     }
 

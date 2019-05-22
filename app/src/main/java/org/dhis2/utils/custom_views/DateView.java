@@ -60,6 +60,10 @@ public class DateView extends FieldLayout implements View.OnClickListener {
         init(context);
     }
 
+    public void init(Context context) {
+        super.init(context);
+    }
+
     @Override
     public void performOnFocusAction() {
         editText.performClick();
@@ -92,6 +96,7 @@ public class DateView extends FieldLayout implements View.OnClickListener {
     }
 
     public void setDescription(String description) {
+        String description1 = description;
         binding.setVariable(BR.description, description);
         binding.executePendingBindings();
     }
@@ -146,7 +151,7 @@ public class DateView extends FieldLayout implements View.OnClickListener {
 
     @Override
     public void onClick(View view) {
-        showNativeCalendar();
+        showCustomCalendar();
     }
 
     private void showNativeCalendar() {
@@ -231,7 +236,9 @@ public class DateView extends FieldLayout implements View.OnClickListener {
                     editText.setText(null);
                     listener.onDateSelected(null);
                 })
-                .setNeutralButton(getContext().getResources().getString(R.string.change_calendar), (dialog, which) -> showNativeCalendar());
+                .setNeutralButton(getContext().getResources().getString(R.string.change_calendar), (dialog, which) -> {
+                    showNativeCalendar();
+                });
 
         alertDialog.setView(datePickerView);
         Dialog dialog = alertDialog.create();

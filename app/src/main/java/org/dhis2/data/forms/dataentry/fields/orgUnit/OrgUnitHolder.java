@@ -13,8 +13,8 @@ import java.util.List;
 import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.processors.FlowableProcessor;
-import io.reactivex.schedulers.Schedulers;
-import timber.log.Timber;
+
+import static android.text.TextUtils.isEmpty;
 
 /**
  * QUADRAM. Created by ppajuelo on 19/03/2018.
@@ -22,21 +22,15 @@ import timber.log.Timber;
 
 public class OrgUnitHolder extends FormViewHolder {
     private final FormOrgUnitBinding formOrgUnitBinding;
-    private final Observable<List<OrganisationUnitModel>> orgUnitsObservable;
     private List<OrganisationUnitModel> orgUnits;
     private CompositeDisposable compositeDisposable;
     private OrgUnitViewModel model;
 
-    OrgUnitHolder(FragmentManager fm, FormOrgUnitBinding binding, FlowableProcessor<RowAction> processor, Observable<List<OrganisationUnitModel>> orgUnits, Observable<List<OrganisationUnitLevel>> levels) {
+    OrgUnitHolder(FragmentManager fm, FormOrgUnitBinding binding, FlowableProcessor<RowAction> processor, Observable<List<OrganisationUnitLevel>> levels) {
         super(binding);
         this.formOrgUnitBinding = binding;
         compositeDisposable = new CompositeDisposable();
-
-        this.orgUnitsObservable = orgUnits;
-
         binding.orgUnitView.setListener(orgUnitUid -> processor.onNext(RowAction.create(model.uid(), orgUnitUid)));
-
-        getOrgUnits();
     }
 
     @Override
@@ -46,42 +40,21 @@ public class OrgUnitHolder extends FormViewHolder {
 
     public void update(OrgUnitViewModel viewModel) {
         this.model = viewModel;
+        String uidValueName = viewModel.value();
+        String ouUid = null;
+        String ouName = null;
+        if (!isEmpty(uidValueName)) {
+            ouUid = uidValueName.split("_ou_")[0];
+            ouName = uidValueName.split("_ou_")[1];
+        }
+
         formOrgUnitBinding.orgUnitView.setObjectStyle(viewModel.objectStyle());
         formOrgUnitBinding.orgUnitView.setLabel(viewModel.label(), viewModel.mandatory());
         descriptionText = viewModel.description();
         formOrgUnitBinding.orgUnitView.setDescription(descriptionText);
         formOrgUnitBinding.orgUnitView.setWarning(viewModel.warning(), viewModel.error());
-        formOrgUnitBinding.orgUnitView.setValue(viewModel.value(), getOrgUnitName(viewModel.value()));
+        formOrgUnitBinding.orgUnitView.setValue(ouUid, ouName);
+        formOrgUnitBinding.orgUnitView.getEditText().setText(ouName);
         formOrgUnitBinding.orgUnitView.updateEditable(viewModel.editable());
-
-
-    }
-
-    private String getOrgUnitName(String value) {
-        String orgUnitName = null;
-        if (orgUnits != null) {
-            for (OrganisationUnitModel orgUnit : orgUnits) {
-                if (orgUnit.uid().equals(value))
-                    orgUnitName = orgUnit.displayName();
-            }
-        }
-        return orgUnitName;
-    }
-
-    private void getOrgUnits() {
-        compositeDisposable.add(orgUnitsObservable
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
-                .subscribe(
-                        orgUnitViewModels ->
-                        {
-                            this.orgUnits = orgUnitViewModels;
-                            if (model.value() != null) {
-                                update(model);
-                            }
-                        },
-                        Timber::d
-                )
-        );
     }
 }

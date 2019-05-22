@@ -189,7 +189,6 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 context.getString(R.string.choose_date));
 
         loadDataElementRules(currentEvent);
-
         isEventExpired = isEventExpired(eventUid);
     }
 
@@ -538,7 +537,6 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     @NonNull
     private FieldViewModel transform(@NonNull Cursor cursor) {
-        long transformInitTime = System.currentTimeMillis();
         String uid = cursor.getString(0);
         String displayName = cursor.getString(1);
         String valueTypeName = cursor.getString(2);
@@ -577,9 +575,11 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 objectStyle = ObjectStyleModel.create(objStyleCursor);
         }
 
-        ProgramStageSectionRenderingType renderingType = renderingType(programStageSection);
+        if (ValueType.valueOf(valueTypeName) == ValueType.ORGANISATION_UNIT && !isEmpty(dataValue)) {
+            dataValue = dataValue + "_ou_" + d2.organisationUnitModule().organisationUnits.uid(dataValue).get().displayName();
+        }
 
-        Timber.d("TRANSFORM TIME IS %s", System.currentTimeMillis() - transformInitTime);
+        ProgramStageSectionRenderingType renderingType = renderingType(programStageSection);
 
         return fieldFactory.create(uid, formName == null ? displayName : formName,
                 ValueType.valueOf(valueTypeName), mandatory, optionSet, dataValue,

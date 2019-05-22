@@ -23,6 +23,7 @@ import javax.inject.Inject;
 
 import androidx.appcompat.widget.PopupMenu;
 import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.Fragment;
 import io.reactivex.functions.Consumer;
 
 @SuppressWarnings("squid:MaximumInheritanceDepth")
@@ -111,14 +112,15 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
 
         initForm();
 
-
     }
 
     private void initForm() {
+        Fragment fragment = FormFragment.newInstance(
+                FormViewArguments.createForEnrollment(dashboardProgramModel.getCurrentEnrollment().uid()), true,
+                false);
+        ((FormFragment)fragment).setSaveButtonTEIDetail(binding.next);
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.dataFragment, FormFragment.newInstance(
-                        FormViewArguments.createForEnrollment(dashboardProgramModel.getCurrentEnrollment().uid()), true,
-                        false))
+                .replace(R.id.dataFragment, fragment)
                 .commit();
     }
 
@@ -159,6 +161,5 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
             presenter.saveLocation(Double.valueOf(savedLat), Double.valueOf(savedLon));
         }
     }
-
 
 }

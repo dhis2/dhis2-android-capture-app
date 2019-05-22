@@ -109,11 +109,6 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.TeiDataDet
     }
 
     @Override
-    public void onSaveClick() {
-        view.getAbstracContext().onBackPressed();
-    }
-
-    @Override
     public void onDeactivate(DashboardProgramModel dashboardProgramModel) {
         if (dashboardProgramModel.getCurrentProgram().accessDataWrite())
             disposable.add(enrollmentStore.save(dashboardProgramModel.getCurrentEnrollment().uid(), EnrollmentStatus.CANCELLED)

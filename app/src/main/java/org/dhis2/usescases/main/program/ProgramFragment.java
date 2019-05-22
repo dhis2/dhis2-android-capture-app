@@ -204,7 +204,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                     }
                 }, Timber::d);
             } else if (currentPeriod == DAILY) {
-                showNativeCalendar(calendar);
+                showCustomCalendar(calendar);
             }
         }
     }
@@ -566,6 +566,14 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                     steps.add(tuto5);
                     steps.add(tuto6);
 
+                    if (binding.programRecycler.getAdapter().getItemCount() > 0) {
+                        FancyShowCaseView tuto11 = new FancyShowCaseView.Builder(getAbstractActivity())
+                                .title(getString(R.string.tuto_main_11))
+                                .focusOn(getAbstractActivity().findViewById(R.id.sync_status))
+                                .closeOnTouch(true)
+                                .build();
+                        steps.add(tuto11);
+                    }
 
                     HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
 

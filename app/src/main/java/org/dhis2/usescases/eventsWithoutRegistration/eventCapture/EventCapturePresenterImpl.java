@@ -78,9 +78,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.EventCapt
     private boolean snackBarIsShowing;
     private final FlowableProcessor<String> sectionProcessor;
     private boolean isSubscribed;
-    private long ruleInitTime;
-    private List<OrganisationUnitLevel> levels;
-    private int lastAdapterPosition;
 
     public EventCapturePresenterImpl(String eventUid, EventCaptureContract.EventCaptureRepository eventCaptureRepository, MetadataRepository metadataRepository, RulesUtilsProvider rulesUtils, DataEntryStore dataEntryStore) {
         this.eventUid = eventUid;
@@ -157,14 +154,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.EventCapt
                                 Timber::e
                         )
         );
-
-        compositeDisposable.add(eventCaptureRepository.getOrgUnitLevels()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        data -> levels = data,
-                        Timber::e
-                ));
 
         compositeDisposable.add(
                 getFieldFlowable(null)
@@ -374,9 +363,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.EventCapt
                     .observeOn(Schedulers.io())
                     .switchMap(action -> {
                                 eventCaptureRepository.setLastUpdated(action.id());
-                                ruleInitTime = System.currentTimeMillis();
                                 EventCaptureFormFragment.getInstance().updateAdapter(action);
-                                this.lastAdapterPosition = action.lastFocusPosition();
                                 return dataEntryStore.save(action.id(), action.value());
                             }
                     ).subscribe(result -> Timber.d("SAVED VALUE AT %s", System.currentTimeMillis()),
@@ -408,7 +395,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.EventCapt
     private List<FieldViewModel> applyEffects(
             @NonNull List<FieldViewModel> viewModels,
             @NonNull Result<RuleEffect> calcResult) {
-        long currentTime = System.currentTimeMillis();
 
         if (calcResult.error() != null) {
             Timber.e(calcResult.error());
@@ -433,7 +419,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.EventCapt
                     iter.remove();
         }
 
-        Timber.d("RULE EFFECTS TOOK %s ms to execute", System.currentTimeMillis() - currentTime);
         return new ArrayList<>(fieldViewModels.values());
     }
 

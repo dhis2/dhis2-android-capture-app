@@ -106,7 +106,7 @@ public class FormAdapter extends RecyclerView.Adapter {
         rows.add(DATETIME, new DateTimeRow(layoutInflater, processor, DATETIME, false));
         rows.add(AGEVIEW, new AgeRow(layoutInflater, processor, false));
         rows.add(YES_NO, new RadioButtonRow(layoutInflater, processor, false));
-        rows.add(ORG_UNIT, new OrgUnitRow(fm, layoutInflater, processor, false, orgUnits, levels));
+        rows.add(ORG_UNIT, new OrgUnitRow(fm, layoutInflater, processor, false, levels));
         rows.add(IMAGE, new ImageRow(layoutInflater, processor, null, null));
         rows.add(UNSUPPORTED, new UnsupportedRow(layoutInflater, processor, false));
         rows.add(LONG_TEXT, new EditTextRow(layoutInflater, processor, false, true));
