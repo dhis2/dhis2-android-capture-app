@@ -260,10 +260,6 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         users = getListFromPreference(Constants.PREFS_USERS)
 
         urls?.let {
-            if (!it.contains(Constants.URL_TEST_229))
-                it.add(Constants.URL_TEST_229)
-            if (!it.contains(Constants.URL_TEST_230))
-                it.add(Constants.URL_TEST_230)
             for (testingCredential in testingCredentials) {
                 if (!it.contains(testingCredential.server_url))
                     it.add(testingCredential.server_url)
