@@ -25,6 +25,7 @@ import static android.text.TextUtils.isEmpty;
 
 public class OrgUnitView extends FieldLayout implements OrgUnitCascadeDialog.CascadeOrgUnitCallbacks {
 
+    private ViewDataBinding binding;
     private ImageView iconView;
     private TextInputAutoCompleteTextView editText;
     private TextInputLayout inputLayout;
@@ -49,7 +50,6 @@ public class OrgUnitView extends FieldLayout implements OrgUnitCascadeDialog.Cas
     }
 
     public void setLayoutData(boolean isBgTransparent, String renderType) {
-        ViewDataBinding binding;
         if (isBgTransparent)
             binding = CustomTextViewBinding.inflate(inflater, this, true);
         else

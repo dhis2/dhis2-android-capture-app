@@ -201,7 +201,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.SearchTEPresen
                         .startWith(queryData)
                         .subscribeOn(AndroidSchedulers.mainThread())
                         .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(data->view.clearData(),Timber::d)
+                        .subscribe(data -> view.clearData(), Timber::d)
         );
 
     }
@@ -217,7 +217,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.SearchTEPresen
     @Override
     public Trio<PagedList<SearchTeiModel>, String, Boolean> getMessage(PagedList<SearchTeiModel> list) {
         int size = list.size();
-
         String messageId = "";
         boolean canRegister = false;
 
@@ -330,10 +329,10 @@ public class SearchTEPresenter implements SearchTEContractsModule.SearchTEPresen
         else
             getProgramTrackedEntityAttributes();
 
-        if(!otherProgramSelected)
+        if (!otherProgramSelected)
             queryData.clear();
 
-        if(queryData.isEmpty())
+        if (queryData.isEmpty())
             queryProcessor.onNext(new HashMap<>());
         else
             queryProcessor.onNext(queryData);
