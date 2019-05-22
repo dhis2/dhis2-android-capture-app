@@ -50,6 +50,7 @@ public abstract class FormViewHolder extends RecyclerView.ViewHolder {
 
     public void openKeyboard(View v) {
         InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
-        imm.showSoftInput(v, 0);
+        if (!imm.showSoftInput(v, 0))
+            v.postDelayed(() -> openKeyboard(v), 500);
     }
 }
