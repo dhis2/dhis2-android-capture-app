@@ -4,11 +4,15 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.tuples.Pair;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.State;
+import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
@@ -21,10 +25,9 @@ import java.util.Objects;
 
 import javax.annotation.Nonnull;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
+import io.reactivex.Observable;
 
 import static android.text.TextUtils.isEmpty;
 import static org.dhis2.data.forms.dataentry.DataEntryStore.valueType.ATTR;
@@ -299,9 +302,16 @@ public final class AttributeValueStore implements DataEntryStore {
 
     @NonNull
     private Flowable<Long> updateEnrollment(long status) {
-        return briteDatabase.createQuery(TrackedEntityInstanceModel.TABLE, SELECT_TEI, enrollment)
-                .mapToOne(TrackedEntityInstanceModel::create).take(1).toFlowable(BackpressureStrategy.LATEST)
-                .switchMap(tei -> {
+        return briteDatabase.createQuery(EnrollmentModel.TABLE, "SELECT Enrollment.* FROM Enrollment WHERE uid = ?", enrollment)
+                .mapToOne(EnrollmentModel::create)
+                .flatMap(enrollmentModel -> {
+                    ContentValues cv = enrollmentModel.toContentValues();
+                    cv.put(EnrollmentModel.Columns.STATE, enrollmentModel.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
+                    briteDatabase.update(EnrollmentModel.TABLE, cv, "uid = ?", enrollment);
+                    return briteDatabase.createQuery(TrackedEntityInstanceModel.TABLE, SELECT_TEI, enrollment)
+                            .mapToOne(TrackedEntityInstanceModel::create).take(1);
+                })
+                .flatMap(tei -> {
                     if (State.SYNCED.equals(tei.state()) || State.TO_DELETE.equals(tei.state()) ||
                             State.ERROR.equals(tei.state())) {
                         ContentValues values = tei.toContentValues();
@@ -315,7 +325,7 @@ public final class AttributeValueStore implements DataEntryStore {
                                     "has not been successfully updated", tei.uid()));
                         }
                     }
-                    return Flowable.just(status);
-                });
+                    return Observable.just(status);
+                }).toFlowable(BackpressureStrategy.LATEST);
     }
 }

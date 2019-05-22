@@ -88,32 +88,44 @@ class HomeRepositoryImpl implements HomeRepository {
                             state = State.TO_UPDATE;
 
                     } else {
+                        List<String> programUids = new ArrayList<>();
+                        programUids.add(program.uid());
                         if (!dateFilter.isEmpty()) {
                             if (!orgUnitFilter.isEmpty()) {
-                                count = d2.eventModule().events
+                                count = d2.trackedEntityModule().trackedEntityInstances
+                                        .byProgramUids(programUids)
+                                        .byLastUpdated().inDatePeriods(dateFilter)
+                                        .byOrganisationUnitUid().in(orgUnitFilter).count();
+                              /*  count = d2.eventModule().events
                                         .byProgramUid().eq(program.uid())
                                         .byEventDate().inDatePeriods(dateFilter)
                                         .byOrganisationUnitUid().in(orgUnitFilter)
-                                        .countTrackedEntityInstances();
+                                        .countTrackedEntityInstances();*/
                             } else {
-                                count = d2.eventModule().events
+                                count = d2.trackedEntityModule().trackedEntityInstances
+                                        .byProgramUids(programUids)
+                                        .byLastUpdated().inDatePeriods(dateFilter).count();
+                               /* count = d2.eventModule().events
                                         .byProgramUid().eq(program.uid())
                                         .byEventDate().inDatePeriods(dateFilter)
-                                        .countTrackedEntityInstances();
+                                        .countTrackedEntityInstances();*/
                             }
                         } else if (!orgUnitFilter.isEmpty()) {
-                            count = d2.eventModule().events
+                            count = d2.trackedEntityModule().trackedEntityInstances
+                                    .byProgramUids(programUids)
+                                    .byOrganisationUnitUid().in(orgUnitFilter).count();
+                          /*  count = d2.eventModule().events
                                     .byProgramUid().eq(program.uid())
                                     .byOrganisationUnitUid().in(orgUnitFilter)
-                                    .countTrackedEntityInstances();
+                                    .countTrackedEntityInstances();*/
                         } else {
-                            count = d2.eventModule().events
+                            count = d2.trackedEntityModule().trackedEntityInstances
+                                    .byProgramUids(programUids).count();
+                           /* count = d2.eventModule().events
                                     .byProgramUid().eq(program.uid())
-                                    .countTrackedEntityInstances();
+                                    .countTrackedEntityInstances();*/
                         }
 
-                        List<String> programUids = new ArrayList<>();
-                        programUids.add(program.uid());
                         if (!d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().in(State.ERROR, State.WARNING).get().isEmpty())
                             state = State.WARNING;
                         else if (!d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().in(State.SENT_VIA_SMS, State.SYNCED_VIA_SMS).get().isEmpty())
