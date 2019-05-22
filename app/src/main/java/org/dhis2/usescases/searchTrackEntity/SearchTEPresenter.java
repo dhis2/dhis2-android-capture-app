@@ -21,9 +21,11 @@ import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.main.program.SyncStatusDialog;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
+import org.dhis2.utils.Constants;
 import org.dhis2.utils.NetworkUtils;
 import org.dhis2.utils.custom_views.OrgUnitDialog;
 import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.constant.Constant;
 import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
@@ -185,11 +187,12 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
         compositeDisposable.add(
                 queryProcessor
-                        .switchMap(map -> {
+                        .map(map -> {
+                            HashMap<String, String> data = new HashMap<>(map);
                             if (!NetworkUtils.isOnline(view.getContext()) || selectedProgram == null || Build.VERSION.SDK_INT <= 19)
-                                return Flowable.fromCallable(() -> searchRepository.searchTrackedEntitiesOffline(selectedProgram, orgUnitsUid, map));
+                                return searchRepository.searchTrackedEntitiesOffline(selectedProgram, orgUnitsUid, data);
                             else
-                                return Flowable.fromCallable(() -> searchRepository.searchTrackedEntitiesAll(selectedProgram, orgUnitsUid, map));
+                                return searchRepository.searchTrackedEntitiesAll(selectedProgram, orgUnitsUid, data);
                         })
                         .doOnError(this::handleError)
                         .subscribeOn(Schedulers.io())
@@ -247,7 +250,10 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 messageId = String.format(view.getContext().getString(R.string.search_max_tei_reached), MAX_NO_SELECTED_PROGRAM_RESULTS);
         } else {
             if (size == 0 && !queryData.isEmpty()) {
-                messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
+                if(selectedProgram.minAttributesRequiredToSearch() > 0 && queryData.size() == 1 && queryData.containsKey(Constants.ENROLLMENT_DATE_UID))
+                    messageId = view.getContext().getString(R.string.search_attr);
+                else
+                    messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
                 canRegister = true;
             } else if (size == 0)
                 messageId = view.getContext().getString(R.string.search_init);
