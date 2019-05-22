@@ -15,11 +15,19 @@
             tools:background="@color/state_synced">
 
             <ImageView
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginStart="22dp"
+                app:srcCompat="@drawable/ic_circle_white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
                 android:id="@+id/syncIcon"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:layout_marginStart="22dp"
-                android:background="@drawable/ic_circle_white"
                 android:padding="1.5dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
