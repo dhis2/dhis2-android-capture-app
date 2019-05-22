@@ -463,7 +463,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
             if (eventStatus != EventStatus.ACTIVE) {
                 setUpActionByStatus(eventStatus);
             } else if (!emptyMandatoryFields.isEmpty()) {
-                view.setMandatoryWarning(emptyMandatoryFields);
+                view.finishDataEntry();
             } else if (!this.errors.isEmpty()) {
                 view.setShowError(errors);
             } else {
