@@ -70,7 +70,10 @@ class OrgUnitCascadeHolder extends RecyclerView.ViewHolder {
         this.ouRepository = orgUnitRepository;
         setLevelLabel();
 
-        binding.levelText.setOnClickListener(view -> menu.show());
+        binding.levelText.setOnClickListener(view -> {
+            if (!isEmpty(ouItem.getParentUid()))
+                menu.show();
+        });
 
         if ((ouItem.getLevel() == 1 && !ouItem.canCaptureData()) || ouItem.getLevel() > 1 && !ouItem.getLevelOrgUnits().isEmpty() && !isEmpty(ouItem.getParentUid()) && !ouItem.canCaptureData()) {
             Trio<String, String, Boolean> selectedOu = ouItem.getLevelOrgUnits().get(0);
