@@ -23,5 +23,6 @@ public class UnsupportedHolder extends FormViewHolder {
     public void update(UnsupportedViewModel viewModel) {
         unsupportedView.setLabel(viewModel.label());
         descriptionText = viewModel.description();
+        label = new StringBuilder().append(viewModel.label());
     }
 }

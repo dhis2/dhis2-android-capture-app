@@ -66,7 +66,7 @@ public class OrgUnitHolder extends FormViewHolder {
         binding.orgUnitView.setValue(ouUid, ouName);
         binding.orgUnitView.getEditText().setText(ouName);
         binding.orgUnitView.updateEditable(viewModel.editable());
-
+        label = new StringBuilder().append(viewModel.label());
 
     }
 
