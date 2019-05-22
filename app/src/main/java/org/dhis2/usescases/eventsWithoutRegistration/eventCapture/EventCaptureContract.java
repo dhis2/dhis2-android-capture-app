@@ -151,6 +151,8 @@ public class EventCaptureContract {
         boolean isEventExpired(String eventUid);
 
         Observable<List<OrganisationUnitLevel>> getOrgUnitLevels();
+
+        boolean optionIsInOptionGroup(String optionUid, String optionGroupToHide);
     }
 
 }
