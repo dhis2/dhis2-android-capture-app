@@ -5,7 +5,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import org.dhis2.data.tuples.Trio
-import org.dhis2.utils.Constants
 import org.dhis2.utils.TestingCredential
 import java.util.*
 
@@ -61,13 +60,11 @@ class LoginViewModel : ViewModel() {
 
 
     private fun checkTestingEnvironment(serverUrl: String) {
-        when (serverUrl) {
-            Constants.URL_TEST_229, Constants.URL_TEST_230 -> isTestingEnvironment.setValue(Trio.create(serverUrl, "android", "Android123"))
-            else -> if (testingCredentials!!.containsKey(serverUrl) && testingCredentials!![serverUrl] != null)
-                isTestingEnvironment.value = Trio.create(serverUrl,
-                        testingCredentials!![serverUrl]!!.user_name,
-                        testingCredentials!![serverUrl]!!.user_pass)
-        }
+        if (testingCredentials!!.containsKey(serverUrl) && testingCredentials!![serverUrl] != null)
+            isTestingEnvironment.value = Trio.create(serverUrl,
+                    testingCredentials!![serverUrl]!!.user_name,
+                    testingCredentials!![serverUrl]!!.user_pass)
+
     }
 
     fun setTestingCredentials(testingCredentials: List<TestingCredential>) {

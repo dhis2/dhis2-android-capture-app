@@ -14,6 +14,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.DatePicker;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.GravityCompat;
+import androidx.databinding.DataBindingUtil;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.DividerItemDecoration;
+
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
@@ -40,14 +49,6 @@ import java.util.Locale;
 
 import javax.inject.Inject;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.core.content.ContextCompat;
-import androidx.core.view.GravityCompat;
-import androidx.databinding.DataBindingUtil;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import io.reactivex.functions.Consumer;
 import me.toptas.fancyshowcase.DismissListener;
 import me.toptas.fancyshowcase.FancyShowCaseView;
@@ -565,6 +566,14 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                     steps.add(tuto5);
                     steps.add(tuto6);
 
+                    if (binding.programRecycler.getAdapter().getItemCount() > 0) {
+                        FancyShowCaseView tuto11 = new FancyShowCaseView.Builder(getAbstractActivity())
+                                .title(getString(R.string.tuto_main_11))
+                                .focusOn(getAbstractActivity().findViewById(R.id.sync_status))
+                                .closeOnTouch(true)
+                                .build();
+                        steps.add(tuto11);
+                    }
 
                     HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
 
