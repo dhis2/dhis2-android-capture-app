@@ -153,7 +153,7 @@ public class DateView extends FieldLayout implements View.OnClickListener {
 
     @Override
     public void onClick(View view) {
-        showNativeCalendar();
+        showCustomCalendar();
     }
 
     private void showNativeCalendar() {
