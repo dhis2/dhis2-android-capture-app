@@ -14,6 +14,7 @@ import org.dhis2.data.forms.dataentry.DataEntryStore;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel;
+import org.dhis2.data.forms.dataentry.fields.image.ImageViewModel;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.tuples.Quartet;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureFragment.EventCaptureFormFragment;
@@ -412,6 +413,24 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
         Map<String, FieldViewModel> fieldViewModels = toMap(viewModels);
         rulesUtils.applyRuleEffects(fieldViewModels, calcResult, this);
+
+        //Remove fields for MATRIX/SEQUENTIAL and actions HIDEOPTION/HIDEOPTIONGROUP
+        Iterator<FieldViewModel> fieldIterator = fieldViewModels.values().iterator();
+        for (String optionUidToHide : optionsToHide) {
+            while (fieldIterator.hasNext()) {
+                FieldViewModel field = fieldIterator.next();
+                if (field instanceof ImageViewModel && field.uid().contains(optionUidToHide))
+                    fieldIterator.remove();
+            }
+        }
+        fieldIterator = fieldViewModels.values().iterator();
+        for (String optionGroupToHide : optionsGroupsToHide) {
+            while (fieldIterator.hasNext()) {
+                FieldViewModel field = fieldIterator.next();
+                if (field instanceof ImageViewModel && eventCaptureRepository.optionIsInOptionGroup(field.uid().split(".")[1],optionGroupToHide))
+                    fieldIterator.remove();
+            }
+        }
 
         //Display the DisplayViewModels only in the last section
         if (!isEmpty(currentSection.get()) && !currentSection.get().equals(sectionList.get(sectionList.size() - 1).sectionUid())) {

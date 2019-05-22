@@ -20,6 +20,7 @@ import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
+import org.hisp.dhis.android.core.common.ObjectWithUid;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
@@ -42,7 +43,6 @@ import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionDeviceRendering;
 import org.hisp.dhis.android.core.program.ProgramStageSectionModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
-import org.hisp.dhis.android.core.program.ProgramType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 import org.hisp.dhis.rules.models.Rule;
@@ -770,5 +770,17 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     @Override
     public Observable<List<OrganisationUnitLevel>> getOrgUnitLevels() {
         return Observable.just(d2.organisationUnitModule().organisationUnitLevels.get());
+    }
+
+    @Override
+    public boolean optionIsInOptionGroup(String optionUid, String optionGroupToHide) {
+        List<ObjectWithUid> optionGroupOptions = d2.optionModule().optionGroups.uid(optionGroupToHide).withAllChildren().get().options();
+        boolean isInGroup = false;
+        if (optionGroupOptions != null)
+            for (ObjectWithUid uidObject : optionGroupOptions)
+                if (uidObject.uid().equals(optionUid))
+                    isInGroup = true;
+
+        return isInGroup;
     }
 }
