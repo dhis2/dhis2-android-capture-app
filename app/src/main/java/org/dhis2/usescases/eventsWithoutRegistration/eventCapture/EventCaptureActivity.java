@@ -132,30 +132,6 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         };
     }
 
-    @Override
-    public void setMandatoryWarning(Map<String, FieldViewModel> emptyMandatoryFields) {
-        new CustomDialog(
-                getAbstracContext(),
-                getString(R.string.missing_mandatory_fields_title),
-                String.format(getString(R.string.missing_mandatory_fields_events_2_0), getMandatoryFieldNames(new ArrayList<>(emptyMandatoryFields.values()))),
-                getAbstracContext().getString(R.string.button_ok),
-                getString(R.string.check_mandatory_field),
-                Constants.RQ_MANDATORY_EVENTS,
-                new DialogClickListener() {
-                    @Override
-                    public void onPositive() {
-                        showCompleteActions(false);
-                    }
-
-                    @Override
-                    public void onNegative() {
-                        String sectionToGo = emptyMandatoryFields.values().iterator().next().programStageSection();
-                        presenter.goToSection(sectionToGo);
-                    }
-                })
-                .show();
-    }
-
     private String getMandatoryFieldNames(List<FieldViewModel> mandatoryValues) {
         StringBuilder mandatoryFieldNames = new StringBuilder();
         for (FieldViewModel fieldViewModel : mandatoryValues) {
