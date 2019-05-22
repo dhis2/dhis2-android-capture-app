@@ -52,10 +52,18 @@
 
 
             <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:visibility="@{program.description()==null?View.GONE:View.VISIBLE}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:srcCompat="@drawable/ic_circle_white"
+                tools:ignore="ContentDescription" />
+
+            <ImageView
                 android:id="@+id/info"
                 android:layout_width="16dp"
                 android:layout_height="16dp"
-                android:background="@drawable/ic_circle_white"
                 android:visibility="@{program.description()==null?View.GONE:View.VISIBLE}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintRight_toRightOf="parent"

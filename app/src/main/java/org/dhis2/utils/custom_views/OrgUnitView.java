@@ -12,6 +12,7 @@ import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.textfield.TextInputLayout;
 
+import org.dhis2.BR;
 import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
 import org.dhis2.databinding.CustomTextViewAccentBinding;
@@ -82,6 +83,13 @@ public class OrgUnitView extends FieldLayout implements OrgUnitCascadeDialog.Cas
             public void onDialogCancelled() {
                 editText.setEnabled(true);
             }
+
+            @Override
+            public void onClear() {
+                listener.onDataChanged(null);
+                editText.setText(null);
+                editText.setEnabled(true);
+            }
         }).show(fm, label));
     }
 
@@ -134,6 +142,7 @@ public class OrgUnitView extends FieldLayout implements OrgUnitCascadeDialog.Cas
                 labelBuilder.append("*");
             this.label = labelBuilder.toString();
             inputLayout.setHint(this.label);
+            binding.setVariable(BR.label, this.label);
         }
     }
 
@@ -150,6 +159,11 @@ public class OrgUnitView extends FieldLayout implements OrgUnitCascadeDialog.Cas
     @Override
     public void onDialogCancelled() {
         // unused
+    }
+
+    @Override
+    public void onClear() {
+
     }
 
     public void setListener(OnDataChanged listener) {

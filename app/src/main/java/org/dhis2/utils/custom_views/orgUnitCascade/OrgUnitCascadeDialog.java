@@ -176,6 +176,8 @@ public class OrgUnitCascadeDialog extends DialogFragment {
             showChips(new ArrayList<>());
             setAdapter(initialData);
             binding.acceptButton.setVisibility(View.INVISIBLE);
+            callbacks.onClear();
+            dismiss();
         });
     }
 
@@ -205,6 +207,8 @@ public class OrgUnitCascadeDialog extends DialogFragment {
         void textChangedConsumer(String selectedOrgUnitUid, String selectedOrgUnitName);
 
         void onDialogCancelled();
+
+        void onClear();
     }
 
     @Override

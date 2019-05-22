@@ -274,7 +274,7 @@ public class EventDetailPresenterImpl implements EventDetailContracts.EventDetai
         eventDetailRepository.saveCatOption(selectedOption);
     }
 
-    private void openDailySelector(boolean futureOnly) {
+    private void showNativeCalendar(boolean futureOnly) {
         Calendar c = Calendar.getInstance();
         if (futureOnly)
             c.add(Calendar.DAY_OF_YEAR, 1);
@@ -325,14 +325,14 @@ public class EventDetailPresenterImpl implements EventDetailContracts.EventDetai
             dateDialog.setButton(DialogInterface.BUTTON_NEUTRAL,
                     view.getContext().getResources().getString(R.string.change_calendar), (dialog, which) -> {
                         dateDialog.dismiss();
-                        showCustomCalendar(futureOnly);
+                        openDailySelector(futureOnly);
                     });
         }
         dateDialog.show();
     }
 
 
-    private void showCustomCalendar(boolean futureOnly) {
+    private void openDailySelector(boolean futureOnly) {
         LayoutInflater layoutInflater = LayoutInflater.from(view.getContext());
         View datePickerView = layoutInflater.inflate(R.layout.widget_datepicker, null);
         final DatePicker datePicker = datePickerView.findViewById(R.id.widget_datepicker);
@@ -363,7 +363,7 @@ public class EventDetailPresenterImpl implements EventDetailContracts.EventDetai
                         dataEntryStore.updateEvent(selectedDate, eventDetailModel.getEventModel());
                     }
                 })
-                .setNeutralButton(view.getContext().getResources().getString(R.string.change_calendar), (dialog, which) -> openDailySelector(futureOnly));
+                .setNeutralButton(view.getContext().getResources().getString(R.string.change_calendar), (dialog, which) -> showNativeCalendar(futureOnly));
 
         if (eventDetailModel.getEventModel().status() != EventStatus.SCHEDULE && eventDetailModel.getEventModel().status() != EventStatus.OVERDUE) {
             datePicker.setMaxDate(System.currentTimeMillis());
