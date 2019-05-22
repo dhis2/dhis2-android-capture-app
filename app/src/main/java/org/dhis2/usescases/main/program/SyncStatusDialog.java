@@ -184,7 +184,7 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
 
         compositeDisposable.add(
                 Observable.fromCallable(() -> d2.trackedEntityModule().trackedEntityTypes
-                        .uid(d2.trackedEntityModule().trackedEntityInstances.uid(recordUid).get().trackedEntityType())
+                        .uid(d2.trackedEntityModule().trackedEntityInstances.byUid().eq(recordUid).one().get().trackedEntityType())
                         .get())
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
@@ -210,7 +210,7 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
         );
 
         compositeDisposable.add(
-                Observable.fromCallable(() -> d2.trackedEntityModule().trackedEntityInstances.uid(recordUid).get().state())
+                Observable.fromCallable(() -> d2.trackedEntityModule().trackedEntityInstances.byUid().eq(recordUid).one().get().state())
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(

@@ -38,6 +38,7 @@ import org.dhis2.utils.custom_views.CustomDialog;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
+import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.rules.models.RuleActionErrorOnCompletion;
 import org.hisp.dhis.rules.models.RuleActionShowError;
@@ -88,6 +89,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     private TextInputLayout reportDateLayout;
     private TextInputEditText reportDate;
     private PublishSubject<ReportStatus> undoObservable;
+    private PublishSubject<EnrollmentStatus> undoSaveObservable;
     private CoordinatorLayout coordinatorLayout;
     private TextInputLayout incidentDateLayout;
     private TextInputEditText incidentDate;
@@ -109,6 +111,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     private boolean mandatoryDelete = true;
     private Context context;
     private ProgressBar progressBar;
+    private View saveButton;
     private DataEntryFragment enrollmentFragment;
 
     public View getDatesLayout() {
@@ -142,6 +145,10 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
         args.putBoolean(FORM_VIEW_TABLAYOUT, showTabLayout);
         fragment.setArguments(args);
         return fragment;
+    }
+
+    public void setSaveButtonTEIDetail(View view){
+        this.saveButton = view;
     }
 
     @Override
@@ -274,6 +281,8 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     public void onResume() {
         super.onResume();
         formPresenter.onAttach(this);
+        if(saveButton != null)
+            formPresenter.initializeSaveObservable();
     }
 
     @Override
@@ -677,6 +686,19 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
                     }
                 })
                 .show();
+    }
+
+    public Observable<EnrollmentStatus> onObservableBackPressed(){
+        undoSaveObservable = PublishSubject.create();
+        return undoSaveObservable.mergeWith(RxView.clicks(saveButton).map(o -> {
+            mandatoryDelete = false;
+            return getEnrollmentStatusFromButton();
+        }).debounce(500, TimeUnit.MILLISECONDS));
+    }
+
+    private EnrollmentStatus getEnrollmentStatusFromButton() {
+        datesLayout.requestFocus();
+        return saveButton.isActivated() ? EnrollmentStatus.ACTIVE : EnrollmentStatus.COMPLETED;
     }
 
     public void onBackPressed(boolean delete) {
