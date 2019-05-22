@@ -81,11 +81,8 @@ public final class DataEntryAdapter extends Adapter {
 
     @NonNull
     private final List<Row> rows;
-    private final DataEntryArguments dataEntryArguments;
 
     private final FlowableProcessor<Trio<String, String, Integer>> processorOptionSet;
-
-    private final Observable<List<OrganisationUnitLevel>> levels;
 
     private final RecyclerView.AdapterDataObserver adapterDataObserver = new RecyclerView.AdapterDataObserver() {
         @Override
@@ -115,8 +112,6 @@ public final class DataEntryAdapter extends Adapter {
         imageSelector = new ObservableField<>("");
         currentPosition = PublishProcessor.create();
         this.processorOptionSet = PublishProcessor.create();
-        this.dataEntryArguments = dataEntryArguments;
-        this.levels = levels;
 
         rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType(), isEditable, false));
         rows.add(BUTTON, new FileRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
@@ -153,8 +148,6 @@ public final class DataEntryAdapter extends Adapter {
         imageSelector = new ObservableField<>("");
         currentPosition = PublishProcessor.create();
         this.processorOptionSet = processorOptSet;
-        this.dataEntryArguments = dataEntryArguments;
-        this.levels = levels;
 
         rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType(), isEditable, false));
         rows.add(BUTTON, new FileRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
@@ -190,8 +183,8 @@ public final class DataEntryAdapter extends Adapter {
         rows.get(holder.getItemViewType()).onBind(holder,
                 viewModels.get(holder.getAdapterPosition()));
 
-        if(position!=0 && position == focusPosition)
-            holder.itemView.requestFocus();
+       /* if(position!=0 && position == focusPosition)
+            holder.itemView.requestFocus();*/
     }
 
     @Override

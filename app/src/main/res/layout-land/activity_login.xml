@@ -296,7 +296,7 @@
                 android:layout_marginEnd="300dp"
                 android:layout_marginBottom="16dp"
                 android:orientation="horizontal"
-                android:visibility="visible">
+                android:visibility="gone">
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/logout"

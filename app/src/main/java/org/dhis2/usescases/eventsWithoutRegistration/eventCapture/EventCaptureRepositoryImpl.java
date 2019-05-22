@@ -253,14 +253,16 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
 
     private List<ProgramRule> filterRules(List<ProgramRule> rules) {
-        Program program = d2.programModule().programs.uid(currentEvent.program()).withAllChildren().get();
+        /*Program program = d2.programModule().programs.uid(currentEvent.program()).withAllChildren().get();
         if (program.programType().equals(ProgramType.WITH_REGISTRATION)) {
             Iterator<ProgramRule> iterator = rules.iterator();
             while (iterator.hasNext()) {
-                if (iterator.next().programStage() == null)
+                ProgramRule programRule = iterator.next();
+                if (programRule.programStage() == null)
                     iterator.remove();
             }
-        }
+        }*/
+        //TODO: THIS IS REMOVING ALL RULES IN SOME CASES IT SHOULD ONLY APPLY FOR PROGRAM RULES WITH ACTION DISPLAY KEY VALUE PAIR
         return rules;
     }
 
@@ -416,7 +418,6 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     }
 
     private List<FieldViewModel> checkRenderType(List<FieldViewModel> fieldViewModels) {
-        long renderingCheckInitTime = System.currentTimeMillis();
         ArrayList<FieldViewModel> renderList = new ArrayList<>();
 
         for (FieldViewModel fieldViewModel : fieldViewModels) {
@@ -459,8 +460,6 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 renderList.add(fieldViewModel);
         }
 
-        Timber.d("RENDERING CHECK TIME IS %s", System.currentTimeMillis() - renderingCheckInitTime);
-
         return renderList;
 
     }
@@ -468,32 +467,6 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     @NonNull
     @Override
     public Flowable<List<FieldViewModel>> list() {
-
-       /* return Flowable.fromCallable(() -> {
-
-            long init = System.currentTimeMillis();
-            accessDataWrite = getAccessDataWrite();
-            ProgramStage programStage = d2.programModule().programStages.uid(currentEvent.programStage()).withAllChildren().get();
-            List<ProgramStageSection> sections = d2.programModule().programStageSections.byProgramStageUid().eq(programStage.uid()).withAllChildren().get();
-
-            List<ProgramStageDataElement> programStageDataElementList = programStage.programStageDataElements();
-            Map<String, ProgramStageDataElement> programStageDataElementMap = new HashMap<>();
-            for (ProgramStageDataElement programStageDataElement : programStageDataElementList)
-                programStageDataElementMap.put(programStageDataElement.dataElement().uid(), programStageDataElement);
-
-            List<FieldViewModel> fieldViewModelList;
-
-            Timber.d("field list init at %s", System.currentTimeMillis() - init);
-            if (sections != null && !sections.isEmpty())
-                fieldViewModelList = getFieldViewModelForSection(sections, programStageDataElementMap);
-            else
-                fieldViewModelList = getFieldViewModelFor(programStageDataElementList);
-
-            long finalTime = System.currentTimeMillis() - init;
-            Timber.d("list() took %s to load %s viewmodels", finalTime, fieldViewModelList.size());
-
-            return fieldViewModelList;
-        }).map(this::checkRenderType);*/
         return briteDatabase
                 .createQuery(TrackedEntityDataValueModel.TABLE, prepareStatement(eventUid))
                 .mapToList(this::transform)
@@ -618,8 +591,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                                 .map(Result::success)
                                 .onErrorReturn(error -> Result.failure(new Exception(error)))
 
-                )
-                .doOnNext(onNext -> Timber.d("RULES ON NEXT! at %s", System.currentTimeMillis()));
+                );
     }
 
     @Override
