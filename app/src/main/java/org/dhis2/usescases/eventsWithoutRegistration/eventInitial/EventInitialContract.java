@@ -95,6 +95,10 @@ public class EventInitialContract {
                                   String catOption, String catOptionCombo,
                                   String latitude, String longitude);
 
+        void scheduleEventPermanent(String enrollmentUid, String trackedEntityInstanceUid, String programStageModel, Date dueDate, String orgUnitUid,
+                                    String categoryOptionComboUid, String categoryOptionsUid,
+                                    String latitude, String longitude);
+
         void scheduleEvent(String enrollmentUid, String programStageModel, Date dueDate, String orgUnitUid,
                            String catOption, String catOptionCombo,
                            String latitude, String longitude);

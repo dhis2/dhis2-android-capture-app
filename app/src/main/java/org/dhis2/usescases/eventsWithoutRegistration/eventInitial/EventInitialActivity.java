@@ -195,7 +195,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                 String programStageModelUid = programStageModel == null ? "" : programStageModel.uid();
                 if (eventUid == null) { // This is a new Event
                     if (eventCreationType == EventCreationType.REFERAL && tempCreate.equals(PERMANENT)) {
-                        presenter.createEventPermanent(
+                        presenter.scheduleEventPermanent(
                                 enrollmentUid,
                                 getTrackedEntityInstance,
                                 programStageModelUid,
@@ -206,7 +206,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                                 isEmpty(binding.lat.getText()) ? null : binding.lat.getText().toString(),
                                 isEmpty(binding.lon.getText()) ? null : binding.lon.getText().toString()
                         );
-                    } else if (eventCreationType == EventCreationType.SCHEDULE) {
+                    } else if (eventCreationType == EventCreationType.SCHEDULE || eventCreationType == EventCreationType.REFERAL) {
                         presenter.scheduleEvent(
                                 enrollmentUid,
                                 programStageModelUid,
@@ -658,8 +658,16 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             Date minDate = DateUtils.getInstance().expDate(null, program.expiryDays() == null ? 0 : program.expiryDays(), program.expiryPeriodType());
             datePickerDialog.getDatePicker().setMinDate(minDate.getTime());
         }
-        if (eventCreationType != EventCreationType.SCHEDULE)
-            datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis() - 1000);
+
+        switch (eventCreationType){
+            case ADDNEW:
+            case DEFAULT:
+                datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis() - 1000);
+                break;
+            case REFERAL:
+            case SCHEDULE:
+                break;
+        }
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
             datePickerDialog.setButton(DialogInterface.BUTTON_NEUTRAL, getContext().getResources().getString(R.string.change_calendar), (dialog, which) -> {
@@ -690,8 +698,16 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             Date minDate = DateUtils.getInstance().expDate(null, program.expiryDays() == null ? 0 : program.expiryDays(), program.expiryPeriodType());
             datePicker.setMinDate(minDate.getTime());
         }
-        if (eventCreationType != EventCreationType.SCHEDULE)
-            datePicker.setMaxDate(System.currentTimeMillis() - 1000);
+
+        switch (eventCreationType){
+            case ADDNEW:
+            case DEFAULT:
+                datePicker.setMaxDate(System.currentTimeMillis() - 1000);
+                break;
+            case REFERAL:
+            case SCHEDULE:
+                break;
+        }
 
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(getContext(), R.style.DatePickerTheme)
                 .setPositiveButton(R.string.action_accept, (dialog, which) -> {
