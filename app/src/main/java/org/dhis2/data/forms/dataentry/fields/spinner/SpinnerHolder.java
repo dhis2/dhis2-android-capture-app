@@ -10,9 +10,6 @@ import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.FormOptionSetBinding;
 import org.dhis2.utils.custom_views.OptionSetDialog;
 import org.dhis2.utils.custom_views.OptionSetPopUp;
-import org.hisp.dhis.android.core.option.OptionModel;
-
-import java.util.Map;
 
 import io.reactivex.processors.FlowableProcessor;
 
@@ -35,9 +32,10 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
 
         binding.optionSetView.setOnSelectedOptionListener((optionName, optionCode) -> {
             processor.onNext(
-                    RowAction.create(viewModel.uid(), isSearchMode ? optionName + "_os_" + optionCode : optionCode, true)
+                    RowAction.create(viewModel.uid(), isSearchMode ? optionName + "_os_" + optionCode : optionCode, true, optionCode, optionName)
             );
-            viewModel.withValue(isSearchMode ? optionName : optionCode);
+            if (isSearchMode)
+                viewModel.withValue(optionName);
         });
 
     }

@@ -225,6 +225,10 @@ final class EnrollmentRepository implements DataEntryRepository {
                 objectStyle = ObjectStyleModel.create(objStyleCursor);
         }
 
+        if (valueType == ValueType.ORGANISATION_UNIT && !isEmpty(dataValue)) {
+            dataValue = dataValue + "_ou_" + d2.organisationUnitModule().organisationUnits.uid(dataValue).get().displayName();
+        }
+
         if (warning != null) {
             return fieldFactory.create(uid,
                     formName != null && !formName.isEmpty()? formName: label, valueType, mandatory, optionSet, dataValue, null, allowFutureDates,
