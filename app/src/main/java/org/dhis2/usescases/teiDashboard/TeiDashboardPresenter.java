@@ -1,37 +1,23 @@
 package org.dhis2.usescases.teiDashboard;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.View;
 
-import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.RuleEngineRepository;
 import org.dhis2.data.metadata.MetadataRepository;
-import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.TEIDataFragment;
-import org.dhis2.usescases.teiDashboard.eventDetail.EventDetailActivity;
-import org.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity;
 import org.dhis2.utils.DateUtils;
-import org.dhis2.utils.EventCreationType;
 import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 
 import java.util.Calendar;
 import java.util.List;
 
-import androidx.appcompat.widget.PopupMenu;
-import androidx.core.app.ActivityOptionsCompat;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -98,6 +84,11 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                     metadataRepository.getTeiOrgUnit(teUid, programUid),
                     metadataRepository.getTeiActivePrograms(teUid, false),
                     DashboardProgramModel::new)
+                    .flatMap(dashboardProgramModel1 -> metadataRepository.getObjectStylesForPrograms(dashboardProgramModel1.getEnrollmentProgramModels())
+                            .map(stringObjectStyleMap -> {
+                                dashboardProgramModel1.setProgramsObjectStyles(stringObjectStyleMap);
+                                return dashboardProgramModel1;
+                            }))
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
@@ -331,9 +322,6 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
-
-
-
 
 
     @Override
