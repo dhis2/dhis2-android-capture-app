@@ -189,7 +189,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 queryProcessor
                         .map(map -> {
                             HashMap<String, String> data = new HashMap<>(map);
-                            if (!NetworkUtils.isOnline(view.getContext()) || selectedProgram == null || Build.VERSION.SDK_INT <= 19)
+                            if (!NetworkUtils.isOnline(view.getContext()) || selectedProgram == null)
                                 return searchRepository.searchTrackedEntitiesOffline(selectedProgram, orgUnitsUid, data);
                             else
                                 return searchRepository.searchTrackedEntitiesAll(selectedProgram, orgUnitsUid, data);
