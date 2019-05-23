@@ -141,7 +141,7 @@ public class OrgUnitCascadeDialog extends DialogFragment {
                                 Timber::e
                         )
         );
-
+        setRetainInstance(true);
         return binding.getRoot();
     }
 
