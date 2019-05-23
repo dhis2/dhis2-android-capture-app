@@ -411,4 +411,8 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     public void toRelationships() {
         fromRelationship = true;
     }
+
+    public int getOrientation() {
+        return orientation;
+    }
 }
