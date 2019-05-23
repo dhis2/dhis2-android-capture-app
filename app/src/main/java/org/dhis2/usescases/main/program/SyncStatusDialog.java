@@ -1,5 +1,6 @@
 package org.dhis2.usescases.main.program;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -51,6 +52,7 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
         PROGRAM, TEI, EVENT
     }
 
+    @SuppressLint("ValidFragment")
     public SyncStatusDialog(String recordUid, ConflictType conflictType) {
         this.recordUid = recordUid;
         this.conflictType = conflictType;
@@ -84,7 +86,7 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
                 configureForEvent();
                 break;
         }
-
+        setRetainInstance(true);
 
         return binding.getRoot();
     }

@@ -78,6 +78,11 @@ public class TeiDashboardPresenterImpl implements TeiDashboardContracts.TeiDashb
                     metadataRepository.getTeiOrgUnit(teUid, programUid),
                     metadataRepository.getTeiActivePrograms(teUid, false),
                     DashboardProgramModel::new)
+                    .flatMap(dashboardProgramModel1 -> metadataRepository.getObjectStylesForPrograms(dashboardProgramModel1.getEnrollmentProgramModels())
+                            .map(stringObjectStyleMap -> {
+                                dashboardProgramModel1.setProgramsObjectStyles(stringObjectStyleMap);
+                                return dashboardProgramModel1;
+                            }))
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
@@ -160,19 +165,6 @@ public class TeiDashboardPresenterImpl implements TeiDashboardContracts.TeiDashb
         );
     }
 
- /*   @Override
-    public void displayGenerateEvent(TEIDataFragment teiDataFragment, String eventUid) {
-        compositeDisposable.add(
-                dashboardRepository.displayGenerateEvent(eventUid)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                teiDataFragment.displayGenerateEvent(),
-                                Timber::d
-                        )
-        );
-    }*/
-
     @Override
     public void generateEvent(String lastModifiedEventUid, Integer standardInterval) {
         compositeDisposable.add(
@@ -201,30 +193,6 @@ public class TeiDashboardPresenterImpl implements TeiDashboardContracts.TeiDashb
         );
     }
 
-
- /*   @Override
-    public void onShareClick(DataSetTableView mView) {
-        PopupMenu menu = new PopupMenu(view.getContext(), mView);
-
-        menu.getMenu().add(Menu.NONE, Menu.NONE, 0, "QR");
-        //menu.getMenu().add(Menu.NONE, Menu.NONE, 1, "SMS"); TODO: When SMS is ready, reactivate option
-
-        menu.setOnMenuItemClickListener(item -> {
-            switch (item.getOrder()) {
-                case 0:
-                    view.showQR();
-                    return true;
-                case 1:
-                    view.displayMessage(view.getContext().getString(R.string.feature_unavaible));
-                    return true;
-                default:
-                    return true;
-            }
-        });
-
-        menu.show();
-    }*/
-
     @Override
     public void onEnrollmentSelectorClick() {
         Bundle extras = new Bundle();
@@ -232,72 +200,12 @@ public class TeiDashboardPresenterImpl implements TeiDashboardContracts.TeiDashb
         view.goToEnrollmentList(extras);
     }
 
-   /* @Override
-    public void onShareQRClick() {
-        view.showQR();
-    }*/
-
     @Override
     public void setProgram(ProgramModel program) {
         this.programUid = program.uid();
         view.restoreAdapter(programUid);
         getData();
     }
-
-    /*@Override
-    public void seeDetails(DataSetTableView sharedView, DashboardProgramModel dashboardProgramModel) {
-        Fragment teiFragment = TEIDataFragment.getInstance();
-        Intent intent = new Intent(view.getContext(), TeiDataDetailActivity.class);
-        Bundle extras = new Bundle();
-        extras.putString("TEI_UID", teUid);
-        extras.putString("PROGRAM_UID", programUid);
-        if (dashboardProgramModel.getCurrentEnrollment() != null)
-            extras.putString("ENROLLMENT_UID", dashboardProgramModel.getCurrentEnrollment().uid());
-        intent.putExtras(extras);
-        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(view.getAbstractActivity(), sharedView, "user_info");
-        teiFragment.startActivityForResult(intent, TEIDataFragment.getDetailsRequestCode(), options.toBundle());
-    }*/
-
-   /* @Override
-    public void onEventSelected(String uid, DataSetTableView sharedView) {
-        Fragment teiFragment = TEIDataFragment.getInstance();
-        if (teiFragment != null && teiFragment.getContext() != null && teiFragment.isAdded()) {
-            Intent intent = new Intent(teiFragment.getContext(), EventInitialActivity.class);
-            intent.putExtras(EventInitialActivity.getBundle(
-                    programUid, uid, EventCreationType.DEFAULT.name(), teUid, null, null, null, dashboardProgramModel.getCurrentEnrollment().uid(), 0, dashboardProgramModel.getCurrentEnrollment().enrollmentStatus()
-            ));
-            teiFragment.startActivityForResult(intent, TEIDataFragment.getEventRequestCode(), null);
-        }
-    }*/
-
-    /*@Override
-    public void onScheduleSelected(String uid, DataSetTableView sharedView) {
-        Fragment teiFragment = TEIDataFragment.getInstance();
-        if (teiFragment != null && teiFragment.getContext() != null && teiFragment.isAdded()) {
-            Intent intent = new Intent(teiFragment.getContext(), EventDetailActivity.class);
-            Bundle extras = new Bundle();
-            extras.putString("EVENT_UID", uid);
-            extras.putString("TOOLBAR_TITLE", view.getToolbarTitle());
-            extras.putString("TEI_UID", teUid);
-            intent.putExtras(extras);
-            ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(view.getAbstractActivity(), sharedView, "shared_view");
-            teiFragment.startActivityForResult(intent, TEIDataFragment.getEventRequestCode(), options.toBundle());
-        }
-    }*/
-
-    /*@Override
-    public void onFollowUp(DashboardProgramModel dashboardProgramModel) {
-        boolean followup = dashboardRepository.setFollowUp(dashboardProgramModel.getCurrentEnrollment().uid());
-
-
-        view.showToast(followup ?
-                view.getContext().getString(R.string.follow_up_enabled) :
-                view.getContext().getString(R.string.follow_up_disabled));
-
-        TEIDataFragment.getInstance().switchFollowUp(followup);
-
-
-    }*/
 
     @Override
     public void onDettach() {
@@ -331,53 +239,8 @@ public class TeiDashboardPresenterImpl implements TeiDashboardContracts.TeiDashb
         return programWritePermission;
     }
 
-   /* @Override
-    public void completeEnrollment(TEIDataFragment teiDataFragment) {
-        if (programWritePermission) {
-            Flowable<Long> flowable = null;
-            EnrollmentStatus newStatus = EnrollmentStatus.COMPLETED;
-
-            flowable = dashboardRepository.updateEnrollmentStatus(dashboardProgramModel.getCurrentEnrollment().uid(), newStatus);
-            compositeDisposable.add(flowable
-                    .subscribeOn(Schedulers.computation())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .map(result -> newStatus)
-                    .subscribe(
-                            teiDataFragment.enrollmentCompleted(),
-                            Timber::d
-                    )
-            );
-        } else
-            view.displayMessage(null);
-    }*/
-
     @Override
     public void showDescription(String description) {
         view.showDescription(description);
     }
-
-    /*public void getCatComboOptions(EventModel event) {
-        compositeDisposable.add(
-                dashboardRepository.catComboForProgram(event.program())
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(catCombo -> {
-                                    for (ProgramStageModel programStage : dashboardProgramModel.getProgramStages()) {
-                                        if (event.programStage().equals(programStage.uid()))
-                                            view.showCatComboDialog(event.uid(), catCombo);
-                                    }
-                                },
-                                Timber::e));
-    }*/
-
-   /* @Override
-    public void changeCatOption(String eventUid, String catOptionComboUid) {
-        metadataRepository.saveCatOption(eventUid, catOptionComboUid);
-    }*/
-
-   /* @Override
-    public void setDefaultCatOptCombToEvent(String eventUid) {
-        dashboardRepository.setDefaultCatOptCombToEvent(eventUid);
-    }*/
-
 }

@@ -105,7 +105,7 @@ public class OrgUnitDialog extends DialogFragment {
         binding.acceptButton.setOnClickListener(possitiveListener);
         binding.clearButton.setOnClickListener(negativeListener);
         renderTree(myOrgs);
-
+        setRetainInstance(true);
         return binding.getRoot();
     }
 

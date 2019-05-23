@@ -43,6 +43,7 @@ import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionDeviceRendering;
 import org.hisp.dhis.android.core.program.ProgramStageSectionModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
+import org.hisp.dhis.android.core.program.ProgramType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 import org.hisp.dhis.rules.models.Rule;
