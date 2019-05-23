@@ -427,7 +427,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         for (String optionGroupToHide : optionsGroupsToHide) {
             while (fieldIterator.hasNext()) {
                 FieldViewModel field = fieldIterator.next();
-                if (field instanceof ImageViewModel && eventCaptureRepository.optionIsInOptionGroup(field.uid().split(".")[1],optionGroupToHide))
+                if (field instanceof ImageViewModel && eventCaptureRepository.optionIsInOptionGroup(field.uid().split(".")[1], optionGroupToHide))
                     fieldIterator.remove();
             }
         }
@@ -594,6 +594,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         if (eventCaptureRepository.reopenEvent()) {
             currentSectionPosition.onNext(0);
             view.showSnackBar(R.string.event_reopened);
+            eventStatus = EventStatus.ACTIVE;
         }
     }
 

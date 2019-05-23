@@ -420,6 +420,10 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         fromRelationship = true;
     }
 
+    public int getOrientation() {
+        return orientation;
+    }
+
 
     private void setProgramColor(String color) {
         int programTheme = ColorUtils.getThemeFromColor(color);
