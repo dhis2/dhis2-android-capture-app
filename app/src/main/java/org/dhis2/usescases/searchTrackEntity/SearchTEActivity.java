@@ -17,6 +17,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.Spinner;
 
@@ -258,7 +259,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 }
 
                 if (!presenter.getQueryData().isEmpty() && data.val2())
-                    needsSearch.set(false);
+                    setFabIcon(false);
 
             });
         } else {
@@ -401,5 +402,16 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     public void setFabIcon(boolean needsSearch) {
         this.needsSearch.set(needsSearch);
+        animSearchFab(needsSearch);
+    }
+
+    private void animSearchFab(boolean hasQuery){
+        if(hasQuery) {
+            binding.enrollmentButton.startAnimation(
+                    AnimationUtils.loadAnimation(binding.enrollmentButton.getContext(), R.anim.bounce_animation));
+        }else {
+            binding.enrollmentButton.clearAnimation();
+            hideKeyboard();
+        }
     }
 }
