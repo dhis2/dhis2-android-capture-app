@@ -22,7 +22,6 @@ import org.hisp.dhis.android.core.user.UserCredentialsModel;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
 import java.util.Objects;
 
 import javax.annotation.Nonnull;
@@ -226,46 +225,49 @@ public final class DataValueStore implements DataEntryStore {
                         ContentValues values = eventModel.toContentValues();
                         values.put(EventModel.Columns.STATE, State.TO_UPDATE.toString());
 
-                        if (briteDatabase.update(EventModel.TABLE, values,
-                                EventModel.Columns.UID + " = ?", eventUid) <= 0) {
-
-                            throw new IllegalStateException(String.format(Locale.US, "Event=[%s] " +
-                                    "has not been successfully updated", eventUid));
-                        }
+                        briteDatabase.update(EventModel.TABLE, values,
+                                EventModel.Columns.UID + " = ?", eventUid);
                     }
 
                     if (eventModel.enrollment() != null) {
-                        EnrollmentModel enrollment = null;
-
-                        try (Cursor enrollmentCursor = briteDatabase.query("SELECT Enrollment.* FROM Enrollment " +
-                                "WHERE Enrollment.uid = ?", eventModel.enrollment())) {
-                            if (enrollmentCursor.moveToFirst())
-                                enrollment = EnrollmentModel.create(enrollmentCursor);
-                        } finally {
-                            if (enrollment != null) {
-                                ContentValues cv = enrollment.toContentValues();
-                                cv.put(TrackedEntityInstanceModel.Columns.STATE, enrollment.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
-                                cv.put(TrackedEntityInstanceModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
-                                briteDatabase.update(EnrollmentModel.TABLE, cv,"uid = ?", eventModel.enrollment());
-                            }
-                        }
-                        TrackedEntityInstanceModel tei = null;
-                        try (Cursor teiCursor = briteDatabase.query("SELECT TrackedEntityInstance .* FROM TrackedEntityInstance " +
-                                "JOIN Enrollment ON Enrollment.trackedEntityInstance = TrackedEntityInstance.uid WHERE Enrollment.uid = ?", eventModel.enrollment())) {
-                            if (teiCursor.moveToFirst())
-                                tei = TrackedEntityInstanceModel.create(teiCursor);
-                        } finally {
-                            if (tei != null) {
-                                ContentValues cv = tei.toContentValues();
-                                cv.put(TrackedEntityInstanceModel.Columns.STATE, tei.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
-                                cv.put(TrackedEntityInstanceModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
-                                briteDatabase.update(TrackedEntityInstanceModel.TABLE, cv, "uid = ?", tei.uid());
-                            }
-                        }
+                        updateEnrollment(eventModel);
+                        updateTEI(eventModel);
                     }
 
                     return Flowable.just(status);
                 });
     }
 
+    private void updateTEI(EventModel eventModel) {
+        TrackedEntityInstanceModel tei = null;
+        try (Cursor teiCursor = briteDatabase.query("SELECT TrackedEntityInstance .* FROM TrackedEntityInstance " +
+                "JOIN Enrollment ON Enrollment.trackedEntityInstance = TrackedEntityInstance.uid WHERE Enrollment.uid = ?", eventModel.enrollment())) {
+            if (teiCursor.moveToFirst())
+                tei = TrackedEntityInstanceModel.create(teiCursor);
+        } finally {
+            if (tei != null) {
+                ContentValues cv = tei.toContentValues();
+                cv.put(TrackedEntityInstanceModel.Columns.STATE, tei.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
+                cv.put(TrackedEntityInstanceModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
+                briteDatabase.update(TrackedEntityInstanceModel.TABLE, cv, "uid = ?", tei.uid());
+            }
+        }
+    }
+
+    private void updateEnrollment(EventModel eventModel) {
+        EnrollmentModel enrollment = null;
+
+        try (Cursor enrollmentCursor = briteDatabase.query("SELECT Enrollment.* FROM Enrollment " +
+                "WHERE Enrollment.uid = ?", eventModel.enrollment())) {
+            if (enrollmentCursor.moveToFirst())
+                enrollment = EnrollmentModel.create(enrollmentCursor);
+        } finally {
+            if (enrollment != null) {
+                ContentValues cv = enrollment.toContentValues();
+                cv.put(TrackedEntityInstanceModel.Columns.STATE, enrollment.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
+                cv.put(TrackedEntityInstanceModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
+                briteDatabase.update(EnrollmentModel.TABLE, cv, "uid = ?", eventModel.enrollment());
+            }
+        }
+    }
 }

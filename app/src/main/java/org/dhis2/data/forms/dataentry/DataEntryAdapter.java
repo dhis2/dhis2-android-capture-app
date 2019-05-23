@@ -186,29 +186,36 @@ public final class DataEntryAdapter extends Adapter {
         return viewModels.size();
     }
 
+    private int getEditTextModelType(FieldViewModel viewModel) {
+        if (((EditTextModel) viewModel).valueType() != ValueType.LONG_TEXT)
+            return EDITTEXT;
+        else
+            return LONG_TEXT;
+    }
+
+    private int getDateTimeViewModelType(FieldViewModel viewModel) {
+        if (((DateTimeViewModel) viewModel).valueType() == ValueType.DATE)
+            return DATE;
+        if (((DateTimeViewModel) viewModel).valueType() == ValueType.TIME)
+            return TIME;
+        else
+            return DATETIME;
+    }
+
     @Override
     public int getItemViewType(int position) {
 
         FieldViewModel viewModel = viewModels.get(position);
         if (viewModel instanceof EditTextModel) {
-            if (((EditTextModel) viewModel).valueType() != ValueType.LONG_TEXT)
-                return EDITTEXT;
-            else
-                return LONG_TEXT;
+            return getEditTextModelType(viewModel);
         } else if (viewModel instanceof RadioButtonViewModel) {
             return CHECKBOX;
         } else if (viewModel instanceof SpinnerViewModel) {
             return SPINNER;
         } else if (viewModel instanceof CoordinateViewModel) {
             return COORDINATES;
-
         } else if (viewModel instanceof DateTimeViewModel) {
-            if (((DateTimeViewModel) viewModel).valueType() == ValueType.DATE)
-                return DATE;
-            if (((DateTimeViewModel) viewModel).valueType() == ValueType.TIME)
-                return TIME;
-            else
-                return DATETIME;
+            return getDateTimeViewModelType(viewModel);
         } else if (viewModel instanceof AgeViewModel) {
             return AGEVIEW;
         } else if (viewModel instanceof FileViewModel) {

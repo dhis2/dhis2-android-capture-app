@@ -282,6 +282,16 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
         super.onPause();
     }
 
+    private void removeDataEntryFragments(){
+        for (Fragment fragment : getChildFragmentManager().getFragments()) {
+            if (fragment instanceof DataEntryFragment) {
+                continue;
+            } else if (fragment != null) {
+                getChildFragmentManager().beginTransaction().remove(fragment).commit();
+            }
+        }
+    }
+
     @NonNull
     @Override
     public Consumer<List<FormSectionViewModel>> renderSectionViewModels() {
@@ -289,13 +299,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
             int currentPostion = -1;
             if (formSectionAdapter.getCount() > 0 && formSectionAdapter.areDifferentSections(sectionViewModels)) {
                 currentPostion = viewPager.getCurrentItem();
-                for (Fragment fragment : getChildFragmentManager().getFragments()) {
-                    if (fragment instanceof DataEntryFragment) {
-                        continue;
-                    } else if (fragment != null) {
-                        getChildFragmentManager().beginTransaction().remove(fragment).commit();
-                    }
-                }
+                removeDataEntryFragments();
                 formSectionAdapter = new FormSectionAdapter(getChildFragmentManager());
                 viewPager.setAdapter(formSectionAdapter);
             }
