@@ -253,17 +253,25 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
 
     private List<ProgramRule> filterRules(List<ProgramRule> rules) {
-        /*Program program = d2.programModule().programs.uid(currentEvent.program()).withAllChildren().get();
+        Program program = d2.programModule().programs.uid(currentEvent.program()).withAllChildren().get();
         if (program.programType().equals(ProgramType.WITH_REGISTRATION)) {
             Iterator<ProgramRule> iterator = rules.iterator();
             while (iterator.hasNext()) {
-                ProgramRule programRule = iterator.next();
-                if (programRule.programStage() == null)
+                if (haveDisplayActionIndicator(iterator.next()))
                     iterator.remove();
             }
-        }*/
-        //TODO: THIS IS REMOVING ALL RULES IN SOME CASES IT SHOULD ONLY APPLY FOR PROGRAM RULES WITH ACTION DISPLAY KEY VALUE PAIR
+        }
         return rules;
+    }
+
+    private boolean haveDisplayActionIndicator(ProgramRule programRule){
+        for(ProgramRuleAction programRuleAction: programRule.programRuleActions()){
+            if((programRuleAction.programRuleActionType() == ProgramRuleActionType.DISPLAYTEXT ||
+                    programRuleAction.programRuleActionType() == ProgramRuleActionType.DISPLAYKEYVALUEPAIR)
+                    && programRule.programStage() == null)
+                return true;
+        }
+        return false;
     }
 
     private List<Rule> trasformToRule(List<ProgramRule> rules) {
