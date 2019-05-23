@@ -49,7 +49,6 @@
         <item name="tabIndicatorHeight">2dp</item>
         <item name="tabTextAppearance">@style/DhisTabText</item>
         <item name="tabSelectedTextColor">?colorAccent</item>
-        <item name="tabBackground">?colorPrimary</item>
         <item name="android:background">?colorPrimary</item>
     </style>
 
