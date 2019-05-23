@@ -9,6 +9,7 @@ import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
+import android.text.method.ScrollingMovementMethod;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.ImageView;
@@ -64,6 +65,13 @@ public class Bindings {
             Drawable drawable = view.getResources().getDrawable(android.R.drawable.dialog_holo_light_frame);
             drawable.setColorFilter(new PorterDuffColorFilter(view.getResources().getColor(R.color.colorGreyDefault), PorterDuff.Mode.MULTIPLY));
             view.setBackground(drawable);
+        }
+    }
+
+    @BindingAdapter("scrollingTextView")
+    public static void setScrollingTextView(TextView textView, boolean canScroll) {
+        if (canScroll) {
+            textView.setMovementMethod(new ScrollingMovementMethod());
         }
     }
 

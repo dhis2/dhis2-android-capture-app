@@ -20,6 +20,7 @@ import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
+import org.hisp.dhis.android.core.common.ObjectWithUid;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
@@ -402,7 +403,6 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     }
 
     private List<FieldViewModel> checkRenderType(List<FieldViewModel> fieldViewModels) {
-        long renderingCheckInitTime = System.currentTimeMillis();
         ArrayList<FieldViewModel> renderList = new ArrayList<>();
 
         for (FieldViewModel fieldViewModel : fieldViewModels) {
@@ -447,8 +447,6 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 renderList.add(fieldViewModel);
         }
 
-        Timber.d("RENDERING CHECK TIME IS %s", System.currentTimeMillis() - renderingCheckInitTime);
-
         return renderList;
 
     }
@@ -456,40 +454,12 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     @NonNull
     @Override
     public Flowable<List<FieldViewModel>> list() {
-
-       /* return Flowable.fromCallable(() -> {
-
-            long init = System.currentTimeMillis();
-            accessDataWrite = getAccessDataWrite();
-            ProgramStage programStage = d2.programModule().programStages.uid(currentEvent.programStage()).withAllChildren().get();
-            List<ProgramStageSection> sections = d2.programModule().programStageSections.byProgramStageUid().eq(programStage.uid()).withAllChildren().get();
-
-            List<ProgramStageDataElement> programStageDataElementList = programStage.programStageDataElements();
-            Map<String, ProgramStageDataElement> programStageDataElementMap = new HashMap<>();
-            for (ProgramStageDataElement programStageDataElement : programStageDataElementList)
-                programStageDataElementMap.put(programStageDataElement.dataElement().uid(), programStageDataElement);
-
-            List<FieldViewModel> fieldViewModelList;
-
-            Timber.d("field list init at %s", System.currentTimeMillis() - init);
-            if (sections != null && !sections.isEmpty())
-                fieldViewModelList = getFieldViewModelForSection(sections, programStageDataElementMap);
-            else
-                fieldViewModelList = getFieldViewModelFor(programStageDataElementList);
-
-            long finalTime = System.currentTimeMillis() - init;
-            Timber.d("list() took %s to load %s viewmodels", finalTime, fieldViewModelList.size());
-
-            return fieldViewModelList;
-        }).map(this::checkRenderType);*/
-
         return briteDatabase
                 .createQuery(TrackedEntityDataValueModel.TABLE, prepareStatement(eventUid))
                 .mapToList(this::transform)
                 .map(this::checkRenderType)
                 .toFlowable(BackpressureStrategy.BUFFER)
-                .doOnNext(onNext -> Timber.d("LIST ON NEXT! at %s", System.currentTimeMillis()))
-                ;
+                .doOnNext(onNext -> Timber.d("LIST ON NEXT! at %s", System.currentTimeMillis()));
     }
 
     @NonNull
@@ -605,8 +575,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                                 .map(Result::success)
                                 .onErrorReturn(error -> Result.failure(new Exception(error)))
 
-                )
-                .doOnNext(onNext -> Timber.d("RULES ON NEXT! at %s", System.currentTimeMillis()));
+                );
     }
 
     @Override
@@ -781,5 +750,17 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     @Override
     public Observable<List<OrganisationUnitLevel>> getOrgUnitLevels() {
         return Observable.just(d2.organisationUnitModule().organisationUnitLevels.get());
+    }
+
+    @Override
+    public boolean optionIsInOptionGroup(String optionUid, String optionGroupToHide) {
+        List<ObjectWithUid> optionGroupOptions = d2.optionModule().optionGroups.uid(optionGroupToHide).withAllChildren().get().options();
+        boolean isInGroup = false;
+        if (optionGroupOptions != null)
+            for (ObjectWithUid uidObject : optionGroupOptions)
+                if (uidObject.uid().equals(optionUid))
+                    isInGroup = true;
+
+        return isInGroup;
     }
 }

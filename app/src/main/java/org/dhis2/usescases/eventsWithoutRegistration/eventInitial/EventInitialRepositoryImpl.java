@@ -190,6 +190,8 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                     orgUnitUid, programStage);
             return Observable.error(new SQLiteConstraintException(message));
         } else {
+            if (enrollmentUid != null)
+                updateEnrollment(enrollmentUid);
             if (trackedEntityInstanceUid != null)
                 updateTei(trackedEntityInstanceUid);
             updateProgramTable(createDate, programUid);
@@ -244,6 +246,8 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                     orgUnitUid, programStage);
             return Observable.error(new SQLiteConstraintException(message));
         } else {
+            if (enrollmentUid != null)
+                updateEnrollment(enrollmentUid);
             if (trackedEntityInstanceUid != null)
                 updateTei(trackedEntityInstanceUid);
             updateTrackedEntityInstance(uid, trackedEntityInstanceUid, orgUnitUid);
@@ -370,6 +374,8 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                 String message = String.format(Locale.US, "Failed to update event for uid=[%s]", eventUid);
                 return Observable.error(new SQLiteConstraintException(message));
             }
+            if(event.enrollment()!=null)
+                updateEnrollment(event.enrollment());
             if (trackedEntityInstance != null)
                 updateTei(trackedEntityInstance);
         }

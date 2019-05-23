@@ -29,6 +29,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.SectionSelecto
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.utils.ColorUtils;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.List;
@@ -63,7 +64,7 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NotNull Context context) {
         super.onAttach(context);
         this.activity = (EventCaptureActivity) context;
         setRetainInstance(true);
@@ -136,7 +137,7 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
                 activity.getPresenter().getOrgUnits(),
                 new ObservableBoolean(true),
                 flowableProcessor,
-                flowableOptions, activity.getPresenter().getLevels());
+                flowableOptions);
 
         RecyclerView.LayoutManager layoutManager;
         if (arguments.renderType() != null && arguments.renderType().equals(ProgramStageSectionRenderingType.MATRIX.name())) {
@@ -147,8 +148,6 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
 
         binding.formRecycler.setLayoutManager(layoutManager);
         binding.formRecycler.setAdapter(dataEntryAdapter);
-
-
     }
 
     public void showFields(List<FieldViewModel> updates) {

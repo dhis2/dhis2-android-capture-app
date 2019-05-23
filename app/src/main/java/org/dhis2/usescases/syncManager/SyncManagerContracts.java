@@ -27,6 +27,10 @@ public class SyncManagerContracts {
         void showSyncErrors(List<TrackerImportConflict> data);
 
         void showLocalDataDeleted(boolean error);
+
+        void syncData();
+
+        void syncMeta();
     }
 
     public interface SyncManagerPresenter {

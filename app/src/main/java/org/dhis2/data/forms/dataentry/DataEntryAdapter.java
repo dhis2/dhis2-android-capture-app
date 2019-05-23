@@ -39,7 +39,6 @@ import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedRow;
 import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel;
 import org.dhis2.data.tuples.Trio;
 import org.hisp.dhis.android.core.common.ValueType;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 
 import java.util.ArrayList;
@@ -84,8 +83,6 @@ public final class DataEntryAdapter extends Adapter {
 
     private final FlowableProcessor<Trio<String, String, Integer>> processorOptionSet;
 
-    private final Observable<List<OrganisationUnitLevel>> levels;
-
     private final RecyclerView.AdapterDataObserver adapterDataObserver = new RecyclerView.AdapterDataObserver() {
         @Override
         public void onItemRangeInserted(int positionStart, int itemCount) {
@@ -104,8 +101,7 @@ public final class DataEntryAdapter extends Adapter {
     public DataEntryAdapter(@NonNull LayoutInflater layoutInflater,
                             @NonNull FragmentManager fragmentManager,
                             @NonNull DataEntryArguments dataEntryArguments,
-                            ObservableBoolean isEditable,
-                            Observable<List<OrganisationUnitLevel>> levels) { //TODO: Add isEditable to all fields and test if can be changed on the fly
+                            ObservableBoolean isEditable) { //TODO: Add isEditable to all fields and test if can be changed on the fly
         setHasStableIds(true);
         rows = new ArrayList<>();
         viewModels = new ArrayList<>();
@@ -113,7 +109,6 @@ public final class DataEntryAdapter extends Adapter {
         imageSelector = new ObservableField<>("");
         currentPosition = PublishProcessor.create();
         this.processorOptionSet = PublishProcessor.create();
-        this.levels = levels;
 
         rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, true, dataEntryArguments.renderType(), false));
         rows.add(BUTTON, new FileRow(layoutInflater, true));
@@ -142,8 +137,7 @@ public final class DataEntryAdapter extends Adapter {
                             @NonNull Observable<List<OrganisationUnitModel>> orgUnits,
                             ObservableBoolean isEditable,//TODO: Add isEditable to all fields and test if can be changed on the fly
                             @NonNull FlowableProcessor<RowAction> processor,
-                            @NonNull FlowableProcessor<Trio<String, String, Integer>> processorOptSet,
-                            Observable<List<OrganisationUnitLevel>> levels) {
+                            @NonNull FlowableProcessor<Trio<String, String, Integer>> processorOptSet) {
         setHasStableIds(true);
         rows = new ArrayList<>();
         viewModels = new ArrayList<>();
@@ -151,7 +145,6 @@ public final class DataEntryAdapter extends Adapter {
         imageSelector = new ObservableField<>("");
         currentPosition = PublishProcessor.create();
         this.processorOptionSet = processorOptSet;
-        this.levels = levels;
 
         rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, true, dataEntryArguments.renderType(), false));
         rows.add(BUTTON, new FileRow(layoutInflater, true));
@@ -186,9 +179,6 @@ public final class DataEntryAdapter extends Adapter {
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         rows.get(holder.getItemViewType()).onBind(holder,
                 viewModels.get(holder.getAdapterPosition()));
-
-        if (position != 0 && position == focusPosition)
-            holder.itemView.requestFocus();
     }
 
     @Override

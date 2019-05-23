@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -170,6 +171,12 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
         binding.executePendingBindings();
 
+        if (getSharedPreferences().getString("COMPLETED_EVENT", null) != null) {
+            presenter.displayGenerateEvent(getSharedPreferences().getString("COMPLETED_EVENT", null));
+            getSharedPreferences().edit().remove("COMPLETED_EVENT").apply();
+        }
+
+
     }
 
     public static int getDetailsRequestCode() {
@@ -191,8 +198,12 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
             presenter.getTEIEvents();
             if (data != null) {
                 String lastModifiedEventUid = data.getStringExtra(Constants.EVENT_UID);
-                if (lastModifiedEventUid != null)
-                    presenter.displayGenerateEvent(lastModifiedEventUid);
+                if (((TeiDashboardMobileActivity) context).getOrientation() != Configuration.ORIENTATION_LANDSCAPE)
+                    getSharedPreferences().edit().putString("COMPLETED_EVENT", lastModifiedEventUid).apply();
+                else {
+                    if (lastModifiedEventUid != null)
+                        presenter.displayGenerateEvent(lastModifiedEventUid);
+                }
             }
 
         }
@@ -333,8 +344,10 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
     @Override
     public void displayGenerateEvent(String eventUid) {
-        if (eventUid != null)
+        if (eventUid != null) {
             presenter.displayGenerateEvent(eventUid);
+            dashboardViewModel.updateEventUid(null);
+        }
     }
 
     @Override
@@ -365,6 +378,6 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
     @Override
     public void openEventCapture(Intent intent) {
-        this.startActivity(intent);
+        this.startActivityForResult(intent, REQ_EVENT, null);
     }
 }

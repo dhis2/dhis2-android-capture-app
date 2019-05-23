@@ -109,6 +109,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
 
     @Override
     public void goToAddRelationship(Intent intent) {
+        ((TeiDashboardMobileActivity)getActivity()).toRelationships();
         this.startActivityForResult(intent, Constants.REQ_ADD_RELATIONSHIP);
     }
 

@@ -133,8 +133,10 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 state -> {
-                                    if (state != State.WARNING && state != State.ERROR)
-                                        setNoConflictMessage();
+                                    if (state == State.TO_POST || state == State.TO_UPDATE) {
+                                        setNoConflictMessage(getString(R.string.no_conflicts_update_message));
+                                    } else if (state != State.WARNING && state != State.ERROR)
+                                        setNoConflictMessage(getString(R.string.no_conflicts_message));
                                     else
                                         setProgramConflictMessage(state);
                                 },
@@ -189,7 +191,7 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                trackedEntityType -> binding.programName.setText(String.format("%s : %s", trackedEntityType.displayName(), recordUid)),
+                                trackedEntityType -> binding.programName.setText(trackedEntityType.displayName()),
                                 error -> dismiss()
                         )
         );
@@ -201,7 +203,7 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
                         .subscribe(
                                 conflicts -> {
                                     if (conflicts.isEmpty())
-                                        setNoConflictMessage();
+                                        setNoConflictMessage(getString(R.string.no_conflicts_update_message));
                                     else
                                         prepareConflictAdapter(conflicts);
                                 },
@@ -225,17 +227,7 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
     }
 
     private void configureForEvent() {
-        compositeDisposable.add(
-                Observable.fromCallable(() -> d2.programModule().programStages
-                        .uid(d2.eventModule().events.uid(recordUid).get().programStage())
-                        .get())
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                stage -> binding.programName.setText(String.format("%s : %s", stage.displayName(), recordUid)),
-                                error -> dismiss()
-                        )
-        );
+        binding.programName.setText(R.string.event_event);
 
         compositeDisposable.add(
                 Observable.fromCallable(() -> d2.importModule().trackerImportConflicts.byEventUid().eq(recordUid).get())
@@ -244,7 +236,7 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
                         .subscribe(
                                 conflicts -> {
                                     if (conflicts.isEmpty())
-                                        setNoConflictMessage();
+                                        setNoConflictMessage(getString(R.string.no_conflicts_update_message));
                                     else
                                         prepareConflictAdapter(conflicts);
                                 },
@@ -299,8 +291,9 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
         setNetworkMessage();
     }
 
-    private void setNoConflictMessage() {
+    private void setNoConflictMessage(String message) {
         binding.synsStatusRecycler.setVisibility(View.GONE);
+        binding.noConflictMessage.setText(message);
         binding.noConflictMessage.setVisibility(View.VISIBLE);
         setNetworkMessage();
 
