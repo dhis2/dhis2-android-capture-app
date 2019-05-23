@@ -36,8 +36,6 @@ public class EventCaptureContract {
 
         Consumer<Float> updatePercentage();
 
-        void setMandatoryWarning(Map<String, FieldViewModel> emptyMandatoryFields);
-
         void attemptToFinish(boolean canComplete);
 
         void showCompleteActions(boolean canComplete);
@@ -151,6 +149,8 @@ public class EventCaptureContract {
         boolean isEventExpired(String eventUid);
 
         Observable<List<OrganisationUnitLevel>> getOrgUnitLevels();
+
+        boolean optionIsInOptionGroup(String optionUid, String optionGroupToHide);
     }
 
 }

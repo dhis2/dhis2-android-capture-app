@@ -65,6 +65,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     private boolean changingProgram;
 
     private DashboardViewModel dashboardViewModel;
+    private boolean fromRelationship;
 
 
     @Override
@@ -154,6 +155,8 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             currentAdapter = adapter;
             binding.teiPager.setAdapter(adapter);
             binding.tabLayout.setVisibility(View.VISIBLE);
+            if (fromRelationship)
+                binding.teiPager.setCurrentItem(2,false);
         } else {
             tabletAdapter = new DashboardPagerTabletAdapter(this, getSupportFragmentManager(), programUid);
             currentAdapter = tabletAdapter;
@@ -178,6 +181,8 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             binding.tabLayout.setVisibility(View.GONE);
             binding.dotsIndicator.setVisibility(View.VISIBLE);
             binding.dotsIndicator.setViewPager(binding.teiPager);
+            if (fromRelationship)
+                binding.teiPager.setCurrentItem(1,false);
         }
 
     }
@@ -304,6 +309,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                 currentAdapter = null;
                 changingProgram = true;
             }
+
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
@@ -402,4 +408,11 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         return programUid;
     }
 
+    public void toRelationships() {
+        fromRelationship = true;
+    }
+
+    public int getOrientation() {
+        return orientation;
+    }
 }
