@@ -436,10 +436,11 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             prefs.edit().putInt(Constants.PROGRAM_THEME, programTheme).apply();
             binding.toolbar.setBackgroundColor(programColor);
             binding.tabLayout.setBackgroundColor(programColor);
-            if (binding.dotsIndicator.getVisibility() == View.VISIBLE) {
-                binding.dotsIndicator.setDotIndicatorColor(programColor);
-                binding.dotsIndicator.setStrokeDotsIndicatorColor(programColor);
-            }
+            if(getOrientation() == Configuration.ORIENTATION_LANDSCAPE)
+                if (binding.dotsIndicator.getVisibility() == View.VISIBLE) {
+                    binding.dotsIndicator.setDotIndicatorColor(programColor);
+                    binding.dotsIndicator.setStrokeDotsIndicatorColor(programColor);
+                }
         } else {
             prefs.edit().remove(Constants.PROGRAM_THEME).apply();
             int colorPrimary;
@@ -462,10 +463,11 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             }
             binding.toolbar.setBackgroundColor(ContextCompat.getColor(this, colorPrimary));
             binding.tabLayout.setBackgroundColor(ContextCompat.getColor(this, colorPrimary));
-            if (binding.dotsIndicator.getVisibility() == View.VISIBLE) {
-                binding.dotsIndicator.setDotIndicatorColor(ContextCompat.getColor(this, colorPrimary));
-                binding.dotsIndicator.setStrokeDotsIndicatorColor(ContextCompat.getColor(this, colorPrimary));
-            }
+            if(getOrientation() == Configuration.ORIENTATION_LANDSCAPE)
+                if (binding.dotsIndicator.getVisibility() == View.VISIBLE) {
+                    binding.dotsIndicator.setDotIndicatorColor(ContextCompat.getColor(this, colorPrimary));
+                    binding.dotsIndicator.setStrokeDotsIndicatorColor(ContextCompat.getColor(this, colorPrimary));
+                }
         }
 
         binding.executePendingBindings();
