@@ -2,6 +2,8 @@ package org.dhis2.usescases.programStageSelection;
 
 import android.database.Cursor;
 
+import androidx.annotation.NonNull;
+
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.forms.RulesRepository;
@@ -27,6 +29,7 @@ import org.hisp.dhis.rules.models.RuleEnrollment;
 import org.hisp.dhis.rules.models.RuleEvent;
 import org.hisp.dhis.rules.models.TriggerEnvironment;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -36,7 +39,6 @@ import java.util.Objects;
 
 import javax.annotation.Nonnull;
 
-import androidx.annotation.NonNull;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -130,10 +132,48 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
                         .cacheWithInitialCapacity(1);
     }
 
+    private RuleEvent.Status getStatus(Cursor cursor) {
+        String eventStatus;
+        if (cursor.getString(2).equals(EventStatus.VISITED.name()))
+            eventStatus = EventStatus.ACTIVE.name();
+        else
+            eventStatus = cursor.getString(2);
+
+        return RuleEvent.Status.valueOf(eventStatus);
+    }
+
+    private List<RuleDataValue> getDataValues(Cursor cursor, String eventUid) throws ParseException {
+        List<RuleDataValue> dataValues = new ArrayList<>();
+        try (Cursor dataValueCursor = briteDatabase.query(QUERY_VALUES, eventUid == null ? "" : eventUid)) {
+            if (dataValueCursor != null && dataValueCursor.moveToFirst()) {
+                for (int i = 0; i < dataValueCursor.getCount(); i++) {
+                    Date eventDateV = DateUtils.databaseDateFormat().parse(cursor.getString(0));
+                    String programStage = cursor.getString(1);
+                    String dataElement = cursor.getString(2);
+                    boolean useCode = cursor.getInt(4) == 1;
+                    String optionCode = cursor.getString(5);
+                    String optionName = cursor.getString(6);
+
+                    dataValues.add(RuleDataValue.create(eventDateV, programStage,
+                            dataElement, getValue(cursor, optionCode, optionName, useCode)));
+                    dataValueCursor.moveToNext();
+                }
+            }
+        }
+        return dataValues;
+    }
+
+    private String getValue(Cursor cursor, String optionCode, String optionName, boolean useCode) {
+        String value = cursor.getString(3) != null ? cursor.getString(3) : "";
+        if (!isEmpty(optionCode) && !isEmpty(optionName)) {
+            value = useCode ? optionCode : optionName; //If de has optionSet then check if value should be code or name for program rules
+        }
+        return value;
+    }
+
     private Flowable<List<RuleEvent>> ruleEvents(String enrollmentUid) {
         return briteDatabase.createQuery(EventModel.TABLE, QUERY_EVENT, enrollmentUid == null ? "" : enrollmentUid)
                 .mapToList(cursor -> {
-                    List<RuleDataValue> dataValues = new ArrayList<>();
                     String eventUid = cursor.getString(0);
                     String programStageUid = cursor.getString(1);
                     Date eventDate = DateUtils.databaseDateFormat().parse(cursor.getString(3));
@@ -141,32 +181,7 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
                     String orgUnit = cursor.getString(5);
                     String orgUnitCode = getOrgUnitCode(orgUnit);
                     String programStageName = cursor.getString(6);
-                    String eventStatus;
-                    if (cursor.getString(2).equals(EventStatus.VISITED.name()))
-                        eventStatus = EventStatus.ACTIVE.name();
-                    else
-                        eventStatus = cursor.getString(2);
-
-                    RuleEvent.Status status = RuleEvent.Status.valueOf(eventStatus);
-
-                    try (Cursor dataValueCursor = briteDatabase.query(QUERY_VALUES, eventUid == null ? "" : eventUid)) {
-                        if (dataValueCursor != null && dataValueCursor.moveToFirst()) {
-                            for (int i = 0; i < dataValueCursor.getCount(); i++) {
-                                Date eventDateV = DateUtils.databaseDateFormat().parse(cursor.getString(0));
-                                String programStage = cursor.getString(1);
-                                String dataElement = cursor.getString(2);
-                                String value = cursor.getString(3) != null ? cursor.getString(3) : "";
-                                Boolean useCode = cursor.getInt(4) == 1;
-                                String optionCode = cursor.getString(5);
-                                String optionName = cursor.getString(6);
-                                if (!isEmpty(optionCode) && !isEmpty(optionName))
-                                    value = useCode ? optionCode : optionName; //If de has optionSet then check if value should be code or name for program rules
-                                dataValues.add(RuleDataValue.create(eventDateV, programStage,
-                                        dataElement, value));
-                                dataValueCursor.moveToNext();
-                            }
-                        }
-                    }
+                    RuleEvent.Status status = getStatus(cursor);
 
                     return RuleEvent.builder()
                             .event(eventUid)
@@ -177,7 +192,7 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
                             .dueDate(dueDate)
                             .organisationUnit(orgUnit)
                             .organisationUnitCode(orgUnitCode)
-                            .dataValues(dataValues)
+                            .dataValues(getDataValues(cursor, eventUid))
                             .build();
 
                 }).toFlowable(BackpressureStrategy.LATEST);
