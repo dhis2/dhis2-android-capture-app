@@ -7,6 +7,7 @@ import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.period.DatePeriod;
+import org.hisp.dhis.android.core.program.Program;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +26,98 @@ class HomeRepositoryImpl implements HomeRepository {
         this.d2 = d2;
     }
 
+    private String getTypeName(Program program) {
+        String typeName;
+        if (program.programType() == WITH_REGISTRATION) {
+            typeName = program.trackedEntityType() != null ? program.trackedEntityType().displayName() : "TEI";
+            if (typeName == null)
+                typeName = d2.trackedEntityModule().trackedEntityTypes.uid(program.trackedEntityType().uid()).get().displayName();
+        } else if (program.programType() == WITHOUT_REGISTRATION)
+            typeName = "Events";
+        else
+            typeName = "DataSets";
+        return typeName;
+    }
+
+    private int getProgramWORegistrationCount(Program program, List<DatePeriod> dateFilter, List<String> orgUnitFilter) {
+        int count = 0;
+        if (!dateFilter.isEmpty()) {
+            if (!orgUnitFilter.isEmpty()) {
+                count = d2.eventModule().events
+                        .byProgramUid().eq(program.uid())
+                        .byEventDate().inDatePeriods(dateFilter)
+                        .byOrganisationUnitUid().in(orgUnitFilter)
+                        .count();
+            } else {
+                count = d2.eventModule().events
+                        .byProgramUid().eq(program.uid())
+                        .byEventDate().inDatePeriods(dateFilter)
+                        .count();
+            }
+        } else if (!orgUnitFilter.isEmpty()) {
+            count = d2.eventModule().events
+                    .byProgramUid().eq(program.uid())
+                    .byOrganisationUnitUid().in(orgUnitFilter)
+                    .count();
+        } else {
+            count = d2.eventModule().events
+                    .byProgramUid().eq(program.uid())
+                    .count();
+        }
+        return count;
+    }
+
+    private int getProgramWithRegistrationCount(Program program, List<DatePeriod> dateFilter, List<String> orgUnitFilter, List<String> programUids) {
+        int count = 0;
+        if (!dateFilter.isEmpty()) {
+            if (!orgUnitFilter.isEmpty()) {
+                count = d2.trackedEntityModule().trackedEntityInstances
+                        .byProgramUids(programUids)
+                        .byLastUpdated().inDatePeriods(dateFilter)
+                        .byOrganisationUnitUid().in(orgUnitFilter).count();
+            } else {
+                count = d2.trackedEntityModule().trackedEntityInstances
+                        .byProgramUids(programUids)
+                        .byLastUpdated().inDatePeriods(dateFilter).count();
+            }
+        } else if (!orgUnitFilter.isEmpty()) {
+            count = d2.trackedEntityModule().trackedEntityInstances
+                    .byProgramUids(programUids)
+                    .byOrganisationUnitUid().in(orgUnitFilter).count();
+        } else {
+            count = d2.trackedEntityModule().trackedEntityInstances
+                    .byProgramUids(programUids).count();
+        }
+
+        return count;
+    }
+
+    private State getProgramWORegistrationState(Program program) {
+        State state = State.SYNCED;
+        ;
+        if (!d2.eventModule().events.byProgramUid().eq(program.uid()).byState().in(State.ERROR, State.WARNING).get().isEmpty())
+            state = State.WARNING;
+        else if (!d2.eventModule().events.byProgramUid().eq(program.uid()).byState().in(State.SENT_VIA_SMS, State.SYNCED_VIA_SMS).get().isEmpty())
+            state = State.SENT_VIA_SMS;
+        else if (!d2.eventModule().events.byProgramUid().eq(program.uid()).byState().in(State.TO_UPDATE, State.TO_POST, State.TO_DELETE).get().isEmpty())
+            state = State.TO_UPDATE;
+
+        return state;
+    }
+
+    private State getProgramWithRegistrationState(List<String> programUids) {
+        State state = State.SYNCED;
+        ;
+        if (!d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().in(State.ERROR, State.WARNING).get().isEmpty())
+            state = State.WARNING;
+        else if (!d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().in(State.SENT_VIA_SMS, State.SYNCED_VIA_SMS).get().isEmpty())
+            state = State.SENT_VIA_SMS;
+        else if (!d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().in(State.TO_UPDATE, State.TO_POST, State.TO_DELETE).get().isEmpty())
+            state = State.TO_UPDATE;
+
+        return state;
+    }
+
     @NonNull
     @Override
     public Flowable<List<ProgramViewModel>> programModels(List<DatePeriod> dateFilter, List<String> orgUnitFilter) {
@@ -37,96 +130,19 @@ class HomeRepositoryImpl implements HomeRepository {
                         return Flowable.fromIterable(programRepo.withStyle().withAllChildren().get());
                 })
                 .map(program -> {
-
-                    String typeName;
-                    if (program.programType() == WITH_REGISTRATION) {
-                        typeName = program.trackedEntityType() != null ? program.trackedEntityType().displayName() : "TEI";
-                        if (typeName == null)
-                            typeName = d2.trackedEntityModule().trackedEntityTypes.uid(program.trackedEntityType().uid()).get().displayName();
-                    } else if (program.programType() == WITHOUT_REGISTRATION)
-                        typeName = "Events";
-                    else
-                        typeName = "DataSets";
+                    String typeName = getTypeName(program);
 
                     int count;
                     State state = State.SYNCED;
                     if (program.programType() == WITHOUT_REGISTRATION) {
-                        if (!dateFilter.isEmpty()) {
-                            if (!orgUnitFilter.isEmpty()) {
-                                count = d2.eventModule().events
-                                        .byProgramUid().eq(program.uid())
-                                        .byEventDate().inDatePeriods(dateFilter)
-                                        .byOrganisationUnitUid().in(orgUnitFilter)
-                                        .count();
-                            } else {
-                                count = d2.eventModule().events
-                                        .byProgramUid().eq(program.uid())
-                                        .byEventDate().inDatePeriods(dateFilter)
-                                        .count();
-                            }
-                        } else if (!orgUnitFilter.isEmpty()) {
-                            count = d2.eventModule().events
-                                    .byProgramUid().eq(program.uid())
-                                    .byOrganisationUnitUid().in(orgUnitFilter)
-                                    .count();
-                        } else {
-                            count = d2.eventModule().events
-                                    .byProgramUid().eq(program.uid())
-                                    .count();
-                        }
-
-                        if (!d2.eventModule().events.byProgramUid().eq(program.uid()).byState().in(State.ERROR, State.WARNING).get().isEmpty())
-                            state = State.WARNING;
-                        else if (!d2.eventModule().events.byProgramUid().eq(program.uid()).byState().in(State.SENT_VIA_SMS, State.SYNCED_VIA_SMS).get().isEmpty())
-                            state = State.SENT_VIA_SMS;
-                        else if (!d2.eventModule().events.byProgramUid().eq(program.uid()).byState().in(State.TO_UPDATE, State.TO_POST, State.TO_DELETE).get().isEmpty())
-                            state = State.TO_UPDATE;
+                        count = getProgramWORegistrationCount(program, dateFilter, orgUnitFilter);
+                        state = getProgramWORegistrationState(program);
 
                     } else {
                         List<String> programUids = new ArrayList<>();
                         programUids.add(program.uid());
-                        if (!dateFilter.isEmpty()) {
-                            if (!orgUnitFilter.isEmpty()) {
-                                count = d2.trackedEntityModule().trackedEntityInstances
-                                        .byProgramUids(programUids)
-                                        .byLastUpdated().inDatePeriods(dateFilter)
-                                        .byOrganisationUnitUid().in(orgUnitFilter).count();
-                              /*  count = d2.eventModule().events
-                                        .byProgramUid().eq(program.uid())
-                                        .byEventDate().inDatePeriods(dateFilter)
-                                        .byOrganisationUnitUid().in(orgUnitFilter)
-                                        .countTrackedEntityInstances();*/
-                            } else {
-                                count = d2.trackedEntityModule().trackedEntityInstances
-                                        .byProgramUids(programUids)
-                                        .byLastUpdated().inDatePeriods(dateFilter).count();
-                               /* count = d2.eventModule().events
-                                        .byProgramUid().eq(program.uid())
-                                        .byEventDate().inDatePeriods(dateFilter)
-                                        .countTrackedEntityInstances();*/
-                            }
-                        } else if (!orgUnitFilter.isEmpty()) {
-                            count = d2.trackedEntityModule().trackedEntityInstances
-                                    .byProgramUids(programUids)
-                                    .byOrganisationUnitUid().in(orgUnitFilter).count();
-                          /*  count = d2.eventModule().events
-                                    .byProgramUid().eq(program.uid())
-                                    .byOrganisationUnitUid().in(orgUnitFilter)
-                                    .countTrackedEntityInstances();*/
-                        } else {
-                            count = d2.trackedEntityModule().trackedEntityInstances
-                                    .byProgramUids(programUids).count();
-                           /* count = d2.eventModule().events
-                                    .byProgramUid().eq(program.uid())
-                                    .countTrackedEntityInstances();*/
-                        }
-
-                        if (!d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().in(State.ERROR, State.WARNING).get().isEmpty())
-                            state = State.WARNING;
-                        else if (!d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().in(State.SENT_VIA_SMS, State.SYNCED_VIA_SMS).get().isEmpty())
-                            state = State.SENT_VIA_SMS;
-                        else if (!d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().in(State.TO_UPDATE, State.TO_POST, State.TO_DELETE).get().isEmpty())
-                            state = State.TO_UPDATE;
+                        count = getProgramWithRegistrationCount(program, dateFilter, orgUnitFilter, programUids);
+                        state = getProgramWithRegistrationState(programUids);
                     }
 
 

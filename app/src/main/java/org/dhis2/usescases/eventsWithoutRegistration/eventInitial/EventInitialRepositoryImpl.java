@@ -312,6 +312,22 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     }
 
 
+    private boolean hasChanged(Event event, Date mDate, String orgUnitUid, String latitude, String longitude, String catOptionCombo) {
+        boolean hasChanged = false;
+        if (event.eventDate() != mDate)
+            hasChanged = true;
+        if (!event.organisationUnit().equals(orgUnitUid))
+            hasChanged = true;
+        if ((event.coordinate() == null && (!isEmpty(latitude) && !isEmpty(longitude))) ||
+                (event.coordinate() != null && (!String.valueOf(event.coordinate().latitude()).equals(latitude) ||
+                        !String.valueOf(event.coordinate().longitude()).equals(longitude))))
+            hasChanged = true;
+        if (!event.attributeOptionCombo().equals(catOptionCombo))
+            hasChanged = true;
+
+        return hasChanged;
+    }
+
     @NonNull
     @Override
     public Observable<EventModel> editEvent(String trackedEntityInstance,
@@ -324,7 +340,6 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
         Event event = d2.eventModule().events.uid(eventUid).get();
 
-        boolean hasChanged = false;
 
         Date currentDate = Calendar.getInstance().getTime();
         Date mDate = null;
@@ -334,18 +349,9 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
             Timber.e(e);
         }
 
-        if (event.eventDate() != mDate)
-            hasChanged = true;
-        if (!event.organisationUnit().equals(orgUnitUid))
-            hasChanged = true;
-        if ((event.coordinate() == null && (!isEmpty(latitude) && !isEmpty(longitude))) ||
-                (event.coordinate() != null && (!String.valueOf(event.coordinate().latitude()).equals(latitude) || !String.valueOf(event.coordinate().longitude()).equals(longitude))))
-            hasChanged = true;
-        if (!event.attributeOptionCombo().equals(catOptionCombo))
-            hasChanged = true;
+        boolean hasChanged = hasChanged(event, mDate, orgUnitUid, latitude, longitude, catOptionCombo);
 
         if (hasChanged) {
-
             Calendar cal = Calendar.getInstance();
             cal.setTime(mDate);
             cal.set(Calendar.HOUR_OF_DAY, 0);
@@ -374,7 +380,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                 String message = String.format(Locale.US, "Failed to update event for uid=[%s]", eventUid);
                 return Observable.error(new SQLiteConstraintException(message));
             }
-            if(event.enrollment()!=null)
+            if (event.enrollment() != null)
                 updateEnrollment(event.enrollment());
             if (trackedEntityInstance != null)
                 updateTei(trackedEntityInstance);

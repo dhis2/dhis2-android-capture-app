@@ -146,11 +146,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
                 DataElement de = d2.dataElementModule().dataElements.uid(dataValue.dataElement()).get();
                 if (de != null && showInReportsDataElements.contains(de.uid())) {
                     String displayName = !isEmpty(de.displayFormName()) ? de.displayFormName() : de.displayName();
-                    String value = dataValue.value();
-                    if (de.optionSet() != null)
-                        value = ValueUtils.optionSetCodeToDisplayName(briteDatabase, de.optionSet().uid(), value);
-                    else if (de.valueType().equals(ValueType.ORGANISATION_UNIT))
-                        value = ValueUtils.orgUnitUidToDisplayName(briteDatabase, value);
+                    String value = getValue(dataValue, de);
 
                     //TODO: Would be good to check other value types to render value (coordinates)
                     data.add(Pair.create(displayName, value));
@@ -160,6 +156,14 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
         return data;
     }
 
+    private String getValue(TrackedEntityDataValue dataValue, DataElement de) {
+        String value = dataValue.value();
+        if (de.optionSet() != null)
+            value = ValueUtils.optionSetCodeToDisplayName(briteDatabase, de.optionSet().uid(), value);
+        else if (de.valueType().equals(ValueType.ORGANISATION_UNIT))
+            value = ValueUtils.orgUnitUidToDisplayName(briteDatabase, value);
+        return value;
+    }
 
     @NonNull
     @Override

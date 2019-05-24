@@ -104,20 +104,29 @@ public class OrgUnitHolder extends TreeNode.BaseNodeViewHolder<OrganisationUnitM
             checkBox.setChecked(false);
     }
 
+
+    private String getText() {
+        if (numberOfSelections == 0)
+            return value.displayName();
+        else
+            return String.format(Locale.getDefault(), "%s (%d)", value.displayName(), numberOfSelections);
+    }
+
+    private void updateNumberOfSelections() {
+        for (TreeNode n : node.getChildren()) {
+            if (n.getViewHolder() instanceof OrgUnitHolder) {
+                numberOfSelections += n.isSelected() ? 1 : 0;
+                numberOfSelections += ((OrgUnitHolder) n.getViewHolder()).numberOfSelections;
+            }
+        }
+    }
+
     private void setSelectedSizeText() {
         numberOfSelections = 0;
         if (node != null) {
-            for (TreeNode n : node.getChildren()) {
-                if (n.getViewHolder() instanceof OrgUnitHolder) {
-                    numberOfSelections += n.isSelected() ? 1 : 0;
-                    numberOfSelections += ((OrgUnitHolder) n.getViewHolder()).numberOfSelections;
-                }
-            }
 
-            if (numberOfSelections == 0)
-                textView.setText(value.displayName());
-            else
-                textView.setText(String.format(Locale.getDefault(), "%s (%d)", value.displayName(), numberOfSelections));
+            updateNumberOfSelections();
+            textView.setText(getText());
 
             if (node.getLevel() > 1 && node.getParent().getViewHolder() instanceof OrgUnitHolder) {
                 ((OrgUnitHolder) node.getParent().getViewHolder()).setSelectedSizeText();

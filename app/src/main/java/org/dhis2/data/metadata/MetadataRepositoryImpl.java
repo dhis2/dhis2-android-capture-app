@@ -452,15 +452,35 @@ public class MetadataRepositoryImpl implements MetadataRepository {
         return conflicts;
     }
 
-    @Override
-    public Observable<List<OptionModel>> searchOptions(String text, String idOptionSet, int page, List<String> optionsToHide, List<String> optionsGroupsToHide) {
-        String pageQuery = String.format(Locale.US, "GROUP BY Option.uid ORDER BY sortOrder LIMIT %d,%d", page * 15, 15);
-        String formattedOptionsToHide = "'" + join("','", optionsToHide) + "'";
-
-        String optionQuery = "SELECT Option.* FROM Option WHERE Option.optionSet = ? " +
+    private String getOptionQuery(String text, List<String> optionsToHide, List<String> optionsGroupsToHide,
+                                  String pageQuery, String formattedOptionsToHide) {
+        return "SELECT Option.* FROM Option WHERE Option.optionSet = ? " +
                 (!optionsToHide.isEmpty() ? "AND Option.uid NOT IN (" + formattedOptionsToHide + ") " : " ") +
                 (!isEmpty(text) ? "AND Option.displayName LIKE '%" + text + "%' " : " ") +
                 pageQuery;
+    }
+
+    private List<String> getOptionGroupUids(OptionModel option) {
+        List<String> optionGroupUids = new ArrayList<>();
+        try (Cursor optionGroupCursor = briteDatabase.query("SELECT OptionGroup.* FROM OptionGroup " +
+                "LEFT JOIN OptionGroupOptionLink ON OptionGroupOptionLink.optionGroup = OptionGroup.uid WHERE OptionGroupOptionLink.option = ?", option.uid())) {
+            if (optionGroupCursor.moveToFirst()) {
+                for (int i = 0; i < optionGroupCursor.getCount(); i++) {
+                    optionGroupUids.add(OptionGroup.create(optionGroupCursor).uid());
+                    optionGroupCursor.moveToNext();
+                }
+            }
+        }
+        return optionGroupUids;
+    }
+
+    @Override
+    public Observable<List<OptionModel>> searchOptions(String text, String idOptionSet, int page,
+                                                       List<String> optionsToHide, List<String> optionsGroupsToHide) {
+        String pageQuery = String.format(Locale.US, "GROUP BY Option.uid ORDER BY sortOrder LIMIT %d,%d", page * 15, 15);
+        String formattedOptionsToHide = "'" + join("','", optionsToHide) + "'";
+
+        String optionQuery = getOptionQuery(text, optionsToHide, optionsGroupsToHide, pageQuery, formattedOptionsToHide);
 
         return briteDatabase.createQuery(OptionModel.TABLE, optionQuery, idOptionSet)
                 .mapToList(OptionModel::create)
@@ -468,16 +488,7 @@ public class MetadataRepositoryImpl implements MetadataRepository {
                     Iterator<OptionModel> iterator = optionList.iterator();
                     while (iterator.hasNext()) {
                         OptionModel option = iterator.next();
-                        List<String> optionGroupUids = new ArrayList<>();
-                        try (Cursor optionGroupCursor = briteDatabase.query("SELECT OptionGroup.* FROM OptionGroup " +
-                                "LEFT JOIN OptionGroupOptionLink ON OptionGroupOptionLink.optionGroup = OptionGroup.uid WHERE OptionGroupOptionLink.option = ?", option.uid())) {
-                            if (optionGroupCursor.moveToFirst()) {
-                                for (int i = 0; i < optionGroupCursor.getCount(); i++) {
-                                    optionGroupUids.add(OptionGroup.create(optionGroupCursor).uid());
-                                    optionGroupCursor.moveToNext();
-                                }
-                            }
-                        }
+                        List<String> optionGroupUids = getOptionGroupUids(option);
                         boolean remove = false;
                         for (String group : optionGroupUids)
                             if (optionsGroupsToHide.contains(group))

@@ -29,6 +29,7 @@ import org.dhis2.utils.NetworkUtils;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.imports.TrackerImportConflict;
+import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramType;
 
 import java.util.ArrayList;
@@ -92,6 +93,54 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
     }
 
 
+    private State getState(Program program) {
+        State state = State.SYNCED;
+        if (program.programType() == ProgramType.WITHOUT_REGISTRATION) {
+            if (!d2.eventModule().events.byProgramUid().eq(program.uid()).byState().in(State.ERROR).get().isEmpty())
+                state = State.ERROR;
+            else if (!d2.eventModule().events.byProgramUid().eq(program.uid()).byState().in(State.WARNING).get().isEmpty())
+                state = State.WARNING;
+            else if (!d2.eventModule().events.byProgramUid().eq(program.uid()).byState().in(State.SENT_VIA_SMS, State.SYNCED_VIA_SMS).get().isEmpty())
+                state = State.SENT_VIA_SMS;
+            else if (!d2.eventModule().events.byProgramUid().eq(program.uid()).byState().in(State.TO_UPDATE, State.TO_POST, State.TO_DELETE).get().isEmpty())
+                state = State.TO_UPDATE;
+        } else {
+            List<String> programUids = new ArrayList<>();
+            programUids.add(program.uid());
+            if (!d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().in(State.ERROR).get().isEmpty())
+                state = State.ERROR;
+            else if (!d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().in(State.WARNING).get().isEmpty())
+                state = State.WARNING;
+            else if (!d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().in(State.SENT_VIA_SMS, State.SYNCED_VIA_SMS).get().isEmpty())
+                state = State.SENT_VIA_SMS;
+            else if (!d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().in(State.TO_UPDATE, State.TO_POST, State.TO_DELETE).get().isEmpty())
+                state = State.TO_UPDATE;
+        }
+        return state;
+    }
+
+    private State getState2(Program program) {
+        State state = State.SYNCED;
+        if (program.programType() == ProgramType.WITH_REGISTRATION) {
+            List<String> programUids = new ArrayList<>();
+            programUids.add(program.uid());
+            if (!d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().in(State.ERROR, State.WARNING).get().isEmpty())
+                state = State.WARNING;
+            else if (!d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().in(State.SENT_VIA_SMS, State.SYNCED_VIA_SMS).get().isEmpty())
+                state = State.SENT_VIA_SMS;
+            else if (!d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().in(State.TO_UPDATE, State.TO_POST, State.TO_DELETE).get().isEmpty())
+                state = State.TO_UPDATE;
+        } else {
+            if (!d2.eventModule().events.byProgramUid().eq(program.uid()).byState().in(State.ERROR, State.WARNING).get().isEmpty())
+                state = State.WARNING;
+            else if (!d2.eventModule().events.byProgramUid().eq(program.uid()).byState().in(State.SENT_VIA_SMS, State.SYNCED_VIA_SMS).get().isEmpty())
+                state = State.SENT_VIA_SMS;
+            else if (!d2.eventModule().events.byProgramUid().eq(program.uid()).byState().in(State.TO_UPDATE, State.TO_POST, State.TO_DELETE).get().isEmpty())
+                state = State.TO_UPDATE;
+        }
+        return state;
+    }
+
     private void configureForProgram() {
 
         compositeDisposable.add(
@@ -106,31 +155,7 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
 
         compositeDisposable.add(
                 Observable.fromCallable(() -> d2.programModule().programs.uid(recordUid).get())
-                        .map(program -> {
-                            State state = State.SYNCED;
-                            if (program.programType() == ProgramType.WITHOUT_REGISTRATION) {
-                                if (!d2.eventModule().events.byProgramUid().eq(program.uid()).byState().in(State.ERROR).get().isEmpty())
-                                    state = State.ERROR;
-                                else if (!d2.eventModule().events.byProgramUid().eq(program.uid()).byState().in(State.WARNING).get().isEmpty())
-                                    state = State.WARNING;
-                                else if (!d2.eventModule().events.byProgramUid().eq(program.uid()).byState().in(State.SENT_VIA_SMS, State.SYNCED_VIA_SMS).get().isEmpty())
-                                    state = State.SENT_VIA_SMS;
-                                else if (!d2.eventModule().events.byProgramUid().eq(program.uid()).byState().in(State.TO_UPDATE, State.TO_POST, State.TO_DELETE).get().isEmpty())
-                                    state = State.TO_UPDATE;
-                            } else {
-                                List<String> programUids = new ArrayList<>();
-                                programUids.add(program.uid());
-                                if (!d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().in(State.ERROR).get().isEmpty())
-                                    state = State.ERROR;
-                                else if (!d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().in(State.WARNING).get().isEmpty())
-                                    state = State.WARNING;
-                                else if (!d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().in(State.SENT_VIA_SMS, State.SYNCED_VIA_SMS).get().isEmpty())
-                                    state = State.SENT_VIA_SMS;
-                                else if (!d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().in(State.TO_UPDATE, State.TO_POST, State.TO_DELETE).get().isEmpty())
-                                    state = State.TO_UPDATE;
-                            }
-                            return state;
-                        })
+                        .map(this::getState)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
@@ -148,27 +173,7 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
 
         compositeDisposable.add(
                 Observable.fromCallable(() -> d2.programModule().programs.uid(recordUid).get())
-                        .map(program -> {
-                            State state = State.SYNCED;
-                            if (program.programType() == ProgramType.WITH_REGISTRATION) {
-                                List<String> programUids = new ArrayList<>();
-                                programUids.add(program.uid());
-                                if (!d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().in(State.ERROR, State.WARNING).get().isEmpty())
-                                    state = State.WARNING;
-                                else if (!d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().in(State.SENT_VIA_SMS, State.SYNCED_VIA_SMS).get().isEmpty())
-                                    state = State.SENT_VIA_SMS;
-                                else if (!d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().in(State.TO_UPDATE, State.TO_POST, State.TO_DELETE).get().isEmpty())
-                                    state = State.TO_UPDATE;
-                            } else {
-                                if (!d2.eventModule().events.byProgramUid().eq(program.uid()).byState().in(State.ERROR, State.WARNING).get().isEmpty())
-                                    state = State.WARNING;
-                                else if (!d2.eventModule().events.byProgramUid().eq(program.uid()).byState().in(State.SENT_VIA_SMS, State.SYNCED_VIA_SMS).get().isEmpty())
-                                    state = State.SENT_VIA_SMS;
-                                else if (!d2.eventModule().events.byProgramUid().eq(program.uid()).byState().in(State.TO_UPDATE, State.TO_POST, State.TO_DELETE).get().isEmpty())
-                                    state = State.TO_UPDATE;
-                            }
-                            return state;
-                        })
+                        .map(this::getState2)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(

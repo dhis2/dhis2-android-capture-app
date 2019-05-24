@@ -61,6 +61,66 @@ public class QRCodeGenerator implements QRInterface {
         gson = new GsonBuilder().setDateFormat(DateUtils.DATABASE_FORMAT_EXPRESSION).create();
     }
 
+    private List<QrViewModel> addTrackedEntityAttributeValues(List<TrackedEntityAttributeValueModel> data) {
+        List<QrViewModel> bitmaps = new ArrayList<>();
+        ArrayList<TrackedEntityAttributeValueModel> arrayListAux = new ArrayList<>();
+        // DIVIDE ATTR QR GENERATION -> 1 QR PER 2 ATTR
+        int count = 0;
+        for (int i = 0; i < data.size(); i++) {
+            arrayListAux.add(data.get(i));
+            if (count == 1) {
+                count = 0;
+                bitmaps.add(new QrViewModel(ATTR_JSON, gson.toJson(arrayListAux)));
+                arrayListAux.clear();
+            } else if (i == data.size() - 1) {
+                bitmaps.add(new QrViewModel(ATTR_JSON, gson.toJson(arrayListAux)));
+            } else {
+                count++;
+            }
+        }
+        return bitmaps;
+    }
+
+    private List<QrViewModel> addTrackedEntityDataValues(List<TrackedEntityDataValueModel> dataValueList) {
+        List<QrViewModel> bitmaps = new ArrayList<>();
+        ArrayList<TrackedEntityDataValueModel> arrayListAux = new ArrayList<>();
+        // DIVIDE ATTR QR GENERATION -> 1 QR PER 2 ATTR
+        int count = 0;
+        for (int i = 0; i < dataValueList.size(); i++) {
+            arrayListAux.add(dataValueList.get(i));
+            if (count == 1) {
+                count = 0;
+                bitmaps.add(new QrViewModel(DATA_JSON, gson.toJson(arrayListAux)));
+                arrayListAux.clear();
+            } else if (i == dataValueList.size() - 1) {
+                bitmaps.add(new QrViewModel(DATA_JSON, gson.toJson(arrayListAux)));
+            } else {
+                count++;
+            }
+        }
+        return bitmaps;
+    }
+
+    private List<QrViewModel> addEnrollments(List<EnrollmentModel> data) {
+        List<QrViewModel> bitmaps = new ArrayList<>();
+        ArrayList<EnrollmentModel> arrayListAux = new ArrayList<>();
+        // DIVIDE ENROLLMENT QR GENERATION -> 1 QR PER 2 ENROLLMENT
+        int count = 0;
+        for (int i = 0; i < data.size(); i++) {
+            arrayListAux.add(data.get(i));
+            if (count == 1) {
+                count = 0;
+                bitmaps.add(new QrViewModel(ENROLLMENT_JSON, gson.toJson(arrayListAux)));
+                arrayListAux.clear();
+            } else if (i == data.size() - 1) {
+                bitmaps.add(new QrViewModel(ENROLLMENT_JSON, gson.toJson(arrayListAux)));
+            } else {
+                count++;
+            }
+        }
+        return bitmaps;
+    }
+
     @Override
     public Observable<List<QrViewModel>> teiQRs(String teiUid) {
         List<QrViewModel> bitmaps = new ArrayList<>();
@@ -74,21 +134,7 @@ public class QRCodeGenerator implements QRInterface {
                         .flatMap(data -> briteDatabase.createQuery(TrackedEntityAttributeValueModel.TABLE, TEI_ATTR, teiUid == null ? "" : teiUid)
                                 .mapToList(TrackedEntityAttributeValueModel::create))
                         .map(data -> {
-                            ArrayList<TrackedEntityAttributeValueModel> arrayListAux = new ArrayList<>();
-                            // DIVIDE ATTR QR GENERATION -> 1 QR PER 2 ATTR
-                            int count = 0;
-                            for (int i = 0; i < data.size(); i++) {
-                                arrayListAux.add(data.get(i));
-                                if (count == 1) {
-                                    count = 0;
-                                    bitmaps.add(new QrViewModel(ATTR_JSON, gson.toJson(arrayListAux)));
-                                    arrayListAux.clear();
-                                } else if (i == data.size() - 1) {
-                                    bitmaps.add(new QrViewModel(ATTR_JSON, gson.toJson(arrayListAux)));
-                                } else {
-                                    count++;
-                                }
-                            }
+                            bitmaps.addAll(addTrackedEntityAttributeValues(data));
                             return true;
                         })
 
@@ -96,28 +142,14 @@ public class QRCodeGenerator implements QRInterface {
                         .flatMap(data -> briteDatabase.createQuery(EnrollmentModel.TABLE, TEI_ENROLLMENTS, teiUid == null ? "" : teiUid)
                                 .mapToList(EnrollmentModel::create))
                         .map(data -> {
-                            ArrayList<EnrollmentModel> arrayListAux = new ArrayList<>();
-                            // DIVIDE ENROLLMENT QR GENERATION -> 1 QR PER 2 ENROLLMENT
-                            int count = 0;
-                            for (int i = 0; i < data.size(); i++) {
-                                arrayListAux.add(data.get(i));
-                                if (count == 1) {
-                                    count = 0;
-                                    bitmaps.add(new QrViewModel(ENROLLMENT_JSON, gson.toJson(arrayListAux)));
-                                    arrayListAux.clear();
-                                } else if (i == data.size() - 1) {
-                                    bitmaps.add(new QrViewModel(ENROLLMENT_JSON, gson.toJson(arrayListAux)));
-                                } else {
-                                    count++;
-                                }
-                            }
+                            bitmaps.addAll(addEnrollments(data));
                             return data;
                         })
 
 
                         .flatMap(data ->
                                 Observable.fromIterable(data)
-                                        .flatMap(enrollment -> briteDatabase.createQuery(EventModel.TABLE, TEI_EVENTS, enrollment.uid() == null ? "" : enrollment.uid())
+                                        .flatMap(enrollment -> briteDatabase.createQuery(EventModel.TABLE, TEI_EVENTS, enrollment.uid())
                                                 .mapToList(EventModel::create)
                                         )
                         )
@@ -125,24 +157,10 @@ public class QRCodeGenerator implements QRInterface {
                                 Observable.fromIterable(data)
                                         .flatMap(event -> {
                                                     bitmaps.add(new QrViewModel(EVENTS_JSON, gson.toJson(event)));
-                                                    return briteDatabase.createQuery(TrackedEntityDataValueModel.TABLE, TEI_DATA, event.uid() == null ? "" : event.uid())
+                                                    return briteDatabase.createQuery(TrackedEntityDataValueModel.TABLE, TEI_DATA, event.uid())
                                                             .mapToList(TrackedEntityDataValueModel::create)
                                                             .map(dataValueList -> {
-                                                                ArrayList<TrackedEntityDataValueModel> arrayListAux = new ArrayList<>();
-                                                                // DIVIDE ATTR QR GENERATION -> 1 QR PER 2 ATTR
-                                                                int count = 0;
-                                                                for (int i = 0; i < dataValueList.size(); i++) {
-                                                                    arrayListAux.add(dataValueList.get(i));
-                                                                    if (count == 1) {
-                                                                        count = 0;
-                                                                        bitmaps.add(new QrViewModel(DATA_JSON, gson.toJson(arrayListAux)));
-                                                                        arrayListAux.clear();
-                                                                    } else if (i == dataValueList.size() - 1) {
-                                                                        bitmaps.add(new QrViewModel(DATA_JSON, gson.toJson(arrayListAux)));
-                                                                    } else {
-                                                                        count++;
-                                                                    }
-                                                                }
+                                                                bitmaps.addAll(addTrackedEntityDataValues(dataValueList));
                                                                 return true;
                                                             });
                                                 }

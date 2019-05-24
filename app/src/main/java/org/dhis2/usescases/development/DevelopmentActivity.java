@@ -53,63 +53,64 @@ public class DevelopmentActivity extends ActivityGlobalAbstract {
         List<String> iconNames = new Gson().fromJson(json, new TypeToken<List<String>>() {
         }.getType());
         count = 0;
-        binding.iconButton.setOnClickListener(view -> {
-            String iconName;
-            if (count == iconNames.size())
-                count = 0;
+        binding.iconButton.setOnClickListener(view -> onIconClick(binding, iconNames));
 
-            if (iconNames.isEmpty()) {
-                iconName = binding.iconInput.getText().toString();
-            } else {
-                iconName = iconNames.get(count);
-                count++;
-            }
+        binding.iconButtonBack.setOnClickListener(view -> onIconBackClick(binding, iconNames));
+    }
 
-            binding.iconInput.setText(iconName);
+    private void onIconBackClick(DevelopmentActivityBinding binding, List<String> iconNames) {
+        String iconName;
+        if (count == 0)
+            count = iconNames.size() - 1;
+        if (iconNames.isEmpty() || count == 0) {
+            count = 0;
+            iconName = binding.iconInput.getText().toString();
+        } else {
+            iconName = iconNames.get(count);
+            count--;
+        }
 
-            int iconResourceNegative = getResources().getIdentifier(iconName + "_negative", "drawable", getPackageName());
-            int iconResourceOutline = getResources().getIdentifier(iconName + "_outline", "drawable", getPackageName());
-            int iconResourcePositive = getResources().getIdentifier(iconName + "_positive", "drawable", getPackageName());
-            try {
-                binding.iconInput.setError(null);
-                binding.iconImagePossitive.setImageResource(iconResourcePositive);
-                binding.iconImageOutline.setImageResource(iconResourceOutline);
-                binding.iconImageNegative.setImageResource(iconResourceNegative);
-            } catch (Exception e) {
-                Timber.e(e);
-                binding.iconInput.setError("This drawable has errors");
-            }
+        binding.iconInput.setText(iconName);
 
-        });
+        int iconResourceNegative = getResources().getIdentifier(iconName + "_negative", "drawable", getPackageName());
+        int iconResourceOutline = getResources().getIdentifier(iconName + "_outline", "drawable", getPackageName());
+        int iconResourcePositive = getResources().getIdentifier(iconName + "_positive", "drawable", getPackageName());
+        try {
+            binding.iconInput.setError(null);
+            binding.iconImagePossitive.setImageResource(iconResourcePositive);
+            binding.iconImageOutline.setImageResource(iconResourceOutline);
+            binding.iconImageNegative.setImageResource(iconResourceNegative);
+        } catch (Exception e) {
+            Timber.e(e);
+            binding.iconInput.setError("This drawable has errors");
+        }
+    }
 
-        binding.iconButtonBack.setOnClickListener(view -> {
-            String iconName;
-            if (count == 0)
-                count = iconNames.size() - 1;
-            if (iconNames.isEmpty() || count == 0) {
-                count = 0;
-                iconName = binding.iconInput.getText().toString();
-            } else {
-                iconName = iconNames.get(count);
-                count--;
-            }
+    private void onIconClick(DevelopmentActivityBinding binding, List<String> iconNames) {
+        String iconName;
+        if (count == iconNames.size())
+            count = 0;
 
-            binding.iconInput.setText(iconName);
+        if (iconNames.isEmpty()) {
+            iconName = binding.iconInput.getText().toString();
+        } else {
+            iconName = iconNames.get(count);
+            count++;
+        }
 
-            int iconResourceNegative = getResources().getIdentifier(iconName + "_negative", "drawable", getPackageName());
-            int iconResourceOutline = getResources().getIdentifier(iconName + "_outline", "drawable", getPackageName());
-            int iconResourcePositive = getResources().getIdentifier(iconName + "_positive", "drawable", getPackageName());
-            try {
-                binding.iconInput.setError(null);
-                binding.iconImagePossitive.setImageResource(iconResourcePositive);
-                binding.iconImageOutline.setImageResource(iconResourceOutline);
-                binding.iconImageNegative.setImageResource(iconResourceNegative);
-            } catch (Exception e) {
-                Timber.e(e);
-                binding.iconInput.setError("This drawable has errors");
-            }
+        binding.iconInput.setText(iconName);
 
-        });
-
+        int iconResourceNegative = getResources().getIdentifier(iconName + "_negative", "drawable", getPackageName());
+        int iconResourceOutline = getResources().getIdentifier(iconName + "_outline", "drawable", getPackageName());
+        int iconResourcePositive = getResources().getIdentifier(iconName + "_positive", "drawable", getPackageName());
+        try {
+            binding.iconInput.setError(null);
+            binding.iconImagePossitive.setImageResource(iconResourcePositive);
+            binding.iconImageOutline.setImageResource(iconResourceOutline);
+            binding.iconImageNegative.setImageResource(iconResourceNegative);
+        } catch (Exception e) {
+            Timber.e(e);
+            binding.iconInput.setError("This drawable has errors");
+        }
     }
 }
