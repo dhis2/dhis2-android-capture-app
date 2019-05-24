@@ -43,7 +43,7 @@ public abstract class RowAction {
     }
 
     @NonNull
-    public static RowAction create(@NonNull String id, @Nullable String value, @NonNull Boolean requieresExactMatch, @NonNull String code, @NonNull String name) {
-        return new AutoValue_RowAction(id, value, requieresExactMatch, code, name, -1);
+    public static RowAction create(@NonNull String id, @Nullable String value, @NonNull Boolean requieresExactMatch, @NonNull String code, @NonNull String name, int lastAdapterPosition) {
+        return new AutoValue_RowAction(id, value, requieresExactMatch, code, name, lastAdapterPosition);
     }
 }

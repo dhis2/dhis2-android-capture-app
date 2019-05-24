@@ -12,6 +12,10 @@ import java.util.List;
 import io.reactivex.Observable;
 
 interface DataEntryPresenter {
+    String getLastFocusItem();
+
+    void clearLastFocusItem();
+
     @UiThread
     void onAttach(@NonNull DataEntryView view);
 

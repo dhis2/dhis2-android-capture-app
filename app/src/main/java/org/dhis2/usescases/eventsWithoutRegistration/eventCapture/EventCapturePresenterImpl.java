@@ -79,6 +79,17 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private boolean snackBarIsShowing;
     private final FlowableProcessor<String> sectionProcessor;
     private boolean isSubscribed;
+    private String lastFocusItem;
+
+    @Override
+    public String getLastFocusItem() {
+        return lastFocusItem;
+    }
+
+    @Override
+    public void clearLastFocusItem() {
+        this.lastFocusItem = null;
+    }
 
     public EventCapturePresenterImpl(String eventUid, EventCaptureContract.EventCaptureRepository eventCaptureRepository, MetadataRepository metadataRepository, RulesUtilsProvider rulesUtils, DataEntryStore dataEntryStore) {
         this.eventUid = eventUid;
@@ -137,7 +148,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                         .subscribe(
                                 data -> {
                                     this.eventStatus = data;
-//                                    if (eventStatus == EventStatus.COMPLETED)
                                     checkExpiration();
                                 },
                                 Timber::e
@@ -235,7 +245,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 updates -> {
-                                    EventCaptureFormFragment.getInstance().showFields(updates);
+                                    EventCaptureFormFragment.getInstance().showFields(updates, lastFocusItem);
                                     checkProgress();
                                 },
                                 Timber::e
@@ -364,6 +374,9 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                     .subscribeOn(Schedulers.io())
                     .observeOn(Schedulers.io())
                     .switchMap(action -> {
+                                if (action.lastFocusPosition() != null && action.lastFocusPosition() >= 0) { //Triggered by form field
+                                    this.lastFocusItem = action.id();
+                                }
                                 eventCaptureRepository.setLastUpdated(action.id());
                                 EventCaptureFormFragment.getInstance().updateAdapter(action);
                                 return dataEntryStore.save(action.id(), action.value());

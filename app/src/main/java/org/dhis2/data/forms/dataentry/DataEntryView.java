@@ -11,6 +11,7 @@ import java.util.List;
 
 import io.reactivex.Flowable;
 import io.reactivex.functions.Consumer;
+import io.reactivex.processors.FlowableProcessor;
 
 interface DataEntryView {
 
@@ -20,11 +21,15 @@ interface DataEntryView {
     @NonNull
     Consumer<List<FieldViewModel>> showFields();
 
+    void nextFocus();
+
     void removeSection(String sectionUid);
 
     void messageOnComplete(String message, boolean canComplete);
 
     Flowable<Trio<String, String, Integer>> optionSetActions();
+
+    FlowableProcessor<RowAction> getActionProcessor();
 
     void setListOptions(List<OptionModel> options);
 

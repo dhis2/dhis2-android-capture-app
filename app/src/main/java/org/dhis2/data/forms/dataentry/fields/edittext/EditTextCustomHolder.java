@@ -5,10 +5,12 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
@@ -35,6 +37,8 @@ import static java.lang.String.valueOf;
 
 final class EditTextCustomHolder extends FormViewHolder {
 
+    private final FlowableProcessor<RowAction> processor;
+    private final boolean isSearchMode;
     private List<String> autoCompleteValues;
     private FormEditTextCustomBinding binding;
     private EditTextViewModel editTextModel;
@@ -42,27 +46,39 @@ final class EditTextCustomHolder extends FormViewHolder {
     EditTextCustomHolder(FormEditTextCustomBinding binding, FlowableProcessor<RowAction> processor, boolean isSearchMode) {
         super(binding);
         this.binding = binding;
-        binding.customEdittext.setFocusChangedListener((v, hasFocus) -> {
-            if (hasFocus)
-                openKeyboard(binding.customEdittext.getEditText());
-            if (isSearchMode || (!hasFocus && editTextModel != null && editTextModel.editable() && valueHasChanged())) {
-                if (!isEmpty(binding.customEdittext.getEditText().getText())) {
-                    checkAutocompleteRendering();
-                    editTextModel.withValue(binding.customEdittext.getEditText().getText().toString());
-                    processor.onNext(RowAction.create(editTextModel.uid(), binding.customEdittext.getEditText().getText().toString(), getAdapterPosition()));
+        this.processor = processor;
+        this.isSearchMode = isSearchMode;
 
-                } else {
-                    processor.onNext(RowAction.create(editTextModel.uid(), null, getAdapterPosition()));
-                }
+        binding.customEdittext.setFocusChangedListener((v, hasFocus) -> {
+            if (hasFocus) {
+                openKeyboard(binding.customEdittext.getEditText());
+                setSelectedBackground(isSearchMode);
+            } else
+                clearBackground(isSearchMode);
+
+            if (isSearchMode || (!hasFocus && editTextModel != null && editTextModel.editable() && valueHasChanged())) {
+                sendAction();
             }
         });
         binding.customEdittext.setOnEditorActionListener((v, actionId, event) -> {
-            binding.customEdittext.getEditText().clearFocus();
+            sendAction();
             closeKeyboard(binding.customEdittext.getEditText());
-            if (!isSearchMode)
-                binding.customEdittext.nextFocus(v);
-            return false;
+            sendAction();
+            return true;
         });
+    }
+
+    private void sendAction() {
+        if (!isEmpty(binding.customEdittext.getEditText().getText())) {
+            checkAutocompleteRendering();
+            editTextModel.withValue(binding.customEdittext.getEditText().getText().toString());
+            processor.onNext(RowAction.create(editTextModel.uid(), binding.customEdittext.getEditText().getText().toString(), getAdapterPosition()));
+
+        } else {
+            processor.onNext(RowAction.create(editTextModel.uid(), null, getAdapterPosition()));
+        }
+
+        clearBackground(isSearchMode);
     }
 
     public void update(@NonNull FieldViewModel model) {
@@ -140,5 +156,11 @@ final class EditTextCustomHolder extends FormViewHolder {
 
     public void dispose() {
 
+    }
+
+    @Override
+    public void performAction() {
+        itemView.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.item_selected_bg));
+        binding.customEdittext.performOnFocusAction();
     }
 }

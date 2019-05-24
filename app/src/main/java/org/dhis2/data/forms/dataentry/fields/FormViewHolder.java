@@ -1,10 +1,12 @@
 package org.dhis2.data.forms.dataentry.fields;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 
+import androidx.core.content.ContextCompat;
 import androidx.databinding.ViewDataBinding;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -53,4 +55,16 @@ public abstract class FormViewHolder extends RecyclerView.ViewHolder {
         if (!imm.showSoftInput(v, 0))
             v.postDelayed(() -> openKeyboard(v), 500);
     }
+
+    public void clearBackground(boolean isSarchMode) {
+        if (!isSarchMode)
+            itemView.setBackgroundColor(Color.WHITE);
+    }
+
+    public void setSelectedBackground(boolean isSarchMode) {
+        if (!isSarchMode)
+            itemView.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.item_selected_bg));
+    }
+
+    public abstract void performAction();
 }

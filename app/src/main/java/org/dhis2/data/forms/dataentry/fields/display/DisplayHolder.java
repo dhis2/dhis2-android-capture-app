@@ -12,7 +12,7 @@ import org.dhis2.databinding.ItemIndicatorBinding;
 public class DisplayHolder extends FormViewHolder {
 
     private final ItemIndicatorBinding binding;
-    DisplayViewModel viewModel;
+    private DisplayViewModel viewModel;
 
     public DisplayHolder(ItemIndicatorBinding binding) {
         super(binding);
@@ -39,6 +39,11 @@ public class DisplayHolder extends FormViewHolder {
 
     @Override
     public void dispose() {
+
+    }
+
+    @Override
+    public void performAction() {
 
     }
 }

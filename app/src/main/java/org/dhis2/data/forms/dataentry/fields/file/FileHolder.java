@@ -1,5 +1,6 @@
 package org.dhis2.data.forms.dataentry.fields.file;
 
+import android.graphics.Color;
 import android.view.View;
 import android.widget.Button;
 
@@ -24,13 +25,19 @@ public class FileHolder extends FormViewHolder {
                 View nextView;
                 if ((nextView = v.focusSearch(FOCUS_DOWN)) != null)
                     nextView.requestFocus();
-            }
+            }else
+                itemView.setBackgroundColor(Color.WHITE);
 
         });
     }
 
     @Override
     public void dispose() {
+
+    }
+
+    @Override
+    public void performAction() {
 
     }
 

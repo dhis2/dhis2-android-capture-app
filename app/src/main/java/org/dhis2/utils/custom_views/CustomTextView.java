@@ -66,6 +66,7 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
 
     @Override
     public void performOnFocusAction() {
+        editText.requestFocus();
         editText.performClick();
     }
 

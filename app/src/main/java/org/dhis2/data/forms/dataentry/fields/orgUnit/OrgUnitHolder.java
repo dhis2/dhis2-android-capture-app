@@ -1,20 +1,16 @@
 package org.dhis2.data.forms.dataentry.fields.orgUnit;
 
-import androidx.fragment.app.FragmentManager;
+import android.graphics.Color;
 
+import androidx.core.content.ContextCompat;
+
+import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.FormOrgUnitBinding;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 
-import java.util.List;
-
-import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.processors.FlowableProcessor;
-import io.reactivex.schedulers.Schedulers;
-import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -24,28 +20,30 @@ import static android.text.TextUtils.isEmpty;
 
 public class OrgUnitHolder extends FormViewHolder {
     private final FormOrgUnitBinding binding;
-    private final Observable<List<OrganisationUnitModel>> orgUnitsObservable;
-    private List<OrganisationUnitModel> orgUnits;
     private CompositeDisposable compositeDisposable;
     private OrgUnitViewModel model;
 
-    OrgUnitHolder(FragmentManager fm, FormOrgUnitBinding binding, FlowableProcessor<RowAction> processor, Observable<List<OrganisationUnitModel>> orgUnits, Observable<List<OrganisationUnitLevel>> levels) {
+    OrgUnitHolder(FormOrgUnitBinding binding, FlowableProcessor<RowAction> processor, boolean isSearchMode) {
         super(binding);
         this.binding = binding;
         compositeDisposable = new CompositeDisposable();
 
-        this.orgUnitsObservable = orgUnits;
-
         binding.orgUnitView.setListener(orgUnitUid -> {
-            processor.onNext(RowAction.create(model.uid(), orgUnitUid));
+            processor.onNext(RowAction.create(model.uid(), orgUnitUid, getAdapterPosition()));
+            if (!isSearchMode)
+                itemView.setBackgroundColor(Color.WHITE);
         });
-
-//        getOrgUnits();
     }
 
     @Override
     public void dispose() {
         compositeDisposable.clear();
+    }
+
+    @Override
+    public void performAction() {
+        itemView.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.item_selected_bg));
+        binding.orgUnitView.performOnFocusAction();
     }
 
     public void update(OrgUnitViewModel viewModel) {
@@ -68,36 +66,5 @@ public class OrgUnitHolder extends FormViewHolder {
         binding.orgUnitView.updateEditable(viewModel.editable());
         label = new StringBuilder().append(viewModel.label());
 
-    }
-
-    private String getOrgUnitName(String value) {
-        String orgUnitName = null;
-        if (orgUnits != null) {
-            for (OrganisationUnitModel orgUnit : orgUnits) {
-                if (orgUnit.uid().equals(value))
-                    orgUnitName = orgUnit.displayName();
-            }
-        }
-        return orgUnitName;
-    }
-
-    private void getOrgUnits() {
-        compositeDisposable.add(orgUnitsObservable
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
-                .subscribe(
-                        orgUnitViewModels ->
-                        {
-                            this.orgUnits = orgUnitViewModels;
-                            if (model.value() != null) {
-                                /*this.inputLayout.setHintAnimationEnabled(false);
-                                this.editText.setText(getOrgUnitName(model.value()));
-                                this.inputLayout.setHintAnimationEnabled(true);*/
-                                update(model);
-                            }
-                        },
-                        Timber::d
-                )
-        );
     }
 }

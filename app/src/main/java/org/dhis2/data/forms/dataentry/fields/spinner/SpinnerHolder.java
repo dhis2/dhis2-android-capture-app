@@ -1,9 +1,12 @@
 package org.dhis2.data.forms.dataentry.fields.spinner;
 
+import android.graphics.Color;
 import android.view.View;
 
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
+import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.tuples.Trio;
@@ -32,10 +35,12 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
 
         binding.optionSetView.setOnSelectedOptionListener((optionName, optionCode) -> {
             processor.onNext(
-                    RowAction.create(viewModel.uid(), isSearchMode ? optionName + "_os_" + optionCode : optionCode, true, optionCode, optionName)
+                    RowAction.create(viewModel.uid(), isSearchMode ? optionName + "_os_" + optionCode : optionCode, true, optionCode, optionName,getAdapterPosition())
             );
             if (isSearchMode)
                 viewModel.withValue(optionName);
+            if(!isSearchMode)
+                itemView.setBackgroundColor(Color.WHITE);
         });
 
     }
@@ -56,6 +61,12 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
     }
 
     public void dispose() {
+    }
+
+    @Override
+    public void performAction() {
+        itemView.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.item_selected_bg));
+        binding.optionSetView.performOnFocusAction();
     }
 
     @Override

@@ -140,8 +140,8 @@
                                 android:background="?attr/period_button"
                                 android:onClick="@{()->presenter.onTimeButtonClick()}"
                                 android:padding="7dp"
-                                app:srcCompat="@drawable/ic_view_none"
                                 android:tint="@color/colorGreyDefault"
+                                app:srcCompat="@drawable/ic_view_none"
                                 tools:ignore="ContentDescription" />
 
                             <TextView
@@ -203,16 +203,16 @@
                             android:gravity="center"
                             android:padding="42dp"
                             android:text="@string/empty_tei_add"
-                            android:visibility="gone"
-                            android:textSize="@dimen/primaryTextSize" />
+                            android:textSize="@dimen/primaryTextSize"
+                            android:visibility="gone" />
 
                         <ProgressBar
                             android:id="@+id/program_progress"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_margin="5dp"
                             android:layout_alignParentTop="true"
                             android:layout_centerInParent="true"
+                            android:layout_margin="5dp"
                             app:progressColor="@{@color/colorPrimary}" />
                     </RelativeLayout>
 
@@ -227,6 +227,7 @@
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="16dp"
                     android:onClick="@{()->presenter.addEvent()}"
+                    android:tint="@color/white"
                     app:backgroundTint="?colorPrimary"
                     app:srcCompat="@drawable/ic_add" />
 
@@ -239,7 +240,8 @@
                 android:layout_gravity="end"
                 android:layout_marginStart="-50dp"
                 android:background="@color/white_faf"
-                app:itemTextColor="?colorPrimary">
+                app:itemTextColor="?colorPrimary"
+                tools:visibility="gone">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
@@ -285,7 +287,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         app:layout_constraintBottom_toTopOf="@id/org_unit_apply"
-                        app:layout_constraintTop_toBottomOf="@+id/org_unit_all" >
+                        app:layout_constraintTop_toBottomOf="@+id/org_unit_all">
+
                         <ProgressBar
                             android:id="@+id/orgUnitProgress"
                             android:layout_width="100dp"
