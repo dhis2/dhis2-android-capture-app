@@ -16,7 +16,7 @@ import io.reactivex.Observable;
 public interface DataEntryRepository {
 
     @NonNull
-    Observable<List<FieldViewModel>> list();
+    Flowable<List<FieldViewModel>> list();
 
     List<FieldViewModel> fieldList();
 

@@ -11,6 +11,14 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.fragment.app.Fragment;
+import androidx.viewpager.widget.ViewPager;
+
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.textfield.TextInputEditText;
@@ -45,20 +53,12 @@ import org.hisp.dhis.rules.models.RuleActionShowError;
 import org.hisp.dhis.rules.models.RuleActionWarningOnCompletion;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.fragment.app.Fragment;
-import androidx.viewpager.widget.ViewPager;
 import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.subjects.PublishSubject;
@@ -147,7 +147,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
         return fragment;
     }
 
-    public void setSaveButtonTEIDetail(View view){
+    public void setSaveButtonTEIDetail(View view) {
         this.saveButton = view;
     }
 
@@ -281,7 +281,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     public void onResume() {
         super.onResume();
         formPresenter.onAttach(this);
-        if(saveButton != null)
+        if (saveButton != null)
             formPresenter.initializeSaveObservable();
     }
 
@@ -319,7 +319,8 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
             if (viewPager.getAdapter() != null && viewPager.getCurrentItem() == viewPager.getAdapter().getCount() - 1) {
                 ((Button) nextButton).setText(getString(R.string.save));
             }
-            enrollmentFragment = ((DataEntryFragment)getChildFragmentManager().getFragments().get(0));
+            if (!getChildFragmentManager().getFragments().isEmpty())
+                enrollmentFragment = ((DataEntryFragment) getChildFragmentManager().getFragments().get(0));
         };
     }
 
@@ -548,11 +549,11 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
                     eventCreationIntent.putExtras(EventCaptureActivity.getActivityBundle(enrollmentTrio.val2(), enrollmentTrio.val1()));
                     eventCreationIntent.putExtra(Constants.TRACKED_ENTITY_INSTANCE, enrollmentTrio.val0());
                     startActivityForResult(eventCreationIntent, RQ_EVENT);
-                } else if(!enrollmentFragment.checkErrors()){ //val0 is program uid, val1 is trackedEntityInstance, val2 is empty
+                } else if (!enrollmentFragment.checkErrors()) { //val0 is program uid, val1 is trackedEntityInstance, val2 is empty
                     this.programUid = enrollmentTrio.val1();
                     this.teiUid = enrollmentTrio.val0();
                     openDashboard(null);
-                }else{
+                } else {
                     progressBar.setVisibility(View.GONE);
                     showErrorsDialog();
                 }
@@ -688,7 +689,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
                 .show();
     }
 
-    public Observable<EnrollmentStatus> onObservableBackPressed(){
+    public Observable<EnrollmentStatus> onObservableBackPressed() {
         undoSaveObservable = PublishSubject.create();
         return undoSaveObservable.mergeWith(RxView.clicks(saveButton).map(o -> {
             mandatoryDelete = false;

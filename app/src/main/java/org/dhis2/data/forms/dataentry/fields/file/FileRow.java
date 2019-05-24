@@ -1,10 +1,11 @@
 package org.dhis2.data.forms.dataentry.fields.file;
 
-import androidx.databinding.DataBindingUtil;
-import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.databinding.DataBindingUtil;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.Row;
@@ -19,7 +20,7 @@ import io.reactivex.processors.FlowableProcessor;
 
 public class FileRow implements Row<FileHolder, FileViewModel> {
     private final String renderType;
-    FormButtonBinding binding;
+    private FormButtonBinding binding;
     @NonNull
     private final LayoutInflater inflater;
     @NonNull
@@ -36,8 +37,8 @@ public class FileRow implements Row<FileHolder, FileViewModel> {
         isSearchMode = true;
     }
 
-    public FileRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor,
-                   @NonNull FlowableProcessor<Integer> currentPosition,boolean isBgTransparent, String renderType) {
+    public FileRow(@NonNull LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor
+            , boolean isBgTransparent, String renderType) {
         this.inflater = layoutInflater;
         this.processor = processor;
         this.isBgTransparent = isBgTransparent;

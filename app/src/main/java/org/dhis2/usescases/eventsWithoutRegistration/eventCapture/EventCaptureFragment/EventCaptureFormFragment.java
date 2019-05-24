@@ -1,11 +1,13 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureFragment;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -133,10 +135,8 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
 
         dataEntryAdapter = new DataEntryAdapter(LayoutInflater.from(activity),
                 activity.getSupportFragmentManager(), arguments,
-                activity.getPresenter().getOrgUnits(),
-                new ObservableBoolean(true),
                 flowableProcessor,
-                flowableOptions, activity.getPresenter().getLevels());
+                flowableOptions);
 
         RecyclerView.LayoutManager layoutManager;
         if (arguments.renderType() != null && arguments.renderType().equals(ProgramStageSectionRenderingType.MATRIX.name())) {
@@ -147,14 +147,31 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
 
         binding.formRecycler.setLayoutManager(layoutManager);
         binding.formRecycler.setAdapter(dataEntryAdapter);
+
+        binding.formRecycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                if (newState != RecyclerView.SCROLL_STATE_IDLE) {
+                    dataEntryAdapter.setLastFocusItem(null);
+                    InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(recyclerView.getWindowToken(), 0);
+                    binding.dummyFocusView.requestFocus();
+                    activity.getPresenter().clearLastFocusItem();
+                }
+            }
+        });
     }
 
-    public void showFields(List<FieldViewModel> updates) {
+    public void showFields(List<FieldViewModel> updates, String lastFocusItem) {
         binding.progress.setVisibility(View.GONE);
 
         if (currentSection.equals("NO_SECTION") ||
                 (!updates.isEmpty() && updates.get(0).programStageSection().equals(currentSection))) {
+
+            if (!isEmpty(lastFocusItem))
+                dataEntryAdapter.setLastFocusItem(lastFocusItem);
             dataEntryAdapter.swap(updates);
+
             int completedValues = 0;
             HashMap<String, Boolean> fields = new HashMap<>();
             for (FieldViewModel fieldViewModel : updates) {

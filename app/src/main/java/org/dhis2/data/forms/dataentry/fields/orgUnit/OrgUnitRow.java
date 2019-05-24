@@ -5,10 +5,8 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
-import androidx.databinding.ViewDataBinding;
 import androidx.fragment.app.FragmentManager;
 
-import org.dhis2.BR;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.Row;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
@@ -32,36 +30,26 @@ public class OrgUnitRow implements Row<OrgUnitHolder, OrgUnitViewModel> {
     private final FlowableProcessor<RowAction> processor;
     private final LayoutInflater inflater;
     private final FragmentManager fm;
-    private final Observable<List<OrganisationUnitModel>> orgUnits;
     private final String renderType;
-    private FormButtonBinding binding;
     private boolean isSearchMode = false;
-    private Observable<List<OrganisationUnitLevel>> levels;
 
     public OrgUnitRow(FragmentManager fm, LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor,
-                      boolean isBgTransparent, Observable<List<OrganisationUnitModel>> orgUnits,
-                      Observable<List<OrganisationUnitLevel>> levels) {
+                      boolean isBgTransparent) {
         this.inflater = layoutInflater;
         this.processor = processor;
         this.isBgTransparent = isBgTransparent;
         this.fm = fm;
-        this.orgUnits = orgUnits;
         this.renderType = null;
         this.isSearchMode = true;
-        this.levels = levels;
     }
 
     public OrgUnitRow(FragmentManager fm, LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor,
-                      @NonNull FlowableProcessor<Integer> currentPosition,
-                      boolean isBgTransparent, Observable<List<OrganisationUnitModel>> orgUnits, String renderType,
-                      Observable<List<OrganisationUnitLevel>> levels) {
+                      boolean isBgTransparent, String renderType) {
         this.inflater = layoutInflater;
         this.processor = processor;
         this.isBgTransparent = isBgTransparent;
         this.fm = fm;
-        this.orgUnits = orgUnits;
         this.renderType = renderType;
-        this.levels = levels;
     }
 
     @NonNull
@@ -69,20 +57,8 @@ public class OrgUnitRow implements Row<OrgUnitHolder, OrgUnitViewModel> {
     public OrgUnitHolder onCreate(@NonNull ViewGroup parent) {
         FormOrgUnitBinding binding = DataBindingUtil.inflate(inflater, R.layout.form_org_unit, parent, false);
         binding.orgUnitView.setLayoutData(isBgTransparent, renderType);
-       /* ViewDataBinding binding = DataBindingUtil.inflate(
-                inflater,
-                isBgTransparent ? R.layout.custom_text_view : R.layout.custom_text_view_accent,
-                parent,
-                false
-        );
-        binding.setVariable(BR.renderType, renderType);
-        binding.executePendingBindings();
-
-        binding.getRoot().findViewById(R.id.input_editText).setFocusable(false); //Makes editText
-        binding.getRoot().findViewById(R.id.input_editText).setClickable(true);//  but clickable*/
-
-       binding.orgUnitView.setFragmentManager(fm);
-        return new OrgUnitHolder(fm, binding, processor, orgUnits, levels);
+        binding.orgUnitView.setFragmentManager(fm);
+        return new OrgUnitHolder(binding, processor, isSearchMode);
     }
 
     @Override

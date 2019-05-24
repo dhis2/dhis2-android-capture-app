@@ -5,6 +5,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
 
+import androidx.annotation.NonNull;
+
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.R;
@@ -17,7 +19,6 @@ import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.maintenance.D2Error;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
@@ -26,7 +27,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import androidx.annotation.NonNull;
+import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import timber.log.Timber;
@@ -100,14 +101,16 @@ final class EnrollmentRepository implements DataEntryRepository {
 
     @NonNull
     @Override
-    public Observable<List<FieldViewModel>> list() {
+    public Flowable<List<FieldViewModel>> list() {
         return briteDatabase
-                .createQuery(TrackedEntityAttributeValueModel.TABLE, QUERY, enrollment == null ? "" : enrollment)
-                .mapToList(this::transform);
+                .createQuery(TrackedEntityAttributeValueModel.TABLE, QUERY, enrollment)
+                .mapToList(this::transform)
+                .map(list -> list)
+                .toFlowable(BackpressureStrategy.BUFFER);
     }
 
     @Override
-    public Observable<List<OrganisationUnitLevel>> getOrgUnitLevels(){
+    public Observable<List<OrganisationUnitLevel>> getOrgUnitLevels() {
         return Observable.just(d2.organisationUnitModule().organisationUnitLevels.get());
     }
 
@@ -148,7 +151,7 @@ final class EnrollmentRepository implements DataEntryRepository {
         EnrollmentStatus enrollmentStatus = EnrollmentStatus.valueOf(cursor.getString(10));
         String description = cursor.getString(11);
         String pattern = cursor.getString(12);
-        String formName = cursor.getString(13);
+        String formName = cursor.getString(13); //TODO: WE NEED THE DISPLAY FORM NAME WHEN AVAILABLE IN THE SDK
 
         if (!isEmpty(optionCodeName)) {
             dataValue = optionCodeName;
@@ -231,12 +234,12 @@ final class EnrollmentRepository implements DataEntryRepository {
 
         if (warning != null) {
             return fieldFactory.create(uid,
-                    formName != null && !formName.isEmpty()? formName: label, valueType, mandatory, optionSet, dataValue, null, allowFutureDates,
+                    label, valueType, mandatory, optionSet, dataValue, null, allowFutureDates,
                     false, null, description, fieldRendering, optionCount, objectStyle)
                     .withWarning(warning);
         } else {
             return fieldFactory.create(uid,
-                    formName != null && !formName.isEmpty()? formName: label, valueType, mandatory, optionSet, dataValue, null, allowFutureDates,
+                    label, valueType, mandatory, optionSet, dataValue, null, allowFutureDates,
                     !generated && enrollmentStatus == EnrollmentStatus.ACTIVE, null, description, fieldRendering, optionCount, objectStyle);
         }
     }

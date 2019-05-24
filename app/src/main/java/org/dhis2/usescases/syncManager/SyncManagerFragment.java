@@ -3,10 +3,7 @@ package org.dhis2.usescases.syncManager;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
@@ -26,11 +23,8 @@ import androidx.core.content.ContextCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.work.State;
 import androidx.work.WorkManager;
-import androidx.work.WorkStatus;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.jakewharton.rxbinding2.widget.RxTextView;
@@ -142,20 +136,20 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     public void onResume() {
         super.onResume();
         WorkManager.getInstance().getStatusesByTagLiveData(META_NOW).observe(this, workStatuses -> {
-            if(!workStatuses.isEmpty() && workStatuses.get(0).getState() == State.RUNNING) {
+            if (!workStatuses.isEmpty() && workStatuses.get(0).getState() == State.RUNNING) {
                 binding.metadataLastSync.setText(R.string.syncing_configuration);
                 binding.buttonSyncMeta.setEnabled(false);
-            }else{
+            } else {
                 binding.buttonSyncMeta.setEnabled(true);
                 setLastSyncDate();
                 presenter.checkData();
             }
         });
         WorkManager.getInstance().getStatusesByTagLiveData(DATA_NOW).observe(this, workStatuses -> {
-            if(!workStatuses.isEmpty() && workStatuses.get(0).getState() == State.RUNNING) {
+            if (!workStatuses.isEmpty() && workStatuses.get(0).getState() == State.RUNNING) {
                 binding.dataLastSync.setText(R.string.syncing_configuration);
                 binding.buttonSyncData.setEnabled(false);
-            }else{
+            } else {
                 binding.buttonSyncData.setEnabled(true);
                 setLastSyncDate();
                 presenter.checkData();
@@ -236,7 +230,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
             str.setSpan(new ImageSpan(getContext(), R.drawable.ic_sync_warning), wIndex, wIndex + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             str.setSpan(new ImageSpan(getContext(), R.drawable.ic_sync_problem_red), eIndex, eIndex + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             binding.dataLastSync.setText(str);
-            binding.dataLastSync.setTextColor(ContextCompat.getColor(getContext(),R.color.red_060));
+            binding.dataLastSync.setTextColor(ContextCompat.getColor(getContext(), R.color.red_060));
 
         } else if (presenter.dataHasWarnings()) {
             String src = getString(R.string.data_sync_warning);
@@ -244,13 +238,16 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
             int wIndex = src.indexOf('@');
             str.setSpan(new ImageSpan(getContext(), R.drawable.ic_sync_warning), wIndex, wIndex + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             binding.dataLastSync.setText(str);
-            binding.dataLastSync.setTextColor(ContextCompat.getColor(getContext(),R.color.colorPrimaryOrange));
+            binding.dataLastSync.setTextColor(ContextCompat.getColor(getContext(), R.color.colorPrimaryOrange));
         }
 
-        if (metaStatus)
+        if (metaStatus) {
             binding.metadataLastSync.setText(String.format(getString(R.string.last_data_sync_date), prefs.getString(Constants.LAST_META_SYNC, "-")));
-        else
+            binding.metadataLastSync.setTextColor(ContextCompat.getColor(context, R.color.text_black_333));
+        }else {
             binding.metadataLastSync.setText(getString(R.string.metadata_sync_error));
+            binding.metadataLastSync.setTextColor(ContextCompat.getColor(context, R.color.red_060));
+        }
 
     }
 

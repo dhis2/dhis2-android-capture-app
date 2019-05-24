@@ -64,6 +64,10 @@ public class EventCaptureContract {
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
+        String getLastFocusItem();
+
+        void clearLastFocusItem();
+
         void init(EventCaptureContract.View view);
 
         void onBackClick();

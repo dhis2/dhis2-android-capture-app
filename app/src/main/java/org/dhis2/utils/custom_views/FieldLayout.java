@@ -47,8 +47,8 @@ public abstract class FieldLayout extends RelativeLayout {
     @Override
     protected void onFocusChanged(boolean gainFocus, int direction, @Nullable Rect previouslyFocusedRect) {
         super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
-        if(gainFocus)
-            performOnFocusAction();
+       /* if(gainFocus)
+            performOnFocusAction();*/
        /* if (gainFocus) {
             setBackgroundColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY_LIGHT));
             performOnFocusAction();

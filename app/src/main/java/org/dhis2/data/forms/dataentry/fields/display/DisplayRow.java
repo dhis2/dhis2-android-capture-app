@@ -12,7 +12,6 @@ import org.dhis2.databinding.ItemIndicatorBinding;
 
 public class DisplayRow implements Row<DisplayHolder, DisplayViewModel> {
 
-    ItemIndicatorBinding binding;
     @NonNull
     private final LayoutInflater inflater;
 
@@ -23,7 +22,7 @@ public class DisplayRow implements Row<DisplayHolder, DisplayViewModel> {
     @NonNull
     @Override
     public DisplayHolder onCreate(@NonNull ViewGroup parent) {
-        binding = DataBindingUtil.inflate(inflater, R.layout.item_indicator, parent, false);
+        ItemIndicatorBinding binding = DataBindingUtil.inflate(inflater, R.layout.item_indicator, parent, false);
         return new DisplayHolder(binding);
     }
 
