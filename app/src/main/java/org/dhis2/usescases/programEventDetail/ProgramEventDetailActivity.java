@@ -19,6 +19,16 @@ import android.view.ViewGroup;
 import android.widget.DatePicker;
 import android.widget.PopupMenu;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
+import androidx.core.view.GravityCompat;
+import androidx.databinding.DataBindingUtil;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.lifecycle.LiveData;
+import androidx.paging.PagedList;
+
 import com.google.android.flexbox.FlexboxLayout;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
@@ -52,15 +62,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.core.content.ContextCompat;
-import androidx.core.content.res.ResourcesCompat;
-import androidx.core.view.GravityCompat;
-import androidx.databinding.DataBindingUtil;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.lifecycle.LiveData;
-import androidx.paging.PagedList;
 import io.reactivex.functions.Consumer;
 import me.toptas.fancyshowcase.FancyShowCaseView;
 import timber.log.Timber;
@@ -420,13 +421,14 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     public void setLiveData(LiveData<PagedList<ProgramEventViewModel>> pagedListLiveData) {
         pagedListLiveData.observe(this, pagedList -> {
             binding.programProgress.setVisibility(View.GONE);
-            liveAdapter.submitList(pagedList);
-            if (binding.recycler.getAdapter() != null && binding.recycler.getAdapter().getItemCount() == 0){
-                binding.emptyTeis.setVisibility(View.VISIBLE);
-            }
-            else{
-                binding.emptyTeis.setVisibility(View.GONE);
-            }
+            liveAdapter.submitList(pagedList, () -> {
+                if (binding.recycler.getAdapter() != null && binding.recycler.getAdapter().getItemCount() == 0) {
+                    binding.emptyTeis.setVisibility(View.VISIBLE);
+                } else {
+                    binding.emptyTeis.setVisibility(View.GONE);
+                }
+            });
+
         });
 
     }
@@ -538,10 +540,9 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     @Override
     public void setWritePermission(Boolean canWrite) {
         binding.addEventButton.setVisibility(canWrite ? View.VISIBLE : View.GONE);
-        if (binding.addEventButton.getVisibility() == View.VISIBLE){
+        if (binding.addEventButton.getVisibility() == View.VISIBLE) {
             binding.emptyTeis.setText(R.string.empty_tei_add);
-        }
-        else{
+        } else {
             binding.emptyTeis.setText(R.string.empty_tei_no_add);
         }
     }

@@ -546,7 +546,7 @@ public class Bindings {
         if (needSearch) {
             drawable = ContextCompat.getDrawable(fab.getContext(), R.drawable.ic_search);
         } else {
-            drawable = ContextCompat.getDrawable(fab.getContext(), R.drawable.ic_add);
+            drawable = ContextCompat.getDrawable(fab.getContext(), R.drawable.ic_add_accent);
         }
         fab.setColorFilter(Color.WHITE);
         fab.setImageDrawable(drawable);
