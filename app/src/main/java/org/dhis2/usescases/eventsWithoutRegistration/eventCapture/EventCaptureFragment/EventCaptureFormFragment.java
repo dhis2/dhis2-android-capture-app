@@ -151,7 +151,7 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
         binding.formRecycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-                if (newState != RecyclerView.SCROLL_STATE_IDLE) {
+                if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
                     dataEntryAdapter.setLastFocusItem(null);
                     InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(recyclerView.getWindowToken(), 0);
