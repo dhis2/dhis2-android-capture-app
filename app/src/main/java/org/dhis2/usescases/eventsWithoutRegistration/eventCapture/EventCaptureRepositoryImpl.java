@@ -265,9 +265,9 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         return rules;
     }
 
-    private boolean haveDisplayActionIndicator(ProgramRule programRule){
-        for(ProgramRuleAction programRuleAction: programRule.programRuleActions()){
-            if((programRuleAction.programRuleActionType() == ProgramRuleActionType.DISPLAYTEXT ||
+    private boolean haveDisplayActionIndicator(ProgramRule programRule) {
+        for (ProgramRuleAction programRuleAction : programRule.programRuleActions()) {
+            if ((programRuleAction.programRuleActionType() == ProgramRuleActionType.DISPLAYTEXT ||
                     programRuleAction.programRuleActionType() == ProgramRuleActionType.DISPLAYKEYVALUEPAIR)
                     && programRule.programStage() == null)
                 return true;
@@ -563,6 +563,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
             if (rendering != null && rendering.moveToFirst())
                 fieldRendering = ValueTypeDeviceRenderingModel.create(rendering);
         }
+
         ObjectStyleModel objectStyle = ObjectStyleModel.builder().build();
         try (Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", uid)) {
             if (objStyleCursor != null && objStyleCursor.moveToFirst())
