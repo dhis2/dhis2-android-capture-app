@@ -201,7 +201,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
         new Handler().postDelayed(() -> {
             FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
-                    .title(getString(R.string.tuto_search_1))
+                    .title(getString(R.string.tuto_search_1_v2))
                     .closeOnTouch(true)
                     .build();
             FancyShowCaseView tuto2 = new FancyShowCaseView.Builder(getAbstractActivity())
@@ -211,13 +211,13 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     .closeOnTouch(true)
                     .build();
             FancyShowCaseView tuto3 = new FancyShowCaseView.Builder(getAbstractActivity())
-                    .title(getString(R.string.tuto_search_3))
+                    .title(getString(R.string.tuto_search_3_v2))
                     .focusOn(getAbstractActivity().findViewById(R.id.enrollmentButton))
                     .closeOnTouch(true)
                     .build();
             FancyShowCaseView tuto4 = new FancyShowCaseView.Builder(getAbstractActivity())
                     .focusOn(getAbstractActivity().findViewById(R.id.clear_button))
-                    .title(getString(R.string.tuto_search_4))
+                    .title(getString(R.string.tuto_search_4_v2))
                     .closeOnTouch(true)
                     .build();
 
@@ -229,9 +229,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
             HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
 
-            if (!prefs.getBoolean("TUTO_SEARCH_SHOWN", false) && !BuildConfig.DEBUG) {
+            if (!prefs.getBoolean(Constants.TUTORIAL_SEARCH, false) && !BuildConfig.DEBUG) {
                 HelpManager.getInstance().showHelp();/* getAbstractActivity().fancyShowCaseQueue.show();*/
-                prefs.edit().putBoolean("TUTO_SEARCH_SHOWN", true).apply();
+                prefs.edit().putBoolean(Constants.TUTORIAL_SEARCH, true).apply();
             }
 
         }, 500);

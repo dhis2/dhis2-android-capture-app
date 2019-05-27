@@ -137,6 +137,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         super.onResume();
         WorkManager.getInstance().getStatusesByTagLiveData(META_NOW).observe(this, workStatuses -> {
             if (!workStatuses.isEmpty() && workStatuses.get(0).getState() == State.RUNNING) {
+                binding.metadataLastSync.setTextColor(ContextCompat.getColor(context, R.color.text_black_333));
                 binding.metadataLastSync.setText(R.string.syncing_configuration);
                 binding.buttonSyncMeta.setEnabled(false);
             } else {
@@ -147,7 +148,8 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         });
         WorkManager.getInstance().getStatusesByTagLiveData(DATA_NOW).observe(this, workStatuses -> {
             if (!workStatuses.isEmpty() && workStatuses.get(0).getState() == State.RUNNING) {
-                binding.dataLastSync.setText(R.string.syncing_configuration);
+                binding.dataLastSync.setTextColor(ContextCompat.getColor(context, R.color.text_black_333));
+                binding.dataLastSync.setText(R.string.syncing_data);
                 binding.buttonSyncData.setEnabled(false);
             } else {
                 binding.buttonSyncData.setEnabled(true);
@@ -218,6 +220,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
         if (dataStatus) {
             binding.dataLastSync.setText(String.format(getString(R.string.last_data_sync_date), prefs.getString(Constants.LAST_DATA_SYNC, "-")));
+            binding.metadataLastSync.setTextColor(ContextCompat.getColor(context, R.color.text_black_333));
         } else {
             binding.dataLastSync.setText(getString(R.string.sync_error_text));
         }

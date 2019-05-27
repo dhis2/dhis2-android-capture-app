@@ -37,6 +37,7 @@ import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.Period;
 import org.dhis2.utils.custom_views.RxDateDialog;
+import org.hisp.dhis.android.core.constant.Constant;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.jetbrains.annotations.NotNull;
 
@@ -72,7 +73,6 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
     ProgramContract.Presenter presenter;
 
     private Period currentPeriod = NONE;
-    private StringBuilder orgUnitFilter = new StringBuilder();
 
     private AndroidTreeView treeView;
 
@@ -136,10 +136,6 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
     }
 
     //endregion
-
-    public void setOrgUnitFilter(StringBuilder orgUnitFilter) {
-        this.orgUnitFilter = orgUnitFilter;
-    }
 
     @SuppressLint({"CheckResult", "RxLeakedSubscription"})
     @Override
@@ -577,9 +573,9 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
 
                     HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
 
-                    if (!prefs.getBoolean("TUTO_SHOWN", false) && !BuildConfig.DEBUG) {
+                    if (!prefs.getBoolean(Constants.TUTORIAL_HOME,false) && !BuildConfig.DEBUG) {
                         HelpManager.getInstance().showHelp();
-                        prefs.edit().putBoolean("TUTO_SHOWN", true).apply();
+                        prefs.edit().putBoolean(Constants.TUTORIAL_HOME, true).apply();
                     }
 
                 }, 500);

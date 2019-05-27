@@ -8,6 +8,10 @@ public class Constants {
 
     public static final String EXTRA_DATA = "extra_data";
 
+    //TUTORIALS
+    public static final String TUTORIAL_HOME = "TUTORIAL_HOME_v2";
+    public static final String TUTORIAL_SEARCH = "TUTORIAL_SEARCH_v2";
+
     //PREFERENCES
     public static final String SHARE_PREFS = "org.dhis2";
     public static final String PREFS_URLS = "pref_urls";
