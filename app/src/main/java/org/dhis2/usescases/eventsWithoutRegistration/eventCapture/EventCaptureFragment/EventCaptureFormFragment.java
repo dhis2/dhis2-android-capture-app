@@ -1,11 +1,21 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureFragment;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ObservableBoolean;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.FormSectionViewModel;
@@ -21,19 +31,12 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.SectionSelecto
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.utils.ColorUtils;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.databinding.DataBindingUtil;
-import androidx.databinding.ObservableBoolean;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import io.reactivex.Flowable;
-import io.reactivex.functions.Consumer;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 
@@ -62,7 +65,7 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NotNull Context context) {
         super.onAttach(context);
         this.activity = (EventCaptureActivity) context;
         setRetainInstance(true);
@@ -96,15 +99,8 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
         });
 
         activity.getPresenter().initCompletionPercentage(sectionSelectorAdapter.completionPercentage());
-//        activity.getPresenter().subscribeToSection();
 
         return binding.getRoot();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-
     }
 
     public void setSectionTitle(DataEntryArguments arguments, FormSectionViewModel formSectionViewModel) {
@@ -134,17 +130,13 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
 
     private void setUpRecyclerView(DataEntryArguments arguments) {
 
-        if(!binding.progress.isShown())
+        if (!binding.progress.isShown())
             binding.progress.setVisibility(View.VISIBLE);
 
         dataEntryAdapter = new DataEntryAdapter(LayoutInflater.from(activity),
                 activity.getSupportFragmentManager(), arguments,
-                activity.getPresenter().getOrgUnits(),
-                new ObservableBoolean(true),
                 flowableProcessor,
                 flowableOptions);
-
-        binding.formRecycler.setAdapter(dataEntryAdapter);
 
         RecyclerView.LayoutManager layoutManager;
         if (arguments.renderType() != null && arguments.renderType().equals(ProgramStageSectionRenderingType.MATRIX.name())) {
@@ -154,30 +146,46 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
                     RecyclerView.VERTICAL, false);
 
         binding.formRecycler.setLayoutManager(layoutManager);
+        binding.formRecycler.setAdapter(dataEntryAdapter);
 
+        binding.formRecycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
+                    dataEntryAdapter.setLastFocusItem(null);
+                    InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(recyclerView.getWindowToken(), 0);
+                    binding.dummyFocusView.requestFocus();
+                    activity.getPresenter().clearLastFocusItem();
+                }
+            }
+        });
     }
 
-    @NonNull
-    public void showFields(List<FieldViewModel> updates) {
+    public void showFields(List<FieldViewModel> updates, String lastFocusItem) {
         binding.progress.setVisibility(View.GONE);
 
         if (currentSection.equals("NO_SECTION") ||
-                    (!updates.isEmpty() && updates.get(0).programStageSection().equals(currentSection))) {
-                dataEntryAdapter.swap(updates);
-                int completedValues = 0;
-                HashMap<String, Boolean> fields = new HashMap<>();
-                for (FieldViewModel fieldViewModel : updates) {
-                    fields.put(fieldViewModel.optionSet() == null ? fieldViewModel.uid() : fieldViewModel.optionSet(), !isEmpty(fieldViewModel.value()));
-                }
-                for (String key : fields.keySet())
-                    if (fields.get(key))
-                        completedValues++;
-                binding.currentSectionTitle.sectionValues.setText(String.format("%s/%s", completedValues, fields.keySet().size()));
+                (!updates.isEmpty() && updates.get(0).programStageSection().equals(currentSection))) {
+
+            if (!isEmpty(lastFocusItem))
+                dataEntryAdapter.setLastFocusItem(lastFocusItem);
+            dataEntryAdapter.swap(updates);
+
+            int completedValues = 0;
+            HashMap<String, Boolean> fields = new HashMap<>();
+            for (FieldViewModel fieldViewModel : updates) {
+                fields.put(fieldViewModel.optionSet() == null ? fieldViewModel.uid() : fieldViewModel.optionSet(), !isEmpty(fieldViewModel.value()));
             }
+            for (String key : fields.keySet())
+                if (fields.get(key))
+                    completedValues++;
+            binding.currentSectionTitle.sectionValues.setText(String.format("%s/%s", completedValues, fields.keySet().size()));
+        }
     }
 
     public void setSectionSelector(List<EventSectionModel> data) {
-       sectionSelectorAdapter.swapData(currentSection, data);
+        sectionSelectorAdapter.swapData(currentSection, data);
     }
 
     public FlowableProcessor<RowAction> dataEntryFlowable() {
@@ -192,11 +200,18 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
         }
     }
 
-    public View getSectionSelector() {
-        return binding.sectionSelector.getRoot();
-    }
-
     public Flowable<Trio<String, String, Integer>> optionSetActions() {
         return dataEntryAdapter.asFlowableOption();
+    }
+
+    public void updateAdapter(RowAction rowAction) {
+        activity.runOnUiThread(() -> {
+            dataEntryAdapter.notifyChanges(rowAction);
+            if (rowAction.lastFocusPosition() != -1)
+                if (rowAction.lastFocusPosition() >= dataEntryAdapter.getItemCount())
+                    binding.formRecycler.smoothScrollToPosition(rowAction.lastFocusPosition());
+                else
+                    binding.formRecycler.smoothScrollToPosition(rowAction.lastFocusPosition() + 1);
+        });
     }
 }

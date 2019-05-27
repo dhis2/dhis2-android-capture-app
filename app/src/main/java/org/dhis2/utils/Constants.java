@@ -8,6 +8,10 @@ public class Constants {
 
     public static final String EXTRA_DATA = "extra_data";
 
+    //TUTORIALS
+    public static final String TUTORIAL_HOME = "TUTORIAL_HOME_v2";
+    public static final String TUTORIAL_SEARCH = "TUTORIAL_SEARCH_v2";
+
     //PREFERENCES
     public static final String SHARE_PREFS = "org.dhis2";
     public static final String PREFS_URLS = "pref_urls";
@@ -17,6 +21,7 @@ public class Constants {
     public static final String EVENT_MAX = "EVENT_MAX";
     public static final String TEI_MAX = "TEI_MAX";
     public static final String LIMIT_BY_ORG_UNIT = "LIMIT_BY_ORG_UNIT";
+    public static final String LIMIT_BY_PROGRAM = "LIMIT_BY_PROGRAM";
     public static final int EVENT_MAX_DEFAULT = 1000;
     public static final int TEI_MAX_DEFAULT = 500;
 
@@ -41,6 +46,8 @@ public class Constants {
     public static final int TIME_15M = 15 * 60;
     public static final int TIME_HOURLY = 60 * 60;
 
+    // LOGIN
+    public static final String ACCOUNT_RECOVERY = "/dhis-web-commons/security/recovery.action";
 
     //EVENT_CREATION
     public static final String PREVIOUS_DASHBOARD_PROGRAM = "previous_dashboard_program";
@@ -109,6 +116,8 @@ public class Constants {
     public static final String DATA_NOW = "DATA_NOW";
     public static final String TIME_META = "timeMeta";
     public static final String TIME_DATA = "timeData";
+    public static final String JIRA_AUTH = "JIRA_AUTH";
+    public static final String JIRA_USER = "JIRA_USER";
 
     public static final String ACCESS_DATA = "access_data";
     private Constants() {

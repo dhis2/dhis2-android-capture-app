@@ -2,6 +2,12 @@ package org.dhis2.usescases.programEventDetail;
 
 import android.database.Cursor;
 
+import androidx.annotation.NonNull;
+import androidx.lifecycle.LiveData;
+import androidx.paging.DataSource;
+import androidx.paging.LivePagedListBuilder;
+import androidx.paging.PagedList;
+
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.tuples.Pair;
@@ -13,10 +19,12 @@ import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
+import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.dataelement.DataElement;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventCollectionRepository;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.period.DatePeriod;
 import org.hisp.dhis.android.core.program.Program;
@@ -24,14 +32,9 @@ import org.hisp.dhis.android.core.program.ProgramStageDataElement;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Transformations;
-import androidx.paging.DataSource;
-import androidx.paging.LivePagedListBuilder;
-import androidx.paging.PagedList;
 import io.reactivex.Observable;
 
 import static android.text.TextUtils.isEmpty;
@@ -63,7 +66,39 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
         if (!catOptCombList.isEmpty())
             for (CategoryOptionCombo catOptComb : catOptCombList)
                 eventRepo = eventRepo.byAttributeOptionComboUid().eq(catOptComb.uid());
-        return Transformations.switchMap(eventRepo.withAllChildren().getPaged(20), this::transform);
+        DataSource dataSource = eventRepo.byState().notIn(State.TO_DELETE).orderByEventDate(RepositoryScope.OrderByDirection.DESC).withAllChildren().getDataSource().map(event -> transformToProgramEventModel(event));
+        return new LivePagedListBuilder(new DataSource.Factory() {
+            @Override
+            public DataSource create() {
+                return dataSource;
+            }
+        }, 20).build();
+//        return Transformations.switchMap(eventRepo.byState().notIn(State.TO_DELETE).orderByEventDate(RepositoryScope.OrderByDirection.DESC).withAllChildren().getPaged(20), events -> transform(events));Transformations.switchMap(eventRepo.byState().notIn(State.TO_DELETE).orderByEventDate(RepositoryScope.OrderByDirection.DESC).withAllChildren().getPaged(20), events -> transform(events));
+    }
+
+    private ProgramEventViewModel transformToProgramEventModel(Event event) {
+        String orgUnitName = getOrgUnitName(event.organisationUnit());
+        List<String> showInReportsDataElements = new ArrayList<>();
+        for (ProgramStageDataElement programStageDataElement : d2.programModule().programStages.uid(event.programStage()).withAllChildren().get().programStageDataElements()) {
+            if (programStageDataElement.displayInReports())
+                showInReportsDataElements.add(programStageDataElement.dataElement().uid());
+        }
+        List<Pair<String, String>> data = getData(event.trackedEntityDataValues(), showInReportsDataElements);
+        boolean hasExpired = isExpired(event);
+        boolean inOrgUnitRange = checkOrgUnitRange(event.organisationUnit(), event.eventDate());
+        CategoryOptionCombo catOptComb = d2.categoryModule().categoryOptionCombos.uid(event.attributeOptionCombo()).get();
+        String attributeOptionCombo = catOptComb != null && !catOptComb.displayName().equals("default") ? catOptComb.displayName() : "";
+
+        return ProgramEventViewModel.create(
+                event.uid(),
+                event.organisationUnit(),
+                orgUnitName,
+                event.eventDate(),
+                event.state(),
+                data,
+                event.status(),
+                hasExpired || !inOrgUnitRange,
+                attributeOptionCombo);
     }
 
     @NonNull
@@ -74,29 +109,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
 
     private LiveData<PagedList<ProgramEventViewModel>> transform(PagedList<Event> events) {
 
-        DataSource dataSource = events.getDataSource().map(event -> {
-            String orgUnitName = getOrgUnitName(event.organisationUnit());
-            List<String> showInReportsDataElements = new ArrayList<>();
-            for (ProgramStageDataElement programStageDataElement : d2.programModule().programStages.uid(event.programStage()).withAllChildren().get().programStageDataElements()) {
-                if (programStageDataElement.displayInReports())
-                    showInReportsDataElements.add(programStageDataElement.dataElement().uid());
-            }
-            List<Pair<String, String>> data = getData(event.trackedEntityDataValues(), showInReportsDataElements);
-            boolean hasExpired = isExpired(event);
-            CategoryOptionCombo catOptComb = d2.categoryModule().categoryOptionCombos.uid(event.attributeOptionCombo()).get();
-            String attributeOptionCombo = catOptComb != null && !catOptComb.displayName().equals("default") ? catOptComb.displayName() : "";
-
-            return ProgramEventViewModel.create(
-                    event.uid(),
-                    event.organisationUnit(),
-                    orgUnitName,
-                    event.eventDate(),
-                    event.state(),
-                    data,
-                    event.status(),
-                    hasExpired,
-                    attributeOptionCombo);
-        });
+        DataSource dataSource = events.getDataSource().map(this::transformToProgramEventModel);
 
         return new LivePagedListBuilder(new DataSource.Factory() {
             @Override
@@ -115,6 +128,18 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
                 program.expiryPeriodType(),
                 program.expiryDays());
 
+    }
+
+    private boolean checkOrgUnitRange(String orgUnitUid, Date eventDate) {
+        boolean inRange = true;
+        OrganisationUnit orgUnit = d2.organisationUnitModule().organisationUnits.uid(orgUnitUid).get();
+        if (orgUnit.openingDate() != null && eventDate.before(orgUnit.openingDate()))
+            inRange = false;
+        if (orgUnit.closedDate() != null && eventDate.after(orgUnit.closedDate()))
+            inRange = false;
+
+
+        return inRange;
     }
 
     private String getOrgUnitName(String orgUnitUid) {
@@ -189,8 +214,11 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     public boolean getAccessDataWrite() {
         boolean canWrite;
         canWrite = d2.programModule().programs.uid(programUid).get().access().data().write();
-        if (canWrite)
+        if (canWrite && d2.programModule().programStages.byProgramUid().eq(programUid).one().get() != null)
             canWrite = d2.programModule().programStages.byProgramUid().eq(programUid).one().get().access().data().write();
+        else if (d2.programModule().programStages.byProgramUid().eq(programUid).one().get() == null)
+            canWrite = false;
+
         return canWrite;
     }
 

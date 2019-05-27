@@ -3,11 +3,13 @@ package org.dhis2.data.service;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import androidx.annotation.NonNull;
+
 import org.dhis2.utils.Constants;
 import org.hisp.dhis.android.core.D2;
 
-import androidx.annotation.NonNull;
 import io.reactivex.Completable;
+import timber.log.Timber;
 
 final class SyncPresenterImpl implements SyncPresenter {
 
@@ -24,8 +26,9 @@ final class SyncPresenterImpl implements SyncPresenter {
         SharedPreferences prefs = context.getSharedPreferences(
                 Constants.SHARE_PREFS, Context.MODE_PRIVATE);
         int eventLimit = prefs.getInt(Constants.EVENT_MAX, Constants.EVENT_MAX_DEFAULT);
-        boolean limityByOU = prefs.getBoolean(Constants.LIMIT_BY_ORG_UNIT, false);
-        d2.eventModule().downloadSingleEvents(eventLimit, limityByOU).call();
+        boolean limitByOU = prefs.getBoolean(Constants.LIMIT_BY_ORG_UNIT, false);
+        boolean limitByProgram = prefs.getBoolean(Constants.LIMIT_BY_PROGRAM, false);
+        d2.eventModule().downloadSingleEvents(eventLimit, limitByOU, limitByProgram).call();
     }
 
     @Override
@@ -34,8 +37,13 @@ final class SyncPresenterImpl implements SyncPresenter {
         SharedPreferences prefs = context.getSharedPreferences(
                 Constants.SHARE_PREFS, Context.MODE_PRIVATE);
         int teiLimit = prefs.getInt(Constants.TEI_MAX, Constants.TEI_MAX_DEFAULT);
-        boolean limityByOU = prefs.getBoolean(Constants.LIMIT_BY_ORG_UNIT, false);
-        Completable.fromObservable(d2.trackedEntityModule().downloadTrackedEntityInstances(teiLimit, limityByOU).asObservable()).blockingAwait();
+        boolean limitByOU = prefs.getBoolean(Constants.LIMIT_BY_ORG_UNIT, false);
+        boolean limitByProgram = prefs.getBoolean(Constants.LIMIT_BY_PROGRAM, false);
+        Completable.fromObservable(d2.trackedEntityModule()
+                .downloadTrackedEntityInstances(teiLimit, limitByOU, limitByProgram)
+                .asObservable()
+                .doOnNext(data -> Timber.d(data.percentage() + "% " + data.doneCalls().size() + "/" + data.totalCalls())))
+                .blockingAwait();
     }
 
     @Override

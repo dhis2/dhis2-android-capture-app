@@ -1,8 +1,8 @@
 package org.dhis2.data.forms.dataentry.fields.image;
 
-import androidx.databinding.Observable;
-import androidx.databinding.ObservableField;
 import android.view.View;
+
+import androidx.databinding.ObservableField;
 
 import org.dhis2.Bindings.Bindings;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
@@ -23,7 +23,7 @@ public class ImageHolder extends FormViewHolder {
     private final ObservableField<String> currentSelector;
     private boolean isEditable;
 
-    ImageViewModel model;
+    private ImageViewModel model;
 
     public ImageHolder(FormImageBinding mBinding, FlowableProcessor<RowAction> processor, ObservableField<String> imageSelector) {
         super(mBinding);
@@ -47,7 +47,7 @@ public class ImageHolder extends FormViewHolder {
                     currentSelector.set(label);
                 }
 
-                processor.onNext(RowAction.create(uids[0], value));
+                processor.onNext(RowAction.create(uids[0], value,getAdapterPosition()));
             }
         });
 
@@ -87,5 +87,9 @@ public class ImageHolder extends FormViewHolder {
 
     public void dispose() {
         disposable.clear();
+    }
+
+    @Override
+    public void performAction() {
     }
 }

@@ -239,6 +239,7 @@
 
 
                         <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/org_unit_layout"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="16dp"
@@ -378,7 +379,7 @@
                     android:layout_alignParentBottom="true"
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="16dp"
-                    android:text="@string/create" />
+                    android:text="@string/next" />
 
             </RelativeLayout>
 

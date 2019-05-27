@@ -2,9 +2,11 @@ package org.dhis2.utils.custom_views;
 
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.text.format.DateFormat;
 import android.util.AttributeSet;
 import android.view.View;
+import android.widget.Toast;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -35,7 +37,7 @@ import timber.log.Timber;
 
 public class TimeView extends FieldLayout implements View.OnClickListener {
 
-    private TextView editText;
+    private TextInputEditText editText;
     private TextInputLayout inputLayout;
     private ViewDataBinding binding;
 
@@ -117,9 +119,14 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
         editText.setText(data);
     }
 
-    public void setWarningOrError(String msg) {
-        if(msg != null)
-            inputLayout.setError(msg);
+    public void setWarning(String msg) {
+        inputLayout.setErrorTextAppearance(R.style.warning_appearance);
+        inputLayout.setError(msg);
+    }
+
+    public void setError(String msg) {
+        inputLayout.setErrorTextAppearance(R.style.error_appearance);
+        inputLayout.setError(msg);
     }
 
     public void setMandatory(){
@@ -162,13 +169,19 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
                 editText.setText(calendarTime);
             }
             listener.onDateSelected(selectedDate);
-//            nextFocus(view);
+            nextFocus(view);
         }, hour, minute, is24HourFormat);
         dialog.setTitle(label);
+
+        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, getContext().getString(R.string.date_dialog_clear), (timeDialog, which) -> {
+            editText.setText(null);
+            listener.onDateSelected(null);
+        });
+
         dialog.show();
     }
 
-    public TextView getEditText() {
+    public TextInputEditText getEditText() {
         return editText;
     }
 

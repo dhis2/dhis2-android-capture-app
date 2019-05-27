@@ -7,6 +7,7 @@ import org.hisp.dhis.android.core.category.CategoryModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
+import org.hisp.dhis.android.core.imports.TrackerImportConflict;
 import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
@@ -33,7 +34,7 @@ import io.reactivex.Observable;
 public interface MetadataRepository {
 
     /*PROGRAMS*/
-    Observable<List<ProgramModel>> getTeiActivePrograms(String teiUid);
+    Observable<List<ProgramModel>> getTeiActivePrograms(String teiUid, boolean showOnlyActive);
 
     Observable<ProgramModel> getProgramWithId(String programUid);
 
@@ -115,7 +116,7 @@ public interface MetadataRepository {
 
     Observable<String> getServerUrl();
 
-    List<D2Error> getSyncErrors();
+    List<TrackerImportConflict> getSyncErrors();
 
     Observable<List<OptionModel>> searchOptions(String text, String idOptionSet, int page, List<String> optionsToHide, List<String> optionsGroupsToHide);
 

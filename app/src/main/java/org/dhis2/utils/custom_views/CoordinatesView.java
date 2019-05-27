@@ -7,6 +7,11 @@ import android.content.pm.PackageManager;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.Toast;
+
+import androidx.core.app.ActivityCompat;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ViewDataBinding;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -24,9 +29,6 @@ import org.dhis2.usescases.general.ActivityGlobalAbstract;
 
 import java.util.Locale;
 
-import androidx.core.app.ActivityCompat;
-import androidx.databinding.DataBindingUtil;
-import androidx.databinding.ViewDataBinding;
 import io.reactivex.processors.FlowableProcessor;
 
 import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter.ACCESS_COARSE_LOCATION_PERMISSION_REQUEST;
@@ -35,7 +37,7 @@ import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventIn
  * QUADRAM. Created by Administrador on 21/03/2018.
  */
 
-public class CoordinatesView extends FieldLayout implements View.OnClickListener {
+public class CoordinatesView extends FieldLayout implements View.OnClickListener, View.OnFocusChangeListener {
 
     private ViewDataBinding binding;
     private TextInputEditText latLong;
@@ -47,7 +49,6 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
     private OnCurrentLocationClick listener2;
     private FlowableProcessor<RowAction> processor;
     private String uid;
-
 
     public CoordinatesView(Context context) {
         super(context);
@@ -71,7 +72,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
 
     @Override
     public void performOnFocusAction() {
-        //not needed
+        latLong.requestFocus();
     }
 
 
@@ -83,6 +84,10 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
 
         inputLayout = findViewById(R.id.inputLayout);
         latLong = findViewById(R.id.latlong);
+
+        latLong.setOnFocusChangeListener(this::onFocusChange);
+        latLong.setFocusable(true); //Makes editText editable
+        latLong.setClickable(true);//  and clickable
 
         ImageButton position = findViewById(R.id.location1);
         ImageButton map = findViewById(R.id.location2);
@@ -100,6 +105,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
     }
 
     public void setLabel(String label) {
+        this.label = label;
         if (binding instanceof FormCoordinatesBinding)
             ((FormCoordinatesBinding) binding).setLabel(label);
         else
@@ -118,8 +124,14 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
         this.latLong.setText(String.format(Locale.getDefault(), "%.5f, %.5f", Double.valueOf(latLongValue[0]), Double.valueOf(latLongValue[1])));
     }
 
-    public void setWargingOrError(String msg) {
-        this.inputLayout.setError(msg);
+    public void setWarning(String msg) {
+        inputLayout.setErrorTextAppearance(R.style.warning_appearance);
+        inputLayout.setError(msg);
+    }
+
+    public void setError(String msg) {
+        inputLayout.setErrorTextAppearance(R.style.error_appearance);
+        inputLayout.setError(msg);
     }
 
     @Override
@@ -171,6 +183,12 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
         this.uid = uid;
     }
 
+    @Override
+    public void onFocusChange(View v, boolean hasFocus) {
+        if (hasFocus)
+            latLong.performClick();
+    }
+
 
     public interface OnMapPositionClick {
         void onMapPositionClick(CoordinatesView coordinatesView);
@@ -188,6 +206,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
                             String.format(Locale.US,
                                     "[%.5f,%.5f]", latitude, longitude))
             );
+            nextFocus(this);
         }
         String lat = String.format(Locale.getDefault(), "%.5f", latitude);
         String lon = String.format(Locale.getDefault(), "%.5f", longitude);

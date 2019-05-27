@@ -294,6 +294,25 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     }
 
     @Override
+    public void scheduleEventPermanent(String enrollmentUid, String trackedEntityInstanceUid, String programStageModel, Date dueDate, String orgUnitUid,
+                              String categoryOptionComboUid, String categoryOptionsUid,
+                              String latitude, String longitude) {
+        if (programModel != null)
+            compositeDisposable.add(
+                    eventInitialRepository.scheduleEvent(enrollmentUid, null, view.getContext(), programModel.uid(),
+                            programStageModel, dueDate, orgUnitUid,
+                            categoryOptionComboUid, categoryOptionsUid,
+                            latitude, longitude)
+                            .subscribeOn(Schedulers.io())
+                            .switchMap(
+                                    eventId -> eventInitialRepository.updateTrackedEntityInstance(eventId, trackedEntityInstanceUid, orgUnitUid)
+                            )
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(view::onEventCreated, t -> view.renderError(t.getMessage()))
+            );
+    }
+
+    @Override
     public void scheduleEvent(String enrollmentUid, String programStageModel, Date dueDate, String orgUnitUid,
                               String categoryOptionComboUid, String categoryOptionsUid,
                               String latitude, String longitude) {

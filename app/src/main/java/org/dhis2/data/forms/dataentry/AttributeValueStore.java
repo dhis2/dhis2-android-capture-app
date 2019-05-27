@@ -4,11 +4,15 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.squareup.sqlbrite2.BriteDatabase;
 
-import org.dhis2.data.tuples.Pair;
+import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.State;
+import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
@@ -21,8 +25,6 @@ import java.util.Objects;
 
 import javax.annotation.Nonnull;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 
@@ -87,7 +89,21 @@ public final class AttributeValueStore implements DataEntryStore {
     @NonNull
     @Override
     public Flowable<Long> save(@NonNull String uid, @Nullable String value) {
-        return Flowable.defer(() -> {
+        return Flowable.just(getValueType(uid))
+                .filter(valueType -> !Objects.equals(currentValue(uid, valueType), value))
+                .switchMap(valueType -> {
+                    if (isEmpty(value))
+                        return Flowable.just(delete(uid, valueType));
+                    else {
+                        long updated = update(uid, value, valueType);
+                        if (updated > 0) {
+                            return Flowable.just(updated);
+                        } else
+                            return Flowable.just(insert(uid, value, valueType));
+                    }
+                })
+                .switchMap(this::updateEnrollment);
+      /*  return Flowable.defer(() -> {
             valueType type = getValueType(uid);
             return Flowable.just(Pair.create(currentValue(uid, type), type));
         })
@@ -111,7 +127,28 @@ public final class AttributeValueStore implements DataEntryStore {
                         return updateEnrollment(status);
                     else
                         return Flowable.just(status);
-                });
+                });*/
+    }
+
+    @NonNull
+    @Override
+    public Flowable<Boolean> checkUnique(@NonNull String uid, @Nullable String value) {
+
+        if (value != null && getValueType(uid) == ATTR) {
+            try (Cursor uniqueCursor = briteDatabase.query("SELECT TrackedEntityAttributeValue.value FROM TrackedEntityAttributeValue" +
+                    " JOIN TrackedEntityAttribute ON TrackedEntityAttribute.uid = TrackedEntityAttributeValue.trackedEntityAttribute" +
+                    " WHERE TrackedEntityAttribute.uid = ? AND" +
+                    " TrackedEntityAttribute.uniqueProperty = ? AND" +
+                    " TrackedEntityAttributeValue.value = ?", uid, "1", value)) {
+                if (uniqueCursor != null && uniqueCursor.getCount() > 0) {
+                    delete(uid, ATTR);
+                    return Flowable.just(false);
+                } else
+                    return Flowable.just(true);
+            }
+
+        } else
+            return Flowable.just(true);
     }
 
 
@@ -278,7 +315,7 @@ public final class AttributeValueStore implements DataEntryStore {
         return eventUid;
     }
 
-    private boolean checkUnique(String attribute, String value) {
+   /* private boolean checkUnique(String attribute, String value) {
         if (attribute != null && value != null) {
             Cursor uniqueCursor = briteDatabase.query("SELECT TrackedEntityAttributeValue.value FROM TrackedEntityAttributeValue" +
                     " JOIN TrackedEntityAttribute ON TrackedEntityAttribute.uid = TrackedEntityAttributeValue.trackedEntityAttribute" +
@@ -295,27 +332,38 @@ public final class AttributeValueStore implements DataEntryStore {
             }
         } else
             return true;
-    }
+    }*/
 
     @NonNull
     private Flowable<Long> updateEnrollment(long status) {
-        return briteDatabase.createQuery(TrackedEntityInstanceModel.TABLE, SELECT_TEI, enrollment)
-                .mapToOne(TrackedEntityInstanceModel::create).take(1).toFlowable(BackpressureStrategy.LATEST)
-                .switchMap(tei -> {
-                    if (State.SYNCED.equals(tei.state()) || State.TO_DELETE.equals(tei.state()) ||
-                            State.ERROR.equals(tei.state())) {
-                        ContentValues values = tei.toContentValues();
-                        values.put(TrackedEntityInstanceModel.Columns.STATE, State.TO_UPDATE.toString());
-
-                        String teiUid = tei.uid() == null ? "" : tei.uid();
-                        if (briteDatabase.update(TrackedEntityInstanceModel.TABLE, values,
-                                TrackedEntityInstanceModel.Columns.UID + " = ?", teiUid) <= 0) {
-
-                            throw new IllegalStateException(String.format(Locale.US, "Tei=[%s] " +
-                                    "has not been successfully updated", tei.uid()));
+        return briteDatabase.createQuery(EnrollmentModel.TABLE, "SELECT Enrollment.* FROM Enrollment WHERE uid = ?", enrollment)
+                .mapToOne(EnrollmentModel::create).take(1).toFlowable(BackpressureStrategy.LATEST)
+                .switchMap(enrollmentModel -> {
+                    if (enrollmentModel.state().equals(State.SYNCED) || enrollmentModel.state().equals(State.TO_DELETE) || enrollmentModel.state().equals(State.ERROR)) {
+                        ContentValues cv = enrollmentModel.toContentValues();
+                        cv.put(EnrollmentModel.Columns.STATE, State.TO_UPDATE.name());
+                        if (briteDatabase.update(EnrollmentModel.TABLE, cv, "uid = ?", enrollment) <= 0) {
+                            throw new IllegalStateException(String.format(Locale.US, "Enrollment=[%s] " +
+                                    "has not been successfully updated", enrollment));
                         }
                     }
+
+                    TrackedEntityInstanceModel tei = null;
+                    try (Cursor teiCursor = briteDatabase.query("SELECT TrackedEntityInstance .* FROM TrackedEntityInstance " +
+                            "JOIN Enrollment ON Enrollment.trackedEntityInstance = TrackedEntityInstance.uid WHERE Enrollment.uid = ?", enrollment)) {
+                        if (teiCursor.moveToFirst())
+                            tei = TrackedEntityInstanceModel.create(teiCursor);
+                    } finally {
+                        if (tei != null) {
+                            ContentValues cv = tei.toContentValues();
+                            cv.put(TrackedEntityInstanceModel.Columns.STATE, tei.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
+                            cv.put(TrackedEntityInstanceModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
+                            briteDatabase.update(TrackedEntityInstanceModel.TABLE, cv, "uid = ?", tei.uid());
+                        }
+                    }
+
                     return Flowable.just(status);
                 });
+
     }
 }

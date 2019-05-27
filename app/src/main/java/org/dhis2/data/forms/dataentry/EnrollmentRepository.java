@@ -5,6 +5,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
 
+import androidx.annotation.NonNull;
+
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.R;
@@ -17,6 +19,7 @@ import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.maintenance.D2Error;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 
@@ -24,7 +27,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import androidx.annotation.NonNull;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import timber.log.Timber;
 
@@ -45,7 +49,8 @@ final class EnrollmentRepository implements DataEntryRepository {
             "  Enrollment.organisationUnit,\n" +
             "  Enrollment.status,\n" +
             "  Field.displayDescription,\n" +
-            "  Field.pattern\n" +
+            "  Field.pattern, \n" +
+            "  Field.formName \n" +
             "FROM (Enrollment INNER JOIN Program ON Program.uid = Enrollment.program)\n" +
             "  LEFT OUTER JOIN (\n" +
             "      SELECT\n" +
@@ -58,7 +63,8 @@ final class EnrollmentRepository implements DataEntryRepository {
             "        ProgramTrackedEntityAttribute.mandatory AS mandatory,\n" +
             "        ProgramTrackedEntityAttribute.allowFutureDate AS allowFutureDate,\n" +
             "        TrackedEntityAttribute.generated AS generated,\n" +
-            "        TrackedEntityAttribute.displayDescription AS displayDescription\n" +
+            "        TrackedEntityAttribute.displayDescription AS displayDescription, \n" +
+            "        TrackedEntityAttribute.formName AS formName \n" +
             "      FROM ProgramTrackedEntityAttribute INNER JOIN TrackedEntityAttribute\n" +
             "          ON TrackedEntityAttribute.uid = ProgramTrackedEntityAttribute.trackedEntityAttribute\n" +
             "    ) AS Field ON Field.program = Program.uid\n" +
@@ -95,10 +101,17 @@ final class EnrollmentRepository implements DataEntryRepository {
 
     @NonNull
     @Override
-    public Observable<List<FieldViewModel>> list() {
+    public Flowable<List<FieldViewModel>> list() {
         return briteDatabase
-                .createQuery(TrackedEntityAttributeValueModel.TABLE, QUERY, enrollment == null ? "" : enrollment)
-                .mapToList(this::transform);
+                .createQuery(TrackedEntityAttributeValueModel.TABLE, QUERY, enrollment)
+                .mapToList(this::transform)
+                .map(list -> list)
+                .toFlowable(BackpressureStrategy.BUFFER);
+    }
+
+    @Override
+    public Observable<List<OrganisationUnitLevel>> getOrgUnitLevels() {
+        return Observable.just(d2.organisationUnitModule().organisationUnitLevels.get());
     }
 
     public List<FieldViewModel> fieldList() {
@@ -138,6 +151,8 @@ final class EnrollmentRepository implements DataEntryRepository {
         EnrollmentStatus enrollmentStatus = EnrollmentStatus.valueOf(cursor.getString(10));
         String description = cursor.getString(11);
         String pattern = cursor.getString(12);
+        String formName = cursor.getString(13); //TODO: WE NEED THE DISPLAY FORM NAME WHEN AVAILABLE IN THE SDK
+
         if (!isEmpty(optionCodeName)) {
             dataValue = optionCodeName;
         }
@@ -191,7 +206,7 @@ final class EnrollmentRepository implements DataEntryRepository {
                     updateStatement.clearBindings();
                 }
             } catch (D2Error e) {
-                Timber.e(e);
+                //Timber.e(e);
                 warning = context.getString(R.string.no_reserved_values);
             }
         }
@@ -211,6 +226,10 @@ final class EnrollmentRepository implements DataEntryRepository {
         try (Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", uid)) {
             if (objStyleCursor != null && objStyleCursor.moveToFirst())
                 objectStyle = ObjectStyleModel.create(objStyleCursor);
+        }
+
+        if (valueType == ValueType.ORGANISATION_UNIT && !isEmpty(dataValue)) {
+            dataValue = dataValue + "_ou_" + d2.organisationUnitModule().organisationUnits.uid(dataValue).get().displayName();
         }
 
         if (warning != null) {

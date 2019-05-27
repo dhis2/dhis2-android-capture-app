@@ -3,16 +3,21 @@ package org.dhis2.data.forms.dataentry;
 import android.content.ContentValues;
 import android.database.Cursor;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import org.dhis2.utils.DateUtils;
+import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
@@ -23,9 +28,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import timber.log.Timber;
 
@@ -100,20 +105,23 @@ final class ProgramStageRepository implements DataEntryRepository {
 
     private ProgramStageSectionRenderingType renderingType;
     private boolean accessDataWrite;
+    private final D2 d2;
+
 
     ProgramStageRepository(@NonNull BriteDatabase briteDatabase,
                            @NonNull FieldViewModelFactory fieldFactory,
-                           @NonNull String eventUid, @Nullable String sectionUid) {
+                           @NonNull String eventUid, @Nullable String sectionUid, D2 d2) {
         this.briteDatabase = briteDatabase;
         this.fieldFactory = fieldFactory;
         this.eventUid = eventUid;
         this.sectionUid = sectionUid;
         this.renderingType = ProgramStageSectionRenderingType.LISTING;
+        this.d2 = d2;
     }
 
     @NonNull
     @Override
-    public Observable<List<FieldViewModel>> list() {
+    public Flowable<List<FieldViewModel>> list() {
 
         try (Cursor cursor = briteDatabase.query(SECTION_RENDERING_TYPE, sectionUid == null ? "" : sectionUid)) {
             if (cursor != null && cursor.moveToFirst()) {
@@ -138,12 +146,22 @@ final class ProgramStageRepository implements DataEntryRepository {
         return briteDatabase
                 .createQuery(TrackedEntityDataValueModel.TABLE, prepareStatement())
                 .mapToList(this::transform)
-                .map(this::checkRenderType);
+                .map(this::checkRenderType)
+                .toFlowable(BackpressureStrategy.BUFFER);
     }
 
     @Override
     public List<FieldViewModel> fieldList() {
-        return null;
+        List<FieldViewModel> list = new ArrayList<>();
+        try (Cursor listCursor = briteDatabase.query(prepareStatement())) {
+            listCursor.moveToFirst();
+            do {
+                list.add(transform(listCursor));
+            } while (listCursor.moveToNext());
+
+        }
+
+        return list;
     }
 
     private List<FieldViewModel> checkRenderType(List<FieldViewModel> fieldViewModels) {
@@ -272,6 +290,10 @@ final class ProgramStageRepository implements DataEntryRepository {
                 objectStyle = ObjectStyleModel.create(objStyleCursor);
         }
 
+        if (valueType == ValueType.ORGANISATION_UNIT && !isEmpty(dataValue)) {
+            dataValue = dataValue + "_ou_" + d2.organisationUnitModule().organisationUnits.uid(dataValue).get().displayName();
+        }
+
         return fieldFactory.create(uid, isEmpty(formLabel) ? label : formLabel, valueType, mandatory, optionSetUid, dataValue, section,
                 allowFutureDates, accessDataWrite && eventStatus == EventStatus.ACTIVE && !hasExpired, renderingType, description, fieldRendering, optionCount, objectStyle);
     }
@@ -288,5 +310,10 @@ final class ProgramStageRepository implements DataEntryRepository {
         }
 
         return String.format(Locale.US, QUERY, where);
+    }
+
+    @Override
+    public Observable<List<OrganisationUnitLevel>> getOrgUnitLevels() {
+        return Observable.just(d2.organisationUnitModule().organisationUnitLevels.get());
     }
 }

@@ -1,17 +1,20 @@
 package org.dhis2.usescases.main.program;
 
+import androidx.annotation.NonNull;
+
 import android.database.Cursor;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
+import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
+import org.hisp.dhis.android.core.common.State;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.period.DatePeriod;
-import org.hisp.dhis.android.core.user.UserOrganisationUnitLinkModel;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.NonNull;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 
@@ -106,18 +109,87 @@ class HomeRepositoryImpl implements HomeRepository {
                     else
                         typeName = "DataSets";
 
-                    int count = 0;
-                    if (program.programType() == WITHOUT_REGISTRATION)
-                        if (!dateFilter.isEmpty())
-                            count = d2.eventModule().events.byProgramUid().eq(program.uid()).byEventDate().inDatePeriods(dateFilter).count();
-                        else
-                            count = d2.eventModule().events.byProgramUid().eq(program.uid()).count();
-                    else {
+                    int count;
+                    State state = State.SYNCED;
+                    if (program.programType() == WITHOUT_REGISTRATION) {
                         if (!dateFilter.isEmpty()) {
-                            count = d2.eventModule().events.byProgramUid().eq(program.uid()).byEventDate().inDatePeriods(dateFilter).countTrackedEntityInstances();
-                        } else
-                            count = d2.eventModule().events.byProgramUid().eq(program.uid()).countTrackedEntityInstances();
+                            if (!orgUnitFilter.isEmpty()) {
+                                count = d2.eventModule().events
+                                        .byProgramUid().eq(program.uid())
+                                        .byEventDate().inDatePeriods(dateFilter)
+                                        .byOrganisationUnitUid().in(orgUnitFilter)
+                                        .count();
+                            } else {
+                                count = d2.eventModule().events
+                                        .byProgramUid().eq(program.uid())
+                                        .byEventDate().inDatePeriods(dateFilter)
+                                        .count();
+                            }
+                        } else if (!orgUnitFilter.isEmpty()) {
+                            count = d2.eventModule().events
+                                    .byProgramUid().eq(program.uid())
+                                    .byOrganisationUnitUid().in(orgUnitFilter)
+                                    .count();
+                        } else {
+                            count = d2.eventModule().events
+                                    .byProgramUid().eq(program.uid())
+                                    .count();
+                        }
+
+                        if (!d2.eventModule().events.byProgramUid().eq(program.uid()).byState().in(State.ERROR, State.WARNING).get().isEmpty())
+                            state = State.WARNING;
+                        else if (!d2.eventModule().events.byProgramUid().eq(program.uid()).byState().in(State.SENT_VIA_SMS, State.SYNCED_VIA_SMS).get().isEmpty())
+                            state = State.SENT_VIA_SMS;
+                        else if (!d2.eventModule().events.byProgramUid().eq(program.uid()).byState().in(State.TO_UPDATE, State.TO_POST, State.TO_DELETE).get().isEmpty())
+                            state = State.TO_UPDATE;
+
+                    } else {
+                        List<String> programUids = new ArrayList<>();
+                        programUids.add(program.uid());
+                        if (!dateFilter.isEmpty()) {
+                            if (!orgUnitFilter.isEmpty()) {
+                                count = d2.trackedEntityModule().trackedEntityInstances
+                                        .byProgramUids(programUids)
+                                        .byLastUpdated().inDatePeriods(dateFilter)
+                                        .byOrganisationUnitUid().in(orgUnitFilter).count();
+                              /*  count = d2.eventModule().events
+                                        .byProgramUid().eq(program.uid())
+                                        .byEventDate().inDatePeriods(dateFilter)
+                                        .byOrganisationUnitUid().in(orgUnitFilter)
+                                        .countTrackedEntityInstances();*/
+                            } else {
+                                count = d2.trackedEntityModule().trackedEntityInstances
+                                        .byProgramUids(programUids)
+                                        .byLastUpdated().inDatePeriods(dateFilter).count();
+                               /* count = d2.eventModule().events
+                                        .byProgramUid().eq(program.uid())
+                                        .byEventDate().inDatePeriods(dateFilter)
+                                        .countTrackedEntityInstances();*/
+                            }
+                        } else if (!orgUnitFilter.isEmpty()) {
+                            count = d2.trackedEntityModule().trackedEntityInstances
+                                    .byProgramUids(programUids)
+                                    .byOrganisationUnitUid().in(orgUnitFilter).count();
+                          /*  count = d2.eventModule().events
+                                    .byProgramUid().eq(program.uid())
+                                    .byOrganisationUnitUid().in(orgUnitFilter)
+                                    .countTrackedEntityInstances();*/
+                        } else {
+                            count = d2.trackedEntityModule().trackedEntityInstances
+                                    .byProgramUids(programUids).count();
+                           /* count = d2.eventModule().events
+                                    .byProgramUid().eq(program.uid())
+                                    .countTrackedEntityInstances();*/
+                        }
+
+                        if (!d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().in(State.ERROR, State.WARNING).get().isEmpty())
+                            state = State.WARNING;
+                        else if (!d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().in(State.SENT_VIA_SMS, State.SYNCED_VIA_SMS).get().isEmpty())
+                            state = State.SENT_VIA_SMS;
+                        else if (!d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().in(State.TO_UPDATE, State.TO_POST, State.TO_DELETE).get().isEmpty())
+                            state = State.TO_UPDATE;
                     }
+
 
                     return ProgramViewModel.create(
                             program.uid(),
@@ -130,34 +202,49 @@ class HomeRepositoryImpl implements HomeRepository {
                             program.programType() != null ? program.programType().name() : null,
                             program.displayDescription(),
                             true,
-                            true
+                            true,
+                            state.name()
                     );
                 }).toList().toFlowable();
     }
 
     @NonNull
     @Override
-    public Observable<List<OrganisationUnitModel>> orgUnits(String parentUid) {
-        String SELECT_ORG_UNITS_BY_PARENT = "SELECT OrganisationUnit.* FROM OrganisationUnit " +
+    public Observable<List<OrganisationUnit>> orgUnits(String parentUid) {
+        return Observable.defer(() -> Observable.just(
+                d2.organisationUnitModule().organisationUnits
+                        .byParentUid().eq(parentUid)
+                        .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
+                        .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
+                        .get()
+        ));
+        /*String SELECT_ORG_UNITS_BY_PARENT = "SELECT OrganisationUnit.* FROM OrganisationUnit " +
                 "JOIN UserOrganisationUnit ON UserOrganisationUnit.organisationUnit = OrganisationUnit.uid " +
                 "WHERE OrganisationUnit.parent = ? AND UserOrganisationUnit.organisationUnitScope = 'SCOPE_DATA_CAPTURE' " +
                 "ORDER BY OrganisationUnit.displayName ASC";
 
         return briteDatabase.createQuery(OrganisationUnitModel.TABLE, SELECT_ORG_UNITS_BY_PARENT, parentUid)
-                .mapToList(OrganisationUnitModel::create);
+                .mapToList(OrganisationUnitModel::create);*/
     }
 
 
     @NonNull
     @Override
-    public Observable<List<OrganisationUnitModel>> orgUnits() {
-        String SELECT_ORG_UNITS =
+    public Observable<List<OrganisationUnit>> orgUnits() {
+        return Observable.defer(() -> Observable.just(
+                d2.organisationUnitModule().organisationUnits
+                        .byRootOrganisationUnit(true)
+                        .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
+                        .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
+                        .get()
+        ));
+    /*    String SELECT_ORG_UNITS =
                 "SELECT * FROM " + OrganisationUnitModel.TABLE + ", " + UserOrganisationUnitLinkModel.TABLE + " " +
                         "WHERE " + OrganisationUnitModel.TABLE + "." + OrganisationUnitModel.Columns.UID + " = " + UserOrganisationUnitLinkModel.TABLE + "." + UserOrganisationUnitLinkModel.Columns.ORGANISATION_UNIT +
                         " AND " + UserOrganisationUnitLinkModel.TABLE + "." + UserOrganisationUnitLinkModel.Columns.ORGANISATION_UNIT_SCOPE + " = '" + OrganisationUnitModel.Scope.SCOPE_DATA_CAPTURE +
                         "' AND UserOrganisationUnit.root = '1' " +
                         " ORDER BY " + OrganisationUnitModel.TABLE + "." + OrganisationUnitModel.Columns.DISPLAY_NAME + " ASC";
         return briteDatabase.createQuery(OrganisationUnitModel.TABLE, SELECT_ORG_UNITS)
-                .mapToList(OrganisationUnitModel::create);
+                .mapToList(OrganisationUnitModel::create);*/
     }
 }

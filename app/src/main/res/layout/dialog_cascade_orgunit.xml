@@ -9,57 +9,44 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        tools:background="?colorPrimary">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginBottom="90dp"
-            android:layout_marginTop="90dp"
+            android:layout_marginTop="70dp"
+            android:layout_marginBottom="70dp"
             android:background="?colorAccent"
             android:orientation="vertical"
             tools:ignore="UselessParent">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/title"
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/orgUnitSearchLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/colorGreyDefault">
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="12dp"
+                app:layout_constraintTop_toTopOf="parent">
 
-                <EditText
-                    android:id="@+id/orgUnitEditText"
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/orgUnitSearchEditText"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="20dp"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp"
-                    android:background="@drawable/bg_rounded_corners_white"
-                    android:drawablePadding="10dp"
-                    android:drawableTint="@color/icon_color"
-                    android:paddingEnd="5dp"
-                    android:paddingStart="5dp"
-                    android:textColor="@color/colorGreyDefault"
-                    android:textStyle="bold"
-                    android:lines="1"
-                    android:maxLines="1"
-                    android:inputType="text"
-                    android:imeOptions="actionDone"
-                    android:singleLine="true"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    tools:hint="This is a hint"
-                    tools:text="This is the title" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
+                    android:layout_height="wrap_content" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
 
             <HorizontalScrollView
                 android:id="@+id/resultsContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="8dp"
-                app:layout_constraintTop_toBottomOf="@id/title">
+                app:layout_constraintTop_toBottomOf="@id/orgUnitSearchLayout">
 
                 <com.google.android.material.chip.ChipGroup
                     android:id="@+id/results"
@@ -79,7 +66,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/resultsContainer"
-                tools:listitem="@layout/form_spinner" />
+                tools:listitem="@layout/org_unit_cascade_level_item" />
 
             <Button
                 android:id="@+id/clear_button"
@@ -88,11 +75,12 @@
                 android:layout_height="40dp"
                 android:layout_gravity="end"
                 android:layout_margin="5dp"
+                android:layout_marginEnd="8dp"
                 android:background="@android:color/transparent"
                 android:text="@string/clear"
                 android:textColor="@color/colorGreyDefault"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
+                app:layout_constraintEnd_toStartOf="@+id/cancel_button" />
 
 
             <Button
@@ -106,8 +94,7 @@
                 android:text="@string/cancel"
                 android:textColor="@color/colorGreyDefault"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/accept_button"
-                app:layout_constraintStart_toEndOf="@id/clear_button" />
+                app:layout_constraintEnd_toStartOf="@id/accept_button" />
 
             <Button
                 android:id="@+id/accept_button"
@@ -118,8 +105,8 @@
                 android:layout_margin="5dp"
                 android:background="@android:color/transparent"
                 android:text="@string/action_accept"
+                android:textColor="@color/blue_4fa"
                 android:visibility="invisible"
-                android:textColor="@color/colorGreyDefault"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>

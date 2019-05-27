@@ -14,7 +14,7 @@ import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.OrgUnitUtils;
 import org.dhis2.utils.Period;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.period.DatePeriod;
 import org.hisp.dhis.android.core.program.ProgramType;
 
@@ -45,7 +45,7 @@ public class ProgramPresenter implements ProgramContract.Presenter {
     private final HomeRepository homeRepository;
     private CompositeDisposable compositeDisposable;
 
-    private List<OrganisationUnitModel> myOrgs = new ArrayList<>();
+    private List<OrganisationUnit> myOrgs = new ArrayList<>();
     private FlowableProcessor<Pair<List<DatePeriod>, List<String>>> programQueries;
 
     private FlowableProcessor<Pair<TreeNode, String>> parentOrgUnit;
@@ -102,12 +102,12 @@ public class ProgramPresenter implements ProgramContract.Presenter {
     }
 
     @Override
-    public List<TreeNode> transformToNode(List<OrganisationUnitModel> orgUnits) {
-        return OrgUnitUtils.createNode(view.getContext(), orgUnits, true);
+    public List<TreeNode> transformToNode(List<OrganisationUnit> orgUnits) {
+        return OrgUnitUtils.createNode_2(view.getContext(), orgUnits, true);
     }
 
     @Override
-    public List<OrganisationUnitModel> getOrgUnits() {
+    public List<OrganisationUnit> getOrgUnits() {
         return myOrgs;
     }
 
@@ -128,6 +128,11 @@ public class ProgramPresenter implements ProgramContract.Presenter {
     public void updateOrgUnitFilter(List<String> orgUnitList) {
         this.currentOrgUnitFilter = orgUnitList;
         programQueries.onNext(Pair.create(currentDateFilter, currentOrgUnitFilter));
+    }
+
+    @Override
+    public void onSyncStatusClick(ProgramViewModel program) {
+        view.showSyncDialog(program.id(), SyncStatusDialog.ConflictType.PROGRAM);
     }
 
     @Override
@@ -200,7 +205,7 @@ public class ProgramPresenter implements ProgramContract.Presenter {
                                     data -> {
                                         this.myOrgs = data;
                                         view.orgUnitProgress(false);
-                                        view.addTree(OrgUnitUtils.renderTree(view.getContext(), myOrgs, true));
+                                        view.addTree(OrgUnitUtils.renderTree_2(view.getContext(), myOrgs, true));
                                     },
                                     throwable -> view.renderError(throwable.getMessage())));
         }
@@ -219,7 +224,8 @@ public class ProgramPresenter implements ProgramContract.Presenter {
 
     @Override
     public void showDescription(String description) {
-        view.showDescription(description);
+        if (!isEmpty(description))
+            view.showDescription(description);
     }
 
 }

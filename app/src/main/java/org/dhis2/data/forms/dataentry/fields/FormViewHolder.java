@@ -1,11 +1,14 @@
 package org.dhis2.data.forms.dataentry.fields;
 
 import android.app.Activity;
-import androidx.databinding.ViewDataBinding;
-import androidx.recyclerview.widget.RecyclerView;
+import android.graphics.Color;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
+
+import androidx.core.content.ContextCompat;
+import androidx.databinding.ViewDataBinding;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.dhis2.R;
 import org.dhis2.utils.Constants;
@@ -32,7 +35,7 @@ public abstract class FormViewHolder extends RecyclerView.ViewHolder {
                             itemView.getContext(),
                             label.toString(),
                             descriptionText != null ? descriptionText : itemView.getContext().getString(R.string.empty_description),
-                            itemView.getContext().getString(R.string.action_accept),
+                            itemView.getContext().getString(R.string.action_close),
                             null,
                             Constants.DESCRIPTION_DIALOG,
                             null
@@ -42,8 +45,26 @@ public abstract class FormViewHolder extends RecyclerView.ViewHolder {
 
     public abstract void dispose();
 
-    public void closeKeyboard(View v){
+    public void closeKeyboard(View v) {
         InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
     }
+
+    public void openKeyboard(View v) {
+        InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
+        if (!imm.showSoftInput(v, 0))
+            v.postDelayed(() -> openKeyboard(v), 500);
+    }
+
+    public void clearBackground(boolean isSarchMode) {
+        if (!isSarchMode)
+            itemView.setBackgroundColor(Color.WHITE);
+    }
+
+    public void setSelectedBackground(boolean isSarchMode) {
+        if (!isSarchMode)
+            itemView.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.item_selected_bg));
+    }
+
+    public abstract void performAction();
 }

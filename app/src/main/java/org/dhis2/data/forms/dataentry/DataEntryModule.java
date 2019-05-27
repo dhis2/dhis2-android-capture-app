@@ -2,6 +2,8 @@ package org.dhis2.data.forms.dataentry;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
+
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.R;
@@ -11,9 +13,9 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.schedulers.SchedulerProvider;
+import org.dhis2.utils.RulesUtilsProvider;
 import org.hisp.dhis.android.core.D2;
 
-import androidx.annotation.NonNull;
 import dagger.Module;
 import dagger.Provides;
 
@@ -58,7 +60,7 @@ public class DataEntryModule {
                     formRepository, arguments.event());
         } else if (!isEmpty(arguments.enrollment())) { //NOPMD
             return new EnrollmentRuleEngineRepository(briteDatabase,
-                    formRepository, arguments.enrollment(),d2);
+                    formRepository, arguments.enrollment(), d2);
         } else {
             throw new IllegalArgumentException("Unsupported entity type");
         }
@@ -71,9 +73,10 @@ public class DataEntryModule {
             @NonNull DataEntryStore dataEntryStore,
             @NonNull DataEntryRepository dataEntryRepository,
             @NonNull RuleEngineRepository ruleEngineRepository,
-            @NonNull MetadataRepository metadataRepository) {
+            @NonNull MetadataRepository metadataRepository,
+            @NonNull RulesUtilsProvider ruleUtils) {
         return new DataEntryPresenterImpl(dataEntryStore,
-                dataEntryRepository, ruleEngineRepository, schedulerProvider, metadataRepository);
+                dataEntryRepository, ruleEngineRepository, schedulerProvider, metadataRepository, ruleUtils);
     }
 
     @Provides
@@ -81,7 +84,7 @@ public class DataEntryModule {
     DataEntryRepository dataEntryRepository(@NonNull BriteDatabase briteDatabase, @NonNull D2 d2) {
         if (!isEmpty(arguments.event())) { // NOPMD
             return new ProgramStageRepository(briteDatabase, modelFactory,
-                    arguments.event(), arguments.section());
+                    arguments.event(), arguments.section(), d2);
         } else if (!isEmpty(arguments.enrollment())) { //NOPMD
             return new EnrollmentRepository(context, briteDatabase, modelFactory, arguments.enrollment(), d2);
         } else {

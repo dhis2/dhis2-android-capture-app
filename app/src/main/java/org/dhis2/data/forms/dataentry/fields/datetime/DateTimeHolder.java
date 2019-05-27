@@ -1,6 +1,12 @@
 package org.dhis2.data.forms.dataentry.fields.datetime;
 
+import android.graphics.Color;
+
+import androidx.core.content.ContextCompat;
+import androidx.databinding.ViewDataBinding;
+
 import org.dhis2.BR;
+import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.FormDateTextBinding;
@@ -11,7 +17,6 @@ import org.hisp.dhis.android.core.common.ValueType;
 
 import java.util.Date;
 
-import androidx.databinding.ViewDataBinding;
 import io.reactivex.processors.FlowableProcessor;
 
 import static android.text.TextUtils.isEmpty;
@@ -24,14 +29,14 @@ import static android.text.TextUtils.isEmpty;
 public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
 
     private final FlowableProcessor<RowAction> processor;
-    private final FlowableProcessor<Integer> currentPosition;
+    private final boolean isSearchMode;
 
     private DateTimeViewModel dateTimeViewModel;
 
-    DateTimeHolder(ViewDataBinding binding, FlowableProcessor<RowAction> processor, FlowableProcessor<Integer> currentPosition) {
+    DateTimeHolder(ViewDataBinding binding, FlowableProcessor<RowAction> processor, boolean isSearchMode) {
         super(binding);
         this.processor = processor;
-        this.currentPosition = currentPosition;
+        this.isSearchMode = isSearchMode;
 
         if (binding instanceof FormTimeTextBinding) {
             ((FormTimeTextBinding) binding).timeView.setDateListener(this);
@@ -71,27 +76,27 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
 
         if (dateTimeViewModel.warning() != null) {
             if (binding instanceof FormTimeTextBinding)
-                ((FormTimeTextBinding) binding).timeView.setWarningOrError(dateTimeViewModel.warning());
+                ((FormTimeTextBinding) binding).timeView.setWarning(dateTimeViewModel.warning());
             if (binding instanceof FormDateTextBinding)
-                ((FormDateTextBinding) binding).dateView.setWarningOrError(dateTimeViewModel.warning());
+                ((FormDateTextBinding) binding).dateView.setWarning(dateTimeViewModel.warning());
             if (binding instanceof FormDateTimeTextBinding)
-                ((FormDateTimeTextBinding) binding).dateTimeView.setWarningOrError(dateTimeViewModel.warning());
+                ((FormDateTimeTextBinding) binding).dateTimeView.setWarning(dateTimeViewModel.warning());
 
         } else if (dateTimeViewModel.error() != null) {
             if (binding instanceof FormTimeTextBinding)
-                ((FormTimeTextBinding) binding).timeView.setWarningOrError(dateTimeViewModel.error());
+                ((FormTimeTextBinding) binding).timeView.setError(dateTimeViewModel.error());
             if (binding instanceof FormDateTextBinding)
-                ((FormDateTextBinding) binding).dateView.setWarningOrError(dateTimeViewModel.error());
+                ((FormDateTextBinding) binding).dateView.setError(dateTimeViewModel.error());
             if (binding instanceof FormDateTimeTextBinding)
-                ((FormDateTimeTextBinding) binding).dateTimeView.setWarningOrError(dateTimeViewModel.error());
+                ((FormDateTimeTextBinding) binding).dateTimeView.setError(dateTimeViewModel.error());
 
         } else {
             if (binding instanceof FormTimeTextBinding)
-                ((FormTimeTextBinding) binding).timeView.setWarningOrError(null);
+                ((FormTimeTextBinding) binding).timeView.setError(null);
             if (binding instanceof FormDateTextBinding)
-                ((FormDateTextBinding) binding).dateView.setWarningOrError(null);
+                ((FormDateTextBinding) binding).dateView.setError(null);
             if (binding instanceof FormDateTimeTextBinding)
-                ((FormDateTimeTextBinding) binding).dateTimeView.setWarningOrError(null);
+                ((FormDateTimeTextBinding) binding).dateTimeView.setError(null);
         }
 
         if (binding instanceof FormTimeTextBinding)
@@ -116,19 +121,28 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
                 dateFormatted = DateUtils.databaseDateFormatNoMillis().format(date);
             }
         }
-        RowAction rowAction = RowAction.create(dateTimeViewModel.uid(), date != null ? dateFormatted : null);
+        RowAction rowAction = RowAction.create(dateTimeViewModel.uid(), date != null ? dateFormatted : null, getAdapterPosition());
         if (processor != null) {
             processor.onNext(rowAction);
+            if (!isSearchMode)
+                itemView.setBackgroundColor(Color.WHITE);
         }
-
-        if (currentPosition != null) {
-            currentPosition.onNext(getAdapterPosition());
-        }
-
     }
 
     @Override
     public void dispose() {
 
+    }
+
+    @Override
+    public void performAction() {
+        itemView.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.item_selected_bg));
+
+        if (binding instanceof FormTimeTextBinding)
+            ((FormTimeTextBinding) binding).timeView.performOnFocusAction();
+        if (binding instanceof FormDateTextBinding)
+            ((FormDateTextBinding) binding).dateView.performOnFocusAction();
+        if (binding instanceof FormDateTimeTextBinding)
+            ((FormDateTimeTextBinding) binding).dateTimeView.performOnFocusAction();
     }
 }

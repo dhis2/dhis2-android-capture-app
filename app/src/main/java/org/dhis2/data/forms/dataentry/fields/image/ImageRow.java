@@ -27,7 +27,6 @@ public class ImageRow implements Row<ImageHolder, ImageViewModel> {
     private final LayoutInflater inflater;
 
     public ImageRow(LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor,
-                    FlowableProcessor<Integer> currentPosition,
                     String renderType) {
         this.inflater = layoutInflater;
         this.processor = processor;
