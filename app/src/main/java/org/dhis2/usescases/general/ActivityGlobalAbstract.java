@@ -12,9 +12,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityOptionsCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.widget.ContentLoadingProgressBar;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.crashlytics.android.Crashlytics;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -25,6 +35,7 @@ import org.dhis2.BuildConfig;
 import org.dhis2.R;
 import org.dhis2.usescases.login.LoginActivity;
 import org.dhis2.usescases.main.MainActivity;
+import org.dhis2.usescases.main.program.SyncStatusDialog;
 import org.dhis2.usescases.map.MapSelectorActivity;
 import org.dhis2.usescases.splash.SplashActivity;
 import org.dhis2.utils.ColorUtils;
@@ -40,14 +51,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityOptionsCompat;
-import androidx.core.content.ContextCompat;
-import androidx.core.widget.ContentLoadingProgressBar;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import rx.Observable;
 import rx.subjects.BehaviorSubject;
 import timber.log.Timber;
@@ -315,6 +318,37 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
     }
 
     @Override
+    public AlertDialog showInfoDialog(String title, String message, String positiveButtonText, String negativeButtonText, OnDialogClickListener clickListener) {
+        if (getActivity() != null) {
+            AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
+
+            //TITLE
+            final View titleView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_title, null);
+            ((TextView) titleView.findViewById(R.id.dialogTitle)).setText(title);
+            alertDialog.setCustomTitle(titleView);
+
+            //BODY
+            final View msgView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_body, null);
+            ((TextView) msgView.findViewById(R.id.dialogBody)).setText(message);
+            ((Button) msgView.findViewById(R.id.dialogAccept)).setText(positiveButtonText);
+            ((Button) msgView.findViewById(R.id.dialogCancel)).setText(negativeButtonText);
+            msgView.findViewById(R.id.dialogAccept).setOnClickListener(view -> {
+                clickListener.onPossitiveClick(alertDialog);
+                alertDialog.dismiss();
+            });
+            msgView.findViewById(R.id.dialogCancel).setOnClickListener(view -> {
+                clickListener.onNegativeClick(alertDialog);
+                alertDialog.dismiss();
+            });
+            alertDialog.setView(msgView);
+
+            return alertDialog;
+
+        } else
+            return null;
+    }
+
+    @Override
     public void onMapPositionClick(CoordinatesView coordinatesView) {
         this.coordinatesView = coordinatesView;
         startActivityForResult(MapSelectorActivity.create(this), Constants.RQ_MAP_LOCATION_VIEW);
@@ -337,7 +371,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
                 getAbstracContext(),
                 getString(R.string.info),
                 description,
-                getString(R.string.action_accept),
+                getString(R.string.action_close),
                 null,
                 Constants.DESCRIPTION_DIALOG,
                 null
@@ -360,5 +394,11 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
                 progressBar.setVisibility(View.VISIBLE);
             else progressBar.setVisibility(View.GONE);
         }
+    }
+
+    @Override
+    public void showSyncDialog(String programUid, SyncStatusDialog.ConflictType conflictType) {
+        new SyncStatusDialog(programUid, conflictType)
+                .show(getSupportFragmentManager(), programUid);
     }
 }

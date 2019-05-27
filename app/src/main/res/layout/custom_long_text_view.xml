@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="label"
+            type="java.lang.String" />
+
+        <variable
+            name="renderType"
+            type="java.lang.String" />
+
+        <variable
+            name="isEditable"
+            type="androidx.databinding.ObservableBoolean" />
+
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:padding="5dp">
+
+        <ImageView
+            android:id="@+id/renderImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="5dp"
+            android:visibility="gone"
+            tools:srcCompat="@drawable/sierra_leone"
+            tools:visibility="visible" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/renderImage"
+            android:orientation="horizontal">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/input_layout"
+                style="@style/ValueType_LongText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint='@{label}'
+                android:textColorHint="@color/text_black_808"
+                android:theme="@style/loginInputText"
+                tools:hint="hint">
+
+                <org.dhis2.utils.custom_views.TextInputAutoCompleteTextView
+                    android:paddingTop="32dp"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:paddingBottom="5dp"
+                    android:id="@+id/input_editText"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="start"
+                    android:imeOptions="actionNext"
+                    android:maxLines="1"
+                    android:textAlignment="textStart"
+                    android:textColor="@color/text_black_333"
+                    android:textSize="15sp"
+                    tools:text="hello" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <ImageView
+                android:id="@+id/descriptionLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                app:srcCompat="@drawable/ic_info_outline"
+                app:tint="?colorPrimary" />
+        </LinearLayout>
+    </RelativeLayout>
+</layout>

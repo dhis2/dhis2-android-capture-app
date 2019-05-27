@@ -1,12 +1,15 @@
 package org.dhis2.usescases.main.program;
 
 import android.database.Cursor;
-import androidx.databinding.BaseObservable;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.databinding.BaseObservable;
 
 import com.gabrielittner.auto.value.cursor.ColumnName;
 import com.google.auto.value.AutoValue;
+
+import org.hisp.dhis.android.core.common.State;
 
 import java.io.Serializable;
 
@@ -71,16 +74,28 @@ public abstract class ProgramViewModel extends BaseObservable implements Seriali
     @ColumnName(Columns.ACCESS_DATA_WRITE)
     public abstract Boolean accessDataWrite();
 
+    public abstract String state();
 
     @NonNull
     public static ProgramViewModel create(@NonNull String uid, @NonNull String displayName, @Nullable String color,
                                           @Nullable String icon, @NonNull Integer count, @Nullable String type,
                                           @NonNull String typeName, String programType, @Nullable String description, @NonNull Boolean onlyEnrollOnce, @NonNull Boolean accessDataWrite) {
-        return new AutoValue_ProgramViewModel(uid, displayName, color, icon, count, type, typeName, programType, description, onlyEnrollOnce, accessDataWrite);
+        return new AutoValue_ProgramViewModel(uid, displayName, color, icon, count, type, typeName, programType, description, onlyEnrollOnce, accessDataWrite, State.SYNCED.name());
+    }
+
+    @NonNull
+    public static ProgramViewModel create(@NonNull String uid, @NonNull String displayName, @Nullable String color,
+                                          @Nullable String icon, @NonNull Integer count, @Nullable String type,
+                                          @NonNull String typeName, String programType, @Nullable String description, @NonNull Boolean onlyEnrollOnce, @NonNull Boolean accessDataWrite, String state) {
+        return new AutoValue_ProgramViewModel(uid, displayName, color, icon, count, type, typeName, programType, description, onlyEnrollOnce, accessDataWrite, state);
     }
 
     public static ProgramViewModel fromCursor(Cursor cursor) {
         return AutoValue_ProgramViewModel.createFromCursor(cursor);
+    }
+
+    public State getState() {
+        return State.valueOf(state());
     }
 
 }

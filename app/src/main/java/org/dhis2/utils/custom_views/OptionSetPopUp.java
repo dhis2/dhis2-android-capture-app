@@ -4,14 +4,16 @@ import android.content.Context;
 import android.view.Menu;
 import android.view.View;
 
+import androidx.appcompat.widget.PopupMenu;
+
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.data.tuples.Trio;
 import org.hisp.dhis.android.core.option.OptionModel;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import androidx.appcompat.widget.PopupMenu;
 import io.reactivex.processors.FlowableProcessor;
 
 /**
@@ -26,6 +28,7 @@ public class OptionSetPopUp {
     private Context context;
     private View anchor;
     private PopupMenu.OnMenuItemClickListener listener;
+    private PopupMenu menu;
 
     public static OptionSetPopUp getInstance() {
         if (instance == null)
@@ -33,22 +36,27 @@ public class OptionSetPopUp {
         return instance;
     }
 
-    public static Boolean isCreated(){
+    public static Boolean isCreated() {
         return instance != null;
     }
 
     public void setOptions(List<OptionModel> options) {
-        optionsMap = new HashMap<>();
-        PopupMenu menu = new PopupMenu(context, anchor);
-        menu.setOnMenuItemClickListener(listener);
-        for (OptionModel optionModel : options) {
-            optionsMap.put(optionModel.displayName(), optionModel);
-            menu.getMenu().add(Menu.NONE, Menu.NONE, options.indexOf(optionModel) + 1, optionModel.displayName());
+        if (menu == null) {
+            optionsMap = new HashMap<>();
+            menu = new PopupMenu(context, anchor);
+            menu.setOnMenuItemClickListener(listener);
+            for (OptionModel optionModel : options) {
+                optionsMap.put(optionModel.displayName(), optionModel);
+                menu.getMenu().add(Menu.NONE, Menu.NONE, options.indexOf(optionModel) + 1, optionModel.displayName());
+            }
+            menu.setOnDismissListener(menu -> {
+                dismiss();
+            });
+            menu.show();
         }
-        menu.show();
     }
 
-    public HashMap<String, OptionModel> getOptions() {
+    public Map<String, OptionModel> getOptions() {
         return optionsMap;
     }
 

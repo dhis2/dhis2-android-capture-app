@@ -45,9 +45,10 @@ android {
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
 
-        setProperty("archivesBaseName", "dhis2-v" + versionName)
+        setProperty("archivesBaseName", "dhis2-v" + versions.vName)
 
         buildConfigField "String", "SDK_VERSION", "\"" + libraries.dhis2sdk + "\""
+        buildConfigField "String", "MAPBOX_ACCESS_TOKEN", "\"pk.eyJ1Ijoib3Jpa2dnIiwiYSI6ImNqdWpqb24zYTFsOXo0M2xwcXRseGx3aXkifQ.6N9aqvpqdrrSBwO9GyfjUw\""
     }
 
     testOptions {
@@ -104,25 +105,21 @@ android {
     productFlavors {
         dhis {
             applicationId "com.dhis2"
-            archivesBaseName = "dhis"
             dimension "default"
             versionCode versions.vCode
             versionName versions.vName
-            setProperty("archivesBaseName", "dhis2-v" + versionName)
         }
         psi {
             applicationId "org.dhis2.psi"
-            archivesBaseName = "PSI"
             dimension "default"
             versionCode 2
             versionName "1.1.0"
-            setProperty("archivesBaseName", "PSI-v" + versionName)
         }
     }
 
     compileOptions {
-        targetCompatibility JavaVersion.VERSION_1_8
-        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility = "8"
+        sourceCompatibility = "8"
     }
 
     dataBinding {
@@ -143,7 +140,13 @@ android {
     }
 
     configurations.all {
-        resolutionStrategy.force 'junit:junit:4.12'
+        resolutionStrategy {
+            preferProjectModules()
+
+            force 'junit:junit:4.12','com.squareup.okhttp3:okhttp:3.12.0'
+
+            forcedModules = ['com.squareup.okhttp3:okhttp:3.12.0']
+        }
     }
 }
 
@@ -155,7 +158,7 @@ sonarqube {
 
 dependencies {
 
-    implementation project(":core")
+//    implementation project(":core")
     implementation project(":customFab")
     implementation project(":dhis2-rule-engine")
     implementation project(":viewpagerdotsindicator")
@@ -164,7 +167,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.1.0-alpha01'
     implementation 'androidx.annotation:annotation:1.0.1'
     implementation 'androidx.cardview:cardview:1.0.0'
-    implementation 'com.google.android.material:material:1.1.0-alpha02'
+    implementation 'com.google.android.material:material:1.1.0-alpha06'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 
     implementation 'androidx.multidex:multidex:2.0.1'
@@ -172,9 +175,9 @@ dependencies {
     //endregion
 
     //region DHIS2 LIBRARIES
-    /*implementation("org.hisp.dhis:android-core:${libraries.dhis2sdk}") {
+    implementation("org.hisp.dhis:android-core:${libraries.dhis2sdk}") {
         exclude group: "org.hisp.dhis", module: "core-rules"
-    }*/
+    }
 
     //implementation "org.hisp.dhis.rules:rule-engine:${libraries.ruleEngine}"
     //endregion
@@ -204,7 +207,7 @@ dependencies {
 
     //region DAGGER
     implementation "com.google.dagger:dagger:${libraries.dagger}"
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-alpha3'
+//    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-alpha3'
     kapt "com.google.dagger:dagger-compiler:${libraries.dagger}"
     //endregion
 
@@ -230,8 +233,10 @@ dependencies {
     //LOCATION
     implementation 'com.google.android.gms:play-services-basement:16.2.0'
     implementation 'com.google.android.gms:play-services-location:16.0.0'
-    implementation 'com.google.android.gms:play-services-maps:16.1.0'
     //endregion
+
+    // Kujaku dependencies
+    implementation 'io.ona.kujaku:library:0.7.1'
 
     // Jake Wharton libraries
     //timber
@@ -257,11 +262,12 @@ dependencies {
     //Test
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    androidTestImplementation('androidx.test.espresso:espresso-core:3.1.1', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-        exclude group: 'com.google.code.findbugs'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
+    /*  androidTestImplementation('androidx.test.espresso:espresso-core:3.1.1', {
+          exclude group: 'com.android.support', module: 'support-annotations'
+          exclude group: 'com.google.code.findbugs'
 
-    })
+      })*/
     androidTestImplementation 'androidx.test.ext:junit:1.1.0'
 
 
@@ -274,6 +280,8 @@ dependencies {
 
     implementation 'com.facebook.stetho:stetho:1.5.0'
     implementation 'com.facebook.stetho:stetho-okhttp3:1.5.0'
+
+    implementation("com.squareup.okhttp3:okhttp:3.12.0")
 
     //RXLint
     implementation 'nl.littlerobots.rxlint:rxlint:1.6'
@@ -299,7 +307,7 @@ dependencies {
     //Paperwork
     implementation "hu.supercluster:paperwork:${libraries.paperwork}"
 
-//    implementation group: 'com.google.guava', name: 'guava', version: '24.1-jre'
+    implementation 'com.google.guava:guava:27.0.1-android'
 
     implementation 'cat.ereza:customactivityoncrash:2.2.0'
 

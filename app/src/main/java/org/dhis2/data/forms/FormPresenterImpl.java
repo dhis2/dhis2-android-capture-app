@@ -12,6 +12,7 @@ import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
+import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.rules.models.RuleAction;
 import org.hisp.dhis.rules.models.RuleActionErrorOnCompletion;
 import org.hisp.dhis.rules.models.RuleActionHideField;
@@ -199,12 +200,38 @@ class FormPresenterImpl implements FormPresenter {
                  .map(data -> data.val0())*/
                 .flatMap(formRepository::autoGenerateEvents) //Autogeneration of events
                 .flatMap(data -> formRepository.useFirstStageDuringRegistration()) //Checks if first Stage Should be used
-                .subscribeOn(schedulerProvider.io())
+                .subscribeOn(schedulerProvider.ui())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         view.finishEnrollment(),
                         throwable -> {
                             throw new OnErrorNotImplementedException(throwable);
                         }));
+
+        compositeDisposable.add(statusChangeObservable.connect());
+    }
+
+    public void initializeSaveObservable(){
+        ConnectableObservable<EnrollmentStatus> statusChangeObservable = view.onObservableBackPressed()
+                .publish();
+
+        compositeDisposable.add(statusChangeObservable
+                .filter(eventStatus -> formViewArguments.type() != FormViewArguments.Type.ENROLLMENT)
+                .subscribeOn(schedulerProvider.ui())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(o -> checkMandatoryFields(), Timber::e));
+
+        Observable<String> enrollmentDoneStream = statusChangeObservable
+                .filter(eventStatus -> formViewArguments.type() == FormViewArguments.Type.ENROLLMENT)
+                .map(reportStatus -> formViewArguments.uid())
+                .observeOn(schedulerProvider.io()).share();
+
+        compositeDisposable.add(enrollmentDoneStream
+                .subscribeOn(schedulerProvider.ui())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        o -> checkMandatoryFields()
+                        , Timber::e));
 
         compositeDisposable.add(statusChangeObservable.connect());
     }

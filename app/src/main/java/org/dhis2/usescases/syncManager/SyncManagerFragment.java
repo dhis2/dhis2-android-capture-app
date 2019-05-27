@@ -3,18 +3,28 @@ package org.dhis2.usescases.syncManager;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ImageSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.widget.NestedScrollView;
+import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.Fragment;
+import androidx.work.State;
+import androidx.work.WorkManager;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.jakewharton.rxbinding2.widget.RxTextView;
@@ -28,7 +38,7 @@ import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.SyncUtils;
-import org.hisp.dhis.android.core.maintenance.D2Error;
+import org.hisp.dhis.android.core.imports.TrackerImportConflict;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -37,13 +47,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.core.app.NotificationCompat;
-import androidx.core.widget.NestedScrollView;
-import androidx.databinding.DataBindingUtil;
-import androidx.fragment.app.Fragment;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Consumer;
@@ -53,6 +56,8 @@ import me.toptas.fancyshowcase.FancyShowCaseView;
 import me.toptas.fancyshowcase.FocusShape;
 import timber.log.Timber;
 
+import static org.dhis2.utils.Constants.DATA_NOW;
+import static org.dhis2.utils.Constants.META_NOW;
 import static org.dhis2.utils.Constants.TIME_15M;
 import static org.dhis2.utils.Constants.TIME_DAILY;
 import static org.dhis2.utils.Constants.TIME_HOURLY;
@@ -79,24 +84,6 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     public SyncManagerFragment() {
         // Required empty public constructor
     }
-
-    private BroadcastReceiver syncReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent.getAction() != null && intent.getAction().equals("action_sync")) {
-                if (SyncUtils.isSyncRunning() && getAbstractActivity().getProgressBar().getVisibility() == View.VISIBLE) {
-                    binding.buttonSyncData.setEnabled(false);
-                    binding.buttonSyncMeta.setEnabled(false);
-                } else {
-                    binding.buttonSyncData.setEnabled(true);
-                    binding.buttonSyncMeta.setEnabled(true);
-
-                    setLastSyncDate();
-                    presenter.checkData();
-                }
-            }
-        }
-    };
 
     @Override
     public void onAttach(@NotNull Context context) {
@@ -148,8 +135,29 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     @Override
     public void onResume() {
         super.onResume();
+        WorkManager.getInstance().getStatusesByTagLiveData(META_NOW).observe(this, workStatuses -> {
+            if (!workStatuses.isEmpty() && workStatuses.get(0).getState() == State.RUNNING) {
+                binding.metadataLastSync.setTextColor(ContextCompat.getColor(context, R.color.text_black_333));
+                binding.metadataLastSync.setText(R.string.syncing_configuration);
+                binding.buttonSyncMeta.setEnabled(false);
+            } else {
+                binding.buttonSyncMeta.setEnabled(true);
+                setLastSyncDate();
+                presenter.checkData();
+            }
+        });
+        WorkManager.getInstance().getStatusesByTagLiveData(DATA_NOW).observe(this, workStatuses -> {
+            if (!workStatuses.isEmpty() && workStatuses.get(0).getState() == State.RUNNING) {
+                binding.dataLastSync.setTextColor(ContextCompat.getColor(context, R.color.text_black_333));
+                binding.dataLastSync.setText(R.string.syncing_data);
+                binding.buttonSyncData.setEnabled(false);
+            } else {
+                binding.buttonSyncData.setEnabled(true);
+                setLastSyncDate();
+                presenter.checkData();
+            }
+        });
         presenter.init(this);
-        LocalBroadcastManager.getInstance(getAbstractActivity().getApplicationContext()).registerReceiver(syncReceiver, new IntentFilter("action_sync"));
 
         if (SyncUtils.isSyncRunning()) {
             binding.buttonSyncData.setEnabled(false);
@@ -175,6 +183,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 ));
 
         binding.limitByOrgUnit.setOnCheckedChangeListener((buttonView, isChecked) -> prefs.edit().putBoolean(Constants.LIMIT_BY_ORG_UNIT, isChecked).apply());
+        binding.limitByProgram.setOnCheckedChangeListener((buttonView, isChecked) -> prefs.edit().putBoolean(Constants.LIMIT_BY_PROGRAM, isChecked).apply());
 
         setLastSyncDate();
     }
@@ -183,7 +192,6 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     public void onPause() {
         super.onPause();
         listenerDisposable.clear();
-        LocalBroadcastManager.getInstance(getAbstractActivity().getApplicationContext()).unregisterReceiver(syncReceiver);
         presenter.disponse();
     }
 
@@ -202,6 +210,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
             binding.eventCurrentData.setText(String.valueOf(syncParameters.val0()));
             binding.teiCurrentData.setText(String.valueOf(syncParameters.val1()));
             binding.limitByOrgUnit.setChecked(prefs.getBoolean(Constants.LIMIT_BY_ORG_UNIT, false));
+            binding.limitByProgram.setChecked(prefs.getBoolean(Constants.LIMIT_BY_PROGRAM, false));
         };
     }
 
@@ -211,13 +220,37 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
         if (dataStatus) {
             binding.dataLastSync.setText(String.format(getString(R.string.last_data_sync_date), prefs.getString(Constants.LAST_DATA_SYNC, "-")));
+            binding.metadataLastSync.setTextColor(ContextCompat.getColor(context, R.color.text_black_333));
         } else {
             binding.dataLastSync.setText(getString(R.string.sync_error_text));
         }
-        if (metaStatus)
+
+        if (presenter.dataHasErrors()) {
+            String src = getString(R.string.data_sync_error);
+            SpannableString str = new SpannableString(src);
+            int wIndex = src.indexOf('@');
+            int eIndex = src.indexOf('$');
+            str.setSpan(new ImageSpan(getContext(), R.drawable.ic_sync_warning), wIndex, wIndex + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            str.setSpan(new ImageSpan(getContext(), R.drawable.ic_sync_problem_red), eIndex, eIndex + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            binding.dataLastSync.setText(str);
+            binding.dataLastSync.setTextColor(ContextCompat.getColor(getContext(), R.color.red_060));
+
+        } else if (presenter.dataHasWarnings()) {
+            String src = getString(R.string.data_sync_warning);
+            SpannableString str = new SpannableString(src);
+            int wIndex = src.indexOf('@');
+            str.setSpan(new ImageSpan(getContext(), R.drawable.ic_sync_warning), wIndex, wIndex + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            binding.dataLastSync.setText(str);
+            binding.dataLastSync.setTextColor(ContextCompat.getColor(getContext(), R.color.colorPrimaryOrange));
+        }
+
+        if (metaStatus) {
             binding.metadataLastSync.setText(String.format(getString(R.string.last_data_sync_date), prefs.getString(Constants.LAST_META_SYNC, "-")));
-        else
-            binding.metadataLastSync.setText(getString(R.string.sync_error_text));
+            binding.metadataLastSync.setTextColor(ContextCompat.getColor(context, R.color.text_black_333));
+        }else {
+            binding.metadataLastSync.setText(getString(R.string.metadata_sync_error));
+            binding.metadataLastSync.setTextColor(ContextCompat.getColor(context, R.color.red_060));
+        }
 
     }
 
@@ -427,6 +460,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 steps.add(tuto7);
 
                 HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
+                HelpManager.getInstance().setScroll(scrollView);
 
                 if (prefs != null && !prefs.getBoolean("TUTO_SETTINGS_SHOWN", false) && !BuildConfig.DEBUG) {
                     HelpManager.getInstance().showHelp();
@@ -438,15 +472,31 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     }
 
     @Override
-    public void showSyncErrors(List<D2Error> data) {
+    public void showSyncErrors(List<TrackerImportConflict> data) {
         new ErrorDialog().setData(data).show(getChildFragmentManager().beginTransaction(), ErrorDialog.TAG);
     }
 
     @Override
     public void showLocalDataDeleted(boolean error) {
+
+        if (!error) {
+            binding.eventCurrentData.setText(String.valueOf(0));
+            binding.teiCurrentData.setText(String.valueOf(0));
+        }
+
         Snackbar deleteDataSnack = Snackbar.make(binding.getRoot(),
                 error ? R.string.delete_local_data_error : R.string.delete_local_data_done,
                 Snackbar.LENGTH_SHORT);
         deleteDataSnack.show();
+    }
+
+    @Override
+    public void syncData() {
+        binding.dataLastSync.setText(R.string.syncing_data);
+    }
+
+    @Override
+    public void syncMeta() {
+        binding.metadataLastSync.setText(R.string.syncing_configuration);
     }
 }

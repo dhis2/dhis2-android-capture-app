@@ -12,6 +12,8 @@ public class ReservedValueContracts {
         void onBackClick();
 
         void refreshAdapter();
+
+        void showReservedValuesError();
     }
 
     public interface Presenter {

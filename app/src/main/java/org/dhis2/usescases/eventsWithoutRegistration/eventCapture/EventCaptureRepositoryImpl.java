@@ -4,6 +4,8 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 
+import androidx.annotation.NonNull;
+
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.R;
@@ -18,6 +20,7 @@ import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
+import org.hisp.dhis.android.core.common.ObjectWithUid;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
@@ -28,6 +31,8 @@ import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
+import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramRule;
 import org.hisp.dhis.android.core.program.ProgramRuleAction;
@@ -38,6 +43,7 @@ import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionDeviceRendering;
 import org.hisp.dhis.android.core.program.ProgramStageSectionModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
+import org.hisp.dhis.android.core.program.ProgramType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 import org.hisp.dhis.rules.models.Rule;
@@ -57,11 +63,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import androidx.annotation.NonNull;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -71,7 +77,6 @@ import static android.text.TextUtils.isEmpty;
 public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCaptureRepository {
 
     private final FieldViewModelFactory fieldFactory;
-
 
     private static final List<String> SECTION_TABLES = Arrays.asList(
             EventModel.TABLE, ProgramModel.TABLE, ProgramStageModel.TABLE, ProgramStageSectionModel.TABLE);
@@ -140,12 +145,16 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     private final BriteDatabase briteDatabase;
     private final String eventUid;
+    private final Event currentEvent;
     private final FormRepository formRepository;
     private final D2 d2;
+    private final boolean isEventEditable;
     private boolean accessDataWrite;
     private String lastUpdatedUid;
     private RuleEvent.Builder eventBuilder;
     private Map<String, List<Rule>> dataElementRules = new HashMap<>();
+    private List<ProgramRule> mandatoryRules;
+    private List<ProgramRule> rules;
 
     public EventCaptureRepositoryImpl(Context context, BriteDatabase briteDatabase, FormRepository formRepository, String eventUid, D2 d2) {
         this.briteDatabase = briteDatabase;
@@ -153,18 +162,18 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         this.formRepository = formRepository;
         this.d2 = d2;
 
-        Event event = d2.eventModule().events.uid(eventUid).withAllChildren().get();
-        ProgramStage programStage = d2.programModule().programStages.uid(event.programStage()).withAllChildren().get();
-        OrganisationUnit ou = d2.organisationUnitModule().organisationUnits.uid(event.organisationUnit()).withAllChildren().get();
+        currentEvent = d2.eventModule().events.uid(eventUid).withAllChildren().get();
+        ProgramStage programStage = d2.programModule().programStages.uid(currentEvent.programStage()).withAllChildren().get();
+        OrganisationUnit ou = d2.organisationUnitModule().organisationUnits.uid(currentEvent.organisationUnit()).withAllChildren().get();
 
         eventBuilder = RuleEvent.builder()
-                .event(event.uid())
-                .programStage(event.programStage())
+                .event(currentEvent.uid())
+                .programStage(currentEvent.programStage())
                 .programStageName(programStage.displayName())
-                .status(RuleEvent.Status.valueOf(event.status().name()))
-                .eventDate(event.eventDate())
-                .dueDate(event.dueDate() != null ? event.dueDate() : event.eventDate())
-                .organisationUnit(event.organisationUnit())
+                .status(RuleEvent.Status.valueOf(currentEvent.status().name()))
+                .eventDate(currentEvent.eventDate())
+                .dueDate(currentEvent.dueDate() != null ? currentEvent.dueDate() : currentEvent.eventDate())
+                .organisationUnit(currentEvent.organisationUnit())
                 .organisationUnitCode(ou.code());
 
         fieldFactory = new FieldViewModelFactoryImpl(
@@ -178,29 +187,34 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 context.getString(R.string.filter_options),
                 context.getString(R.string.choose_date));
 
-        loadDataElementRules(event);
+        loadDataElementRules(currentEvent);
+
+        isEventEditable = isEventExpired(eventUid);
     }
 
     private void loadDataElementRules(Event event) {
-        List<ProgramRule> rules = d2.programModule().programRules.byProgramUid().eq(event.program()).withAllChildren().get();
-        List<ProgramRule> mandatoryRules = new ArrayList<>();
+        rules = d2.programModule().programRules.byProgramUid().eq(event.program()).withAllChildren().get();
+
+        mandatoryRules = new ArrayList<>();
         Iterator<ProgramRule> ruleIterator = rules.iterator();
         while (ruleIterator.hasNext()) {
             ProgramRule rule = ruleIterator.next();
-            if (rule.programStage() != null && rule.programStage().uid().equals(event.programStage()))
+            if (rule.programStage() != null && !rule.programStage().uid().equals(event.programStage()))
                 ruleIterator.remove();
             else if (rule.condition() == null)
                 ruleIterator.remove();
-            for (ProgramRuleAction action : rule.programRuleActions())
-                if (action.programRuleActionType() == ProgramRuleActionType.HIDEFIELD ||
-                        action.programRuleActionType() == ProgramRuleActionType.HIDESECTION ||
-                        action.programRuleActionType() == ProgramRuleActionType.ASSIGN ||
-                        action.programRuleActionType() == ProgramRuleActionType.SHOWWARNING ||
-                        action.programRuleActionType() == ProgramRuleActionType.SHOWERROR ||
-                        action.programRuleActionType() == ProgramRuleActionType.HIDEOPTIONGROUP ||
-                        action.programRuleActionType() == ProgramRuleActionType.HIDEOPTION)
-                    if (!mandatoryRules.contains(rule))
-                        mandatoryRules.add(rule);
+            else
+                for (ProgramRuleAction action : rule.programRuleActions())
+                    if (action.programRuleActionType() == ProgramRuleActionType.HIDEFIELD ||
+                            action.programRuleActionType() == ProgramRuleActionType.HIDESECTION ||
+                            action.programRuleActionType() == ProgramRuleActionType.ASSIGN ||
+                            action.programRuleActionType() == ProgramRuleActionType.SHOWWARNING ||
+                            action.programRuleActionType() == ProgramRuleActionType.SHOWERROR ||
+                            action.programRuleActionType() == ProgramRuleActionType.HIDEOPTIONGROUP ||
+                            action.programRuleActionType() == ProgramRuleActionType.HIDEOPTION ||
+                            action.programRuleActionType() == ProgramRuleActionType.SETMANDATORYFIELD)
+                        if (!mandatoryRules.contains(rule))
+                            mandatoryRules.add(rule);
         }
 
         List<ProgramRuleVariable> variables = d2.programModule().programRuleVariables
@@ -221,7 +235,9 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 if (rule.condition().contains(variable.displayName()) || actionsContainsDE(rule.programRuleActions(), variable.displayName())) {
                     if (dataElementRules.get(variable.dataElement().uid()) == null)
                         dataElementRules.put(variable.dataElement().uid(), trasformToRule(mandatoryRules));
-                    dataElementRules.get(variable.dataElement().uid()).add(trasformToRule(rule));
+                    Rule fRule = trasformToRule(rule);
+                    if (!dataElementRules.get(variable.dataElement().uid()).contains(fRule))
+                        dataElementRules.get(variable.dataElement().uid()).add(fRule);
                 }
             }
         }
@@ -236,7 +252,31 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 rule.displayName());
     }
 
+
+    private List<ProgramRule> filterRules(List<ProgramRule> rules) {
+        Program program = d2.programModule().programs.uid(currentEvent.program()).withAllChildren().get();
+        if (program.programType().equals(ProgramType.WITH_REGISTRATION)) {
+            Iterator<ProgramRule> iterator = rules.iterator();
+            while (iterator.hasNext()) {
+                if (haveDisplayActionIndicator(iterator.next()))
+                    iterator.remove();
+            }
+        }
+        return rules;
+    }
+
+    private boolean haveDisplayActionIndicator(ProgramRule programRule) {
+        for (ProgramRuleAction programRuleAction : programRule.programRuleActions()) {
+            if ((programRuleAction.programRuleActionType() == ProgramRuleActionType.DISPLAYTEXT ||
+                    programRuleAction.programRuleActionType() == ProgramRuleActionType.DISPLAYKEYVALUEPAIR)
+                    && programRule.programStage() == null)
+                return true;
+        }
+        return false;
+    }
+
     private List<Rule> trasformToRule(List<ProgramRule> rules) {
+        filterRules(rules);
         List<Rule> finalRules = new ArrayList<>();
         for (ProgramRule rule : rules) {
             finalRules.add(Rule.create(
@@ -286,6 +326,20 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         return enrollment == null || enrollment.status() == EnrollmentStatus.ACTIVE;
     }
 
+    private boolean inOrgUnitRange(String eventUid) {
+        Event event = d2.eventModule().events.uid(eventUid).get();
+        String orgUnitUid = event.organisationUnit();
+        Date eventDate = event.eventDate();
+        boolean inRange = true;
+        OrganisationUnit orgUnit = d2.organisationUnitModule().organisationUnits.uid(orgUnitUid).get();
+        if (eventDate != null && orgUnit.openingDate() != null && eventDate.before(orgUnit.openingDate()))
+            inRange = false;
+        if (eventDate != null && orgUnit.closedDate() != null && eventDate.after(orgUnit.closedDate()))
+            inRange = false;
+
+        return inRange;
+    }
+
     @Override
     public boolean isEnrollmentCancelled() {
         Enrollment enrollment = d2.enrollmentModule().enrollments.uid(d2.eventModule().events.uid(eventUid).get().enrollment()).get();
@@ -293,6 +347,15 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
             return false;
         else
             return d2.enrollmentModule().enrollments.uid(d2.eventModule().events.uid(eventUid).get().enrollment()).get().status() == EnrollmentStatus.CANCELLED;
+    }
+
+    @Override
+    public boolean isEventExpired(String eventUid) {
+        Event event = d2.eventModule().events.uid(eventUid).withAllChildren().get();
+        Program program = d2.programModule().programs.uid(event.program()).withAllChildren().get();
+        boolean isExpired = DateUtils.getInstance().isEventExpired(event.eventDate(), event.completedDate(), event.status(), program.completeEventsExpiryDays(), program.expiryPeriodType(), program.expiryDays());
+        boolean editable = isEnrollmentOpen() && /*event.status() == EventStatus.ACTIVE*/!isExpired && getAccessDataWrite() && inOrgUnitRange(eventUid);
+        return !editable;
     }
 
     @Override
@@ -323,7 +386,8 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                         return "";
                     else
                         return categoryOptionComboRepo.get().displayName();
-                });
+                })
+                .map(displayName -> displayName.equals("default") ? "" : displayName);
     }
 
     @Override
@@ -338,11 +402,17 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     @Override
     public Flowable<List<FieldViewModel>> list(String sectionUid) {
         accessDataWrite = getAccessDataWrite();
+        long time;
         return briteDatabase
                 .createQuery(TrackedEntityDataValueModel.TABLE, prepareStatement(sectionUid, eventUid))
                 .mapToList(this::transform)
-                .map(this::checkRenderType)
-                .toFlowable(BackpressureStrategy.LATEST);
+                .map(fieldViewModels -> {
+                    Timber.d("CHECK RENDERING FOR SECTION");
+                    return checkRenderType(fieldViewModels);
+                })
+                .toFlowable(BackpressureStrategy.LATEST)
+                .doOnSubscribe(subscription -> Timber.d("LIST SUBSCRIBED! at %s", System.currentTimeMillis()))
+                ;
     }
 
     private ProgramStageSectionRenderingType renderingType(String sectionUid) {
@@ -357,7 +427,6 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     }
 
     private List<FieldViewModel> checkRenderType(List<FieldViewModel> fieldViewModels) {
-
         ArrayList<FieldViewModel> renderList = new ArrayList<>();
 
         for (FieldViewModel fieldViewModel : fieldViewModels) {
@@ -407,12 +476,13 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     @NonNull
     @Override
     public Flowable<List<FieldViewModel>> list() {
-        accessDataWrite = getAccessDataWrite();
         return briteDatabase
                 .createQuery(TrackedEntityDataValueModel.TABLE, prepareStatement(eventUid))
                 .mapToList(this::transform)
-                .map(this::checkRenderType)
-                .toFlowable(BackpressureStrategy.LATEST);
+                .map(fieldViewModels -> checkRenderType(fieldViewModels))
+                .toFlowable(BackpressureStrategy.BUFFER)
+                .doOnNext(onNext -> Timber.d("LIST ON NEXT! at %s", System.currentTimeMillis()))
+                ;
     }
 
 
@@ -493,10 +563,15 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
             if (rendering != null && rendering.moveToFirst())
                 fieldRendering = ValueTypeDeviceRenderingModel.create(rendering);
         }
+
         ObjectStyleModel objectStyle = ObjectStyleModel.builder().build();
         try (Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", uid)) {
             if (objStyleCursor != null && objStyleCursor.moveToFirst())
                 objectStyle = ObjectStyleModel.create(objStyleCursor);
+        }
+
+        if (ValueType.valueOf(valueTypeName) == ValueType.ORGANISATION_UNIT && !isEmpty(dataValue)) {
+            dataValue = dataValue + "_ou_" + d2.organisationUnitModule().organisationUnits.uid(dataValue).get().displayName();
         }
 
         ProgramStageSectionRenderingType renderingType = renderingType(programStageSection);
@@ -504,7 +579,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         return fieldFactory.create(uid, formName == null ? displayName : formName,
                 ValueType.valueOf(valueTypeName), mandatory, optionSet, dataValue,
                 programStageSection, allowFurureDates,
-                isEnrollmentOpen() && eventStatus == EventStatus.ACTIVE && accessDataWrite,
+                !isEventEditable,
                 renderingType, description, fieldRendering, optionCount, objectStyle);
     }
 
@@ -517,15 +592,11 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                         event -> formRepository.ruleEngine()
                                 .switchMap(ruleEngine -> {
                                     if (isEmpty(lastUpdatedUid))
-                                        return Flowable.fromCallable(ruleEngine.evaluate(event));
+                                        return Flowable.fromCallable(ruleEngine.evaluate(event, trasformToRule(rules)));
                                     else
                                         return Flowable.just(dataElementRules.get(lastUpdatedUid) != null ? dataElementRules.get(lastUpdatedUid) : new ArrayList<Rule>())
-                                                .flatMap(rules -> {
-                                                    if (!rules.isEmpty())
-                                                        return Flowable.fromCallable(ruleEngine.evaluate(event, rules));
-                                                    else
-                                                        return Flowable.just(new ArrayList<RuleEffect>());
-                                                });
+                                                .map(updatedRules -> updatedRules.isEmpty() ? trasformToRule(rules) : updatedRules)
+                                                .flatMap(rules -> Flowable.fromCallable(ruleEngine.evaluate(event, rules)));
                                 })
                                 .map(Result::success)
                                 .onErrorReturn(error -> Result.failure(new Exception(error)))
@@ -704,5 +775,22 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
             // This programstage has sections
             return FormSectionViewModel.createForSection(eventUid, cursor.getString(2), cursor.getString(3), cursor.getString(5));
         }
+    }
+
+    @Override
+    public Observable<List<OrganisationUnitLevel>> getOrgUnitLevels() {
+        return Observable.just(d2.organisationUnitModule().organisationUnitLevels.get());
+    }
+
+    @Override
+    public boolean optionIsInOptionGroup(String optionUid, String optionGroupToHide) {
+        List<ObjectWithUid> optionGroupOptions = d2.optionModule().optionGroups.uid(optionGroupToHide).withAllChildren().get().options();
+        boolean isInGroup = false;
+        if (optionGroupOptions != null)
+            for (ObjectWithUid uidObject : optionGroupOptions)
+                if (uidObject.uid().equals(optionUid))
+                    isInGroup = true;
+
+        return isInGroup;
     }
 }

@@ -1,6 +1,8 @@
 package org.dhis2.usescases.datasets.datasetDetail;
 
 import android.annotation.SuppressLint;
+
+import androidx.core.view.GravityCompat;
 import androidx.databinding.DataBindingUtil;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
@@ -127,10 +129,10 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
 
     @Override
     public void openDrawer() {
-        if (!binding.drawerLayout.isDrawerOpen(Gravity.END))
-            binding.drawerLayout.openDrawer(Gravity.END);
+        if (!binding.drawerLayout.isDrawerOpen(GravityCompat.END))
+            binding.drawerLayout.openDrawer(GravityCompat.END);
         else
-            binding.drawerLayout.closeDrawer(Gravity.END);
+            binding.drawerLayout.closeDrawer(GravityCompat.END);
     }
 
     @SuppressLint({"RxLeakedSubscription", "CheckResult"})

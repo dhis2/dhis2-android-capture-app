@@ -4,10 +4,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Looper;
+import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 import com.facebook.stetho.Stetho;
 import com.google.android.gms.security.ProviderInstaller;
+import com.mapbox.mapboxsdk.Mapbox;
 
 import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.dagger.PerServer;
@@ -28,6 +30,8 @@ import org.dhis2.usescases.login.LoginComponent;
 import org.dhis2.usescases.login.LoginModule;
 import org.dhis2.usescases.sync.SyncComponent;
 import org.dhis2.usescases.sync.SyncModule;
+import org.dhis2.usescases.teiDashboard.TeiDashboardComponent;
+import org.dhis2.usescases.teiDashboard.TeiDashboardModule;
 import org.dhis2.utils.UtilsModule;
 import org.dhis2.utils.timber.DebugTree;
 import org.dhis2.utils.timber.ReleaseTree;
@@ -43,6 +47,7 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.multidex.MultiDex;
 import androidx.multidex.MultiDexApplication;
 import io.fabric.sdk.android.Fabric;
+import io.ona.kujaku.KujakuLibrary;
 import io.reactivex.Scheduler;
 import io.reactivex.android.plugins.RxAndroidPlugins;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -88,6 +93,10 @@ public class App extends MultiDexApplication implements Components {
     @PerActivity
     SyncComponent syncComponent;
 
+    @Nullable
+    @PerActivity
+    private TeiDashboardComponent dashboardComponent;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -98,6 +107,10 @@ public class App extends MultiDexApplication implements Components {
             Stetho.initializeWithDefaults(this);
             Timber.d("STETHO INITIALIZATION END AT %s", System.currentTimeMillis() - startTime);
         }
+
+        KujakuLibrary.setEnableMapDownloadResume(false);
+        KujakuLibrary.init(this);
+
         Fabric.with(this, new Crashlytics());
         Timber.d("FABRIC INITIALIZATION END AT %s", System.currentTimeMillis() - startTime);
 
@@ -292,6 +305,22 @@ public class App extends MultiDexApplication implements Components {
         formComponent = null;
     }
 
+    ////////////////////////////////////////////////////////////////////////
+    // Dashboard component
+    ////////////////////////////////////////////////////////////////////////
+    @NonNull
+    public TeiDashboardComponent createDashboardComponent(@NonNull TeiDashboardModule dashboardModule) {
+        return (dashboardComponent = userComponent.plus(dashboardModule));
+    }
+
+    @Nullable
+    public TeiDashboardComponent dashboardComponent() {
+        return dashboardComponent;
+    }
+
+    public void releaseDashboardComponent() {
+        dashboardComponent = null;
+    }
 
     ////////////////////////////////////////////////////////////////////////
     // AndroidInjector

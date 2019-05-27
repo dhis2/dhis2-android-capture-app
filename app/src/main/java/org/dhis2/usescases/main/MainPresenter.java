@@ -4,14 +4,15 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.view.Gravity;
 
+import androidx.annotation.NonNull;
+import androidx.work.WorkManager;
+
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.usescases.login.LoginActivity;
 import org.dhis2.utils.Constants;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.user.User;
 
-import androidx.annotation.NonNull;
-import androidx.work.WorkManager;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;

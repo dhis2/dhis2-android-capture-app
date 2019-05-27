@@ -1,16 +1,16 @@
 package org.dhis2.data.forms.dataentry.fields.edittext;
 
-import androidx.databinding.DataBindingUtil;
-import androidx.databinding.ObservableBoolean;
-import androidx.databinding.ViewDataBinding;
-import androidx.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import org.dhis2.BR;
+import androidx.annotation.NonNull;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ObservableBoolean;
+
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.Row;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
+import org.dhis2.databinding.FormEditTextCustomBinding;
 
 import io.reactivex.processors.FlowableProcessor;
 
@@ -26,43 +26,36 @@ public class EditTextRow implements Row<EditTextCustomHolder, EditTextModel> {
     private final FlowableProcessor<RowAction> processor;
     private final boolean isBgTransparent;
     private final String renderType;
-    private final ObservableBoolean isEditable;
+    private final boolean isLongText;
     private boolean isSearchMode = false;
 
     //Search form constructor
-    public EditTextRow(@NonNull LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor, boolean isBgTransparent) {
+    public EditTextRow(@NonNull LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor, boolean isBgTransparent, boolean isLongText) {
         this.inflater = layoutInflater;
         this.processor = processor;
         this.isBgTransparent = isBgTransparent;
         this.renderType = null;
-        this.isEditable = new ObservableBoolean(true);
         this.isSearchMode = true;
+        this.isLongText = isLongText;
     }
 
     //Data entryconstructor
     public EditTextRow(@NonNull LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor,
-                       @NonNull FlowableProcessor<Integer> currentPosition,
-                       boolean isBgTransparent, String renderType, ObservableBoolean isEditable) {
+                       boolean isBgTransparent, String renderType, boolean isLongText) {
         this.inflater = layoutInflater;
         this.processor = processor;
         this.isBgTransparent = isBgTransparent;
         this.renderType = renderType;
-        this.isEditable = isEditable;
+        this.isLongText = isLongText;
     }
 
     @NonNull
     @Override
     public EditTextCustomHolder onCreate(@NonNull ViewGroup viewGroup) {
-        ViewDataBinding binding = DataBindingUtil.inflate(
-                inflater,
-                isBgTransparent ? R.layout.custom_text_view : R.layout.custom_text_view_accent,
-                viewGroup,
-                false
-        );
-        binding.setVariable(BR.renderType, renderType);
-        binding.executePendingBindings();
-        return new EditTextCustomHolder(viewGroup, binding
-                , processor, isBgTransparent, renderType, isEditable, isSearchMode);
+        FormEditTextCustomBinding binding = DataBindingUtil.inflate(inflater, R.layout.form_edit_text_custom, viewGroup, false);
+        binding.customEdittext.setLayoutData(isBgTransparent,isLongText);
+        binding.customEdittext.setRenderType(renderType);
+        return new EditTextCustomHolder(binding, processor, isSearchMode);
     }
 
     @Override

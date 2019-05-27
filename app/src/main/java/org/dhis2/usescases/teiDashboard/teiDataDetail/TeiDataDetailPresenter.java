@@ -58,7 +58,7 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
                     metadataRepository.getProgramTrackedEntityAttributes(programUid),
                     dashboardRepository.getTEIAttributeValues(programUid, uid),
                     metadataRepository.getTeiOrgUnit(uid),
-                    metadataRepository.getTeiActivePrograms(uid),
+                    metadataRepository.getTeiActivePrograms(uid, false),
                     DashboardProgramModel::new)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -93,7 +93,7 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
                     metadataRepository.getProgramTrackedEntityAttributes(null),
                     dashboardRepository.getTEIAttributeValues(null, uid),
                     metadataRepository.getTeiOrgUnit(uid),
-                    metadataRepository.getTeiActivePrograms(uid),
+                    metadataRepository.getTeiActivePrograms(uid, false),
                     metadataRepository.getTEIEnrollments(uid),
                     DashboardProgramModel::new)
                     .subscribeOn(Schedulers.io())
@@ -108,7 +108,6 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
     public void onBackPressed() {
         view.getAbstracContext().onBackPressed();
     }
-
 
     @Override
     public void onDeactivate(DashboardProgramModel dashboardProgramModel) {

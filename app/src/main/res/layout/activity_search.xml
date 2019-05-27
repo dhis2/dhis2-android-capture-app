@@ -9,6 +9,10 @@
             name="presenter"
             type="org.dhis2.usescases.searchTrackEntity.SearchTEContractsModule.Presenter" />
 
+        <variable
+            name="needsSearch"
+            type="androidx.databinding.ObservableBoolean" />
+
     </data>
 
     <RelativeLayout
@@ -160,13 +164,14 @@
                 android:layout_alignParentBottom="true"
                 android:layout_gravity="end|bottom"
                 android:layout_margin="15dp"
-                android:onClick="@{(view)->presenter.onFabClick(view)}"
+                android:focusableInTouchMode="true"
+                android:onClick="@{(view)->presenter.onFabClick(view, needsSearch)}"
                 android:tint="@color/white"
                 app:backgroundTint="?attr/colorPrimary"
                 app:elevation="7dp"
                 app:fabSize="normal"
                 app:layout_behavior="org.dhis2.utils.FixedBottomViewBehavior"
-                app:srcCompat='@{@drawable/ic_add}' />
+                app:searchOrAdd='@{ needsSearch }' />
 
             <!--END OF SCROLLING VIEW-->
 

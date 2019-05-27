@@ -4,6 +4,9 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.R;
@@ -14,6 +17,7 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.Result;
+import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.State;
@@ -39,8 +43,6 @@ import java.util.Locale;
 
 import javax.annotation.Nonnull;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
@@ -117,7 +119,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
             "      FROM ProgramStageDataElement\n" +
             "        INNER JOIN DataElement ON DataElement.uid = ProgramStageDataElement.dataElement\n" +
             "        LEFT JOIN ProgramStageSection ON ProgramStageSection.programStage = ProgramStageDataElement.programStage\n" +
-            "        LEFT JOIN ProgramStageSectionDataElementLink ON ProgramStageSectionDataElementLink.programStageSection = ProgramStageSection.uid AND ProgramStageSectionDataElementLink.dataElement = DataElement.uid\n" +            "    ) AS Field ON (Field.stage = Event.programStage)\n" +
+            "        LEFT JOIN ProgramStageSectionDataElementLink ON ProgramStageSectionDataElementLink.programStageSection = ProgramStageSection.uid AND ProgramStageSectionDataElementLink.dataElement = DataElement.uid\n" + "    ) AS Field ON (Field.stage = Event.programStage)\n" +
             "  LEFT OUTER JOIN TrackedEntityDataValue AS Value ON (\n" +
             "    Value.event = Event.uid AND Value.dataElement = Field.id\n" +
             "  )\n" +
@@ -174,15 +176,18 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
 
     private static final String ACCESS_QUERY = "SELECT ProgramStage.accessDataWrite FROM ProgramStage JOIN Event ON Event.programStage = ProgramStage.uid WHERE Event.uid = ? LIMIT 1";
     private static final String PROGRAM_ACCESS_QUERY = "SELECT Program.accessDataWrite FROM Program JOIN Event ON Event.program = Program.uid WHERE Event.uid = ? LIMIT 1";
+    private final D2 d2;
 
 
     public EventSummaryRepositoryImpl(@NonNull Context context,
                                       @NonNull BriteDatabase briteDatabase,
                                       @NonNull FormRepository formRepository,
-                                      @Nullable String eventUid) {
+                                      @Nullable String eventUid,
+                                      @NonNull D2 d2) {
         this.briteDatabase = briteDatabase;
         this.formRepository = formRepository;
         this.eventUid = eventUid;
+        this.d2 = d2;
         fieldFactory = new FieldViewModelFactoryImpl(
                 context.getString(R.string.enter_text),
                 context.getString(R.string.enter_long_text),
@@ -254,6 +259,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
     @NonNull
     private FieldViewModel transform(@NonNull Cursor cursor) {
         String uid = cursor.getString(0);
+        ValueType valueType = ValueType.valueOf(cursor.getString(2));
         String dataValue = cursor.getString(5);
         String optionCodeName = cursor.getString(6);
         EventStatus eventStatus = EventStatus.valueOf(cursor.getString(9));
@@ -265,12 +271,13 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
         }
 
         int optionCount = 0;
-        try (Cursor countCursor = briteDatabase.query("SELECT COUNT (uid) FROM Option WHERE optionSet = ?", optionSet)) {
-            if (countCursor != null && countCursor.moveToFirst())
-                optionCount = countCursor.getInt(0);
-        } catch (Exception e) {
-            Timber.e(e);
-        }
+        if (optionSet != null)
+            try (Cursor countCursor = briteDatabase.query("SELECT COUNT (uid) FROM Option WHERE optionSet = ?", optionSet)) {
+                if (countCursor != null && countCursor.moveToFirst())
+                    optionCount = countCursor.getInt(0);
+            } catch (Exception e) {
+                Timber.e(e);
+            }
 
         ValueTypeDeviceRenderingModel fieldRendering = null;
         try (Cursor rendering = briteDatabase.query("SELECT * FROM ValueTypeDeviceRendering WHERE uid = ?", uid)) {
@@ -285,8 +292,13 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
                 objectStyle = ObjectStyleModel.create(objStyleCursor);
         }
 
+
+        if (valueType == ValueType.ORGANISATION_UNIT && !isEmpty(dataValue)) {
+            dataValue = dataValue + "_ou_" + d2.organisationUnitModule().organisationUnits.uid(dataValue).get().displayName();
+        }
+
         return fieldFactory.create(uid, formName == null ? cursor.getString(1) : formName,
-                ValueType.valueOf(cursor.getString(2)), cursor.getInt(3) == 1,
+                valueType, cursor.getInt(3) == 1,
                 optionSet, dataValue, cursor.getString(7), cursor.getInt(8) == 1,
                 eventStatus == EventStatus.ACTIVE, null, description, fieldRendering, optionCount, objectStyle);
     }

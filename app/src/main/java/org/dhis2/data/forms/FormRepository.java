@@ -1,6 +1,6 @@
 package org.dhis2.data.forms;
 
-import com.google.android.gms.maps.model.LatLng;
+import com.mapbox.mapboxsdk.geometry.LatLng;
 
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.tuples.Pair;
@@ -30,6 +30,8 @@ public interface FormRepository {
     Flowable<Pair<ProgramModel, String>> incidentDate();
 
     Flowable<ProgramModel> getAllowDatesInFuture();
+
+    Flowable<RuleEngine> restartRuleEngine();
 
     @NonNull
     Flowable<RuleEngine> ruleEngine();

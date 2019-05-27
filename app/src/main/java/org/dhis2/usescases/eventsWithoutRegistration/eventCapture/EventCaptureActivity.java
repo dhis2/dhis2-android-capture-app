@@ -1,12 +1,16 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
 import android.app.DatePickerDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.GestureDetector;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.DatePicker;
 import android.widget.PopupMenu;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -35,6 +39,7 @@ import javax.inject.Inject;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.databinding.DataBindingUtil;
 import io.reactivex.functions.Consumer;
 import timber.log.Timber;
@@ -127,30 +132,6 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         };
     }
 
-    @Override
-    public void setMandatoryWarning(Map<String, FieldViewModel> emptyMandatoryFields) {
-        new CustomDialog(
-                getAbstracContext(),
-                getString(R.string.missing_mandatory_fields_title),
-                String.format(getString(R.string.missing_mandatory_fields_events_2_0), getMandatoryFieldNames(new ArrayList<>(emptyMandatoryFields.values()))),
-                getAbstracContext().getString(R.string.button_ok),
-                getString(R.string.check_mandatory_field),
-                Constants.RQ_MANDATORY_EVENTS,
-                new DialogClickListener() {
-                    @Override
-                    public void onPositive() {
-                        showCompleteActions(false);
-                    }
-
-                    @Override
-                    public void onNegative() {
-                        String sectionToGo = emptyMandatoryFields.values().iterator().next().programStageSection();
-                        presenter.goToSection(sectionToGo);
-                    }
-                })
-                .show();
-    }
-
     private String getMandatoryFieldNames(List<FieldViewModel> mandatoryValues) {
         StringBuilder mandatoryFieldNames = new StringBuilder();
         for (FieldViewModel fieldViewModel : mandatoryValues) {
@@ -232,12 +213,17 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                 reschedule();
                 break;
             case FINISH:
+                default:
                 finishDataEntry();
                 break;
         }
     }
 
     private void reschedule() {
+
+    }
+
+    private void showNativeCalendar() {
         Calendar calendar = DateUtils.getInstance().getCalendar();
         DatePickerDialog datePickerDialog = new DatePickerDialog(this, (view, year, month, dayOfMonth) -> {
             Calendar chosenDate = Calendar.getInstance();
@@ -245,7 +231,41 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
             presenter.rescheduleEvent(chosenDate.getTime());
         }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
 
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            datePickerDialog.setButton(DialogInterface.BUTTON_NEUTRAL, getContext().getResources().getString(R.string.change_calendar), (dialog, which) -> {
+                datePickerDialog.dismiss();
+                showCustomCalendar();
+            });
+        }
+
         datePickerDialog.show();
+    }
+
+    private void showCustomCalendar() {
+        LayoutInflater layoutInflater = LayoutInflater.from(getContext());
+        View datePickerView = layoutInflater.inflate(R.layout.widget_datepicker, null);
+        final DatePicker datePicker = datePickerView.findViewById(R.id.widget_datepicker);
+
+        Calendar c = DateUtils.getInstance().getCalendar();
+        int year = c.get(Calendar.YEAR);
+        int month = c.get(Calendar.MONTH);
+        int day = c.get(Calendar.DAY_OF_MONTH);
+
+        datePicker.updateDate(year, month, day);
+
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(getContext(), R.style.DatePickerTheme)
+                .setPositiveButton(R.string.action_accept, (dialog, which) -> {
+                    Calendar chosenDate = Calendar.getInstance();
+                    chosenDate.set(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
+                    presenter.rescheduleEvent(chosenDate.getTime());
+                })
+                .setNeutralButton(getContext().getResources().getString(R.string.change_calendar), (dialog, which) -> {
+                    showNativeCalendar();
+                });
+
+        alertDialog.setView(datePickerView);
+        Dialog dialog = alertDialog.create();
+        dialog.show();
     }
 
     @Override
@@ -468,5 +488,10 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
     public void onSwipeLeft() {
         presenter.onNextSection();
+    }
+
+    @Override
+    public void back() {
+        finishDataEntry();
     }
 }

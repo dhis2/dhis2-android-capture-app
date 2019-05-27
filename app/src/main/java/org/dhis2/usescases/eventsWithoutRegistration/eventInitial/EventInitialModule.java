@@ -2,6 +2,9 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventInitial;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.dagger.PerActivity;
@@ -16,8 +19,6 @@ import org.dhis2.utils.CodeGenerator;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.rules.RuleExpressionEvaluator;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import dagger.Module;
 import dagger.Provides;
 
@@ -56,8 +57,8 @@ public class EventInitialModule {
     @PerActivity
     EventSummaryRepository eventSummaryRepository(@NonNull Context context,
                                                   @NonNull BriteDatabase briteDatabase,
-                                                  @NonNull FormRepository formRepository) {
-        return new EventSummaryRepositoryImpl(context, briteDatabase, formRepository, eventUid);
+                                                  @NonNull FormRepository formRepository, D2 d2) {
+        return new EventSummaryRepositoryImpl(context, briteDatabase, formRepository, eventUid, d2);
     }
 
     @Provides
@@ -65,7 +66,7 @@ public class EventInitialModule {
                                   @NonNull RuleExpressionEvaluator evaluator,
                                   @NonNull RulesRepository rulesRepository,
                                   @NonNull D2 d2) {
-        return new EventRepository(briteDatabase, evaluator, rulesRepository, eventUid,d2);
+        return new EventRepository(briteDatabase, evaluator, rulesRepository, eventUid, d2);
     }
 
     @Provides

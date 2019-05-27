@@ -5,7 +5,7 @@ import com.unnamed.b.atv.model.TreeNode;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.utils.Period;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.period.DatePeriod;
 
 import java.util.ArrayList;
@@ -26,11 +26,7 @@ public class ProgramContract {
 
         void showTimeUnitPicker();
 
-//        void getSelectedPrograms(ArrayList<Date> dates, Period period, String orgUnitQuery);
-
         Consumer<List<ProgramViewModel>> swapProgramModelData();
-
-        void setOrgUnitFilter(StringBuilder orgUnitFilter);
 
         @UiThread
         void renderError(String message);
@@ -66,23 +62,19 @@ public class ProgramContract {
 
         void showDescription(String description);
 
-//        void getProgramsWithDates(ArrayList<Date> dates, Period period);
-
-//        void getProgramsOrgUnit(List<Date> dates, Period period, String orgUnitQuery);
-
-//        void getAllPrograms(String orgUnitQuery);
-
         void onExpandOrgUnitNode(TreeNode treeNode, String parentUid);
 
-        List<TreeNode> transformToNode(List<OrganisationUnitModel> orgUnits);
+        List<TreeNode> transformToNode(List<OrganisationUnit> orgUnits);
 
-        List<OrganisationUnitModel> getOrgUnits();
+        List<OrganisationUnit> getOrgUnits();
 
         void dispose();
 
         void updateDateFilter(List<DatePeriod> datePeriodList);
 
         void updateOrgUnitFilter(List<String> orgUnitList);
+
+        void onSyncStatusClick(ProgramViewModel program);
 
         boolean areFiltersApplied();
     }

@@ -28,11 +28,11 @@ import javax.net.ssl.X509TrustManager;
 import androidx.annotation.NonNull;
 import dagger.Module;
 import dagger.Provides;
-import okhttp3.CipherSuite;
 import okhttp3.ConnectionSpec;
 import okhttp3.Dispatcher;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.Response;
 import okhttp3.TlsVersion;
 import timber.log.Timber;
 
@@ -66,12 +66,12 @@ public class ServerModule {
     @PerServer
     OkHttpClient okHttpClient(Authenticator authenticator, Context context) {
         String userAgent = String.format("%s/%s/%s/Android_%s",
-                context.getString(R.string.app_name), //App name
+                "Dhis2", //App name
                 BuildConfig.VERSION_NAME,//SDK version
                 org.dhis2.BuildConfig.VERSION_NAME, //App version
                 Build.VERSION.SDK_INT //Android Version
         );
-        Dispatcher dispatcher=new Dispatcher();
+        Dispatcher dispatcher = new Dispatcher();
         dispatcher.setMaxRequests(5);
         OkHttpClient.Builder client = new OkHttpClient.Builder()
                 .addInterceptor(authenticator)
@@ -119,7 +119,7 @@ public class ServerModule {
                 specs.add(ConnectionSpec.CLEARTEXT);
 
                 client
-                        .sslSocketFactory(new TLSSocketFactory(sc.getSocketFactory()),trustManager)
+                        .sslSocketFactory(new TLSSocketFactory(sc.getSocketFactory()), trustManager)
                         .connectionSpecs(specs);
 
             } catch (Exception e) {

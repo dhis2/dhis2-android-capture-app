@@ -49,7 +49,6 @@
         <item name="tabIndicatorHeight">2dp</item>
         <item name="tabTextAppearance">@style/DhisTabText</item>
         <item name="tabSelectedTextColor">?colorAccent</item>
-        <item name="tabBackground">?colorPrimary</item>
         <item name="android:background">?colorPrimary</item>
     </style>
 
@@ -63,6 +62,27 @@
         <item name="colorAccent">@color/text_black_333</item>
         <item name="colorControlNormal">@color/text_black_333</item>
         <item name="colorControlActivated">@color/text_black_333</item>
+    </style>
+
+    <style name="ValueType_LongText" parent="Widget.MaterialComponents.TextInputLayout.FilledBox">
+        <item name="android:textColorHint">@color/text_black_808</item>
+        <item name="colorAccent">@color/text_black_333</item>
+        <item name="colorControlNormal">@color/text_black_333</item>
+        <item name="colorControlActivated">@color/text_black_333</item>
+    </style>
+
+    <style name="ValueType_Text">
+        <item name="android:textColorHint">@color/text_black_808</item>
+        <item name="colorAccent">@color/text_black_333</item>
+        <item name="colorControlNormal">@color/text_black_333</item>
+        <item name="colorControlActivated">@color/text_black_333</item>
+    </style>
+
+    <style name="boxedInputText" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="android:textColorHint">?colorPrimaryLight</item>
+        <item name="colorAccent">?colorPrimaryLight</item>
+        <item name="colorControlNormal">?colorPrimaryLight</item>
+        <item name="colorControlActivated">?colorPrimaryLight</item>
     </style>
 
     <style name="loginInputTextAccent" parent="Base.Widget.MaterialComponents.TextInputLayout">
@@ -98,7 +118,8 @@
 
     <style name="checkBoxErrorLog" parent="Base.Theme.AppCompat">
         <item name="colorAccent">@color/colorPrimary_00b</item>
-        <item name="android:textColorSecondary">@color/colorGreyDefault</item> <!-- for check state -->
+        <item name="android:textColorSecondary">@color/colorGreyDefault
+        </item> <!-- for check state -->
     </style>
 
     <style name="FullWidthButton">
@@ -188,6 +209,30 @@
         <item name="android:padding">@dimen/padding_12</item>
         <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
         <item name="android:clickable">true</item>
+    </style>
+
+    <style name="ActionIconNoPadding" parent="Widget.AppCompat.ImageButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+        <item name="android:clickable">true</item>
+    </style>
+
+    <style name="warning_appearance" parent="@android:style/TextAppearance">
+        <item name="android:textColor">@color/warning_color</item>
+    </style>
+
+    <style name="error_appearance" parent="@android:style/TextAppearance">
+        <item name="android:textColor">@color/error_color</item>
+    </style>
+
+    <style name="PrimaryOulineButton" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="colorAccent">?colorAccent</item>
+    </style>
+
+    <style name="DhisMaterialDialog" parent="Base.ThemeOverlay.MaterialComponents.Dialog.Alert">
+        <item name="colorAccent">@color/text_black_333</item>
+        <item name="colorPrimary">@color/text_black_333</item>
     </style>
 
 </resources>

@@ -3,6 +3,9 @@ package org.dhis2.data.metadata;
 import android.content.ContentValues;
 import android.database.Cursor;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.R;
@@ -17,7 +20,8 @@ import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
-import org.hisp.dhis.android.core.maintenance.D2Error;
+import org.hisp.dhis.android.core.imports.TrackerImportConflict;
+import org.hisp.dhis.android.core.option.OptionGroup;
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -35,13 +39,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -65,7 +68,7 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     private final String ACTIVE_TEI_PROGRAMS = String.format(
             " SELECT %s.* FROM %s " +
                     "JOIN %s ON %s.%s = %s.%s " +
-                    "WHERE %s.%s = ?",
+                    "WHERE %s.%s = ? ",
             ProgramModel.TABLE,
             ProgramModel.TABLE,
             EnrollmentModel.TABLE, EnrollmentModel.TABLE, EnrollmentModel.Columns.PROGRAM, ProgramModel.TABLE, ProgramModel.Columns.UID,
@@ -333,8 +336,12 @@ public class MetadataRepositoryImpl implements MetadataRepository {
 
 
     @Override
-    public Observable<List<ProgramModel>> getTeiActivePrograms(String teiUid) {
-        return briteDatabase.createQuery(ACTIVE_TEI_PROGRAMS_TABLES, ACTIVE_TEI_PROGRAMS, teiUid == null ? "" : teiUid)
+    public Observable<List<ProgramModel>> getTeiActivePrograms(String teiUid, boolean showOnlyActive) {
+        String query = ACTIVE_TEI_PROGRAMS;
+        if(showOnlyActive)
+            query = query + " and Enrollment.status = 'ACTIVE'";
+
+        return briteDatabase.createQuery(ACTIVE_TEI_PROGRAMS_TABLES, query, teiUid == null ? "" : teiUid)
                 .mapToList(ProgramModel::create);
     }
 
@@ -441,71 +448,58 @@ public class MetadataRepositoryImpl implements MetadataRepository {
 
 
     @Override
-    public List<D2Error> getSyncErrors() {
-        List<D2Error> d2Errors = new ArrayList<>();
-        try (Cursor cursor = briteDatabase.query("SELECT * FROM D2Error ORDER BY created DESC LIMIT 20")) {
+    public List<TrackerImportConflict> getSyncErrors() {
+        List<TrackerImportConflict> conflicts = new ArrayList<>();
+        try (Cursor cursor = briteDatabase.query("SELECT * FROM TrackerImportConflict ORDER BY created DESC")) {
             if (cursor != null && cursor.moveToFirst()) {
                 for (int i = 0; i < cursor.getCount(); i++) {
-                    d2Errors.add(D2Error.create(cursor));
+                    TrackerImportConflict conflict = TrackerImportConflict.create(cursor);
+                    conflicts.add(conflict);
                     cursor.moveToNext();
                 }
             }
         } catch (Exception e) {
             Timber.e(e);
         }
-        return d2Errors;
+        return conflicts;
     }
 
     @Override
     public Observable<List<OptionModel>> searchOptions(String text, String idOptionSet, int page, List<String> optionsToHide, List<String> optionsGroupsToHide) {
-        String pageQuery = String.format(Locale.US, " LIMIT %d,%d", page * 15, 15);
+        String pageQuery = String.format(Locale.US, "GROUP BY Option.uid ORDER BY sortOrder LIMIT %d,%d", page * 15, 15);
         String formattedOptionsToHide = "'" + join("','", optionsToHide) + "'";
-        String formattedOptionGroupsToHide = "'" + join("','", optionsGroupsToHide) + "'";
 
-        String options = "SELECT Option.*, OptionGroupOptionLink.optionGroup FROM Option " +
-                "LEFT JOIN OptionGroupOptionLink ON OptionGroupOptionLink.option = Option.uid " +
-                "WHERE Option.optionSet = ? " +
-                (!optionsGroupsToHide.isEmpty() ? "AND (OptionGroupOptionLink.optionGroup IS NULL OR OptionGroupOptionLink.optionGroup NOT IN (" + formattedOptionGroupsToHide + ")) " : "") +
-                (!optionsToHide.isEmpty() ? "AND Option.uid NOT IN (" + formattedOptionsToHide + ") " : "") +
-                (!isEmpty(text) ? "AND Option.displayName LIKE '%" + text + "%' " : "") +
+        String optionQuery = "SELECT Option.* FROM Option WHERE Option.optionSet = ? " +
+                (!optionsToHide.isEmpty() ? "AND Option.uid NOT IN (" + formattedOptionsToHide + ") " : " ") +
+                (!isEmpty(text) ? "AND Option.displayName LIKE '%" + text + "%' " : " ") +
                 pageQuery;
 
-        return briteDatabase.createQuery(OptionModel.TABLE, options, idOptionSet)
-                .mapToList(OptionModel::create);
-
-        /*String optionGroupQuery = "SELECT Option.*, OptionGroupOptionLink.optionGroup FROM Option " +
-                "LEFT JOIN OptionGroupOptionLink ON OptionGroupOptionLink.option = Option.uid  " +
-                "WHERE Option.optionSet = ? " +
-                "AND (OptionGroupOptionLink.optionGroup IS NULL OR OptionGroupOptionLink.optionGroup NOT IN (" + formattedOptionGroupsToHide + ")) " +
-                "GROUP BY Option.uid ORDER BY  Option.sortOrder ASC";
-
-        return briteDatabase.createQuery(OptionGroupOptionLinkTableInfo.TABLE_INFO.name(), optionGroupQuery, idOptionSet)
+        return briteDatabase.createQuery(OptionModel.TABLE, optionQuery, idOptionSet)
                 .mapToList(OptionModel::create)
-                .flatMap(list -> {
-                    if (list.isEmpty()) {
-                        String optionQuery = !isEmpty(text) ?
-                                "select Option.* from OptionSet " +
-                                        "JOIN Option ON Option.optionSet = OptionSet.uid " +
-                                        "where OptionSet.uid = ? and Option.displayName like '%" + text + "%' " +
-                                        "AND Option.uid NOT IN (" + formattedOptionsToHide + ") " + pageQuery :
-                                "select Option.* from OptionSet " +
-                                        "JOIN Option ON Option.optionSet = OptionSet.uid " +
-                                        "where OptionSet.uid = ? " +
-                                        "AND Option.uid NOT IN (" + formattedOptionsToHide + ") " + pageQuery;
-
-                        return briteDatabase.createQuery(OptionSetModel.TABLE, optionQuery, idOptionSet)
-                                .mapToList(OptionModel::create);
-                    } else {
-                        Iterator<OptionModel> iterator = list.iterator();
-                        while (iterator.hasNext()) {
-                            OptionModel option = iterator.next();
-                            if (optionsToHide.contains(option.uid()))
-                                iterator.remove();
-                            if (!option.displayName().contains(text))
-                                iterator.remove();
+                .map(optionList -> {
+                    Iterator<OptionModel> iterator = optionList.iterator();
+                    while (iterator.hasNext()) {
+                        OptionModel option = iterator.next();
+                        List<String> optionGroupUids = new ArrayList<>();
+                        try (Cursor optionGroupCursor = briteDatabase.query("SELECT OptionGroup.* FROM OptionGroup " +
+                                "LEFT JOIN OptionGroupOptionLink ON OptionGroupOptionLink.optionGroup = OptionGroup.uid WHERE OptionGroupOptionLink.option = ?", option.uid())) {
+                            if (optionGroupCursor.moveToFirst()) {
+                                for (int i = 0; i < optionGroupCursor.getCount(); i++) {
+                                    optionGroupUids.add(OptionGroup.create(optionGroupCursor).uid());
+                                    optionGroupCursor.moveToNext();
+                                }
+                            }
                         }
-                        return Observable.just(list);
+                        boolean remove = false;
+                        for (String group : optionGroupUids)
+                            if (optionsGroupsToHide.contains(group))
+                                remove = true;
+
+                        if (remove)
+                            iterator.remove();
+
                     }
-                });*/
+                    return optionList;
+                });
     }
 }

@@ -3,7 +3,7 @@ package org.dhis2.data.forms;
 import android.content.ContentValues;
 import android.database.Cursor;
 
-import com.google.android.gms.maps.model.LatLng;
+import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
@@ -25,10 +25,10 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 import org.hisp.dhis.rules.RuleEngine;
@@ -198,28 +198,55 @@ public class EnrollmentFormRepository implements FormRepository {
     private final CodeGenerator codeGenerator;
 
     @NonNull
-    private final Flowable<RuleEngine> cachedRuleEngineFlowable;
+    private Flowable<RuleEngine> cachedRuleEngineFlowable;
 
     @NonNull
     private final String enrollmentUid;
     private final D2 d2;
+    private final RulesRepository rulesRepository;
+    private final RuleExpressionEvaluator expressionEvaluator;
 
     private String programUid;
 
     public EnrollmentFormRepository(@NonNull BriteDatabase briteDatabase,
-                             @NonNull RuleExpressionEvaluator expressionEvaluator,
-                             @NonNull RulesRepository rulesRepository,
-                             @NonNull CodeGenerator codeGenerator,
-                             @NonNull String enrollmentUid,
+                                    @NonNull RuleExpressionEvaluator expressionEvaluator,
+                                    @NonNull RulesRepository rulesRepository,
+                                    @NonNull CodeGenerator codeGenerator,
+                                    @NonNull String enrollmentUid,
                                     @NonNull D2 d2) {
         this.d2 = d2;
         this.briteDatabase = briteDatabase;
         this.codeGenerator = codeGenerator;
         this.enrollmentUid = enrollmentUid;
+        this.rulesRepository = rulesRepository;
+        this.expressionEvaluator = expressionEvaluator;
 
         // We don't want to rebuild RuleEngine on each request, since metadata of
         // the event is not changing throughout lifecycle of FormComponent.
         this.cachedRuleEngineFlowable = enrollmentProgram()
+                .switchMap(program -> Flowable.zip(
+                        rulesRepository.rulesNew(program),
+                        rulesRepository.ruleVariables(program),
+                        rulesRepository.enrollmentEvents(enrollmentUid),
+                        rulesRepository.queryConstants(),
+                        (rules, variables, events, constants) -> {
+                            RuleEngine.Builder builder = RuleEngineContext.builder(expressionEvaluator)
+                                    .rules(rules)
+                                    .ruleVariables(variables)
+                                    .calculatedValueMap(new HashMap<>())
+                                    .supplementaryData(new HashMap<>())
+                                    .constantsValue(constants)
+                                    .build().toEngineBuilder();
+                            builder.triggerEnvironment(TriggerEnvironment.ANDROIDCLIENT);
+                            builder.events(events);
+                            return builder.build();
+                        }))
+                .cacheWithInitialCapacity(1);
+    }
+
+    @Override
+    public Flowable<RuleEngine> restartRuleEngine() {
+        return this.cachedRuleEngineFlowable = enrollmentProgram()
                 .switchMap(program -> Flowable.zip(
                         rulesRepository.rulesNew(program),
                         rulesRepository.ruleVariables(program),
@@ -334,8 +361,8 @@ public class EnrollmentFormRepository implements FormRepository {
     public Consumer<LatLng> storeCoordinates() {
         return latLng -> {
             ContentValues enrollment = new ContentValues();
-            enrollment.put(EnrollmentModel.Columns.LATITUDE, latLng.latitude);
-            enrollment.put(EnrollmentModel.Columns.LONGITUDE, latLng.longitude); // TODO: Check if state is TO_POST
+            enrollment.put(EnrollmentModel.Columns.LATITUDE, latLng.getLatitude());
+            enrollment.put(EnrollmentModel.Columns.LONGITUDE, latLng.getLongitude()); // TODO: Check if state is TO_POST
             // TODO: and if so, keep the TO_POST state
 
             briteDatabase.update(EnrollmentModel.TABLE, enrollment,
@@ -558,7 +585,7 @@ public class EnrollmentFormRepository implements FormRepository {
 
     @Override
     public Observable<OrganisationUnit> getOrgUnitDates() {
-        return Observable.defer(()->Observable.just(d2.enrollmentModule().enrollments.uid(enrollmentUid).get()))
+        return Observable.defer(() -> Observable.just(d2.enrollmentModule().enrollments.uid(enrollmentUid).get()))
                 .switchMap(enrollment -> Observable.just(d2.organisationUnitModule().organisationUnits.uid(enrollment.organisationUnit()).get()));
     }
 
@@ -611,6 +638,10 @@ public class EnrollmentFormRepository implements FormRepository {
         try (Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", uid)) {
             if (objStyleCursor != null && objStyleCursor.moveToFirst())
                 objectStyle = ObjectStyleModel.create(objStyleCursor);
+        }
+
+        if (valueType == ValueType.ORGANISATION_UNIT && !isEmpty(dataValue)) {
+            dataValue = dataValue + "_ou_" + d2.organisationUnitModule().organisationUnits.uid(dataValue).get().displayName();
         }
 
         return fieldFactory.create(uid, label, valueType, mandatory, optionSetUid, dataValue, section,
