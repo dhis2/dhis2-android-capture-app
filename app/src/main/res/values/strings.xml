@@ -361,10 +361,10 @@
     <string name="tuto_settings_errors">Check if a connection to the server failed</string>
     <string name="tuto_settings_reset">Free some disk space</string>
     <string name="tuto_settings_4">…or delete everything to start over.</string>
-    <string name="tuto_search_1">Find your entities both in local memory and online server.</string>
+    <string name="tuto_search_1_v2">Find your entities both in your local device and the online server.</string>
     <string name="tuto_search_2">You can switch to other programs</string>
-    <string name="tuto_search_3">Add new entities</string>
-    <string name="tuto_search_4">Click here to restart</string>
+    <string name="tuto_search_3_v2">Search or Add new entities. You need to search before you can add a new one!</string>
+    <string name="tuto_search_4_v2">Click here to clean the fields and restart the search.</string>
     <string name="tuto_dashboard_1">This is the entity dashboard</string>
     <string name="tuto_dashboard_2">See entities profile information…</string>
     <string name="tuto_dashboard_3">…Share information via QR or SMS…</string>
@@ -458,6 +458,7 @@
     <string name="network_unavailable">Network connection is not available.</string>
     <string name="action_close">Close</string>
     <string name="tuto_main_11">Now you can check sync information by clicking here</string>
-    <string name="no_conflicts_update_message">This data is not yet synced with the server</string>
+    <string name="no_conflicts_update_message">This data is stored in your device only, it is not synced with the server.</string>
+    <string name="no_conflicts_synced_message">You are up to date! All your data is sent to the server.</string>
 
 </resources>

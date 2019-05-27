@@ -135,12 +135,21 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 state -> {
-                                    if (state == State.TO_POST || state == State.TO_UPDATE) {
-                                        setNoConflictMessage(getString(R.string.no_conflicts_update_message));
-                                    } else if (state != State.WARNING && state != State.ERROR)
-                                        setNoConflictMessage(getString(R.string.no_conflicts_message));
-                                    else
-                                        setProgramConflictMessage(state);
+                                    switch (state) {
+                                        case TO_POST:
+                                        case TO_UPDATE:
+                                            setNoConflictMessage(getString(R.string.no_conflicts_update_message));
+                                            break;
+                                        case SYNCED:
+                                            setNoConflictMessage(getString(R.string.no_conflicts_synced_message));
+                                            break;
+                                        case WARNING:
+                                        case ERROR:
+                                            setProgramConflictMessage(state);
+                                            break;
+                                        default:
+                                            break;
+                                    }
                                 },
                                 error -> dismiss()
                         )
@@ -204,9 +213,7 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 conflicts -> {
-                                    if (conflicts.isEmpty())
-                                        setNoConflictMessage(getString(R.string.no_conflicts_update_message));
-                                    else
+                                    if (!conflicts.isEmpty())
                                         prepareConflictAdapter(conflicts);
                                 },
                                 error -> dismiss()
@@ -222,6 +229,15 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
                                     Bindings.setStateIcon(binding.syncIcon, state);
                                     binding.syncStatusName.setText(getTextByState(state));
                                     binding.syncStatusBar.setBackgroundResource(getColorForState(state));
+                                    switch (state) {
+                                        case TO_POST:
+                                        case TO_UPDATE:
+                                            setNoConflictMessage(getString(R.string.no_conflicts_update_message));
+                                            break;
+                                        case SYNCED:
+                                            setNoConflictMessage(getString(R.string.no_conflicts_synced_message));
+                                            break;
+                                    }
                                 },
                                 error -> dismiss()
                         )
@@ -237,9 +253,7 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 conflicts -> {
-                                    if (conflicts.isEmpty())
-                                        setNoConflictMessage(getString(R.string.no_conflicts_update_message));
-                                    else
+                                    if (!conflicts.isEmpty())
                                         prepareConflictAdapter(conflicts);
                                 },
                                 error -> dismiss()
@@ -255,6 +269,15 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
                                     Bindings.setStateIcon(binding.syncIcon, state);
                                     binding.syncStatusName.setText(getTextByState(state));
                                     binding.syncStatusBar.setBackgroundResource(getColorForState(state));
+                                    switch (state) {
+                                        case TO_POST:
+                                        case TO_UPDATE:
+                                            setNoConflictMessage(getString(R.string.no_conflicts_update_message));
+                                            break;
+                                        case SYNCED:
+                                            setNoConflictMessage(getString(R.string.no_conflicts_synced_message));
+                                            break;
+                                    }
                                 },
                                 error -> dismiss()
                         )
