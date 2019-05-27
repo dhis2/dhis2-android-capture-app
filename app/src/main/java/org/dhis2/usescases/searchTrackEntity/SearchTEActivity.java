@@ -12,7 +12,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.TypedValue;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
@@ -133,7 +132,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
         binding.scrollView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
-        binding.formRecycler.setAdapter(new FormAdapter(getSupportFragmentManager(), LayoutInflater.from(this), this, presenter.getOrgUnitLevels()));
+        binding.formRecycler.setAdapter(new FormAdapter(getSupportFragmentManager(), this));
 
         binding.enrollmentButton.setOnTouchListener((v, event) -> {
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -145,7 +144,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             }
             return true;
         });
-}
+    }
 
     @Override
     protected void onResume() {
@@ -407,11 +406,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         animSearchFab(needsSearch);
     }
 
-    private void animSearchFab(boolean hasQuery){
-        if(hasQuery) {
+    private void animSearchFab(boolean hasQuery) {
+        if (hasQuery) {
             binding.enrollmentButton.startAnimation(
                     AnimationUtils.loadAnimation(binding.enrollmentButton.getContext(), R.anim.bounce_animation));
-        }else {
+        } else {
             binding.enrollmentButton.clearAnimation();
             hideKeyboard();
         }

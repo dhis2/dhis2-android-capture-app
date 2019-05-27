@@ -36,7 +36,6 @@ import org.dhis2.data.tuples.Trio;
 import org.dhis2.utils.Constants;
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.ValueType;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 import org.jetbrains.annotations.NotNull;
@@ -45,11 +44,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import io.reactivex.Observable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 
 import static android.text.TextUtils.isEmpty;
+
 
 /**
  * QUADRAM. Created by ppajuelo on 06/11/2017.
@@ -87,12 +86,13 @@ public class FormAdapter extends RecyclerView.Adapter {
     private Context context;
     private Map<String, String> queryData;
 
-    public FormAdapter(FragmentManager fm, LayoutInflater layoutInflater, Context context,
-                       Observable<List<OrganisationUnitLevel>> levels) {
+
+    public FormAdapter(FragmentManager fm, Context context) {
         setHasStableIds(true);
         this.processor = PublishProcessor.create();
         this.processorOptionSet = PublishProcessor.create();
         this.context = context;
+        LayoutInflater layoutInflater = LayoutInflater.from(context);
         attributeList = new ArrayList<>();
         rows = new ArrayList<>();
 
@@ -248,7 +248,8 @@ public class FormAdapter extends RecyclerView.Adapter {
 
     }
 
-    public void setList(List<TrackedEntityAttributeModel> modelList, ProgramModel programModel, Map<String, String> queryData) {
+    public void setList(List<TrackedEntityAttributeModel> modelList, ProgramModel
+            programModel, Map<String, String> queryData) {
         this.queryData = queryData;
         if (programModel != null) {
             this.programModel = programModel;

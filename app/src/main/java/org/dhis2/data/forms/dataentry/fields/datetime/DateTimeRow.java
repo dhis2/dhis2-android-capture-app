@@ -24,28 +24,31 @@ public class DateTimeRow implements Row<DateTimeHolder, DateTimeViewModel> {
 
     private static final int TIME = 5;
     private static final int DATE = 6;
+    private static final int DATETIME = 7;
     private final LayoutInflater inflater;
     private final FlowableProcessor<RowAction> processor;
     private final boolean isBgTransparent;
-    private final FlowableProcessor<Integer> currentPosition;
+    private final String renderType;
 
     private int viewType;
+    private boolean isSearchMode = false;
 
     public DateTimeRow(LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor, int viewType, boolean isBgTransparent) {
         this.processor = processor;
         this.inflater = layoutInflater;
         this.viewType = viewType;
         this.isBgTransparent = isBgTransparent;
-        this.currentPosition = null;
+        this.renderType = null;
+        this.isSearchMode = true;
     }
 
     public DateTimeRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor,
-                       @NonNull FlowableProcessor<Integer> currentPosition, int viewType, boolean isBgTransparent) {
+                       int viewType, boolean isBgTransparent, String renderType) {
         this.processor = processor;
         this.inflater = layoutInflater;
         this.viewType = viewType;
         this.isBgTransparent = isBgTransparent;
-        this.currentPosition = currentPosition;
+        this.renderType = renderType;
     }
 
     @NonNull
@@ -65,6 +68,7 @@ public class DateTimeRow implements Row<DateTimeHolder, DateTimeViewModel> {
                         R.layout.form_date_text, parent, false);
                 ((FormDateTextBinding) binding).dateView.setIsBgTransparent(isBgTransparent);
                 break;
+            case DATETIME:
             default:
                 binding = DataBindingUtil.inflate(inflater,
                         R.layout.form_date_time_text, parent, false);
@@ -72,7 +76,7 @@ public class DateTimeRow implements Row<DateTimeHolder, DateTimeViewModel> {
                 break;
         }
 
-        return new DateTimeHolder(binding, processor, currentPosition);
+        return new DateTimeHolder(binding, processor, isSearchMode);
     }
 
     @Override

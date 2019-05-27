@@ -47,7 +47,7 @@ public class ImageHolder extends FormViewHolder {
                     currentSelector.set(label);
                 }
 
-                processor.onNext(RowAction.create(uids[0], value));
+                processor.onNext(RowAction.create(uids[0], value,getAdapterPosition()));
             }
         });
 
@@ -84,5 +84,9 @@ public class ImageHolder extends FormViewHolder {
 
     public void dispose() {
         disposable.clear();
+    }
+
+    @Override
+    public void performAction() {
     }
 }

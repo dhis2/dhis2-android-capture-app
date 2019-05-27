@@ -1,16 +1,17 @@
 package org.dhis2.data.forms.dataentry;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.databinding.ObservableBoolean;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -38,6 +39,9 @@ import javax.inject.Inject;
 
 import io.reactivex.Flowable;
 import io.reactivex.functions.Consumer;
+import io.reactivex.processors.FlowableProcessor;
+
+import static android.text.TextUtils.isEmpty;
 
 public final class DataEntryFragment extends FragmentGlobalAbstract implements DataEntryView {
     private static final String ARGUMENTS = "args";
@@ -50,6 +54,7 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
     private Fragment formFragment;
     private String section;
     private ProgressBar progressBar;
+    private View dummyFocusView;
 
     @NonNull
     public static DataEntryFragment create(@NonNull DataEntryArguments arguments) {
@@ -88,6 +93,7 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
                              @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_data_entry, container, false);
         progressBar = view.findViewById(R.id.progress);
+        dummyFocusView = view.findViewById(R.id.dummyFocusView);
         Bindings.setProgressColor(progressBar, R.color.colorPrimary);
         return view;
     }
@@ -122,12 +128,20 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
         return dataEntryAdapter.asFlowableOption();
     }
 
+    @Override
+    public FlowableProcessor<RowAction> getActionProcessor() {
+        return dataEntryAdapter.asFlowable();
+    }
+
     @NonNull
     @Override
     public Consumer<List<FieldViewModel>> showFields() {
         return updates -> {
             progressBar.setVisibility(View.INVISIBLE);
+            if (!isEmpty(dataEntryPresenter.getLastFocusItem()))
+                dataEntryAdapter.setLastFocusItem(dataEntryPresenter.getLastFocusItem());
             dataEntryAdapter.swap(updates);
+
         };
     }
 
@@ -136,6 +150,13 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
         if (formFragment instanceof FormFragment) {
             ((FormFragment) formFragment).hideSections();
         }
+    }
+
+    @Override
+    public void nextFocus() {
+        if (!isEmpty(dataEntryPresenter.getLastFocusItem()))
+            dataEntryAdapter.setLastFocusItem(dataEntryPresenter.getLastFocusItem());
+        dataEntryAdapter.swapWithoutList();
     }
 
     @Override
@@ -150,9 +171,7 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
     private void setUpRecyclerView() {
         DataEntryArguments arguments = getArguments().getParcelable(ARGUMENTS);
         dataEntryAdapter = new DataEntryAdapter(LayoutInflater.from(getActivity()),
-                getChildFragmentManager(),
-                arguments,
-                new ObservableBoolean(true));
+                getChildFragmentManager(), arguments);
 
         RecyclerView.LayoutManager layoutManager;
         if (arguments.renderType() != null && arguments.renderType().equals(ProgramStageSectionRenderingType.MATRIX.name())) {
@@ -162,6 +181,19 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
                     RecyclerView.VERTICAL, false);
         recyclerView.setAdapter(dataEntryAdapter);
         recyclerView.setLayoutManager(layoutManager);
+
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                if (newState != RecyclerView.SCROLL_STATE_IDLE) {
+                    dataEntryAdapter.setLastFocusItem(null);
+                    InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(recyclerView.getWindowToken(), 0);
+                    dummyFocusView.requestFocus();
+                    dataEntryPresenter.clearLastFocusItem();
+                }
+            }
+        });
 
     }
 

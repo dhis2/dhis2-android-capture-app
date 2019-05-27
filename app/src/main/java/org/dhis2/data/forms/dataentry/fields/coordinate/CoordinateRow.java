@@ -24,13 +24,14 @@ public class CoordinateRow implements Row<CoordinateHolder, CoordinateViewModel>
     @NonNull
     private final LayoutInflater inflater;
     private final boolean isBgTransparent;
+    private final boolean isSearchMode;
 
     public CoordinateRow(@NonNull LayoutInflater layoutInflater,
-                         @NonNull FlowableProcessor<RowAction> processor,
-                         boolean isBgTransparent) {
+                         @NonNull FlowableProcessor<RowAction> processor, boolean isBgTransparent) {
         this.inflater = layoutInflater;
         this.processor = processor;
         this.isBgTransparent = isBgTransparent;
+        this.isSearchMode = true;
     }
 
     @NonNull
@@ -39,7 +40,7 @@ public class CoordinateRow implements Row<CoordinateHolder, CoordinateViewModel>
         CustomFormCoordinateBinding binding = DataBindingUtil.inflate(inflater,
                 R.layout.custom_form_coordinate, parent, false);
         binding.formCoordinates.setIsBgTransparent(isBgTransparent);
-        return new CoordinateHolder(binding, processor);
+        return new CoordinateHolder(binding, processor, isSearchMode);
     }
 
     @Override

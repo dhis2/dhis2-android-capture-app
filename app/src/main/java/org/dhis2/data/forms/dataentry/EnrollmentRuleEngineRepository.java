@@ -330,8 +330,8 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
     @NonNull
     @Override
     public Flowable<Result<RuleEffect>> calculate() {
-        return Flowable.defer(() -> Flowable.just(getRuleAttributeValueMap()))
-                .map(attrs -> ruleEnrollmentBuilder.attributeValues(attrs).build())
+        return queryAttributeValues()
+                .map(ruleAttributeValues -> ruleEnrollmentBuilder.attributeValues(ruleAttributeValues).build())
                 .switchMap(enrollment -> formRepository.ruleEngine()
                         .switchMap(ruleEngine -> {
                             if (isEmpty(lastUpdatedAttr) && !getIndicators)

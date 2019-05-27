@@ -35,4 +35,9 @@ public class DisplayHolder extends FormViewHolder {
     public void dispose() {
         // unused
     }
+
+    @Override
+    public void performAction() {
+        // unused
+    }
 }

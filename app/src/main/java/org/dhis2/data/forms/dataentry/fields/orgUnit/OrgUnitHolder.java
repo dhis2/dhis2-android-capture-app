@@ -1,5 +1,10 @@
 package org.dhis2.data.forms.dataentry.fields.orgUnit;
 
+import android.graphics.Color;
+
+import androidx.core.content.ContextCompat;
+
+import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.FormOrgUnitBinding;
@@ -14,20 +19,32 @@ import static android.text.TextUtils.isEmpty;
  */
 
 public class OrgUnitHolder extends FormViewHolder {
+
     private final FormOrgUnitBinding formOrgUnitBinding;
     private CompositeDisposable compositeDisposable;
     private OrgUnitViewModel model;
 
-    OrgUnitHolder(FormOrgUnitBinding binding, FlowableProcessor<RowAction> processor) {
+    OrgUnitHolder(FormOrgUnitBinding binding, FlowableProcessor<RowAction> processor,
+                  boolean isSearchMode) {
         super(binding);
         this.formOrgUnitBinding = binding;
         compositeDisposable = new CompositeDisposable();
-        binding.orgUnitView.setListener(orgUnitUid -> processor.onNext(RowAction.create(model.uid(), orgUnitUid)));
+        formOrgUnitBinding.orgUnitView.setListener(orgUnitUid -> {
+            processor.onNext(RowAction.create(model.uid(), orgUnitUid, getAdapterPosition()));
+            if (!isSearchMode)
+                itemView.setBackgroundColor(Color.WHITE);
+        });
     }
 
     @Override
     public void dispose() {
         compositeDisposable.clear();
+    }
+
+    @Override
+    public void performAction() {
+        itemView.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.item_selected_bg));
+        formOrgUnitBinding.orgUnitView.performOnFocusAction();
     }
 
     public void update(OrgUnitViewModel viewModel) {

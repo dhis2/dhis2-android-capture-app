@@ -25,6 +25,7 @@ public class OrgUnitRow implements Row<OrgUnitHolder, OrgUnitViewModel> {
     private final LayoutInflater inflater;
     private final FragmentManager fm;
     private final String renderType;
+    private boolean isSearchMode = false;
 
     public OrgUnitRow(FragmentManager fm, LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor,
                       boolean isBgTransparent) {
@@ -33,6 +34,7 @@ public class OrgUnitRow implements Row<OrgUnitHolder, OrgUnitViewModel> {
         this.isBgTransparent = isBgTransparent;
         this.fm = fm;
         this.renderType = null;
+        this.isSearchMode = true;
     }
 
     public OrgUnitRow(FragmentManager fm, LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor,
@@ -50,7 +52,7 @@ public class OrgUnitRow implements Row<OrgUnitHolder, OrgUnitViewModel> {
         FormOrgUnitBinding binding = DataBindingUtil.inflate(inflater, R.layout.form_org_unit, parent, false);
         binding.orgUnitView.setLayoutData(isBgTransparent, renderType);
         binding.orgUnitView.setFragmentManager(fm);
-        return new OrgUnitHolder(binding, processor);
+        return new OrgUnitHolder(binding, processor, isSearchMode);
     }
 
     @Override

@@ -58,7 +58,9 @@ import static org.dhis2.utils.Constants.TRACKED_ENTITY_INSTANCE;
  * -Created by ppajuelo on 29/11/2017.
  */
 
-public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataContracts.TEIDataView, DialogClickListener {
+
+public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataContracts.TEIDataView {
+
 
     private static final int REQ_DETAILS = 1001;
     private static final int REQ_EVENT = 2001;
@@ -255,7 +257,18 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
                         getString(R.string.button_ok),
                         getString(R.string.cancel),
                         RC_GENERATE_EVENT,
-                        this);
+                        new DialogClickListener() {
+                            @Override
+                            public void onPositive() {
+                                createEvent(EventCreationType.SCHEDULE, programStageFromEvent.standardInterval() != null ? programStageFromEvent.standardInterval() : 0);
+                            }
+
+                            @Override
+                            public void onNegative() {
+                                if (programStageFromEvent.remindCompleted())
+                                    presenter.areEventsCompleted();
+                            }
+                        });
                 dialog.show();
             } else if (programStageModel.remindCompleted())
                 showDialogCloseProgram();
@@ -263,6 +276,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     }
 
     private void showDialogCloseProgram() {
+
         dialog = new CustomDialog(
                 getContext(),
                 getString(R.string.event_completed),
@@ -270,7 +284,16 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
                 getString(R.string.button_ok),
                 getString(R.string.cancel),
                 RC_EVENTS_COMPLETED,
-                this);
+                new DialogClickListener() {
+                    @Override
+                    public void onPositive() {
+                        presenter.completeEnrollment();
+                    }
+
+                    @Override
+                    public void onNegative() {
+                    }
+                });
         dialog.show();
     }
 
@@ -285,7 +308,16 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
                         getString(R.string.button_ok),
                         getString(R.string.cancel),
                         RC_EVENTS_COMPLETED,
-                        this);
+                        new DialogClickListener() {
+                            @Override
+                            public void onPositive() {
+                                presenter.completeEnrollment();
+                            }
+
+                            @Override
+                            public void onNegative() {
+                            }
+                        });
                 dialog.show();
             }
 
@@ -298,20 +330,6 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
             if (enrollmentStatus == EnrollmentStatus.COMPLETED)
                 activity.getPresenter().getData();
         };
-    }
-
-    @Override
-    public void onPositive() {
-        switch (dialog.getRequestCode()) {
-            case RC_EVENTS_COMPLETED:
-                presenter.completeEnrollment();
-                break;
-            case RC_GENERATE_EVENT:
-                createEvent(EventCreationType.SCHEDULE, programStageFromEvent.standardInterval() != null ? programStageFromEvent.standardInterval() : 0);
-                break;
-            default:
-                break;
-        }
     }
 
     private void createEvent(EventCreationType eventCreationType, Integer scheduleIntervalDays) {
@@ -327,12 +345,6 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
             intent.putExtras(bundle);
             startActivityForResult(intent, REQ_EVENT);
         }
-    }
-
-    @Override
-    public void onNegative() {
-        if (dialog.getRequestCode() == RC_GENERATE_EVENT && programStageFromEvent.remindCompleted())
-            presenter.areEventsCompleted();
     }
 
     @Override

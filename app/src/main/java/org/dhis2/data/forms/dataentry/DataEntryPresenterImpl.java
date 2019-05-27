@@ -9,6 +9,8 @@ import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.utils.Result;
+import org.dhis2.utils.RulesActionCallbacks;
+import org.dhis2.utils.RulesUtilsProvider;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.rules.models.RuleAction;
@@ -26,7 +28,6 @@ import org.hisp.dhis.rules.models.RuleActionWarningOnCompletion;
 import org.hisp.dhis.rules.models.RuleEffect;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,8 +42,11 @@ import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
+import static android.text.TextUtils.isEmpty;
+
+
 @SuppressWarnings("PMD")
-final class DataEntryPresenterImpl implements DataEntryPresenter {
+final class DataEntryPresenterImpl implements DataEntryPresenter, RulesActionCallbacks {
 
     @NonNull
     private final DataEntryStore dataEntryStore;
@@ -60,75 +64,83 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
     private final MetadataRepository metadataRepository;
     @NonNull
     private final CompositeDisposable disposable;
+    private final RulesUtilsProvider ruleUtils;
     private DataEntryView dataEntryView;
     private List<String> optionsToHide = new ArrayList<>();
     private List<String> optionsGroupsToHide = new ArrayList<>();
-    private Map<String, FieldViewModel> currentFieldViewModels;
     private FlowableProcessor<RowAction> assignProcessor;
-    private FlowableProcessor<Boolean> requestListProcessor;
+
+    @Override
+    public String getLastFocusItem() {
+        return lastFocusItem;
+    }
+
+    @Override
+    public void clearLastFocusItem() {
+        this.lastFocusItem = null;
+    }
+
+    private String lastFocusItem;
 
     DataEntryPresenterImpl(@NonNull DataEntryStore dataEntryStore,
                            @NonNull DataEntryRepository dataEntryRepository,
                            @NonNull RuleEngineRepository ruleEngineRepository,
                            @NonNull SchedulerProvider schedulerProvider,
-                           @NonNull MetadataRepository metadataRepository) {
+                           @NonNull MetadataRepository metadataRepository, RulesUtilsProvider ruleUtils) {
         this.dataEntryStore = dataEntryStore;
         this.dataEntryRepository = dataEntryRepository;
         this.ruleEngineRepository = ruleEngineRepository;
         this.schedulerProvider = schedulerProvider;
         this.disposable = new CompositeDisposable();
         this.metadataRepository = metadataRepository;
-        this.currentFieldViewModels = new HashMap<>();
         this.assignProcessor = PublishProcessor.create();
-        this.requestListProcessor = PublishProcessor.create();
+        this.ruleUtils = ruleUtils;
+
     }
 
     @Override
     public void onAttach(@NonNull DataEntryView dataEntryView) {
         this.dataEntryView = dataEntryView;
-        Observable<List<FieldViewModel>> fieldsFlowable = Observable.defer(() -> Observable.just(dataEntryRepository.fieldList()).doOnNext(data -> Timber.d("NEW LIST OF DATA WITH SIZE %s", data.size())));
-        Flowable<Result<RuleEffect>> ruleEffectFlowable = ruleEngineRepository.calculate().doOnNext(data -> Timber.d("NEW RULE CALCULATION"))
-                .onErrorReturn(throwable -> Result.failure(new Exception(throwable)));
 
-        // Combining results of two repositories into a single stream.
-        Flowable<List<FieldViewModel>> viewModelsFlowable = Flowable.zip(
-                fieldsFlowable.toFlowable(BackpressureStrategy.LATEST), ruleEffectFlowable, this::applyEffects);
-
-        disposable.add(
-                requestListProcessor
-                        .startWith(true)
-                        .flatMap(newRequest -> viewModelsFlowable)
-                        .subscribeOn(schedulerProvider.computation())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe(dataEntryView.showFields(),
-                                Timber::d
-                        ));
-
-        disposable.add(dataEntryView.rowActions().distinctUntilChanged()
+        disposable.add(Flowable.zip(
+                dataEntryRepository.list().subscribeOn(Schedulers.computation()),
+                ruleEngineRepository.calculate().subscribeOn(Schedulers.computation()),
+                this::applyEffects)
                 .subscribeOn(schedulerProvider.computation())
                 .observeOn(schedulerProvider.ui())
+                .subscribe(dataEntryView.showFields(),
+                        Timber::d
+                ));
+
+        disposable.add(dataEntryView.rowActions().onBackpressureBuffer()
                 .switchMap(action -> {
+                            if (action.lastFocusPosition() != null && action.lastFocusPosition() >= 0) { //Triggered by form field
+                                this.lastFocusItem = action.id();
+                            }
                             ruleEngineRepository.updateRuleAttributeMap(action.id(), action.value());
                             return dataEntryStore.save(action.id(), action.value()).
-                                    map(result -> {
-                                        if (result == 5)
-                                            dataEntryStore.save(action.id(), null);
-
-                                        dataEntryView.updateAdapter(action);
-                                        return Trio.create(result, action.id(), action.value());
-                                    });
+                                    map(result -> Trio.create(result, action.id(), action.value()));
                         }
-                ).subscribe(resultUidValue -> {
-                            if (resultUidValue.val0() == -5)
-                                dataEntryView.showMessage(R.string.unique_warning);
-                            else {
-                                Timber.d("Value %s saved for uid %s", resultUidValue.val2(), resultUidValue.val1());
-                                requestListProcessor.onNext(true);
-                            }
+                )
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(resultUidValue -> {
+                            Timber.d("Value %s saved for uid %s", resultUidValue.val2(), resultUidValue.val1());
+                            if (resultUidValue.val0() == 0)
+                                dataEntryView.nextFocus();
                         },
                         Timber::d)
         );
 
+        disposable.add(dataEntryView.rowActions()
+                .filter(rowAction -> !isEmpty(rowAction.value()))
+                .switchMap(rowAction -> dataEntryStore.checkUnique(rowAction.id(), rowAction.value()))
+                .filter(checkPass -> !checkPass)
+                .subscribeOn(schedulerProvider.computation())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(
+                        result -> dataEntryView.showMessage(R.string.unique_warning), Timber::e)
+        );
         disposable.add(
                 assignProcessor
                         .distinctUntilChanged()
@@ -156,10 +168,6 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
                                 dataEntryView::setListOptions,
                                 Timber::e
                         ));
-    }
-
-    private void save(String uid, String value) {
-        assignProcessor.onNext(RowAction.create(uid, value));
     }
 
     @Override
@@ -191,17 +199,16 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
         optionsGroupsToHide.clear();
 
         Map<String, FieldViewModel> fieldViewModels = toMap(viewModels);
-        applyRuleEffects(fieldViewModels, calcResult);
-
-        this.currentFieldViewModels.clear();
-        this.currentFieldViewModels = fieldViewModels;
+        ruleUtils.applyRuleEffects(fieldViewModels, calcResult, this);
+//        applyRuleEffects(fieldViewModels, calcResult);
 
         return new ArrayList<>(fieldViewModels.values());
 
     }
 
     @NonNull
-    private static Map<String, FieldViewModel> toMap(@NonNull List<FieldViewModel> fieldViewModels) {
+    private static Map<String, FieldViewModel> toMap
+            (@NonNull List<FieldViewModel> fieldViewModels) {
         Map<String, FieldViewModel> map = new LinkedHashMap<>();
         for (FieldViewModel fieldViewModel : fieldViewModels) {
             map.put(fieldViewModel.uid(), fieldViewModel);
@@ -209,13 +216,16 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
         return map;
     }
 
-    private void applyRuleEffects(Map<String, FieldViewModel> fieldViewModels, Result<RuleEffect> calcResult) {
+    private void applyRuleEffects
+            (Map<String, FieldViewModel> fieldViewModels, Result<RuleEffect> calcResult) {
         for (RuleEffect ruleEffect : calcResult.items()) {
             appluRule(ruleEffect, fieldViewModels);
         }
     }
 
-    private void applyShowWarning(RuleEffect ruleEffect, Map<String, FieldViewModel> fieldViewModels, RuleAction ruleAction) {
+    private void applyShowWarning(RuleEffect
+                                          ruleEffect, Map<String, FieldViewModel> fieldViewModels, RuleAction
+                                          ruleAction) {
         RuleActionShowWarning showWarning = (RuleActionShowWarning) ruleAction;
         FieldViewModel model = fieldViewModels.get(showWarning.field());
 
@@ -226,7 +236,9 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
             Timber.d("Field with uid %s is missing", showWarning.field());
     }
 
-    private void applyShowError(RuleEffect ruleEffect, Map<String, FieldViewModel> fieldViewModels, RuleAction ruleAction) {
+    private void applyShowError(RuleEffect
+                                        ruleEffect, Map<String, FieldViewModel> fieldViewModels, RuleAction
+                                        ruleAction) {
         RuleActionShowError showError = (RuleActionShowError) ruleAction;
         FieldViewModel model = fieldViewModels.get(showError.field());
 
@@ -235,7 +247,9 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
                     model.withError(showError.content() + ruleEffect.data()));
     }
 
-    private void applyAssign(RuleEffect ruleEffect, Map<String, FieldViewModel> fieldViewModels, RuleAction ruleAction) {
+    private void applyAssign(RuleEffect
+                                     ruleEffect, Map<String, FieldViewModel> fieldViewModels, RuleAction
+                                     ruleAction) {
         RuleActionAssign assign = (RuleActionAssign) ruleAction;
 
         if (fieldViewModels.get(assign.field()) == null)
@@ -251,14 +265,16 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
         }
     }
 
-    private void setMandatory(Map<String, FieldViewModel> fieldViewModels, RuleAction ruleAction) {
+    private void setMandatory
+            (Map<String, FieldViewModel> fieldViewModels, RuleAction ruleAction) {
         RuleActionSetMandatoryField mandatoryField = (RuleActionSetMandatoryField) ruleAction;
         FieldViewModel model = fieldViewModels.get(mandatoryField.field());
         if (model != null)
             fieldViewModels.put(mandatoryField.field(), model.setMandatory());
     }
 
-    private void appluRule(RuleEffect ruleEffect, Map<String, FieldViewModel> fieldViewModels) {
+    private void appluRule(RuleEffect
+                                   ruleEffect, Map<String, FieldViewModel> fieldViewModels) {
         RuleAction ruleAction = ruleEffect.ruleAction();
         if (ruleAction instanceof RuleActionShowWarning) {
             applyShowWarning(ruleEffect, fieldViewModels, ruleAction);
@@ -304,4 +320,57 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
 
         dataEntryView.removeSection();
     }
+
+    @Override
+    public void setCalculatedValue(String calculatedValueVariable, String value) {
+
+    }
+
+    @Override
+    public void setShowError(@NonNull RuleActionShowError showError, FieldViewModel
+            model) {
+
+    }
+
+    @Override
+    public void unsupportedRuleAction() {
+
+    }
+
+    @Override
+    public void save(String uid, String value) {
+        dataEntryView.getActionProcessor().onNext(RowAction.create(uid, value));
+    }
+
+    @Override
+    public void setDisplayKeyValue(String label, String value) {
+
+    }
+
+    @Override
+    public void sethideSection(String sectionUid) {
+
+    }
+
+    @Override
+    public void setMessageOnComplete(String content, boolean canComplete) {
+
+    }
+
+    @Override
+    public void setHideProgramStage(String programStageUid) {
+
+    }
+
+    @Override
+    public void setOptionToHide(String optionUid) {
+        optionsToHide.add(optionUid);
+    }
+
+    @Override
+    public void setOptionGroupToHide(String optionGroupUid) {
+        optionsGroupsToHide.add(optionGroupUid);
+
+    }
+
 }

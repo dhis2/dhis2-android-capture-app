@@ -1,5 +1,10 @@
 package org.dhis2.data.forms.dataentry.fields.age;
 
+import android.graphics.Color;
+
+import androidx.core.content.ContextCompat;
+
+import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.FormAgeCustomBinding;
@@ -18,12 +23,15 @@ public class AgeHolder extends FormViewHolder {
     private FormAgeCustomBinding formAgeCustomBinding;
     private AgeViewModel ageViewModel;
 
-    AgeHolder(FormAgeCustomBinding binding, FlowableProcessor<RowAction> processor) {
+    AgeHolder(FormAgeCustomBinding binding, FlowableProcessor<RowAction> processor, boolean isSearchMode) {
         super(binding);
         this.formAgeCustomBinding = binding;
         binding.customAgeview.setAgeChangedListener(ageDate -> {
-                    if (ageViewModel.value() == null || !ageViewModel.value().equals(DateUtils.databaseDateFormat().format(ageDate)))
-                        processor.onNext(RowAction.create(ageViewModel.uid(), DateUtils.databaseDateFormat().format(ageDate)));
+                    if (ageViewModel.value() == null || !ageViewModel.value().equals(DateUtils.databaseDateFormat().format(ageDate))) {
+                        processor.onNext(RowAction.create(ageViewModel.uid(), DateUtils.databaseDateFormat().format(ageDate), getAdapterPosition()));
+                        if (!isSearchMode)
+                            itemView.setBackgroundColor(Color.WHITE);
+                    }
                 }
         );
 
@@ -37,7 +45,9 @@ public class AgeHolder extends FormViewHolder {
         label = new StringBuilder(ageViewModel.label());
         if (ageViewModel.mandatory())
             label.append("*");
+
         formAgeCustomBinding.customAgeview.setLabel(label.toString(), ageViewModel.description());
+
         if (!isEmpty(ageViewModel.value())) {
             formAgeCustomBinding.customAgeview.setInitialValue(ageViewModel.value());
         }
@@ -58,5 +68,11 @@ public class AgeHolder extends FormViewHolder {
     @Override
     public void dispose() {
         // unused
+    }
+
+    @Override
+    public void performAction() {
+        itemView.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.item_selected_bg));
+        formAgeCustomBinding.customAgeview.performOnFocusAction();
     }
 }

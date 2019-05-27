@@ -8,12 +8,13 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 
 import java.util.List;
 
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 
 public interface DataEntryRepository {
 
     @NonNull
-    Observable<List<FieldViewModel>> list();
+    Flowable<List<FieldViewModel>> list();
 
     List<FieldViewModel> fieldList();
 

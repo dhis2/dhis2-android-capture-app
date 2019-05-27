@@ -21,6 +21,7 @@ public class RadioButtonRow implements Row<RadioButtonHolder, RadioButtonViewMod
 
     private final LayoutInflater inflater;
     private final boolean isBgTransparent;
+    private final boolean isSearchMode;
 
     @NonNull
     private final FlowableProcessor<RowAction> processor;
@@ -29,6 +30,7 @@ public class RadioButtonRow implements Row<RadioButtonHolder, RadioButtonViewMod
         this.inflater = layoutInflater;
         this.processor = processor;
         this.isBgTransparent = isBgTransparent;
+        this.isSearchMode = true;
     }
 
     @NonNull
@@ -37,7 +39,7 @@ public class RadioButtonRow implements Row<RadioButtonHolder, RadioButtonViewMod
         FormYesNoBinding binding = DataBindingUtil.inflate(inflater,
                 R.layout.form_yes_no, parent, false);
         binding.customYesNo.setIsBgTransparent(isBgTransparent);
-        return new RadioButtonHolder(binding, processor);
+        return new RadioButtonHolder(binding, processor, isSearchMode);
     }
 
     @Override

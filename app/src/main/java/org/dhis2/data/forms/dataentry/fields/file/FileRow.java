@@ -20,11 +20,13 @@ public class FileRow implements Row<FileHolder, FileViewModel> {
     @NonNull
     private final LayoutInflater inflater;
     private final boolean isBgTransparent;
+    private final boolean isSearchMode;
 
 
     public FileRow(@NonNull LayoutInflater layoutInflater, boolean isBgTransparent) {
         this.inflater = layoutInflater;
         this.isBgTransparent = isBgTransparent;
+        isSearchMode = true;
     }
 
     @NonNull

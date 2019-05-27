@@ -1,7 +1,10 @@
 package org.dhis2.data.forms.dataentry.fields.radiobutton;
 
+import android.graphics.Color;
 import android.view.View;
 import android.widget.RadioGroup;
+
+import androidx.core.content.ContextCompat;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
@@ -22,15 +25,17 @@ public class RadioButtonHolder extends FormViewHolder {
     private final RadioGroup radioGroup;
     private final FormYesNoBinding formYesNoBinding;
     private final View clearButton;
+    private final boolean isSearchMode;
 
     private RadioButtonViewModel viewModel;
 
-    RadioButtonHolder(FormYesNoBinding binding, FlowableProcessor<RowAction> processor) {
+    RadioButtonHolder(FormYesNoBinding binding, FlowableProcessor<RowAction> processor, boolean isSearchMode) {
         super(binding);
         radioGroup = binding.customYesNo.getRadioGroup();
         clearButton = binding.customYesNo.getClearButton();
         this.formYesNoBinding = binding;
         this.processor = processor;
+        this.isSearchMode = isSearchMode;
     }
 
 
@@ -75,30 +80,38 @@ public class RadioButtonHolder extends FormViewHolder {
             switch (checkedId) {
                 case R.id.yes:
                     viewModel = (RadioButtonViewModel) checkBoxViewModel.withValue(String.valueOf(true));
-                    rowAction = RowAction.create(checkBoxViewModel.uid(), String.valueOf(true));
+                    rowAction = RowAction.create(checkBoxViewModel.uid(), String.valueOf(true), getAdapterPosition());
                     break;
                 case R.id.no:
                     viewModel = (RadioButtonViewModel) checkBoxViewModel.withValue(String.valueOf(false));
-                    rowAction = RowAction.create(checkBoxViewModel.uid(), String.valueOf(false));
+                    rowAction = RowAction.create(checkBoxViewModel.uid(), String.valueOf(false), getAdapterPosition());
                     break;
                 default:
                     viewModel = (RadioButtonViewModel) checkBoxViewModel.withValue(null);
-                    rowAction = RowAction.create(checkBoxViewModel.uid(), null);
+                    rowAction = RowAction.create(checkBoxViewModel.uid(), null, getAdapterPosition());
                     break;
             }
             formYesNoBinding.customYesNo.nextFocus(formYesNoBinding.customYesNo);
             processor.onNext(rowAction);
+            if (!isSearchMode)
+                itemView.setBackgroundColor(Color.WHITE);
         });
 
         clearButton.setOnClickListener(view -> {
             if (checkBoxViewModel.editable().booleanValue()) {
                 radioGroup.clearCheck();
-                processor.onNext(RowAction.create(checkBoxViewModel.uid(), null));
+                processor.onNext(RowAction.create(checkBoxViewModel.uid(), null, getAdapterPosition()));
             }
         });
     }
 
     public void dispose() {
         // unused
+    }
+
+    @Override
+    public void performAction() {
+        itemView.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.item_selected_bg));
+        formYesNoBinding.customYesNo.performOnFocusAction();
     }
 }

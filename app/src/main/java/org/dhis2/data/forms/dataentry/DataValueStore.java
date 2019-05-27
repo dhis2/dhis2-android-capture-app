@@ -78,6 +78,12 @@ public final class DataValueStore implements DataEntryStore {
                 .switchMap(this::updateEvent);
     }
 
+    @NonNull
+    @Override
+    public Flowable<Boolean> checkUnique(@NonNull String uid, @Nullable String value) {
+        return Flowable.just(true);
+    }
+
 
     private long update(@NonNull String uid, @Nullable String value, valueType valueType) {
         ContentValues dataValue = new ContentValues();

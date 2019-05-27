@@ -282,7 +282,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
         super.onPause();
     }
 
-    private void removeDataEntryFragments(){
+    private void removeDataEntryFragments() {
         for (Fragment fragment : getChildFragmentManager().getFragments()) {
             if (fragment instanceof DataEntryFragment) {
                 continue;
@@ -314,7 +314,9 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
             if (viewPager.getAdapter() != null && viewPager.getCurrentItem() == viewPager.getAdapter().getCount() - 1) {
                 ((Button) nextButton).setText(getString(R.string.save));
             }
-            enrollmentFragment = ((DataEntryFragment) getChildFragmentManager().getFragments().get(0));
+
+            if (!getChildFragmentManager().getFragments().isEmpty())
+                enrollmentFragment = ((DataEntryFragment) getChildFragmentManager().getFragments().get(0));
         };
     }
 

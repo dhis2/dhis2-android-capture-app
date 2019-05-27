@@ -66,6 +66,7 @@ import io.reactivex.functions.Consumer;
 import me.toptas.fancyshowcase.FancyShowCaseView;
 import timber.log.Timber;
 
+import static org.dhis2.R.layout.activity_program_event_detail;
 import static org.dhis2.utils.Period.DAILY;
 import static org.dhis2.utils.Period.MONTHLY;
 import static org.dhis2.utils.Period.NONE;
@@ -118,7 +119,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         chosenDateMonth.add(new Date());
         chosenDateYear.add(new Date());
 
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_program_event_detail);
+        binding = DataBindingUtil.setContentView(this, activity_program_event_detail);
 
         binding.setPresenter(presenter);
 
@@ -462,14 +463,14 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     public void setLiveData(LiveData<PagedList<ProgramEventViewModel>> pagedListLiveData) {
         pagedListLiveData.observe(this, pagedList -> {
             binding.programProgress.setVisibility(View.GONE);
-            liveAdapter.submitList(pagedList);
-            if (binding.recycler.getAdapter() != null && binding.recycler.getAdapter().getItemCount() == 0) {
-                binding.emptyTeis.setVisibility(View.VISIBLE);
-            } else {
-                binding.emptyTeis.setVisibility(View.GONE);
-            }
+            liveAdapter.submitList(pagedList, () -> {
+                if (binding.recycler.getAdapter() != null && binding.recycler.getAdapter().getItemCount() == 0) {
+                    binding.emptyTeis.setVisibility(View.VISIBLE);
+                } else {
+                    binding.emptyTeis.setVisibility(View.GONE);
+                }
+            });
         });
-
     }
 
     @Override

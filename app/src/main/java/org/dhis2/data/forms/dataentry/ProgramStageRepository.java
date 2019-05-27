@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.Locale;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import timber.log.Timber;
 
@@ -119,7 +121,7 @@ final class ProgramStageRepository implements DataEntryRepository {
 
     @NonNull
     @Override
-    public Observable<List<FieldViewModel>> list() {
+    public Flowable<List<FieldViewModel>> list() {
 
         try (Cursor cursor = briteDatabase.query(SECTION_RENDERING_TYPE, sectionUid == null ? "" : sectionUid)) {
             if (cursor != null && cursor.moveToFirst()) {
@@ -144,7 +146,8 @@ final class ProgramStageRepository implements DataEntryRepository {
         return briteDatabase
                 .createQuery(TrackedEntityDataValueModel.TABLE, prepareStatement())
                 .mapToList(this::transform)
-                .map(this::checkRenderType);
+                .map(this::checkRenderType)
+                .toFlowable(BackpressureStrategy.BUFFER);
     }
 
     @Override

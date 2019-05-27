@@ -448,13 +448,13 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         }
 
        /* if (program.captureCoordinates()) { //TODO: CHECK IF CAPTURE COORDINATES IN PROGRAM HAS ANY IMPACT IN STAGES
-            binding.coordinatesLayout.setVisibility(View.VISIBLE);
+            binding.coordinatesLayout.setVisibility(EventCaptureView.VISIBLE);
             if (binding.location1.isClickable())
                 binding.location1.setOnClickListener(v -> presenter.onLocationClick());
             if (binding.location2.isClickable())
                 binding.location2.setOnClickListener(v -> presenter.onLocation2Click());
         } else
-            binding.coordinatesLayout.setVisibility(View.GONE);*/
+            binding.coordinatesLayout.setVisibility(EventCaptureView.GONE);*/
     }
 
     @Override

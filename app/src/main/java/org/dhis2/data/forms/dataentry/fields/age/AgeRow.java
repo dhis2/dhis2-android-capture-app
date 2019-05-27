@@ -21,9 +21,18 @@ public class AgeRow implements Row<AgeHolder, AgeViewModel> {
 
     private final LayoutInflater inflater;
     private final boolean isBgTransparent;
+    private boolean isSearchMode = false;
     private final FlowableProcessor<RowAction> processor;
 
     public AgeRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor, boolean isBgTransparent) {
+        this.inflater = layoutInflater;
+        this.isBgTransparent = isBgTransparent;
+        this.processor = processor;
+        this.isSearchMode = true;
+    }
+
+    public AgeRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor,
+                  boolean isBgTransparent, String renderType) {
         this.inflater = layoutInflater;
         this.isBgTransparent = isBgTransparent;
         this.processor = processor;
@@ -35,7 +44,7 @@ public class AgeRow implements Row<AgeHolder, AgeViewModel> {
         FormAgeCustomBinding binding = DataBindingUtil.inflate(inflater,
                 R.layout.form_age_custom, parent, false);
         binding.customAgeview.setIsBgTransparent(isBgTransparent);
-        return new AgeHolder(binding, processor);
+        return new AgeHolder(binding, processor, isSearchMode);
     }
 
     @Override
