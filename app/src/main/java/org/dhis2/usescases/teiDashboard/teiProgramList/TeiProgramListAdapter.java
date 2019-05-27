@@ -1,11 +1,12 @@
 package org.dhis2.usescases.teiDashboard.teiProgramList;
 
-import androidx.databinding.DataBindingUtil;
-import androidx.databinding.ViewDataBinding;
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ViewDataBinding;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.dhis2.R;
 import org.dhis2.usescases.main.program.ProgramViewModel;
@@ -83,7 +84,7 @@ public class TeiProgramListAdapter extends RecyclerView.Adapter<TeiProgramListEn
     public void onBindViewHolder(@NonNull TeiProgramListEnrollmentViewHolder holder, int position) {
         switch (listItems.get(position).getViewType()) {
             case TeiProgramListItem.TeiProgramListItemViewType.ALL_PROGRAMS_DASHBOARD:
-                holder.bind(presenter,null,null);
+                holder.bind(presenter, null, null);
                 break;
             case TeiProgramListItem.TeiProgramListItemViewType.FIRST_TITLE:
                 holder.bind(presenter, null, null);
@@ -134,20 +135,14 @@ public class TeiProgramListAdapter extends RecyclerView.Adapter<TeiProgramListEn
         orderList();
     }
 
-    private void orderList() {
-        listItems.clear();
-
-        TeiProgramListItem allProgramsDashBoardItem = new TeiProgramListItem(null, null, TeiProgramListItem.TeiProgramListItemViewType.ALL_PROGRAMS_DASHBOARD);
-        listItems.add(allProgramsDashBoardItem);
-
-        TeiProgramListItem firstTeiProgramListItem = new TeiProgramListItem(null, null, TeiProgramListItem.TeiProgramListItemViewType.FIRST_TITLE);
-        listItems.add(firstTeiProgramListItem);
-
+    private void addActiveEnrollments() {
         for (EnrollmentViewModel enrollmentModel : activeEnrollments) {
             TeiProgramListItem teiProgramListItem = new TeiProgramListItem(enrollmentModel, null, TeiProgramListItem.TeiProgramListItemViewType.ACTIVE_ENROLLMENT);
             listItems.add(teiProgramListItem);
         }
+    }
 
+    private void addInactiveEnrollments() {
         if (!inactiveEnrollments.isEmpty()) {
             TeiProgramListItem secondTeiProgramListItem = new TeiProgramListItem(null, null, TeiProgramListItem.TeiProgramListItemViewType.SECOND_TITLE);
             listItems.add(secondTeiProgramListItem);
@@ -157,34 +152,36 @@ public class TeiProgramListAdapter extends RecyclerView.Adapter<TeiProgramListEn
                 listItems.add(teiProgramListItem);
             }
         }
+    }
 
+    private void findPossibleEnrollmentPrograms(ProgramViewModel programModel) {
         boolean found;
         boolean active;
-        for (ProgramViewModel programModel : programs) {
-            found = false;
-            active = false;
-            for (EnrollmentViewModel enrollment : activeEnrollments) {
+        found = false;
+        active = false;
+        for (EnrollmentViewModel enrollment : activeEnrollments) {
+            if (programModel.title().equals(enrollment.programName())) {
+                found = true;
+                active = true;
+            }
+        }
+
+        if (!found)
+            for (EnrollmentViewModel enrollment : inactiveEnrollments) {
                 if (programModel.title().equals(enrollment.programName())) {
                     found = true;
-                    active = true;
+                    active = false;
                 }
             }
 
-            if (!found)
-                for (EnrollmentViewModel enrollment : inactiveEnrollments) {
-                    if (programModel.title().equals(enrollment.programName())) {
-                        found = true;
-                        active = false;
-                    }
-                }
-
-            if (found) {
-                if (!active && !programModel.onlyEnrollOnce())
-                    possibleEnrollmentPrograms.add(programModel);
-            } else
+        if (found) {
+            if (!active && !programModel.onlyEnrollOnce())
                 possibleEnrollmentPrograms.add(programModel);
-        }
+        } else
+            possibleEnrollmentPrograms.add(programModel);
+    }
 
+    private void addPossibleEnrollmentPrograms() {
         if (!possibleEnrollmentPrograms.isEmpty()) {
             TeiProgramListItem thirdTeiProgramListItem = new TeiProgramListItem(null, null, TeiProgramListItem.TeiProgramListItemViewType.THIRD_TITLE);
             listItems.add(thirdTeiProgramListItem);
@@ -194,6 +191,25 @@ public class TeiProgramListAdapter extends RecyclerView.Adapter<TeiProgramListEn
                 listItems.add(teiProgramListItem);
             }
         }
+    }
+
+    private void orderList() {
+        listItems.clear();
+
+        TeiProgramListItem allProgramsDashBoardItem = new TeiProgramListItem(null, null, TeiProgramListItem.TeiProgramListItemViewType.ALL_PROGRAMS_DASHBOARD);
+        listItems.add(allProgramsDashBoardItem);
+
+        TeiProgramListItem firstTeiProgramListItem = new TeiProgramListItem(null, null, TeiProgramListItem.TeiProgramListItemViewType.FIRST_TITLE);
+        listItems.add(firstTeiProgramListItem);
+
+        addActiveEnrollments();
+        addInactiveEnrollments();
+
+        for (ProgramViewModel programModel : programs) {
+            findPossibleEnrollmentPrograms(programModel);
+        }
+
+        addPossibleEnrollmentPrograms();
 
         notifyDataSetChanged();
     }

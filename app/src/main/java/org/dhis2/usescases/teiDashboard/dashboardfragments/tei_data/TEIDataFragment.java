@@ -205,32 +205,39 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
                         presenter.displayGenerateEvent(lastModifiedEventUid);
                 }
             }
-
         }
+    }
+
+    private void setEmptyTeis() {
+        binding.emptyTeis.setVisibility(View.VISIBLE);
+        if (binding.fab.getVisibility() == View.VISIBLE) {
+            binding.emptyTeis.setText(R.string.empty_tei_add);
+        } else {
+            binding.emptyTeis.setText(R.string.empty_tei_no_add);
+        }
+    }
+
+    private void setUpEvent(EventModel event, List<EventModel> events) {
+        if (event.eventDate() != null && event.eventDate().after(DateUtils.getInstance().getToday())) {
+            binding.teiRecycler.scrollToPosition(events.indexOf(event));
+        }
+        if (hasCatComb && event.attributeOptionCombo() == null && !catComboShowed.contains(event)) {
+            presenter.getCatComboOptions(event);
+            catComboShowed.add(event);
+        } else if (!hasCatComb && event.attributeOptionCombo() == null)
+            presenter.setDefaultCatOptCombToEvent(event.uid());
     }
 
     @Override
     public Consumer<List<EventModel>> setEvents() {
         return events -> {
             if (events.isEmpty()) {
-                binding.emptyTeis.setVisibility(View.VISIBLE);
-                if (binding.fab.getVisibility() == View.VISIBLE) {
-                    binding.emptyTeis.setText(R.string.empty_tei_add);
-                } else {
-                    binding.emptyTeis.setText(R.string.empty_tei_no_add);
-                }
+                setEmptyTeis();
             } else {
                 binding.emptyTeis.setVisibility(View.GONE);
                 adapter.swapItems(events);
                 for (EventModel event : events) {
-                    if (event.eventDate() != null && event.eventDate().after(DateUtils.getInstance().getToday())) {
-                        binding.teiRecycler.scrollToPosition(events.indexOf(event));
-                    }
-                    if (hasCatComb && event.attributeOptionCombo() == null && !catComboShowed.contains(event)) {
-                        presenter.getCatComboOptions(event);
-                        catComboShowed.add(event);
-                    } else if (!hasCatComb && event.attributeOptionCombo() == null)
-                        presenter.setDefaultCatOptCombToEvent(event.uid());
+                    setUpEvent(event, events);
                 }
             }
         };

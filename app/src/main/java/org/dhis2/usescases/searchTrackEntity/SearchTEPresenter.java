@@ -4,7 +4,6 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +15,7 @@ import androidx.paging.PagedList;
 import org.dhis2.R;
 import org.dhis2.data.forms.FormActivity;
 import org.dhis2.data.forms.FormViewArguments;
+import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.main.program.SyncStatusDialog;
@@ -25,7 +25,6 @@ import org.dhis2.utils.Constants;
 import org.dhis2.utils.NetworkUtils;
 import org.dhis2.utils.custom_views.OrgUnitDialog;
 import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.android.core.constant.Constant;
 import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
@@ -140,36 +139,37 @@ public class SearchTEPresenter implements SearchTEContractsModule.SearchTEPresen
 
     }
 
+    private void parseQueryData(RowAction data) {
+        Map<String, String> queryDataBU = new HashMap<>(queryData);
+        view.setFabIcon(true);
+        if (!isEmpty(data.value())) {
+            queryData.put(data.id(), data.value());
+            if (data.requiresExactMatch())
+                if (data.value().equals("null_os_null")) {
+                    queryData.remove(data.id());
+                    queryDataEQ.remove(data.id());
+                } else
+                    queryDataEQ.put(data.id(), data.value());
+        } else {
+            queryData.remove(data.id());
+            queryDataEQ.remove(data.id());
+        }
+
+        if (!queryData.equals(queryDataBU)) { //Only when queryData has changed
+            if (!isEmpty(data.value()))
+                queryData.put(data.id(), data.value());
+            else
+                queryData.remove(data.id());
+        }
+    }
+
     @Override
     public void initSearch(SearchTEContractsModule.SearchTEView view) {
 
         compositeDisposable.add(view.rowActionss()
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(data -> {
-                            Map<String, String> queryDataBU = new HashMap<>(queryData);
-                            view.setFabIcon(true);
-                            if (!isEmpty(data.value())) {
-                                queryData.put(data.id(), data.value());
-                                if (data.requiresExactMatch())
-                                    if (data.value().equals("null_os_null")) {
-                                        queryData.remove(data.id());
-                                        queryDataEQ.remove(data.id());
-                                    } else
-                                        queryDataEQ.put(data.id(), data.value());
-                            } else {
-                                queryData.remove(data.id());
-                                queryDataEQ.remove(data.id());
-                            }
-
-                            if (!queryData.equals(queryDataBU)) { //Only when queryData has changed
-                                if (!isEmpty(data.value()))
-                                    queryData.put(data.id(), data.value());
-                                else
-                                    queryData.remove(data.id());
-                            }
-                        },
-                        Timber::d)
+                .subscribe(this::parseQueryData, Timber::d)
         );
 
         compositeDisposable.add(
@@ -217,49 +217,99 @@ public class SearchTEPresenter implements SearchTEContractsModule.SearchTEPresen
 
     //------------------------------------------
     //region DATA
+
+    private String getSelectedProgramNotFrontPageMessage(int size) {
+        String message = "";
+        if (selectedProgram.minAttributesRequiredToSearch() == 0 && queryData.size() == 0) {
+            message = view.getContext().getString(R.string.search_attr);
+        }
+        if (selectedProgram.minAttributesRequiredToSearch() > queryData.size()) {
+            message = String.format(view.getContext().getString(R.string.search_min_num_attr), selectedProgram.minAttributesRequiredToSearch());
+        } else if (selectedProgram.maxTeiCountToReturn() != 0 && size > selectedProgram.maxTeiCountToReturn()) {
+            message = String.format(view.getContext().getString(R.string.search_max_tei_reached), selectedProgram.maxTeiCountToReturn());
+        } else if (size == 0 && !queryData.isEmpty()) {
+            message = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
+        } else if (size == 0) {
+            message = view.getContext().getString(R.string.search_init);
+        }
+
+        return message;
+    }
+
+    private boolean getSelectedProgramNotFrontPageCanRegister(int size) {
+        boolean canRegister = false;
+
+        if (selectedProgram.minAttributesRequiredToSearch() <= queryData.size() &&
+                (selectedProgram.maxTeiCountToReturn() == 0 || size <= selectedProgram.maxTeiCountToReturn()) &&
+                (size == 0 && !queryData.isEmpty())) {
+            canRegister = true;
+        }
+
+        return canRegister;
+    }
+
+    private String getNoSelectedProgramMessage(int size) {
+        String message = "";
+        if (queryData.isEmpty() && view.fromRelationshipTEI() == null)
+            message = view.getContext().getString(R.string.search_init);
+        else if (size == 0) {
+            message = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
+        } else if (size > MAX_NO_SELECTED_PROGRAM_RESULTS && view.fromRelationshipTEI() == null)
+            message = String.format(view.getContext().getString(R.string.search_max_tei_reached), MAX_NO_SELECTED_PROGRAM_RESULTS);
+        return message;
+    }
+
+    private boolean getNoSelectedProgramCanRegister(int size) {
+        boolean canRegister = false;
+        if ((!queryData.isEmpty() || view.fromRelationshipTEI() != null) && (size == 0)) {
+            canRegister = true;
+        }
+        return canRegister;
+    }
+
+    private String getSelectedProgramFrontPageMessage(int size) {
+        String message = "";
+        if (size == 0 && !queryData.isEmpty()) {
+            if (selectedProgram.minAttributesRequiredToSearch() > 0 && queryData.size() == 1 && queryData.containsKey(Constants.ENROLLMENT_DATE_UID))
+                message = view.getContext().getString(R.string.search_attr);
+            else
+                message = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
+        } else if (size == 0)
+            message = view.getContext().getString(R.string.search_init);
+        return message;
+    }
+
+    private boolean getSelectedProgramFrontPageCanRegister(int size) {
+        boolean canRegister = false;
+        if (size == 0 && !queryData.isEmpty()) {
+            canRegister = true;
+        }
+        return canRegister;
+    }
+
     @Override
     public Trio<PagedList<SearchTeiModel>, String, Boolean> getMessage(PagedList<SearchTeiModel> list) {
         int size = list.size();
-        String messageId = "";
+        String message = "";
         boolean canRegister = false;
 
         if (selectedProgram != null && !selectedProgram.displayFrontPageList()) {
-            if (selectedProgram.minAttributesRequiredToSearch() == 0 && queryData.size() == 0) {
-                messageId = view.getContext().getString(R.string.search_attr);
-            }
-            if (selectedProgram.minAttributesRequiredToSearch() > queryData.size()) {
-                messageId = String.format(view.getContext().getString(R.string.search_min_num_attr), selectedProgram.minAttributesRequiredToSearch());
-            } else if (selectedProgram.maxTeiCountToReturn() != 0 && size > selectedProgram.maxTeiCountToReturn()) {
-                messageId = String.format(view.getContext().getString(R.string.search_max_tei_reached), selectedProgram.maxTeiCountToReturn());
-            } else if (size == 0 && !queryData.isEmpty()) {
-                messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
-                canRegister = true;
-            } else if (size == 0) {
-                messageId = view.getContext().getString(R.string.search_init);
-            }
+            message = getSelectedProgramNotFrontPageMessage(size);
+            canRegister = getSelectedProgramNotFrontPageCanRegister(size);
+
         } else if (selectedProgram == null) {
-            if (queryData.isEmpty() && view.fromRelationshipTEI() == null)
-                messageId = view.getContext().getString(R.string.search_init);
-            else if (size == 0) {
-                messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
-                canRegister = true;
-            } else if (size > MAX_NO_SELECTED_PROGRAM_RESULTS && view.fromRelationshipTEI() == null)
-                messageId = String.format(view.getContext().getString(R.string.search_max_tei_reached), MAX_NO_SELECTED_PROGRAM_RESULTS);
+            message = getNoSelectedProgramMessage(size);
+            canRegister = getNoSelectedProgramCanRegister(size);
+
         } else {
-            if (size == 0 && !queryData.isEmpty()) {
-                if(selectedProgram.minAttributesRequiredToSearch() > 0 && queryData.size() == 1 && queryData.containsKey(Constants.ENROLLMENT_DATE_UID))
-                    messageId = view.getContext().getString(R.string.search_attr);
-                else
-                    messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
-                canRegister = true;
-            } else if (size == 0)
-                messageId = view.getContext().getString(R.string.search_init);
+            message = getSelectedProgramFrontPageMessage(size);
+            canRegister = getSelectedProgramFrontPageCanRegister(size);
         }
 
-        if (messageId.isEmpty())
+        if (message.isEmpty())
             canRegister = true;
 
-        return Trio.create(list, messageId, canRegister);
+        return Trio.create(list, message, canRegister);
     }
 
     private void handleError(Throwable throwable) {

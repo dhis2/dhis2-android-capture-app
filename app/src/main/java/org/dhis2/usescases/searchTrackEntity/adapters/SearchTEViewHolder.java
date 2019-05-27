@@ -80,6 +80,27 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
         binding.setFollowUp(isFollowUp);
     }
 
+    private Drawable getIconImage(Context parentContext, Trio<String, String, String> enrollmentInfo) {
+        int icon;
+        if (!isEmpty(enrollmentInfo.val2())) {
+            Resources resources = parentContext.getResources();
+            String iconName = enrollmentInfo.val2().startsWith("ic_") ? enrollmentInfo.val2() : "ic_" + enrollmentInfo.val2();
+            icon = resources.getIdentifier(iconName, "drawable", parentContext.getPackageName());
+        } else {
+            icon = R.drawable.ic_program_default;
+        }
+
+        Drawable iconImage;
+        try {
+            iconImage = ContextCompat.getDrawable(parentContext, icon);
+            iconImage.mutate();
+        } catch (Exception e) {
+            Timber.log(1, e);
+            iconImage = ContextCompat.getDrawable(parentContext, R.drawable.ic_program_default);
+            iconImage.mutate();
+        }
+        return iconImage;
+    }
 
     private void setEnrollmentInfo(List<Trio<String, String, String>> enrollmentsInfo) {
         binding.chipContainer.removeAllViews();
@@ -93,28 +114,10 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
                 chip.setText(enrollmentInfo.val0());
 
                 int color = ColorUtils.getColorFrom(enrollmentInfo.val1(), ColorUtils.getPrimaryColor(parentContext, ColorUtils.ColorType.PRIMARY_LIGHT));
-                int icon;
-                if (!isEmpty(enrollmentInfo.val2())) {
-                    Resources resources = parentContext.getResources();
-                    String iconName = enrollmentInfo.val2().startsWith("ic_") ? enrollmentInfo.val2() : "ic_" + enrollmentInfo.val2();
-                    icon = resources.getIdentifier(iconName, "drawable", parentContext.getPackageName());
-                } else {
-                    icon = R.drawable.ic_program_default;
-                }
-
-                Drawable iconImage;
-                try {
-                    iconImage = ContextCompat.getDrawable(parentContext, icon);
-                    iconImage.mutate();
-                } catch (Exception e) {
-                    Timber.log(1, e);
-                    iconImage = ContextCompat.getDrawable(parentContext, R.drawable.ic_program_default);
-                    iconImage.mutate();
-                }
 
                 Drawable bgDrawable = ContextCompat.getDrawable(parentContext, R.drawable.ic_chip_circle_24);
 
-                Drawable wrappedIcon = DrawableCompat.wrap(iconImage);
+                Drawable wrappedIcon = DrawableCompat.wrap(getIconImage(parentContext, enrollmentInfo));
                 Drawable wrappedBg = DrawableCompat.wrap(bgDrawable);
 
                 LayerDrawable finalDrawable = new LayerDrawable(new Drawable[]{wrappedBg, wrappedIcon});
@@ -131,5 +134,4 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
             }
         }
     }
-
 }

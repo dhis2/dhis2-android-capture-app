@@ -421,7 +421,6 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                 saveTei();
             } else {
                 view.showIdError();
-                return;
             }
         } catch (JSONException | ParseException e) {
             Timber.e(e);
@@ -524,6 +523,7 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
         }
     }
 
+    @SuppressWarnings("squid:S3776")
     private void saveEvent(JSONObject event) throws JSONException, ParseException {
         EventModel.Builder eventModelBuilder;
         eventModelBuilder = EventModel.builder();
@@ -662,6 +662,7 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
         compositeDisposable.clear();
     }
 
+    @SuppressWarnings("squid:S3776")
     private EventModel saveEvent() throws JSONException, ParseException {
         EventModel.Builder eventModelBuilder = EventModel.builder();
         if (eventWORegistrationJson.has("uid")) {

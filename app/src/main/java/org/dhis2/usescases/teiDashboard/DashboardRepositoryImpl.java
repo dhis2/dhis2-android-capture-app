@@ -527,40 +527,43 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                 }).toFlowable(BackpressureStrategy.LATEST);
     }
 
+    private void insertNote(Cursor cursor, Cursor cursor1, Pair<String, Boolean> stringBooleanPair) {
+        cursor.moveToFirst();
+        String userName = cursor.getString(0);
+
+        cursor1.moveToFirst();
+        String enrollmentUidAux = cursor1.getString(0);
+
+        SQLiteStatement insetNoteStatement = briteDatabase.getWritableDatabase()
+                .compileStatement(INSERT_NOTE);
+
+        sqLiteBind(insetNoteStatement, 1, codeGenerator.generate()); //enrollment
+        sqLiteBind(insetNoteStatement, 2, enrollmentUidAux == null ? "" : enrollmentUidAux); //enrollment
+        sqLiteBind(insetNoteStatement, 3, stringBooleanPair.val0() == null ? "" : stringBooleanPair.val0()); //value
+        sqLiteBind(insetNoteStatement, 4, userName == null ? "" : userName); //storeBy
+        sqLiteBind(insetNoteStatement, 5, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime())); //storeDate
+        sqLiteBind(insetNoteStatement, 6, State.TO_POST.name()); //state
+
+        long inserted = briteDatabase.executeInsert(NoteModel.TABLE, insetNoteStatement);
+
+        if (inserted != -1) {
+            TrackedEntityInstance tei = d2.trackedEntityModule().trackedEntityInstances.byUid().eq(teiUid).one().get();
+            ContentValues cv = new ContentValues();
+            cv.put(TrackedEntityInstance.Columns.STATE, tei.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
+            briteDatabase.update(TrackedEntityInstanceModel.TABLE, cv, "uid = ?", teiUid);
+            briteDatabase.update(EnrollmentModel.TABLE, cv, "uid = ?", enrollmentUidAux);
+        }
+
+        insetNoteStatement.clearBindings();
+    }
+
     @Override
     public Consumer<Pair<String, Boolean>> handleNote() {
         return stringBooleanPair -> {
             if (stringBooleanPair.val1()) {
-
                 try (Cursor cursor1 = briteDatabase.query(SELECT_ENROLLMENT, programUid == null ? "" : programUid, EnrollmentStatus.ACTIVE.name(), teiUid == null ? "" : teiUid);
                      Cursor cursor = briteDatabase.query(SELECT_USERNAME)) {
-                    cursor.moveToFirst();
-                    String userName = cursor.getString(0);
-
-                    cursor1.moveToFirst();
-                    String enrollmentUidAux = cursor1.getString(0);
-
-                    SQLiteStatement insetNoteStatement = briteDatabase.getWritableDatabase()
-                            .compileStatement(INSERT_NOTE);
-
-                    sqLiteBind(insetNoteStatement, 1, codeGenerator.generate()); //enrollment
-                    sqLiteBind(insetNoteStatement, 2, enrollmentUidAux == null ? "" : enrollmentUidAux); //enrollment
-                    sqLiteBind(insetNoteStatement, 3, stringBooleanPair.val0() == null ? "" : stringBooleanPair.val0()); //value
-                    sqLiteBind(insetNoteStatement, 4, userName == null ? "" : userName); //storeBy
-                    sqLiteBind(insetNoteStatement, 5, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime())); //storeDate
-                    sqLiteBind(insetNoteStatement, 6, State.TO_POST.name()); //state
-
-                    long inserted = briteDatabase.executeInsert(NoteModel.TABLE, insetNoteStatement);
-
-                    if (inserted != -1) {
-                        TrackedEntityInstance tei = d2.trackedEntityModule().trackedEntityInstances.byUid().eq(teiUid).one().get();
-                        ContentValues cv = new ContentValues();
-                        cv.put(TrackedEntityInstance.Columns.STATE, tei.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
-                        briteDatabase.update(TrackedEntityInstanceModel.TABLE, cv, "uid = ?", teiUid);
-                        briteDatabase.update(EnrollmentModel.TABLE, cv, "uid = ?", enrollmentUidAux);
-                    }
-
-                    insetNoteStatement.clearBindings();
+                    insertNote(cursor, cursor1, stringBooleanPair);
                 }
             }
         };

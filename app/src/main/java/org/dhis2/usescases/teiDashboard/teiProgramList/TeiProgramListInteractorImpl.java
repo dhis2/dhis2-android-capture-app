@@ -53,6 +53,21 @@ public class TeiProgramListInteractorImpl implements TeiProgramListContract.TeiP
         getPrograms();
     }
 
+    private List<OrganisationUnitModel> getOrgUnits(List<OrganisationUnitModel> allOrgUnits){
+        ArrayList<OrganisationUnitModel> orgUnits = new ArrayList<>();
+        for (OrganisationUnitModel orgUnit : allOrgUnits) {
+            boolean afterOpening = false;
+            boolean beforeClosing = false;
+            if (orgUnit.openingDate() == null || !selectedEnrollmentDate.before(orgUnit.openingDate()))
+                afterOpening = true;
+            if (orgUnit.closedDate() == null || !selectedEnrollmentDate.after(orgUnit.closedDate()))
+                beforeClosing = true;
+            if (afterOpening && beforeClosing)
+                orgUnits.add(orgUnit);
+        }
+        return orgUnits;
+    }
+
     private void showNativeCalendar(String programUid, String uid, OrgUnitDialog orgUnitDialog) {
 
         Calendar c = Calendar.getInstance();
@@ -77,17 +92,7 @@ public class TeiProgramListInteractorImpl implements TeiProgramListContract.TeiP
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(
                                     allOrgUnits -> {
-                                        ArrayList<OrganisationUnitModel> orgUnits = new ArrayList<>();
-                                        for (OrganisationUnitModel orgUnit : allOrgUnits) {
-                                            boolean afterOpening = false;
-                                            boolean beforeClosing = false;
-                                            if (orgUnit.openingDate() == null || !selectedEnrollmentDate.before(orgUnit.openingDate()))
-                                                afterOpening = true;
-                                            if (orgUnit.closedDate() == null || !selectedEnrollmentDate.after(orgUnit.closedDate()))
-                                                beforeClosing = true;
-                                            if (afterOpening && beforeClosing)
-                                                orgUnits.add(orgUnit);
-                                        }
+                                        List<OrganisationUnitModel> orgUnits = getOrgUnits(allOrgUnits);
                                         if (orgUnits.size() > 1) {
                                             orgUnitDialog.setOrgUnits(orgUnits);
                                             if (!orgUnitDialog.isAdded())

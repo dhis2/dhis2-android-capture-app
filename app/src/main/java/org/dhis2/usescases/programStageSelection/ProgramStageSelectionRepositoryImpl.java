@@ -147,20 +147,24 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
         try (Cursor dataValueCursor = briteDatabase.query(QUERY_VALUES, eventUid == null ? "" : eventUid)) {
             if (dataValueCursor != null && dataValueCursor.moveToFirst()) {
                 for (int i = 0; i < dataValueCursor.getCount(); i++) {
-                    Date eventDateV = DateUtils.databaseDateFormat().parse(cursor.getString(0));
-                    String programStage = cursor.getString(1);
-                    String dataElement = cursor.getString(2);
-                    boolean useCode = cursor.getInt(4) == 1;
-                    String optionCode = cursor.getString(5);
-                    String optionName = cursor.getString(6);
-
-                    dataValues.add(RuleDataValue.create(eventDateV, programStage,
-                            dataElement, getValue(cursor, optionCode, optionName, useCode)));
+                    dataValues.add(createRuleDataValue(cursor));
                     dataValueCursor.moveToNext();
                 }
             }
         }
         return dataValues;
+    }
+
+    private RuleDataValue createRuleDataValue(Cursor cursor) throws ParseException {
+        Date eventDateV = DateUtils.databaseDateFormat().parse(cursor.getString(0));
+        String programStage = cursor.getString(1);
+        String dataElement = cursor.getString(2);
+        boolean useCode = cursor.getInt(4) == 1;
+        String optionCode = cursor.getString(5);
+        String optionName = cursor.getString(6);
+
+        return RuleDataValue.create(eventDateV, programStage,
+                dataElement, getValue(cursor, optionCode, optionName, useCode));
     }
 
     private String getValue(Cursor cursor, String optionCode, String optionName, boolean useCode) {
