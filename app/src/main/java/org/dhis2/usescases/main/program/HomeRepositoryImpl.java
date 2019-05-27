@@ -67,7 +67,7 @@ class HomeRepositoryImpl implements HomeRepository {
         return count;
     }
 
-    private int getProgramWithRegistrationCount(Program program, List<DatePeriod> dateFilter, List<String> orgUnitFilter, List<String> programUids) {
+    private int getProgramWithRegistrationCount(List<DatePeriod> dateFilter, List<String> orgUnitFilter, List<String> programUids) {
         int count = 0;
         if (!dateFilter.isEmpty()) {
             if (!orgUnitFilter.isEmpty()) {
@@ -94,7 +94,7 @@ class HomeRepositoryImpl implements HomeRepository {
 
     private State getProgramWORegistrationState(Program program) {
         State state = State.SYNCED;
-        ;
+
         if (!d2.eventModule().events.byProgramUid().eq(program.uid()).byState().in(State.ERROR, State.WARNING).get().isEmpty())
             state = State.WARNING;
         else if (!d2.eventModule().events.byProgramUid().eq(program.uid()).byState().in(State.SENT_VIA_SMS, State.SYNCED_VIA_SMS).get().isEmpty())
@@ -107,7 +107,7 @@ class HomeRepositoryImpl implements HomeRepository {
 
     private State getProgramWithRegistrationState(List<String> programUids) {
         State state = State.SYNCED;
-        ;
+
         if (!d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().in(State.ERROR, State.WARNING).get().isEmpty())
             state = State.WARNING;
         else if (!d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().in(State.SENT_VIA_SMS, State.SYNCED_VIA_SMS).get().isEmpty())
@@ -141,7 +141,7 @@ class HomeRepositoryImpl implements HomeRepository {
                     } else {
                         List<String> programUids = new ArrayList<>();
                         programUids.add(program.uid());
-                        count = getProgramWithRegistrationCount(program, dateFilter, orgUnitFilter, programUids);
+                        count = getProgramWithRegistrationCount(dateFilter, orgUnitFilter, programUids);
                         state = getProgramWithRegistrationState(programUids);
                     }
 

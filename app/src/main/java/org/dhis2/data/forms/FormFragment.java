@@ -284,9 +284,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
 
     private void removeDataEntryFragments() {
         for (Fragment fragment : getChildFragmentManager().getFragments()) {
-            if (fragment instanceof DataEntryFragment) {
-                continue;
-            } else if (fragment != null) {
+            if (!(fragment instanceof DataEntryFragment) && fragment != null) {
                 getChildFragmentManager().beginTransaction().remove(fragment).commit();
             }
         }

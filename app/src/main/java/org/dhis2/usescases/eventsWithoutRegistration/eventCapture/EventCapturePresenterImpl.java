@@ -348,6 +348,41 @@ public class EventCapturePresenterImpl implements EventCaptureContract.EventCapt
                 1000);
     }
 
+    private String getNextSectionTitle(List<FormSectionViewModel> finalSectionList, int position) {
+        String section = finalSectionList.get(position).sectionUid() != null ?
+                finalSectionList.get(position).sectionUid() :
+                "NO_SECTION";
+        String nextSection = !finalSectionList.isEmpty() ?
+                section :
+                "NO_SECTION";
+        return nextSection;
+    }
+
+    private void parseSectionInPosition(int position) {
+        FormSectionViewModel formSectionViewModel = getFinalSections().get(position);
+        currentSection.set(formSectionViewModel.sectionUid());
+        if (getFinalSections().size() > 1) {
+            DataEntryArguments arguments =
+                    DataEntryArguments.forEventSection(formSectionViewModel.uid(),
+                            formSectionViewModel.sectionUid(),
+                            formSectionViewModel.renderType());
+            EventCaptureFormFragment.getInstance().setSectionTitle(arguments, formSectionViewModel);
+        } else {
+            DataEntryArguments arguments =
+                    DataEntryArguments.forEvent(formSectionViewModel.uid(), formSectionViewModel.renderType());
+            EventCaptureFormFragment.getInstance().setSingleSection(arguments);
+        }
+
+        subscribeToActions();
+
+        EventCaptureFormFragment.getInstance().setSectionProgress(
+                getFinalSections().indexOf(formSectionViewModel),
+                getFinalSections().size());
+
+        List<FormSectionViewModel> finalSectionList = getFinalSections();
+        sectionProcessor.onNext(getNextSectionTitle(finalSectionList, position));
+    }
+
     @Override
     public void subscribeToSection() {
         if (!isSubscribed) {
@@ -370,37 +405,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.EventCapt
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(
-                                    position -> {
-                                        FormSectionViewModel formSectionViewModel = getFinalSections().get(position);
-                                        currentSection.set(formSectionViewModel.sectionUid());
-                                        if (getFinalSections().size() > 1) {
-                                            DataEntryArguments arguments =
-                                                    DataEntryArguments.forEventSection(formSectionViewModel.uid(),
-                                                            formSectionViewModel.sectionUid(),
-                                                            formSectionViewModel.renderType());
-                                            EventCaptureFormFragment.getInstance().setSectionTitle(arguments, formSectionViewModel);
-                                        } else {
-                                            DataEntryArguments arguments =
-                                                    DataEntryArguments.forEvent(formSectionViewModel.uid(), formSectionViewModel.renderType());
-                                            EventCaptureFormFragment.getInstance().setSingleSection(arguments);
-                                        }
-
-                                        subscribeToActions();
-
-                                        EventCaptureFormFragment.getInstance().setSectionProgress(
-                                                getFinalSections().indexOf(formSectionViewModel),
-                                                getFinalSections().size());
-
-                                        List<FormSectionViewModel> finalSectionList = getFinalSections();
-
-                                        String section = finalSectionList.get(position).sectionUid() != null ?
-                                                finalSectionList.get(position).sectionUid() :
-                                                "NO_SECTION";
-                                        String nextSection = !finalSectionList.isEmpty() ?
-                                                section :
-                                                "NO_SECTION";
-                                        sectionProcessor.onNext(nextSection);
-                                    },
+                                    this::parseSectionInPosition,
                                     Timber::e
                             )
             );

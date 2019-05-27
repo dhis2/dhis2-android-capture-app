@@ -21,7 +21,7 @@ public class AgeRow implements Row<AgeHolder, AgeViewModel> {
 
     private final LayoutInflater inflater;
     private final boolean isBgTransparent;
-    private boolean isSearchMode = false;
+    private boolean isSearchMode;
     private final FlowableProcessor<RowAction> processor;
 
     public AgeRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor, boolean isBgTransparent) {
@@ -29,13 +29,6 @@ public class AgeRow implements Row<AgeHolder, AgeViewModel> {
         this.isBgTransparent = isBgTransparent;
         this.processor = processor;
         this.isSearchMode = true;
-    }
-
-    public AgeRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor,
-                  boolean isBgTransparent, String renderType) {
-        this.inflater = layoutInflater;
-        this.isBgTransparent = isBgTransparent;
-        this.processor = processor;
     }
 
     @NonNull

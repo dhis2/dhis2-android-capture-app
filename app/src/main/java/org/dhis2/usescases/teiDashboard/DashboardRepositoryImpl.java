@@ -539,7 +539,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
         sqLiteBind(insetNoteStatement, 1, codeGenerator.generate()); //enrollment
         sqLiteBind(insetNoteStatement, 2, enrollmentUidAux == null ? "" : enrollmentUidAux); //enrollment
-        sqLiteBind(insetNoteStatement, 3, stringBooleanPair.val0() == null ? "" : stringBooleanPair.val0()); //value
+        sqLiteBind(insetNoteStatement, 3, stringBooleanPair.val0()); //value
         sqLiteBind(insetNoteStatement, 4, userName == null ? "" : userName); //storeBy
         sqLiteBind(insetNoteStatement, 5, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime())); //storeDate
         sqLiteBind(insetNoteStatement, 6, State.TO_POST.name()); //state

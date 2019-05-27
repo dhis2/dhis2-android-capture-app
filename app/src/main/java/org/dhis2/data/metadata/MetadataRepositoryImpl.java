@@ -452,8 +452,7 @@ public class MetadataRepositoryImpl implements MetadataRepository {
         return conflicts;
     }
 
-    private String getOptionQuery(String text, List<String> optionsToHide, List<String> optionsGroupsToHide,
-                                  String pageQuery, String formattedOptionsToHide) {
+    private String getOptionQuery(String text, List<String> optionsToHide, String pageQuery, String formattedOptionsToHide) {
         return "SELECT Option.* FROM Option WHERE Option.optionSet = ? " +
                 (!optionsToHide.isEmpty() ? "AND Option.uid NOT IN (" + formattedOptionsToHide + ") " : " ") +
                 (!isEmpty(text) ? "AND Option.displayName LIKE '%" + text + "%' " : " ") +
@@ -480,7 +479,7 @@ public class MetadataRepositoryImpl implements MetadataRepository {
         String pageQuery = String.format(Locale.US, "GROUP BY Option.uid ORDER BY sortOrder LIMIT %d,%d", page * 15, 15);
         String formattedOptionsToHide = "'" + join("','", optionsToHide) + "'";
 
-        String optionQuery = getOptionQuery(text, optionsToHide, optionsGroupsToHide, pageQuery, formattedOptionsToHide);
+        String optionQuery = getOptionQuery(text, optionsToHide, pageQuery, formattedOptionsToHide);
 
         return briteDatabase.createQuery(OptionModel.TABLE, optionQuery, idOptionSet)
                 .mapToList(OptionModel::create)

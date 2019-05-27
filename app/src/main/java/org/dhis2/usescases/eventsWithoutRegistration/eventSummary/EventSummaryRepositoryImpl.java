@@ -338,7 +338,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
                 EventModel event = EventModel.create(cursor);
                 ContentValues values = getValues(event, lastUpdated);
 
-                updateEvent(cursor, values, lastUpdated);
+                updateEvent(values);
                 updateProgram(cursor, values, lastUpdated);
                 return Observable.just(event);
             } else
@@ -346,7 +346,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
         }
     }
 
-    private void updateEvent(Cursor cursor, ContentValues values, String lastUpdated) {
+    private void updateEvent(ContentValues values) {
         briteDatabase.update(EventModel.TABLE, values,
                 EventModel.Columns.UID + " = ?", eventUid == null ? "" : eventUid);
     }

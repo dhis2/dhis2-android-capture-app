@@ -27,8 +27,6 @@ public class RadioButtonHolder extends FormViewHolder {
     private final View clearButton;
     private final boolean isSearchMode;
 
-    private RadioButtonViewModel viewModel;
-
     RadioButtonHolder(FormYesNoBinding binding, FlowableProcessor<RowAction> processor, boolean isSearchMode) {
         super(binding);
         radioGroup = binding.customYesNo.getRadioGroup();
@@ -41,11 +39,8 @@ public class RadioButtonHolder extends FormViewHolder {
 
     public void update(RadioButtonViewModel checkBoxViewModel) {
 
-
-        this.viewModel = checkBoxViewModel;
-
         radioGroup.setOnCheckedChangeListener(null);
-        descriptionText = viewModel.description();
+        descriptionText = checkBoxViewModel.description();
         formYesNoBinding.setDescription(descriptionText);
         label = new StringBuilder(checkBoxViewModel.label());
         formYesNoBinding.customYesNo.setValueType(checkBoxViewModel.valueType());
@@ -79,15 +74,12 @@ public class RadioButtonHolder extends FormViewHolder {
             RowAction rowAction;
             switch (checkedId) {
                 case R.id.yes:
-                    viewModel = (RadioButtonViewModel) checkBoxViewModel.withValue(String.valueOf(true));
                     rowAction = RowAction.create(checkBoxViewModel.uid(), String.valueOf(true), getAdapterPosition());
                     break;
                 case R.id.no:
-                    viewModel = (RadioButtonViewModel) checkBoxViewModel.withValue(String.valueOf(false));
                     rowAction = RowAction.create(checkBoxViewModel.uid(), String.valueOf(false), getAdapterPosition());
                     break;
                 default:
-                    viewModel = (RadioButtonViewModel) checkBoxViewModel.withValue(null);
                     rowAction = RowAction.create(checkBoxViewModel.uid(), null, getAdapterPosition());
                     break;
             }

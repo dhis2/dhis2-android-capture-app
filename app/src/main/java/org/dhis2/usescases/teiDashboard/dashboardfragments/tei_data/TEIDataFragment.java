@@ -292,6 +292,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
                     @Override
                     public void onNegative() {
+                        // unused
                     }
                 });
         dialog.show();
@@ -316,6 +317,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
                             @Override
                             public void onNegative() {
+                                // unused
                             }
                         });
                 dialog.show();

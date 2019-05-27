@@ -343,158 +343,6 @@ public class DateUtils {
         return new int[]{interval.getYears(), interval.getMonths(), interval.getDays()};
     }
 
-    public Date getNewDate(List<EventModel> events, PeriodType periodType) {
-        Calendar now = Calendar.getInstance();
-        now.set(Calendar.HOUR_OF_DAY, 0);
-        now.set(Calendar.MINUTE, 0);
-        now.set(Calendar.SECOND, 0);
-        now.set(Calendar.MILLISECOND, 0);
-
-        List<Date> eventDates = new ArrayList<>();
-        Date newDate = new Date();
-        boolean needNewDate = true;
-
-        for (EventModel event : events) {
-            eventDates.add(event.eventDate());
-        }
-
-        while (needNewDate) {
-            switch (periodType) {
-                case Weekly:
-                    now.setTime(moveWeekly(now));
-                    if (!eventDates.contains(now.getTime())) {
-                        newDate = now.getTime();
-                        needNewDate = false;
-                    }
-                    now.add(Calendar.WEEK_OF_YEAR, 1); //jump one week
-                    break;
-                case WeeklyWednesday:
-                    now.setTime(moveWeeklyWednesday(now));
-                    if (!eventDates.contains(now.getTime())) {
-                        newDate = now.getTime();
-                        needNewDate = false;
-                    }
-                    now.add(Calendar.WEEK_OF_YEAR, 1);
-                    break;
-                case WeeklyThursday:
-                    now.setTime(moveWeeklyThursday(now));
-                    if (!eventDates.contains(now.getTime())) {
-                        newDate = now.getTime();
-                        needNewDate = false;
-                    }
-                    now.add(Calendar.WEEK_OF_YEAR, 1);
-                    break;
-                case WeeklySaturday:
-                    now.setTime(moveWeeklySaturday(now));
-                    if (!eventDates.contains(now.getTime())) {
-                        newDate = now.getTime();
-                        needNewDate = false;
-                    }
-                    now.add(Calendar.WEEK_OF_YEAR, 1);
-                    break;
-                case WeeklySunday:
-                    now.setTime(moveWeeklySunday(now));
-                    if (!eventDates.contains(now.getTime())) {
-                        newDate = now.getTime();
-                        needNewDate = false;
-                    }
-                    now.add(Calendar.WEEK_OF_YEAR, 1);
-                    break;
-                case BiWeekly:
-                    now.setTime(moveBiWeekly(now));
-                    if (!eventDates.contains(now.getTime())) {
-                        newDate = now.getTime();
-                        needNewDate = false;
-                    }
-                    now.add(Calendar.WEEK_OF_YEAR, 2);
-                    break;
-                case Monthly:
-                    now.setTime(moveMonthly(now));
-                    if (!eventDates.contains(now.getTime())) {
-                        newDate = now.getTime();
-                        needNewDate = false;
-                    }
-                    now.add(Calendar.MONTH, 1);
-                    break;
-                case BiMonthly:
-                    now.setTime(moveBiMonthly(now));
-                    if (!eventDates.contains(now.getTime())) {
-                        newDate = now.getTime();
-                        needNewDate = false;
-                    }
-                    now.add(Calendar.MONTH, 2);
-                    break;
-                case Quarterly:
-                    now.setTime(moveQuarterly(now));
-                    if (!eventDates.contains(now.getTime())) {
-                        newDate = now.getTime();
-                        needNewDate = false;
-                    }
-                    now.add(Calendar.MONTH, 4);
-                    break;
-                case SixMonthly:
-                    now.setTime(moveSixMonthly(now));
-                    if (!eventDates.contains(now.getTime())) {
-                        newDate = now.getTime();
-                        needNewDate = false;
-                    }
-                    now.add(Calendar.MONTH, 6);
-                    break;
-                case SixMonthlyApril:
-                    now.setTime(moveSixMonthlyApril(now));
-                    if (!eventDates.contains(now.getTime())) {
-                        newDate = now.getTime();
-                        needNewDate = false;
-                    }
-                    now.add(Calendar.MONTH, 6);
-                    break;
-                case Yearly:
-                    now.setTime(moveYearly(now));
-                    if (!eventDates.contains(now.getTime())) {
-                        newDate = now.getTime();
-                        needNewDate = false;
-                    }
-                    now.add(Calendar.DAY_OF_YEAR, 1);
-                    break;
-                case FinancialApril:
-                    now.setTime(moveFinancialApril(now));
-                    if (!eventDates.contains(now.getTime())) {
-                        newDate = now.getTime();
-                        needNewDate = false;
-                    }
-                    now.add(Calendar.DAY_OF_YEAR, 1);
-                    break;
-                case FinancialJuly:
-                    now.setTime(moveFinancialJuly(now));
-                    if (!eventDates.contains(now.getTime())) {
-                        newDate = now.getTime();
-                        needNewDate = false;
-                    }
-                    now.add(Calendar.DAY_OF_YEAR, 1);
-                    break;
-                case FinancialOct:
-                    now.setTime(moveFinancialOct(now));
-                    if (!eventDates.contains(now.getTime())) {
-                        newDate = now.getTime();
-                        needNewDate = false;
-                    }
-                    now.add(Calendar.DAY_OF_YEAR, 1);
-                    break;
-                case Daily:
-                default:
-                    if (!eventDates.contains(now.getTime())) {
-                        newDate = now.getTime();
-                        needNewDate = false;
-                    }
-                    now.add(Calendar.DAY_OF_YEAR, 1); //jump one day
-                    break;
-            }
-            now.setTime(getNextPeriod(periodType, now.getTime(), 1));
-        }
-
-        return newDate;
-    }
-
     public Date moveWeeklyWednesday(Calendar date) {
         if (date.get(Calendar.DAY_OF_WEEK) > 1 && date.get(Calendar.DAY_OF_WEEK) < Calendar.WEDNESDAY)
             date.set(Calendar.DAY_OF_WEEK, Calendar.WEDNESDAY);
@@ -619,6 +467,69 @@ public class DateUtils {
     }
 
 
+    private Date getDay(Date date, Date day, int expiryDays, Calendar calendar) {
+        if (TimeUnit.MILLISECONDS.toDays(date.getTime() - day.getTime()) >= expiryDays) {
+            return day;
+        } else {
+            calendar.add(Calendar.WEEK_OF_YEAR, -1);
+            return calendar.getTime();
+        }
+    }
+
+    private Date getDayBiWeekly(Date date, Date day, int expiryDays, Calendar calendar) {
+        if (TimeUnit.MILLISECONDS.toDays(date.getTime() - day.getTime()) >= expiryDays) {
+            return day;
+        } else {
+            calendar.add(Calendar.WEEK_OF_YEAR, -2);
+            return calendar.getTime();
+        }
+    }
+
+    private Date getDayMonthly(Date date, Date day, int expiryDays, Calendar calendar) {
+        if (TimeUnit.MILLISECONDS.toDays(date.getTime() - day.getTime()) >= expiryDays) {
+            return day;
+        } else {
+            calendar.add(Calendar.MONTH, -1);
+            return calendar.getTime();
+        }
+    }
+
+    private Date getDayBiMonthly(Date date, Date day, int expiryDays, Calendar calendar) {
+        if (TimeUnit.MILLISECONDS.toDays(date.getTime() - day.getTime()) >= expiryDays) {
+            return day;
+        } else {
+            calendar.add(Calendar.MONTH, -2);
+            return calendar.getTime();
+        }
+    }
+
+    private Date getDayQuarterly(Date date, Date day, int expiryDays, Calendar calendar) {
+        if (TimeUnit.MILLISECONDS.toDays(date.getTime() - day.getTime()) >= expiryDays) {
+            return day;
+        } else {
+            calendar.add(Calendar.MONTH, -4);
+            return calendar.getTime();
+        }
+    }
+
+    private Date getDaySixMonthy(Date date, Date day, int expiryDays, Calendar calendar) {
+        if (TimeUnit.MILLISECONDS.toDays(date.getTime() - day.getTime()) >= expiryDays) {
+            return day;
+        } else {
+            calendar.add(Calendar.MONTH, -6);
+            return calendar.getTime();
+        }
+    }
+
+    private Date getDayYearly(Date date, Date day, int expiryDays, Calendar calendar) {
+        if (TimeUnit.MILLISECONDS.toDays(date.getTime() - day.getTime()) >= expiryDays) {
+            return day;
+        } else {
+            calendar.add(Calendar.YEAR, -1);
+            return calendar.getTime();
+        }
+    }
+
     /**
      * @param currentDate      Date from which calculation will be carried out. Default value is today.
      * @param expiryDays       Number of extra days to add events on previous period
@@ -643,152 +554,105 @@ public class DateUtils {
                     return calendar.getTime();
                 case Weekly:
                     calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
-                    Date firstDateOfWeek = calendar.getTime();
-                    if (TimeUnit.MILLISECONDS.toDays(date.getTime() - firstDateOfWeek.getTime()) >= expiryDays) {
-                        return firstDateOfWeek;
-                    } else {
-                        calendar.add(Calendar.WEEK_OF_YEAR, -1);
-                    }
-                    break;
+                    return getDay(date, calendar.getTime(), expiryDays, calendar);
+
                 case WeeklyWednesday:
                     calendar.set(Calendar.DAY_OF_WEEK, Calendar.WEDNESDAY); //moves to current week wednesday
-                    Date wednesday = calendar.getTime();
-                    if (TimeUnit.MILLISECONDS.toDays(date.getTime() - wednesday.getTime()) >= expiryDays)
-                        return wednesday;
-                    else
-                        calendar.add(Calendar.WEEK_OF_YEAR, -1);
-                    break;
+                    return getDay(date, calendar.getTime(), expiryDays, calendar);
+
                 case WeeklyThursday:
                     calendar.set(Calendar.DAY_OF_WEEK, Calendar.THURSDAY); //moves to current week wednesday
-                    Date thursday = calendar.getTime();
-                    if (TimeUnit.MILLISECONDS.toDays(date.getTime() - thursday.getTime()) >= expiryDays)
-                        return thursday;
-                    else
-                        calendar.add(Calendar.WEEK_OF_YEAR, -1);
-                    break;
+                    return getDay(date, calendar.getTime(), expiryDays, calendar);
+
                 case WeeklySaturday:
                     calendar.set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY); //moves to current week wednesday
-                    Date saturday = calendar.getTime();
-                    if (TimeUnit.MILLISECONDS.toDays(date.getTime() - saturday.getTime()) >= expiryDays)
-                        return saturday;
-                    else
-                        calendar.add(Calendar.WEEK_OF_YEAR, -1);
-                    break;
+                    return getDay(date, calendar.getTime(), expiryDays, calendar);
+
                 case WeeklySunday:
                     calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY); //moves to current week wednesday
-                    Date sunday = calendar.getTime();
-                    if (TimeUnit.MILLISECONDS.toDays(date.getTime() - sunday.getTime()) >= expiryDays)
-                        return sunday;
-                    else
-                        calendar.add(Calendar.WEEK_OF_YEAR, -1);
-                    break;
+                    return getDay(date, calendar.getTime(), expiryDays, calendar);
+
                 case BiWeekly:
                     if (calendar.get(Calendar.WEEK_OF_YEAR) % 2 == 0) //if true, we are in the 2nd week of the period
                         calendar.add(Calendar.WEEK_OF_YEAR, -1);//Moved to first week
                     calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
-                    Date firstDateOfBiWeek = calendar.getTime();
-                    if (TimeUnit.MILLISECONDS.toDays(date.getTime() - firstDateOfBiWeek.getTime()) >= expiryDays) {
-                        return firstDateOfBiWeek;
-                    } else {
-                        calendar.add(Calendar.WEEK_OF_YEAR, -2);
-                    }
-                    break;
+                    return getDayBiWeekly(date, calendar.getTime(), expiryDays, calendar);
+
                 case Monthly:
                     Date firstDateOfMonth = getFirstDayOfMonth(calendar.getTime());
                     calendar.setTime(firstDateOfMonth);
-                    if (TimeUnit.MILLISECONDS.toDays(date.getTime() - firstDateOfMonth.getTime()) >= expiryDays) {
-                        return firstDateOfMonth;
-                    } else {
-                        calendar.add(Calendar.MONTH, -1);
-                    }
-                    break;
+                    return getDayMonthly(date, calendar.getTime(), expiryDays, calendar);
+
                 case BiMonthly:
                     if (calendar.get(Calendar.MONTH) % 2 != 0) //January is 0, December is 11
                         calendar.add(Calendar.MONTH, -1); //Moved to first month
                     Date firstDateOfBiMonth = getFirstDayOfMonth(calendar.getTime());
                     calendar.setTime(firstDateOfBiMonth);
-                    if (TimeUnit.MILLISECONDS.toDays(date.getTime() - firstDateOfBiMonth.getTime()) >= expiryDays) {
-                        return firstDateOfBiMonth;
-                    } else {
-                        calendar.add(Calendar.MONTH, -2);
-                    }
-                    break;
+                    return getDayBiMonthly(date, calendar.getTime(), expiryDays, calendar);
+
                 case Quarterly:
                     while (calendar.get(Calendar.MONTH) % 4 != 0) //January is 0, December is 11
                         calendar.add(Calendar.MONTH, -1); //Moved to first month
                     Date firstDateOfQMonth = getFirstDayOfMonth(calendar.getTime());
                     calendar.setTime(firstDateOfQMonth);
-                    if (TimeUnit.MILLISECONDS.toDays(date.getTime() - firstDateOfQMonth.getTime()) >= expiryDays) {
-                        return firstDateOfQMonth;
-                    } else {
-                        calendar.add(Calendar.MONTH, -4);
-                    }
-                    break;
+                    return getDayQuarterly(date, calendar.getTime(), expiryDays, calendar);
+
                 case SixMonthly:
                     while (calendar.get(Calendar.MONTH) % 6 != 0) //January is 0, December is 11
                         calendar.add(Calendar.MONTH, -1); //Moved to first month
                     Date firstDateOfSixMonth = getFirstDayOfMonth(calendar.getTime());
                     calendar.setTime(firstDateOfSixMonth);
-                    if (TimeUnit.MILLISECONDS.toDays(date.getTime() - firstDateOfSixMonth.getTime()) >= expiryDays) {
-                        return firstDateOfSixMonth;
-                    } else {
-                        calendar.add(Calendar.MONTH, -6);
-                    }
-                    break;
+                    return getDaySixMonthy(date, calendar.getTime(), expiryDays, calendar);
+
                 case SixMonthlyApril:
                     while ((calendar.get(Calendar.MONTH) - 3) % 6 != 0) //April is 0, December is 8
                         calendar.add(Calendar.MONTH, -1); //Moved to first month
                     Date firstDateOfSixMonthApril = getFirstDayOfMonth(calendar.getTime());
                     calendar.setTime(firstDateOfSixMonthApril);
-                    if (TimeUnit.MILLISECONDS.toDays(date.getTime() - firstDateOfSixMonthApril.getTime()) >= expiryDays) {
-                        return firstDateOfSixMonthApril;
-                    } else {
-                        calendar.add(Calendar.MONTH, -6);
-                    }
-                    break;
+                    return getDaySixMonthy(date, calendar.getTime(), expiryDays, calendar);
+
                 case Yearly:
                     Date firstDateOfYear = getFirstDayOfYear(calendar.getTime());
                     calendar.setTime(firstDateOfYear);
-                    if (TimeUnit.MILLISECONDS.toDays(date.getTime() - firstDateOfYear.getTime()) >= expiryDays) {
-                        return firstDateOfYear;
-                    } else {
-                        calendar.add(Calendar.YEAR, -1);
-                    }
-                    break;
+                    return getDayYearly(date, calendar.getTime(), expiryDays, calendar);
+
                 case FinancialApril:
                     calendar.set(Calendar.MONTH, Calendar.APRIL);//Moved to April
                     Date firstDateOfAprilYear = getFirstDayOfMonth(calendar.getTime()); //first day of April
                     calendar.setTime(firstDateOfAprilYear);
-                    if (TimeUnit.MILLISECONDS.toDays(date.getTime() - firstDateOfAprilYear.getTime()) >= expiryDays) {
-                        return firstDateOfAprilYear;
-                    } else {
-                        calendar.add(Calendar.YEAR, -1); //Moved to April last year
-                    }
-                    break;
+                    return getDayYearly(date, calendar.getTime(), expiryDays, calendar);
+
                 case FinancialJuly:
                     calendar.set(Calendar.MONTH, Calendar.JULY);//Moved to July
                     Date firstDateOfJulyYear = getFirstDayOfMonth(calendar.getTime()); //first day of July
                     calendar.setTime(firstDateOfJulyYear);
-                    if (TimeUnit.MILLISECONDS.toDays(date.getTime() - firstDateOfJulyYear.getTime()) >= expiryDays) {
-                        return firstDateOfJulyYear;
-                    } else {
-                        calendar.add(Calendar.YEAR, -1); //Moved to July last year
-                    }
-                    break;
+                    return getDayYearly(date, calendar.getTime(), expiryDays, calendar);
+
                 case FinancialOct:
                     calendar.set(Calendar.MONTH, Calendar.OCTOBER);//Moved to October
                     Date firstDateOfOctYear = getFirstDayOfMonth(calendar.getTime()); //first day of October
                     calendar.setTime(firstDateOfOctYear);
-                    if (TimeUnit.MILLISECONDS.toDays(date.getTime() - firstDateOfOctYear.getTime()) >= expiryDays) {
-                        return firstDateOfOctYear;
-                    } else {
-                        calendar.add(Calendar.YEAR, -1); //Moved to October last year
-                    }
-                    break;
+                    return getDayYearly(date, calendar.getTime(), expiryDays, calendar);
             }
 
             return calendar.getTime();
         }
+    }
+
+    private int getBiWeeklyExtra(Calendar calendar) {
+        return calendar.get(Calendar.WEEK_OF_YEAR) % 2 == 0 ? 1 : 2;
+    }
+
+    private int getBiMonthlyExtra(Calendar calendar) {
+        return (calendar.get(Calendar.MONTH) + 1) % 2 == 0 ? 1 : 2;
+    }
+
+    private int getQuarterlyExtra(Calendar calendar) {
+        return 1 + 4 - (calendar.get(Calendar.MONTH) + 1) % 4;
+    }
+
+    private int getSixMonthlyExtra(Calendar calendar) {
+        return 1 + 6 - (calendar.get(Calendar.MONTH) + 1) % 6;
     }
 
     /**
@@ -830,7 +694,7 @@ public class DateUtils {
                 calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
                 break;
             case BiWeekly:
-                extra = calendar.get(Calendar.WEEK_OF_YEAR) % 2 == 0 ? 1 : 2;
+                extra = getBiWeeklyExtra(calendar);
                 calendar.add(Calendar.WEEK_OF_YEAR, page * extra);
                 calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
                 break;
@@ -839,17 +703,17 @@ public class DateUtils {
                 calendar.set(Calendar.DAY_OF_MONTH, 1);
                 break;
             case BiMonthly:
-                extra = (calendar.get(Calendar.MONTH) + 1) % 2 == 0 ? 1 : 2;
+                extra = getBiMonthlyExtra(calendar);
                 calendar.add(Calendar.MONTH, page * extra);
                 calendar.set(Calendar.DAY_OF_MONTH, 1);
                 break;
             case Quarterly:
-                extra = 1 + 4 - (calendar.get(Calendar.MONTH) + 1) % 4;
+                extra = getQuarterlyExtra(calendar);
                 calendar.add(Calendar.MONTH, page * extra);
                 calendar.set(Calendar.DAY_OF_MONTH, 1);
                 break;
             case SixMonthly:
-                extra = 1 + 6 - (calendar.get(Calendar.MONTH) + 1) % 6;
+                extra = getSixMonthlyExtra(calendar);
                 calendar.add(Calendar.MONTH, page * extra);
                 calendar.set(Calendar.DAY_OF_MONTH, 1);
                 break;

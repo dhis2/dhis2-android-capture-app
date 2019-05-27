@@ -39,7 +39,6 @@ public class MapSelectorActivity extends ActivityGlobalAbstract {
     private FusedLocationProviderClient mFusedLocationClient;
     public static final String LATITUDE = "latitude";
     public static final String LONGITUDE = "longitude";
-    private TextView latLon;
 
     @NonNull
     public static Intent create(@NonNull Activity activity) {
@@ -66,8 +65,6 @@ public class MapSelectorActivity extends ActivityGlobalAbstract {
             }
         });
 
-        latLon = findViewById(R.id.latlon);
-
         mapView = findViewById(R.id.map_view);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(mapboxMap -> {
@@ -76,7 +73,10 @@ public class MapSelectorActivity extends ActivityGlobalAbstract {
             map.addOnCameraIdleListener(() -> {
                 if (map.getCameraPosition().target != null) {
                     String latLonText = map.getCameraPosition().target.getLatitude() + " : " + map.getCameraPosition().target.getLongitude();
-                    latLon.setText(latLonText);
+                    TextView latLon = findViewById(R.id.latlon);
+                    if (latLon != null) {
+                        latLon.setText(latLonText);
+                    }
                 }
             });
         });

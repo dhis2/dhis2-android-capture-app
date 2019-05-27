@@ -68,7 +68,17 @@ public class TeiProgramListEnrollmentViewHolder extends RecyclerView.ViewHolder 
         return icon;
     }
 
-    public void bind(TeiProgramListContract.TeiProgramListPresenter presenter, EnrollmentViewModel enrollment, ProgramViewModel programModel) {
+    private void setIconBg(RelativeLayout iconBg, int color) {
+        Drawable bgImage = ContextCompat.getDrawable(itemView.getContext(), R.drawable.photo_temp_gray);
+        if (bgImage != null) {
+            iconBg.setBackground(ColorUtils.tintDrawableWithColor(bgImage, color));
+        }
+    }
+
+    public void bind(TeiProgramListContract.TeiProgramListPresenter presenter,
+                     EnrollmentViewModel enrollment,
+                     ProgramViewModel programModel) {
+
         binding.setVariable(BR.enrollment, enrollment);
         binding.setVariable(BR.program, programModel);
         binding.setVariable(BR.presenter, presenter);
@@ -95,10 +105,7 @@ public class TeiProgramListEnrollmentViewHolder extends RecyclerView.ViewHolder 
                 programImage.setImageDrawable(ColorUtils.tintDrawableReosurce(iconImage, color));
             }
 
-            Drawable bgImage = ContextCompat.getDrawable(itemView.getContext(), R.drawable.photo_temp_gray);
-            if (bgImage != null) {
-                iconBg.setBackground(ColorUtils.tintDrawableWithColor(bgImage, color));
-            }
+            setIconBg(iconBg, color);
 
         } else if (programModel != null) {
             ImageView programImage;
@@ -122,10 +129,7 @@ public class TeiProgramListEnrollmentViewHolder extends RecyclerView.ViewHolder 
                 programImage.setImageDrawable(ColorUtils.tintDrawableReosurce(iconImage, color));
             }
 
-            Drawable bgImage = ContextCompat.getDrawable(itemView.getContext(), R.drawable.photo_temp_gray);
-            if (bgImage != null) {
-                iconBg.setBackground(ColorUtils.tintDrawableWithColor(bgImage, color));
-            }
+            setIconBg(iconBg, color);
         }
 
         binding.executePendingBindings();

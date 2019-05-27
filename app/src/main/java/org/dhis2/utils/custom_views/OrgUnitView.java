@@ -163,7 +163,7 @@ public class OrgUnitView extends FieldLayout implements OrgUnitCascadeDialog.Cas
 
     @Override
     public void onClear() {
-
+        // unused
     }
 
     public void setListener(OnDataChanged listener) {

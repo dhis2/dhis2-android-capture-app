@@ -737,31 +737,6 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
         return eventModel;
     }
 
-    private void saveTEDataValue2(JSONObject attrV) throws JSONException, ParseException {
-        TrackedEntityDataValueModel.Builder attrValueModelBuilder;
-        attrValueModelBuilder = TrackedEntityDataValueModel.builder();
-
-        if (attrV.has("event"))
-            attrValueModelBuilder.event(attrV.getString("event"));
-        if (attrV.has("lastUpdated"))
-            attrValueModelBuilder.lastUpdated(DateUtils.databaseDateFormat().parse(attrV.getString("lastUpdated")));
-        if (attrV.has("dataElement"))
-            attrValueModelBuilder.dataElement(attrV.getString("dataElement"));
-        if (attrV.has("storedBy"))
-            attrValueModelBuilder.storedBy(attrV.getString("storedBy"));
-        if (attrV.has("value"))
-            attrValueModelBuilder.value(attrV.getString("value"));
-        if (attrV.has("providedElsewhere"))
-            attrValueModelBuilder.providedElsewhere(Boolean.parseBoolean(attrV.getString("providedElsewhere")));
-
-        TrackedEntityDataValueModel attrValueModel = attrValueModelBuilder.build();
-
-        if (attrValueModel != null) {
-            long result = briteDatabase.insert(TrackedEntityDataValueModel.TABLE, attrValueModel.toContentValues());
-            Timber.d("insert event %l", result);
-        }
-    }
-
     @Override
     public void downloadEventWORegistration() {
 
@@ -785,7 +760,7 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
         for (int i = 0; i < dataJson.size(); i++) {
             try {
                 JSONObject attrV = dataJson.get(i);
-                saveTEDataValue2(attrV);
+                saveTEDataValue(attrV);
 
             } catch (JSONException | ParseException e) {
                 Timber.e(e);

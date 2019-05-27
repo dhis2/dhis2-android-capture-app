@@ -170,7 +170,6 @@ public class TeiProgramListAdapter extends RecyclerView.Adapter<TeiProgramListEn
             for (EnrollmentViewModel enrollment : inactiveEnrollments) {
                 if (programModel.title().equals(enrollment.programName())) {
                     found = true;
-                    active = false;
                 }
             }
 

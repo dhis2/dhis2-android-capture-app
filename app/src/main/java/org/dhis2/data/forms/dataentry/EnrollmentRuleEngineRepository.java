@@ -288,13 +288,6 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
         }
     }
 
-    private List<RuleAttributeValue> getRuleAttributeValueMap() {
-        Enrollment enrollment = d2.enrollmentModule().enrollments.uid(enrollmentUid).withAllChildren().get();
-        Program program = d2.programModule().programs.uid(enrollment.program()).withAllChildren().get();
-        setRuleAttributeMap(getAttributesValueMap(enrollment, program));
-        return new ArrayList<>(ruleAttributeValueMap.values());
-    }
-
     @Override
     public void updateRuleAttributeMap(String uid, String value) {
         lastUpdatedAttr = uid;

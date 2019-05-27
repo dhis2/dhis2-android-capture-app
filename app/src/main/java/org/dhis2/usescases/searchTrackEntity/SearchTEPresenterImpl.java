@@ -57,7 +57,7 @@ import static android.text.TextUtils.isEmpty;
  * QUADRAM. Created by ppajuelo on 02/11/2017.
  */
 
-public class SearchTEPresenter implements SearchTEContractsModule.SearchTEPresenter {
+public class SearchTEPresenterImpl implements SearchTEContractsModule.SearchTEPresenter {
 
     private static final int MAX_NO_SELECTED_PROGRAM_RESULTS = 5;
     private final MetadataRepository metadataRepository;
@@ -77,7 +77,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.SearchTEPresen
 
     private FlowableProcessor<HashMap<String, String>> queryProcessor;
 
-    public SearchTEPresenter(SearchRepository searchRepository, MetadataRepository metadataRepository, D2 d2) {
+    public SearchTEPresenterImpl(SearchRepository searchRepository, MetadataRepository metadataRepository, D2 d2) {
         this.metadataRepository = metadataRepository;
         this.searchRepository = searchRepository;
         this.d2 = d2;

@@ -22,7 +22,6 @@ import com.google.android.material.snackbar.Snackbar;
 
 import org.dhis2.App;
 import org.dhis2.R;
-import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.databinding.ActivityEventCaptureBinding;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
@@ -35,9 +34,7 @@ import org.dhis2.utils.custom_views.ProgressBarAnimation;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -113,17 +110,6 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
             this.completionPercentage = (int) (percentage * 100);
 
         };
-    }
-
-    private String getMandatoryFieldNames(List<FieldViewModel> mandatoryValues) {
-        StringBuilder mandatoryFieldNames = new StringBuilder();
-        for (FieldViewModel fieldViewModel : mandatoryValues) {
-            mandatoryFieldNames.append(fieldViewModel.label());
-            if (mandatoryValues.indexOf(fieldViewModel) < mandatoryValues.size() - 1)
-                mandatoryFieldNames.append(", ");
-        }
-
-        return mandatoryFieldNames.toString();
     }
 
     @Override

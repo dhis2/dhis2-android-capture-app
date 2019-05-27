@@ -16,6 +16,14 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.viewpager.widget.ViewPager;
+
 import com.google.android.material.tabs.TabLayout;
 
 import org.dhis2.App;
@@ -39,13 +47,6 @@ import java.util.ArrayList;
 
 import javax.inject.Inject;
 
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.databinding.DataBindingUtil;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentStatePagerAdapter;
-import androidx.lifecycle.ViewModelProviders;
-import androidx.viewpager.widget.ViewPager;
 import me.toptas.fancyshowcase.FancyShowCaseView;
 import me.toptas.fancyshowcase.FocusShape;
 
@@ -436,11 +437,10 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             prefs.edit().putInt(Constants.PROGRAM_THEME, programTheme).apply();
             binding.toolbar.setBackgroundColor(programColor);
             binding.tabLayout.setBackgroundColor(programColor);
-            if(getOrientation() == Configuration.ORIENTATION_LANDSCAPE)
-                if (binding.dotsIndicator.getVisibility() == View.VISIBLE) {
-                    binding.dotsIndicator.setDotIndicatorColor(programColor);
-                    binding.dotsIndicator.setStrokeDotsIndicatorColor(programColor);
-                }
+            if (getOrientation() == Configuration.ORIENTATION_LANDSCAPE && binding.dotsIndicator.getVisibility() == View.VISIBLE) {
+                binding.dotsIndicator.setDotIndicatorColor(programColor);
+                binding.dotsIndicator.setStrokeDotsIndicatorColor(programColor);
+            }
         } else {
             prefs.edit().remove(Constants.PROGRAM_THEME).apply();
             int colorPrimary;
@@ -463,11 +463,10 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             }
             binding.toolbar.setBackgroundColor(ContextCompat.getColor(this, colorPrimary));
             binding.tabLayout.setBackgroundColor(ContextCompat.getColor(this, colorPrimary));
-            if(getOrientation() == Configuration.ORIENTATION_LANDSCAPE)
-                if (binding.dotsIndicator.getVisibility() == View.VISIBLE) {
-                    binding.dotsIndicator.setDotIndicatorColor(ContextCompat.getColor(this, colorPrimary));
-                    binding.dotsIndicator.setStrokeDotsIndicatorColor(ContextCompat.getColor(this, colorPrimary));
-                }
+            if (getOrientation() == Configuration.ORIENTATION_LANDSCAPE && binding.dotsIndicator.getVisibility() == View.VISIBLE) {
+                binding.dotsIndicator.setDotIndicatorColor(ContextCompat.getColor(this, colorPrimary));
+                binding.dotsIndicator.setStrokeDotsIndicatorColor(ContextCompat.getColor(this, colorPrimary));
+            }
         }
 
         binding.executePendingBindings();

@@ -35,7 +35,7 @@ public class SearchTEModule {
     @Provides
     @PerActivity
     SearchTEContractsModule.SearchTEPresenter providePresenter(D2 d2, SearchRepository searchRepository, MetadataRepository metadataRepository) {
-        return new SearchTEPresenter(searchRepository, metadataRepository,d2);
+        return new SearchTEPresenterImpl(searchRepository, metadataRepository,d2);
     }
 
     @Provides

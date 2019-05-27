@@ -310,7 +310,7 @@ public class Bindings {
             if (DateUtils.getInstance().isEventExpired(null, event.completedDate(), program.completeEventsExpiryDays())) {
                 bgColor = R.drawable.item_event_dark_gray_ripple;
             } else if (event.status() != null) {
-                bgColor = setEventColorWithStatus(view, event, programStage, program);
+                bgColor = setEventColorWithStatus(event, programStage, program);
             } else {
                 bgColor = R.drawable.item_event_red_ripple;
             }
@@ -318,7 +318,7 @@ public class Bindings {
         }
     }
 
-    private static int setEventColorWithStatus(View view, EventModel event, ProgramStageModel programStage, ProgramModel program) {
+    private static int setEventColorWithStatus(EventModel event, ProgramStageModel programStage, ProgramModel program) {
         int bgColor;
         switch (event.status()) {
             case ACTIVE:

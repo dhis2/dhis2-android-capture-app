@@ -88,5 +88,6 @@ public class ImageHolder extends FormViewHolder {
 
     @Override
     public void performAction() {
+        // unused
     }
 }

@@ -140,39 +140,46 @@ public class EventDetailPresenterImpl implements EventDetailContracts.EventDetai
         } else if (formFragment.hasError() != null) {
             view.showInfoDialog(view.getContext().getString(R.string.error), formFragment.hasError().content());
         } else {
-            if (formFragment.isAdded() && formFragment.getContext() != null) {
-                List<Fragment> sectionFragments = formFragment.getChildFragmentManager().getFragments();
-                boolean mandatoryOk = true;
-                boolean hasError = false;
-                for (Fragment dataEntryFragment : sectionFragments) {
-                    mandatoryOk = mandatoryOk && ((DataEntryFragment) dataEntryFragment).checkMandatory();
-                    hasError = ((DataEntryFragment) dataEntryFragment).checkErrors();
-                }
-                if (mandatoryOk && !hasError) {
-                    if (!isEmpty(formFragment.getMessageOnComplete())) {
-                        final AlertDialog dialog = view.showInfoDialog(view.getContext().getString(R.string.warning_error_on_complete_title), formFragment.getMessageOnComplete(), new OnDialogClickListener() {
-                            @Override
-                            public void onPossitiveClick(AlertDialog alertDialog) {
-                                updateEventStatus(eventModel);
-                            }
-
-                            @Override
-                            public void onNegativeClick(AlertDialog alertDialog) {
-                                // unused
-                            }
-                        });
-                        dialog.show();
-                    } else {
-                        updateEventStatus(eventModel);
-                    }
-                } else if (!mandatoryOk)
-                    view.showInfoDialog(view.getContext().getString(R.string.unable_to_complete), view.getAbstractActivity().getString(R.string.missing_mandatory_fields));
-                else
-                    view.showInfoDialog(view.getContext().getString(R.string.unable_to_complete), view.getAbstracContext().getString(R.string.field_errors));
-            }
+            handleNotErrorStatus(eventModel, formFragment);
         }
     }
 
+    private void handleNotErrorStatus(EventModel eventModel, FormFragment formFragment) {
+        if (formFragment.isAdded() && formFragment.getContext() != null) {
+            List<Fragment> sectionFragments = formFragment.getChildFragmentManager().getFragments();
+            boolean mandatoryOk = true;
+            boolean hasError = false;
+            for (Fragment dataEntryFragment : sectionFragments) {
+                mandatoryOk = mandatoryOk && ((DataEntryFragment) dataEntryFragment).checkMandatory();
+                hasError = ((DataEntryFragment) dataEntryFragment).checkErrors();
+            }
+            if (mandatoryOk && !hasError) {
+                handleMandatoryOkAndNoError(eventModel, formFragment);
+            } else if (!mandatoryOk)
+                view.showInfoDialog(view.getContext().getString(R.string.unable_to_complete), view.getAbstractActivity().getString(R.string.missing_mandatory_fields));
+            else
+                view.showInfoDialog(view.getContext().getString(R.string.unable_to_complete), view.getAbstracContext().getString(R.string.field_errors));
+        }
+    }
+
+    private void handleMandatoryOkAndNoError(EventModel eventModel, FormFragment formFragment) {
+        if (!isEmpty(formFragment.getMessageOnComplete())) {
+            final AlertDialog dialog = view.showInfoDialog(view.getContext().getString(R.string.warning_error_on_complete_title), formFragment.getMessageOnComplete(), new OnDialogClickListener() {
+                @Override
+                public void onPossitiveClick(AlertDialog alertDialog) {
+                    updateEventStatus(eventModel);
+                }
+
+                @Override
+                public void onNegativeClick(AlertDialog alertDialog) {
+                    // unused
+                }
+            });
+            dialog.show();
+        } else {
+            updateEventStatus(eventModel);
+        }
+    }
 
     @Override
     public void eventStatus(View buttonView, EventModel eventModel, ProgramStageModel stageModel) {
