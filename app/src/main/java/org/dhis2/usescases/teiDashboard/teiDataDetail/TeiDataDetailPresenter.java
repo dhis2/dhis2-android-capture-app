@@ -200,6 +200,11 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
     }
 
     @Override
+    public void onDestroy() {
+        disposable.clear();
+    }
+
+    @Override
     public void saveLocation(double latitude, double longitude) {
         disposable.add(
                 enrollmentStore.saveCoordinates(latitude, longitude)

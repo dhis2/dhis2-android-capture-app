@@ -22,5 +22,7 @@ public class ReservedValueContracts {
         void onClickRefill(ReservedValueModel reservedValue);
 
         void onBackClick();
+
+        void onPause();
     }
 }

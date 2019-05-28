@@ -247,10 +247,10 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                 .state(State.TO_UPDATE)
                 .build();
 
-        updateProgramTable(currentDate, eventModel.program());
-        updateTeiState();
 
         briteDatabase.update(EventModel.TABLE, event.toContentValues(), EventModel.Columns.UID + " = ?", event.uid());
+        updateTeiState();
+
         return event;
     }
 
@@ -330,8 +330,6 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                         return Observable.error(new IllegalStateException("Event has not been successfully added"));
                     }
 
-                    updateProgramTable(createdDate.getTime(), programUid);
-
                     return Observable.just("Event Created");
                 });
     }
@@ -379,27 +377,17 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                         return Observable.error(new IllegalStateException("Event has not been successfully added"));
                     }
 
-                    updateProgramTable(createdDate.getTime(), programUid);
-
                     return Observable.just("Event Created");
                 });
     }
 
     @Override
     public void updateTeiState() {
-        String GET_TEI = "SELECT * FROM TrackedEntityInstance WHERE uid = ? LIMIT 1";
-        try (Cursor teiCursor = briteDatabase.query(GET_TEI, teiUid)) {
-            if (teiCursor != null && teiCursor.moveToFirst()) {
-                TrackedEntityInstanceModel tei = TrackedEntityInstanceModel.create(teiCursor);
-                ContentValues contentValues = tei.toContentValues();
-                if (contentValues.get(TrackedEntityInstanceModel.Columns.STATE).equals(State.SYNCED.name())) {
-                    contentValues.put(TrackedEntityInstanceModel.Columns.STATE, State.TO_UPDATE.name());
-
-                    briteDatabase.update(TrackedEntityInstanceModel.TABLE, contentValues, "uid = ?", teiUid);
-
-                }
-            }
-        }
+        TrackedEntityInstance tei = d2.trackedEntityModule().trackedEntityInstances.uid(teiUid).get();
+        ContentValues cv = tei.toContentValues();
+        cv.put(TrackedEntityInstance.Columns.STATE, tei.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
+        cv.put(TrackedEntityInstanceModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
+        briteDatabase.update(TrackedEntityInstanceModel.TABLE, cv, "uid = ?", teiUid);
     }
 
     @Override
@@ -677,11 +665,5 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                     }
                     return Flowable.just(status);
                 });
-    }
-
-    private void updateProgramTable(Date lastUpdated, String programUid) {
-        /*ContentValues program = new ContentValues();TODO: Crash if active
-        program.put(EnrollmentModel.Columns.LAST_UPDATED, BaseIdentifiableObject.DATE_FORMAT.format(lastUpdated));
-        briteDatabase.update(ProgramModel.TABLE, program, ProgramModel.Columns.UID + " = ?", programUid);*/
     }
 }
