@@ -124,11 +124,9 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
                 .setInputPeriod(periods)
                 .setOpenFuturePeriods(openFuturePeriods)
                 .setPeriod(periodType)
-                //.setMaxDate(DateUtils.getInstance().getNextPeriod(periodType, DateUtils.getInstance().getToday(), -1))
                 .setPossitiveListener(selectedDate -> {
                     Calendar calendar = Calendar.getInstance();
                     calendar.setTime(selectedDate);
-                    calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
                     this.selectedPeriod = calendar.getTime();
                     binding.dataSetPeriodEditText.setText(DateUtils.getInstance().getPeriodUIString(periodType, selectedDate, Locale.getDefault()));
                     checkActionVisivbility();
