@@ -1,18 +1,19 @@
 package org.dhis2.data.forms.dataentry.tablefields.datetime;
 
+import android.view.LayoutInflater;
+import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ObservableField;
 import androidx.databinding.ViewDataBinding;
-import androidx.annotation.NonNull;
-import android.view.LayoutInflater;
-import android.view.ViewGroup;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.Row;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.databinding.FormDateTextBinding;
-import org.dhis2.databinding.FormDateTimeTextBinding;
 import org.dhis2.databinding.FormTimeTextBinding;
+import org.dhis2.databinding.TableDateTimeTextBinding;
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetTableAdapter;
 
 import io.reactivex.processors.FlowableProcessor;
@@ -61,8 +62,8 @@ public class DateTimeRow implements Row<DateTimeHolder, DateTimeViewModel> {
                 break;
             default:
                 binding = DataBindingUtil.inflate(inflater,
-                        R.layout.form_date_time_text, parent, false);
-                ((FormDateTimeTextBinding) binding).dateTimeView.setCellLayout(tableScale);
+                        R.layout.table_date_time_text, parent, false);
+                ((TableDateTimeTextBinding) binding).dateTimeView.setCellLayout(tableScale);
                 break;
         }
 
