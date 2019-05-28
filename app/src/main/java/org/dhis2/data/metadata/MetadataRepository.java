@@ -8,7 +8,6 @@ import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.imports.TrackerImportConflict;
-import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -69,9 +68,9 @@ public interface MetadataRepository {
 
     Observable<OrganisationUnitModel> getOrganisationUnit(String orgUnitUid);
 
-    Observable<OrganisationUnitModel> getTeiOrgUnit(String teiUid);
+    Observable<List<OrganisationUnitModel>> getTeiOrgUnits(String teiUid);
 
-    Observable<OrganisationUnitModel> getTeiOrgUnit(@NonNull String teiUid, @Nullable String programUid);
+    Observable<List<OrganisationUnitModel>> getTeiOrgUnits(@NonNull String teiUid, @Nullable String programUid);
 
     /*PROGRAM TRACKED ENTITY ATTRIBUTE*/
 
