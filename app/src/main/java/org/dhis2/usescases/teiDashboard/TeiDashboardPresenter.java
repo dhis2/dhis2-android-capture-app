@@ -3,9 +3,6 @@ package org.dhis2.usescases.teiDashboard;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-
 import org.dhis2.data.forms.dataentry.RuleEngineRepository;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.TEIDataFragment;
@@ -17,6 +14,8 @@ import org.hisp.dhis.android.core.program.ProgramModel;
 
 import java.util.Calendar;
 
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -77,7 +76,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                     dashboardRepository.getTEIEnrollmentEvents(programUid, teUid),
                     metadataRepository.getProgramTrackedEntityAttributes(programUid),
                     dashboardRepository.getTEIAttributeValues(programUid, teUid),
-                    metadataRepository.getTeiOrgUnit(teUid, programUid),
+                    metadataRepository.getTeiOrgUnits(teUid, programUid),
                     metadataRepository.getTeiActivePrograms(teUid, false),
                     DashboardProgramModel::new)
                     .flatMap(dashboardProgramModel1 -> metadataRepository.getObjectStylesForPrograms(dashboardProgramModel1.getEnrollmentProgramModels())
@@ -104,7 +103,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                     metadataRepository.getTrackedEntityInstance(teUid),
                     metadataRepository.getProgramTrackedEntityAttributes(null),
                     dashboardRepository.getTEIAttributeValues(null, teUid),
-                    metadataRepository.getTeiOrgUnit(teUid),
+                    metadataRepository.getTeiOrgUnits(teUid),
                     metadataRepository.getTeiActivePrograms(teUid, true),
                     metadataRepository.getTEIEnrollments(teUid),
                     DashboardProgramModel::new)
