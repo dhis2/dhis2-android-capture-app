@@ -32,7 +32,8 @@ public class SearchTeiLiveAdapter extends PagedListAdapter<SearchTeiModel, Searc
             else {
                 return oldItem.getTei().uid().equals(newItem.getTei().uid()) &&
                         oldItem.getTei().state().equals(newItem.getTei().state()) &&
-                        oldItem.getAttributeValueModels().equals(newItem.getAttributeValueModels());
+                        oldItem.getAttributeValueModels().equals(newItem.getAttributeValueModels()) &&
+                        oldItem.getEnrollmentModels().equals(newItem.getEnrollmentModels());
             }
         }
     };

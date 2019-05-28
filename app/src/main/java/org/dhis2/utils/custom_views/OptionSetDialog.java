@@ -1,6 +1,7 @@
 package org.dhis2.utils.custom_views;
 
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -69,6 +70,13 @@ public class OptionSetDialog extends DialogFragment {
             dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         }
         return dialog;
+    }
+
+    @Override
+    public void onCancel(@NonNull DialogInterface dialog) {
+        instace = null;
+        disposable.clear();
+        super.onCancel(dialog);
     }
 
     @Override

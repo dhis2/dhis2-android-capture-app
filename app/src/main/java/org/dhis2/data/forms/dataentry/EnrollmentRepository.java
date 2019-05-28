@@ -50,7 +50,8 @@ final class EnrollmentRepository implements DataEntryRepository {
             "  Enrollment.status,\n" +
             "  Field.displayDescription,\n" +
             "  Field.pattern, \n" +
-            "  Field.formName \n" +
+            "  Field.formName, \n" +
+            "  Field.formOrder \n" +
             "FROM (Enrollment INNER JOIN Program ON Program.uid = Enrollment.program)\n" +
             "  LEFT OUTER JOIN (\n" +
             "      SELECT\n" +
@@ -60,6 +61,7 @@ final class EnrollmentRepository implements DataEntryRepository {
             "        TrackedEntityAttribute.pattern AS pattern,\n" +
             "        TrackedEntityAttribute.optionSet AS optionSet,\n" +
             "        ProgramTrackedEntityAttribute.program AS program,\n" +
+            "        ProgramTrackedEntityAttribute.sortOrder AS formOrder,\n" +
             "        ProgramTrackedEntityAttribute.mandatory AS mandatory,\n" +
             "        ProgramTrackedEntityAttribute.allowFutureDate AS allowFutureDate,\n" +
             "        TrackedEntityAttribute.generated AS generated,\n" +
@@ -74,7 +76,8 @@ final class EnrollmentRepository implements DataEntryRepository {
             "  LEFT OUTER JOIN Option ON (\n" +
             "    Field.optionSet = Option.optionSet AND Value.value = Option.code\n" +
             "  )\n" +
-            "WHERE Enrollment.uid = ?";
+            "WHERE Enrollment.uid = ? " +
+            "ORDER BY Field.formOrder ASC;";
 
 
     @NonNull

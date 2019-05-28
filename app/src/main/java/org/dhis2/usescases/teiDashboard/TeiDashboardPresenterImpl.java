@@ -12,10 +12,8 @@ import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 
 import java.util.Calendar;
-import java.util.List;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -75,7 +73,7 @@ public class TeiDashboardPresenterImpl implements TeiDashboardContracts.TeiDashb
                     dashboardRepository.getTEIEnrollmentEvents(programUid, teUid),
                     metadataRepository.getProgramTrackedEntityAttributes(programUid),
                     dashboardRepository.getTEIAttributeValues(programUid, teUid),
-                    metadataRepository.getTeiOrgUnit(teUid, programUid),
+                    metadataRepository.getTeiOrgUnits(teUid, programUid),
                     metadataRepository.getTeiActivePrograms(teUid, false),
                     DashboardProgramModel::new)
                     .flatMap(dashboardProgramModel1 -> metadataRepository.getObjectStylesForPrograms(dashboardProgramModel1.getEnrollmentProgramModels())
@@ -102,7 +100,7 @@ public class TeiDashboardPresenterImpl implements TeiDashboardContracts.TeiDashb
                     metadataRepository.getTrackedEntityInstance(teUid),
                     metadataRepository.getProgramTrackedEntityAttributes(null),
                     dashboardRepository.getTEIAttributeValues(null, teUid),
-                    metadataRepository.getTeiOrgUnit(teUid),
+                    metadataRepository.getTeiOrgUnits(teUid),
                     metadataRepository.getTeiActivePrograms(teUid, true),
                     metadataRepository.getTEIEnrollments(teUid),
                     DashboardProgramModel::new)
@@ -211,13 +209,6 @@ public class TeiDashboardPresenterImpl implements TeiDashboardContracts.TeiDashb
     public void onDettach() {
         compositeDisposable.clear();
     }
-
-    public Observable<List<TrackedEntityAttributeValueModel>> getTEIMainAttributes(String teiUid) {
-        return dashboardRepository.mainTrackedEntityAttributes(teiUid)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
-    }
-
 
     @Override
     public void onBackPressed() {

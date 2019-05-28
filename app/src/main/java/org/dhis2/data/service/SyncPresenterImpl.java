@@ -28,8 +28,7 @@ final class SyncPresenterImpl implements SyncPresenter {
         int eventLimit = prefs.getInt(Constants.EVENT_MAX, Constants.EVENT_MAX_DEFAULT);
         boolean limitByOU = prefs.getBoolean(Constants.LIMIT_BY_ORG_UNIT, false);
         boolean limitByProgram = prefs.getBoolean(Constants.LIMIT_BY_PROGRAM, false);
-        // TODO CRIS: ADD LIMIT BY PROGRAM WHEN SDK INCLUDES FEATURE
-        d2.eventModule().downloadSingleEvents(eventLimit, limitByOU).call();
+        d2.eventModule().downloadSingleEvents(eventLimit, limitByOU, limitByProgram).call();
     }
 
     @Override

@@ -49,6 +49,12 @@ public class ReservedValueActivity extends ActivityGlobalAbstract implements Res
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        presenter.onPause();
+    }
+
+    @Override
     public void onBackClick() {
         super.onBackPressed();
     }

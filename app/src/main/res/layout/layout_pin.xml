@@ -65,6 +65,7 @@
             android:textColor="?colorPrimary"
             android:textSize="12sp"
             android:textStyle="bold"
+            tools:visibility="visible"
             app:layout_constraintTop_toBottomOf="@id/indicator_dots" />
 
         <com.andrognito.pinlockview.PinLockView
@@ -73,7 +74,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/indicator_dots"
             app:indicatorType="fillWithAnimation"
-            app:keypadButtonSize="48dp"
+            app:keypadButtonSize="24dp"
             app:keypadDeleteButtonSize="24dp"
             app:keypadShowDeleteButton="true"
             app:keypadTextColor="?colorPrimary"

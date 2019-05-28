@@ -69,9 +69,9 @@ public interface MetadataRepository {
 
     Observable<OrganisationUnitModel> getOrganisationUnit(String orgUnitUid);
 
-    Observable<OrganisationUnitModel> getTeiOrgUnit(String teiUid);
+    Observable<List<OrganisationUnitModel>> getTeiOrgUnits(String teiUid);
 
-    Observable<OrganisationUnitModel> getTeiOrgUnit(@NonNull String teiUid, @Nullable String programUid);
+    Observable<List<OrganisationUnitModel>> getTeiOrgUnits(@NonNull String teiUid, @Nullable String programUid);
 
     /*PROGRAM TRACKED ENTITY ATTRIBUTE*/
 

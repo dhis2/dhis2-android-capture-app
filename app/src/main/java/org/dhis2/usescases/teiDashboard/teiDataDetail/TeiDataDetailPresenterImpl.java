@@ -56,7 +56,7 @@ public class TeiDataDetailPresenterImpl implements TeiDataDetailContracts.TeiDat
                     dashboardRepository.getTEIEnrollmentEvents(programUid, uid),
                     metadataRepository.getProgramTrackedEntityAttributes(programUid),
                     dashboardRepository.getTEIAttributeValues(programUid, uid),
-                    metadataRepository.getTeiOrgUnit(uid),
+                    metadataRepository.getTeiOrgUnits(uid),
                     metadataRepository.getTeiActivePrograms(uid, false),
                     DashboardProgramModel::new)
                     .subscribeOn(Schedulers.io())
@@ -91,7 +91,7 @@ public class TeiDataDetailPresenterImpl implements TeiDataDetailContracts.TeiDat
                     metadataRepository.getTrackedEntityInstance(uid),
                     metadataRepository.getProgramTrackedEntityAttributes(null),
                     dashboardRepository.getTEIAttributeValues(null, uid),
-                    metadataRepository.getTeiOrgUnit(uid),
+                    metadataRepository.getTeiOrgUnits(uid),
                     metadataRepository.getTeiActivePrograms(uid, false),
                     metadataRepository.getTEIEnrollments(uid),
                     DashboardProgramModel::new)
@@ -187,7 +187,7 @@ public class TeiDataDetailPresenterImpl implements TeiDataDetailContracts.TeiDat
         }
         mFusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
             if (location != null) {
-                saveLocation(location.getLatitude(),location.getLongitude());
+                saveLocation(location.getLatitude(), location.getLongitude());
             }
         });
     }
@@ -196,6 +196,11 @@ public class TeiDataDetailPresenterImpl implements TeiDataDetailContracts.TeiDat
     public void onLocation2Click() {
         Intent intent = new Intent(view.getContext(), MapSelectorActivity.class);
         view.getAbstractActivity().startActivityForResult(intent, Constants.RQ_MAP_LOCATION);
+    }
+
+    @Override
+    public void onDestroy() {
+        disposable.clear();
     }
 
     @Override

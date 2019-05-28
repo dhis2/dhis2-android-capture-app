@@ -135,7 +135,6 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
     }
 
     //endregion
-
     private void selectedDates(List<Date> selectedDates, SimpleDateFormat weeklyFormat) {
         String textToShow;
         if (currentPeriod == WEEKLY) {
@@ -618,9 +617,9 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
 
                     HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
 
-                    if (!prefs.getBoolean("TUTO_SHOWN", false) && !BuildConfig.DEBUG) {
+                    if (!prefs.getBoolean(Constants.TUTORIAL_HOME, false) && !BuildConfig.DEBUG) {
                         HelpManager.getInstance().showHelp();
-                        prefs.edit().putBoolean("TUTO_SHOWN", true).apply();
+                        prefs.edit().putBoolean(Constants.TUTORIAL_HOME, true).apply();
                     }
 
                 }, 500);
