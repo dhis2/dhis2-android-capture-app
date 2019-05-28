@@ -22,7 +22,7 @@ public class RelationshipContracts {
 
     public interface View extends AbstractActivityContracts.View {
 
-        Consumer<List<Pair<Relationship, RelationshipType>>> setRelationships();
+        Consumer<List<RelationshipViewModel>> setRelationships();
 
         Consumer<List<Trio<RelationshipTypeModel, String, Integer>>> setRelationshipTypes();
 

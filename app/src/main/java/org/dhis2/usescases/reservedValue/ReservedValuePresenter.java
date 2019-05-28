@@ -72,4 +72,9 @@ public class ReservedValuePresenter implements ReservedValueContracts.Presenter 
         if (view != null)
             view.onBackClick();
     }
+
+    @Override
+    public void onPause() {
+        disposable.clear();
+    }
 }
