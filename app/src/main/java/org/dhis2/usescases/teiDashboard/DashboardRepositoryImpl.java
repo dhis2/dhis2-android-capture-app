@@ -20,9 +20,9 @@ import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
-import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.data.database.DbDateColumnAdapter;
+import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.enrollment.note.NoteModel;
@@ -48,7 +48,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 
 import io.reactivex.BackpressureStrategy;
@@ -183,7 +182,6 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
     private String teiUid;
     private String programUid;
-    private String enrollmentUid;
 
     private static final String SELECT_USERNAME = "SELECT " +
             "UserCredentials.displayName FROM UserCredentials";
@@ -390,12 +388,12 @@ public class DashboardRepositoryImpl implements DashboardRepository {
         briteDatabase.update(TrackedEntityInstanceModel.TABLE, cv, "uid = ?", teiUid);
     }
 
-    @Override
-    public String relationshipTeiSync(String teiUidToUpdate) {
-        ContentValues cv = new ContentValues();
-        cv.put(TrackedEntityInstanceModel.Columns.STATE, State.SYNCED.name());
-        briteDatabase.update(TrackedEntityInstanceModel.TABLE, cv, "uid = ?", teiUidToUpdate);
-        return teiUidToUpdate;
+    private void updateEnrollmentState(String enrollmentUid) {
+        Enrollment enrollment = d2.enrollmentModule().enrollments.uid(enrollmentUid).get();
+        ContentValues cv = enrollment.toContentValues();
+        cv.put("lastUpdated", DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
+        cv.put("state", enrollment.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
+        long updated = briteDatabase.update("Enrollment", cv, "uid = ?", enrollment.uid());
     }
 
     @Override
@@ -486,19 +484,17 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     @Override
     public boolean setFollowUp(String enrollmentUid) {
 
-        String enrollmentFollowUpQuery = "SELECT Enrollment.followup FROM Enrollment WHERE Enrollment.uid = ?";
-        boolean followUp = false;
+        Enrollment enrollment = d2.enrollmentModule().enrollments.uid(enrollmentUid).get();
+        boolean followUp = enrollment.followUp() != null ? enrollment.followUp() : false;
 
-        try (Cursor cursor = briteDatabase.query(enrollmentFollowUpQuery, enrollmentUid)) {
-            if (cursor != null && cursor.moveToFirst()) {
-                followUp = cursor.getInt(0) == 1;
-            }
-        }
-
-        ContentValues contentValues = new ContentValues();
+        ContentValues contentValues = enrollment.toContentValues();
         contentValues.put(EnrollmentModel.Columns.FOLLOW_UP, followUp ? "0" : "1");
+        contentValues.put(EnrollmentModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
+        contentValues.put(EnrollmentModel.Columns.STATE, enrollment.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
 
         int update = briteDatabase.update(EnrollmentModel.TABLE, contentValues, EnrollmentModel.Columns.UID + " = ?", enrollmentUid == null ? "" : enrollmentUid);
+
+        updateTeiState();
 
         return !followUp;
     }
@@ -556,11 +552,8 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                     long inserted = briteDatabase.executeInsert(NoteModel.TABLE, insetNoteStatement);
 
                     if (inserted != -1) {
-                        TrackedEntityInstance tei = d2.trackedEntityModule().trackedEntityInstances.byUid().eq(teiUid).one().get();
-                        ContentValues cv = new ContentValues();
-                        cv.put(TrackedEntityInstance.Columns.STATE, tei.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
-                        briteDatabase.update(TrackedEntityInstanceModel.TABLE, cv, "uid = ?", teiUid);
-                        briteDatabase.update(EnrollmentModel.TABLE, cv, "uid = ?", enrollmentUid);
+                        updateEnrollmentState(enrollmentUid);
+                        updateTeiState();
                     }
 
                     insetNoteStatement.clearBindings();
@@ -570,100 +563,20 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     }
 
     @Override
-    public Observable<Boolean> handleNote(Pair<String, Boolean> stringBooleanPair) {
-        if (stringBooleanPair.val1()) {
-
-            try (Cursor cursor1 = briteDatabase.query(SELECT_ENROLLMENT, programUid == null ? "" : programUid, EnrollmentStatus.ACTIVE.name(), teiUid == null ? "" : teiUid);
-                 Cursor cursor = briteDatabase.query(SELECT_USERNAME)) {
-
-                cursor.moveToFirst();
-                String userName = cursor.getString(0);
-
-                cursor1.moveToFirst();
-                String enrollmentUidAux = cursor1.getString(0);
-
-                SQLiteStatement insetNoteStatement = briteDatabase.getWritableDatabase()
-                        .compileStatement(INSERT_NOTE);
-
-
-                sqLiteBind(insetNoteStatement, 1, codeGenerator.generate()); //enrollment
-                sqLiteBind(insetNoteStatement, 2, enrollmentUidAux == null ? "" : enrollmentUidAux); //enrollment
-                sqLiteBind(insetNoteStatement, 3, stringBooleanPair.val0()); //value
-                sqLiteBind(insetNoteStatement, 4, userName == null ? "" : userName); //storeBy
-                sqLiteBind(insetNoteStatement, 5, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime())); //storeDate
-                sqLiteBind(insetNoteStatement, 6, State.TO_POST.name()); //storeDate
-
-                long success = briteDatabase.executeInsert(NoteModel.TABLE, insetNoteStatement);
-
-                insetNoteStatement.clearBindings();
-
-                return Observable.just(success == 1).flatMap(value -> updateEnrollment(success).toObservable())
-                        .map(value -> value == 1);
-            }
-
-        } else
-            return Observable.just(false);
-    }
-
-    @Override
     public Flowable<Long> updateEnrollmentStatus(@NonNull String uid, @NonNull EnrollmentStatus value) {
         return Flowable
                 .defer(() -> {
-                    long updated = update(uid, value);
+                    //UPDATE ENROLLMENT
+                    Enrollment enrollment = d2.enrollmentModule().enrollments.uid(uid).get();
+                    ContentValues cv = enrollment.toContentValues();
+                    cv.put("lastUpdated", DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
+                    cv.put("status", value.name());
+                    cv.put("state", enrollment.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
+                    long updated = briteDatabase.update("Enrollment", cv, "uid = ?", enrollment.uid());
+
+                    updateTeiState();
                     return Flowable.just(updated);
-                })
-                .switchMap(this::updateEnrollment);
-    }
-
-    private long update(String uid, EnrollmentStatus value) {
-        this.enrollmentUid = uid;
-        String UPDATE = "UPDATE Enrollment\n" +
-                "SET lastUpdated = ?, status = ?\n" +
-                "WHERE uid = ?;";
-
-        SQLiteStatement updateStatement = briteDatabase.getWritableDatabase()
-                .compileStatement(UPDATE);
-        sqLiteBind(updateStatement, 1, BaseIdentifiableObject.DATE_FORMAT
-                .format(Calendar.getInstance().getTime()));
-        sqLiteBind(updateStatement, 2, value);
-        sqLiteBind(updateStatement, 3, enrollmentUid == null ? "" : enrollmentUid);
-
-        long updated = briteDatabase.executeUpdateDelete(
-                TrackedEntityAttributeValueModel.TABLE, updateStatement);
-        updateStatement.clearBindings();
-
-        updateTeiState();
-
-        return updated;
-    }
-
-    @NonNull
-    private Flowable<Long> updateEnrollment(long status) {
-        String SELECT_TEI = "SELECT *\n" +
-                "FROM TrackedEntityInstance\n" +
-                "WHERE uid IN (\n" +
-                "  SELECT trackedEntityInstance\n" +
-                "  FROM Enrollment\n" +
-                "  WHERE Enrollment.uid = ?\n" +
-                ") LIMIT 1;";
-        return briteDatabase.createQuery(TrackedEntityInstanceModel.TABLE, SELECT_TEI, enrollmentUid == null ? "" : enrollmentUid)
-                .mapToOne(TrackedEntityInstanceModel::create).take(1).toFlowable(BackpressureStrategy.LATEST)
-                .switchMap(tei -> {
-                    if (State.SYNCED.equals(tei.state()) || State.TO_DELETE.equals(tei.state()) ||
-                            State.ERROR.equals(tei.state())) {
-                        ContentValues values = tei.toContentValues();
-                        values.put(TrackedEntityInstanceModel.Columns.STATE, State.TO_UPDATE.toString());
-
-                        if (tei != null && tei.uid() != null) {
-                            if (briteDatabase.update(TrackedEntityInstanceModel.TABLE, values,
-                                    TrackedEntityInstanceModel.Columns.UID + " = ?", tei.uid()) <= 0) {
-
-                                throw new IllegalStateException(String.format(Locale.US, "Tei=[%s] " +
-                                        "has not been successfully updated", tei.uid()));
-                            }
-                        }
-                    }
-                    return Flowable.just(status);
                 });
     }
+
 }

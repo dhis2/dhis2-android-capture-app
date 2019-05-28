@@ -47,8 +47,6 @@ public interface DashboardRepository {
 
     Consumer<Pair<String, Boolean>> handleNote();
 
-    Observable<Boolean> handleNote(Pair<String,Boolean> pair);
-
     void setDashboardDetails(String teiUid, String programUid);
 
     Observable<List<TrackedEntityAttributeValueModel>> mainTrackedEntityAttributes(String teiUid);
@@ -66,8 +64,6 @@ public interface DashboardRepository {
     Observable<String> generateNewEventFromDate(String lastModifiedEventUid, Calendar chosenDate);
 
     void updateTeiState();
-
-    String relationshipTeiSync(String teiUid);
 
     Integer getObjectStyle(Context context, String uid);
 
