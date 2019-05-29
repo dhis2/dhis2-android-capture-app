@@ -5,6 +5,10 @@ import android.os.Bundle;
 import android.view.MenuInflater;
 import android.view.View;
 
+import androidx.appcompat.widget.PopupMenu;
+import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.Fragment;
+
 import org.dhis2.App;
 import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
@@ -21,9 +25,6 @@ import java.util.Locale;
 
 import javax.inject.Inject;
 
-import androidx.appcompat.widget.PopupMenu;
-import androidx.databinding.DataBindingUtil;
-import androidx.fragment.app.Fragment;
 import io.reactivex.functions.Consumer;
 
 public class TeiDataDetailActivity extends ActivityGlobalAbstract implements TeiDataDetailContracts.View {
@@ -47,6 +48,12 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
         init(getIntent().getStringExtra("TEI_UID"), getIntent().getStringExtra("PROGRAM_UID"), getIntent().getStringExtra("ENROLLMENT_UID"));
 
         binding.programLockLayout.setOnClickListener(this::showScheduleContentOptions);
+    }
+
+    @Override
+    protected void onDestroy() {
+        presenter.onDestroy();
+        super.onDestroy();
     }
 
     private void showScheduleContentOptions(View v) {
@@ -117,7 +124,7 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
         Fragment fragment = FormFragment.newInstance(
                 FormViewArguments.createForEnrollment(dashboardProgramModel.getCurrentEnrollment().uid()), true,
                 false);
-        ((FormFragment)fragment).setSaveButtonTEIDetail(binding.next);
+        ((FormFragment) fragment).setSaveButtonTEIDetail(binding.next);
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.dataFragment, fragment)
                 .commit();

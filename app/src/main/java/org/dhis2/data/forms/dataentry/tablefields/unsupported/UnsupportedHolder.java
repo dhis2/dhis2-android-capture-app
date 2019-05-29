@@ -1,6 +1,7 @@
 package org.dhis2.data.forms.dataentry.tablefields.unsupported;
 
 import android.widget.Button;
+import android.widget.TextView;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.FormViewHolder;
@@ -24,6 +25,8 @@ public class UnsupportedHolder extends FormViewHolder {
 
     public void update(UnsupportedViewModel viewModel) {
         button.setText(R.string.unsupported_value_type);
+        button.setEnabled(false);
+        button.setActivated(false);
         descriptionText = viewModel.description();
     }
 }

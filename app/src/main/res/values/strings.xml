@@ -319,7 +319,7 @@
     <string name="login_error_null_pass">Password is missing. Please fill this field.</string>
     <string name="login_error_null_username">Username is missing. Please fill this field.</string>
     <string name="login_error_dhis_version">This server is running a dhis version different than 2.29. Update your server version or use the testing environment to proceed.</string>
-    <string name="login_error_dhis_version_v2">This server is running a dhis version different than 2.29. Update your server version or use the testing environment to proceed.</string>
+    <string name="login_error_dhis_version_v2">This server is running a dhis version different than %s. Update your server version or use the testing environment to proceed.</string>
     <string name="login_error_unsuccessful_response">Something went wrong. Please check that server url, username and password are correct and try again.</string>
     <string name="login_error_error_response">The server could not complete this request.</string>
     <string name="login_error_default">There has been a problem while trying to log into the server.</string>
@@ -466,6 +466,7 @@
     <string name="tuto_main_11">Now you can check sync information by clicking here</string>
     <string name="no_conflicts_update_message">This data is stored in your device only, it is not synced with the server.</string>
     <string name="no_conflicts_synced_message">You are up to date! All your data is sent to the server.</string>
+    <string name="relationship_error_recursive">You can\'t relate a record with itself</string>
     <string name="data_set_closed">Close</string>
     <string name="data_set_open">Open</string>
     <string name="unsupported_value_type">Unsupported value type</string>

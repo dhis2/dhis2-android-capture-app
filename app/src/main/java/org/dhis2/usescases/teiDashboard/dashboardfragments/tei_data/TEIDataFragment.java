@@ -139,6 +139,12 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
         dashboardViewModel.eventUid().observe(this, this::displayGenerateEvent);
     }
 
+    @Override
+    public void onPause() {
+        presenter.onDettach();
+        super.onPause();
+    }
+
     public void setData(DashboardProgramModel nprogram) {
         this.dashboardModel = nprogram;
 
@@ -201,8 +207,8 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
             presenter.getTEIEvents();
             if (data != null) {
                 lastModifiedEventUid = data.getStringExtra(Constants.EVENT_UID);
-                if(((TeiDashboardMobileActivity)context).getOrientation() != Configuration.ORIENTATION_LANDSCAPE)
-                getSharedPreferences().edit().putString("COMPLETED_EVENT", lastModifiedEventUid).apply();
+                if (((TeiDashboardMobileActivity) context).getOrientation() != Configuration.ORIENTATION_LANDSCAPE)
+                    getSharedPreferences().edit().putString("COMPLETED_EVENT", lastModifiedEventUid).apply();
                 else {
                     if (lastModifiedEventUid != null)
                         presenter.displayGenerateEvent(lastModifiedEventUid);
@@ -286,7 +292,8 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
                     }
 
                     @Override
-                    public void onNegative() {}
+                    public void onNegative() {
+                    }
                 });
         dialog.show();
     }
@@ -309,7 +316,8 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
                             }
 
                             @Override
-                            public void onNegative() {}
+                            public void onNegative() {
+                            }
                         });
                 dialog.show();
             }

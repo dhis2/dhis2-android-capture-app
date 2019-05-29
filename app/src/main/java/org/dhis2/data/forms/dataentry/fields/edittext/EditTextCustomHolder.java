@@ -82,37 +82,22 @@ final class EditTextCustomHolder extends FormViewHolder {
     }
 
     public void update(@NonNull FieldViewModel model) {
-
         this.editTextModel = (EditTextViewModel) model;
 
-        descriptionText = editTextModel.description();
-        binding.customEdittext.setValueType(editTextModel.valueType());
+        binding.customEdittext.setObjectSyle(model.objectStyle());
+        label = new StringBuilder(model.label());
+        binding.customEdittext.setLabel(model.label(), model.mandatory());
+        descriptionText = model.description();
+        binding.customEdittext.setDescription(descriptionText);
+        binding.customEdittext.setWarning(model.warning(), model.error());
+
+        binding.customEdittext.setText(editTextModel.value());
         binding.customEdittext.setEditable(model.editable());
-        if (editTextModel.valueType() == ValueType.LONG_TEXT) {
-            binding.customEdittext.getInputLayout().getEditText().setSingleLine(false);
-            binding.customEdittext.getInputLayout().getEditText().setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
-        }
-        label = new StringBuilder(editTextModel.label());
-        if (editTextModel.mandatory())
-            label.append("*");
-        binding.customEdittext.setLabel(label.toString());
 
-        if (editTextModel.warning() != null)
-            binding.customEdittext.setWarning(editTextModel.warning());
-        else if (editTextModel.error() != null)
-            binding.customEdittext.setError(editTextModel.error());
-        else
-            binding.customEdittext.setError(null);
-
-
-        if (editTextModel.value() != null)
-            binding.customEdittext.setText(editTextModel.value());
-        else
-            binding.customEdittext.setText(null);
+        binding.customEdittext.setValueType(editTextModel.valueType());
 
         setRenderingType(editTextModel.fieldRendering());
 
-        binding.executePendingBindings();
     }
 
     private void checkAutocompleteRendering() {

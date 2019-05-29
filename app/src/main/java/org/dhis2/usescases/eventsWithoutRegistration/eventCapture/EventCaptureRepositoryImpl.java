@@ -45,6 +45,7 @@ import org.hisp.dhis.android.core.program.ProgramStageSectionModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 import org.hisp.dhis.android.core.program.ProgramType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 import org.hisp.dhis.rules.models.Rule;
 import org.hisp.dhis.rules.models.RuleAction;
@@ -149,7 +150,6 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     private final FormRepository formRepository;
     private final D2 d2;
     private final boolean isEventEditable;
-    private boolean accessDataWrite;
     private String lastUpdatedUid;
     private RuleEvent.Builder eventBuilder;
     private Map<String, List<Rule>> dataElementRules = new HashMap<>();
@@ -401,8 +401,6 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     @NonNull
     @Override
     public Flowable<List<FieldViewModel>> list(String sectionUid) {
-        accessDataWrite = getAccessDataWrite();
-        long time;
         return briteDatabase
                 .createQuery(TrackedEntityDataValueModel.TABLE, prepareStatement(sectionUid, eventUid))
                 .mapToList(this::transform)
@@ -606,23 +604,35 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     @Override
     public Observable<Boolean> completeEvent() {
-        ContentValues contentValues = new ContentValues();
+        ContentValues contentValues = currentEvent.toContentValues();
         contentValues.put(EventModel.Columns.STATUS, EventStatus.COMPLETED.name());
         String completeDate = DateUtils.databaseDateFormat().format(DateUtils.getInstance().getToday());
         contentValues.put(EventModel.Columns.COMPLETE_DATE, completeDate);
-        return Observable.just(briteDatabase.update(EventModel.TABLE, contentValues, "uid = ?", eventUid) > 0);
+        contentValues.put("lastUpdated", DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
+        contentValues.put(EventModel.Columns.STATE, currentEvent.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
+        boolean updated = briteDatabase.update(EventModel.TABLE, contentValues, "uid = ?", eventUid) > 0;
+        if (updated && currentEvent.enrollment() != null)
+            updateEnrollment(currentEvent.enrollment());
+        return Observable.just(updated);
     }
 
     @Override
     public boolean reopenEvent() {
-        ContentValues contentValues = new ContentValues();
+        ContentValues contentValues = currentEvent.toContentValues();
         contentValues.put(EventModel.Columns.STATUS, EventStatus.ACTIVE.name());
-        return briteDatabase.update(EventModel.TABLE, contentValues, "uid = ?", eventUid) > 0;
+        contentValues.put("lastUpdated", DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
+        contentValues.put(EventModel.Columns.STATE, currentEvent.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
+        boolean updated = briteDatabase.update(EventModel.TABLE, contentValues, "uid = ?", eventUid) > 0;
+        if (updated && currentEvent.enrollment() != null)
+            updateEnrollment(currentEvent.enrollment());
+        if (updated && currentEvent.enrollment() != null)
+            updateEnrollment(currentEvent.enrollment());
+        return updated;
     }
 
     @Override
     public Observable<Boolean> deleteEvent() {
-        Event event = d2.eventModule().events.uid(eventUid).withAllChildren().get();
+        Event event = currentEvent;
         long status;
         if (event.state() == State.TO_POST) {
             String DELETE_WHERE = String.format(
@@ -642,39 +652,24 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     }
 
     private void updateEnrollment(String enrollmentUid) {
-        String SELECT_ENROLLMENT = "SELECT *\n" +
-                "FROM Enrollment\n" +
-                "WHERE uid = ? LIMIT 1;";
-        try (Cursor enrollmentCursor = briteDatabase.query(SELECT_ENROLLMENT, enrollmentUid)) {
-            if (enrollmentCursor != null && enrollmentCursor.moveToFirst()) {
-                EnrollmentModel enrollmentModel = EnrollmentModel.create(enrollmentCursor);
-
-                ContentValues cv = enrollmentModel.toContentValues();
-                cv.put(EnrollmentModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
-                cv.put(EnrollmentModel.Columns.STATE, enrollmentModel.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
-                briteDatabase.update(EnrollmentModel.TABLE, cv, "uid = ?", enrollmentUid);
-                updateTei(enrollmentModel.trackedEntityInstance());
-            }
-        }
+        Enrollment enrollment = d2.enrollmentModule().enrollments.uid(enrollmentUid).get();
+        ContentValues cv = enrollment.toContentValues();
+        cv.put("lastUpdated", DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
+        cv.put("state", enrollment.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
+        briteDatabase.update(EnrollmentModel.TABLE, cv, "uid = ?", enrollmentUid);
+        updateTei(enrollment.uid());
     }
 
     private void updateTei(String teiUid) {
-        String selectTei = "SELECT * FROM TrackedEntityInstance WHERE uid = ?";
-        try (Cursor teiCursor = briteDatabase.query(selectTei, teiUid)) {
-            if (teiCursor != null && teiCursor.moveToFirst()) {
-                TrackedEntityInstanceModel teiModel = TrackedEntityInstanceModel.create(teiCursor);
-                ContentValues cv = teiModel.toContentValues();
-                cv.put(TrackedEntityInstanceModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
-                cv.put(TrackedEntityInstanceModel.Columns.STATE,
-                        teiModel.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
-                briteDatabase.update(TrackedEntityInstanceModel.TABLE, cv, "uid = ?", teiUid);
-            }
-        }
+        TrackedEntityInstance tei = d2.trackedEntityModule().trackedEntityInstances.uid(teiUid).get();
+        ContentValues cv = tei.toContentValues();
+        cv.put("lastUpdated", DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
+        cv.put("state", tei.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
+        briteDatabase.update(TrackedEntityInstanceModel.TABLE, cv, "uid = ?", teiUid);
     }
 
     @Override
-    public Observable<Boolean> updateEventStatus(EventStatus
-                                                         status) {
+    public Observable<Boolean> updateEventStatus(EventStatus status) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(EventModel.Columns.STATUS, status.name());
         String updateDate = DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime());
@@ -684,10 +679,15 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     @Override
     public Observable<Boolean> rescheduleEvent(Date newDate) {
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(EventModel.Columns.DUE_DATE, DateUtils.databaseDateFormat().format(newDate));
-        return Observable.just(briteDatabase.update(EventModel.TABLE, contentValues, "uid = ?", eventUid))
-                .flatMap(result -> updateEventStatus(EventStatus.SCHEDULE));
+        ContentValues cv = currentEvent.toContentValues();
+        cv.put(EventModel.Columns.DUE_DATE, DateUtils.databaseDateFormat().format(newDate));
+        cv.put("lastUpdated", DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
+        cv.put("state", currentEvent.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
+        cv.put("status", EventStatus.SCHEDULE.name());
+        boolean updated = briteDatabase.update(EventModel.TABLE, cv, "uid = ?", eventUid) > 0;
+        if (updated && currentEvent.enrollment() != null)
+            updateEnrollment(currentEvent.enrollment());
+        return Observable.just(updated);
     }
 
     @Override
