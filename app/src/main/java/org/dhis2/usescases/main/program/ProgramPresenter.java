@@ -132,7 +132,10 @@ public class ProgramPresenter implements ProgramContract.Presenter {
 
     @Override
     public void onSyncStatusClick(ProgramViewModel program) {
-        view.showSyncDialog(program.id(), SyncStatusDialog.ConflictType.PROGRAM);
+        if(!program.typeName().equals("DataSets"))
+            view.showSyncDialog(program.id(), SyncStatusDialog.ConflictType.PROGRAM);
+        else
+            view.showSyncDialog(program.id(), SyncStatusDialog.ConflictType.DATA_SET);
     }
 
     @Override

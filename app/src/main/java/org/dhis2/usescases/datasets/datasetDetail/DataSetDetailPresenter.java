@@ -5,6 +5,7 @@ import androidx.annotation.IntDef;
 
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity;
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialActivity;
+import org.dhis2.usescases.main.program.SyncStatusDialog;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.OrgUnitUtils;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
@@ -171,5 +172,10 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
             if(!selectedPeriods.isEmpty() && selectedPeriods.get(0).equals(entry.getKey()))
                 return entry.getValue();
         return "";
+    }
+
+    @Override
+    public void onSyncIconClick(String orgUnit, String attributeCombo, String periodId) {
+        view.showSyncDialog(orgUnit, attributeCombo, periodId, SyncStatusDialog.ConflictType.TEI);
     }
 }

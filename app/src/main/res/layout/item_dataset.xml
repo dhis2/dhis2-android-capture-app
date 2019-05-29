@@ -65,6 +65,8 @@
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            android:clickable="true"
+            android:focusable="true"
             app:stateIcon='@{dataset.state}'
             tools:ignore="ContentDescription"
             tools:src="@drawable/ic_sync" />

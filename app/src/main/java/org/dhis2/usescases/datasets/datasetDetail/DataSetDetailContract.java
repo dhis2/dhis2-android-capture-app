@@ -61,5 +61,7 @@ public class DataSetDetailContract {
         Map<String, String> getPeriodAvailableForFilter();
 
         String getFirstPeriodSelected();
+
+        void onSyncIconClick(String orgUnit, String attributeCombo, String periodId);
     }
 }
