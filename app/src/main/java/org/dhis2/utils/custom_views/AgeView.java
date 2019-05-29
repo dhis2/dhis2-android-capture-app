@@ -9,7 +9,6 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.DatePicker;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.databinding.ViewDataBinding;
@@ -155,14 +154,15 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
         if (!hasFocus)
             switch (v.getId()) {
                 case R.id.input_days:
+                    handleSingleInputs(true);
                 case R.id.input_month:
                 case R.id.input_year:
-                    handleSingleInputs();
+                    handleSingleInputs(false);
                     break;
             }
     }
 
-    protected void handleSingleInputs() {
+    protected void handleSingleInputs(boolean finish) {
 
         Calendar calendar = Calendar.getInstance();
 
@@ -177,7 +177,8 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
         String birthDate = DateUtils.uiDateFormat().format(calendar.getTime());
         if (!date.getText().toString().equals(birthDate)) {
             date.setText(birthDate);
-            listener.onAgeSet(calendar.getTime());
+            if (finish)
+                listener.onAgeSet(calendar.getTime());
         }
     }
 

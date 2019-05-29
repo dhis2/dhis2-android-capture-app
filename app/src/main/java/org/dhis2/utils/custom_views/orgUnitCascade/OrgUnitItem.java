@@ -32,20 +32,29 @@ public class OrgUnitItem {
     }
 
     public boolean canCaptureData() {
-        getLevelOrgUnits();
+        OrganisationUnitCollectionRepository captureRepo = ouRepo.byLevel().eq(level);
+        if(!isEmpty(parentUid))
+            captureRepo = captureRepo.byParentUid().eq(parentUid);
+        hasCaptureOrgUnits = !captureRepo.byOrganisationUnitScope(ouScope).get().isEmpty();
+//        getLevelOrgUnits();
         return hasCaptureOrgUnits;
     }
 
     public List<Trio<String, String, Boolean>> getLevelOrgUnits() {
 
-        OrganisationUnitCollectionRepository finalOuRepo = ouRepo;
+        List<Trio<String, String, Boolean>> menuOrgUnitList = new ArrayList<>();
+
+        OrganisationUnitCollectionRepository finalOuRepo = ouRepo.byLevel().eq(level);
         if (!isEmpty(parentUid))
             finalOuRepo = finalOuRepo.byParentUid().eq(parentUid);
 
         List<OrganisationUnit> orgUnitList = finalOuRepo.get();
+        int nextLevel = level+1;
+        while(orgUnitList.isEmpty())
+            orgUnitList = ouRepo.byLevel().eq(nextLevel++).get();
+
         if (orgUnitList.isEmpty())//When parent is set and list is empty the ou has not been downloaded, we have to get it from the uidPath
             orgUnitList = ouRepo.get();
-        List<OrganisationUnit> captureOrgUnits = finalOuRepo.byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).get();
 
         Map<String, Trio<String, String, Boolean>> menuOrgUnits = new HashMap<>();
         for (OrganisationUnit ou : orgUnitList) {
@@ -62,7 +71,7 @@ public class OrgUnitItem {
                     hasCaptureOrgUnits = true;
             }
         }
-        List<Trio<String, String, Boolean>> menuOrgUnitList = new ArrayList<>(menuOrgUnits.values());
+        menuOrgUnitList.addAll(menuOrgUnits.values());
         Collections.sort(menuOrgUnitList, (ou1, ou2) -> ou1.val1().compareTo(ou2.val1()));
         return menuOrgUnitList;
     }

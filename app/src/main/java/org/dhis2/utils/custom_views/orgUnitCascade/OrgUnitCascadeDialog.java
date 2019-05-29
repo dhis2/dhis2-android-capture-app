@@ -125,7 +125,6 @@ public class OrgUnitCascadeDialog extends DialogFragment {
                                 if (maxLevel < ou.level())
                                     maxLevel = ou.level();
                             }
-
                             return maxLevel;
                         })
                         .map(maxLevel -> {
