@@ -11,6 +11,7 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -20,7 +21,9 @@ import androidx.databinding.ViewDataBinding;
 import com.google.android.material.textfield.TextInputLayout;
 
 import org.dhis2.BR;
+import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
+import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
@@ -44,6 +47,7 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
     private LayoutInflater inflater;
     private TextInputLayout inputLayout;
     private boolean isLongText;
+    private View descriptionLabel;
 
     public CustomTextView(Context context) {
         super(context);
@@ -83,14 +87,21 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
         inputLayout = findViewById(R.id.input_layout);
         editText = findViewById(R.id.input_editText);
         icon = findViewById(R.id.renderImage);
+        descriptionLabel = binding.getRoot().findViewById(R.id.descriptionLabel);
+
         editText.setOnFocusChangeListener(this);
+    }
+
+    public void setDescription(String description) {
+        descriptionLabel.setVisibility(label.length() > 16 || description != null ? View.VISIBLE : View.GONE);
     }
 
     private void configureViews() {
 
         editText.setFilters(new InputFilter[]{});
 
-        TextInputLayout.LayoutParams lp = new TextInputLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        TextInputLayout.LayoutParams lp = new TextInputLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
+        lp.weight = 1f;
         inputLayout.setLayoutParams(lp);
         editText.setMaxLines(1);
         editText.setVerticalScrollBarEnabled(false);
@@ -116,6 +127,8 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
                     editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
                     editText.setVerticalScrollBarEnabled(true);
                     editText.setScrollBarStyle(View.SCROLLBARS_INSIDE_INSET);
+                    editText.setSingleLine(false);
+                    editText.setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
                     break;
                 case LETTER:
                     editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
@@ -176,14 +189,15 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
         editText.setEnabled(editable);
     }
 
-    public void setWarning(String msg) {
-        inputLayout.setErrorTextAppearance(R.style.warning_appearance);
-        inputLayout.setError(msg);
-    }
-
-    public void setError(String msg) {
-        inputLayout.setErrorTextAppearance(R.style.error_appearance);
-        inputLayout.setError(msg);
+    public void setWarning(String warning, String error) {
+        if (!isEmpty(error)) {
+            inputLayout.setErrorTextAppearance(R.style.error_appearance);
+            inputLayout.setError(error);
+        } else if (!isEmpty(warning)) {
+            inputLayout.setErrorTextAppearance(R.style.warning_appearance);
+            inputLayout.setError(warning);
+        } else
+            inputLayout.setError(null);
     }
 
     public void setText(String text) {
@@ -192,10 +206,15 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
                 0 : editText.getText().length());
     }
 
-    public void setLabel(String label) {
-        this.label = label;
-        binding.setVariable(BR.label, label);
-        binding.executePendingBindings();
+    public void setLabel(String label, boolean mandatory) {
+        if (inputLayout.getHint() == null || !inputLayout.getHint().toString().equals(label)) {
+            StringBuilder labelBuilder = new StringBuilder(label);
+            if (mandatory)
+                labelBuilder.append("*");
+            this.label = labelBuilder.toString();
+            inputLayout.setHint(this.label);
+            binding.setVariable(BR.label, this.label);
+        }
     }
 
     public TextInputAutoCompleteTextView getEditText() {
@@ -286,4 +305,7 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
     }
 
 
+    public void setObjectSyle(ObjectStyleModel objectStyle) {
+        Bindings.setObjectStyle(icon, this, objectStyle);
+    }
 }
