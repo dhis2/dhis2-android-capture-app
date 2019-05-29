@@ -10,18 +10,25 @@
 
     </data>
 
-    <Button
-        android:id="@+id/formButton"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:minHeight="@dimen/default_cell_height"
-        android:clickable="false"
-        android:enabled="false"
-        android:focusable="true"
-        android:padding="3dp"
-        android:maxLines="2"
-        android:ellipsize="end"
-        android:textAllCaps="false"
-        android:textColor="@color/gray_b2b"
-        tools:text="Unsupported" />
+        android:layout_height="match_parent">
+
+        <Button
+            android:id="@+id/formButton"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:minHeight="@dimen/default_cell_height"
+            android:clickable="false"
+            android:enabled="false"
+            android:focusable="true"
+            android:padding="3dp"
+            android:maxLines="2"
+            android:ellipsize="end"
+            android:textAllCaps="false"
+            android:textColor="@color/gray_b2b"
+            android:background="@drawable/cell_edit_bg"
+            tools:text="Unsupported" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
