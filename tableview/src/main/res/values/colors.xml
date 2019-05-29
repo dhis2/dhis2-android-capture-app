@@ -19,9 +19,9 @@
 <resources>
     <color name="table_view_default_text_color">#ffffff</color>
     <color name="table_view_default_separator_color">#ffffff</color>
-    <color name="table_view_default_unselected_background_color">#DFDFDF</color>
+    <color name="table_view_default_unselected_background_color">#ffffff</color>
     <color name="table_view_default_header_background_color">#5C5C5C</color>
-    <color name="table_view_default_selected_background_color">#5C5C5C</color>
+    <color name="table_view_default_selected_background_color">#DFDFDF</color>
     <color name="table_view_default_disabled_background_color">#909090</color>
     <color name="table_view_default_deactivated_background_color">#5C5C5C</color>
     <color name="table_view_default_shadow_background_color">#000000</color>
