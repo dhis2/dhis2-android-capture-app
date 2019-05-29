@@ -13,7 +13,9 @@ import org.dhis2.data.forms.dataentry.tablefields.Row;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.databinding.FormDateTextBinding;
 import org.dhis2.databinding.FormTimeTextBinding;
+import org.dhis2.databinding.TableDateTextBinding;
 import org.dhis2.databinding.TableDateTimeTextBinding;
+import org.dhis2.databinding.TableTimeTextBinding;
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetTableAdapter;
 
 import io.reactivex.processors.FlowableProcessor;
@@ -52,13 +54,13 @@ public class DateTimeRow implements Row<DateTimeHolder, DateTimeViewModel> {
         switch (viewType) {
             case TIME:
                 binding = DataBindingUtil.inflate(inflater,
-                        R.layout.form_time_text, parent, false);
-                ((FormTimeTextBinding) binding).timeView.setCellLayout(tableScale);
+                        R.layout.table_time_text, parent, false);
+                ((TableTimeTextBinding) binding).timeView.setCellLayout(tableScale);
                 break;
             case DATE:
                 binding = DataBindingUtil.inflate(inflater,
-                        R.layout.form_date_text, parent, false);
-                ((FormDateTextBinding) binding).dateView.setCellLayout(tableScale);
+                        R.layout.table_date_text, parent, false);
+                ((TableDateTextBinding) binding).dateView.setCellLayout(tableScale);
                 break;
             default:
                 binding = DataBindingUtil.inflate(inflater,

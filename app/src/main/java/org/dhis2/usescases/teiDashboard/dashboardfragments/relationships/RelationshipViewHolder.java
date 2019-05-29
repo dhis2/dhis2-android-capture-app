@@ -2,19 +2,11 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.relationships;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ItemRelationshipBinding;
-import org.dhis2.usescases.teiDashboard.TeiDashboardContracts;
-
-import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipContracts;
 import org.hisp.dhis.android.core.relationship.Relationship;
-import org.hisp.dhis.android.core.relationship.RelationshipType;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 
 import java.util.List;
-
-import io.reactivex.disposables.CompositeDisposable;
-import timber.log.Timber;
 
 /**
  * QUADRAM. Created by ppajuelo on 05/12/2017.
@@ -23,49 +15,33 @@ import timber.log.Timber;
 public class RelationshipViewHolder extends RecyclerView.ViewHolder {
 
     private final ItemRelationshipBinding binding;
-    private CompositeDisposable compositeDisposable;
 
     public RelationshipViewHolder(ItemRelationshipBinding binding) {
         super(binding.getRoot());
         this.binding = binding;
-        this.compositeDisposable = new CompositeDisposable();
     }
 
-    public void bind(RelationshipContracts.Presenter presenter, Pair<Relationship, RelationshipType> relationships) {
+    public void bind(RelationshipContracts.Presenter presenter, RelationshipViewModel relationships) {
 
-        Relationship relationship = relationships.val0();
-        String relationshipTEIUid;
-        boolean from;
+        Relationship relationship = relationships.relationship();
 
-        if (!presenter.getTeiUid().equals(relationship.from().trackedEntityInstance().trackedEntityInstance())) {
-            relationshipTEIUid = relationship.from().trackedEntityInstance().trackedEntityInstance();
-            from = true;
-        }else {
-            relationshipTEIUid = relationship.to().trackedEntityInstance().trackedEntityInstance();
-            from = false;
-        }
-        compositeDisposable.add(
-                presenter.getTEIMainAttributes(relationshipTEIUid)
-                        .subscribe(
-                                this::setAttributes,
-                                Timber::d
-                        )
-        );
+        boolean from = relationships.relationshipDirection() == RelationshipViewModel.RelationshipDirection.FROM;
 
-        binding.teiRelationshipLink.setOnClickListener(view -> presenter.openDashboard(relationshipTEIUid));
+        binding.teiRelationshipLink.setOnClickListener(view -> presenter.openDashboard(relationships.teiUid()));
 
         binding.setPresenter(presenter);
         binding.setRelationship(relationship);
-        String relationshipNameText = from?relationships.val1().aIsToB():relationships.val1().bIsToA();
-        binding.relationshipName.setText(relationshipNameText!=null?relationshipNameText:relationships.val1().displayName());
-        binding.executePendingBindings();
+        String relationshipNameText = from ? relationships.relationshipType().aIsToB() : relationships.relationshipType().bIsToA();
+        binding.relationshipName.setText(relationshipNameText != null ? relationshipNameText : relationships.relationshipType().displayName());
 
+        if (relationships.teiAttributes() != null)
+            setAttributes(relationships.teiAttributes());
     }
 
-    private void setAttributes(List<TrackedEntityAttributeValueModel> trackedEntityAttributeValueModels) {
+    private void setAttributes(List<TrackedEntityAttributeValue> trackedEntityAttributeValueModels) {
         if (trackedEntityAttributeValueModels.size() > 1)
             binding.setTeiName(String.format("%s %s", trackedEntityAttributeValueModels.get(0).value(), trackedEntityAttributeValueModels.get(1).value()));
-        else if(!trackedEntityAttributeValueModels.isEmpty())
+        else if (!trackedEntityAttributeValueModels.isEmpty())
             binding.setTeiName(trackedEntityAttributeValueModels.get(0).value());
         else
             binding.setTeiName("-");

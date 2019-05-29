@@ -3,9 +3,6 @@ package org.dhis2.data.metadata;
 import android.content.ContentValues;
 import android.database.Cursor;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.R;
@@ -45,6 +42,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -91,17 +90,21 @@ public class MetadataRepositoryImpl implements MetadataRepository {
 
     private final String TEI_ORG_UNIT_QUERY = String.format(
             "SELECT * FROM %s " +
+                    "WHERE %s.%s IN (" +
+                    "SELECT %s.%s FROM %s " +
                     "JOIN %s ON %s.%s = %s.%s " +
-                    "WHERE  %s.%s = ? LIMIT 1",
+                    "WHERE  %s.%s = ?)",
             OrganisationUnitModel.TABLE,
-            TrackedEntityInstanceModel.TABLE, TrackedEntityInstanceModel.TABLE, TrackedEntityInstanceModel.Columns.ORGANISATION_UNIT, OrganisationUnitModel.TABLE, OrganisationUnitModel.Columns.UID,
-            TrackedEntityInstanceModel.TABLE, TrackedEntityInstanceModel.Columns.UID);
+            OrganisationUnitModel.TABLE, OrganisationUnitModel.Columns.UID,
+            EnrollmentModel.TABLE, EnrollmentModel.Columns.ORGANISATION_UNIT, EnrollmentModel.TABLE,
+            TrackedEntityInstanceModel.TABLE, TrackedEntityInstanceModel.TABLE, TrackedEntityInstanceModel.Columns.UID, EnrollmentModel.TABLE, EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE,
+            EnrollmentModel.TABLE, EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE);
 
     private final String ENROLLMENT_ORG_UNIT_QUERY =
             "SELECT OrganisationUnit.* FROM OrganisationUnit " +
                     "WHERE OrganisationUnit.uid IN (" +
                     "SELECT Enrollment.organisationUnit FROM Enrollment " +
-                    "JOIN Program ON Program.uid = Enrollment.program WHERE Enrollment.trackedEntityInstance = ? AND Program.uid = ? LIMIT 1)";
+                    "JOIN Program ON Program.uid = Enrollment.program WHERE Enrollment.trackedEntityInstance = ? AND Program.uid = ?)";
 
 
     private Set<String> TEI_ORG_UNIT_TABLES = new HashSet<>(Arrays.asList(OrganisationUnitModel.TABLE, TrackedEntityInstanceModel.TABLE));
@@ -248,20 +251,20 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     }
 
     @Override
-    public Observable<OrganisationUnitModel> getTeiOrgUnit(String teiUid) {
+    public Observable<List<OrganisationUnitModel>> getTeiOrgUnits(String teiUid) {
         return briteDatabase
                 .createQuery(TEI_ORG_UNIT_TABLES, TEI_ORG_UNIT_QUERY, teiUid == null ? "" : teiUid)
-                .mapToOne(OrganisationUnitModel::create);
+                .mapToList(OrganisationUnitModel::create);
     }
 
     @Override
-    public Observable<OrganisationUnitModel> getTeiOrgUnit(@NonNull String teiUid, @Nullable String programUid) {
+    public Observable<List<OrganisationUnitModel>> getTeiOrgUnits(@NonNull String teiUid, @Nullable String programUid) {
         if (programUid == null)
-            return getTeiOrgUnit(teiUid);
+            return getTeiOrgUnits(teiUid);
         else
             return briteDatabase
                     .createQuery(TEI_ORG_UNIT_TABLES, ENROLLMENT_ORG_UNIT_QUERY, teiUid, programUid)
-                    .mapToOne(OrganisationUnitModel::create);
+                    .mapToList(OrganisationUnitModel::create);
     }
 
     @Override
@@ -338,7 +341,7 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     @Override
     public Observable<List<ProgramModel>> getTeiActivePrograms(String teiUid, boolean showOnlyActive) {
         String query = ACTIVE_TEI_PROGRAMS;
-        if(showOnlyActive)
+        if (showOnlyActive)
             query = query + " and Enrollment.status = 'ACTIVE'";
 
         return briteDatabase.createQuery(ACTIVE_TEI_PROGRAMS_TABLES, query, teiUid == null ? "" : teiUid)

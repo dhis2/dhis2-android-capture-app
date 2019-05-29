@@ -9,10 +9,9 @@ import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.datetime.OnDateSelected;
 import org.dhis2.data.forms.dataentry.tablefields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
-import org.dhis2.databinding.FormDateTextBinding;
+import org.dhis2.databinding.TableDateTextBinding;
 import org.dhis2.databinding.TableDateTimeTextBinding;
-import org.dhis2.databinding.FormTimeTextBinding;
-import org.dhis2.databinding.TableDateTimeTextBinding;
+import org.dhis2.databinding.TableTimeTextBinding;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.common.ValueType;
 
@@ -39,12 +38,12 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
         this.disposable = new CompositeDisposable();
         this.processor = processor;
 
-        if (binding instanceof FormTimeTextBinding) {
-            ((FormTimeTextBinding) binding).timeView.setDateListener(this);
+        if (binding instanceof TableTimeTextBinding) {
+            ((TableTimeTextBinding) binding).timeView.setDateListener(this);
         }
 
-        if (binding instanceof FormDateTextBinding) {
-            ((FormDateTextBinding) binding).dateView.setDateListener(this);
+        if (binding instanceof TableDateTextBinding) {
+            ((TableDateTextBinding) binding).dateView.setDateListener(this);
         }
 
         if (binding instanceof TableDateTimeTextBinding) {
@@ -73,35 +72,35 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
         if (!isEmpty(value))
             binding.setVariable(BR.initData, value);
 
-        if (binding instanceof FormDateTextBinding)
-            ((FormDateTextBinding) binding).dateView.setAllowFutureDates(dateTimeViewModel.allowFutureDate());
+        if (binding instanceof TableDateTextBinding)
+            ((TableDateTextBinding) binding).dateView.setAllowFutureDates(dateTimeViewModel.allowFutureDate());
         if (binding instanceof TableDateTimeTextBinding)
             ((TableDateTimeTextBinding) binding).dateTimeView.setAllowFutureDates(dateTimeViewModel.allowFutureDate());
 
         if (dateTimeViewModel.warning() != null) {
-            if (binding instanceof FormTimeTextBinding)
-                ((FormTimeTextBinding) binding).timeView.setWarning(dateTimeViewModel.warning());
-            if (binding instanceof FormDateTextBinding)
-                ((FormDateTextBinding) binding).dateView.setWarning(dateTimeViewModel.warning());
+            if (binding instanceof TableTimeTextBinding)
+                ((TableTimeTextBinding) binding).timeView.setWarning(dateTimeViewModel.warning());
+            if (binding instanceof TableDateTextBinding)
+                ((TableDateTextBinding) binding).dateView.setWarning(dateTimeViewModel.warning());
             if (binding instanceof TableDateTimeTextBinding)
                 ((TableDateTimeTextBinding) binding).dateTimeView.setWarning(dateTimeViewModel.warning());
 
         } else if (dateTimeViewModel.error() != null) {
-            if (binding instanceof FormTimeTextBinding)
-                ((FormTimeTextBinding) binding).timeView.setError(dateTimeViewModel.error());
-            if (binding instanceof FormDateTextBinding)
-                ((FormDateTextBinding) binding).dateView.setError(dateTimeViewModel.error());
+            if (binding instanceof TableTimeTextBinding)
+                ((TableTimeTextBinding) binding).timeView.setError(dateTimeViewModel.error());
+            if (binding instanceof TableDateTextBinding)
+                ((TableDateTextBinding) binding).dateView.setError(dateTimeViewModel.error());
             if (binding instanceof TableDateTimeTextBinding)
                 ((TableDateTimeTextBinding) binding).dateTimeView.setWarning(dateTimeViewModel.error());
 
         } else {
-            if (binding instanceof FormTimeTextBinding) {
-                ((FormTimeTextBinding) binding).timeView.setError(null);
-                ((FormTimeTextBinding) binding).timeView.setWarning(null);
+            if (binding instanceof TableTimeTextBinding) {
+                ((TableTimeTextBinding) binding).timeView.setError(null);
+                ((TableTimeTextBinding) binding).timeView.setWarning(null);
             }
-            if (binding instanceof FormDateTextBinding) {
-                ((FormDateTextBinding) binding).dateView.setError(null);
-                ((FormDateTextBinding) binding).dateView.setWarning(null);
+            if (binding instanceof TableDateTextBinding) {
+                ((TableDateTextBinding) binding).dateView.setError(null);
+                ((TableDateTextBinding) binding).dateView.setWarning(null);
             }
             if (binding instanceof TableDateTimeTextBinding) {
                 ((TableDateTimeTextBinding) binding).dateTimeView.setError(null);
@@ -110,33 +109,33 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
         }
 
         if (!viewModel.editable()) {
-            if (binding instanceof FormTimeTextBinding)
-                ((FormTimeTextBinding) binding).timeView.getEditText().setBackgroundColor(ContextCompat.getColor(((FormTimeTextBinding) binding).timeView.getContext(), R.color.bg_black_e6e));
-            if (binding instanceof FormDateTextBinding)
-                ((FormDateTextBinding) binding).dateView.getEditText().setBackgroundColor(ContextCompat.getColor(((FormDateTextBinding) binding).dateView.getContext(), R.color.bg_black_e6e));
+            if (binding instanceof TableTimeTextBinding)
+                ((TableTimeTextBinding) binding).timeView.getEditText().setBackgroundColor(ContextCompat.getColor(((TableTimeTextBinding) binding).timeView.getContext(), R.color.bg_black_e6e));
+            if (binding instanceof TableDateTextBinding)
+                ((TableDateTextBinding) binding).dateView.getEditText().setBackgroundColor(ContextCompat.getColor(((TableDateTextBinding) binding).dateView.getContext(), R.color.bg_black_e6e));
             if (binding instanceof TableDateTimeTextBinding)
                 ((TableDateTimeTextBinding) binding).dateTimeView.getEditText().setBackgroundColor(ContextCompat.getColor(((TableDateTimeTextBinding) binding).dateTimeView.getContext(), R.color.bg_black_e6e));
         } else {
-            if (binding instanceof FormTimeTextBinding)
-                ((FormTimeTextBinding) binding).timeView.setBackgroundColor(ContextCompat.getColor(((FormTimeTextBinding) binding).timeView.getContext(), R.color.white));
-            if (binding instanceof FormDateTextBinding)
-                ((FormDateTextBinding) binding).dateView.setBackgroundColor(ContextCompat.getColor(((FormDateTextBinding) binding).dateView.getContext(), R.color.white));
+            if (binding instanceof TableTimeTextBinding)
+                ((TableTimeTextBinding) binding).timeView.setBackgroundColor(ContextCompat.getColor(((TableTimeTextBinding) binding).timeView.getContext(), R.color.white));
+            if (binding instanceof TableDateTextBinding)
+                ((TableDateTextBinding) binding).dateView.setBackgroundColor(ContextCompat.getColor(((TableDateTextBinding) binding).dateView.getContext(), R.color.white));
             if (binding instanceof TableDateTimeTextBinding)
                 ((TableDateTimeTextBinding) binding).dateTimeView.setBackgroundColor(ContextCompat.getColor(((TableDateTimeTextBinding) binding).dateTimeView.getContext(), R.color.white));
         }
 
-        if (binding instanceof FormTimeTextBinding)
-            ((FormTimeTextBinding) binding).timeView.setEditable(accessDataWrite && viewModel.editable());
-        if (binding instanceof FormDateTextBinding)
-            ((FormDateTextBinding) binding).dateView.setEditable(accessDataWrite && viewModel.editable());
+        if (binding instanceof TableTimeTextBinding)
+            ((TableTimeTextBinding) binding).timeView.setEditable(accessDataWrite && viewModel.editable());
+        if (binding instanceof TableDateTextBinding)
+            ((TableDateTextBinding) binding).dateView.setEditable(accessDataWrite && viewModel.editable());
         if (binding instanceof TableDateTimeTextBinding)
             ((TableDateTimeTextBinding) binding).dateTimeView.setEditable(accessDataWrite && viewModel.editable());
 
         if (dateTimeViewModel.mandatory()) {
-            if (binding instanceof FormTimeTextBinding)
-                ((FormTimeTextBinding) binding).timeView.setMandatory();
-            if (binding instanceof FormDateTextBinding)
-                ((FormDateTextBinding) binding).dateView.setMandatory();
+            if (binding instanceof TableTimeTextBinding)
+                ((TableTimeTextBinding) binding).timeView.setMandatory();
+            if (binding instanceof TableDateTextBinding)
+                ((TableDateTextBinding) binding).dateView.setMandatory();
             if (binding instanceof TableDateTimeTextBinding)
                 ((TableDateTimeTextBinding) binding).dateTimeView.setMandatory();
         }
@@ -169,12 +168,12 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
     public void setSelected(SelectionState selectionState) {
         super.setSelected(selectionState);
         if (selectionState == SelectionState.SELECTED && dateTimeViewModel.editable()) {
-            if (binding instanceof FormTimeTextBinding) {
-                ((FormTimeTextBinding) binding).timeView.performClick();
+            if (binding instanceof TableTimeTextBinding) {
+                ((TableTimeTextBinding) binding).timeView.performClick();
             }
 
-            if (binding instanceof FormDateTextBinding) {
-                ((FormDateTextBinding) binding).dateView.performClick();
+            if (binding instanceof TableDateTextBinding) {
+                ((TableDateTextBinding) binding).dateView.performClick();
             }
 
             if (binding instanceof TableDateTimeTextBinding) {

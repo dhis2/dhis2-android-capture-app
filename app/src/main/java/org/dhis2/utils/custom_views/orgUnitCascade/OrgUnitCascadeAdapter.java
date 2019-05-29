@@ -26,6 +26,7 @@ import static android.text.TextUtils.isEmpty;
 public class OrgUnitCascadeAdapter extends RecyclerView.Adapter<OrgUnitCascadeHolder> {
 
     private final OrganisationUnitCollectionRepository orgUnitRepository;
+    private final OrgUnitCascadeDialog.OUSelectionType selectionType;
     private List<OrgUnitItem> items; //OrgUnit uid, orgUnit name, paretUid, canBe selected
     private ObservableInt level = new ObservableInt(1);
     private HashMap<Integer, String> selectedParent = new HashMap<>();
@@ -36,10 +37,11 @@ public class OrgUnitCascadeAdapter extends RecyclerView.Adapter<OrgUnitCascadeHo
         void onNewLevelSelected(boolean canBeSelected);
     }
 
-    OrgUnitCascadeAdapter(List<OrgUnitItem> items, String selectedOrgUnit, OrgUnitCascadeAdapterInterface orgUnitCascadeAdapterInterface, OrganisationUnitCollectionRepository organisationUnits) {
+    OrgUnitCascadeAdapter(List<OrgUnitItem> items, String selectedOrgUnit, OrgUnitCascadeAdapterInterface orgUnitCascadeAdapterInterface, OrganisationUnitCollectionRepository organisationUnits, OrgUnitCascadeDialog.OUSelectionType ouSelectionType) {
         this.items = items;
         this.orgUnitCascadeAdapterInterface = orgUnitCascadeAdapterInterface;
         this.orgUnitRepository = organisationUnits;
+        this.selectionType = ouSelectionType;
 
         if (isEmpty(selectedOrgUnit))
             for (int i = 1; i < items.size(); i++)
@@ -63,7 +65,7 @@ public class OrgUnitCascadeAdapter extends RecyclerView.Adapter<OrgUnitCascadeHo
     @Override
     public OrgUnitCascadeHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
         OrgUnitCascadeLevelItemBinding binding = DataBindingUtil.inflate(LayoutInflater.from(viewGroup.getContext()), R.layout.org_unit_cascade_level_item, viewGroup, false);
-        return new OrgUnitCascadeHolder(binding, this);
+        return new OrgUnitCascadeHolder(binding, this,selectionType);
     }
 
     @Override
