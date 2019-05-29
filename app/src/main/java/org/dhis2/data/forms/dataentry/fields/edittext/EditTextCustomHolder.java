@@ -1,7 +1,6 @@
 package org.dhis2.data.forms.dataentry.fields.edittext;
 
 
-import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 
 import androidx.annotation.NonNull;
@@ -17,7 +16,6 @@ import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.FormEditTextCustomBinding;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.Preconditions;
-import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
 
@@ -82,37 +80,18 @@ final class EditTextCustomHolder extends FormViewHolder {
     }
 
     public void update(@NonNull FieldViewModel model) {
-
         this.editTextModel = (EditTextViewModel) model;
-
-        descriptionText = editTextModel.description();
-        formEditTextCustomBinding.customEdittext.setValueType(editTextModel.valueType());
+        formEditTextCustomBinding.customEdittext.setObjectSyle(model.objectStyle());
+        label = new StringBuilder(model.label());
+        formEditTextCustomBinding.customEdittext.setLabel(model.label(), model.mandatory());
+        descriptionText = model.description();
+        formEditTextCustomBinding.customEdittext.setDescription(descriptionText);
+        formEditTextCustomBinding.customEdittext.setWarning(model.warning(), model.error());
+        formEditTextCustomBinding.customEdittext.setText(editTextModel.value());
         formEditTextCustomBinding.customEdittext.setEditable(model.editable());
-        if (editTextModel.valueType() == ValueType.LONG_TEXT) {
-            formEditTextCustomBinding.customEdittext.getInputLayout().getEditText().setSingleLine(false);
-            formEditTextCustomBinding.customEdittext.getInputLayout().getEditText().setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
-        }
-        label = new StringBuilder(editTextModel.label());
-        if (editTextModel.mandatory())
-            label.append("*");
-        formEditTextCustomBinding.customEdittext.setLabel(label.toString());
-
-        if (editTextModel.warning() != null)
-            formEditTextCustomBinding.customEdittext.setWarning(editTextModel.warning());
-        else if (editTextModel.error() != null)
-            formEditTextCustomBinding.customEdittext.setError(editTextModel.error());
-        else
-            formEditTextCustomBinding.customEdittext.setError(null);
-
-
-        if (editTextModel.value() != null)
-            formEditTextCustomBinding.customEdittext.setText(editTextModel.value());
-        else
-            formEditTextCustomBinding.customEdittext.setText(null);
+        formEditTextCustomBinding.customEdittext.setValueType(editTextModel.valueType());
 
         setRenderingType(editTextModel.fieldRendering());
-
-        formEditTextCustomBinding.executePendingBindings();
     }
 
     private void checkAutocompleteRendering() {

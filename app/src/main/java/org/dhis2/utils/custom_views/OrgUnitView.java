@@ -90,7 +90,7 @@ public class OrgUnitView extends FieldLayout implements OrgUnitCascadeDialog.Cas
                 editText.setText(null);
                 editText.setEnabled(true);
             }
-        }).show(fm, label));
+        }, OrgUnitCascadeDialog.OUSelectionType.SEARCH).show(fm, label));
     }
 
     @Override

@@ -140,6 +140,12 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
         dashboardViewModel.eventUid().observe(this, this::displayGenerateEvent);
     }
 
+    @Override
+    public void onPause() {
+        presenter.onDettach();
+        super.onPause();
+    }
+
     public void setData(DashboardProgramModel nprogram) {
         this.dashboardModel = nprogram;
 

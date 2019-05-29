@@ -621,7 +621,9 @@ public class SearchTEPresenterImpl implements SearchTEContractsModule.SearchTEPr
 
     @Override
     public void addRelationship(String teiuid, boolean online) {
-        if (!online) {
+        if (teiuid.equals(view.fromRelationshipTEI())) {
+            view.displayMessage(view.getContext().getString(R.string.relationship_error_recursive));
+        } else if (!online) {
             Intent intent = new Intent();
             intent.putExtra("TEI_A_UID", teiuid);
             view.getAbstractActivity().setResult(RESULT_OK, intent);
@@ -647,7 +649,8 @@ public class SearchTEPresenterImpl implements SearchTEContractsModule.SearchTEPr
     }
 
     @Override
-    public void downloadTeiForRelationship(String teiuid, @Nullable String relationshipTypeUid) {
+    public void downloadTeiForRelationship(String teiuid, @Nullable String
+            relationshipTypeUid) {
         List<String> teiUids = new ArrayList<>();
         teiUids.add(teiuid);
         compositeDisposable.add(

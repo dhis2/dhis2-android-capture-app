@@ -24,15 +24,17 @@ import static android.text.TextUtils.isEmpty;
 class OrgUnitCascadeHolder extends RecyclerView.ViewHolder {
     private final OrgUnitCascadeLevelItemBinding binding;
     private final OrgUnitCascadeAdapter adapter;
+    private final OrgUnitCascadeDialog.OUSelectionType selectionType;
     private String selectedOrgUnit;
     private PopupMenu menu;
     private OrganisationUnitCollectionRepository ouRepository;
     private OrgUnitItem ouItem;
 
-    public OrgUnitCascadeHolder(@NonNull OrgUnitCascadeLevelItemBinding binding, OrgUnitCascadeAdapter adapter) {
+    public OrgUnitCascadeHolder(@NonNull OrgUnitCascadeLevelItemBinding binding, OrgUnitCascadeAdapter adapter, OrgUnitCascadeDialog.OUSelectionType selectionType) {
         super(binding.getRoot());
         this.binding = binding;
         this.adapter = adapter;
+        this.selectionType = selectionType;
 
         binding.clearButton.setOnClickListener(view -> {
             selectedOrgUnit = null;
@@ -60,7 +62,7 @@ class OrgUnitCascadeHolder extends RecyclerView.ViewHolder {
             adapter.setSelectedLevel(
                     getAdapterPosition() + 1,
                     selectedOrgUnit,
-                    ouRepository.byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).uid(selectedOrgUnit).exists());
+                    ouRepository.byOrganisationUnitScope(selectionType == OrgUnitCascadeDialog.OUSelectionType.SEARCH ? OrganisationUnit.Scope.SCOPE_TEI_SEARCH : OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).uid(selectedOrgUnit).exists());
             return false;
         });
     }
