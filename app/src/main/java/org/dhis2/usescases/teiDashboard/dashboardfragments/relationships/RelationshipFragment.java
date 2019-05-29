@@ -88,7 +88,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
     }
 
     @Override
-    public Consumer<List<Pair<Relationship, RelationshipType>>> setRelationships() {
+    public Consumer<List<RelationshipViewModel>> setRelationships() {
         return relationships -> {
             if (relationshipAdapter != null) {
                 relationshipAdapter.addItems(relationships);

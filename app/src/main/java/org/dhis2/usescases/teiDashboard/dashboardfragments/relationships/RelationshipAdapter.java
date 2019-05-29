@@ -1,17 +1,14 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.relationships;
 
-import androidx.databinding.DataBindingUtil;
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import org.dhis2.R;
-import org.dhis2.data.tuples.Pair;
-import org.dhis2.databinding.ItemRelationshipBinding;
+import androidx.annotation.NonNull;
+import androidx.databinding.DataBindingUtil;
+import androidx.recyclerview.widget.RecyclerView;
 
-import org.hisp.dhis.android.core.relationship.Relationship;
-import org.hisp.dhis.android.core.relationship.RelationshipType;
+import org.dhis2.R;
+import org.dhis2.databinding.ItemRelationshipBinding;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +20,7 @@ import java.util.List;
 public class RelationshipAdapter extends RecyclerView.Adapter<RelationshipViewHolder> {
 
     private RelationshipContracts.Presenter presenter;
-    private List<Pair<Relationship, RelationshipType>> relationships;
+    private List<RelationshipViewModel> relationships;
 
     public RelationshipAdapter(RelationshipContracts.Presenter presenter) {
         this.presenter = presenter;
@@ -39,7 +36,7 @@ public class RelationshipAdapter extends RecyclerView.Adapter<RelationshipViewHo
 
     @Override
     public void onBindViewHolder(@NonNull RelationshipViewHolder holder, int position) {
-        holder.bind(presenter, relationships.get(position));
+        holder.bind(presenter,relationships.get(position));
     }
 
     @Override
@@ -47,7 +44,7 @@ public class RelationshipAdapter extends RecyclerView.Adapter<RelationshipViewHo
         return relationships != null ? relationships.size() : 0;
     }
 
-    public void addItems(List<Pair<Relationship, RelationshipType>> relationships) {
+    public void addItems(List<RelationshipViewModel> relationships) {
         this.relationships = relationships;
         notifyDataSetChanged();
     }

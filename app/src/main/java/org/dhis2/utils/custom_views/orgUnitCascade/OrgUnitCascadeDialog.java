@@ -44,7 +44,10 @@ import static android.text.TextUtils.isEmpty;
  */
 
 public class OrgUnitCascadeDialog extends DialogFragment {
+    private final OUSelectionType ouSelectionType;
     private DialogCascadeOrgunitBinding binding;
+
+    public enum OUSelectionType {CAPTURE, SEARCH}
 
     private String title;
     private CascadeOrgUnitCallbacks callbacks;
@@ -53,10 +56,11 @@ public class OrgUnitCascadeDialog extends DialogFragment {
     private D2 d2;
     private List<OrgUnitItem> initialData;
 
-    public OrgUnitCascadeDialog(String fieldLabel, String currentOUUid, CascadeOrgUnitCallbacks cascadeOrgUnitCallbacks) {
+    public OrgUnitCascadeDialog(String fieldLabel, String currentOUUid, CascadeOrgUnitCallbacks cascadeOrgUnitCallbacks, OUSelectionType ouSelectionType) {
         this.callbacks = cascadeOrgUnitCallbacks;
         this.title = fieldLabel;
         this.selectedOrgUnit = currentOUUid;
+        this.ouSelectionType = ouSelectionType;
     }
 
 
@@ -127,7 +131,7 @@ public class OrgUnitCascadeDialog extends DialogFragment {
                         .map(maxLevel -> {
                             List<OrgUnitItem> orgUnitItems = new ArrayList<>();
                             for (int i = 1; i <= maxLevel; i++) {
-                                OrgUnitItem orgUnitItem = new OrgUnitItem(d2.organisationUnitModule().organisationUnits);
+                                OrgUnitItem orgUnitItem = new OrgUnitItem(d2.organisationUnitModule().organisationUnits, ouSelectionType);
                                 orgUnitItem.setLevel(i);
                                 orgUnitItem.setOrganisationUnitLevel(d2.organisationUnitModule().organisationUnitLevels.byLevel().eq(i).one().get());//TODO: CHECK IF OU ALREADY SELECTED
                                 orgUnitItems.add(orgUnitItem);
@@ -153,7 +157,7 @@ public class OrgUnitCascadeDialog extends DialogFragment {
             } else {
                 binding.acceptButton.setVisibility(View.INVISIBLE);
             }
-        }, d2.organisationUnitModule().organisationUnits);
+        }, d2.organisationUnitModule().organisationUnits, ouSelectionType);
         binding.recycler.setAdapter(adapter);
     }
 

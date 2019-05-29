@@ -29,6 +29,7 @@ import org.dhis2.data.forms.dataentry.fields.edittext.EditTextModel;
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextRow;
 import org.dhis2.data.forms.dataentry.fields.file.FileRow;
 import org.dhis2.data.forms.dataentry.fields.file.FileViewModel;
+import org.dhis2.data.forms.dataentry.fields.image.ImageHolder;
 import org.dhis2.data.forms.dataentry.fields.image.ImageRow;
 import org.dhis2.data.forms.dataentry.fields.image.ImageViewModel;
 import org.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitRow;
@@ -157,8 +158,9 @@ public final class DataEntryAdapter extends Adapter {
 
         if (position != 0 && position == nextFocusPosition && holder instanceof FormViewHolder) {
             ((FormViewHolder) holder).performAction();
-            holder.itemView.setBackground(ContextCompat.getDrawable(holder.itemView.getContext(), R.drawable.item_selected_bg));
-        } else {
+            if (!(holder instanceof ImageHolder))
+                holder.itemView.setBackground(ContextCompat.getDrawable(holder.itemView.getContext(), R.drawable.item_selected_bg));
+        } else if (!(holder instanceof ImageHolder)) {
             holder.itemView.setBackgroundColor(Color.WHITE);
         }
 
@@ -249,7 +251,7 @@ public final class DataEntryAdapter extends Adapter {
             notifyItemChanged(nextFocusPosition);
     }
 
-    public void swapWithoutList(){
+    public void swapWithoutList() {
 
         if (lastFocusItem != null) {
             nextFocusPosition = -1;

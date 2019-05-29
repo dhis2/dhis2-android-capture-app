@@ -22,10 +22,12 @@ public class OrgUnitItem {
     private String uid;
     private String parentUid;
     private boolean hasCaptureOrgUnits;
+    private final OrganisationUnit.Scope ouScope;
 
 
-    public OrgUnitItem(OrganisationUnitCollectionRepository ouRepo) {
+    public OrgUnitItem(OrganisationUnitCollectionRepository ouRepo, OrgUnitCascadeDialog.OUSelectionType ouSelectionType) {
         this.ouRepo = ouRepo;
+        this.ouScope = ouSelectionType == OrgUnitCascadeDialog.OUSelectionType.SEARCH ? OrganisationUnit.Scope.SCOPE_TEI_SEARCH : OrganisationUnit.Scope.SCOPE_DATA_CAPTURE;
 
     }
 
@@ -41,7 +43,7 @@ public class OrgUnitItem {
             finalOuRepo = finalOuRepo.byParentUid().eq(parentUid);
 
         List<OrganisationUnit> orgUnitList = finalOuRepo.get();
-        if(orgUnitList.isEmpty())//When parent is set and list is empty the ou has not been downloaded, we have to get it from the uidPath
+        if (orgUnitList.isEmpty())//When parent is set and list is empty the ou has not been downloaded, we have to get it from the uidPath
             orgUnitList = ouRepo.get();
         List<OrganisationUnit> captureOrgUnits = finalOuRepo.byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).get();
 
@@ -50,7 +52,7 @@ public class OrgUnitItem {
             String[] uidPath = ou.path().replaceFirst("/", "").split("/");
             String[] namePath = ou.displayNamePath().replaceFirst("/", "").split("/");
             if (uidPath.length >= level && !menuOrgUnits.containsKey(uidPath[level - 1]) && (isEmpty(parentUid) || (level > 1 && uidPath[level - 2].equals(parentUid)))) {
-                boolean canCapture = ouRepo.byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).uid(uidPath[level-1]).exists();
+                boolean canCapture = ouRepo.byOrganisationUnitScope(ouScope).uid(uidPath[level - 1]).exists();
                 menuOrgUnits.put(uidPath[level - 1],
                         Trio.create(
                                 uidPath[level - 1],

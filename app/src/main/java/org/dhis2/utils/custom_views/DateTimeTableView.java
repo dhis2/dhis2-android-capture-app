@@ -9,19 +9,19 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.DatePicker;
-import android.widget.Toast;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
-
-import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ObservableField;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.datetime.OnDateSelected;
-import org.dhis2.databinding.DateTimeViewBinding;
+import org.dhis2.databinding.CustomCellViewBinding;
+import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetTableAdapter;
 import org.dhis2.utils.DateUtils;
 
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
@@ -32,30 +32,28 @@ import timber.log.Timber;
  * QUADRAM. Created by frodriguez on 1/15/2018.
  */
 
-public class DateTimeView extends FieldLayout implements View.OnClickListener, View.OnFocusChangeListener {
+public class DateTimeTableView extends FieldLayout implements View.OnClickListener, View.OnFocusChangeListener {
 
-    private TextInputEditText editText;
-    private TextInputLayout inputLayout;
-    private DateTimeViewBinding binding;
+    private TextView textView;
+    private CustomCellViewBinding binding;
 
     private Calendar selectedCalendar;
-    private DateFormat dateFormat;
     private OnDateSelected listener;
     private boolean allowFutureDates;
     private Date date;
     DatePickerDialog dateDialog;
 
-    public DateTimeView(Context context) {
+    public DateTimeTableView(Context context) {
         super(context);
         init(context);
     }
 
-    public DateTimeView(Context context, AttributeSet attrs) {
+    public DateTimeTableView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context);
     }
 
-    public DateTimeView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public DateTimeTableView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context);
     }
@@ -63,16 +61,18 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
 
     @Override
     public void performOnFocusAction() {
-        editText.performClick();
+        textView.performClick();
     }
 
 
     public void setLabel(String label) {
-        binding.setLabel(label);
+        this.label = label;
+        binding.executePendingBindings();
     }
 
     public void setDescription(String description) {
-        binding.setDescription(description);
+       /* binding.setDescription(description);
+        binding.executePendingBindings();*/
     }
 
     public void initData(String data) {
@@ -96,40 +96,34 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
 
             data = DateUtils.dateTimeFormat().format(date);
         } else {
-            editText.setText("");
+            textView.setText("");
         }
-        editText.setText(data);
+        textView.setText(data);
     }
 
     public void setWarning(String msg) {
-        inputLayout.setErrorTextAppearance(R.style.warning_appearance);
-        inputLayout.setError(msg);
+
+
     }
 
     public void setError(String msg) {
-        inputLayout.setErrorTextAppearance(R.style.error_appearance);
-        inputLayout.setError(msg);
-    }
 
-    public void setIsBgTransparent(boolean isBgTransparent) {
-        this.isBgTransparent = isBgTransparent;
-        setLayout();
+
     }
 
     public void setAllowFutureDates(boolean allowFutureDates) {
         this.allowFutureDates = allowFutureDates;
     }
 
-    private void setLayout() {
-        binding = DateTimeViewBinding.inflate(inflater, this, true);
-        inputLayout = findViewById(R.id.inputLayout);
-        editText = findViewById(R.id.inputEditText);
+    public void setCellLayout(ObservableField<DataSetTableAdapter.TableScale> tableScale) {
+        binding = DataBindingUtil.inflate(inflater, R.layout.custom_cell_view, this, true);
+        binding.setTableScale(tableScale);
+        textView = findViewById(R.id.inputEditText);
         selectedCalendar = Calendar.getInstance();
-        dateFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
-        editText.setFocusable(false); //Makes editText not editable
-        editText.setClickable(true);//  but clickable
-        editText.setOnFocusChangeListener(this);
-        editText.setOnClickListener(this);
+        textView.setFocusable(false); //Makes editText not editable
+        textView.setClickable(true);//  but clickable
+        textView.setOnFocusChangeListener(this);
+        textView.setOnClickListener(this);
     }
 
     @Override
@@ -141,6 +135,12 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
     public void setDateListener(OnDateSelected listener) {
         this.listener = listener;
     }
+
+    public void setMandatory() {
+        ImageView mandatory = binding.getRoot().findViewById(R.id.ic_mandatory);
+        mandatory.setVisibility(View.VISIBLE);
+    }
+
 
     @Override
     public void onClick(View view) {
@@ -165,13 +165,13 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
                 year,
                 month,
                 day);
-        dateDialog.setTitle(binding.getLabel());
+        dateDialog.setTitle(label);
         if (!allowFutureDates) {
             dateDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
         }
 
         dateDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getContext().getString(R.string.date_dialog_clear), (dialog, which) -> {
-            editText.setText(null);
+            textView.setText(null);
             listener.onDateSelected(null);
         });
 
@@ -203,7 +203,7 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
         }
 
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(getContext(), R.style.DatePickerTheme)
-                .setTitle(binding.getLabel())
+                .setTitle(label)
                 .setPositiveButton(R.string.action_accept, (dialog, which) -> {
                     selectedCalendar.set(Calendar.YEAR, datePicker.getYear());
                     selectedCalendar.set(Calendar.MONTH, datePicker.getMonth());
@@ -211,7 +211,7 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
                     showTimePicker(view);
                 })
                 .setNegativeButton(getContext().getString(R.string.date_dialog_clear), (dialog, which) -> {
-                    editText.setText(null);
+                    textView.setText(null);
                     listener.onDateSelected(null);
                 })
                 .setNeutralButton(getContext().getResources().getString(R.string.change_calendar), (dialog, which) -> {
@@ -234,23 +234,23 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
             selectedCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
             selectedCalendar.set(Calendar.MINUTE, minutes);
             Date selectedDate = selectedCalendar.getTime();
-            String result = dateFormat.format(selectedDate);
-            editText.setText(result);
+            String result = DateUtils.timeFormat().format(selectedDate);
+            textView.setText(result);
             listener.onDateSelected(selectedDate);
             nextFocus(view);
         },
                 hour,
                 minute,
                 is24HourFormat);
-        dialog.setTitle(binding.getLabel());
+        dialog.setTitle(label);
         dialog.show();
     }
 
-    public TextInputEditText getEditText() {
-        return editText;
+    public TextView getEditText() {
+        return textView;
     }
 
     public void setEditable(Boolean editable) {
-        editText.setEnabled(editable);
+        textView.setEnabled(editable);
     }
 }

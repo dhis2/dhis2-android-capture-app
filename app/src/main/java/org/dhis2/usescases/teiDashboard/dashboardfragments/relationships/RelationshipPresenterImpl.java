@@ -21,7 +21,10 @@ import org.hisp.dhis.android.core.relationship.RelationshipItem;
 import org.hisp.dhis.android.core.relationship.RelationshipItemTrackedEntityInstance;
 import org.hisp.dhis.android.core.relationship.RelationshipType;
 import org.hisp.dhis.android.core.relationship.RelationshipTypeModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeAttribute;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,7 +68,7 @@ public class RelationshipPresenterImpl implements RelationshipContracts.Presente
     public void init(RelationshipContracts.View view) {
         this.view = view;
 
-        compositeDisposable.add(
+        /*compositeDisposable.add(
                 updateRelationships.startWith(true)
                         .flatMap(update ->
                                 Flowable.fromIterable(
@@ -79,6 +82,53 @@ public class RelationshipPresenterImpl implements RelationshipContracts.Presente
                                                 if (type.uid().equals(relationship.relationshipType()))
                                                     relationshipType = type;
                                             return Pair.create(relationship, relationshipType);
+                                        })
+                                        .toList().toFlowable()
+                        )
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                view.setRelationships(),
+                                Timber::d
+                        )
+        );*/
+
+        compositeDisposable.add(
+                updateRelationships.startWith(true)
+                        .flatMap(update ->
+                                Flowable.fromIterable(
+                                        d2.relationshipModule().relationships.getByItem(
+                                                RelationshipItem.builder().trackedEntityInstance(
+                                                        RelationshipItemTrackedEntityInstance.builder().trackedEntityInstance(teiUid).build()).build()
+                                        ))
+                                        .map(relationship -> {
+                                            RelationshipType relationshipType = null;
+                                            for (RelationshipType type : d2.relationshipModule().relationshipTypes.get())
+                                                if (type.uid().equals(relationship.relationshipType()))
+                                                    relationshipType = type;
+
+                                            String relationshipTEIUid;
+                                            RelationshipViewModel.RelationshipDirection direction;
+                                            if (!teiUid.equals(relationship.from().trackedEntityInstance().trackedEntityInstance())) {
+                                                relationshipTEIUid = relationship.from().trackedEntityInstance().trackedEntityInstance();
+                                                direction = RelationshipViewModel.RelationshipDirection.FROM;
+                                            } else {
+                                                relationshipTEIUid = relationship.to().trackedEntityInstance().trackedEntityInstance();
+                                                direction = RelationshipViewModel.RelationshipDirection.TO;
+                                            }
+
+                                            TrackedEntityInstance tei = d2.trackedEntityModule().trackedEntityInstances.withTrackedEntityAttributeValues().uid(relationshipTEIUid).get();
+                                            List<TrackedEntityTypeAttribute> typeAttributes = d2.trackedEntityModule().trackedEntityTypeAttributes
+                                                    .byTrackedEntityTypeUid().eq(tei.trackedEntityType())
+                                                    .byDisplayInList().isTrue()
+                                                    .withAllChildren().get();
+                                            List<String> attributeUids = new ArrayList<>();
+                                            for (TrackedEntityTypeAttribute typeAttribute : typeAttributes)
+                                                attributeUids.add(typeAttribute.trackedEntityAttribute().uid());
+                                            List<TrackedEntityAttributeValue> attributeValues = d2.trackedEntityModule().trackedEntityAttributeValues.byTrackedEntityInstance().eq(tei.uid())
+                                                    .byTrackedEntityAttribute().in(attributeUids).get();
+
+                                            return RelationshipViewModel.create(relationship, relationshipType, direction, relationshipTEIUid, attributeValues);
                                         })
                                         .toList().toFlowable()
                         )

@@ -4,7 +4,6 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,7 +24,6 @@ import org.dhis2.utils.Constants;
 import org.dhis2.utils.NetworkUtils;
 import org.dhis2.utils.custom_views.OrgUnitDialog;
 import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.android.core.constant.Constant;
 import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
@@ -205,7 +203,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         .startWith(queryData)
                         .subscribeOn(AndroidSchedulers.mainThread())
                         .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(data->view.clearData(),Timber::d)
+                        .subscribe(data -> view.clearData(), Timber::d)
         );
 
     }
@@ -250,7 +248,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 messageId = String.format(view.getContext().getString(R.string.search_max_tei_reached), MAX_NO_SELECTED_PROGRAM_RESULTS);
         } else {
             if (size == 0 && !queryData.isEmpty()) {
-                if(selectedProgram.minAttributesRequiredToSearch() > 0 && queryData.size() == 1 && queryData.containsKey(Constants.ENROLLMENT_DATE_UID))
+                if (selectedProgram.minAttributesRequiredToSearch() > 0 && queryData.size() == 1 && queryData.containsKey(Constants.ENROLLMENT_DATE_UID))
                     messageId = view.getContext().getString(R.string.search_attr);
                 else
                     messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
@@ -338,10 +336,10 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         else
             getProgramTrackedEntityAttributes();
 
-        if(!otherProgramSelected)
+        if (!otherProgramSelected)
             queryData.clear();
 
-        if(queryData.isEmpty())
+        if (queryData.isEmpty())
             queryProcessor.onNext(new HashMap<>());
         else
             queryProcessor.onNext(queryData);
@@ -576,7 +574,9 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public void addRelationship(String TEIuid, boolean online) {
-        if (!online) {
+        if (TEIuid.equals(view.fromRelationshipTEI())) {
+            view.displayMessage(view.getContext().getString(R.string.relationship_error_recursive));
+        } else if (!online) {
             Intent intent = new Intent();
             intent.putExtra("TEI_A_UID", TEIuid);
             view.getAbstractActivity().setResult(RESULT_OK, intent);
