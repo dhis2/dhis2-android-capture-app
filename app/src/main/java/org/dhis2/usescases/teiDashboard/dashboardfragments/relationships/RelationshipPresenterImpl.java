@@ -64,35 +64,17 @@ public class RelationshipPresenterImpl implements RelationshipContracts.Relation
         teiType = d2.trackedEntityModule().trackedEntityInstances.byUid().eq(teiUid).withAllChildren().one().get().trackedEntityType();
     }
 
+    private RelationshipType getRelationshipType(Relationship relationship) {
+        RelationshipType relationshipType = null;
+        for (RelationshipType type : d2.relationshipModule().relationshipTypes.get())
+            if (type.uid().equals(relationship.relationshipType()))
+                relationshipType = type;
+        return relationshipType;
+    }
+
     @Override
     public void init(RelationshipContracts.RelationshipView view) {
         this.view = view;
-
-        /*compositeDisposable.add(
-                updateRelationships.startWith(true)
-                        .flatMap(update ->
-                                Flowable.fromIterable(
-                                        d2.relationshipModule().relationships.getByItem(
-                                                RelationshipItem.builder().trackedEntityInstance(
-                                                        RelationshipItemTrackedEntityInstance.builder().trackedEntityInstance(teiUid).build()).build()
-                                        ))
-                                        .map(relationship -> {
-                                            RelationshipType relationshipType = null;
-                                            for (RelationshipType type : d2.relationshipModule().relationshipTypes.get())
-                                                if (type.uid().equals(relationship.relationshipType()))
-                                                    relationshipType = type;
-                                            return Pair.create(relationship, relationshipType);
-                                        })
-                                        .toList().toFlowable()
-                        )
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                view.setRelationships(),
-                                Timber::d
-                        )
-        );*/
-
         compositeDisposable.add(
                 updateRelationships.startWith(true)
                         .flatMap(update ->
@@ -102,10 +84,7 @@ public class RelationshipPresenterImpl implements RelationshipContracts.Relation
                                                         RelationshipItemTrackedEntityInstance.builder().trackedEntityInstance(teiUid).build()).build()
                                         ))
                                         .map(relationship -> {
-                                            RelationshipType relationshipType = null;
-                                            for (RelationshipType type : d2.relationshipModule().relationshipTypes.get())
-                                                if (type.uid().equals(relationship.relationshipType()))
-                                                    relationshipType = type;
+                                            RelationshipType relationshipType = getRelationshipType(relationship);
 
                                             String relationshipTEIUid;
                                             RelationshipViewModel.RelationshipDirection direction;

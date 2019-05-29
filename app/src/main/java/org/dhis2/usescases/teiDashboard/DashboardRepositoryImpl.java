@@ -374,14 +374,6 @@ public class DashboardRepositoryImpl implements DashboardRepository {
         briteDatabase.update(TrackedEntityInstanceModel.TABLE, cv, "uid = ?", teiUid);
     }
 
-    private void updateEnrollmentState(String enrollmentUid) {
-        Enrollment enrollment = d2.enrollmentModule().enrollments.uid(enrollmentUid).get();
-        ContentValues cv = enrollment.toContentValues();
-        cv.put("lastUpdated", DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
-        cv.put("state", enrollment.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
-        long updated = briteDatabase.update("Enrollment", cv, "uid = ?", enrollment.uid());
-    }
-
     @Override
     public Integer getObjectStyle(Context context, String uid) {
         String getObjectStyle = "SELECT * FROM ObjectStyle WHERE uid = ?";
@@ -470,7 +462,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     public boolean setFollowUp(String enrollmentUid) {
 
         Enrollment enrollment = d2.enrollmentModule().enrollments.uid(enrollmentUid).get();
-        boolean followUp = enrollment.followUp() != null ? enrollment.followUp() : false;
+        boolean followUp = enrollment.followUp() != null && enrollment.followUp();
 
         ContentValues contentValues = enrollment.toContentValues();
         contentValues.put(EnrollmentModel.Columns.FOLLOW_UP, followUp ? "0" : "1");

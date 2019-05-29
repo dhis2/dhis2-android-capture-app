@@ -242,6 +242,8 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
                                         case SYNCED:
                                             setNoConflictMessage(getString(R.string.no_conflicts_synced_message));
                                             break;
+                                        default:
+                                            break;
                                     }
                                 },
                                 error -> dismiss()
@@ -281,6 +283,8 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
                                             break;
                                         case SYNCED:
                                             setNoConflictMessage(getString(R.string.no_conflicts_synced_message));
+                                            break;
+                                        default:
                                             break;
                                     }
                                 },

@@ -530,6 +530,15 @@ public class DateUtils {
         }
     }
 
+    private Calendar getCurrentDateCalendar(@Nullable Date currentDate) {
+        Calendar calendar = getCalendar();
+
+        if (currentDate != null)
+            calendar.setTime(currentDate);
+
+        return calendar;
+    }
+
     /**
      * @param currentDate      Date from which calculation will be carried out. Default value is today.
      * @param expiryDays       Number of extra days to add events on previous period
@@ -538,105 +547,101 @@ public class DateUtils {
      */
     public Date expDate(@Nullable Date currentDate, int expiryDays, @Nullable PeriodType expiryPeriodType) {
 
-        Calendar calendar = getCalendar();
-
-        if (currentDate != null)
-            calendar.setTime(currentDate);
+        Calendar calendar = getCurrentDateCalendar(currentDate);
 
         Date date = calendar.getTime();
 
         if (expiryPeriodType == null) {
             return null;
-        } else {
-            switch (expiryPeriodType) {
-                case Daily:
-                    calendar.add(Calendar.DAY_OF_YEAR, -expiryDays);
-                    return calendar.getTime();
-                case Weekly:
-                    calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
-                    return getDay(date, calendar.getTime(), expiryDays, calendar);
-
-                case WeeklyWednesday:
-                    calendar.set(Calendar.DAY_OF_WEEK, Calendar.WEDNESDAY); //moves to current week wednesday
-                    return getDay(date, calendar.getTime(), expiryDays, calendar);
-
-                case WeeklyThursday:
-                    calendar.set(Calendar.DAY_OF_WEEK, Calendar.THURSDAY); //moves to current week wednesday
-                    return getDay(date, calendar.getTime(), expiryDays, calendar);
-
-                case WeeklySaturday:
-                    calendar.set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY); //moves to current week wednesday
-                    return getDay(date, calendar.getTime(), expiryDays, calendar);
-
-                case WeeklySunday:
-                    calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY); //moves to current week wednesday
-                    return getDay(date, calendar.getTime(), expiryDays, calendar);
-
-                case BiWeekly:
-                    if (calendar.get(Calendar.WEEK_OF_YEAR) % 2 == 0) //if true, we are in the 2nd week of the period
-                        calendar.add(Calendar.WEEK_OF_YEAR, -1);//Moved to first week
-                    calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
-                    return getDayBiWeekly(date, calendar.getTime(), expiryDays, calendar);
-
-                case Monthly:
-                    Date firstDateOfMonth = getFirstDayOfMonth(calendar.getTime());
-                    calendar.setTime(firstDateOfMonth);
-                    return getDayMonthly(date, calendar.getTime(), expiryDays, calendar);
-
-                case BiMonthly:
-                    if (calendar.get(Calendar.MONTH) % 2 != 0) //January is 0, December is 11
-                        calendar.add(Calendar.MONTH, -1); //Moved to first month
-                    Date firstDateOfBiMonth = getFirstDayOfMonth(calendar.getTime());
-                    calendar.setTime(firstDateOfBiMonth);
-                    return getDayBiMonthly(date, calendar.getTime(), expiryDays, calendar);
-
-                case Quarterly:
-                    while (calendar.get(Calendar.MONTH) % 4 != 0) //January is 0, December is 11
-                        calendar.add(Calendar.MONTH, -1); //Moved to first month
-                    Date firstDateOfQMonth = getFirstDayOfMonth(calendar.getTime());
-                    calendar.setTime(firstDateOfQMonth);
-                    return getDayQuarterly(date, calendar.getTime(), expiryDays, calendar);
-
-                case SixMonthly:
-                    while (calendar.get(Calendar.MONTH) % 6 != 0) //January is 0, December is 11
-                        calendar.add(Calendar.MONTH, -1); //Moved to first month
-                    Date firstDateOfSixMonth = getFirstDayOfMonth(calendar.getTime());
-                    calendar.setTime(firstDateOfSixMonth);
-                    return getDaySixMonthy(date, calendar.getTime(), expiryDays, calendar);
-
-                case SixMonthlyApril:
-                    while ((calendar.get(Calendar.MONTH) - 3) % 6 != 0) //April is 0, December is 8
-                        calendar.add(Calendar.MONTH, -1); //Moved to first month
-                    Date firstDateOfSixMonthApril = getFirstDayOfMonth(calendar.getTime());
-                    calendar.setTime(firstDateOfSixMonthApril);
-                    return getDaySixMonthy(date, calendar.getTime(), expiryDays, calendar);
-
-                case Yearly:
-                    Date firstDateOfYear = getFirstDayOfYear(calendar.getTime());
-                    calendar.setTime(firstDateOfYear);
-                    return getDayYearly(date, calendar.getTime(), expiryDays, calendar);
-
-                case FinancialApril:
-                    calendar.set(Calendar.MONTH, Calendar.APRIL);//Moved to April
-                    Date firstDateOfAprilYear = getFirstDayOfMonth(calendar.getTime()); //first day of April
-                    calendar.setTime(firstDateOfAprilYear);
-                    return getDayYearly(date, calendar.getTime(), expiryDays, calendar);
-
-                case FinancialJuly:
-                    calendar.set(Calendar.MONTH, Calendar.JULY);//Moved to July
-                    Date firstDateOfJulyYear = getFirstDayOfMonth(calendar.getTime()); //first day of July
-                    calendar.setTime(firstDateOfJulyYear);
-                    return getDayYearly(date, calendar.getTime(), expiryDays, calendar);
-
-                case FinancialOct:
-                    calendar.set(Calendar.MONTH, Calendar.OCTOBER);//Moved to October
-                    Date firstDateOfOctYear = getFirstDayOfMonth(calendar.getTime()); //first day of October
-                    calendar.setTime(firstDateOfOctYear);
-                    return getDayYearly(date, calendar.getTime(), expiryDays, calendar);
-            }
-
-            return calendar.getTime();
         }
+        switch (expiryPeriodType) {
+            case Daily:
+                calendar.add(Calendar.DAY_OF_YEAR, -expiryDays);
+                return calendar.getTime();
+            case Weekly:
+                calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+                return getDay(date, calendar.getTime(), expiryDays, calendar);
+
+            case WeeklyWednesday:
+                calendar.set(Calendar.DAY_OF_WEEK, Calendar.WEDNESDAY); //moves to current week wednesday
+                return getDay(date, calendar.getTime(), expiryDays, calendar);
+
+            case WeeklyThursday:
+                calendar.set(Calendar.DAY_OF_WEEK, Calendar.THURSDAY); //moves to current week wednesday
+                return getDay(date, calendar.getTime(), expiryDays, calendar);
+
+            case WeeklySaturday:
+                calendar.set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY); //moves to current week wednesday
+                return getDay(date, calendar.getTime(), expiryDays, calendar);
+
+            case WeeklySunday:
+                calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY); //moves to current week wednesday
+                return getDay(date, calendar.getTime(), expiryDays, calendar);
+
+            case BiWeekly:
+                if (calendar.get(Calendar.WEEK_OF_YEAR) % 2 == 0) //if true, we are in the 2nd week of the period
+                    calendar.add(Calendar.WEEK_OF_YEAR, -1);//Moved to first week
+                calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
+                return getDayBiWeekly(date, calendar.getTime(), expiryDays, calendar);
+
+            case Monthly:
+                Date firstDateOfMonth = getFirstDayOfMonth(calendar.getTime());
+                calendar.setTime(firstDateOfMonth);
+                return getDayMonthly(date, calendar.getTime(), expiryDays, calendar);
+
+            case BiMonthly:
+                if (calendar.get(Calendar.MONTH) % 2 != 0) //January is 0, December is 11
+                    calendar.add(Calendar.MONTH, -1); //Moved to first month
+                Date firstDateOfBiMonth = getFirstDayOfMonth(calendar.getTime());
+                calendar.setTime(firstDateOfBiMonth);
+                return getDayBiMonthly(date, calendar.getTime(), expiryDays, calendar);
+
+            case Quarterly:
+                while (calendar.get(Calendar.MONTH) % 4 != 0) //January is 0, December is 11
+                    calendar.add(Calendar.MONTH, -1); //Moved to first month
+                Date firstDateOfQMonth = getFirstDayOfMonth(calendar.getTime());
+                calendar.setTime(firstDateOfQMonth);
+                return getDayQuarterly(date, calendar.getTime(), expiryDays, calendar);
+
+            case SixMonthly:
+                while (calendar.get(Calendar.MONTH) % 6 != 0) //January is 0, December is 11
+                    calendar.add(Calendar.MONTH, -1); //Moved to first month
+                Date firstDateOfSixMonth = getFirstDayOfMonth(calendar.getTime());
+                calendar.setTime(firstDateOfSixMonth);
+                return getDaySixMonthy(date, calendar.getTime(), expiryDays, calendar);
+
+            case SixMonthlyApril:
+                while ((calendar.get(Calendar.MONTH) - 3) % 6 != 0) //April is 0, December is 8
+                    calendar.add(Calendar.MONTH, -1); //Moved to first month
+                Date firstDateOfSixMonthApril = getFirstDayOfMonth(calendar.getTime());
+                calendar.setTime(firstDateOfSixMonthApril);
+                return getDaySixMonthy(date, calendar.getTime(), expiryDays, calendar);
+
+            case Yearly:
+                Date firstDateOfYear = getFirstDayOfYear(calendar.getTime());
+                calendar.setTime(firstDateOfYear);
+                return getDayYearly(date, calendar.getTime(), expiryDays, calendar);
+
+            case FinancialApril:
+                calendar.set(Calendar.MONTH, Calendar.APRIL);//Moved to April
+                Date firstDateOfAprilYear = getFirstDayOfMonth(calendar.getTime()); //first day of April
+                calendar.setTime(firstDateOfAprilYear);
+                return getDayYearly(date, calendar.getTime(), expiryDays, calendar);
+
+            case FinancialJuly:
+                calendar.set(Calendar.MONTH, Calendar.JULY);//Moved to July
+                Date firstDateOfJulyYear = getFirstDayOfMonth(calendar.getTime()); //first day of July
+                calendar.setTime(firstDateOfJulyYear);
+                return getDayYearly(date, calendar.getTime(), expiryDays, calendar);
+
+            case FinancialOct:
+                calendar.set(Calendar.MONTH, Calendar.OCTOBER);//Moved to October
+                Date firstDateOfOctYear = getFirstDayOfMonth(calendar.getTime()); //first day of October
+                calendar.setTime(firstDateOfOctYear);
+                return getDayYearly(date, calendar.getTime(), expiryDays, calendar);
+        }
+
+        return calendar.getTime();
     }
 
     private int getBiWeeklyExtra(Calendar calendar) {
@@ -655,6 +660,12 @@ public class DateUtils {
         return 1 + 6 - (calendar.get(Calendar.MONTH) + 1) % 6;
     }
 
+    private PeriodType getPeriodDefaultIfNull(PeriodType period) {
+        if (period == null)
+            period = PeriodType.Daily;
+        return period;
+    }
+
     /**
      * @param period      Period in which the date will be selected
      * @param currentDate Current selected date
@@ -666,8 +677,8 @@ public class DateUtils {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(currentDate);
         int extra;
-        if (period == null)
-            period = PeriodType.Daily;
+
+        period = getPeriodDefaultIfNull(period);
 
         switch (period) {
             case Daily:

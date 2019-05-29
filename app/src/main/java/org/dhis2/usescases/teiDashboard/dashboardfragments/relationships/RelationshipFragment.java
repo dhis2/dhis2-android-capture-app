@@ -26,8 +26,6 @@ import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
-import org.hisp.dhis.android.core.relationship.Relationship;
-import org.hisp.dhis.android.core.relationship.RelationshipType;
 import org.hisp.dhis.android.core.relationship.RelationshipTypeModel;
 import org.jetbrains.annotations.NotNull;
 
@@ -109,7 +107,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
 
     @Override
     public void goToAddRelationship(Intent intent) {
-        ((TeiDashboardMobileActivity)getActivity()).toRelationships();
+        ((TeiDashboardMobileActivity) getActivity()).toRelationships();
         this.startActivityForResult(intent, Constants.REQ_ADD_RELATIONSHIP);
     }
 

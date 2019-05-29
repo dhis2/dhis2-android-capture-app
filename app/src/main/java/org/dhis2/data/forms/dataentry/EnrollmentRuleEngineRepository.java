@@ -20,9 +20,7 @@ import org.hisp.dhis.android.core.program.ProgramRule;
 import org.hisp.dhis.android.core.program.ProgramRuleAction;
 import org.hisp.dhis.android.core.program.ProgramRuleActionType;
 import org.hisp.dhis.android.core.program.ProgramRuleVariable;
-import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.rules.RuleEngine;
 import org.hisp.dhis.rules.models.Rule;
@@ -139,40 +137,6 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
         loadAttrRules(program.uid());
     }
 
-    private Map<String, String> getAttributesValueMap(Enrollment enrollment, Program program) {
-        List<TrackedEntityAttributeValue> attributeValueList = d2.trackedEntityModule().trackedEntityAttributeValues
-                .byTrackedEntityInstance().eq(enrollment.trackedEntityInstance())
-                .withAllChildren().get();
-
-        Map<String, String> attrValueMap = new HashMap<>();
-        for (TrackedEntityAttributeValue attributeValue : attributeValueList) {
-            String uid = attributeValue.trackedEntityAttribute();
-            attrValueMap.put(uid, getValue(attributeValue));
-        }
-
-        for (ProgramTrackedEntityAttribute prgAttr : program.programTrackedEntityAttributes()) {
-            if (!attrValueMap.containsKey(prgAttr.uid()))
-                attrValueMap.put(prgAttr.uid(), "");
-        }
-        return attrValueMap;
-    }
-
-    private String getValue(TrackedEntityAttributeValue attributeValue) {
-        String value = attributeValue.value();
-        TrackedEntityAttribute attr = d2.trackedEntityModule().trackedEntityAttributes.uid(attributeValue.trackedEntityAttribute()).withAllChildren().get();
-        if (attr != null && attr.optionSet() != null) {
-            List<Option> options = d2.optionModule().optionSets.uid(attr.optionSet().uid()).withAllChildren().get().options();
-            ProgramRuleVariable ruleVariable = attrRuleVariableMap.get(attr.uid());
-            if (ruleVariable != null && (ruleVariable.useCodeForOptionSet() == null || !ruleVariable.useCodeForOptionSet())) {
-                for (Option option : options) {
-                    if (value.equals(option.code()))
-                        value = option.displayName();
-                }
-            }
-        }
-        return value;
-    }
-
     private void addMandatoryRules(List<ProgramRule> rules) {
         Iterator<ProgramRule> ruleIterator = rules.iterator();
         while (ruleIterator.hasNext()) {
@@ -279,13 +243,6 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
 
         }
         return actionContainsDe;
-    }
-
-    private void setRuleAttributeMap(Map<String, String> attrValueMap) {
-        for (Map.Entry<String, String> attrValueEntry : attrValueMap.entrySet()) {
-            ruleAttributeValueMap.put(attrValueEntry.getKey(),
-                    RuleAttributeValue.create(attrValueEntry.getKey(), attrValueEntry.getValue()));
-        }
     }
 
     @Override

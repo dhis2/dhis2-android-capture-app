@@ -74,7 +74,7 @@ public class OptionSetDialog extends DialogFragment {
 
     @Override
     public void onCancel(@NonNull DialogInterface dialog) {
-        instace = null;
+        destroyInstance();
         disposable.clear();
         super.onCancel(dialog);
     }

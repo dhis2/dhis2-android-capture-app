@@ -13,6 +13,7 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,36 +33,57 @@ public class OrgUnitUtils {
         // hide public constructor
     }
 
+    private static Date getOpeningDate(OrganisationUnitModel orgUnit) {
+        return orgUnit != null ? orgUnit.openingDate() : null;
+    }
+
+    private static Date getClosedDate(OrganisationUnitModel orgUnit) {
+        return orgUnit != null ? orgUnit.closedDate() : null;
+    }
+
+    private static Date getOpeningDate(OrganisationUnit orgUnit) {
+        return orgUnit != null ? orgUnit.openingDate() : null;
+    }
+
+    private static Date getClosedDate(OrganisationUnit orgUnit) {
+        return orgUnit != null ? orgUnit.closedDate() : null;
+    }
+
+    private static List<OrganisationUnitModel> getOrgUnitsToAdd(OrganisationUnitModel myorg, Map<String, OrganisationUnitModel> myOrgUnitMap) {
+        String[] pathName = myorg.displayNamePath().split("/");
+        String[] pathUid = myorg.path().split("/");
+        List<OrganisationUnitModel> allOrgs = new ArrayList<>();
+        for (int i = myorg.level(); i > 0; i--) {
+            OrganisationUnitModel orgToAdd = OrganisationUnitModel.builder()
+                    .uid(pathUid[i])
+                    .openingDate(getOpeningDate(myOrgUnitMap.get(pathUid[i])))
+                    .closedDate(getClosedDate(myOrgUnitMap.get(pathUid[i])))
+                    .level(i)
+                    .parent(pathUid[i - 1])
+                    .name(pathName[i])
+                    .displayName(pathName[i])
+                    .displayShortName(pathName[i])
+                    .build();
+            if (!allOrgs.contains(orgToAdd))
+                allOrgs.add(orgToAdd);
+        }
+        return allOrgs;
+    }
+
     public static TreeNode renderTree(Context context, @NonNull List<OrganisationUnitModel> myOrgs, Boolean isMultiSelection) {
 
         HashMap<Integer, ArrayList<TreeNode>> subLists = new HashMap<>();
         Map<String, OrganisationUnitModel> myOrgUnitMap = new HashMap<>();
+
         for (OrganisationUnitModel organisationUnit : myOrgs)
             myOrgUnitMap.put(organisationUnit.uid(), organisationUnit);
 
         List<OrganisationUnitModel> allOrgs = new ArrayList<>();
         ArrayList<String> myOrgUnitUids = new ArrayList<>();
-        if (myOrgs == null) {
-            myOrgs = new ArrayList<>();
-        }
+
         for (OrganisationUnitModel myorg : myOrgs) {
             myOrgUnitUids.add(myorg.uid());
-            String[] pathName = myorg.displayNamePath().split("/");
-            String[] pathUid = myorg.path().split("/");
-            for (int i = myorg.level(); i > 0; i--) {
-                OrganisationUnitModel orgToAdd = OrganisationUnitModel.builder()
-                        .uid(pathUid[i])
-                        .openingDate(myOrgUnitMap.get(pathUid[i]) != null ? myOrgUnitMap.get(pathUid[i]).openingDate() : null)
-                        .closedDate(myOrgUnitMap.get(pathUid[i]) != null ? myOrgUnitMap.get(pathUid[i]).closedDate() : null)
-                        .level(i)
-                        .parent(pathUid[i - 1])
-                        .name(pathName[i])
-                        .displayName(pathName[i])
-                        .displayShortName(pathName[i])
-                        .build();
-                if (!allOrgs.contains(orgToAdd))
-                    allOrgs.add(orgToAdd);
-            }
+            allOrgs.addAll(getOrgUnitsToAdd(myorg, myOrgUnitMap));
         }
 
         Collections.sort(myOrgs, (org1, org2) -> org2.level().compareTo(org1.level()));
@@ -82,21 +104,8 @@ public class OrgUnitUtils {
             subLists.put(orgs.level(), sublist);
         }
 
-
-        SortedSet<Integer> keys = new TreeSet<>(subLists.keySet());
-
         try {
-            if (!keys.isEmpty()) {
-                for (int level = keys.last(); level > 1; level--) {
-                    for (TreeNode treeNode : subLists.get(level - 1)) {
-                        for (TreeNode childTreeNode : subLists.get(level)) {
-                            if (((OrganisationUnitModel) childTreeNode.getValue()).parent().equals(((OrganisationUnitModel) treeNode.getValue()).uid()))
-                                treeNode.addChild(childTreeNode);
-                        }
-
-                    }
-                }
-            }
+            addTreeNodes(subLists);
         } catch (NoSuchElementException e) { //It seems keys.last() can result in a null
             Timber.e(e);
         }
@@ -107,6 +116,58 @@ public class OrgUnitUtils {
         }
 
         return root;
+    }
+
+    private static void addTreeNodes(HashMap<Integer, ArrayList<TreeNode>> subLists) {
+        SortedSet<Integer> keys = new TreeSet<>(subLists.keySet());
+
+        if (!keys.isEmpty()) {
+            for (int level = keys.last(); level > 1; level--) {
+                for (TreeNode treeNode : subLists.get(level - 1)) {
+                    for (TreeNode childTreeNode : subLists.get(level)) {
+                        if (((OrganisationUnitModel) childTreeNode.getValue()).parent().equals(((OrganisationUnitModel) treeNode.getValue()).uid()))
+                            treeNode.addChild(childTreeNode);
+                    }
+                }
+            }
+        }
+    }
+
+    private static void addTreeNodes2(HashMap<Integer, ArrayList<TreeNode>> subLists) {
+        SortedSet<Integer> keys = new TreeSet<>(subLists.keySet());
+
+        if (!keys.isEmpty()) {
+            for (int level = keys.last(); level > 1; level--) {
+                for (TreeNode treeNode : subLists.get(level - 1)) {
+                    for (TreeNode childTreeNode : subLists.get(level)) {
+                        if (((OrganisationUnit) childTreeNode.getValue()).path().equals(((OrganisationUnit) treeNode.getValue()).uid()))
+                            treeNode.addChild(childTreeNode);
+                    }
+
+                }
+            }
+        }
+    }
+
+    private static List<OrganisationUnit> getOrgUnitsToAdd(OrganisationUnit myorg, Map<String, OrganisationUnit> myOrgUnitMap) {
+        String[] pathName = myorg.displayNamePath().split("/");
+        String[] pathUid = myorg.path().split("/");
+        List<OrganisationUnit> allOrgs = new ArrayList<>();
+        for (int i = myorg.level(); i > 0; i--) {
+            OrganisationUnit orgToAdd = OrganisationUnit.builder()
+                    .uid(pathUid[i])
+                    .openingDate(getOpeningDate(myOrgUnitMap.get(pathUid[i])))
+                    .closedDate(getClosedDate(myOrgUnitMap.get(pathUid[i])))
+                    .level(i)
+                    .path(pathUid[i - 1])
+                    .name(pathName[i])
+                    .displayName(pathName[i])
+                    .displayShortName(pathName[i])
+                    .build();
+            if (!allOrgs.contains(orgToAdd))
+                allOrgs.add(orgToAdd);
+        }
+        return allOrgs;
     }
 
     public static TreeNode renderTree2(Context context, @NonNull List<OrganisationUnit> myOrgs, Boolean isMultiSelection) {
@@ -121,23 +182,7 @@ public class OrgUnitUtils {
 
         for (OrganisationUnit myorg : myOrgs) {
             myOrgUnitUids.add(myorg.uid());
-            String[] pathName = myorg.displayNamePath().split("/");
-            String[] pathUid = myorg.path().split("/");
-            for (int i = myorg.level(); i > 0; i--) {
-                OrganisationUnit orgToAdd = OrganisationUnit.builder()
-                        .uid(pathUid[i])
-                        .openingDate(myOrgUnitMap.get(pathUid[i]) != null ? myOrgUnitMap.get(pathUid[i]).openingDate() : null)
-                        .closedDate(myOrgUnitMap.get(pathUid[i]) != null ? myOrgUnitMap.get(pathUid[i]).closedDate() : null)
-                        .level(i)
-//                        .parent(pathUid[i - 1])
-                        .path(pathUid[i - 1])
-                        .name(pathName[i])
-                        .displayName(pathName[i])
-                        .displayShortName(pathName[i])
-                        .build();
-                if (!allOrgs.contains(orgToAdd))
-                    allOrgs.add(orgToAdd);
-            }
+            allOrgs.addAll(getOrgUnitsToAdd(myorg, myOrgUnitMap));
         }
 
         Collections.sort(myOrgs, (org1, org2) -> org2.level().compareTo(org1.level()));
@@ -158,21 +203,8 @@ public class OrgUnitUtils {
             subLists.put(orgs.level(), sublist);
         }
 
-
-        SortedSet<Integer> keys = new TreeSet<>(subLists.keySet());
-
         try {
-            if (!keys.isEmpty()) {
-                for (int level = keys.last(); level > 1; level--) {
-                    for (TreeNode treeNode : subLists.get(level - 1)) {
-                        for (TreeNode childTreeNode : subLists.get(level)) {
-                            if (((OrganisationUnit) childTreeNode.getValue()).path().equals(((OrganisationUnit) treeNode.getValue()).uid()))
-                                treeNode.addChild(childTreeNode);
-                        }
-
-                    }
-                }
-            }
+            addTreeNodes2(subLists);
         } catch (NoSuchElementException e) { //It seems keys.last() can result in a null
             Timber.e(e);
         }

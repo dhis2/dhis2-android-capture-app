@@ -214,59 +214,87 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
             listener.onFocusChange(v, hasFocus);
     }
 
+    private boolean validatePhone() {
+        if (Patterns.PHONE.matcher(editText.getText().toString()).matches())
+            return true;
+        else {
+            inputLayout.setError(editText.getContext().getString(R.string.invalid_phone_number));
+            return false;
+        }
+    }
+
+    private boolean validateEmail() {
+        if (Patterns.EMAIL_ADDRESS.matcher(editText.getText().toString()).matches())
+            return true;
+        else {
+            inputLayout.setError(editText.getContext().getString(R.string.invalid_email));
+            return false;
+        }
+    }
+
+    private boolean validateNegInt() {
+        if (Integer.valueOf(editText.getText().toString()) < 0)
+            return true;
+        else {
+            inputLayout.setError(editText.getContext().getString(R.string.invalid_negative_number));
+            return false;
+        }
+    }
+
+    private boolean validateZeroPositiveInt() {
+        if (editText.getText() != null &&
+                Integer.valueOf(editText.getText().toString()) >= 0)
+            return true;
+        else {
+            inputLayout.setError(editText.getContext().getString(R.string.invalid_possitive_zero));
+            return false;
+        }
+    }
+
+    private boolean validatePosInt() {
+        if (Integer.valueOf(editText.getText().toString()) > 0)
+            return true;
+        else {
+            inputLayout.setError(editText.getContext().getString(R.string.invalid_possitive));
+            return false;
+        }
+    }
+
+    private boolean validateInterval() {
+        if (Float.valueOf(editText.getText().toString()) >= 0 && Float.valueOf(editText.getText().toString()) <= 1)
+            return true;
+        else {
+            inputLayout.setError(editText.getContext().getString(R.string.invalid_interval));
+            return false;
+        }
+    }
+
+    private boolean validatePercent() {
+        if (Float.valueOf(editText.getText().toString()) >= 0 && Float.valueOf(editText.getText().toString()) <= 100)
+            return true;
+        else {
+            inputLayout.setError(editText.getContext().getString(R.string.invalid_percentage));
+            return false;
+        }
+    }
+
     private boolean validate() {
         if (editText.getText() != null && !isEmpty(editText.getText())) {
             switch (valueType) {
                 case PHONE_NUMBER:
-                    if (Patterns.PHONE.matcher(editText.getText().toString()).matches())
-                        return true;
-                    else {
-                        inputLayout.setError(editText.getContext().getString(R.string.invalid_phone_number));
-                        return false;
-                    }
+                    return validatePhone();
                 case EMAIL:
-                    if (Patterns.EMAIL_ADDRESS.matcher(editText.getText().toString()).matches())
-                        return true;
-                    else {
-                        inputLayout.setError(editText.getContext().getString(R.string.invalid_email));
-                        return false;
-                    }
+                    return validateEmail();
                 case INTEGER_NEGATIVE:
-                    if (Integer.valueOf(editText.getText().toString()) < 0)
-                        return true;
-                    else {
-                        inputLayout.setError(editText.getContext().getString(R.string.invalid_negative_number));
-                        return false;
-                    }
+                    return validateNegInt();
                 case INTEGER_ZERO_OR_POSITIVE:
-                    if (editText.getText() != null &&
-                            Integer.valueOf(editText.getText().toString()) >= 0)
-                        return true;
-                    else {
-                        inputLayout.setError(editText.getContext().getString(R.string.invalid_possitive_zero));
-                        return false;
-                    }
+                    return validateZeroPositiveInt();
                 case INTEGER_POSITIVE:
-                    if (Integer.valueOf(editText.getText().toString()) > 0)
-                        return true;
-                    else {
-                        inputLayout.setError(editText.getContext().getString(R.string.invalid_possitive));
-                        return false;
-                    }
+                    return validatePosInt();
                 case UNIT_INTERVAL:
-                    if (Float.valueOf(editText.getText().toString()) >= 0 && Float.valueOf(editText.getText().toString()) <= 1)
-                        return true;
-                    else {
-                        inputLayout.setError(editText.getContext().getString(R.string.invalid_interval));
-                        return false;
-                    }
+                    return validateInterval();
                 case PERCENTAGE:
-                    if (Float.valueOf(editText.getText().toString()) >= 0 && Float.valueOf(editText.getText().toString()) <= 100)
-                        return true;
-                    else {
-                        inputLayout.setError(editText.getContext().getString(R.string.invalid_percentage));
-                        return false;
-                    }
+                    return validatePercent();
                 default:
                     return true;
             }

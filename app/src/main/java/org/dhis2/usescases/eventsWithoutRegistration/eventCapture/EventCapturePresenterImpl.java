@@ -352,10 +352,9 @@ public class EventCapturePresenterImpl implements EventCaptureContract.EventCapt
         String section = finalSectionList.get(position).sectionUid() != null ?
                 finalSectionList.get(position).sectionUid() :
                 "NO_SECTION";
-        String nextSection = !finalSectionList.isEmpty() ?
+        return !finalSectionList.isEmpty() ?
                 section :
                 "NO_SECTION";
-        return nextSection;
     }
 
     private void parseSectionInPosition(int position) {
