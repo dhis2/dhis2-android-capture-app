@@ -8,6 +8,7 @@ import android.text.method.DigitsKeyListener;
 import android.util.AttributeSet;
 import android.util.Patterns;
 import android.util.TypedValue;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -301,7 +302,11 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
     }
 
     public void setOnEditorActionListener(TextView.OnEditorActionListener actionListener) {
-        editText.setOnEditorActionListener(actionListener);
+        editText.setOnEditorActionListener((v, actionId, event) -> {
+            if (validate())
+                return actionListener.onEditorAction(v, actionId, event);
+            return true;
+        });
     }
 
 
