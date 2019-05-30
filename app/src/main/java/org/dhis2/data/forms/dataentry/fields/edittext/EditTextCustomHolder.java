@@ -4,7 +4,7 @@ package org.dhis2.data.forms.dataentry.fields.edittext;
 import android.widget.ArrayAdapter;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
+import androidx.appcompat.content.res.AppCompatResources;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -139,7 +139,7 @@ final class EditTextCustomHolder extends FormViewHolder {
 
     @Override
     public void performAction() {
-        itemView.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.item_selected_bg));
+        itemView.setBackground(AppCompatResources.getDrawable(itemView.getContext(), R.drawable.item_selected_bg));
         formEditTextCustomBinding.customEdittext.performOnFocusAction();
     }
 }

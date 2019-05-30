@@ -159,15 +159,16 @@ class FormPresenterImpl implements FormPresenter {
         //endregion
 
         compositeDisposable.add(view.reportDateChanged()
+                .switchMap(formRepository::saveReportDate)
                 .subscribeOn(schedulerProvider.ui())
                 .observeOn(schedulerProvider.io())
-                .subscribe(formRepository.storeReportDate(), Timber::e));
+                .subscribe(saved -> Timber.d("reportDate saved"), Timber::e));
 
         compositeDisposable.add(view.incidentDateChanged()
-                .filter(date -> date != null)
+                .switchMap(formRepository::saveIncidentDate)
                 .subscribeOn(schedulerProvider.ui())
                 .observeOn(schedulerProvider.io())
-                .subscribe(formRepository.storeIncidentDate(), Timber::e));
+                .subscribe(saved -> Timber.d("incidentDate saved"), Timber::e));
 
         compositeDisposable.add(view.reportCoordinatesChanged()
                 .filter(latLng -> latLng != null)
@@ -205,7 +206,7 @@ class FormPresenterImpl implements FormPresenter {
         compositeDisposable.add(statusChangeObservable.connect());
     }
 
-    public void initializeSaveObservable(){
+    public void initializeSaveObservable() {
         ConnectableObservable<EnrollmentStatus> statusChangeObservable = view.onObservableBackPressed()
                 .publish();
 

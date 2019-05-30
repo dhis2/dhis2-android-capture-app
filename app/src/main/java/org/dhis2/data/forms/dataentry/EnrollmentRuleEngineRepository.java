@@ -141,7 +141,7 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
         Iterator<ProgramRule> ruleIterator = rules.iterator();
         while (ruleIterator.hasNext()) {
             ProgramRule rule = ruleIterator.next();
-            if (rule.condition() == null)
+            if (rule.condition() == null || rule.programStage() != null)
                 ruleIterator.remove();
             for (ProgramRuleAction action : rule.programRuleActions())
                 if ((action.programRuleActionType() == ProgramRuleActionType.HIDEFIELD ||

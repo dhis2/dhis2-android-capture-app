@@ -111,7 +111,7 @@ public final class EventsRuleEngineRepository implements RuleEngineRepository {
                     String eventUidAux = cursor.getString(0);
                     String programStageUid = cursor.getString(1);
                     RuleEvent.Status status = RuleEvent.Status.valueOf(cursor.getString(2));
-                    Date eventDate = parseDate(cursor.getString(3));
+                    Date eventDate = cursor.isNull(3) ? null : parseDate(cursor.getString(3));
                     Date dueDate = cursor.isNull(4) ? eventDate : parseDate(cursor.getString(4));
                     String orgUnit = cursor.getString(5);
                     String orgUnitCode = getOrgUnitCode(orgUnit);
@@ -122,7 +122,7 @@ public final class EventsRuleEngineRepository implements RuleEngineRepository {
                             .programStage(programStageUid)
                             .programStageName(programStageName)
                             .status(status)
-                            .eventDate(eventDate)
+                            .eventDate(eventDate == null ? dueDate : eventDate)
                             .dueDate(dueDate)
                             .organisationUnit(orgUnit)
                             .organisationUnitCode(orgUnitCode)

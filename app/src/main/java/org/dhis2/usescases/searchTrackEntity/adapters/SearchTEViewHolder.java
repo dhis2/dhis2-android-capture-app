@@ -7,6 +7,7 @@ import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.recyclerview.widget.RecyclerView;
@@ -52,8 +53,8 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
 
         setTEIData(searchTeiModel.getAttributeValueModels());
 
-        binding.trackedEntityImage.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.photo_temp_gray));
-        binding.followUp.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.ic_circle_red));
+        binding.trackedEntityImage.setBackground(AppCompatResources.getDrawable(itemView.getContext(), R.drawable.photo_temp_gray));
+        binding.followUp.setBackground(AppCompatResources.getDrawable(itemView.getContext(), R.drawable.ic_circle_red));
 
         binding.syncState.setOnClickListener(view -> presenter.onSyncIconClick(searchTeiModel.getTei().uid()));
 
@@ -115,8 +116,7 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
 
                 int color = ColorUtils.getColorFrom(enrollmentInfo.val1(), ColorUtils.getPrimaryColor(parentContext, ColorUtils.ColorType.PRIMARY_LIGHT));
 
-                Drawable bgDrawable = ContextCompat.getDrawable(parentContext, R.drawable.ic_chip_circle_24);
-
+                Drawable bgDrawable = AppCompatResources.getDrawable(parentContext, R.drawable.ic_chip_circle_24);
                 Drawable wrappedIcon = DrawableCompat.wrap(getIconImage(parentContext, enrollmentInfo));
                 Drawable wrappedBg = DrawableCompat.wrap(bgDrawable);
 

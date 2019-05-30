@@ -18,6 +18,7 @@ import org.dhis2.data.forms.FormViewArguments;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.tuples.Trio;
+import org.dhis2.databinding.WidgetDatepickerBinding;
 import org.dhis2.usescases.main.program.SyncStatusDialog;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
@@ -525,8 +526,9 @@ public class SearchTEPresenterImpl implements SearchTEContractsModule.SearchTEPr
     private void showCustomCalendar(OrganisationUnitModel selectedOrgUnitModel, String programUid, String uid) {
 
         LayoutInflater layoutInflater = LayoutInflater.from(view.getContext());
-        View datePickerView = layoutInflater.inflate(R.layout.widget_datepicker, null);
-        final DatePicker datePicker = datePickerView.findViewById(R.id.widget_datepicker);
+//        View datePickerView = layoutInflater.inflate(R.layout.widget_datepicker, null);
+        WidgetDatepickerBinding binding = WidgetDatepickerBinding.inflate(layoutInflater);
+        final DatePicker datePicker = binding.widgetDatepicker;
 
         Calendar c = Calendar.getInstance();
         datePicker.updateDate(
@@ -535,8 +537,8 @@ public class SearchTEPresenterImpl implements SearchTEContractsModule.SearchTEPr
                 c.get(Calendar.DAY_OF_MONTH));
 
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(view.getContext(), R.style.DatePickerTheme)
-                .setTitle(selectedProgram.enrollmentDateLabel())
-                .setPositiveButton(R.string.action_accept, (dialog, which) -> {
+                .setTitle(selectedProgram.enrollmentDateLabel());
+               /* .setPositiveButton(R.string.action_accept, (dialog, which) -> {
                     Calendar selectedCalendar = Calendar.getInstance();
                     selectedCalendar.set(Calendar.YEAR, datePicker.getYear());
                     selectedCalendar.set(Calendar.MONTH, datePicker.getMonth());
@@ -551,7 +553,7 @@ public class SearchTEPresenterImpl implements SearchTEContractsModule.SearchTEPr
                 })
                 .setNeutralButton(view.getContext().getResources().getString(R.string.change_calendar),
                         (dialog, which) -> showNativeCalendar(selectedOrgUnitModel, programUid, uid))
-                .setNegativeButton(view.getContext().getString(R.string.date_dialog_clear), (dialog, which) -> dialog.dismiss());
+                .setNegativeButton(view.getContext().getString(R.string.date_dialog_clear), (dialog, which) -> dialog.dismiss());*/
 
         if (selectedOrgUnitModel.openingDate() != null)
             datePicker.setMinDate(selectedOrgUnitModel.openingDate().getTime());
@@ -568,8 +570,28 @@ public class SearchTEPresenterImpl implements SearchTEContractsModule.SearchTEPr
             datePicker.setMaxDate(selectedOrgUnitModel.closedDate().getTime());
         }
 
-        alertDialog.setView(datePickerView);
+        alertDialog.setView(binding.getRoot());
         Dialog dialog = alertDialog.create();
+
+        binding.changeCalendarButton.setOnClickListener(changeButton -> {
+            showNativeCalendar(selectedOrgUnitModel, programUid, uid);
+            dialog.dismiss();
+        });
+        binding.clearButton.setOnClickListener(clearButton-> dialog.dismiss());
+        binding.acceptButton.setOnClickListener(acceptButton->{
+            Calendar selectedCalendar = Calendar.getInstance();
+            selectedCalendar.set(Calendar.YEAR, datePicker.getYear());
+            selectedCalendar.set(Calendar.MONTH, datePicker.getMonth());
+            selectedCalendar.set(Calendar.DAY_OF_MONTH, datePicker.getDayOfMonth());
+            selectedCalendar.set(Calendar.HOUR_OF_DAY, 0);
+            selectedCalendar.set(Calendar.MINUTE, 0);
+            selectedCalendar.set(Calendar.SECOND, 0);
+            selectedCalendar.set(Calendar.MILLISECOND, 0);
+            selectedEnrollmentDate = selectedCalendar.getTime();
+
+            enrollInOrgUnit(selectedOrgUnitModel.uid(), programUid, uid, selectedEnrollmentDate);
+            dialog.dismiss();
+        });
         dialog.show();
     }
 

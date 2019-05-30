@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.databinding.DataBindingUtil;
 
 import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionHelper;
@@ -147,7 +147,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
                     .setLabel(relationshipTypeAux.displayName())
                     .setResId(resource)
                     .setLabelTextBold(true)
-                    .setLabelBackgroundDrawable(ContextCompat.getDrawable(getAbstracContext(), R.drawable.bg_chip))
+                    .setLabelBackgroundDrawable(AppCompatResources.getDrawable(getAbstracContext(), R.drawable.bg_chip))
                     .setIconNormalColor(ColorUtils.getPrimaryColor(getAbstracContext(), ColorUtils.ColorType.PRIMARY_DARK))
                     .setWrapper(Pair.create(relationshipTypeAux, trio.val1()))
             );

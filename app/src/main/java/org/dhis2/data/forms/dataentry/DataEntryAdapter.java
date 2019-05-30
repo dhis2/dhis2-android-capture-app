@@ -4,14 +4,6 @@ import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
-import androidx.databinding.ObservableField;
-import androidx.fragment.app.FragmentManager;
-import androidx.recyclerview.widget.DiffUtil;
-import androidx.recyclerview.widget.RecyclerView.Adapter;
-import androidx.recyclerview.widget.RecyclerView.ViewHolder;
-
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
@@ -46,6 +38,13 @@ import org.hisp.dhis.android.core.common.ValueType;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.databinding.ObservableField;
+import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.RecyclerView.Adapter;
+import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 
@@ -159,7 +158,7 @@ public final class DataEntryAdapter extends Adapter {
         if (position != 0 && position == nextFocusPosition && holder instanceof FormViewHolder) {
             ((FormViewHolder) holder).performAction();
             if (!(holder instanceof ImageHolder))
-                holder.itemView.setBackground(ContextCompat.getDrawable(holder.itemView.getContext(), R.drawable.item_selected_bg));
+                holder.itemView.setBackground(AppCompatResources.getDrawable(holder.itemView.getContext(), R.drawable.item_selected_bg));
         } else if (!(holder instanceof ImageHolder)) {
             holder.itemView.setBackgroundColor(Color.WHITE);
         }

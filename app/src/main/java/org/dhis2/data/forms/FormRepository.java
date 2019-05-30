@@ -40,7 +40,13 @@ public interface FormRepository {
     Consumer<String> storeReportDate();
 
     @NonNull
+    Observable<Long> saveReportDate(String date);
+
+    @NonNull
     Consumer<String> storeIncidentDate();
+
+    @NonNull
+    Observable<Long> saveIncidentDate(String date);
 
     @NonNull
     Consumer<LatLng> storeCoordinates();

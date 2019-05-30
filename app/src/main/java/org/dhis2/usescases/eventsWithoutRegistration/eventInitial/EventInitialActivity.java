@@ -37,6 +37,7 @@ import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.databinding.ActivityEventInitialBinding;
 import org.dhis2.databinding.CategorySelectorBinding;
+import org.dhis2.databinding.WidgetDatepickerBinding;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.map.MapSelectorActivity;
@@ -716,8 +717,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     private void showCustomCalendar(DatePickerDialog.OnDateSetListener listener) {
         LayoutInflater layoutInflater = LayoutInflater.from(getContext());
-        View datePickerView = layoutInflater.inflate(R.layout.widget_datepicker, null);
-        final DatePicker datePicker = datePickerView.findViewById(R.id.widget_datepicker);
+        WidgetDatepickerBinding widgetBinding = WidgetDatepickerBinding.inflate(layoutInflater);
+        final DatePicker datePicker = widgetBinding.widgetDatepicker;
 
         Calendar calendar = Calendar.getInstance();
 
@@ -744,13 +745,25 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                 break;
         }
 
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(getContext(), R.style.DatePickerTheme)
-                .setPositiveButton(R.string.action_accept, (dialog, which) ->
-                        listener.onDateSet(datePicker, datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth()))
-                .setNeutralButton(getContext().getResources().getString(R.string.change_calendar), (dialog, which) -> showNativeCalendar(listener));
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(getContext(), R.style.DatePickerTheme);
+                /*.setPositiveButton(R.string.action_accept, (dialog, which) -> {
+                    listener.onDateSet(datePicker, datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
+                })
+                .setNeutralButton(getContext().getResources().getString(R.string.change_calendar), (dialog, which) -> showNativeCalendar(listener));*/
 
-        alertDialog.setView(datePickerView);
+        alertDialog.setView(widgetBinding.getRoot());
         Dialog dialog = alertDialog.create();
+
+        widgetBinding.changeCalendarButton.setOnClickListener(calendarButton -> {
+            showNativeCalendar(listener);
+            dialog.dismiss();
+        });
+        widgetBinding.clearButton.setOnClickListener(clearButton -> dialog.dismiss());
+        widgetBinding.acceptButton.setOnClickListener(acceptButton -> {
+            listener.onDateSet(datePicker, datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
+            dialog.dismiss();
+        });
+
         dialog.show();
     }
 

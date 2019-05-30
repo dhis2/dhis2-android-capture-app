@@ -2,7 +2,7 @@ package org.dhis2.data.forms.dataentry.fields.orgUnit;
 
 import android.graphics.Color;
 
-import androidx.core.content.ContextCompat;
+import androidx.appcompat.content.res.AppCompatResources;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
@@ -43,7 +43,7 @@ public class OrgUnitHolder extends FormViewHolder {
 
     @Override
     public void performAction() {
-        itemView.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.item_selected_bg));
+        itemView.setBackground(AppCompatResources.getDrawable(itemView.getContext(), R.drawable.item_selected_bg));
         formOrgUnitBinding.orgUnitView.performOnFocusAction();
     }
 

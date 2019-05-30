@@ -4,7 +4,7 @@ import android.graphics.Color;
 import android.view.View;
 import android.widget.RadioGroup;
 
-import androidx.core.content.ContextCompat;
+import androidx.appcompat.content.res.AppCompatResources;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
@@ -103,7 +103,7 @@ public class RadioButtonHolder extends FormViewHolder {
 
     @Override
     public void performAction() {
-        itemView.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.item_selected_bg));
+        itemView.setBackground(AppCompatResources.getDrawable(itemView.getContext(), R.drawable.item_selected_bg));
         formYesNoBinding.customYesNo.performOnFocusAction();
     }
 }

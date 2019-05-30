@@ -4,13 +4,14 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.widget.DatePicker;
 
 import androidx.appcompat.app.AlertDialog;
 
 import org.dhis2.R;
+import org.dhis2.databinding.WidgetDatepickerBinding;
 import org.dhis2.usescases.main.program.ProgramViewModel;
+import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.custom_views.OrgUnitDialog;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -129,8 +130,9 @@ public class TeiProgramListInteractorImpl implements TeiProgramListContract.TeiP
 
     private void showCustomCalendar(String programUid, String uid, OrgUnitDialog orgUnitDialog) {
         LayoutInflater layoutInflater = LayoutInflater.from(view.getContext());
-        View datePickerView = layoutInflater.inflate(R.layout.widget_datepicker, null);
-        final DatePicker datePicker = datePickerView.findViewById(R.id.widget_datepicker);
+//        View datePickerView = layoutInflater.inflate(R.layout.widget_datepicker, null);
+        WidgetDatepickerBinding binding = WidgetDatepickerBinding.inflate(layoutInflater);
+        final DatePicker datePicker = binding.widgetDatepicker;
 
         Calendar c = Calendar.getInstance();
         datePicker.updateDate(
@@ -138,8 +140,8 @@ public class TeiProgramListInteractorImpl implements TeiProgramListContract.TeiP
                 c.get(Calendar.MONTH),
                 c.get(Calendar.DAY_OF_MONTH));
 
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(view.getContext(), R.style.DatePickerTheme)
-                .setPositiveButton(R.string.action_accept, (dialog, which) -> {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(view.getContext(), R.style.DatePickerTheme);
+               /* .setPositiveButton(R.string.action_accept, (dialog, which) -> {
                     Calendar selectedCalendar = Calendar.getInstance();
                     selectedCalendar.set(Calendar.YEAR, datePicker.getYear());
                     selectedCalendar.set(Calendar.MONTH, datePicker.getMonth());
@@ -169,7 +171,9 @@ public class TeiProgramListInteractorImpl implements TeiProgramListContract.TeiP
                 })
                 .setNeutralButton(view.getContext().getResources().getString(R.string.change_calendar),
                         (dialog, which) -> showNativeCalendar(programUid, uid, orgUnitDialog))
-                .setNegativeButton(view.getContext().getString(R.string.date_dialog_clear), (dialog, which) -> dialog.dismiss());
+                .setNegativeButton(view.getContext().getString(R.string.date_dialog_clear), (dialog, which) -> {
+                    dialog.dismiss();
+                });*/
 
         ProgramModel selectedProgram = getProgramFromUid(programUid);
         if (selectedProgram != null && !selectedProgram.selectEnrollmentDatesInFuture()) {
@@ -180,8 +184,55 @@ public class TeiProgramListInteractorImpl implements TeiProgramListContract.TeiP
             alertDialog.setTitle(selectedProgram.enrollmentDateLabel());
         }
 
-        alertDialog.setView(datePickerView);
+        alertDialog.setView(binding.getRoot());
         Dialog dialog = alertDialog.create();
+
+        binding.changeCalendarButton.setOnClickListener(changeButton -> {
+            showNativeCalendar(programUid, uid, orgUnitDialog);
+            dialog.dismiss();
+        });
+
+        binding.clearButton.setOnClickListener(clearButton -> dialog.dismiss());
+        binding.acceptButton.setOnClickListener(acceptButton -> {
+            Calendar selectedCalendar = Calendar.getInstance();
+            selectedCalendar.set(Calendar.YEAR, datePicker.getYear());
+            selectedCalendar.set(Calendar.MONTH, datePicker.getMonth());
+            selectedCalendar.set(Calendar.DAY_OF_MONTH, datePicker.getDayOfMonth());
+            selectedCalendar.set(Calendar.HOUR_OF_DAY, 0);
+            selectedCalendar.set(Calendar.MINUTE, 0);
+            selectedCalendar.set(Calendar.SECOND, 0);
+            selectedCalendar.set(Calendar.MILLISECOND, 0);
+            selectedEnrollmentDate = selectedCalendar.getTime();
+
+            compositeDisposable.add(getOrgUnits(programUid)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
+                            allOrgUnits -> {
+                                ArrayList<OrganisationUnitModel> orgUnits = new ArrayList<>();
+                                for (OrganisationUnitModel orgUnit : allOrgUnits) {
+                                    boolean afterOpening = false;
+                                    boolean beforeClosing = false;
+                                    if (orgUnit.openingDate() == null || !selectedEnrollmentDate.before(orgUnit.openingDate()))
+                                        afterOpening = true;
+                                    if (orgUnit.closedDate() == null || !selectedEnrollmentDate.after(orgUnit.closedDate()))
+                                        beforeClosing = true;
+                                    if (afterOpening && beforeClosing)
+                                        orgUnits.add(orgUnit);
+                                }
+                                if (orgUnits.size() > 1) {
+                                    orgUnitDialog.setOrgUnits(orgUnits);
+                                    if (!orgUnitDialog.isAdded())
+                                        orgUnitDialog.show(view.getAbstracContext().getSupportFragmentManager(), "OrgUnitEnrollment");
+                                } else if (!orgUnits.isEmpty())
+                                    enrollInOrgUnit(orgUnits.get(0).uid(), programUid, uid, selectedEnrollmentDate);
+                                else
+                                    view.displayMessage(view.getContext().getString(R.string.no_org_units));
+                            },
+                            Timber::d
+                    ));
+        });
+
         dialog.show();
     }
 

@@ -190,7 +190,8 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 context.getString(R.string.filter_options),
                 context.getString(R.string.choose_date));
 
-        loadDataElementRules(currentEvent);
+//        loadDataElementRules(currentEvent);
+
         isEventEditable = isEventExpired(eventUid);
     }
 
@@ -591,7 +592,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     @NonNull
     @Override
     public Flowable<Result<RuleEffect>> calculate() {
-        return queryDataValues(eventUid)
+        return loadRules().flatMap(loadRules -> queryDataValues(eventUid))
                 .map(dataValues -> eventBuilder.dataValues(dataValues).build())
                 .switchMap(
                         event -> formRepository.ruleEngine()
@@ -607,6 +608,13 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                                 .onErrorReturn(error -> Result.failure(new Exception(error)))
 
                 );
+    }
+
+    private Flowable<Boolean> loadRules() {
+        return Flowable.fromCallable(() -> {
+            loadDataElementRules(currentEvent);
+            return true;
+        });
     }
 
     @Override
@@ -664,7 +672,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         cv.put("lastUpdated", DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
         cv.put("state", enrollment.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
         briteDatabase.update(EnrollmentModel.TABLE, cv, "uid = ?", enrollmentUid);
-        updateTei(enrollment.uid());
+        updateTei(enrollment.trackedEntityInstance());
     }
 
     private void updateTei(String teiUid) {

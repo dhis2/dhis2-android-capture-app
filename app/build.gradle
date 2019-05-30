@@ -49,6 +49,12 @@ android {
 
         buildConfigField "String", "SDK_VERSION", "\"" + libraries.dhis2sdk + "\""
         buildConfigField "String", "MAPBOX_ACCESS_TOKEN", "\"pk.eyJ1Ijoib3Jpa2dnIiwiYSI6ImNqdWpqb24zYTFsOXo0M2xwcXRseGx3aXkifQ.6N9aqvpqdrrSBwO9GyfjUw\""
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                includeCompileClasspath true
+            }
+        }
     }
 
     testOptions {
@@ -216,7 +222,7 @@ dependencies {
     // Google's auto-value. Annotations are used only during compilation time, as well as
     // annotation processor which hoops up into compilation process
     api "com.google.auto.value:auto-value:${libraries.autovalue}"
-    annotationProcessor "com.google.auto.value:auto-value:${libraries.autovalue}"
+    kapt "com.google.auto.value:auto-value:${libraries.autovalue}"
 
     // Extension which generates mappers for work with cursors
     kapt "com.gabrielittner.auto.value:auto-value-cursor:${libraries.autovaluecursor}"
