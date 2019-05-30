@@ -19,6 +19,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import org.dhis2.R;
 import org.dhis2.databinding.AgeCustomViewAccentBinding;
 import org.dhis2.databinding.AgeCustomViewBinding;
+import org.dhis2.databinding.WidgetDatepickerBinding;
 import org.dhis2.utils.DateUtils;
 
 import java.text.DateFormat;
@@ -124,8 +125,8 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
 
     private void showCustomCalendar(View view) {
         LayoutInflater layoutInflater = LayoutInflater.from(getContext());
-        View datePickerView = layoutInflater.inflate(R.layout.widget_datepicker, null);
-        final DatePicker datePicker = datePickerView.findViewById(R.id.widget_datepicker);
+        WidgetDatepickerBinding binding = WidgetDatepickerBinding.inflate(layoutInflater);
+        final DatePicker datePicker = binding.widgetDatepicker;
 
         Calendar c = Calendar.getInstance();
         int year = c.get(Calendar.YEAR);
@@ -136,12 +137,27 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
         datePicker.setMaxDate(c.getTimeInMillis());
 
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(getContext(), R.style.DatePickerTheme)
-                .setTitle(label)
-                .setPositiveButton(R.string.action_accept, (dialog, which) -> handleDateInput(view, datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth()))
-                .setNeutralButton(getContext().getResources().getString(R.string.change_calendar), (dialog, which) -> showNativeCalendar(view));
+                .setTitle(label);
+                /*.setPositiveButton(R.string.action_accept, (dialog, which) -> handleDateInput(view, datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth()))
+                .setNeutralButton(getContext().getResources().getString(R.string.change_calendar), (dialog, which) -> showNativeCalendar(view));*/
 
-        alertDialog.setView(datePickerView);
+        alertDialog.setView(binding.getRoot());
         Dialog dialog = alertDialog.create();
+
+        binding.changeCalendarButton.setOnClickListener(calendarButton->{
+            showNativeCalendar(view);
+            dialog.dismiss();
+        });
+        binding.clearButton.setOnClickListener(clearButton->{
+            listener.onAgeSet(null);
+            dialog.dismiss();
+        });
+
+        binding.acceptButton.setOnClickListener(acceptButton->{
+            handleDateInput(view, datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
+            dialog.dismiss();
+        });
+
         dialog.show();
     }
 

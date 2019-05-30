@@ -31,6 +31,7 @@ import org.dhis2.Components;
 import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.FragmentProgramBinding;
+import org.dhis2.databinding.WidgetDatepickerBinding;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
@@ -229,8 +230,9 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
 
     private void showCustomCalendar(Calendar calendar) {
         LayoutInflater layoutInflater = LayoutInflater.from(getContext());
-        View datePickerView = layoutInflater.inflate(R.layout.widget_datepicker, null);
-        final DatePicker datePicker = datePickerView.findViewById(R.id.widget_datepicker);
+//        View datePickerView = layoutInflater.inflate(R.layout.widget_datepicker, null);
+        WidgetDatepickerBinding widgetBinding = WidgetDatepickerBinding.inflate(layoutInflater);
+        final DatePicker datePicker = widgetBinding.widgetDatepicker;
 
         Calendar c = Calendar.getInstance();
         datePicker.updateDate(
@@ -238,8 +240,8 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                 c.get(Calendar.MONTH),
                 c.get(Calendar.DAY_OF_MONTH));
 
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(getContext(), R.style.DatePickerTheme)
-                .setPositiveButton(R.string.action_accept, (dialog, which) -> {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(getContext(), R.style.DatePickerTheme);
+                /*.setPositiveButton(R.string.action_accept, (dialog, which) -> {
                     calendar.set(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
                     Date[] dates = DateUtils.getInstance().getDateFromDateAndPeriod(calendar.getTime(), currentPeriod);
                     ArrayList<Date> selectedDates = new ArrayList<>();
@@ -248,10 +250,27 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                     binding.buttonPeriodText.setText(DateUtils.getInstance().formatDate(dates[0]));
                     chosenDateDay = dates[0];
                 })
-                .setNeutralButton(getContext().getResources().getString(R.string.change_calendar), (dialog, which) -> showNativeCalendar(calendar));
+                .setNeutralButton(getContext().getResources().getString(R.string.change_calendar), (dialog, which) -> showNativeCalendar(calendar));*/
 
-        alertDialog.setView(datePickerView);
+        alertDialog.setView(widgetBinding.getRoot());
         Dialog dialog = alertDialog.create();
+
+        widgetBinding.changeCalendarButton.setOnClickListener(calendarButton->{
+            showNativeCalendar(calendar);
+            dialog.dismiss();
+        });
+        widgetBinding.clearButton.setOnClickListener(clearButton->dialog.dismiss());
+        widgetBinding.acceptButton.setOnClickListener(acceptButton->{
+            calendar.set(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
+            Date[] dates = DateUtils.getInstance().getDateFromDateAndPeriod(calendar.getTime(), currentPeriod);
+            ArrayList<Date> selectedDates = new ArrayList<>();
+            selectedDates.add(dates[0]);
+            presenter.updateDateFilter(DateUtils.getInstance().getDatePeriodListFor(selectedDates, currentPeriod));
+            binding.buttonPeriodText.setText(DateUtils.getInstance().formatDate(dates[0]));
+            chosenDateDay = dates[0];
+            dialog.dismiss();
+        });
+
         dialog.show();
     }
 

@@ -451,20 +451,39 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
 
     @NonNull
     private DatePickerDialogFragment.FormattedOnDateSetListener publishReportDateChange() {
-        return date -> {
-            if (onReportDateChanged != null) {
-                onReportDateChanged.onNext(BaseIdentifiableObject.DATE_FORMAT.format(date));
+
+        return new DatePickerDialogFragment.FormattedOnDateSetListener() {
+            @Override
+            public void onDateSet(@NonNull Date date) {
+                if (onReportDateChanged != null) {
+                    onReportDateChanged.onNext(BaseIdentifiableObject.DATE_FORMAT.format(date));
+                }
+            }
+
+            @Override
+            public void onClearDate() {
+                onReportDateChanged.onNext("");
             }
         };
     }
 
     @NonNull
     private DatePickerDialogFragment.FormattedOnDateSetListener publishIncidentDateChange() {
-        return date -> {
-            if (onIncidentDateChanged != null) {
-                onIncidentDateChanged.onNext(BaseIdentifiableObject.DATE_FORMAT.format(date));
+
+        return new DatePickerDialogFragment.FormattedOnDateSetListener() {
+            @Override
+            public void onDateSet(@NonNull Date date) {
+                if (onIncidentDateChanged != null) {
+                    onIncidentDateChanged.onNext(BaseIdentifiableObject.DATE_FORMAT.format(date));
+                }
+            }
+
+            @Override
+            public void onClearDate() {
+                onIncidentDateChanged.onNext("");
             }
         };
+
     }
 
     @Override

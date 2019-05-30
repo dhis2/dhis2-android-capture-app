@@ -3,6 +3,8 @@ package org.dhis2.data.forms;
 import android.content.ContentValues;
 import android.database.Cursor;
 
+import androidx.annotation.NonNull;
+
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.squareup.sqlbrite2.BriteDatabase;
 
@@ -28,7 +30,6 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 import org.hisp.dhis.rules.RuleEngine;
@@ -36,13 +37,13 @@ import org.hisp.dhis.rules.RuleEngineContext;
 import org.hisp.dhis.rules.RuleExpressionEvaluator;
 import org.hisp.dhis.rules.models.TriggerEnvironment;
 
+import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import androidx.annotation.NonNull;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -354,6 +355,68 @@ public class EnrollmentFormRepository implements FormRepository {
             briteDatabase.update(EnrollmentModel.TABLE, enrollment,
                     EnrollmentModel.Columns.UID + " = ?", enrollmentUid == null ? "" : enrollmentUid);
         };
+    }
+
+    @NonNull
+    @Override
+    public Observable<Long> saveReportDate(String reportDate) {
+        try {
+
+            String reportDateToStore = null;
+            if (!isEmpty(reportDate)) {
+
+                Calendar cal = Calendar.getInstance();
+                Date date = DateUtils.databaseDateFormat().parse(reportDate);
+                cal.setTime(date);
+                cal.set(Calendar.HOUR_OF_DAY, 0);
+                cal.set(Calendar.MINUTE, 0);
+                cal.set(Calendar.SECOND, 0);
+                cal.set(Calendar.MILLISECOND, 0);
+                reportDateToStore = DateUtils.databaseDateFormat().format(cal.getTime());
+            }
+
+            ContentValues enrollment = new ContentValues();
+            enrollment.put(EnrollmentModel.Columns.ENROLLMENT_DATE, reportDateToStore);
+            enrollment.put(EnrollmentModel.Columns.STATE, State.TO_UPDATE.name()); // TODO: Check if state is TO_POST
+            // TODO: and if so, keep the TO_POST state
+
+            long updated = briteDatabase.update(EnrollmentModel.TABLE, enrollment,
+                    EnrollmentModel.Columns.UID + " = ?", enrollmentUid == null ? "" : enrollmentUid);
+
+            return Observable.just(updated);
+        } catch (ParseException e) {
+            return Observable.error(new Exception("Error saving reportDate"));
+        }
+
+    }
+
+    @NonNull
+    @Override
+    public Observable<Long> saveIncidentDate(String incidentDate) {
+        try {
+            String incidentDateToStore = null;
+            if (!isEmpty(incidentDate)) {
+                Calendar cal = Calendar.getInstance();
+                Date date = DateUtils.databaseDateFormat().parse(incidentDate);
+                cal.setTime(date);
+                cal.set(Calendar.HOUR_OF_DAY, 0);
+                cal.set(Calendar.MINUTE, 0);
+                cal.set(Calendar.SECOND, 0);
+                cal.set(Calendar.MILLISECOND, 0);
+                incidentDateToStore = DateUtils.databaseDateFormat().format(cal.getTime());
+            }
+            ContentValues enrollment = new ContentValues();
+            enrollment.put(EnrollmentModel.Columns.INCIDENT_DATE, incidentDateToStore);
+            enrollment.put(EnrollmentModel.Columns.STATE, State.TO_UPDATE.name()); // TODO: Check if state is TO_POST
+            // TODO: and if so, keep the TO_POST state
+
+            long updated = briteDatabase.update(EnrollmentModel.TABLE, enrollment,
+                    EnrollmentModel.Columns.UID + " = ?", enrollmentUid == null ? "" : enrollmentUid);
+
+            return Observable.just(updated);
+        } catch (ParseException e) {
+            return Observable.error(new Exception("Error saving reportDate"));
+        }
     }
 
     @NonNull

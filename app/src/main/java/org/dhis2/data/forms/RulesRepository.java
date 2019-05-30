@@ -567,7 +567,7 @@ public final class RulesRepository {
                                                 String programStageName = cursor.getString(6);
                                                 RuleEvent.Status status = cursor.getString(2).equals(RuleEvent.Status.VISITED.toString()) ?
                                                         RuleEvent.Status.ACTIVE :
-                                                        RuleEvent.Status.valueOf(cursor.getString(2)); //TODO: WHAT?
+                                                        RuleEvent.Status.valueOf(cursor.getString(2));
 
                                                 try (Cursor dataValueCursor = briteDatabase.query(QUERY_VALUES, eventUid)) {
                                                     if (dataValueCursor != null && dataValueCursor.moveToFirst()) {
