@@ -39,7 +39,7 @@ import java.util.Locale;
 import javax.inject.Inject;
 
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.content.ContextCompat;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -160,23 +160,23 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
         switch (currentPeriod) {
             case NONE:
                 currentPeriod = DAILY;
-                drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_view_day);
+                drawable = AppCompatResources.getDrawable(getContext(), R.drawable.ic_view_day);
                 break;
             case DAILY:
                 currentPeriod = WEEKLY;
-                drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_view_week);
+                drawable = AppCompatResources.getDrawable(getContext(), R.drawable.ic_view_week);
                 break;
             case WEEKLY:
                 currentPeriod = MONTHLY;
-                drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_view_month);
+                drawable = AppCompatResources.getDrawable(getContext(), R.drawable.ic_view_month);
                 break;
             case MONTHLY:
                 currentPeriod = YEARLY;
-                drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_view_year);
+                drawable = AppCompatResources.getDrawable(getContext(), R.drawable.ic_view_year);
                 break;
             case YEARLY:
                 currentPeriod = NONE;
-                drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_view_none);
+                drawable = AppCompatResources.getDrawable(getContext(), R.drawable.ic_view_none);
                 break;
         }
         binding.buttonTime.setImageDrawable(drawable);
@@ -296,7 +296,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
         }
     }
 
-    private void showNativeCalendar(Calendar calendar){
+    private void showNativeCalendar(Calendar calendar) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(chosenDateDay);
         DatePickerDialog pickerDialog;
@@ -311,7 +311,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
             chosenDateDay = dates[0];
         }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
 
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP){
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
             pickerDialog.setButton(DialogInterface.BUTTON_NEUTRAL, getContext().getResources().getString(R.string.change_calendar), (dialog, which) -> {
                 pickerDialog.dismiss();
                 showCustomCalendar(calendar);
@@ -320,7 +320,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
         pickerDialog.show();
     }
 
-    private void showCustomCalendar(Calendar calendar){
+    private void showCustomCalendar(Calendar calendar) {
         LayoutInflater layoutInflater = LayoutInflater.from(getContext());
         View datePickerView = layoutInflater.inflate(R.layout.widget_datepicker, null);
         final DatePicker datePicker = datePickerView.findViewById(R.id.widget_datepicker);

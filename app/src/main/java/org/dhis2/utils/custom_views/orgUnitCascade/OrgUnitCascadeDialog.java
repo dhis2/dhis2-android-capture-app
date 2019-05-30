@@ -9,12 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.databinding.DataBindingUtil;
-import androidx.fragment.app.DialogFragment;
-
 import com.google.android.material.chip.Chip;
 import com.jakewharton.rxbinding2.widget.RxTextView;
 
@@ -31,6 +25,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.DialogFragment;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -99,7 +98,7 @@ public class OrgUnitCascadeDialog extends DialogFragment {
         binding = DataBindingUtil.inflate(inflater, R.layout.dialog_cascade_orgunit, container, false);
         binding.orgUnitSearchEditText.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_search, 0, 0, 0);
         binding.orgUnitSearchLayout.setHint(title);
-        binding.orgUnitSearchEditText.setCompoundDrawables(ColorUtils.tintDrawableWithColor(ContextCompat.getDrawable(getContext(), R.drawable.ic_search), R.color.icon_color), null, null, null);
+        binding.orgUnitSearchEditText.setCompoundDrawables(ColorUtils.tintDrawableWithColor(AppCompatResources.getDrawable(getContext(), R.drawable.ic_search), R.color.icon_color), null, null, null);
         disposable = new CompositeDisposable();
 
         setListeners();

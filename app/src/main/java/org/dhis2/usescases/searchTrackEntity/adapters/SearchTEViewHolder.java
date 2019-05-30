@@ -7,10 +7,6 @@ import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 
-import androidx.core.content.ContextCompat;
-import androidx.core.graphics.drawable.DrawableCompat;
-import androidx.recyclerview.widget.RecyclerView;
-
 import com.google.android.material.chip.Chip;
 
 import org.dhis2.R;
@@ -23,6 +19,9 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel
 
 import java.util.List;
 
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.recyclerview.widget.RecyclerView;
 import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
@@ -52,8 +51,8 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
 
         setTEIData(searchTeiModel.getAttributeValueModels());
 
-        binding.trackedEntityImage.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.photo_temp_gray));
-        binding.followUp.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.ic_circle_red));
+        binding.trackedEntityImage.setBackground(AppCompatResources.getDrawable(itemView.getContext(), R.drawable.photo_temp_gray));
+        binding.followUp.setBackground(AppCompatResources.getDrawable(itemView.getContext(), R.drawable.ic_circle_red));
 
         binding.syncState.setOnClickListener(view -> presenter.onSyncIconClick(searchTeiModel.getTei().uid()));
 
@@ -104,15 +103,15 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
 
                 Drawable iconImage;
                 try {
-                    iconImage = ContextCompat.getDrawable(parentContext, icon);
+                    iconImage = AppCompatResources.getDrawable(parentContext, icon);
                     iconImage.mutate();
                 } catch (Exception e) {
                     Timber.log(1, e);
-                    iconImage = ContextCompat.getDrawable(parentContext, R.drawable.ic_program_default);
+                    iconImage = AppCompatResources.getDrawable(parentContext, R.drawable.ic_program_default);
                     iconImage.mutate();
                 }
 
-                Drawable bgDrawable = ContextCompat.getDrawable(parentContext, R.drawable.ic_chip_circle_24);
+                Drawable bgDrawable = AppCompatResources.getDrawable(parentContext, R.drawable.ic_chip_circle_24);
 
                 Drawable wrappedIcon = DrawableCompat.wrap(iconImage);
                 Drawable wrappedBg = DrawableCompat.wrap(bgDrawable);

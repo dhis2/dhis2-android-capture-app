@@ -19,16 +19,6 @@ import android.view.ViewGroup;
 import android.widget.DatePicker;
 import android.widget.PopupMenu;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.core.content.ContextCompat;
-import androidx.core.content.res.ResourcesCompat;
-import androidx.core.view.GravityCompat;
-import androidx.databinding.DataBindingUtil;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.lifecycle.LiveData;
-import androidx.paging.PagedList;
-
 import com.google.android.flexbox.FlexboxLayout;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
@@ -63,6 +53,15 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.content.res.ResourcesCompat;
+import androidx.core.view.GravityCompat;
+import androidx.databinding.DataBindingUtil;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.lifecycle.LiveData;
+import androidx.paging.PagedList;
 import io.reactivex.functions.Consumer;
 import me.toptas.fancyshowcase.FancyShowCaseView;
 import timber.log.Timber;
@@ -256,7 +255,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         LayoutInflater layoutInflater = LayoutInflater.from(getContext());
 //        View datePickerView = layoutInflater.inflate(R.layout.widget_datepicker, null);
         WidgetDatepickerBinding widgetBinding = WidgetDatepickerBinding.inflate(layoutInflater);
-        final DatePicker datePicker =widgetBinding.widgetDatepicker;
+        final DatePicker datePicker = widgetBinding.widgetDatepicker;
 
         Calendar c = Calendar.getInstance();
         datePicker.updateDate(
@@ -280,12 +279,12 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         alertDialog.setView(widgetBinding.getRoot());
         Dialog dialog = alertDialog.create();
 
-        widgetBinding.changeCalendarButton.setOnClickListener(calendarButton->{
+        widgetBinding.changeCalendarButton.setOnClickListener(calendarButton -> {
             showNativeCalendar(calendar);
             dialog.dismiss();
         });
-        widgetBinding.clearButton.setOnClickListener(clearButton->dialog.dismiss());
-        widgetBinding.acceptButton.setOnClickListener(acceptButton->{
+        widgetBinding.clearButton.setOnClickListener(clearButton -> dialog.dismiss());
+        widgetBinding.acceptButton.setOnClickListener(acceptButton -> {
             calendar.set(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
             Date[] dates = DateUtils.getInstance().getDateFromDateAndPeriod(calendar.getTime(), currentPeriod);
             ArrayList<Date> selectedDates = new ArrayList<>();
@@ -310,23 +309,23 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         switch (currentPeriod) {
             case NONE:
                 currentPeriod = DAILY;
-                drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_view_day);
+                drawable = AppCompatResources.getDrawable(getContext(), R.drawable.ic_view_day);
                 break;
             case DAILY:
                 currentPeriod = WEEKLY;
-                drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_view_week);
+                drawable = AppCompatResources.getDrawable(getContext(), R.drawable.ic_view_week);
                 break;
             case WEEKLY:
                 currentPeriod = MONTHLY;
-                drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_view_month);
+                drawable = AppCompatResources.getDrawable(getContext(), R.drawable.ic_view_month);
                 break;
             case MONTHLY:
                 currentPeriod = YEARLY;
-                drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_view_year);
+                drawable = AppCompatResources.getDrawable(getContext(), R.drawable.ic_view_year);
                 break;
             case YEARLY:
                 currentPeriod = NONE;
-                drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_view_none);
+                drawable = AppCompatResources.getDrawable(getContext(), R.drawable.ic_view_none);
                 break;
         }
         binding.buttonTime.setImageDrawable(drawable);

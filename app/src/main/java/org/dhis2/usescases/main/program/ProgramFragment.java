@@ -14,15 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.DatePicker;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.core.content.ContextCompat;
-import androidx.core.view.GravityCompat;
-import androidx.databinding.DataBindingUtil;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.recyclerview.widget.DividerItemDecoration;
-
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
@@ -38,7 +29,6 @@ import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.Period;
 import org.dhis2.utils.custom_views.RxDateDialog;
-import org.hisp.dhis.android.core.constant.Constant;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.jetbrains.annotations.NotNull;
 
@@ -51,6 +41,14 @@ import java.util.Locale;
 
 import javax.inject.Inject;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.view.GravityCompat;
+import androidx.databinding.DataBindingUtil;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import io.reactivex.functions.Consumer;
 import me.toptas.fancyshowcase.DismissListener;
 import me.toptas.fancyshowcase.FancyShowCaseView;
@@ -255,12 +253,12 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
         alertDialog.setView(widgetBinding.getRoot());
         Dialog dialog = alertDialog.create();
 
-        widgetBinding.changeCalendarButton.setOnClickListener(calendarButton->{
+        widgetBinding.changeCalendarButton.setOnClickListener(calendarButton -> {
             showNativeCalendar(calendar);
             dialog.dismiss();
         });
-        widgetBinding.clearButton.setOnClickListener(clearButton->dialog.dismiss());
-        widgetBinding.acceptButton.setOnClickListener(acceptButton->{
+        widgetBinding.clearButton.setOnClickListener(clearButton -> dialog.dismiss());
+        widgetBinding.acceptButton.setOnClickListener(acceptButton -> {
             calendar.set(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
             Date[] dates = DateUtils.getInstance().getDateFromDateAndPeriod(calendar.getTime(), currentPeriod);
             ArrayList<Date> selectedDates = new ArrayList<>();
@@ -292,23 +290,23 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
             switch (currentPeriod) {
                 case NONE:
                     currentPeriod = DAILY;
-                    drawable = ContextCompat.getDrawable(context, R.drawable.ic_view_day);
+                    drawable = AppCompatResources.getDrawable(context, R.drawable.ic_view_day);
                     break;
                 case DAILY:
                     currentPeriod = WEEKLY;
-                    drawable = ContextCompat.getDrawable(context, R.drawable.ic_view_week);
+                    drawable = AppCompatResources.getDrawable(context, R.drawable.ic_view_week);
                     break;
                 case WEEKLY:
                     currentPeriod = MONTHLY;
-                    drawable = ContextCompat.getDrawable(context, R.drawable.ic_view_month);
+                    drawable = AppCompatResources.getDrawable(context, R.drawable.ic_view_month);
                     break;
                 case MONTHLY:
                     currentPeriod = YEARLY;
-                    drawable = ContextCompat.getDrawable(context, R.drawable.ic_view_year);
+                    drawable = AppCompatResources.getDrawable(context, R.drawable.ic_view_year);
                     break;
                 case YEARLY:
                     currentPeriod = NONE;
-                    drawable = ContextCompat.getDrawable(context, R.drawable.ic_view_none);
+                    drawable = AppCompatResources.getDrawable(context, R.drawable.ic_view_none);
                     break;
             }
             if (binding.programRecycler.getAdapter() != null) {
@@ -592,7 +590,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
 
                     HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
 
-                    if (!prefs.getBoolean(Constants.TUTORIAL_HOME,false) && !BuildConfig.DEBUG) {
+                    if (!prefs.getBoolean(Constants.TUTORIAL_HOME, false) && !BuildConfig.DEBUG) {
                         HelpManager.getInstance().showHelp();
                         prefs.edit().putBoolean(Constants.TUTORIAL_HOME, true).apply();
                     }
