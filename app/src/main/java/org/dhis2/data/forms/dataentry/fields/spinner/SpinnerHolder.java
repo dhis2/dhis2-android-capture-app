@@ -3,9 +3,6 @@ package org.dhis2.data.forms.dataentry.fields.spinner;
 import android.graphics.Color;
 import android.view.View;
 
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.FragmentActivity;
-
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
@@ -14,6 +11,8 @@ import org.dhis2.databinding.FormOptionSetBinding;
 import org.dhis2.utils.custom_views.OptionSetDialog;
 import org.dhis2.utils.custom_views.OptionSetPopUp;
 
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.fragment.app.FragmentActivity;
 import io.reactivex.processors.FlowableProcessor;
 
 /**
@@ -65,7 +64,7 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
 
     @Override
     public void performAction() {
-        itemView.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.item_selected_bg));
+        itemView.setBackground(AppCompatResources.getDrawable(itemView.getContext(), R.drawable.item_selected_bg));
         binding.optionSetView.performOnFocusAction();
     }
 

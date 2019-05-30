@@ -17,11 +17,6 @@ import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import androidx.core.content.ContextCompat;
-import androidx.databinding.BindingAdapter;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.dhis2.R;
@@ -45,6 +40,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.content.ContextCompat;
+import androidx.databinding.BindingAdapter;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import timber.log.Timber;
 
 /**
@@ -146,16 +146,16 @@ public class Bindings {
             status = EnrollmentStatus.ACTIVE;
         switch (status) {
             case ACTIVE:
-                lock = ContextCompat.getDrawable(view.getContext(), R.drawable.ic_lock_open_green);
+                lock = AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_lock_open_green);
                 break;
             case COMPLETED:
-                lock = ContextCompat.getDrawable(view.getContext(), R.drawable.ic_lock_completed);
+                lock = AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_lock_completed);
                 break;
             case CANCELLED:
-                lock = ContextCompat.getDrawable(view.getContext(), R.drawable.ic_lock_inactive);
+                lock = AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_lock_inactive);
                 break;
             default:
-                lock = ContextCompat.getDrawable(view.getContext(), R.drawable.ic_lock_read_only);
+                lock = AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_lock_read_only);
                 break;
         }
 
@@ -200,30 +200,30 @@ public class Bindings {
                 switch (status) {
                     case ACTIVE:
                         if (DateUtils.getInstance().hasExpired(event, program.expiryDays(), program.completeEventsExpiryDays(), eventProgramStage.periodType() != null ? eventProgramStage.periodType() : program.expiryPeriodType())) {
-                            view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_eye_red));
+                            view.setImageDrawable(AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_eye_red));
                         } else {
-                            view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_edit));
+                            view.setImageDrawable(AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_edit));
                         }
                         break;
                     case OVERDUE:
                     case COMPLETED:
                     case SKIPPED:
-                        view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_visibility));
+                        view.setImageDrawable(AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_visibility));
                         break;
                     case SCHEDULE:
-                        view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_edit));
+                        view.setImageDrawable(AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_edit));
                         break;
                     case VISITED:
-                        view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_edit));
+                        view.setImageDrawable(AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_edit));
                         break;
                     default:
-                        view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_edit));
+                        view.setImageDrawable(AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_edit));
                         break;
                 }
             } else if (enrollmentStatus == EnrollmentStatus.COMPLETED) {
-                view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_visibility));
+                view.setImageDrawable(AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_visibility));
             } else { //EnrollmentStatus = CANCELLED
-                view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_visibility));
+                view.setImageDrawable(AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_visibility));
             }
         }
     }
@@ -315,7 +315,7 @@ public class Bindings {
             } else {
                 bgColor = R.drawable.item_event_red_ripple;
             }
-            view.setBackground(ContextCompat.getDrawable(view.getContext(), bgColor));
+            view.setBackground(AppCompatResources.getDrawable(view.getContext(), bgColor));
         }
     }
 
@@ -324,13 +324,13 @@ public class Bindings {
         Drawable icon;
         switch (status) {
             case ERROR:
-                icon = ContextCompat.getDrawable(view.getContext(), R.drawable.red_circle);
+                icon = AppCompatResources.getDrawable(view.getContext(), R.drawable.red_circle);
                 break;
             case SUCCESS:
-                icon = ContextCompat.getDrawable(view.getContext(), R.drawable.green_circle);
+                icon = AppCompatResources.getDrawable(view.getContext(), R.drawable.green_circle);
                 break;
             case WARNING:
-                icon = ContextCompat.getDrawable(view.getContext(), R.drawable.yellow_circle);
+                icon = AppCompatResources.getDrawable(view.getContext(), R.drawable.yellow_circle);
                 break;
             default:
                 icon = null;
@@ -544,9 +544,9 @@ public class Bindings {
     public static void setFabIcoin(FloatingActionButton fab, boolean needSearch) {
         Drawable drawable;
         if (needSearch) {
-            drawable = ContextCompat.getDrawable(fab.getContext(), R.drawable.ic_search);
+            drawable = AppCompatResources.getDrawable(fab.getContext(), R.drawable.ic_search);
         } else {
-            drawable = ContextCompat.getDrawable(fab.getContext(), R.drawable.ic_add_accent);
+            drawable = AppCompatResources.getDrawable(fab.getContext(), R.drawable.ic_add_accent);
         }
         fab.setColorFilter(Color.WHITE);
         fab.setImageDrawable(drawable);

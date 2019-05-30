@@ -150,6 +150,10 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
         });
         binding.clearButton.setOnClickListener(clearButton->{
             listener.onAgeSet(null);
+            date.setText(null);
+            this.day.setText(null);
+            this.month.setText(null);
+            this.year.setText(null);
             dialog.dismiss();
         });
 
