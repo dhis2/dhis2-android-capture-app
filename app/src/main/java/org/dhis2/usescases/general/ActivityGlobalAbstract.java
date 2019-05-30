@@ -401,4 +401,10 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
         new SyncStatusDialog(programUid, conflictType)
                 .show(getSupportFragmentManager(), programUid);
     }
+
+    @Override
+    public void showSyncDialog(String orgUnit, String attributeCombo, String periodId, SyncStatusDialog.ConflictType conflictType) {
+        new SyncStatusDialog(orgUnit,attributeCombo, periodId, conflictType)
+                .show(getSupportFragmentManager(), attributeCombo);
+    }
 }

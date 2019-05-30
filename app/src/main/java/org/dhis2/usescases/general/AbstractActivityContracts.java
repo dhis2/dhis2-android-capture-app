@@ -56,6 +56,8 @@ public class AbstractActivityContracts {
         SharedPreferences getSharedPreferences();
 
         void showSyncDialog(String programUid, SyncStatusDialog.ConflictType conflictType);
+
+        void showSyncDialog(String orgUnit, String attributeCombo, String periodId, SyncStatusDialog.ConflictType conflictType);
     }
 
     public interface Presenter {

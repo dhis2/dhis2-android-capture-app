@@ -131,4 +131,9 @@ public abstract class FragmentGlobalAbstract extends Fragment implements Abstrac
     public void showSyncDialog(String programUid, SyncStatusDialog.ConflictType conflictType) {
         getAbstractActivity().showSyncDialog(programUid,conflictType);
     }
+
+    @Override
+    public void showSyncDialog(String orgUnit, String attributeCombo, String periodId, SyncStatusDialog.ConflictType conflictType) {
+        getAbstractActivity().showSyncDialog(orgUnit,attributeCombo,periodId ,conflictType);
+    }
 }
