@@ -4,6 +4,7 @@ import org.dhis2.data.tuples.Pair;
 import org.hisp.dhis.android.core.category.CategoryModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
+import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
 import org.hisp.dhis.android.core.dataset.DataSetModel;
 
@@ -21,7 +22,7 @@ public interface DataSetTableRepository {
 
     Flowable<Map<String, List<CategoryOptionComboModel>>> getCatOptionCombo();
 
-    Flowable<Boolean> dataSetStatus();
+    Flowable<State> dataSetStatus();
     Flowable<String> getCatComboName(String catcomboUid);
 
 }

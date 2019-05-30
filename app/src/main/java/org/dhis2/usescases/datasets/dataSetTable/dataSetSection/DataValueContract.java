@@ -39,6 +39,8 @@ public class DataValueContract {
         void setCompleteReopenText(Boolean isCompleted);
 
         void highligthHeaderRow(int table, int row, boolean mandatory);
+
+        void update(boolean modified);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter{

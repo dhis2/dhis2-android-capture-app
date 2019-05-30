@@ -162,13 +162,13 @@ public class DataSetTableRepositoryImpl implements DataSetTableRepository {
     }
 
     @Override
-    public Flowable<Boolean> dataSetStatus() {
+    public Flowable<State> dataSetStatus() {
         DataSetCompleteRegistration dscr = d2.dataSetModule().dataSetCompleteRegistrations
                 .byDataSetUid().eq(dataSetUid)
                 .byAttributeOptionComboUid().eq(catOptCombo)
                 .byOrganisationUnitUid().eq(orgUnitUid)
                 .byPeriod().eq(periodId).one().get();
-        return Flowable.defer(() -> Flowable.just(dscr != null && dscr.state() != State.TO_DELETE));
+        return Flowable.defer(() -> dscr!=null ? Flowable.just(dscr.state()) : Flowable.empty());
     }
 
     /**

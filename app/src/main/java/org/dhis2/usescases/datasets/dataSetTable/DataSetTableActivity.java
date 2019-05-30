@@ -14,8 +14,6 @@ import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ActivityDatasetTableBinding;
-import org.dhis2.databinding.ItemCategoryComboBinding;
-import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialModel;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.Constants;
 import org.hisp.dhis.android.core.category.CategoryModel;
@@ -36,7 +34,6 @@ import javax.inject.Inject;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
-import io.reactivex.functions.Consumer;
 
 public class DataSetTableActivity extends ActivityGlobalAbstract implements DataSetTableContract.View {
 
@@ -244,10 +241,18 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     }
 
     @Override
-    public Consumer<Boolean> isDataSetOpen() {
-        return dataSetIsOpen -> {
-            binding.programLock.setImageResource(!dataSetIsOpen ? R.drawable.ic_lock_open_green : R.drawable.ic_lock_completed);
-            binding.programLockText.setText(!dataSetIsOpen ? getString(org.dhis2.R.string.data_set_open) : getString(org.dhis2.R.string.data_set_closed));
-        };
+    public void isDataSetOpen(boolean dataSetIsOpen) {
+        binding.programLock.setImageResource(!dataSetIsOpen ? R.drawable.ic_lock_open_green : R.drawable.ic_lock_completed);
+        binding.programLockText.setText(!dataSetIsOpen ? getString(org.dhis2.R.string.data_set_open) : getString(org.dhis2.R.string.data_set_closed));
+        binding.programLockText.setTextColor(!dataSetIsOpen ? getResources().getColor(R.color.green_7ed) : getResources().getColor(R.color.gray_666));
+    }
+
+    @Override
+    public void isDataSetSynced(boolean dataSetIsSynced) {
+        binding.syncState.setImageResource(dataSetIsSynced? R.drawable.ic_sync_green : R.drawable.ic_sync_problem_grey);
+    }
+
+    public void update(){
+        presenter.init(this, orgUnitUid, periodTypeName, catOptCombo, periodInitialDate, periodId);
     }
 }

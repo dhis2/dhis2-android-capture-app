@@ -458,4 +458,11 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
                     ContextCompat.getColor(getContext(), R.color.table_view_default_all_required_background_color));
         }
     }
+
+    @Override
+    public void update(boolean modified) {
+        if(modified) {
+            activity.update();
+        }
+    }
 }

@@ -112,6 +112,7 @@
                     android:textColor="@color/green_7ed"
                     android:textSize="11sp"
                     android:textStyle="normal"
+                    android:text="@string/data_set_open"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="@id/program_lock"
                     app:layout_constraintStart_toStartOf="@+id/program_lock" />
