@@ -80,7 +80,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
             case TRUE_ONLY:
                 return RadioButtonViewModel.fromRawValue(id, label, type, mandatory, value, section, editable, description,dataElement,listCategoryOption,storeBy, row, column, categoryOptionCombo, catCombo);
             case ORGANISATION_UNIT:
-                return OrgUnitViewModel.create(id, label, mandatory, value, section, editable, description,dataElement,listCategoryOption,storeBy, row, column, categoryOptionCombo, catCombo);
+                //return OrgUnitViewModel.create(id, label, mandatory, value, section, editable, description,dataElement,listCategoryOption,storeBy, row, column, categoryOptionCombo, catCombo);
             case FILE_RESOURCE:
             case IMAGE:
             case TRACKER_ASSOCIATE:

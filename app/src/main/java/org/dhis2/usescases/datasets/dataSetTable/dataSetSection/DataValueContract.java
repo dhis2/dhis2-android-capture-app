@@ -38,6 +38,8 @@ public class DataValueContract {
 
         void setCompleteReopenText(Boolean isCompleted);
 
+        void highligthHeaderRow(int table, int row, boolean mandatory);
+
         void update(boolean modified);
     }
 
@@ -60,7 +62,7 @@ public class DataValueContract {
 
         FlowableProcessor<Trio<String, String, Integer>> getProcessorOptionSet();
 
-        void addCells(List<List<FieldViewModel>> cells);
+        void addCells(int table, List<List<FieldViewModel>> cells);
 
         DataInputPeriodModel checkHasInputPeriod();
 

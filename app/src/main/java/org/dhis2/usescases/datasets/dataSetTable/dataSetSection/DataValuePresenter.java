@@ -1,5 +1,7 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection;
 
+import android.util.SparseArray;
+
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
@@ -54,6 +56,7 @@ public class DataValuePresenter implements DataValueContract.Presenter{
     private String periodId;
     private List<String> tablesNames;
 
+    private List<List<List<FieldViewModel>>> tableCells;
     private List<List<FieldViewModel>> cells;
     private List<DataInputPeriodModel> dataInputPeriodModel;
     private MetadataRepository metadataRepository;
@@ -73,6 +76,7 @@ public class DataValuePresenter implements DataValueContract.Presenter{
         processorOptionSet = PublishProcessor.create();
         dataValuesChanged = new ArrayList<>();
         cells = new ArrayList<>();
+        this.tableCells = new ArrayList<>();
         this.orgUnitUid = orgUnitUid;
         this.periodTypeName = periodTypeName;
         this.periodFinalDate = periodFinalDate;
@@ -140,15 +144,17 @@ public class DataValuePresenter implements DataValueContract.Presenter{
 
     private boolean checkAllFieldRequired(){
         boolean checkAllField = true;
-        for(List<FieldViewModel> rowFields: cells){
-            boolean hasValue = false;
-            for(FieldViewModel field: rowFields) {
-                if (field.value() != null && !field.value().isEmpty())
-                    hasValue = true;
+        for(int i=0; i< tableCells.size(); i++) {
+            for (List<FieldViewModel> rowFields : tableCells.get(i)) {
+                boolean hasValue = false;
+                for (FieldViewModel field : rowFields) {
+                    if (field.value() != null && !field.value().isEmpty())
+                        hasValue = true;
 
-                if (hasValue && (field.value() == null || field.value().isEmpty())){
-                    checkAllField = false;
-                    break;
+                    if (hasValue && (field.value() == null || field.value().isEmpty())) {
+                        checkAllField = false;
+                        view.highligthHeaderRow(i, tableCells.get(i).indexOf(rowFields), false);
+                    }
                 }
             }
         }
@@ -156,14 +162,18 @@ public class DataValuePresenter implements DataValueContract.Presenter{
     }
 
     private boolean checkMandatoryField() {
-        for (List<FieldViewModel> rowFields : cells) {
-            for (FieldViewModel field : rowFields) {
-                if (field.mandatory() && (field.value() == null || field.value().isEmpty())) {
-                    return false;
+        boolean mandatoryOk = true;
+        for(int i=0; i< tableCells.size(); i++) {
+            for (List<FieldViewModel> rowFields : tableCells.get(i)) {
+                for (FieldViewModel field : rowFields) {
+                    if (field.mandatory() && (field.value() == null || field.value().isEmpty())) {
+                        mandatoryOk = false;
+                        view.highligthHeaderRow(i, tableCells.get(i).indexOf(rowFields), true);
+                    }
                 }
             }
         }
-        return true;
+        return mandatoryOk;
     }
 
     private DataValueModel tranformDataSetTableModelToDataValueModel(DataSetTableModel dataSetTableModel){
@@ -420,8 +430,9 @@ public class DataValuePresenter implements DataValueContract.Presenter{
     }
 
     @Override
-    public void addCells(List<List<FieldViewModel>> cells){
+    public void addCells(int table, List<List<FieldViewModel>> cells){
         this.cells.addAll(cells);
+        this.tableCells.add(table, cells);
     }
 
     @Override
