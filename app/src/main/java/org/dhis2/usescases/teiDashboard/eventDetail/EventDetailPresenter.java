@@ -10,10 +10,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.DatePicker;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.Fragment;
+
 import org.dhis2.R;
 import org.dhis2.data.forms.FormFragment;
 import org.dhis2.data.forms.dataentry.DataEntryFragment;
 import org.dhis2.data.metadata.MetadataRepository;
+import org.dhis2.databinding.WidgetDatepickerBinding;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.OnDialogClickListener;
 import org.dhis2.utils.custom_views.OrgUnitDialog;
@@ -25,12 +29,11 @@ import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import androidx.appcompat.app.AlertDialog;
-import androidx.fragment.app.Fragment;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -334,8 +337,9 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
 
     private void openDailySelector(boolean futureOnly) {
         LayoutInflater layoutInflater = LayoutInflater.from(view.getContext());
-        View datePickerView = layoutInflater.inflate(R.layout.widget_datepicker, null);
-        final DatePicker datePicker = datePickerView.findViewById(R.id.widget_datepicker);
+        //        View datePickerView = layoutInflater.inflate(R.layout.widget_datepicker, null);
+        WidgetDatepickerBinding widgetBinding = WidgetDatepickerBinding.inflate(layoutInflater);
+        final DatePicker datePicker = widgetBinding.widgetDatepicker;
 
         Calendar c = Calendar.getInstance();
         if (futureOnly)
@@ -347,8 +351,8 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
         datePicker.updateDate(year, month, day);
         datePicker.setMaxDate(c.getTimeInMillis());
 
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(view.getContext(), R.style.DatePickerTheme)
-                .setPositiveButton(R.string.action_accept, (dialog, which) -> {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(view.getContext(), R.style.DatePickerTheme);
+                /*.setPositiveButton(R.string.action_accept, (dialog, which) -> {
                     Calendar selectedCalendar = Calendar.getInstance();
                     selectedCalendar.set(Calendar.YEAR, datePicker.getYear());
                     selectedCalendar.set(Calendar.MONTH, datePicker.getMonth());
@@ -363,7 +367,7 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
                         dataEntryStore.updateEvent(selectedDate, eventDetailModel.getEventModel());
                     }
                 })
-                .setNeutralButton(view.getContext().getResources().getString(R.string.change_calendar), (dialog, which) -> showNativeCalendar(futureOnly));
+                .setNeutralButton(view.getContext().getResources().getString(R.string.change_calendar), (dialog, which) -> showNativeCalendar(futureOnly));*/
 
         if (eventDetailModel.getEventModel().status() != EventStatus.SCHEDULE && eventDetailModel.getEventModel().status() != EventStatus.OVERDUE) {
             datePicker.setMaxDate(System.currentTimeMillis());
@@ -383,8 +387,31 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
             datePicker.setMaxDate(eventDetailModel.orgUnitClosingDate().getTime());
 
 
-        alertDialog.setView(datePickerView);
+        alertDialog.setView(widgetBinding.getRoot());
         Dialog dialog = alertDialog.create();
+
+        widgetBinding.changeCalendarButton.setOnClickListener(calendarButton->{
+            showNativeCalendar(futureOnly);
+            dialog.dismiss();
+        });
+        widgetBinding.clearButton.setOnClickListener(clearButton->dialog.dismiss());
+        widgetBinding.acceptButton.setOnClickListener(acceptButton->{
+            Calendar selectedCalendar = Calendar.getInstance();
+            selectedCalendar.set(Calendar.YEAR, datePicker.getYear());
+            selectedCalendar.set(Calendar.MONTH, datePicker.getMonth());
+            selectedCalendar.set(Calendar.DAY_OF_MONTH, datePicker.getDayOfMonth());
+            selectedCalendar.set(Calendar.HOUR_OF_DAY, c.get(Calendar.HOUR_OF_DAY));
+            selectedCalendar.set(Calendar.MINUTE, c.get(Calendar.MINUTE));
+            Date selectedDate = selectedCalendar.getTime();
+            String result = DateUtils.uiDateFormat().format(selectedDate);
+            view.setDate(result);
+
+            if (eventDetailModel.getProgramStage().accessDataWrite()) {
+                dataEntryStore.updateEvent(selectedDate, eventDetailModel.getEventModel());
+            }
+            dialog.dismiss();
+        });
+
         dialog.show();
     }
 

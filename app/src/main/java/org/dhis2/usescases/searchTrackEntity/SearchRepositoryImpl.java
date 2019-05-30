@@ -281,20 +281,25 @@ public class SearchRepositoryImpl implements SearchRepository {
                     String dataValue = queryData.get(key);
                     if (dataValue.contains("_os_"))
                         dataValue = dataValue.split("_os_")[1];
-                    TrackedEntityAttributeValueModel attributeValueModel =
-                            TrackedEntityAttributeValueModel.builder()
-                                    .created(currentDate)
-                                    .lastUpdated(currentDate)
-                                    .value(dataValue)
-                                    .trackedEntityAttribute(key)
-                                    .trackedEntityInstance(generatedUid)
-                                    .build();
-                    if (briteDatabase.insert(TrackedEntityAttributeValueModel.TABLE,
-                            attributeValueModel.toContentValues()) < 0) {
-                        String message = String.format(Locale.US, "Failed to insert new trackedEntityAttributeValue " +
-                                        "instance for organisationUnit=[%s] and trackedEntity=[%s]",
-                                orgUnit, teiType);
-                        return Observable.error(new SQLiteConstraintException(message));
+
+                    boolean isGenerated = d2.trackedEntityModule().trackedEntityAttributes.uid(key).get().generated();
+
+                    if(!isGenerated) {
+                        TrackedEntityAttributeValueModel attributeValueModel =
+                                TrackedEntityAttributeValueModel.builder()
+                                        .created(currentDate)
+                                        .lastUpdated(currentDate)
+                                        .value(dataValue)
+                                        .trackedEntityAttribute(key)
+                                        .trackedEntityInstance(generatedUid)
+                                        .build();
+                        if (briteDatabase.insert(TrackedEntityAttributeValueModel.TABLE,
+                                attributeValueModel.toContentValues()) < 0) {
+                            String message = String.format(Locale.US, "Failed to insert new trackedEntityAttributeValue " +
+                                            "instance for organisationUnit=[%s] and trackedEntity=[%s]",
+                                    orgUnit, teiType);
+                            return Observable.error(new SQLiteConstraintException(message));
+                        }
                     }
                 }
 

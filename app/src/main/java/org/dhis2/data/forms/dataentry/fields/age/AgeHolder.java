@@ -10,6 +10,8 @@ import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.FormAgeCustomBinding;
 import org.dhis2.utils.DateUtils;
 
+import java.util.Objects;
+
 import io.reactivex.processors.FlowableProcessor;
 
 import static android.text.TextUtils.isEmpty;
@@ -27,8 +29,8 @@ public class AgeHolder extends FormViewHolder {
         super(binding);
         this.binding = binding;
         binding.customAgeview.setAgeChangedListener(ageDate -> {
-                    if (ageViewModel.value() == null || !ageViewModel.value().equals(DateUtils.databaseDateFormat().format(ageDate))) {
-                        processor.onNext(RowAction.create(ageViewModel.uid(), DateUtils.databaseDateFormat().format(ageDate), getAdapterPosition()));
+                    if (ageViewModel.value() == null || !Objects.equals(ageViewModel.value(), ageDate == null ? null : DateUtils.databaseDateFormat().format(ageDate))) {
+                        processor.onNext(RowAction.create(ageViewModel.uid(), ageDate == null ? null : DateUtils.databaseDateFormat().format(ageDate), getAdapterPosition()));
                         if (!isSearchMode)
                             itemView.setBackgroundColor(Color.WHITE);
                     }

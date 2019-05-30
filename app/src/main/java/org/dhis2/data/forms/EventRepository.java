@@ -317,10 +317,22 @@ public class EventRepository implements FormRepository {
 
     @NonNull
     @Override
+    public Observable<Long> saveReportDate(String date) {
+        return Observable.empty();
+    }
+
+    @NonNull
+    @Override
     public Consumer<String> storeIncidentDate() {
         return data -> {
             //incident date is only for tracker events
         };
+    }
+
+    @NonNull
+    @Override
+    public Observable<Long> saveIncidentDate(String date) {
+        return Observable.empty();
     }
 
     @NonNull

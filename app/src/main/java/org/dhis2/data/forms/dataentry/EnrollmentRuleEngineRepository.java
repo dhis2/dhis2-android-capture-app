@@ -176,21 +176,22 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
         Iterator<ProgramRule> ruleIterator = rules.iterator();
         while (ruleIterator.hasNext()) {
             ProgramRule rule = ruleIterator.next();
-            if (rule.condition() == null)
+            if (rule.condition() == null || rule.programStage() != null)
                 ruleIterator.remove();
-            for (ProgramRuleAction action : rule.programRuleActions())
-                if (action.programRuleActionType() == ProgramRuleActionType.HIDEFIELD ||
-                        action.programRuleActionType() == ProgramRuleActionType.HIDESECTION ||
-                        action.programRuleActionType() == ProgramRuleActionType.ASSIGN ||
-                        action.programRuleActionType() == ProgramRuleActionType.SHOWWARNING ||
-                        action.programRuleActionType() == ProgramRuleActionType.SHOWERROR ||
-                        action.programRuleActionType() == ProgramRuleActionType.DISPLAYKEYVALUEPAIR ||
-                        action.programRuleActionType() == ProgramRuleActionType.DISPLAYTEXT ||
-                        action.programRuleActionType() == ProgramRuleActionType.HIDEOPTIONGROUP ||
-                        action.programRuleActionType() == ProgramRuleActionType.HIDEOPTION ||
-                        action.programRuleActionType() == ProgramRuleActionType.SETMANDATORYFIELD)
-                    if (!mandatoryRules.contains(rule))
-                        mandatoryRules.add(rule);
+            else
+                for (ProgramRuleAction action : rule.programRuleActions())
+                    if (action.programRuleActionType() == ProgramRuleActionType.HIDEFIELD ||
+                            action.programRuleActionType() == ProgramRuleActionType.HIDESECTION ||
+                            action.programRuleActionType() == ProgramRuleActionType.ASSIGN ||
+                            action.programRuleActionType() == ProgramRuleActionType.SHOWWARNING ||
+                            action.programRuleActionType() == ProgramRuleActionType.SHOWERROR ||
+                            action.programRuleActionType() == ProgramRuleActionType.DISPLAYKEYVALUEPAIR ||
+                            action.programRuleActionType() == ProgramRuleActionType.DISPLAYTEXT ||
+                            action.programRuleActionType() == ProgramRuleActionType.HIDEOPTIONGROUP ||
+                            action.programRuleActionType() == ProgramRuleActionType.HIDEOPTION ||
+                            action.programRuleActionType() == ProgramRuleActionType.SETMANDATORYFIELD)
+                        if (!mandatoryRules.contains(rule))
+                            mandatoryRules.add(rule);
         }
 
         List<ProgramRuleVariable> variables = d2.programModule().programRuleVariables

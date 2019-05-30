@@ -2,6 +2,8 @@ package org.dhis2.data.forms;
 
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
+
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.forms.dataentry.EnrollmentRuleEngineRepository;
@@ -28,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import androidx.annotation.NonNull;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -157,15 +158,16 @@ class FormPresenterImpl implements FormPresenter {
         //endregion
 
         compositeDisposable.add(view.reportDateChanged()
+                .switchMap(formRepository::saveReportDate)
                 .subscribeOn(schedulerProvider.ui())
                 .observeOn(schedulerProvider.io())
-                .subscribe(formRepository.storeReportDate(), Timber::e));
+                .subscribe(saved -> Timber.d("reportDate saved"), Timber::e));
 
         compositeDisposable.add(view.incidentDateChanged()
-                .filter(date -> date != null)
+                .switchMap(formRepository::saveIncidentDate)
                 .subscribeOn(schedulerProvider.ui())
                 .observeOn(schedulerProvider.io())
-                .subscribe(formRepository.storeIncidentDate(), Timber::e));
+                .subscribe(saved -> Timber.d("incidentDate saved"), Timber::e));
 
         compositeDisposable.add(view.reportCoordinatesChanged()
                 .filter(latLng -> latLng != null)
@@ -211,7 +213,7 @@ class FormPresenterImpl implements FormPresenter {
         compositeDisposable.add(statusChangeObservable.connect());
     }
 
-    public void initializeSaveObservable(){
+    public void initializeSaveObservable() {
         ConnectableObservable<EnrollmentStatus> statusChangeObservable = view.onObservableBackPressed()
                 .publish();
 
