@@ -1,14 +1,8 @@
 package org.dhis2.usescases.datasets.datasetDetail;
 
 import android.annotation.SuppressLint;
-
-import androidx.core.view.GravityCompat;
-import androidx.databinding.DataBindingUtil;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
-import androidx.core.content.res.ResourcesCompat;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import android.view.Gravity;
 import android.view.View;
 
 import com.unnamed.b.atv.model.TreeNode;
@@ -18,11 +12,11 @@ import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.databinding.ActivityDatasetDetailBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
-import org.dhis2.usescases.main.program.OrgUnitHolder;
+import org.dhis2.usescases.main.program.OrgUnitHolder_2;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.custom_views.RxDateDialog;
 import org.dhis2.utils.Period;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
+import org.dhis2.utils.custom_views.RxDateDialog;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -31,6 +25,10 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import androidx.core.content.res.ResourcesCompat;
+import androidx.core.view.GravityCompat;
+import androidx.databinding.DataBindingUtil;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import io.reactivex.Flowable;
 import io.reactivex.processors.PublishProcessor;
 import timber.log.Timber;
@@ -116,10 +114,10 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
 
         treeView.setDefaultNodeClickListener((node, value) -> {
             if (treeView.getSelected().size() == 1 && !node.isSelected()) {
-                ((OrgUnitHolder) node.getViewHolder()).update();
+                ((OrgUnitHolder_2) node.getViewHolder()).update();
                 binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
             } else if (treeView.getSelected().size() > 1) {
-                ((OrgUnitHolder) node.getViewHolder()).update();
+                ((OrgUnitHolder_2) node.getViewHolder()).update();
                 binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
             }
         });
@@ -165,7 +163,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
         orgUnitFilter = new StringBuilder();
         List<String> selectOrgUnit = new ArrayList<>();
         for (int i = 0; i < treeView.getSelected().size(); i++)
-            selectOrgUnit.add(((OrganisationUnitModel) treeView.getSelected().get(i).getValue()).uid());
+            selectOrgUnit.add(((OrganisationUnit) treeView.getSelected().get(i).getValue()).uid());
 
         this.selectedOrgUnit = selectOrgUnit;
 

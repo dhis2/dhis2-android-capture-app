@@ -1,20 +1,20 @@
 package org.dhis2.usescases.datasets.datasetDetail;
 
 import android.database.Cursor;
-import androidx.annotation.NonNull;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.utils.DateUtils;
+import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.datavalue.DataValueModel;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.period.PeriodModel;
-import org.hisp.dhis.android.core.period.PeriodType;
 
 import java.util.List;
 import java.util.Locale;
 
+import androidx.annotation.NonNull;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -34,18 +34,18 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
     private final static String DATA_SETS_ORG_UNIT_FILTER = "AND DataValue.organisationUnit IN (%s) ";
     private final static String DATA_SETS_PERIOD_FILTER = "AND DataValue.period IN (%s) ";
 
+    private final D2 d2;
     private final BriteDatabase briteDatabase;
 
-    public DataSetDetailRepositoryImpl(BriteDatabase briteDatabase) {
+    public DataSetDetailRepositoryImpl(D2 d2, BriteDatabase briteDatabase) {
         this.briteDatabase = briteDatabase;
+        this.d2 = d2;
     }
 
     @NonNull
     @Override
-    public Observable<List<OrganisationUnitModel>> orgUnits() {
-        String SELECT_ORG_UNITS = "SELECT * FROM " + OrganisationUnitModel.TABLE;
-        return briteDatabase.createQuery(OrganisationUnitModel.TABLE, SELECT_ORG_UNITS)
-                .mapToList(OrganisationUnitModel::create);
+    public Observable<List<OrganisationUnit>> orgUnits() {
+        return Observable.just(d2.organisationUnitModule().organisationUnits.get());
     }
 
     @Override
