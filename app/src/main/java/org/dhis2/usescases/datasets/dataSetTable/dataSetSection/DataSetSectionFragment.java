@@ -9,6 +9,7 @@ import android.widget.LinearLayout;
 
 import com.evrencoskun.tableview.TableView;
 import com.evrencoskun.tableview.adapter.recyclerview.CellRecyclerView;
+import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.dhis2.App;
@@ -23,7 +24,6 @@ import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableContract;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
-import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.custom_views.OptionSetCellDialog;
@@ -35,7 +35,6 @@ import org.hisp.dhis.android.core.dataset.DataSetModel;
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.period.PeriodModel;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -44,12 +43,14 @@ import javax.inject.Inject;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.MutableLiveData;
 import io.reactivex.Flowable;
 import io.reactivex.processors.FlowableProcessor;
-import timber.log.Timber;
+
+import static com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder.SelectionState.UNSELECTED;
 
 /**
  * QUADRAM. Created by ppajuelo on 02/10/2018.
@@ -123,6 +124,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
         presenterFragment.setCurrentNumTables(new ArrayList<>(dataTableModel.catCombos().values()));
         activity.updateTabLayout(section, dataTableModel.catCombos().size());
 
+        int table = 0;
         for (String catCombo : dataTableModel.catCombos().keySet()) {
             DataSetTableAdapter adapter = new DataSetTableAdapter(getAbstracContext(), presenterFragment.getProcessor(), presenterFragment.getProcessorOptionSet());
             adapters.add(adapter);
@@ -249,7 +251,8 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
                     rows,
                     cells, adapter.getShowRowTotal());
 
-            presenterFragment.addCells(listFields);
+            presenterFragment.addCells(table, listFields);
+            table++;
 
             if (!catCombo.equals(new ArrayList<>(dataTableModel.catCombos().keySet()).get(dataTableModel.catCombos().keySet().size() - 1)))
                 adapter = new DataSetTableAdapter(getAbstracContext(), presenterFragment.getProcessor(), presenterFragment.getProcessorOptionSet());
@@ -441,5 +444,18 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
             binding.actionButton.setText(activity.getString(R.string.complete));
         else
             binding.actionButton.setText(activity.getString(R.string.re_open));
+    }
+
+    @Override
+    public void highligthHeaderRow(int table, int row, boolean mandatory) {
+        AbstractViewHolder columnHeader = (AbstractViewHolder) adapters.get(table).getTableView().getRowHeaderRecyclerView()
+                .findViewHolderForAdapterPosition(row);
+
+        if(columnHeader != null) {
+            columnHeader.setSelected(UNSELECTED);
+            columnHeader.setBackgroundColor(mandatory ?
+                    ContextCompat.getColor(getContext(), R.color.table_view_default_mandatory_background_color) :
+                    ContextCompat.getColor(getContext(), R.color.table_view_default_all_required_background_color));
+        }
     }
 }

@@ -37,6 +37,8 @@ public class DataValueContract {
         boolean isOpenOrReopen();
 
         void setCompleteReopenText(Boolean isCompleted);
+
+        void highligthHeaderRow(int table, int row, boolean mandatory);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter{
@@ -58,7 +60,7 @@ public class DataValueContract {
 
         FlowableProcessor<Trio<String, String, Integer>> getProcessorOptionSet();
 
-        void addCells(List<List<FieldViewModel>> cells);
+        void addCells(int table, List<List<FieldViewModel>> cells);
 
         DataInputPeriodModel checkHasInputPeriod();
 
