@@ -176,6 +176,6 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
 
     @Override
     public void onSyncIconClick(String orgUnit, String attributeCombo, String periodId) {
-        view.showSyncDialog(orgUnit, attributeCombo, periodId, SyncStatusDialog.ConflictType.TEI);
+        view.showSyncDialog(orgUnit, attributeCombo, periodId, SyncStatusDialog.ConflictType.DATA_VALUES);
     }
 }

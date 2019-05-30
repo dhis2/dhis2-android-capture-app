@@ -126,6 +126,9 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
                         }).subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread()).subscribe(
                         state -> {
+                            Bindings.setStateIcon(binding.syncIcon, state);
+                            binding.syncStatusName.setText(getTextByState(state));
+                            binding.syncStatusBar.setBackgroundResource(getColorForState(state));
                             switch (state) {
                                 case TO_POST:
                                 case TO_UPDATE:
@@ -163,6 +166,9 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
                         }).subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread()).subscribe(
                         state -> {
+                            Bindings.setStateIcon(binding.syncIcon, state);
+                            binding.syncStatusName.setText(getTextByState(state));
+                            binding.syncStatusBar.setBackgroundResource(getColorForState(state));
                             switch (state) {
                                 case TO_POST:
                                 case TO_UPDATE:
