@@ -37,6 +37,8 @@ public class DataValueContract {
         boolean isOpenOrReopen();
 
         void setCompleteReopenText(Boolean isCompleted);
+
+        void update(boolean modified);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter{

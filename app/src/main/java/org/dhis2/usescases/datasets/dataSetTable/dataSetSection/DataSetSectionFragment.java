@@ -442,4 +442,11 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
         else
             binding.actionButton.setText(activity.getString(R.string.re_open));
     }
+
+    @Override
+    public void update(boolean modified) {
+        if(modified) {
+            activity.update();
+        }
+    }
 }
