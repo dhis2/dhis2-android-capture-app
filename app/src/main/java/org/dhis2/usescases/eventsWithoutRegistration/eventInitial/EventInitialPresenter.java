@@ -8,6 +8,10 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 
@@ -22,6 +26,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryAc
 import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryRepository;
 import org.dhis2.usescases.map.MapSelectorActivity;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.EventCreationType;
 import org.dhis2.utils.OrgUnitUtils;
 import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.D2;
@@ -43,11 +48,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
@@ -295,8 +298,8 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
 
     @Override
     public void scheduleEventPermanent(String enrollmentUid, String trackedEntityInstanceUid, String programStageModel, Date dueDate, String orgUnitUid,
-                              String categoryOptionComboUid, String categoryOptionsUid,
-                              String latitude, String longitude) {
+                                       String categoryOptionComboUid, String categoryOptionsUid,
+                                       String latitude, String longitude) {
         if (programModel != null)
             compositeDisposable.add(
                     eventInitialRepository.scheduleEvent(enrollmentUid, null, view.getContext(), programModel.uid(),
@@ -399,16 +402,22 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
 
     @Override
     public void filterOrgUnits(String date) {
-        compositeDisposable.add(eventInitialRepository.filteredOrgUnits(date, programId)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        orgUnits -> {
-                            this.orgUnits = orgUnits;
-                            view.addTree(OrgUnitUtils.renderTree(view.getContext(), orgUnits, true));
-                        },
-                        throwable -> view.showNoOrgUnits()
-                ));
+
+        Observable<List<OrganisationUnitModel>> orgUnitObservable =
+                view.eventcreateionType() != EventCreationType.REFERAL ? eventInitialRepository.filteredOrgUnits(date, programId) :
+                        eventInitialRepository.searchOrgUnits(date, programId);
+
+        compositeDisposable.add(
+                orgUnitObservable
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                orgUnits -> {
+                                    this.orgUnits = orgUnits;
+                                    view.addTree(OrgUnitUtils.renderTree(view.getContext(), orgUnits, true));
+                                },
+                                throwable -> view.showNoOrgUnits()
+                        ));
     }
 
     @Override

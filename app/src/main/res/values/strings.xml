@@ -461,5 +461,6 @@
     <string name="no_conflicts_update_message">This data is stored in your device only, it is not synced with the server.</string>
     <string name="no_conflicts_synced_message">You are up to date! All your data is sent to the server.</string>
     <string name="relationship_error_recursive">You can\'t relate a record with itself</string>
+    <string name="unblock_session">Unblock session</string>
 
 </resources>

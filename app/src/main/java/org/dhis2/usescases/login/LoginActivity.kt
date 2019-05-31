@@ -213,6 +213,10 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         }
     }
 
+    override fun alreadyAuthenticated(){
+        startActivity(MainActivity::class.java, null, true, true, null)
+    }
+
     override fun showCrashlyticsDialog() {
         showInfoDialog(getString(R.string.send_user_name_title), getString(R.string.send_user_name_mesage),
                 getString(R.string.action_agree), getString(R.string.cancel),
@@ -245,6 +249,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
             }
         })
+        binding.pinLayout.title.text = getString(R.string.unblock_session)
         binding.pinLayout.root.visibility = View.VISIBLE
         isPinScreenVisible = true
     }

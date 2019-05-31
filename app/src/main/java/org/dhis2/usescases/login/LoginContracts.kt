@@ -50,6 +50,7 @@ class LoginContracts {
         fun openAccountRecovery()
 
         fun displayAlertDialog(titleResource:Int, descriptionResource:Int,negativeResource:Int?,positiveResource:Int)
+        fun alreadyAuthenticated()
     }
 
     interface Presenter {
