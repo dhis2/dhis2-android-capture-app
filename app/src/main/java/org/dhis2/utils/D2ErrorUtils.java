@@ -47,7 +47,7 @@ public class D2ErrorUtils {
             case USER_ACCOUNT_LOCKED:
                 return d2Error.errorDescription();
             case INVALID_DHIS_VERSION:
-                return String.format(context.getString(R.string.login_error_dhis_version_v2), TextUtils.join(",", DHISVersion.allowedVersionsAsStr()));
+                return String.format(context.getString(R.string.login_error_dhis_version_v2), TextUtils.join(", ", DHISVersion.allowedVersionsAsStr()));
             case ALREADY_AUTHENTICATED:
                 return d2Error.errorDescription();
             case NO_AUTHENTICATED_USER:
