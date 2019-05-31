@@ -19,7 +19,8 @@ public abstract class DataSetTableModel{
     public static class Columns extends DataSetModel.Columns {
         public static final String CATEGORY_OPTION = "catOption";
         public static final String LIST_CATEGORY_OPTION = "listCategory";
-        public static final String CATEGORY_COMBO = "catCombo";
+        public static final String CATEGORY_COMBO = "catComboDataElement";
+        public static final String CATEGORY_COMBO_LINK = "catComboLink";
     }
 
     public static DataSetTableModel fromCursor(Cursor cursor){
