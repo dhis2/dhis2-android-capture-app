@@ -107,7 +107,7 @@ class LoginPresenter internal constructor(private val configurationRepository: C
     }
 
     override fun logIn(serverUrl: String, userName: String, pass: String) {
-        val baseUrl = HttpUrl.parse(canonizeUrl(serverUrl)) ?: return
+        val baseUrl = HttpUrl.parse(canonizeUrl(serverUrl+"/api")) ?: return
         disposable.add(
                 configurationRepository.configure(baseUrl)
                         .map { config -> (view.abstractActivity.applicationContext as App).createServerComponent(config).userManager() }
@@ -120,6 +120,8 @@ class LoginPresenter internal constructor(private val configurationRepository: C
                                     Response.error<Any>(404, ResponseBody.create(MediaType.parse("text"), "NOT FOUND"))
                                 else {
                                     prefs.edit().putString(Constants.USER, user.userCredentials()?.username()).apply()
+                                    prefs.edit().putBoolean("SessionLocked", false).apply()
+                                    prefs.edit().putString("pin", null).apply()
                                     Response.success<Any>(null)
                                 }
                             }
@@ -165,7 +167,6 @@ class LoginPresenter internal constructor(private val configurationRepository: C
                             { data ->
                                 val prefs = view.abstracContext.sharedPreferences
                                 prefs.edit().putBoolean("SessionLocked", false).apply()
-                                prefs.edit().putString("pin", null).apply()
                                 view.handleLogout()
                             },
                             { t -> view.handleLogout() }
@@ -184,9 +185,13 @@ class LoginPresenter internal constructor(private val configurationRepository: C
 
     override fun handleError(throwable: Throwable) {
         Timber.e(throwable)
-        if (throwable is D2Error && throwable.errorCode() == D2ErrorCode.ALREADY_AUTHENTICATED)
-            handleResponse(Response.success<Any>(null))
-        else
+        if (throwable is D2Error && throwable.errorCode() == D2ErrorCode.ALREADY_AUTHENTICATED) {
+            val prefs = view.abstractActivity.getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE)
+            prefs.edit().putBoolean("SessionLocked", false).apply()
+            prefs.edit().putString("pin", null).apply()
+            view.alreadyAuthenticated()
+//            handleResponse(Response.success<Any>(null))
+        }else
             view.renderError(throwable)
         view.showLoginProgress(false)
     }

@@ -33,9 +33,13 @@ public class OrgUnitItem {
 
     public boolean canCaptureData() {
         OrganisationUnitCollectionRepository captureRepo = ouRepo.byLevel().eq(level);
-        if(!isEmpty(parentUid))
+        if (!isEmpty(parentUid))
             captureRepo = captureRepo.byParentUid().eq(parentUid);
-        hasCaptureOrgUnits = !captureRepo.byOrganisationUnitScope(ouScope).get().isEmpty();
+        if (ouScope == OrganisationUnit.Scope.SCOPE_TEI_SEARCH)
+            hasCaptureOrgUnits = !captureRepo.get().isEmpty(); //All search and capture, as capture ou implies it can be searched
+        else
+            hasCaptureOrgUnits = !captureRepo.byOrganisationUnitScope(ouScope).get().isEmpty();
+
 //        getLevelOrgUnits();
         return hasCaptureOrgUnits;
     }
@@ -49,8 +53,8 @@ public class OrgUnitItem {
             finalOuRepo = finalOuRepo.byParentUid().eq(parentUid);
 
         List<OrganisationUnit> orgUnitList = finalOuRepo.get();
-        int nextLevel = level+1;
-        while(orgUnitList.isEmpty())
+        int nextLevel = level + 1;
+        while (orgUnitList.isEmpty())
             orgUnitList = ouRepo.byLevel().eq(nextLevel++).get();
 
         if (orgUnitList.isEmpty())//When parent is set and list is empty the ou has not been downloaded, we have to get it from the uidPath

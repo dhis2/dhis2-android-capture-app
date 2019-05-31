@@ -6,6 +6,7 @@ import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModule;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
 import java.util.Date;
@@ -34,6 +35,9 @@ public interface EventInitialRepository {
 
     @NonNull
     Observable<List<OrganisationUnitModel>> filteredOrgUnits(String date, String programId);
+
+    @NonNull
+    Observable<List<OrganisationUnitModel>> searchOrgUnits(String date, String programId);
 
     Observable<String> createEvent(String enrollmentUid, @Nullable String trackedEntityInstanceUid,
                                    @NonNull Context context, @NonNull String program,

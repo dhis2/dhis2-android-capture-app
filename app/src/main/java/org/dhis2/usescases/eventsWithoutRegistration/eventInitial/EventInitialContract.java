@@ -7,6 +7,7 @@ import com.unnamed.b.atv.model.TreeNode;
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.usescases.general.AbstractActivityContracts;
+import org.dhis2.utils.EventCreationType;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
@@ -77,6 +78,8 @@ public class EventInitialContract {
         void setHideSection(String sectionUid);
 
         void renderObjectStyle(ObjectStyleModel objectStyleModel);
+
+        EventCreationType eventcreateionType();
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
