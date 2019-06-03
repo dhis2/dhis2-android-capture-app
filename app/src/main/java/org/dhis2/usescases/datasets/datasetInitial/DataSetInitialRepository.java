@@ -1,11 +1,12 @@
 package org.dhis2.usescases.datasets.datasetInitial;
 
+import androidx.annotation.NonNull;
+
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 
 import java.util.List;
 
-import androidx.annotation.NonNull;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 

@@ -39,10 +39,10 @@ public class DataSetInitialPresenter implements DataSetInitialContract.Presenter
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 dataSetInitialModel -> {
-                                        catCombo = dataSetInitialModel.categoryCombo();
-                                        openFuturePeriods = dataSetInitialModel.openFuturePeriods();
-                                        view.setData(dataSetInitialModel);
-                                    },
+                                    catCombo = dataSetInitialModel.categoryCombo();
+                                    openFuturePeriods = dataSetInitialModel.openFuturePeriods();
+                                    view.setData(dataSetInitialModel);
+                                },
                                 Timber::d
                         ));
     }
@@ -69,12 +69,12 @@ public class DataSetInitialPresenter implements DataSetInitialContract.Presenter
     public void onReportPeriodClick(PeriodType periodType) {
         compositeDisposable.add(
                 dataSetInitialRepository.getDataInputPeriod()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(data -> {
-                            view.showPeriodSelector(periodType, data, openFuturePeriods);
-                        },
-                        Timber::e)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(data -> {
+                                    view.showPeriodSelector(periodType, data, openFuturePeriods);
+                                },
+                                Timber::e)
         );
     }
 
@@ -95,23 +95,23 @@ public class DataSetInitialPresenter implements DataSetInitialContract.Presenter
     public void onActionButtonClick() {
         compositeDisposable.add(
                 dataSetInitialRepository.getCategoryOptionCombo(view.getSelectedCatOptions(), catCombo)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(catOptCombo -> {
-                            Bundle bundle = DataSetTableActivity.getBundle(
-                                    view.getDataSetUid(),
-                                    view.getSelectedOrgUnit().uid(),
-                                    view.getSelectedOrgUnit().name(),
-                                    view.getPeriodType(),
-                                    DateUtils.getInstance().getPeriodUIString(PeriodType.valueOf(view.getPeriodType()), view.getSelectedPeriod(), Locale.getDefault()),
-                                    d2.periodModule().periodHelper.getPeriod(PeriodType.valueOf(view.getPeriodType()), view.getPeriodDate()).periodId(),
-                                    catOptCombo
-                            );
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(catOptCombo -> {
+                                    Bundle bundle = DataSetTableActivity.getBundle(
+                                            view.getDataSetUid(),
+                                            view.getSelectedOrgUnit().uid(),
+                                            view.getSelectedOrgUnit().name(),
+                                            view.getPeriodType(),
+                                            DateUtils.getInstance().getPeriodUIString(PeriodType.valueOf(view.getPeriodType()), view.getSelectedPeriod(), Locale.getDefault()),
+                                            d2.periodModule().periodHelper.getPeriod(PeriodType.valueOf(view.getPeriodType()), view.getPeriodDate()).periodId(),
+                                            catOptCombo
+                                    );
 
-                            view.startActivity(DataSetTableActivity.class, bundle, true, false, null);
-                        },
-                        Timber::e
-                )
+                                    view.startActivity(DataSetTableActivity.class, bundle, true, false, null);
+                                },
+                                Timber::e
+                        )
         );
 
     }

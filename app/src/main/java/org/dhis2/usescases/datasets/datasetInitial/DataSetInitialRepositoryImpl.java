@@ -1,5 +1,7 @@
 package org.dhis2.usescases.datasets.datasetInitial;
 
+import androidx.annotation.NonNull;
+
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryCombo;
@@ -8,11 +10,9 @@ import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.dataset.DataSet;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import androidx.annotation.NonNull;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 
@@ -29,19 +29,19 @@ public class DataSetInitialRepositoryImpl implements DataSetInitialRepository {
     @Override
     public Flowable<List<DateRangeInputPeriodModel>> getDataInputPeriod() {
         return Flowable.just(d2.dataSetModule().dataSets.withDataInputPeriods().byUid().eq(dataSetUid).one().get())
-               .flatMapIterable(dataSet -> dataSet.dataInputPeriods())
-               .flatMap(dataInputPeriod ->
-                       Flowable.just(d2.periodModule().periods.byPeriodId().eq(dataInputPeriod.period().uid()).get())
-                               .flatMapIterable(periods -> periods)
-                               .map(period -> {
-                                   Date periodStartDate = period.startDate();
-                                   Date periodEndDate = period.endDate();
+                .flatMapIterable(dataSet -> dataSet.dataInputPeriods())
+                .flatMap(dataInputPeriod ->
+                        Flowable.just(d2.periodModule().periods.byPeriodId().eq(dataInputPeriod.period().uid()).get())
+                                .flatMapIterable(periods -> periods)
+                                .map(period -> {
+                                    Date periodStartDate = period.startDate();
+                                    Date periodEndDate = period.endDate();
 
-                                   return DateRangeInputPeriodModel.create(dataSetUid,
-                                           dataInputPeriod.period().uid(), dataInputPeriod.openingDate(),
-                                           dataInputPeriod.closingDate(), periodStartDate, periodEndDate);
-                               })
-               ).toList().toFlowable();
+                                    return DateRangeInputPeriodModel.create(dataSetUid,
+                                            dataInputPeriod.period().uid(), dataInputPeriod.openingDate(),
+                                            dataInputPeriod.closingDate(), periodStartDate, periodEndDate);
+                                })
+                ).toList().toFlowable();
     }
 
     @NonNull
@@ -67,17 +67,18 @@ public class DataSetInitialRepositoryImpl implements DataSetInitialRepository {
     @NonNull
     @Override
     public Observable<List<OrganisationUnit>> orgUnits() {
-        return Observable.fromIterable(d2.organisationUnitModule().organisationUnits.withDataSets().get())
-                .map(organisationUnit -> {
-                    List<OrganisationUnit> dataSetOrgUnits = new ArrayList<>();
-                    List<OrganisationUnit> orgUnits = new ArrayList<>();
-                    for (DataSet dataSet : organisationUnit.dataSets()) {
+        return Observable.just(d2.organisationUnitModule().organisationUnits.withDataSets().get())
+                .flatMapIterable(organisationUnits -> organisationUnits)
+                .filter(organisationUnit -> {
+                    boolean result = false;
+                    for (DataSet dataSet : organisationUnit.dataSets())
                         if (dataSet.uid().equals(dataSetUid))
-                            orgUnits.add(organisationUnit);
-                        dataSetOrgUnits.addAll(orgUnits);
-                    }
-                    return dataSetOrgUnits;
-                });
+                            result = true;
+                    return result;
+                })
+                .toList()
+                .toObservable();
+
     }
 
     @NonNull
