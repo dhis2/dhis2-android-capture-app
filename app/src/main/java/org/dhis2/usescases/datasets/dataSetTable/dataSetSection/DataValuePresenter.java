@@ -272,10 +272,7 @@ public class DataValuePresenter implements DataValueContract.Presenter{
                         rowFields.get(i).listCategoryOption().containsAll(catOptions)  )) {
                     FieldViewModel field = rowFields.get(i);
                     rowFields.remove(i);
-                    if(rowFields.size() == 0)
-                        rowFields.add(i, field.setValue(value));
-                    else
-                        rowFields.add(i == rowFields.size() ? i-1: i, field.setValue(value));
+                    rowFields.add(i, field.setValue(value));
                 }
             }
         }
