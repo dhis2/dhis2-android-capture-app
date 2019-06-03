@@ -12,6 +12,8 @@ public class D2ErrorUtils {
     public static String getErrorMessage(Context context, Throwable throwable) {
         if (throwable.getCause() instanceof D2Error)
             return handleD2Error(context, (D2Error) throwable.getCause());
+        else if (throwable instanceof D2Error)
+            return handleD2Error(context,(D2Error)throwable);
         else
             return throwable.getLocalizedMessage();
     }

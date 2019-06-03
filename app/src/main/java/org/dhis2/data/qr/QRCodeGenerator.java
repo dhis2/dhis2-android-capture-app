@@ -1,6 +1,7 @@
 package org.dhis2.data.qr;
 
 import android.graphics.Bitmap;
+import android.text.TextUtils;
 import android.util.Base64;
 
 import com.google.gson.Gson;
@@ -14,15 +15,27 @@ import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.usescases.qrCodes.QrViewModel;
 import org.dhis2.utils.DateUtils;
+import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
+import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.DataFormatException;
+import java.util.zip.Deflater;
+import java.util.zip.Inflater;
 
 import io.reactivex.Observable;
 import timber.log.Timber;
@@ -42,7 +55,14 @@ import static org.dhis2.data.qr.QRjson.TEI_JSON;
 public class QRCodeGenerator implements QRInterface {
 
     private final BriteDatabase briteDatabase;
+    private final D2 d2;
     private final Gson gson;
+    private static final String TEI_FLAG = "$T";
+    private static final String ENROLLMENT_FLAG = "$R";
+    private static final String EVENT_FLAG = "$E";
+    private static final String ATTR_FLAG = "$A";
+    private static final String DE_FLAG = "$D";
+    private static String data;
 
     private static final String TEI = "SELECT * FROM " + TrackedEntityInstanceModel.TABLE + " WHERE " + TrackedEntityInstanceModel.TABLE + "." + TrackedEntityInstanceModel.Columns.UID + " = ? LIMIT 1";
 
@@ -63,6 +83,7 @@ public class QRCodeGenerator implements QRInterface {
     QRCodeGenerator(BriteDatabase briteDatabase) {
         this.briteDatabase = briteDatabase;
         gson = new GsonBuilder().setDateFormat(DateUtils.DATABASE_FORMAT_EXPRESSION).create();
+        this.d2 = null;
     }
 
     @Override
@@ -213,5 +234,136 @@ public class QRCodeGenerator implements QRInterface {
         }
 
         return bitmap;
+    }
+
+    public Observable<byte[]> getUncodedData(String teiUid) {
+        return Observable.fromCallable(() -> getData(teiUid))
+                .map(this::compress);
+    }
+
+    public byte[] compress(String dataToCompress) {
+        byte[] input = dataToCompress.getBytes(StandardCharsets.UTF_8);
+        Deflater compresser = new Deflater();
+        compresser.setInput(input);
+        compresser.finish();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        byte[] buf = new byte[8192];
+        while (!compresser.finished()) {
+            int byteCount = compresser.deflate(buf);
+            baos.write(buf, 0, byteCount);
+        }
+        compresser.end();
+        return baos.toByteArray();
+    }
+
+    public String decompress(byte[] dataToDecompress) {
+        try {
+            Inflater decompresser = new Inflater();
+            decompresser.setInput(dataToDecompress);
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream(dataToDecompress.length);
+            byte[] buffer = new byte[1024];
+            while (!decompresser.finished()) {
+                int count = decompresser.inflate(buffer);
+                outputStream.write(buffer, 0, count);
+            }
+            outputStream.close();
+            byte[] output = outputStream.toByteArray();
+            decompresser.end();
+            return new String(output, 0, output.length, StandardCharsets.UTF_8);
+        } catch (DataFormatException e) {
+            Timber.e(e);
+            return "";
+        } catch (IOException e) {
+            Timber.e(e);
+            return "";
+        }
+    }
+
+    private String getData(String teiUid) {
+        StringBuilder dataBuilder = new StringBuilder();
+        dataBuilder.append(TEI_FLAG);
+        TrackedEntityInstance tei = d2.trackedEntityModule().trackedEntityInstances.uid(teiUid).get();
+        dataBuilder.append(setTeiData(tei));
+        List<Enrollment> enrollments = d2.enrollmentModule().enrollments.byTrackedEntityInstance().eq(teiUid).get();
+        for (Enrollment enrollment : enrollments) {
+            dataBuilder.append(ENROLLMENT_FLAG);
+            dataBuilder.append(setEnrollmentData(enrollment));
+            List<TrackedEntityAttributeValue> teAttrValues = d2.trackedEntityModule().trackedEntityAttributeValues.byTrackedEntityInstance().eq(teiUid).get();
+            for (TrackedEntityAttributeValue attrValue : teAttrValues) {
+                dataBuilder.append(ATTR_JSON);
+                dataBuilder.append(setAttrData(attrValue));
+            }
+            List<Event> events = d2.eventModule().events.byEnrollmentUid().eq(enrollment.uid()).get();
+            for (Event event : events) {
+                dataBuilder.append(EVENT_FLAG);
+                dataBuilder.append(setEventData(event));
+                List<TrackedEntityDataValue> teDataValue = d2.trackedEntityModule().trackedEntityDataValues.byEvent().eq(event.uid()).get();
+                for (TrackedEntityDataValue dataValue : teDataValue) {
+                    dataBuilder.append(DE_FLAG);
+                    dataBuilder.append(setTEDataValue(dataValue));
+                }
+            }
+        }
+
+        return dataBuilder.toString();
+    }
+
+    private String setAttrData(TrackedEntityAttributeValue attrValue) {
+        List<String> data = new ArrayList<>();
+        data.add(attrValue.trackedEntityAttribute());
+        data.add(attrValue.value());
+        return TextUtils.join("|", data);
+    }
+
+    private String setTEDataValue(TrackedEntityDataValue dataValue) {
+        List<String> data = new ArrayList<>();
+        data.add(dataValue.dataElement());
+        data.add(dataValue.value());
+        return TextUtils.join("|", data);
+    }
+
+    private String setEventData(Event event) {
+        List<String> data = new ArrayList<>();
+        data.add(event.uid());
+        data.add(DateUtils.databaseDateFormat().format(event.created()));
+        data.add(event.status().name());
+        data.add(event.coordinate() != null ? String.valueOf(event.coordinate().latitude()) : "");
+        data.add(event.coordinate() != null ? String.valueOf(event.coordinate().longitude()) : "");
+        data.add(event.program());
+        data.add(event.program()); //TEI OR ENROLLMENT?
+        data.add(event.programStage());
+        data.add(DateUtils.databaseDateFormat().format(event.eventDate()));
+        data.add(DateUtils.databaseDateFormat().format(event.created()));
+        data.add(DateUtils.databaseDateFormat().format(event.created()));
+        data.add(event.state() != null ? event.state().name() : "");
+        return TextUtils.join("|", data);
+    }
+
+    private String setTeiData(TrackedEntityInstance tei) {
+        List<String> data = new ArrayList<>();
+        data.add(tei.uid());
+        data.add(DateUtils.databaseDateFormat().format(tei.created()));
+        data.add(tei.organisationUnit());
+        data.add(tei.trackedEntityType());
+        data.add(tei.featureType() != null ? tei.featureType().name() : "");
+        data.add(tei.coordinates());
+        data.add(tei.state() != null ? tei.state().name() : "");
+        return TextUtils.join("|", data);
+    }
+
+    private String setEnrollmentData(Enrollment enrollment) {
+        List<String> data = new ArrayList<>();
+        data.add(enrollment.uid());
+        data.add(DateUtils.databaseDateFormat().format(enrollment.created()));
+        data.add(enrollment.organisationUnit());
+        data.add(enrollment.program());
+        data.add(DateUtils.databaseDateFormat().format(enrollment.enrollmentDate()));
+        data.add(DateUtils.databaseDateFormat().format(enrollment.incidentDate()));
+        data.add(enrollment.followUp() ? "t" : "f");
+        data.add(enrollment.status().name());
+        data.add(enrollment.coordinate() != null ? String.valueOf(enrollment.coordinate().latitude()) : "");
+        data.add(enrollment.coordinate() != null ? String.valueOf(enrollment.coordinate().longitude()) : "");
+        data.add(enrollment.state().name());
+        return TextUtils.join("|", data);
     }
 }
