@@ -19,13 +19,9 @@ import org.dhis2.R;
 import org.dhis2.databinding.ActivityDatasetTableBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.Constants;
-import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.dataset.DataSet;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -42,10 +38,6 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
     boolean accessDataWrite;
     boolean tableSelectorVisible = false;
-
-    private OrganisationUnitModel selectedOrgUnit;
-    private Date selectedPeriod;
-    private HashMap<String, CategoryOption> selectedCatOptions;
     private List<String> sections;
 
     @Inject
