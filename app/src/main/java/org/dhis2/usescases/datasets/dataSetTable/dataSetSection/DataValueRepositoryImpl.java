@@ -14,9 +14,11 @@ import org.hisp.dhis.android.core.category.CategoryOptionComboCategoryOptionLink
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.common.State;
+import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
 import org.hisp.dhis.android.core.dataset.DataInputPeriodModel;
 import org.hisp.dhis.android.core.dataset.DataSetCompleteRegistration;
+import org.hisp.dhis.android.core.dataset.DataSetDataElementLinkModel;
 import org.hisp.dhis.android.core.dataset.DataSetModel;
 import org.hisp.dhis.android.core.dataset.SectionGreyedFieldsLinkModel;
 import org.hisp.dhis.android.core.dataset.SectionModel;
@@ -41,9 +43,8 @@ public class DataValueRepositoryImpl implements DataValueRepository {
     private String dataSetUid;
 
     private final String DATA_ELEMENTS = "SELECT " +
-            "DataElement.* " +
-            /*"DataSetSection.sectionName," +
-            "DataSetSection.sectionOrder " +*/
+            "DataElement.*, " +
+            "DataSetDataElementLink.categoryCombo as CategoryComboOverride " +
             "FROM DataElement " +
             "JOIN DataSetDataElementLink ON " +
             "DataSetDataElementLink.dataElement = DataElement.uid " +
@@ -51,16 +52,18 @@ public class DataValueRepositoryImpl implements DataValueRepository {
             "LEFT JOIN Section ON Section.uid = SectionDataElementLink.section " ;
 
 
-    private final String CAT_COMBO = "SELECT \n" +
-            "            CategoryCombo.* \n" +
-            "          FROM CategoryCombo \n" +
-            "          JOIN DataSetDataElementLink ON DataSetDataElementLink.dataElement = DataElement.uid \n" +
-            "          JOIN DataElement ON CategoryCombo.uid = DataElement.categoryCombo\n" +
-            "          LEFT JOIN SectionDataElementLink ON SectionDataElementLink.dataElement = DataElement.uid \n" +
-            "          LEFT JOIN Section ON Section.uid = SectionDataElementLink.section \n" +
-            "          WHERE DataSetDataElementLink.dataSet = ? ";
+    private final String CAT_COMBO = "SELECT " +
+            "   CategoryCombo.*, " +
+            "   DataSetDataElementLink.categoryCombo " +
+            " FROM DataSetDataElementLink " +
+            " JOIN DataElement ON DataElement.uid = DataSetDataElementLink.dataElement " +
+            " JOIN CategoryCombo ON CategoryCombo.uid = case when dataSetDataElementLink.categoryCombo IS NOT NULL then dataSetDataElementLink.categoryCombo else dataElement.categoryCombo end " +
+            " LEFT JOIN SectionDataElementLink ON SectionDataElementLink.dataElement = DataElement.uid " +
+            " LEFT JOIN Section ON Section.uid = SectionDataElementLink.section " +
+            " WHERE DataSetDataElementLink.dataSet = ?  ";
 
-    private final String DATA_VALUES = "SELECT DataValue.*, CategoryOptionComboCategoryOptionLink.categoryOption as catOption, DataElement.categoryCombo as catCombo FROM DataValue " +
+    private final String DATA_VALUES = "SELECT DataValue.*, CategoryOptionComboCategoryOptionLink.categoryOption as catOption, " +
+            "DataElement.categoryCombo as catComboDataElement, DataSetDataElementLink.categoryCombo as catComboLink FROM DataValue " +
             "JOIN CategoryOptionComboCategoryOptionLink ON CategoryOptionComboCategoryOptionLink.categoryOptionCombo = DataValue.categoryOptionCombo " +
             "JOIN DataSetDataElementLink ON DataSetDataElementLink.dataElement = DataValue.dataElement " +
             "JOIN DataElement ON DataElement.uid = DataSetDataElementLink.dataElement " +
@@ -68,14 +71,12 @@ public class DataValueRepositoryImpl implements DataValueRepository {
             "WHERE DataValue.organisationUnit = ? " +
             "AND DataValue.attributeOptionCombo = ? " +
             "AND DataSetDataElementLink.dataSet = ? " +
-            "AND DataValue.period = ? "
-            //"AND DataElement.aggregationType IS NOT 'NONE'"
-            /*"AND Section.name = ?"*/;
+            "AND DataValue.period = ? ";
 
     private final String CATEGORY_OPTION = "SELECT CategoryOption.*, Category.uid AS category, section.displayName as SectionName, CategoryCombo.uid as catCombo,CategoryCategoryComboLink.sortOrder as sortOrder " +
             "FROM DataSetDataElementLink " +
             "JOIN DataElement ON DataElement.uid = DataSetDataElementLink.dataElement " +
-            "JOIN CategoryCombo ON CategoryCombo.uid = DataElement.categoryCombo " +
+            "JOIN CategoryCombo ON CategoryCombo.uid = case when dataSetDataElementLink.categoryCombo IS NOT NULL then dataSetDataElementLink.categoryCombo else dataElement.categoryCombo end  " +
             "JOIN CategoryCategoryComboLink ON CategoryCategoryComboLink.CategoryCombo = CategoryCombo.uid " +
             "JOIN Category ON Category.uid = CategoryCategoryComboLink.category " +
             "JOIN CategoryCategoryOptionLink ON CategoryCategoryOptionLink.category = Category.uid " +
@@ -87,16 +88,17 @@ public class DataValueRepositoryImpl implements DataValueRepository {
             "WHERE DataSetDataElementLink.dataSet = ? ";
 
 
-    private final String CATEGORY_OPTION_COMBO = "SELECT CategoryOptionCombo.*,section.displayName as SectionName FROM CategoryOptionCombo " +
-            "JOIN DataElement ON DataElement.categoryCombo = CategoryOptionCombo.categoryCombo " +
-            "JOIN DataSetDataElementLink ON DataSetDataElementLink.dataElement = DataElement.uid " +
-            "JOIN CategoryCategoryComboLink ON CategoryCategoryComboLink.categoryCombo = categoryOptionCombo.categoryCombo " +
-            "JOIN CategoryOptionComboCategoryOptionLink ON CategoryOptionComboCategoryOptionLink.categoryOptionCombo = CategoryOptionCombo.uid " +
-            "JOIN CategoryCategoryOptionLink ON CategoryCategoryOptionLink.categoryOption = CategoryOptionComboCategoryOptionLink.categoryOption " +
-            "LEFT JOIN (SELECT section.displayName, section.uid, SectionDataElementLINK.dataElement as dataelement FROM Section " +
-            "JOIN SectionDataElementLINK ON SectionDataElementLink.section = Section.uid) as section on section.dataelement = DataElement.uid " +
-            "WHERE DataSetDataElementLink.dataSet = ? " +
-            "GROUP BY section.uid, CategoryOptionCombo.uid  ORDER BY section.uid, CategoryCategoryComboLink.sortOrder, CategoryCategoryOptionLink.sortOrder";
+    private final String CATEGORY_OPTION_COMBO = "SELECT CategoryOptionCombo.*,section.displayName as SectionName " +
+            " FROM DataSetDataElementLink " +
+            " JOIN DataElement ON DataElement.uid = DataSetDataElementLink.dataElement " +
+            " JOIN CategoryOptionCombo ON CategoryOptionCombo.categoryCombo = case when dataSetDataElementLink.categoryCombo IS NOT NULL then dataSetDataElementLink.categoryCombo else dataElement.categoryCombo end " +
+            " JOIN CategoryCategoryComboLink ON CategoryCategoryComboLink.categoryCombo = categoryOptionCombo.categoryCombo " +
+            " JOIN CategoryOptionComboCategoryOptionLink ON CategoryOptionComboCategoryOptionLink.categoryOptionCombo = CategoryOptionCombo.uid " +
+            " JOIN CategoryCategoryOptionLink ON CategoryCategoryOptionLink.categoryOption = CategoryOptionComboCategoryOptionLink.categoryOption " +
+            " LEFT JOIN (SELECT section.displayName, section.uid, SectionDataElementLINK.dataElement as dataelement FROM Section " +
+            " JOIN SectionDataElementLINK ON SectionDataElementLink.section = Section.uid) as section on section.dataelement = DataElement.uid " +
+            " WHERE DataSetDataElementLink.dataSet = ? " +
+            " GROUP BY section.uid, CategoryOptionCombo.uid  ORDER BY section.uid, CategoryCategoryComboLink.sortOrder, CategoryCategoryOptionLink.sortOrder";
 
 
     private final String DATA_SET = "SELECT DataSet.* FROM DataSet WHERE DataSet.uid = ?";
@@ -125,15 +127,15 @@ public class DataValueRepositoryImpl implements DataValueRepository {
             "AND Section.name = ?";
 
     private static final String SELECT_CATEGORY_OPTION_COMBO = "SELECT CategoryOptionCombo.uid as categoryOptionCombo, CategoryOptionComboCategoryOptionLink.categoryOption as categoryOption " +
-            "FROM CategoryOptionCombo " +
-            "JOIN DataElement ON DataElement.categoryCombo = CategoryOptionCombo.categoryCombo " +
-            "JOIN DataSetDataElementLink ON DataSetDataElementLink.dataElement = DataElement.uid " +
-            "JOIN CategoryCategoryComboLink ON CategoryCategoryComboLink.categoryCombo = categoryOptionCombo.categoryCombo " +
-            "JOIN CategoryOptionComboCategoryOptionLink ON CategoryOptionComboCategoryOptionLink.categoryOptionCombo = CategoryOptionCombo.uid " +
-            "JOIN CategoryCategoryOptionLink ON CategoryCategoryOptionLink.categoryOption = CategoryOptionComboCategoryOptionLink.categoryOption " +
-            "WHERE DataSetDataElementLink.dataSet = ? " +
-            "GROUP BY CategoryOptionCombo.uid, CategoryOptionComboCategoryOptionLink.categoryOption " +
-            "ORDER BY CategoryCategoryComboLink.sortOrder, CategoryCategoryOptionLink.sortOrder";
+            " FROM DataSetDataElementLink " +
+            " JOIN DataElement ON DataElement.uid = DataSetDataElementLink.dataElement " +
+            "            JOIN CategoryOptionCombo ON CategoryOptionCombo.categoryCombo = case when dataSetDataElementLink.categoryCombo IS NOT NULL then dataSetDataElementLink.categoryCombo else dataElement.categoryCombo end\n" +
+            "            JOIN CategoryCategoryComboLink ON CategoryCategoryComboLink.categoryCombo = categoryOptionCombo.categoryCombo " +
+            "            JOIN CategoryOptionComboCategoryOptionLink ON CategoryOptionComboCategoryOptionLink.categoryOptionCombo = CategoryOptionCombo.uid " +
+            "            JOIN CategoryCategoryOptionLink ON CategoryCategoryOptionLink.categoryOption = CategoryOptionComboCategoryOptionLink.categoryOption " +
+            " WHERE DataSetDataElementLink.dataSet = ? " +
+            " GROUP BY CategoryOptionCombo.uid, CategoryOptionComboCategoryOptionLink.categoryOption " +
+            " ORDER BY CategoryCategoryComboLink.sortOrder, CategoryCategoryOptionLink.sortOrder";
 
     private static final String SELECT_PERIOD = "SELECT * FROM Period WHERE periodId = ?";
 
@@ -186,7 +188,30 @@ public class DataValueRepositoryImpl implements DataValueRepository {
             query = query + "WHERE Section.dataSet = ? AND Section.name = ? GROUP BY DataElement.uid ";
             query = query + " ORDER BY SectionDataElementLink.sortOrder ";
             return briteDatabase.createQuery(DataElementModel.TABLE, query, dataSetUid, section)
-                    .mapToList(DataElementModel::create).toFlowable(BackpressureStrategy.LATEST);
+                    .mapToList(cursor -> {
+                        String catComboOverride = cursor.getString(cursor.getColumnIndex("CategoryComboOverride"));
+
+                        DataElementModel dataElementModel = DataElementModel.builder()
+                                .uid(cursor.getString(cursor.getColumnIndex(DataElementModel.Columns.UID)))
+                                .code(cursor.getString(cursor.getColumnIndex(DataElementModel.Columns.CODE)))
+                                .name(cursor.getString(cursor.getColumnIndex(DataElementModel.Columns.NAME)))
+                                .displayName(cursor.getString(cursor.getColumnIndex(DataElementModel.Columns.DISPLAY_NAME)))
+                                .shortName(cursor.getString(cursor.getColumnIndex(DataElementModel.Columns.SHORT_NAME)))
+                                .displayShortName(cursor.getString(cursor.getColumnIndex(DataElementModel.Columns.DISPLAY_SHORT_NAME)))
+                                .description(cursor.getString(cursor.getColumnIndex(DataElementModel.Columns.DESCRIPTION)))
+                                .displayDescription(cursor.getString(cursor.getColumnIndex(DataElementModel.Columns.DISPLAY_DESCRIPTION)))
+                                .valueType(ValueType.valueOf(cursor.getString(cursor.getColumnIndex(DataElementModel.Columns.VALUE_TYPE))))
+                                .zeroIsSignificant(cursor.getInt(cursor.getColumnIndex(DataElementModel.Columns.ZERO_IS_SIGNIFICANT)) == 0 ? false : true)
+                                .aggregationType(cursor.getString(cursor.getColumnIndex(DataElementModel.Columns.AGGREGATION_TYPE)))
+                                .formName(cursor.getString(cursor.getColumnIndex(DataElementModel.Columns.FORM_NAME)))
+                                .domainType(cursor.getString(cursor.getColumnIndex(DataElementModel.Columns.DOMAIN_TYPE)))
+                                .displayFormName(cursor.getString(cursor.getColumnIndex(DataElementModel.Columns.DISPLAY_FORM_NAME)))
+                                .optionSet(cursor.getString(cursor.getColumnIndex(DataElementModel.Columns.OPTION_SET)))
+                                .categoryCombo(catComboOverride != null && !catComboOverride.isEmpty() ? catComboOverride : cursor.getString(cursor.getColumnIndex(DataElementModel.Columns.CATEGORY_COMBO)))
+                                .build();
+
+                        return dataElementModel;
+                    }).toFlowable(BackpressureStrategy.LATEST);
         }
         query = query + "WHERE DataSetDataElementLink.dataSet = ? GROUP BY DataElement.uid  ORDER BY SectionDataElementLink.sortOrder";
         return briteDatabase.createQuery(DataElementModel.TABLE, query, dataSetUid)
@@ -194,6 +219,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
     }
 
     public Flowable<List<CategoryCombo>> getCatCombo(String section){
+
         String query = CAT_COMBO;
         if (!section.equals("NO_SECTION")) {
             query = query + " AND Section.name = ? ";
@@ -201,6 +227,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
             return briteDatabase.createQuery(DataElementModel.TABLE, query, dataSetUid, section)
                     .mapToList(CategoryCombo::create).toFlowable(BackpressureStrategy.LATEST);
         }
+
         query = query + "GROUP BY CategoryCombo.uid ORDER BY SectionDataElementLink.sortOrder";
         return briteDatabase.createQuery(DataElementModel.TABLE, query, dataSetUid)
                 .mapToList(CategoryCombo::create).toFlowable(BackpressureStrategy.LATEST);
@@ -272,6 +299,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
 
     @Override
     public Flowable<Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>>> getCatOptions(String section) {
+
         Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>> map = new HashMap<>();
         String query = CATEGORY_OPTION;
 
@@ -280,6 +308,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
         }
         query = query + "GROUP BY  CategoryOption.uid,Category.uid, SectionName,catCombo, CategoryCategoryOptionLink.sortOrder " +
                 "ORDER BY section.uid, CategoryCategoryComboLink.sortOrder, CategoryCategoryOptionLink.sortOrder";
+
         return briteDatabase.createQuery(CategoryOptionModel.TABLE, query, dataSetUid)
                 .mapToList(cursor -> {
                     CategoryOptionModel catOption = CategoryOptionModel.create(cursor);
@@ -339,7 +368,10 @@ public class DataValueRepositoryImpl implements DataValueRepository {
                             cursor.getString(cursor.getColumnIndex(DataValueModel.Columns.VALUE)),
                             cursor.getString(cursor.getColumnIndex(DataValueModel.Columns.STORED_BY)),
                             cursor.getString(cursor.getColumnIndex(DataSetTableModel.Columns.CATEGORY_OPTION)),
-                            listCatOptions, cursor.getString(cursor.getColumnIndex(DataSetTableModel.Columns.CATEGORY_COMBO)));
+                            listCatOptions,  cursor.getString(cursor.getColumnIndex(DataSetTableModel.Columns.CATEGORY_COMBO_LINK)) != null &&
+                                    !cursor.getString(cursor.getColumnIndex(DataSetTableModel.Columns.CATEGORY_COMBO_LINK)).isEmpty() ?
+                                    cursor.getString(cursor.getColumnIndex(DataSetTableModel.Columns.CATEGORY_COMBO_LINK)) :
+                                    cursor.getString(cursor.getColumnIndex(DataSetTableModel.Columns.CATEGORY_COMBO)));
                     listData.add(dataValue);
                     return dataValue;
 
