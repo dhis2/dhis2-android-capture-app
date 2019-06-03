@@ -2,7 +2,7 @@ package org.dhis2.usescases.datasets.datasetInitial;
 
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.hisp.dhis.android.core.category.CategoryOption;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.period.PeriodType;
 
 import java.util.Date;
@@ -22,7 +22,7 @@ public class DataSetInitialContract {
 
         void setData(DataSetInitialModel dataSetInitialModel);
 
-        void showOrgUnitDialog(List<OrganisationUnitModel> data);
+        void showOrgUnitDialog(List<OrganisationUnit> data);
 
         void showPeriodSelector(PeriodType periodType, List<DateRangeInputPeriodModel> periods, Integer openFuturePeriods);
 
@@ -30,7 +30,7 @@ public class DataSetInitialContract {
 
         String getDataSetUid();
 
-        OrganisationUnitModel getSelectedOrgUnit();
+        OrganisationUnit getSelectedOrgUnit();
 
         Date getSelectedPeriod();
 

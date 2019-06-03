@@ -2,6 +2,8 @@ package org.dhis2.usescases.datasets.datasetInitial;
 
 import android.database.Cursor;
 
+import androidx.annotation.Nullable;
+
 import com.gabrielittner.auto.value.cursor.ColumnAdapter;
 import com.gabrielittner.auto.value.cursor.ColumnName;
 import com.google.auto.value.AutoValue;
@@ -11,8 +13,6 @@ import org.hisp.dhis.android.core.dataset.DataInputPeriodModel;
 
 import java.util.Date;
 
-import androidx.annotation.Nullable;
-
 @AutoValue
 public abstract class DateRangeInputPeriodModel {
 
@@ -21,7 +21,7 @@ public abstract class DateRangeInputPeriodModel {
         public static final String END_PERIOD = "endPeriodDate";
     }
 
-    public static DateRangeInputPeriodModel fromCursor(Cursor cursor){
+    public static DateRangeInputPeriodModel fromCursor(Cursor cursor) {
         return AutoValue_DateRangeInputPeriodModel.createFromCursor(cursor);
     }
 

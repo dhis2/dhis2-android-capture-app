@@ -1,11 +1,12 @@
 package org.dhis2.usescases.datasets.datasetInitial;
 
+import androidx.annotation.NonNull;
+
 import org.hisp.dhis.android.core.category.CategoryOption;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 
 import java.util.List;
 
-import androidx.annotation.NonNull;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 
@@ -15,7 +16,7 @@ public interface DataSetInitialRepository {
     Observable<DataSetInitialModel> dataSet();
 
     @NonNull
-    Observable<List<OrganisationUnitModel>> orgUnits();
+    Observable<List<OrganisationUnit>> orgUnits();
 
     @NonNull
     Observable<List<CategoryOption>> catCombo(String categoryUid);

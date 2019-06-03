@@ -6,6 +6,9 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.PopupMenu;
 
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
+
 import com.google.android.material.textfield.TextInputEditText;
 
 import org.dhis2.App;
@@ -15,12 +18,12 @@ import org.dhis2.databinding.ItemCategoryComboBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
-import org.dhis2.utils.custom_views.OrgUnitDialog;
+import org.dhis2.utils.custom_views.OrgUnitDialog_2;
 import org.dhis2.utils.custom_views.PeriodDialog;
 import org.dhis2.utils.custom_views.PeriodDialogInputPeriod;
 import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryOption;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.period.PeriodType;
 
 import java.util.ArrayList;
@@ -32,9 +35,6 @@ import java.util.Locale;
 
 import javax.inject.Inject;
 
-import androidx.annotation.Nullable;
-import androidx.databinding.DataBindingUtil;
-
 public class DataSetInitialActivity extends ActivityGlobalAbstract implements DataSetInitialContract.View {
 
     private ActivityDatasetInitialBinding binding;
@@ -43,7 +43,7 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
     DataSetInitialContract.Presenter presenter;
 
     private HashMap<String, CategoryOption> selectedCatOptions;
-    private OrganisationUnitModel selectedOrgUnit;
+    private OrganisationUnit selectedOrgUnit;
     private Date selectedPeriod;
     private String dataSetUid;
 
@@ -99,8 +99,8 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
      * When changing orgUnit, date must be cleared
      */
     @Override
-    public void showOrgUnitDialog(List<OrganisationUnitModel> data) {
-        OrgUnitDialog orgUnitDialog = OrgUnitDialog.getInstace().setMultiSelection(false);
+    public void showOrgUnitDialog(List<OrganisationUnit> data) {
+        OrgUnitDialog_2 orgUnitDialog = OrgUnitDialog_2.getInstace().setMultiSelection(false);
         orgUnitDialog.setOrgUnits(data);
         orgUnitDialog.setTitle(getString(R.string.org_unit))
                 .setPossitiveListener(v -> {
@@ -115,7 +115,7 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
                     orgUnitDialog.dismiss();
                 })
                 .setNegativeListener(v -> orgUnitDialog.dismiss());
-        orgUnitDialog.show(getSupportFragmentManager(), OrgUnitDialog.class.getSimpleName());
+        orgUnitDialog.show(getSupportFragmentManager(), OrgUnitDialog_2.class.getSimpleName());
     }
 
     @Override
@@ -165,7 +165,7 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
     }
 
     @Override
-    public OrganisationUnitModel getSelectedOrgUnit() {
+    public OrganisationUnit getSelectedOrgUnit() {
         return selectedOrgUnit;
     }
 

@@ -1,5 +1,8 @@
 package org.dhis2.usescases.datasets.datasetInitial;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.google.auto.value.AutoValue;
 
 import org.hisp.dhis.android.core.category.Category;
@@ -7,9 +10,6 @@ import org.hisp.dhis.android.core.period.PeriodType;
 
 import java.util.Collections;
 import java.util.List;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 @AutoValue
 public abstract class DataSetInitialModel {

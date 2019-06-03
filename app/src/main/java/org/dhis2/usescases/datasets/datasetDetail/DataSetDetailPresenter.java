@@ -1,13 +1,13 @@
 package org.dhis2.usescases.datasets.datasetDetail;
 
 import android.os.Bundle;
-import androidx.annotation.IntDef;
 
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity;
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialActivity;
 import org.dhis2.usescases.main.program.SyncStatusDialog;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.OrgUnitUtils;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 
 import java.lang.annotation.Retention;
@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import androidx.annotation.IntDef;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
@@ -28,7 +29,7 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
     private DataSetDetailRepository dataSetDetailRepository;
     private DataSetDetailContract.View view;
     private CompositeDisposable compositeDisposable;
-    private List<OrganisationUnitModel> orgUnits;
+    private List<OrganisationUnit> orgUnits;
     private List<String> selectedOrgUnits;
     private List<String> selectedPeriods = new ArrayList<>();
     private Map<String, String> mapPeriodAvailable;
@@ -115,8 +116,8 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
     }
 
     @Override
-    public List<OrganisationUnitModel> getOrgUnits() {
-        return this.orgUnits;
+    public List<OrganisationUnit> getOrgUnits() {
+        return orgUnits;
     }
 
     @Override
@@ -129,7 +130,7 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
         compositeDisposable.add(dataSetDetailRepository.orgUnits()
                 .map(orgUnits -> {
                     this.orgUnits = orgUnits;
-                    return OrgUnitUtils.renderTree(view.getContext(), orgUnits, true);
+                    return OrgUnitUtils.renderTree_2(view.getContext(), orgUnits, true);
                 })
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())

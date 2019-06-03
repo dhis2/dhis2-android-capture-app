@@ -3,6 +3,7 @@ package org.dhis2.usescases.datasets.datasetDetail;
 import com.unnamed.b.atv.model.TreeNode;
 
 import org.dhis2.usescases.general.AbstractActivityContracts;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 
 import java.util.Date;
@@ -50,7 +51,7 @@ public class DataSetDetailContract {
 
         void onDataSetClick(String orgUnit, String orgUnitName, String perdiodId, String periodType, String initPeriodType, String catOptionComb);
 
-        List<OrganisationUnitModel> getOrgUnits();
+        List<OrganisationUnit> getOrgUnits();
 
         void showFilter();
 
