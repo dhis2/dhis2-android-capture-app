@@ -45,8 +45,6 @@ public class DataValueRepositoryImpl implements DataValueRepository {
     private final String DATA_ELEMENTS = "SELECT " +
             "DataElement.*, " +
             "DataSetDataElementLink.categoryCombo as CategoryComboOverride " +
-            /*"DataSetSection.sectionName," +
-            "DataSetSection.sectionOrder " +*/
             "FROM DataElement " +
             "JOIN DataSetDataElementLink ON " +
             "DataSetDataElementLink.dataElement = DataElement.uid " +
@@ -73,30 +71,12 @@ public class DataValueRepositoryImpl implements DataValueRepository {
             "WHERE DataValue.organisationUnit = ? " +
             "AND DataValue.attributeOptionCombo = ? " +
             "AND DataSetDataElementLink.dataSet = ? " +
-            "AND DataValue.period = ? "
-            //"AND DataElement.aggregationType IS NOT 'NONE'"
-            /*"AND Section.name = ?"*/;
+            "AND DataValue.period = ? ";
 
     private final String CATEGORY_OPTION = "SELECT CategoryOption.*, Category.uid AS category, section.displayName as SectionName, CategoryCombo.uid as catCombo,CategoryCategoryComboLink.sortOrder as sortOrder " +
             "FROM DataSetDataElementLink " +
             "JOIN DataElement ON DataElement.uid = DataSetDataElementLink.dataElement " +
             "JOIN CategoryCombo ON CategoryCombo.uid = case when dataSetDataElementLink.categoryCombo IS NOT NULL then dataSetDataElementLink.categoryCombo else dataElement.categoryCombo end  " +
-            "JOIN CategoryCategoryComboLink ON CategoryCategoryComboLink.CategoryCombo = CategoryCombo.uid " +
-            "JOIN Category ON Category.uid = CategoryCategoryComboLink.category " +
-            "JOIN CategoryCategoryOptionLink ON CategoryCategoryOptionLink.category = Category.uid " +
-            "JOIN CategoryOption ON CategoryOption.uid = CategoryCategoryOptionLink.categoryOption " +
-            "LEFT JOIN ( " +
-            "SELECT Section.dataSet as sectionDataSet, section.displayName, Section.name, Section.uid, SectionDataElementLink.dataElement " +
-            "FROM Section JOIN SectionDataElementLink ON SectionDataElementLink.section = Section.uid ) " +
-            "AS section ON section.sectionDataSet = DataSetDataElementLink.dataSet " +
-            "WHERE DataSetDataElementLink.dataSet = ? ";
-
-    private final String DATASETDATAELEMENTLINK = "SELECT categoryCombo FROM DataSetDataElementLink WHERE dataSet = ? ";
-
-    private final String CATEGORY_OPTION_LINK = "SELECT CategoryOption.*, Category.uid AS category, section.displayName as SectionName, CategoryCombo.uid as catCombo,CategoryCategoryComboLink.sortOrder as sortOrder " +
-            "FROM DataSetDataElementLink " +
-            "JOIN DataElement ON DataElement.uid = DataSetDataElementLink.dataElement " +
-            "JOIN CategoryCombo ON CategoryCombo.uid = DataSetDataElementLink.categoryCombo " +
             "JOIN CategoryCategoryComboLink ON CategoryCategoryComboLink.CategoryCombo = CategoryCombo.uid " +
             "JOIN Category ON Category.uid = CategoryCategoryComboLink.category " +
             "JOIN CategoryCategoryOptionLink ON CategoryCategoryOptionLink.category = Category.uid " +
