@@ -5,17 +5,16 @@ import android.graphics.drawable.Drawable;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ImageSpan;
+
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 
 import org.dhis2.R;
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetSectionFragment;
-import org.hisp.dhis.android.core.dataelement.DataElementModel;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * QUADRAM. Created by ppajuelo on 02/10/2018.
@@ -23,47 +22,48 @@ import java.util.Map;
 
 public final class DataSetSectionAdapter extends FragmentStatePagerAdapter {
 
-    private ArrayList<String> sectionArrays;
+    private List<String> sections;
     private boolean accessDataWrite;
     private String dataSetUid;
     private Context context;
     private List<DataSetSectionFragment> fragments;
+
     DataSetSectionAdapter(FragmentManager fm, boolean accessDataWrite, String dataSetUid, Context context) {
         super(fm);
         fragments = new ArrayList<>();
-        sectionArrays = new ArrayList<>();
+        sections = new ArrayList<>();
         this.accessDataWrite = accessDataWrite;
         this.dataSetUid = dataSetUid;
         this.context = context;
     }
 
-    public DataSetSectionFragment getCurrentItem(int position){
+    public DataSetSectionFragment getCurrentItem(int position) {
         return fragments.get(position);
     }
 
     @Override
     public Fragment getItem(int position) {
-        DataSetSectionFragment fragment = DataSetSectionFragment.create(sectionArrays.get(position), accessDataWrite, dataSetUid);
+        DataSetSectionFragment fragment = DataSetSectionFragment.create(sections.get(position), accessDataWrite, dataSetUid);
         fragments.add(fragment);
         return fragment;
     }
 
-    void swapData(Map<String, List<DataElementModel>> dataElements) {
-        sectionArrays = new ArrayList<>(dataElements.keySet());
+    void swapData(List<String> sections) {
+        this.sections = sections;
         notifyDataSetChanged();
     }
 
     @Override
     public int getCount() {
-        return sectionArrays.size();
+        return sections.size();
     }
 
     @Override
     public CharSequence getPageTitle(int position) {
-        SpannableString sb = new SpannableString(sectionArrays.get(position) + "  ");
+        SpannableString sb = new SpannableString(sections.get(position) + "  ");
 
-        if(fragments.size()>position &&
-                (fragments.get(position).currentNumTables()!= null && fragments.get(position).currentNumTables().size()>1)) {
+        if (fragments.size() > position &&
+                (fragments.get(position).currentNumTables() != null && fragments.get(position).currentNumTables().size() > 1)) {
             Drawable image = context.getResources().getDrawable(R.drawable.ic_arrow_down_white);
             image.setBounds(0, 0, image.getIntrinsicWidth(), image.getIntrinsicHeight());
             ImageSpan imageSpan = new ImageSpan(image, ImageSpan.ALIGN_BOTTOM);

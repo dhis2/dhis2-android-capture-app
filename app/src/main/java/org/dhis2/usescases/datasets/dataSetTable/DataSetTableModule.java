@@ -1,7 +1,5 @@
 package org.dhis2.usescases.datasets.dataSetTable;
 
-import com.squareup.sqlbrite2.BriteDatabase;
-
 import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialRepository;
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialRepositoryImpl;
@@ -40,13 +38,13 @@ public class DataSetTableModule {
 
     @Provides
     @PerActivity
-    DataSetTableRepository DataSetTableRepository(BriteDatabase briteDatabase, D2 d2) {
-        return new DataSetTableRepositoryImpl(d2, briteDatabase, dataSetUid, periodId, orgUnitUid, catOptCombo);
+    DataSetTableRepository DataSetTableRepository(D2 d2) {
+        return new DataSetTableRepositoryImpl(d2, dataSetUid, periodId, orgUnitUid, catOptCombo);
     }
 
     @Provides
     @PerActivity
-    DataSetInitialRepository DataSetInitialRepository(BriteDatabase briteDatabase, D2 d2) {
+    DataSetInitialRepository DataSetInitialRepository(D2 d2) {
         return new DataSetInitialRepositoryImpl(d2, dataSetUid);
     }
 

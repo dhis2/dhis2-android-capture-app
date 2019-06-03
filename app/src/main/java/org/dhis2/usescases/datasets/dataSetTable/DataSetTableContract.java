@@ -1,25 +1,15 @@
 package org.dhis2.usescases.datasets.dataSetTable;
 
-import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.general.AbstractActivityContracts;
-import org.hisp.dhis.android.core.category.CategoryModel;
-import org.hisp.dhis.android.core.category.CategoryOptionModel;
-import org.hisp.dhis.android.core.common.State;
-import org.hisp.dhis.android.core.dataelement.DataElementModel;
-import org.hisp.dhis.android.core.dataset.DataSetModel;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
+import org.hisp.dhis.android.core.dataset.DataSet;
 
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
-
-import io.reactivex.functions.Consumer;
 
 public class DataSetTableContract {
 
     public interface View extends AbstractActivityContracts.View {
 
-        void setDataElements(Map<String, List<DataElementModel>> data, Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>> stringListMap);
+        void setSections(List<String> sections);
 
         void setDataValue(List<DataSetTableModel> data);
 
@@ -27,19 +17,13 @@ public class DataSetTableContract {
 
         void showOptions(boolean open);
 
-        OrganisationUnitModel getSelectedOrgUnit();
-
-        Date getSelectedPeriod();
-
         String getDataSetUid();
 
         String getOrgUnitName();
 
         void goToTable(int numTable);
 
-        void setCurrentNumTables(int numTables);
-
-        void renderDetails(DataSetModel dataSetModel, String catcomboName);
+        void renderDetails(DataSet dataSet, String catcomboName);
 
         void isDataSetOpen(boolean dataSetIsOpen);
 

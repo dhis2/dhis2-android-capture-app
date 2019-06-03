@@ -5,6 +5,10 @@ import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.view.View;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
+
 import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexboxLayoutManager;
 import com.google.android.flexbox.JustifyContent;
@@ -12,28 +16,19 @@ import com.google.android.material.tabs.TabLayout;
 
 import org.dhis2.App;
 import org.dhis2.R;
-import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ActivityDatasetTableBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.Constants;
-import org.hisp.dhis.android.core.category.CategoryModel;
 import org.hisp.dhis.android.core.category.CategoryOption;
-import org.hisp.dhis.android.core.category.CategoryOptionModel;
-import org.hisp.dhis.android.core.dataelement.DataElementModel;
-import org.hisp.dhis.android.core.dataset.DataSetModel;
+import org.hisp.dhis.android.core.dataset.DataSet;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Inject;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.databinding.DataBindingUtil;
 
 public class DataSetTableActivity extends ActivityGlobalAbstract implements DataSetTableContract.View {
 
@@ -51,7 +46,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     private OrganisationUnitModel selectedOrgUnit;
     private Date selectedPeriod;
     private HashMap<String, CategoryOption> selectedCatOptions;
-    private Map<String, List<DataElementModel>> dataElements;
+    private List<String> sections;
 
     @Inject
     DataSetTableContract.Presenter presenter;
@@ -98,6 +93,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
         binding.setPresenter(presenter);
         binding.dataSetName.setText(String.format("%s - %s", orgUnitName, periodInitialDate));
 
+        setViewPager();
     }
 
     @Override
@@ -112,8 +108,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
         super.onPause();
     }
 
-    @Override
-    public void setDataElements(Map<String, List<DataElementModel>> dataElements, Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>> catOptions) {
+    private void setViewPager() {
         viewPagerAdapter = new DataSetSectionAdapter(getSupportFragmentManager(), accessDataWrite, getIntent().getStringExtra(Constants.DATA_SET_UID), this);
         binding.viewPager.setAdapter(viewPagerAdapter);
         binding.tabLayout.setupWithViewPager(binding.viewPager);
@@ -149,23 +144,28 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
                 tableSelectorVisible = !tableSelectorVisible;
             }
         });
-        this.dataElements = dataElements;
-        if (dataElements.containsKey("NO_SECTION") && dataElements.size() > 1)
-            dataElements.remove("NO_SECTION");
-        viewPagerAdapter.swapData(dataElements);
+    }
+
+    @Override
+    public void setSections(List<String> sections) {
+        this.sections = sections;
+        if (sections.contains("NO_SECTION") && sections.size() > 1)
+            sections.remove("NO_SECTION");
+        viewPagerAdapter.swapData(sections);
     }
 
     public void updateTabLayout(String section, int numTables) {
 
         if (section.equals("NO_SECTION")) {
             if (numTables > 1) {
-                dataElements.put(getString(R.string.tab_tables), dataElements.remove("NO_SECTION"));
-                viewPagerAdapter.swapData(dataElements);
+                sections.remove("NO_SECTION");
+                sections.add(getString(R.string.tab_tables));
+                viewPagerAdapter.swapData(sections);
             } else
                 binding.tabLayout.setVisibility(View.GONE);
         } else {
             if (numTables > 1)
-                viewPagerAdapter.swapData(dataElements);
+                viewPagerAdapter.swapData(sections);
         }
     }
 
@@ -191,15 +191,6 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
             binding.infoContainer.setVisibility(View.GONE);
     }
 
-    @Override
-    public OrganisationUnitModel getSelectedOrgUnit() {
-        return selectedOrgUnit;
-    }
-
-    @Override
-    public Date getSelectedPeriod() {
-        return selectedPeriod;
-    }
 
     @Override
     public String getDataSetUid() {
@@ -218,18 +209,8 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     }
 
     @Override
-    public void setCurrentNumTables(int numTables) {
-        //Table Selector
-        List<String> tables = new ArrayList<>();
-        for (int i = 1; i <= numTables; i++) {
-            tables.add(getResources().getString(R.string.table) + i);
-        }
-        ((TableCheckboxAdapter) binding.tableRecycler.getAdapter()).swapData(tables);
-    }
-
-    @Override
-    public void renderDetails(DataSetModel dataSetModel, String catComboName) {
-        binding.dataSetSubtitle.setText(String.format("%s %s", dataSetModel.displayName(), !catComboName.equals("default") ? "- "+catComboName : ""));
+    public void renderDetails(DataSet dataSet, String catComboName) {
+        binding.dataSetSubtitle.setText(String.format("%s %s", dataSet.displayName(), !catComboName.equals("default") ? "- " + catComboName : ""));
         if (catComboName.equals("default")) {
             binding.catCombo.setVisibility(View.GONE);
             binding.catComboLabel.setVisibility(View.GONE);
@@ -237,7 +218,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
         binding.orgUnit.setText(orgUnitName);
         binding.reportPeriod.setText(periodInitialDate);
         binding.catCombo.setText(catComboName);
-        binding.datasetDescription.setText(dataSetModel.displayDescription());
+        binding.datasetDescription.setText(dataSet.displayDescription());
     }
 
     @Override
@@ -249,10 +230,10 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
     @Override
     public void isDataSetSynced(boolean dataSetIsSynced) {
-        binding.syncState.setImageResource(dataSetIsSynced? R.drawable.ic_sync_green : R.drawable.ic_sync_problem_grey);
+        binding.syncState.setImageResource(dataSetIsSynced ? R.drawable.ic_sync_green : R.drawable.ic_sync_problem_grey);
     }
 
-    public void update(){
+    public void update() {
         presenter.init(this, orgUnitUid, periodTypeName, catOptCombo, periodInitialDate, periodId);
     }
 }
