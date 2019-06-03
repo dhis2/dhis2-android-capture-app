@@ -7,6 +7,7 @@ import android.text.method.DigitsKeyListener;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 
 import com.evrencoskun.tableview.TableView;
@@ -22,6 +23,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.databinding.ObservableBoolean;
+
+import java.util.ArrayList;
+
 import io.reactivex.processors.FlowableProcessor;
 
 import static android.text.TextUtils.isEmpty;
@@ -87,6 +91,8 @@ final class EditTextCellCustomHolder extends FormViewHolder {
                 customBinding.inputEditText.setActivated(true);
         }
 
+        if(editTextModel.column()!=((ArrayList) tableView.getAdapter().getCellRecyclerViewAdapter().getItems().get(0)).size()-1)
+            customBinding.inputEditText.setImeOptions(EditorInfo.IME_ACTION_NEXT);
 
         customBinding.executePendingBindings();
     }

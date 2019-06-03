@@ -31,7 +31,6 @@
             android:layout_height="0dp"
             android:background="@drawable/cell_edit_bg"
             android:ellipsize="end"
-            android:imeOptions="actionNext"
             android:lines="1"
             android:minHeight="@dimen/default_cell_height"
             android:paddingStart="8dp"
