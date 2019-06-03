@@ -86,7 +86,8 @@ final class MainPresenterImpl implements MainContracts.MainPresenter {
             prefs.edit().putString("pin", pin).apply();
         }
         WorkManager.getInstance().cancelAllWork();
-        view.startActivity(LoginActivity.class, null, true, true, null);
+//        view.startActivity(LoginActivity.class, null, true, true, null);
+        view.back();
     }
 
     @Override

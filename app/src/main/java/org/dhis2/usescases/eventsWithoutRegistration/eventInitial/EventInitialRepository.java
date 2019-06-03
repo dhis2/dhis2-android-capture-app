@@ -2,6 +2,9 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventInitial;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.event.EventModel;
@@ -12,8 +15,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 
@@ -34,6 +35,10 @@ public interface EventInitialRepository {
 
     @NonNull
     Observable<List<OrganisationUnitModel>> filteredOrgUnits(String date, String programId);
+
+
+    @NonNull
+    Observable<List<OrganisationUnitModel>> searchOrgUnits(String date, String programId);
 
     @SuppressWarnings("squid:S00107")
     Observable<String> createEvent(String enrollmentUid, @Nullable String trackedEntityInstanceUid,
@@ -73,5 +78,5 @@ public interface EventInitialRepository {
 
     boolean isEnrollmentOpen();
 
-    Flowable<Map<String,CategoryOption>> getOptionsFromCatOptionCombo(String eventId);
+    Flowable<Map<String, CategoryOption>> getOptionsFromCatOptionCombo(String eventId);
 }

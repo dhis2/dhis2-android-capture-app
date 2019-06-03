@@ -26,6 +26,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryAc
 import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryRepository;
 import org.dhis2.usescases.map.MapSelectorActivity;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.EventCreationType;
 import org.dhis2.utils.OrgUnitUtils;
 import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.category.CategoryCombo;
@@ -48,6 +49,7 @@ import java.util.Map;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
@@ -398,16 +400,21 @@ public class EventInitialPresenterImpl implements EventInitialContract.EventInit
 
     @Override
     public void filterOrgUnits(String date) {
-        compositeDisposable.add(eventInitialRepository.filteredOrgUnits(date, programId)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        orgUnitsResult -> {
-                            this.orgUnits = orgUnitsResult;
-                            view.addTree(OrgUnitUtils.renderTree(view.getContext(), orgUnitsResult, true));
-                        },
-                        throwable -> view.showNoOrgUnits()
-                ));
+        Observable<List<OrganisationUnitModel>> orgUnitObservable =
+                view.eventcreateionType() != EventCreationType.REFERAL ? eventInitialRepository.filteredOrgUnits(date, programId) :
+                        eventInitialRepository.searchOrgUnits(date, programId);
+
+        compositeDisposable.add(
+                orgUnitObservable
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                orgUnits -> {
+                                    this.orgUnits = orgUnits;
+                                    view.addTree(OrgUnitUtils.renderTree(view.getContext(), orgUnits, true));
+                                },
+                                throwable -> view.showNoOrgUnits()
+                        ));
     }
 
     @Override

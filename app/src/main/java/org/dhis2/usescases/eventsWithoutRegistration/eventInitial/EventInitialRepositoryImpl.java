@@ -66,6 +66,17 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
             " date(" + OrganisationUnitModel.Columns.CLOSED_DATE + ") >= date(?)) " +
             "AND OrganisationUnitProgramLink .program = ?";
 
+    private static final String SEARCH_ORG_UNITS_FILTERED = "SELECT OrganisationUnit.* FROM " + OrganisationUnitModel.TABLE +
+            " JOIN OrganisationUnitProgramLink ON OrganisationUnitProgramLink .organisationUnit = OrganisationUnit.uid " +
+            " WHERE OrganisationUnit.uid IN (SELECT UserOrganisationUnit.organisationUnit FROM UserOrganisationUnit)" +
+            " AND ("
+            + OrganisationUnitModel.Columns.OPENING_DATE + " IS NULL OR " +
+            " date(" + OrganisationUnitModel.Columns.OPENING_DATE + ") <= date(?)) AND ("
+            + OrganisationUnitModel.Columns.CLOSED_DATE + " IS NULL OR " +
+            " date(" + OrganisationUnitModel.Columns.CLOSED_DATE + ") >= date(?)) " +
+            "AND OrganisationUnitProgramLink .program = ? ";
+
+
     private final BriteDatabase briteDatabase;
     private final CodeGenerator codeGenerator;
     private final String eventUid;
@@ -134,6 +145,18 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
         if (date == null)
             return orgUnits(programId);
         return briteDatabase.createQuery(OrganisationUnitModel.TABLE, SELECT_ORG_UNITS_FILTERED,
+                date,
+                date,
+                programId == null ? "" : programId)
+                .mapToList(OrganisationUnitModel::create);
+    }
+
+    @NonNull
+    @Override
+    public Observable<List<OrganisationUnitModel>> searchOrgUnits(String date, String programId) {
+        if (date == null)
+            return orgUnits(programId);
+        return briteDatabase.createQuery(OrganisationUnitModel.TABLE, SEARCH_ORG_UNITS_FILTERED,
                 date,
                 date,
                 programId == null ? "" : programId)
@@ -250,7 +273,8 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
         } else {
             if (enrollmentUid != null)
                 updateEnrollment(enrollmentUid);
-            if (trackedEntityInstanceUid != null)
+            String tei = d2.enrollmentModule().enrollments.uid(enrollmentUid).get().trackedEntityInstance();
+            if (!isEmpty(tei))
                 updateTei(trackedEntityInstanceUid);
             return Observable.just(uid);
         }

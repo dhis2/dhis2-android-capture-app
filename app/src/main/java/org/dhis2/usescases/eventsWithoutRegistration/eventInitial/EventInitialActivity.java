@@ -877,6 +877,11 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         }
     }
 
+    @Override
+    public EventCreationType eventcreateionType() {
+        return eventCreationType;
+    }
+
     private int calculateCompletedFields(@NonNull List<FieldViewModel> updates) {
         int total = 0;
         for (FieldViewModel fieldViewModel : updates) {
