@@ -33,7 +33,7 @@ android {
         abortOnError false
     }
 
-    compileSdkVersion 28
+    compileSdkVersion versions.sdk
     buildToolsVersion versions.tools
     defaultConfig {
         applicationId "com.dhis2"
