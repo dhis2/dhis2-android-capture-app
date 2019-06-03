@@ -183,12 +183,12 @@ public class DataValueRepositoryImpl implements DataValueRepository {
     public Flowable<List<DataElementModel>> getDataElements(String section) {
         String query = DATA_ELEMENTS;
         if (!section.equals("NO_SECTION")) {
-            query = query + " AND Section.name = ? ";
-            query = query + " ORDER BY SectionDataElementLink.sortOrder";
+            query = query + " AND Section.name = ? GROUP BY DataElement.uid ";
+            query = query + " ORDER BY SectionDataElementLink.sortOrder ";
             return briteDatabase.createQuery(DataElementModel.TABLE, query, dataSetUid, section)
                     .mapToList(DataElementModel::create).toFlowable(BackpressureStrategy.LATEST);
         }
-        query = query + " ORDER BY SectionDataElementLink.sortOrder";
+        query = query + " GROUP BY DataElement.uid  ORDER BY SectionDataElementLink.sortOrder";
         return briteDatabase.createQuery(DataElementModel.TABLE, query, dataSetUid)
                 .mapToList(DataElementModel::create).toFlowable(BackpressureStrategy.LATEST);
     }
