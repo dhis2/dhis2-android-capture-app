@@ -51,8 +51,8 @@ public class DataValueRepositoryImpl implements DataValueRepository {
             "JOIN DataSetDataElementLink ON " +
             "DataSetDataElementLink.dataElement = DataElement.uid " +
             "LEFT JOIN SectionDataElementLink ON SectionDataElementLink.dataElement = DataElement.uid " +
-            "LEFT JOIN Section ON Section.uid = SectionDataElementLink.section " +
-            "WHERE DataSetDataElementLink.dataSet = ?";
+            "LEFT JOIN Section ON Section.uid = SectionDataElementLink.section " ;
+
 
     private final String CAT_COMBO = "SELECT " +
             "   CategoryCombo.*, " +
@@ -205,8 +205,8 @@ public class DataValueRepositoryImpl implements DataValueRepository {
     public Flowable<List<DataElementModel>> getDataElements(String section) {
         String query = DATA_ELEMENTS;
         if (!section.equals("NO_SECTION")) {
-            query = query + " AND Section.name = ? ";
-            query = query + " ORDER BY SectionDataElementLink.sortOrder";
+            query = query + "WHERE Section.dataSet = ? AND Section.name = ? GROUP BY DataElement.uid ";
+            query = query + " ORDER BY SectionDataElementLink.sortOrder ";
             return briteDatabase.createQuery(DataElementModel.TABLE, query, dataSetUid, section)
                     .mapToList(cursor -> {
                         String catComboOverride = cursor.getString(cursor.getColumnIndex("CategoryComboOverride"));
@@ -233,7 +233,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
                         return dataElementModel;
                     }).toFlowable(BackpressureStrategy.LATEST);
         }
-        query = query + " ORDER BY SectionDataElementLink.sortOrder";
+        query = query + "WHERE DataSetDataElementLink.dataSet = ? GROUP BY DataElement.uid  ORDER BY SectionDataElementLink.sortOrder";
         return briteDatabase.createQuery(DataElementModel.TABLE, query, dataSetUid)
                 .mapToList(DataElementModel::create).toFlowable(BackpressureStrategy.LATEST);
     }

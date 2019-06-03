@@ -28,6 +28,8 @@ import org.dhis2.databinding.SyncBottomDialogBinding;
 import org.dhis2.utils.NetworkUtils;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.State;
+import org.hisp.dhis.android.core.dataset.DataSetElement;
+import org.hisp.dhis.android.core.datavalue.DataValue;
 import org.hisp.dhis.android.core.imports.TrackerImportConflict;
 import org.hisp.dhis.android.core.program.ProgramType;
 
@@ -41,20 +43,32 @@ import io.reactivex.schedulers.Schedulers;
 
 public class SyncStatusDialog extends BottomSheetDialogFragment {
 
-    private final String recordUid;
+    private String recordUid;
     private final CompositeDisposable compositeDisposable;
     private final ConflictType conflictType;
     private D2 d2;
     private SyncBottomDialogBinding binding;
     private SyncConflictAdapter adapter;
+    private String orgUnitDataValue;
+    private String attributeComboDataValue;
+    private String periodIdDataValue;
 
     public enum ConflictType {
-        PROGRAM, TEI, EVENT
+        PROGRAM, TEI, EVENT, DATA_SET, DATA_VALUES
     }
 
     @SuppressLint("ValidFragment")
     public SyncStatusDialog(String recordUid, ConflictType conflictType) {
         this.recordUid = recordUid;
+        this.conflictType = conflictType;
+        this.compositeDisposable = new CompositeDisposable();
+    }
+
+    @SuppressLint("ValidFragment")
+    public SyncStatusDialog(String orgUnitDataValue,String attributeComboDataValue, String periodIdDataValue, ConflictType conflictType) {
+        this.orgUnitDataValue = orgUnitDataValue;
+        this.attributeComboDataValue = attributeComboDataValue;
+        this.periodIdDataValue = periodIdDataValue;
         this.conflictType = conflictType;
         this.compositeDisposable = new CompositeDisposable();
     }
@@ -85,10 +99,95 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
             case EVENT:
                 configureForEvent();
                 break;
+            case DATA_SET:
+                configureForDataSet();
+                break;
+            case DATA_VALUES:
+                configureForDataValue();
         }
         setRetainInstance(true);
 
         return binding.getRoot();
+    }
+
+    private void configureForDataValue() {
+        compositeDisposable.add(
+                Observable.fromCallable(()-> d2.dataValueModule().dataValues.byOrganisationUnitUid().eq(orgUnitDataValue)
+                        .byAttributeOptionComboUid().eq(attributeComboDataValue)
+                        .byPeriod().eq(periodIdDataValue).get())
+                        .map(dataSetElements -> {
+                            State state = State.SYNCED;
+                            for(DataValue dataValue: dataSetElements){
+                                if(dataValue.state() != State.SYNCED)
+                                    state = State.TO_UPDATE;
+                            }
+
+                            return state;
+                        }).subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread()).subscribe(
+                        state -> {
+                            Bindings.setStateIcon(binding.syncIcon, state);
+                            binding.syncStatusName.setText(getTextByState(state));
+                            binding.syncStatusBar.setBackgroundResource(getColorForState(state));
+                            switch (state) {
+                                case TO_POST:
+                                case TO_UPDATE:
+                                    setNoConflictMessage(getString(R.string.no_conflicts_update_message));
+                                    break;
+                                case SYNCED:
+                                    setNoConflictMessage(getString(R.string.no_conflicts_synced_message));
+                                    break;
+                                case WARNING:
+                                case ERROR:
+                                    setProgramConflictMessage(state);
+                                    break;
+                                default:
+                                    break;
+                            }
+                        },
+                        error -> dismiss()
+                ));
+    }
+
+    private void configureForDataSet() {
+
+        compositeDisposable.add(
+                Observable.fromCallable(()-> d2.dataSetModule().dataSets.uid(recordUid).withAllChildren().get().dataSetElements())
+                        .map(dataSetElements -> {
+                            State state = State.SYNCED;
+                            for(DataSetElement dataSetElement: dataSetElements){
+                                for(DataValue dataValue: d2.dataValueModule().dataValues.byDataElementUid().eq(dataSetElement.dataElement().uid()).get()){
+                                    if(dataValue.state() != State.SYNCED)
+                                        state = State.TO_UPDATE;
+                                }
+                            }
+
+                            return state;
+                        }).subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread()).subscribe(
+                        state -> {
+                            Bindings.setStateIcon(binding.syncIcon, state);
+                            binding.syncStatusName.setText(getTextByState(state));
+                            binding.syncStatusBar.setBackgroundResource(getColorForState(state));
+                            switch (state) {
+                                case TO_POST:
+                                case TO_UPDATE:
+                                    setNoConflictMessage(getString(R.string.no_conflicts_update_message));
+                                    break;
+                                case SYNCED:
+                                    setNoConflictMessage(getString(R.string.no_conflicts_synced_message));
+                                    break;
+                                case WARNING:
+                                case ERROR:
+                                    setProgramConflictMessage(state);
+                                    break;
+                                default:
+                                    break;
+                            }
+                        },
+                        error -> dismiss()
+                ));
+
     }
 
 

@@ -24,6 +24,8 @@ public class DataSetDetailViewHolder extends RecyclerView.ViewHolder{
         binding.setVariable(BR.dataset, dataset);
         binding.executePendingBindings();
 
+        binding.syncIcon.setOnClickListener(view ->  presenter.onSyncIconClick(dataset.orgUnitUid(), dataset.catOptionComboUid(), dataset.periodId()));
+
         itemView.setOnClickListener(view -> presenter.onDataSetClick(
                 dataset.orgUnitUid(),
                 dataset.nameOrgUnit(),

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialRepository;
 import org.dhis2.utils.DateUtils;
+import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.period.PeriodType;
 
 import java.util.Locale;
@@ -83,8 +84,10 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
                 tableRepository.dataSetStatus()
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                view.isDataSetOpen(),
+                        .subscribe(state -> {
+                                    view.isDataSetOpen(state!= null && state != State.TO_DELETE);
+                                    view.isDataSetSynced(state == null || state == State.SYNCED);
+                                },
                                 Timber::d
                         )
         );
