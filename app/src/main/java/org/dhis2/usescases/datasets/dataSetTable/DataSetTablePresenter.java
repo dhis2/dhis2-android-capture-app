@@ -1,14 +1,7 @@
 package org.dhis2.usescases.datasets.dataSetTable;
 
-import android.os.Bundle;
-
 import org.dhis2.data.tuples.Pair;
-import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialRepository;
-import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.common.State;
-import org.hisp.dhis.android.core.period.PeriodType;
-
-import java.util.Locale;
 
 import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -50,20 +43,12 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
         this.periodId = periodId;
 
         compositeDisposable.add(
-                Flowable.zip(
-                        tableRepository.getDataElements(),
-                        tableRepository.getCatOptions(),
-                        Pair::create
-                )
+                tableRepository.getSections()
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                data -> {
-                                    view.setDataElements(data.val0(), data.val1());
-                                },
-                                Timber::e
-                        )
+                        .subscribe(view::setSections, Timber::e)
         );
+
         compositeDisposable.add(
                 Flowable.zip(
                         tableRepository.getDataSet(),
@@ -73,9 +58,7 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                data -> {
-                                    view.renderDetails(data.val0(), data.val1());
-                                },
+                                data -> view.renderDetails(data.val0(), data.val1()),
                                 Timber::e
                         )
         );
@@ -85,7 +68,7 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(state -> {
-                                    view.isDataSetOpen(state!= null && state != State.TO_DELETE);
+                                    view.isDataSetOpen(state != null && state != State.TO_DELETE);
                                     view.isDataSetSynced(state == null || state == State.SYNCED);
                                 },
                                 Timber::d
@@ -126,7 +109,7 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
     @Override
     public void optionsClick() {
         view.showOptions(open);
-        open =!open;
+        open = !open;
     }
 
     @Override
