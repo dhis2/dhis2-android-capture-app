@@ -203,9 +203,10 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
             if (variable.trackedEntityAttribute() == null)
                 variableIterator.remove();
         }
+        List<Rule> finalMandatoryRules = trasformToRule(mandatoryRules);
         for (ProgramRuleVariable variable : variables) {
             if (variable.trackedEntityAttribute() != null && !attributeRules.containsKey(variable.trackedEntityAttribute().uid()))
-                attributeRules.put(variable.trackedEntityAttribute().uid(), trasformToRule(mandatoryRules));
+                attributeRules.put(variable.trackedEntityAttribute().uid(), finalMandatoryRules);
             for (ProgramRule rule : rules) {
                 if (rule.condition().contains(variable.displayName()) || actionsContainsAttr(rule.programRuleActions(), variable.displayName())) {
                     if (attributeRules.get(variable.trackedEntityAttribute().uid()) == null)

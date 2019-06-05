@@ -112,6 +112,9 @@ final class DataEntryPresenterImpl implements DataEntryPresenter, RulesActionCal
                 ));
 
         disposable.add(dataEntryView.rowActions().onBackpressureBuffer()
+                .switchMap(rowAction -> dataEntryStore.checkUnique(rowAction.id(), rowAction.value())
+                        .filter(checkPass -> checkPass) //If not unique
+                        .map(checkPass->rowAction)) //save value
                 .switchMap(action -> {
                             if (action.lastFocusPosition() != null && action.lastFocusPosition() >= 0) { //Triggered by form field
                                 this.lastFocusItem = action.id();

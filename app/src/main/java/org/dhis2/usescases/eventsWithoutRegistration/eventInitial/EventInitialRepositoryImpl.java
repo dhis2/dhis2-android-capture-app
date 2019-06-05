@@ -275,8 +275,8 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                 updateEnrollment(enrollmentUid);
             String tei = d2.enrollmentModule().enrollments.uid(enrollmentUid).get().trackedEntityInstance();
             if (!isEmpty(tei))
-                updateTei(trackedEntityInstanceUid);
-//            updateTrackedEntityInstance(uid, trackedEntityInstanceUid, orgUnitUid);
+                updateTei(tei);
+
             return Observable.just(uid);
         }
     }

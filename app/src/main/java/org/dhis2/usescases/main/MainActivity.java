@@ -168,7 +168,9 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
 
     @Override
     public void onBackPressed() {
-        if (isPinLayoutVisible) {
+        if (fragId != R.id.menu_home) {
+            changeFragment(R.id.menu_home);
+        } else if (isPinLayoutVisible) {
             isPinLayoutVisible = false;
             startActivity(new Intent(MainActivity.this, MainActivity.class));
             finish();

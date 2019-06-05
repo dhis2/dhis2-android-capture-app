@@ -191,7 +191,6 @@ public class App extends MultiDexApplication implements Components {
                 .appModule(new AppModule(this))
                 .schedulerModule(new SchedulerModule(new SchedulersProviderImpl()))
                 .metadataModule(new MetadataModule())
-                .qrModule(new QRModule())
                 .utilModule(new UtilsModule());
     }
 

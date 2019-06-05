@@ -69,7 +69,7 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
     }
 
     private void setEnrollment(List<EnrollmentModel> enrollments) {
-        binding.linearLayout.removeAllViews();
+//        binding.linearLayout.removeAllViews();
         boolean isFollowUp = false;
         for (EnrollmentModel enrollment : enrollments) {
             if (enrollment.followUp() != null && enrollment.followUp())
@@ -85,7 +85,7 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
 
         Context parentContext = binding.chipContainer.getContext();
         for (Trio<String, String, String> enrollmentInfo : enrollmentsInfo) {
-            if (binding.linearLayout.getChildCount() < 2 &&
+            if (/*binding.chipContainer.getChildCount() < 2 &&*/
                     (binding.getPresenter().getProgramModel() == null || !binding.getPresenter().getProgramModel().displayName().equals(enrollmentInfo.val0()))) {
 
                 Chip chip = new Chip(parentContext);

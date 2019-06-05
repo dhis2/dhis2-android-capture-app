@@ -1,11 +1,15 @@
 package org.dhis2.usescases.qrCodes;
 
 import androidx.databinding.DataBindingUtil;
+
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.viewpager.widget.ViewPager;
 import android.view.View;
+
+import com.bumptech.glide.Glide;
 
 import org.dhis2.App;
 import org.dhis2.R;
@@ -140,5 +144,10 @@ public class QrActivity extends ActivityGlobalAbstract implements QrContracts.Vi
     @Override
     public void onNextQr() {
         binding.viewPager.setCurrentItem(binding.viewPager.getCurrentItem() + 1);
+    }
+
+    @Override
+    public void showQRBitmap(Bitmap bitmap) {
+        Glide.with(this).load(bitmap).into(binding.bitmapTest);
     }
 }

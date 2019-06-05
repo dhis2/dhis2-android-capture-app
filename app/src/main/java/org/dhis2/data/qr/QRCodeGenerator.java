@@ -16,10 +16,12 @@ import com.squareup.sqlbrite2.BriteDatabase;
 import org.dhis2.usescases.qrCodes.QrViewModel;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.period.FeatureType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue;
@@ -32,7 +34,9 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
@@ -40,6 +44,8 @@ import java.util.zip.Inflater;
 import io.reactivex.Observable;
 import timber.log.Timber;
 
+import static android.text.TextUtils.isEmpty;
+import static java.util.zip.Deflater.BEST_COMPRESSION;
 import static org.dhis2.data.qr.QRjson.ATTR_JSON;
 import static org.dhis2.data.qr.QRjson.DATA_JSON;
 import static org.dhis2.data.qr.QRjson.DATA_JSON_WO_REGISTRATION;
@@ -62,6 +68,14 @@ public class QRCodeGenerator implements QRInterface {
     private static final String EVENT_FLAG = "$E";
     private static final String ATTR_FLAG = "$A";
     private static final String DE_FLAG = "$D";
+
+    private static final Pattern TEI_PATTERN = Pattern.compile("\\$T(.+)");
+    private static final Pattern ENROLLMENT_PATTERN = Pattern.compile("\\$R(.+)");
+    private static final Pattern EVENT_PATTERN = Pattern.compile("\\$E(.+)");
+    private static final Pattern ATTR_PATTERN = Pattern.compile("\\$A(.+)");
+    private static final Pattern DE_PATTERN = Pattern.compile("\\$D(.+)");
+
+
     private static String data;
 
     private static final String TEI = "SELECT * FROM " + TrackedEntityInstanceModel.TABLE + " WHERE " + TrackedEntityInstanceModel.TABLE + "." + TrackedEntityInstanceModel.Columns.UID + " = ? LIMIT 1";
@@ -80,10 +94,10 @@ public class QRCodeGenerator implements QRInterface {
             RelationshipModel.TABLE + "." + RelationshipModel.Columns.TRACKED_ENTITY_INSTANCE_B + " = ?";*/
 
 
-    QRCodeGenerator(BriteDatabase briteDatabase) {
+    public QRCodeGenerator(BriteDatabase briteDatabase, D2 d2) {
         this.briteDatabase = briteDatabase;
         gson = new GsonBuilder().setDateFormat(DateUtils.DATABASE_FORMAT_EXPRESSION).create();
-        this.d2 = null;
+        this.d2 = d2;
     }
 
     @Override
@@ -236,14 +250,63 @@ public class QRCodeGenerator implements QRInterface {
         return bitmap;
     }
 
-    public Observable<byte[]> getUncodedData(String teiUid) {
+    public static Bitmap transform(byte[] inputData) {
+        String encoded;
+        encoded = Base64.encodeToString(inputData, Base64.DEFAULT);
+
+        MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
+        Bitmap bitmap = null;
+        try {
+            BitMatrix bitMatrix = multiFormatWriter.encode(encoded, BarcodeFormat.QR_CODE, 1000, 1000);
+            BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
+            bitmap = barcodeEncoder.createBitmap(bitMatrix);
+        } catch (WriterException e) {
+            Timber.e(e);
+        }
+
+        return bitmap;
+    }
+
+    private String decodeData(String data) {
+        byte[] decodedBytes = Base64.decode(data, Base64.DEFAULT);
+        return new String(decodedBytes, StandardCharsets.UTF_8);
+    }
+
+    @Override
+    public Observable<Bitmap> getUncodedData(String teiUid) {
         return Observable.fromCallable(() -> getData(teiUid))
-                .map(this::compress);
+                .map(this::compress)
+                .map(QRCodeGenerator::transform);
+    }
+
+    @Override
+    public Observable<Boolean> setData(String inputData) {
+        return Observable.fromCallable(() -> decompress(decodeData(inputData).getBytes()))
+                .map(data -> getTEIInfo(data));
+    }
+
+    private Boolean getTEIInfo(String formattedData) {
+        String initialString = TEI_PATTERN.matcher(formattedData).group(1);
+        String tei_substring = initialString.substring(0,initialString.indexOf(ENROLLMENT_FLAG));
+
+        String[] tei_substring_split = tei_substring.split("|");
+
+        TrackedEntityInstance tei = TrackedEntityInstance.builder()
+                .uid(tei_substring_split[0])
+                .created(/*DateUtils.databaseDateFormat().parse(teiSubstring[1])*/new Date())
+                .organisationUnit(tei_substring_split[2])
+                .trackedEntityType(tei_substring_split[3])
+                .featureType(!isEmpty(tei_substring_split[4]) ? FeatureType.valueOf(tei_substring_split[4]) : null)
+                .coordinates(!isEmpty(tei_substring_split[5]) ? tei_substring_split[5] : null)
+                .state(State.valueOf(tei_substring_split[6]))
+                .build();
+
+        return true;
     }
 
     public byte[] compress(String dataToCompress) {
         byte[] input = dataToCompress.getBytes(StandardCharsets.UTF_8);
-        Deflater compresser = new Deflater();
+        Deflater compresser = new Deflater(BEST_COMPRESSION);
         compresser.setInput(input);
         compresser.finish();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -290,7 +353,7 @@ public class QRCodeGenerator implements QRInterface {
             dataBuilder.append(setEnrollmentData(enrollment));
             List<TrackedEntityAttributeValue> teAttrValues = d2.trackedEntityModule().trackedEntityAttributeValues.byTrackedEntityInstance().eq(teiUid).get();
             for (TrackedEntityAttributeValue attrValue : teAttrValues) {
-                dataBuilder.append(ATTR_JSON);
+                dataBuilder.append(ATTR_FLAG);
                 dataBuilder.append(setAttrData(attrValue));
             }
             List<Event> events = d2.eventModule().events.byEnrollmentUid().eq(enrollment.uid()).get();
@@ -332,9 +395,9 @@ public class QRCodeGenerator implements QRInterface {
         data.add(event.program());
         data.add(event.program()); //TEI OR ENROLLMENT?
         data.add(event.programStage());
-        data.add(DateUtils.databaseDateFormat().format(event.eventDate()));
-        data.add(DateUtils.databaseDateFormat().format(event.created()));
-        data.add(DateUtils.databaseDateFormat().format(event.created()));
+        data.add(event.eventDate() != null ? DateUtils.databaseDateFormat().format(event.eventDate()) : "");
+        data.add(event.completedDate() != null ? DateUtils.databaseDateFormat().format(event.completedDate()) : "");
+        data.add(event.dueDate() != null ? DateUtils.databaseDateFormat().format(event.created()) : "");
         data.add(event.state() != null ? event.state().name() : "");
         return TextUtils.join("|", data);
     }
@@ -357,8 +420,8 @@ public class QRCodeGenerator implements QRInterface {
         data.add(DateUtils.databaseDateFormat().format(enrollment.created()));
         data.add(enrollment.organisationUnit());
         data.add(enrollment.program());
-        data.add(DateUtils.databaseDateFormat().format(enrollment.enrollmentDate()));
-        data.add(DateUtils.databaseDateFormat().format(enrollment.incidentDate()));
+        data.add(enrollment.enrollmentDate() != null ? DateUtils.databaseDateFormat().format(enrollment.enrollmentDate()) : "");
+        data.add(enrollment.incidentDate() != null ? DateUtils.databaseDateFormat().format(enrollment.incidentDate()) : "");
         data.add(enrollment.followUp() ? "t" : "f");
         data.add(enrollment.status().name());
         data.add(enrollment.coordinate() != null ? String.valueOf(enrollment.coordinate().latitude()) : "");
