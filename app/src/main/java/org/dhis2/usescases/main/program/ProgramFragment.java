@@ -1,10 +1,7 @@
 package org.dhis2.usescases.main.program;
 
 import android.annotation.SuppressLint;
-import android.app.DatePickerDialog;
-import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -31,9 +28,9 @@ import org.dhis2.Components;
 import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.FragmentProgramBinding;
-import org.dhis2.databinding.WidgetDatepickerBinding;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.DatePickerUtils;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.Period;
@@ -203,67 +200,25 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
         }
     }
 
-    private void showNativeCalendar(Calendar calendar) {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(chosenDateDay);
-        DatePickerDialog pickerDialog;
-        pickerDialog = new DatePickerDialog(getContext(), (datePicker, year, monthOfYear, dayOfMonth) -> {
-            calendar.set(year, monthOfYear, dayOfMonth);
-            Date[] dates = DateUtils.getInstance().getDateFromDateAndPeriod(calendar.getTime(), currentPeriod);
-            ArrayList<Date> selectedDates = new ArrayList<>();
-            selectedDates.add(dates[0]);
-            presenter.updateDateFilter(DateUtils.getInstance().getDatePeriodListFor(selectedDates, currentPeriod));
-            binding.buttonPeriodText.setText(DateUtils.getInstance().formatDate(dates[0]));
-            chosenDateDay = dates[0];
-        }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
-
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            pickerDialog.setButton(DialogInterface.BUTTON_NEUTRAL, getContext().getResources().getString(R.string.change_calendar), (dialog, which) -> {
-                pickerDialog.dismiss();
-                showCustomCalendar(calendar);
-            });
-        }
-
-        pickerDialog.show();
-    }
-
     private void showCustomCalendar(Calendar calendar) {
-        LayoutInflater layoutInflater = LayoutInflater.from(getContext());
-        WidgetDatepickerBinding widgetBinding = WidgetDatepickerBinding.inflate(layoutInflater);
-        final DatePicker datePicker = widgetBinding.widgetDatepicker;
-        final DatePicker calendarPicker = widgetBinding.widgetDatepickerCalendar;
-        DatePicker currentCalendar = datePicker;
 
-        Calendar c = Calendar.getInstance();
-        datePicker.updateDate(
-                c.get(Calendar.YEAR),
-                c.get(Calendar.MONTH),
-                c.get(Calendar.DAY_OF_MONTH));
+        DatePickerUtils.getDatePickerDialog(context, new DatePickerUtils.OnDatePickerClickListener() {
+            @Override
+            public void onNegativeClick() {
 
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(getContext(), R.style.DatePickerTheme);
+            }
 
-        alertDialog.setView(widgetBinding.getRoot());
-        Dialog dialog = alertDialog.create();
-
-        widgetBinding.changeCalendarButton.setOnClickListener(calendarButton -> {
-            datePicker.setVisibility(datePicker.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
-            calendarPicker.setVisibility(datePicker.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
-            /*showNativeCalendar(calendar);
-            dialog.dismiss();*/
-        });
-        widgetBinding.clearButton.setOnClickListener(clearButton -> dialog.dismiss());
-        widgetBinding.acceptButton.setOnClickListener(acceptButton -> {
-            calendar.set(currentCalendar.getYear(), currentCalendar.getMonth(), currentCalendar.getDayOfMonth());
-            Date[] dates = DateUtils.getInstance().getDateFromDateAndPeriod(calendar.getTime(), currentPeriod);
-            ArrayList<Date> selectedDates = new ArrayList<>();
-            selectedDates.add(dates[0]);
-            presenter.updateDateFilter(DateUtils.getInstance().getDatePeriodListFor(selectedDates, currentPeriod));
-            binding.buttonPeriodText.setText(DateUtils.getInstance().formatDate(dates[0]));
-            chosenDateDay = dates[0];
-            dialog.dismiss();
-        });
-
-        dialog.show();
+            @Override
+            public void onPositiveClick(DatePicker datePicker) {
+                calendar.set(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
+                Date[] dates = DateUtils.getInstance().getDateFromDateAndPeriod(calendar.getTime(), currentPeriod);
+                ArrayList<Date> selectedDates = new ArrayList<>();
+                selectedDates.add(dates[0]);
+                presenter.updateDateFilter(DateUtils.getInstance().getDatePeriodListFor(selectedDates, currentPeriod));
+                binding.buttonPeriodText.setText(DateUtils.getInstance().formatDate(dates[0]));
+                chosenDateDay = dates[0];
+            }
+        }).show();
     }
 
     public Period getCurrentPeriod() {
