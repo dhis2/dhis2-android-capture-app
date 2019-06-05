@@ -90,7 +90,7 @@ public final class AttributeValueStore implements DataEntryStore {
     @Override
     public Flowable<Long> save(@NonNull String uid, @Nullable String value) {
         return Flowable.just(getValueType(uid))
-                .filter(valueType -> !Objects.equals(currentValue(uid, valueType), value))
+                .filter(valueType -> currentValue(uid, valueType, value))
                 .switchMap(valueType -> {
                     if (isEmpty(value))
                         return Flowable.just(delete(uid, valueType));
@@ -195,15 +195,19 @@ public final class AttributeValueStore implements DataEntryStore {
         return attrUid != null ? ATTR : valueType.DATA_ELEMENT;
     }
 
-    private String currentValue(@NonNull String uid, valueType valueType) {
+    private boolean currentValue(@NonNull String uid, valueType valueType, String currentValue) {
+
+        String value = null;
+        if (currentValue != null && (currentValue.equals("0.0") || currentValue.isEmpty()))
+            currentValue = null;
+
         if (valueType == ATTR) {
             try (Cursor cursor = briteDatabase.query("SELECT TrackedEntityAttributeValue.value FROM TrackedEntityAttributeValue " +
                     "JOIN Enrollment ON Enrollment.trackedEntityInstance = TrackedEntityAttributeValue.trackedEntityInstance " +
                     "WHERE TrackedEntityAttributeValue.trackedEntityAttribute = ? AND Enrollment.uid = ?", uid, enrollment)) {
-                if (cursor != null && cursor.moveToFirst()) {
-                    return cursor.getString(0);
-                } else
-                    return "";
+                if (cursor != null && cursor.moveToFirst())
+                    value = cursor.getString(0);
+
             }
 
         } else {
@@ -215,12 +219,13 @@ public final class AttributeValueStore implements DataEntryStore {
                     "AND Event.status = ? " +
                     "ORDER BY Event.eventDate DESC LIMIT 1", uid, enrollment, EventStatus.ACTIVE.name())) {
                 if (cursor != null && cursor.moveToFirst()) {
-                    return cursor.getString(0);
-                } else
-                    return "";
+                    value = cursor.getString(0);
+                }
             }
 
         }
+
+        return !Objects.equals(value, currentValue);
     }
 
     private long insert(@NonNull String attribute, @NonNull String value, valueType valueType) {

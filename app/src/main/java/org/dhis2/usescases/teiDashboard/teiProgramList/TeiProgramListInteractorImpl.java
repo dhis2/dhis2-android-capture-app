@@ -11,10 +11,9 @@ import androidx.appcompat.app.AlertDialog;
 import org.dhis2.R;
 import org.dhis2.databinding.WidgetDatepickerBinding;
 import org.dhis2.usescases.main.program.ProgramViewModel;
-import org.dhis2.utils.DateUtils;
-import org.dhis2.utils.custom_views.OrgUnitDialog;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
-import org.hisp.dhis.android.core.program.ProgramModel;
+import org.dhis2.utils.custom_views.OrgUnitDialog2;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
+import org.hisp.dhis.android.core.program.Program;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -54,22 +53,8 @@ public class TeiProgramListInteractorImpl implements TeiProgramListContract.TeiP
         getPrograms();
     }
 
-    private ArrayList<OrganisationUnitModel> getOrgUnits(List<OrganisationUnitModel> allOrgUnits) {
-        ArrayList<OrganisationUnitModel> orgUnits = new ArrayList<>();
-        for (OrganisationUnitModel orgUnit : allOrgUnits) {
-            boolean afterOpening = false;
-            boolean beforeClosing = false;
-            if (orgUnit.openingDate() == null || !selectedEnrollmentDate.before(orgUnit.openingDate()))
-                afterOpening = true;
-            if (orgUnit.closedDate() == null || !selectedEnrollmentDate.after(orgUnit.closedDate()))
-                beforeClosing = true;
-            if (afterOpening && beforeClosing)
-                orgUnits.add(orgUnit);
-        }
-        return orgUnits;
-    }
+    private void showNativeCalendar(String programUid, String uid, OrgUnitDialog2 orgUnitDialog) {
 
-    private void showNativeCalendar(String programUid, String uid, OrgUnitDialog orgUnitDialog) {
         Calendar c = Calendar.getInstance();
         int year = c.get(Calendar.YEAR);
         int month = c.get(Calendar.MONTH);
@@ -92,7 +77,17 @@ public class TeiProgramListInteractorImpl implements TeiProgramListContract.TeiP
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(
                                     allOrgUnits -> {
-                                        List<OrganisationUnitModel> orgUnits = getOrgUnits(allOrgUnits);
+                                        ArrayList<OrganisationUnit> orgUnits = new ArrayList<>();
+                                        for (OrganisationUnit orgUnit : allOrgUnits) {
+                                            boolean afterOpening = false;
+                                            boolean beforeClosing = false;
+                                            if (orgUnit.openingDate() == null || !selectedEnrollmentDate.before(orgUnit.openingDate()))
+                                                afterOpening = true;
+                                            if (orgUnit.closedDate() == null || !selectedEnrollmentDate.after(orgUnit.closedDate()))
+                                                beforeClosing = true;
+                                            if (afterOpening && beforeClosing)
+                                                orgUnits.add(orgUnit);
+                                        }
                                         if (orgUnits.size() > 1) {
                                             orgUnitDialog.setOrgUnits(orgUnits);
                                             if (!orgUnitDialog.isAdded())
@@ -109,14 +104,16 @@ public class TeiProgramListInteractorImpl implements TeiProgramListContract.TeiP
                 year,
                 month,
                 day);
-        ProgramModel selectedProgram = getProgramFromUid(programUid);
+        Program selectedProgram = getProgramFromUid(programUid);
         if (selectedProgram != null && !selectedProgram.selectEnrollmentDatesInFuture()) {
             dateDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
         }
         if (selectedProgram != null) {
             dateDialog.setTitle(selectedProgram.enrollmentDateLabel());
         }
-        dateDialog.setButton(DialogInterface.BUTTON_NEGATIVE, view.getContext().getString(R.string.date_dialog_clear), (dialog, which) -> dialog.dismiss());
+        dateDialog.setButton(DialogInterface.BUTTON_NEGATIVE, view.getContext().getString(R.string.date_dialog_clear), (dialog, which) -> {
+            dialog.dismiss();
+        });
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
             dateDialog.setButton(DialogInterface.BUTTON_NEUTRAL, view.getContext().getResources().getString(R.string.change_calendar), (dialog, which) -> {
@@ -128,9 +125,8 @@ public class TeiProgramListInteractorImpl implements TeiProgramListContract.TeiP
         dateDialog.show();
     }
 
-    private void showCustomCalendar(String programUid, String uid, OrgUnitDialog orgUnitDialog) {
+    private void showCustomCalendar(String programUid, String uid, OrgUnitDialog2 orgUnitDialog) {
         LayoutInflater layoutInflater = LayoutInflater.from(view.getContext());
-//        View datePickerView = layoutInflater.inflate(R.layout.widget_datepicker, null);
         WidgetDatepickerBinding binding = WidgetDatepickerBinding.inflate(layoutInflater);
         final DatePicker datePicker = binding.widgetDatepicker;
 
@@ -141,41 +137,8 @@ public class TeiProgramListInteractorImpl implements TeiProgramListContract.TeiP
                 c.get(Calendar.DAY_OF_MONTH));
 
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(view.getContext(), R.style.DatePickerTheme);
-               /* .setPositiveButton(R.string.action_accept, (dialog, which) -> {
-                    Calendar selectedCalendar = Calendar.getInstance();
-                    selectedCalendar.set(Calendar.YEAR, datePicker.getYear());
-                    selectedCalendar.set(Calendar.MONTH, datePicker.getMonth());
-                    selectedCalendar.set(Calendar.DAY_OF_MONTH, datePicker.getDayOfMonth());
-                    selectedCalendar.set(Calendar.HOUR_OF_DAY, 0);
-                    selectedCalendar.set(Calendar.MINUTE, 0);
-                    selectedCalendar.set(Calendar.SECOND, 0);
-                    selectedCalendar.set(Calendar.MILLISECOND, 0);
-                    selectedEnrollmentDate = selectedCalendar.getTime();
 
-                    compositeDisposable.add(getOrgUnits(programUid)
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(
-                                    allOrgUnits -> {
-                                        ArrayList<OrganisationUnitModel> orgUnits = getOrgUnits(allOrgUnits);
-                                        if (orgUnits.size() > 1) {
-                                            orgUnitDialog.setOrgUnits(orgUnits);
-                                            if (!orgUnitDialog.isAdded())
-                                                orgUnitDialog.show(view.getAbstracContext().getSupportFragmentManager(), "OrgUnitEnrollment");
-                                        } else
-                                            enrollInOrgUnit(orgUnits.get(0).uid(), programUid, uid, selectedEnrollmentDate);
-                                    },
-                                    Timber::d
-                            )
-                    );
-                })
-                .setNeutralButton(view.getContext().getResources().getString(R.string.change_calendar),
-                        (dialog, which) -> showNativeCalendar(programUid, uid, orgUnitDialog))
-                .setNegativeButton(view.getContext().getString(R.string.date_dialog_clear), (dialog, which) -> {
-                    dialog.dismiss();
-                });*/
-
-        ProgramModel selectedProgram = getProgramFromUid(programUid);
+        Program selectedProgram = getProgramFromUid(programUid);
         if (selectedProgram != null && !selectedProgram.selectEnrollmentDatesInFuture()) {
             datePicker.setMaxDate(System.currentTimeMillis());
         }
@@ -209,8 +172,8 @@ public class TeiProgramListInteractorImpl implements TeiProgramListContract.TeiP
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
                             allOrgUnits -> {
-                                ArrayList<OrganisationUnitModel> orgUnits = new ArrayList<>();
-                                for (OrganisationUnitModel orgUnit : allOrgUnits) {
+                                ArrayList<OrganisationUnit> orgUnits = new ArrayList<>();
+                                for (OrganisationUnit orgUnit : allOrgUnits) {
                                     boolean afterOpening = false;
                                     boolean beforeClosing = false;
                                     if (orgUnit.openingDate() == null || !selectedEnrollmentDate.before(orgUnit.openingDate()))
@@ -240,7 +203,7 @@ public class TeiProgramListInteractorImpl implements TeiProgramListContract.TeiP
     public void enroll(String programUid, String uid) {
         selectedEnrollmentDate = Calendar.getInstance().getTime();
 
-        OrgUnitDialog orgUnitDialog = OrgUnitDialog.getInstace().setMultiSelection(false);
+        OrgUnitDialog2 orgUnitDialog = OrgUnitDialog2.getInstace().setMultiSelection(false);
         orgUnitDialog.setTitle("Enrollment Org Unit")
                 .setPossitiveListener(v -> {
                     if (orgUnitDialog.getSelectedOrgUnit() != null && !orgUnitDialog.getSelectedOrgUnit().isEmpty())
@@ -252,7 +215,7 @@ public class TeiProgramListInteractorImpl implements TeiProgramListContract.TeiP
         showCustomCalendar(programUid, uid, orgUnitDialog);
     }
 
-    private ProgramModel getProgramFromUid(String programUid) {
+    private Program getProgramFromUid(String programUid) {
         return teiProgramListRepository.getProgram(programUid);
     }
 
@@ -261,13 +224,14 @@ public class TeiProgramListInteractorImpl implements TeiProgramListContract.TeiP
                 teiProgramListRepository.saveToEnroll(orgUnitUid, programUid, teiUid, enrollmentDate)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(enrollmentUid ->
-                                        view.goToEnrollmentScreen(enrollmentUid, programUid),
+                        .subscribe(enrollmentUid -> {
+                                    view.goToEnrollmentScreen(enrollmentUid, programUid);
+                                },
                                 Timber::d)
         );
     }
 
-    public Observable<List<OrganisationUnitModel>> getOrgUnits(String programUid) {
+    public Observable<List<OrganisationUnit>> getOrgUnits(String programUid) {
         return teiProgramListRepository.getOrgUnits(programUid);
     }
 
@@ -311,19 +275,19 @@ public class TeiProgramListInteractorImpl implements TeiProgramListContract.TeiP
         );
     }
 
-    private void deleteRepeatedPrograms(List<ProgramViewModel> allPrograms, List<ProgramModel> alreadyEnrolledPrograms) {
+    private void deleteRepeatedPrograms(List<ProgramViewModel> allPrograms, List<Program> alreadyEnrolledPrograms) {
         ArrayList<ProgramViewModel> programListToPrint = new ArrayList<>();
-        for (ProgramViewModel programModel1 : allPrograms) {
+        for (ProgramViewModel programViewModel : allPrograms) {
             boolean isAlreadyEnrolled = false;
             boolean onlyEnrollOnce = false;
-            for (ProgramModel programModel2 : alreadyEnrolledPrograms) {
-                if (programModel1.id().equals(programModel2.uid())) {
+            for (Program program : alreadyEnrolledPrograms) {
+                if (programViewModel.id().equals(program.uid())) {
                     isAlreadyEnrolled = true;
-                    onlyEnrollOnce = programModel2.onlyEnrollOnce();
+                    onlyEnrollOnce = program.onlyEnrollOnce();
                 }
             }
             if (!isAlreadyEnrolled || !onlyEnrollOnce) {
-                programListToPrint.add(programModel1);
+                programListToPrint.add(programViewModel);
             }
         }
         view.setPrograms(programListToPrint);

@@ -10,6 +10,10 @@ import android.util.TypedValue;
 import android.view.Window;
 import android.view.WindowManager;
 
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.databinding.DataBindingUtil;
+
 import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.databinding.ActivityTeiProgramListBinding;
@@ -21,10 +25,6 @@ import org.dhis2.utils.Constants;
 import java.util.List;
 
 import javax.inject.Inject;
-
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.databinding.DataBindingUtil;
 
 /**
  * QUADRAM. Created by Cristian on 13/02/2018.
@@ -46,13 +46,8 @@ public class TeiProgramListActivity extends ActivityGlobalAbstract implements Te
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_tei_program_list);
         binding.setPresenter(presenter);
-    }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
         presenter.init(this);
-
     }
 
     @Override
