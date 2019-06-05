@@ -393,4 +393,8 @@ public abstract class AbstractTableAdapter<CH, RH, C> implements ITableAdapter {
     public void setOnScaleListener(AbstractTableAdapter.OnScale listener) {
         this.onScaleListener = listener;
     }
+
+    public boolean hasTotal() {
+        return mHasTotal;
+    }
 }

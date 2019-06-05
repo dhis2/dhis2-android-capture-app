@@ -21,7 +21,6 @@ import org.hisp.dhis.android.core.common.ValueType;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.content.ContextCompat;
 import androidx.databinding.ObservableBoolean;
 
 import java.util.ArrayList;
@@ -57,12 +56,13 @@ final class EditTextCellCustomHolder extends FormViewHolder {
 
         customBinding.inputEditText.setOnFocusChangeListener((v, hasFocus) -> {
             if (editTextModel != null && editTextModel.editable() && !editText.getText().toString().equals(editTextModel.value())) {
-                if (!isEmpty(editText.getText()) && validate())
+                if (validate())
                     processor.onNext(RowAction.create(editTextModel.uid(), editText.getText().toString(), editTextModel.dataElement(), editTextModel.listCategoryOption(), editTextModel.catCombo(), editTextModel.row(), editTextModel.column()));
-
             }
             if (!hasFocus)
                 closeKeyboard(editText);
+            else
+                tableView.setSelectedCell(editTextModel.column(), editTextModel.row());
         });
     }
 
@@ -91,7 +91,7 @@ final class EditTextCellCustomHolder extends FormViewHolder {
                 customBinding.inputEditText.setActivated(true);
         }
 
-        if(editTextModel.column()!=((ArrayList) tableView.getAdapter().getCellRecyclerViewAdapter().getItems().get(0)).size()-1)
+        if(editTextModel.column()!=((ArrayList) tableView.getAdapter().getCellRecyclerViewAdapter().getItems().get(0)).size() - (tableView.getAdapter().hasTotal() ? 2:1))
             customBinding.inputEditText.setImeOptions(EditorInfo.IME_ACTION_NEXT);
 
         customBinding.executePendingBindings();
@@ -260,7 +260,7 @@ final class EditTextCellCustomHolder extends FormViewHolder {
     public void setSelected(SelectionState selectionState) {
         super.setSelected(selectionState);
         if (selectionState == SelectionState.SELECTED) {
-            editText.requestFocus();
+            customBinding.inputEditText.requestFocus();
             if (editTextModel.editable())
                 openKeyboard(editText);
         }
