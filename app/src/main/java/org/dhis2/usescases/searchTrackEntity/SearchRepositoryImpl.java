@@ -277,6 +277,8 @@ public class SearchRepositoryImpl implements SearchRepository {
                     return Observable.error(new SQLiteConstraintException(message));
                 }
 
+                if(queryData.containsKey(Constants.ENROLLMENT_DATE_UID))
+                    queryData.remove(Constants.ENROLLMENT_DATE_UID);
                 for (String key : queryData.keySet()) {
                     String dataValue = queryData.get(key);
                     if (dataValue.contains("_os_"))

@@ -1,8 +1,5 @@
 package org.dhis2.data.qr;
 
-import android.nfc.NdefMessage;
-import android.nfc.NdefRecord;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,12 +28,12 @@ public class QRCodeGeneratorTest {
 
     @Before
     public void setUp() {
-        QRInterface qrInterface = new QRCodeGenerator(null);
+        QRInterface qrInterface = new QRCodeGenerator(null, null);
     }
 
     @Test
     public void compressDataTest() {
-        QRCodeGenerator qr = new QRCodeGenerator(null);
+        QRCodeGenerator qr = new QRCodeGenerator(null, null);
         byte[] result = qr.compress(veryLongLorem);
         String uncompressed = qr.decompress(result);
         Assert.assertTrue(result.length < veryLongLorem.getBytes().length);

@@ -224,25 +224,6 @@ public class DateView extends FieldLayout implements View.OnClickListener {
 
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(getContext(), R.style.DatePickerTheme)
                 .setTitle(label);
-               /* .setPositiveButton(R.string.action_accept, (dialog, which) -> {
-                    selectedCalendar.set(Calendar.YEAR, datePicker.getYear());
-                    selectedCalendar.set(Calendar.MONTH, datePicker.getMonth());
-                    selectedCalendar.set(Calendar.DAY_OF_MONTH, datePicker.getDayOfMonth());
-                    selectedCalendar.set(Calendar.HOUR_OF_DAY, c.get(Calendar.HOUR_OF_DAY));
-                    selectedCalendar.set(Calendar.MINUTE, c.get(Calendar.MINUTE));
-                    Date selectedDate = selectedCalendar.getTime();
-                    String result = DateUtils.uiDateFormat().format(selectedDate);
-                    editText.setText(result);
-                    listener.onDateSelected(selectedDate);
-                    nextFocus(this);
-                })
-                .setNegativeButton(getContext().getString(R.string.date_dialog_clear), (dialog, which) -> {
-                    editText.setText(null);
-                    listener.onDateSelected(null);
-                })
-                .setNeutralButton(getContext().getResources().getString(R.string.change_calendar), (dialog, which) -> {
-                    showNativeCalendar();
-                });*/
 
         alertDialog.setView(binding.getRoot());
         Dialog dialog = alertDialog.create();
