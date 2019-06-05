@@ -1,5 +1,7 @@
 package org.dhis2.data.qr;
 
+import android.graphics.Bitmap;
+
 import org.dhis2.usescases.qrCodes.QrViewModel;
 
 import java.util.List;
@@ -16,4 +18,7 @@ public interface QRInterface {
 
     Observable<List<QrViewModel>> eventWORegistrationQRs(String eventUid);
 
+    Observable<Bitmap> getUncodedData(String teiUid);
+
+    Observable<Boolean> setData(String inputData);
 }

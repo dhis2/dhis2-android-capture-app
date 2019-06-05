@@ -195,7 +195,10 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         isEventEditable = isEventExpired(eventUid);
     }
 
-    private void getMandatoryRules(Event event) {
+    private void loadDataElementRules(Event event) {
+        float init = System.currentTimeMillis();
+        rules = d2.programModule().programRules.byProgramUid().eq(event.program()).withAllChildren().get();
+        Timber.d("LOAD ALL RULES  AT %s", System.currentTimeMillis() - init);
         mandatoryRules = new ArrayList<>();
         Iterator<ProgramRule> ruleIterator = rules.iterator();
         while (ruleIterator.hasNext()) {
@@ -218,16 +221,14 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                         mandatoryRules.add(rule);
                     }
         }
-    }
 
-    private void loadDataElementRules(Event event) {
-        rules = d2.programModule().programRules.byProgramUid().eq(event.program()).withAllChildren().get();
-
-        getMandatoryRules(event);
+        Timber.d("LOAD MANDATORY RULES  AT %s", System.currentTimeMillis() - init);
 
         List<ProgramRuleVariable> variables = d2.programModule().programRuleVariables
                 .byProgramUid().eq(event.program())
                 .withAllChildren().get();
+        Timber.d("LOAD VARIABLES RULES  AT %s", System.currentTimeMillis() - init);
+
         Iterator<ProgramRuleVariable> variableIterator = variables.iterator();
         while (variableIterator.hasNext()) {
             ProgramRuleVariable variable = variableIterator.next();
@@ -235,23 +236,23 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 variableIterator.remove();
             }
         }
-        for (ProgramRuleVariable variable : variables) {
-            getDataElementRules(variable);
-        }
-    }
+        Timber.d("FINISHED REMOVING VARIABLES RULES  AT %s", System.currentTimeMillis() - init);
 
-    private void getDataElementRules(ProgramRuleVariable variable) {
-        if (variable.dataElement() != null && !dataElementRules.containsKey(variable.dataElement().uid()))
-            dataElementRules.put(variable.dataElement().uid(), trasformToRule(mandatoryRules));
-        for (ProgramRule rule : rules) {
-            if (rule.condition().contains(variable.displayName()) || actionsContainsDE(rule.programRuleActions(), variable.displayName())) {
-                if (dataElementRules.get(variable.dataElement().uid()) == null)
-                    dataElementRules.put(variable.dataElement().uid(), trasformToRule(mandatoryRules));
-                Rule fRule = trasformToRule(rule);
-                if (!dataElementRules.get(variable.dataElement().uid()).contains(fRule))
-                    dataElementRules.get(variable.dataElement().uid()).add(fRule);
+        List<Rule> finalMandatoryRules = trasformToRule(mandatoryRules);
+        for (ProgramRuleVariable variable : variables) {
+            if (variable.dataElement() != null && !dataElementRules.containsKey(variable.dataElement().uid()))
+                dataElementRules.put(variable.dataElement().uid(), finalMandatoryRules);
+            for (ProgramRule rule : rules) {
+                if (rule.condition().contains(variable.displayName()) || actionsContainsDE(rule.programRuleActions(), variable.displayName())) {
+                    if (dataElementRules.get(variable.dataElement().uid()) == null)
+                        dataElementRules.put(variable.dataElement().uid(), trasformToRule(mandatoryRules));
+                    Rule fRule = trasformToRule(rule);
+                    if (!dataElementRules.get(variable.dataElement().uid()).contains(fRule))
+                        dataElementRules.get(variable.dataElement().uid()).add(fRule);
+                }
             }
         }
+        Timber.d("FINISHED DE RULES  AT %s", System.currentTimeMillis() - init);
     }
 
     private Rule trasformToRule(ProgramRule rule) {
@@ -342,8 +343,10 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     public boolean isEventExpired(String eventUid) {
         Event event = d2.eventModule().events.uid(eventUid).withAllChildren().get();
         Program program = d2.programModule().programs.uid(event.program()).withAllChildren().get();
+        ProgramStage stage = d2.programModule().programStages.uid(event.programStage()).get();
         boolean isExpired = DateUtils.getInstance().isEventExpired(event.eventDate(), event.completedDate(), event.status(), program.completeEventsExpiryDays(), program.expiryPeriodType(), program.expiryDays());
-        boolean editable = isEnrollmentOpen() && /*event.status() == EventStatus.ACTIVE*/!isExpired && getAccessDataWrite() && inOrgUnitRange(eventUid);
+        boolean blockAfterComplete = event.status() == EventStatus.COMPLETED && stage.blockEntryForm();
+        boolean editable = isEnrollmentOpen() && !blockAfterComplete && !isExpired && getAccessDataWrite() && inOrgUnitRange(eventUid);
         return !editable;
     }
 
@@ -612,7 +615,10 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     private Flowable<Boolean> loadRules() {
         return Flowable.fromCallable(() -> {
+            Timber.d("INIT RULES");
+            long init = System.currentTimeMillis();
             loadDataElementRules(currentEvent);
+            Timber.d("INIT RULES END AT %s", (System.currentTimeMillis() - init) / 1000);
             return true;
         });
     }

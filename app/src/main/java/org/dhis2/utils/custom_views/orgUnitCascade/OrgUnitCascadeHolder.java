@@ -80,7 +80,7 @@ class OrgUnitCascadeHolder extends RecyclerView.ViewHolder {
                 menu.show();
         });
 
-        if ((ouItem.getLevel() == 1 && !ouItem.canCaptureData()) || ouItem.getLevel() > 1 && ouItem.getLevelOrgUnits().size() < 2 && !isEmpty(ouItem.getParentUid()) && !ouItem.canCaptureData()) {
+        if ((ouItem.getLevel() == 1 && !ouItem.canCaptureData()) || ouItem.getLevel() > 1 && ouItem.getLevelOrgUnits().size() == 1 && !isEmpty(ouItem.getParentUid()) && !ouItem.canCaptureData()) {
             Trio<String, String, Boolean> selectedOu = ouItem.getLevelOrgUnits().get(0);
             selectedOrgUnit = selectedOu.val0();
             binding.levelText.setText(selectedOu.val1());
