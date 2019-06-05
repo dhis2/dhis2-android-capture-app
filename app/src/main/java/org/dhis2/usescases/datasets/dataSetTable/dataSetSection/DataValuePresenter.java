@@ -1,12 +1,11 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection;
 
-import android.util.SparseArray;
-
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.tuples.Pair;
+import org.dhis2.data.tuples.Quartet;
 import org.dhis2.data.tuples.Sextet;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel;
@@ -15,7 +14,9 @@ import org.hisp.dhis.android.core.category.CategoryModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.common.State;
+import org.hisp.dhis.android.core.dataelement.DataElement;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
+import org.hisp.dhis.android.core.dataset.DataInputPeriod;
 import org.hisp.dhis.android.core.dataset.DataInputPeriodModel;
 import org.hisp.dhis.android.core.datavalue.DataValueModel;
 
@@ -23,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -45,7 +47,7 @@ public class DataValuePresenter implements DataValueContract.Presenter{
     private String periodFinalDate;
     private String attributeOptionCombo;
 
-    private Trio<List<DataElementModel>, Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>>, List<CategoryCombo>> tableData;
+    private Trio<List<DataElement>, Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>>, List<CategoryCombo>> tableData;
 
     private DataValueRepository repository;
     private DataValueContract.View view;
@@ -58,7 +60,7 @@ public class DataValuePresenter implements DataValueContract.Presenter{
 
     private List<List<List<FieldViewModel>>> tableCells;
     private List<List<FieldViewModel>> cells;
-    private List<DataInputPeriodModel> dataInputPeriodModel;
+    private List<DataInputPeriod> dataInputPeriodModel;
     private MetadataRepository metadataRepository;
     @NonNull
     private FlowableProcessor<RowAction> processor;
@@ -82,7 +84,7 @@ public class DataValuePresenter implements DataValueContract.Presenter{
         this.periodFinalDate = periodFinalDate;
         this.attributeOptionCombo = attributeOptionCombo;
         this.periodId = periodId;
-        compositeDisposable.add(
+        /*compositeDisposable.add(
                 Flowable.zip(
                         repository.getDataElements(section),
                         repository.getCatOptions(section),
@@ -95,7 +97,7 @@ public class DataValuePresenter implements DataValueContract.Presenter{
                                 data -> this.tableData = data,
                                 Timber::e
                         )
-        );
+        );*/
 
             compositeDisposable.add(
                     Flowable.zip(
@@ -290,17 +292,24 @@ public class DataValuePresenter implements DataValueContract.Presenter{
                         )
         );
         compositeDisposable.add(
-                repository.getCatOptionCombo()
-                        .flatMap(data ->
-                                Flowable.zip(
+                Flowable.zip(
+                        repository.getCatOptionCombo(),
+                        repository.getDataElements(section),
+                        repository.getCatOptions(section),
+                        repository.getCatCombo(section),
+                        Quartet::create
+                )
+                        .flatMap(data ->{
+                                tableData = Trio.create(data.val1(), data.val2(), new LinkedList<>(data.val3()));
+                                return Flowable.zip(
                                         repository.getDataValues(orgUnitUid, periodTypeName, periodId, attributeOptionCombo, section),
                                         repository.getDataSet(),
-                                        repository.getGreyedFields(getUidCatOptionsCombo(data), section),
-                                        repository.getMandatoryDataElement(getUidCatOptionsCombo(data)),
+                                        repository.getGreyedFields(getUidCatOptionsCombo(data.val0()), section),
+                                        repository.getMandatoryDataElement(getUidCatOptionsCombo(data.val0())),
                                         repository.getSectionByDataSet(section),
                                         repository.getCategoryOptionComboCatOption(),
                                         Sextet::create
-                                ))
+                                );})
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
@@ -320,12 +329,12 @@ public class DataValuePresenter implements DataValueContract.Presenter{
         );
     }
 
-    public Map<String, String> getCatCombos(List<DataElementModel> dataElements, List<CategoryCombo> catCombos){
+    public Map<String, String> getCatCombos(List<DataElement> dataElements, List<CategoryCombo> catCombos){
         Map<String, String> list = new HashMap<>();
-        for(DataElementModel dataElement: dataElements) {
+        for(DataElement dataElement: dataElements) {
             if (!list.keySet().contains(dataElement.categoryCombo())) {
                 for(CategoryCombo categoryCombo: catCombos)
-                    if(categoryCombo.uid().equals(dataElement.categoryCombo()))
+                    if(categoryCombo.uid().equals(dataElement.categoryCombo().uid()))
                         list.put(categoryCombo.uid(), categoryCombo.name());
             }
         }
@@ -417,9 +426,9 @@ public class DataValuePresenter implements DataValueContract.Presenter{
         return catOptionsCombo;
     }
 
-    public DataInputPeriodModel checkHasInputPeriod(){
-        DataInputPeriodModel inputPeriodModel = null;
-        for(DataInputPeriodModel inputPeriod :dataInputPeriodModel){
+    public DataInputPeriod checkHasInputPeriod(){
+        DataInputPeriod inputPeriodModel = null;
+        for(DataInputPeriod inputPeriod :dataInputPeriodModel){
             if(inputPeriod.period().equals(periodId))
                 inputPeriodModel = inputPeriod;
         }
@@ -453,7 +462,7 @@ public class DataValuePresenter implements DataValueContract.Presenter{
         return processorOptionSet;
     }
 
-    public List<DataInputPeriodModel> getDataInputPeriodModel() {
+    public List<DataInputPeriod> getDataInputPeriodModel() {
         return dataInputPeriodModel;
     }
 

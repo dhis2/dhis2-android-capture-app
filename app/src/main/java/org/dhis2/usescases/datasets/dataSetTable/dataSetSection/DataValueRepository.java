@@ -6,11 +6,15 @@ import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
+import org.hisp.dhis.android.core.dataelement.DataElement;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
+import org.hisp.dhis.android.core.dataset.DataInputPeriod;
 import org.hisp.dhis.android.core.dataset.DataInputPeriodModel;
+import org.hisp.dhis.android.core.dataset.DataSet;
 import org.hisp.dhis.android.core.dataset.DataSetModel;
 import org.hisp.dhis.android.core.dataset.SectionModel;
 import org.hisp.dhis.android.core.datavalue.DataValueModel;
+import org.hisp.dhis.android.core.period.Period;
 import org.hisp.dhis.android.core.period.PeriodModel;
 
 import java.util.List;
@@ -21,9 +25,9 @@ import io.reactivex.Flowable;
 public interface DataValueRepository {
     Flowable<Long> insertDataValue(DataValueModel dataValues);
 
-    Flowable<DataSetModel> getDataSet();
+    Flowable<DataSet> getDataSet();
 
-    Flowable<List<DataElementModel>> getDataElements(String section);
+    Flowable<List<DataElement>> getDataElements(String section);
 
     Flowable<List<CategoryCombo>> getCatCombo(String section);
 
@@ -41,9 +45,9 @@ public interface DataValueRepository {
 
     Flowable<Map<String, List<String>>> getCategoryOptionComboCatOption();
 
-    Flowable<PeriodModel> getPeriod(String periodId);
+    Flowable<Period> getPeriod(String periodId);
 
-    Flowable<List<DataInputPeriodModel>> getDataInputPeriod();
+    Flowable<List<DataInputPeriod>> getDataInputPeriod();
 
     Flowable<Boolean> completeDataSet(String orgUnitUid, String periodInitialDate, String catCombo);
 
