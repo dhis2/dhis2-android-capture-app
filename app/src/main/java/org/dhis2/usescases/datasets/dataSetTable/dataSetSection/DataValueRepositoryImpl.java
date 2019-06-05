@@ -49,7 +49,8 @@ public class DataValueRepositoryImpl implements DataValueRepository {
             "JOIN DataSetDataElementLink ON " +
             "DataSetDataElementLink.dataElement = DataElement.uid " +
             "LEFT JOIN SectionDataElementLink ON SectionDataElementLink.dataElement = DataElement.uid " +
-            "LEFT JOIN Section ON Section.uid = SectionDataElementLink.section " ;
+            "LEFT JOIN Section ON Section.uid = SectionDataElementLink.section " +
+            "LEFT JOIN Section s2 ON s2.dataSet = DataSetDataElementLink.dataSet " ;
 
 
     private final String CAT_COMBO = "SELECT " +
@@ -185,9 +186,9 @@ public class DataValueRepositoryImpl implements DataValueRepository {
     public Flowable<List<DataElementModel>> getDataElements(String section) {
         String query = DATA_ELEMENTS;
         if (!section.equals("NO_SECTION")) {
-            query = query + "WHERE Section.dataSet = ? AND Section.name = ? GROUP BY DataElement.uid ";
+            query = query + "WHERE Section.dataSet = ? AND Section.name = ? and DataSetDataElementLink.dataSet = ? GROUP BY DataElement.uid ";
             query = query + " ORDER BY SectionDataElementLink.sortOrder ";
-            return briteDatabase.createQuery(DataElementModel.TABLE, query, dataSetUid, section)
+            return briteDatabase.createQuery(DataElementModel.TABLE, query, dataSetUid, section, dataSetUid)
                     .mapToList(cursor -> {
                         String catComboOverride = cursor.getString(cursor.getColumnIndex("CategoryComboOverride"));
 
