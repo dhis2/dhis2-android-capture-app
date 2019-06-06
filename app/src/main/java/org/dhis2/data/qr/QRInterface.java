@@ -20,5 +20,11 @@ public interface QRInterface {
 
     Observable<Bitmap> getUncodedData(String teiUid);
 
+    Observable<byte[]> getNFCData(String teiUid);
+
     Observable<Boolean> setData(String inputData);
+
+    String decompress(byte[] dataToDecompress);
+
+    void saveData(String data);
 }
