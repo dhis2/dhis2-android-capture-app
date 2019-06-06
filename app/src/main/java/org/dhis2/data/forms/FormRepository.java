@@ -7,8 +7,10 @@ import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
+import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.rules.RuleEngine;
 
 import java.util.List;
@@ -80,11 +82,13 @@ public interface FormRepository {
     @NonNull
     Observable<String> getTrackedEntityInstanceUid();
 
-    Observable<Trio<Boolean, CategoryComboModel, List<CategoryOptionComboModel>>> getProgramCategoryCombo();
+    Observable<Trio<Boolean, CategoryComboModel, List<CategoryOptionComboModel>>> getProgramCategoryCombo(String eventUid);
 
     void saveCategoryOption(CategoryOptionComboModel selectedOption);
 
     Observable<Boolean> captureCoodinates();
 
     Observable<OrganisationUnit> getOrgUnitDates();
+
+    Flowable<ProgramStage> getProgramStage(String eventUid);
 }

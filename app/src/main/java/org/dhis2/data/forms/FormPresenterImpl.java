@@ -11,10 +11,15 @@ import org.dhis2.data.forms.dataentry.EventsRuleEngineRepository;
 import org.dhis2.data.forms.dataentry.RuleEngineRepository;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.schedulers.SchedulerProvider;
+import org.dhis2.data.tuples.Pair;
+import org.dhis2.data.tuples.Trio;
 import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
+import org.hisp.dhis.android.core.period.FeatureType;
+import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.rules.models.RuleAction;
 import org.hisp.dhis.rules.models.RuleActionErrorOnCompletion;
 import org.hisp.dhis.rules.models.RuleActionHideField;
@@ -30,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -37,6 +43,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.observables.ConnectableObservable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
+import io.reactivex.schedulers.Schedulers;
 import rx.exceptions.OnErrorNotImplementedException;
 import timber.log.Timber;
 
@@ -124,7 +131,7 @@ class FormPresenterImpl implements FormPresenter {
             );
         } else {
             view.hideDates();
-            compositeDisposable.add(formRepository.getProgramCategoryCombo()
+            compositeDisposable.add(formRepository.getProgramCategoryCombo(null)
                     .subscribeOn(schedulerProvider.io())
                     .observeOn(schedulerProvider.ui())
                     .subscribe(hasOptionCatComboAndOption -> {
@@ -432,5 +439,25 @@ class FormPresenterImpl implements FormPresenter {
     @Override
     public void saveCategoryOption(CategoryOptionComboModel selectedOption) {
         formRepository.saveCategoryOption(selectedOption);
+    }
+
+    public void getNeedInitial(String eventUid){
+        compositeDisposable.add(
+                Flowable.zip(
+                        formRepository.getProgramStage(eventUid),
+                        formRepository.getProgramCategoryCombo(eventUid).toFlowable(BackpressureStrategy.LATEST),
+                        Pair::create
+                )
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                pair -> {
+                                    ProgramStage programStage = pair.val0();
+                                    Trio<Boolean, CategoryComboModel, List<CategoryOptionComboModel>> trio = pair.val1();
+                                    view.setNeedInitial(programStage.featureType().equals(FeatureType.POINT) || !trio.val1().isDefault(), programStage.uid());
+                                    },
+                                Timber::e
+                        )
+        );
     }
 }
