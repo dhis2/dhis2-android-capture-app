@@ -1,16 +1,11 @@
 package org.dhis2.utils.custom_views;
 
-import android.app.DatePickerDialog;
-import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.text.InputFilter;
 import android.util.AttributeSet;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.DatePicker;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.databinding.ViewDataBinding;
 
 import com.google.android.material.textfield.TextInputEditText;
@@ -19,7 +14,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import org.dhis2.R;
 import org.dhis2.databinding.AgeCustomViewAccentBinding;
 import org.dhis2.databinding.AgeCustomViewBinding;
-import org.dhis2.databinding.WidgetDatepickerBinding;
+import org.dhis2.utils.DatePickerUtils;
 import org.dhis2.utils.DateUtils;
 
 import java.text.DateFormat;
@@ -101,68 +96,23 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
         showCustomCalendar(view);
     }
 
-    private void showNativeCalendar(View view) {
-        Calendar c = Calendar.getInstance();
-        int year = c.get(Calendar.YEAR);
-        int month = c.get(Calendar.MONTH);
-        int day = c.get(Calendar.DAY_OF_MONTH);
-
-        DatePickerDialog dateDialog = new DatePickerDialog(getContext(), (
-                (datePicker, year1, month1, day1) -> handleDateInput(view, year1, month1, day1)),
-                year,
-                month,
-                day);
-        dateDialog.getDatePicker().setMaxDate(c.getTimeInMillis());
-        dateDialog.setTitle(label);
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            dateDialog.setButton(DialogInterface.BUTTON_NEUTRAL, getContext().getResources().getString(R.string.change_calendar), (dialog, which) -> {
-                dateDialog.dismiss();
-                showCustomCalendar(view);
-            });
-        }
-        dateDialog.show();
-    }
-
     private void showCustomCalendar(View view) {
-        LayoutInflater layoutInflater = LayoutInflater.from(getContext());
-        WidgetDatepickerBinding binding = WidgetDatepickerBinding.inflate(layoutInflater);
-        final DatePicker datePicker = binding.widgetDatepicker;
 
-        Calendar c = Calendar.getInstance();
-        int year = c.get(Calendar.YEAR);
-        int month = c.get(Calendar.MONTH);
-        int day = c.get(Calendar.DAY_OF_MONTH);
+        DatePickerUtils.getDatePickerDialog(getContext(), label, null, true, new DatePickerUtils.OnDatePickerClickListener() {
+            @Override
+            public void onNegativeClick() {
+                listener.onAgeSet(null);
+                date.setText(null);
+                AgeView.this.day.setText(null);
+                AgeView.this.month.setText(null);
+                AgeView.this.year.setText(null);
+            }
 
-        datePicker.updateDate(year, month, day);
-        datePicker.setMaxDate(c.getTimeInMillis());
-
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(getContext(), R.style.DatePickerTheme)
-                .setTitle(label);
-                /*.setPositiveButton(R.string.action_accept, (dialog, which) -> handleDateInput(view, datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth()))
-                .setNeutralButton(getContext().getResources().getString(R.string.change_calendar), (dialog, which) -> showNativeCalendar(view));*/
-
-        alertDialog.setView(binding.getRoot());
-        Dialog dialog = alertDialog.create();
-
-        binding.changeCalendarButton.setOnClickListener(calendarButton->{
-            showNativeCalendar(view);
-            dialog.dismiss();
-        });
-        binding.clearButton.setOnClickListener(clearButton->{
-            listener.onAgeSet(null);
-            date.setText(null);
-            this.day.setText(null);
-            this.month.setText(null);
-            this.year.setText(null);
-            dialog.dismiss();
-        });
-
-        binding.acceptButton.setOnClickListener(acceptButton->{
-            handleDateInput(view, datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
-            dialog.dismiss();
-        });
-
-        dialog.show();
+            @Override
+            public void onPositiveClick(DatePicker datePicker) {
+                handleDateInput(view, datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
+            }
+        }).show();
     }
 
     public void setAgeChangedListener(OnAgeSet listener) {

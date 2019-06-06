@@ -13,6 +13,7 @@ import org.dhis2.usescases.qrCodes.QrActivity;
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import org.dhis2.usescases.teiDashboard.DashboardRepository;
 import org.dhis2.usescases.teiDashboard.eventDetail.EventDetailActivity;
+import org.dhis2.usescases.teiDashboard.nfc_data.NfcDataWriteActivity;
 import org.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.EventCreationType;
@@ -174,6 +175,7 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
         PopupMenu menu = new PopupMenu(view.getContext(), mView);
 
         menu.getMenu().add(Menu.NONE, Menu.NONE, 0, "QR");
+        menu.getMenu().add(Menu.NONE, Menu.NONE, 1, "NFC");
         //menu.getMenu().add(Menu.NONE, Menu.NONE, 1, "SMS"); TODO: When SMS is ready, reactivate option
 
         menu.setOnMenuItemClickListener(item -> {
@@ -184,6 +186,11 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
                     view.showQR(intent);
                     return true;
                 case 1:
+                    Intent intentNfc = new Intent(view.getContext(), NfcDataWriteActivity.class);
+                    intentNfc.putExtra("TEI_UID",teiUid);
+                    view.showQR(intentNfc);
+                    return true;
+                case 2:
                     view.displayMessage(view.getContext().getString(R.string.feature_unavaible));
                     return true;
                 default:
