@@ -162,49 +162,6 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
                         showTimePicker(view);
                     }
                 }).show();
-      /*  LayoutInflater layoutInflater = LayoutInflater.from(getContext());
-        WidgetDatepickerBinding dateBinding = WidgetDatepickerBinding.inflate(layoutInflater);
-        final DatePicker datePicker = dateBinding.widgetDatepicker;
-
-        Calendar c = Calendar.getInstance();
-        if (date != null)
-            c.setTime(date);
-        int year = c.get(Calendar.YEAR);
-        int month = c.get(Calendar.MONTH);
-        int day = c.get(Calendar.DAY_OF_MONTH);
-
-        datePicker.updateDate(year, month, day);
-
-        if (!allowFutureDates) {
-            datePicker.setMaxDate(System.currentTimeMillis());
-        }
-
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(getContext(), R.style.DatePickerTheme)
-                .setTitle(binding.getLabel());
-
-        alertDialog.setView(dateBinding.getRoot());
-        Dialog dialog = alertDialog.create();
-
-        dateBinding.changeCalendarButton.setOnClickListener(calendarView->{
-            showNativeCalendar(calendarView);
-            dialog.dismiss();
-        });
-
-        dateBinding.clearButton.setOnClickListener(clearButton->{
-            editText.setText(null);
-            listener.onDateSelected(null);
-            dialog.dismiss();
-        });
-
-        dateBinding.acceptButton.setOnClickListener(acceptButton->{
-            selectedCalendar.set(Calendar.YEAR, datePicker.getYear());
-            selectedCalendar.set(Calendar.MONTH, datePicker.getMonth());
-            selectedCalendar.set(Calendar.DAY_OF_MONTH, datePicker.getDayOfMonth());
-            dialog.dismiss();
-            showTimePicker(view);
-        });
-
-        dialog.show();*/
     }
 
     private void showTimePicker(View view) {
