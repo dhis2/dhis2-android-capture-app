@@ -17,6 +17,12 @@ import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.content.ContextCompat;
+import androidx.databinding.BindingAdapter;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.dhis2.R;
@@ -40,11 +46,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.content.ContextCompat;
-import androidx.databinding.BindingAdapter;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import timber.log.Timber;
 
 /**
@@ -345,53 +346,46 @@ public class Bindings {
             case ACTIVE:
                 if (event.isExpired()) {
                     textView.setText(textView.getContext().getString(R.string.event_editing_expired));
-                    textView.setTextColor(ContextCompat.getColor(textView.getContext(), R.color.red_060));
                 } else {
                     textView.setText(textView.getContext().getString(R.string.event_open));
-                    textView.setTextColor(ContextCompat.getColor(textView.getContext(), R.color.yellow_fdd));
                 }
                 break;
             case COMPLETED:
                 if (event.isExpired()) {
                     textView.setText(textView.getContext().getString(R.string.event_editing_expired));
-                    textView.setTextColor(ContextCompat.getColor(textView.getContext(), R.color.red_060));
                 } else {
                     textView.setText(textView.getContext().getString(R.string.event_completed));
-                    textView.setTextColor(ContextCompat.getColor(textView.getContext(), R.color.gray_b2b));
                 }
                 break;
             case SKIPPED:
                 textView.setText(textView.getContext().getString(R.string.event_editing_expired));
-                textView.setTextColor(ContextCompat.getColor(textView.getContext(), R.color.red_060));
                 break;
             default:
                 textView.setText(textView.getContext().getString(R.string.read_only));
-                textView.setTextColor(ContextCompat.getColor(textView.getContext(), R.color.green_7ed));
                 break;
         }
     }
 
     @BindingAdapter("eventWithoutRegistrationStatusIcon")
     public static void setEventWithoutRegistrationStatusIcon(ImageView imageView, ProgramEventViewModel event) {
+
+        if(event.eventStatus() == EventStatus.ACTIVE && !event.isExpired())
+            imageView.setImageResource(R.drawable.ic_edit);
+        else
+            imageView.setImageResource(R.drawable.ic_visibility);
+/*
         switch (event.eventStatus()) {
             case ACTIVE:
                 if (event.isExpired()) {
-                    imageView.setImageResource(R.drawable.ic_eye_red);
+                    imageView.setImageResource(R.drawable.ic_visibility);
                 } else
-                    imageView.setImageResource(R.drawable.ic_edit_yellow);
-                break;
-            case COMPLETED:
-                if (event.isExpired()) {
-                    imageView.setImageResource(R.drawable.ic_eye_red);
-                } else
-                    imageView.setImageResource(R.drawable.ic_eye_grey);
+                    imageView.setImageResource(R.drawable.ic_edit);
                 break;
             default:
-                // TODO CRIS: HERE CHECK THE EVENT APPROVAL
-                imageView.setImageResource(R.drawable.ic_eye_green);
+                imageView.setImageResource(R.drawable.ic_visibility);
                 break;
 
-        }
+        }*/
     }
 
     @BindingAdapter("stateText")

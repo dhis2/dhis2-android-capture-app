@@ -1,5 +1,6 @@
 package org.dhis2.data.qr;
 
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.text.TextUtils;
 import android.util.Base64;
@@ -452,7 +453,7 @@ public class QRCodeGenerator implements QRInterface {
      */
 
     @Override
-    public void saveData(String data) {
+    public String saveData(String data) {
         String[] teiData = data.split("\\$T");
         String[] enrollment = teiData[1].split("\\$R");
         TrackedEntityInstance tei = saveTeiData(enrollment[0]);
@@ -473,6 +474,8 @@ public class QRCodeGenerator implements QRInterface {
                 }
             }
         }
+
+        return tei.uid();
     }
 
 
@@ -495,7 +498,7 @@ public class QRCodeGenerator implements QRInterface {
                 .state(State.valueOf(data[6]))
                 .build();
 
-        briteDatabase.insert("TrackedEntityInstance", tei.toContentValues()); //CHECK IF INSERTED
+        briteDatabase.insert("TrackedEntityInstance", tei.toContentValues(), SQLiteDatabase.CONFLICT_REPLACE); //CHECK IF INSERTED
         return tei;
     }
 
@@ -537,7 +540,7 @@ public class QRCodeGenerator implements QRInterface {
                 .trackedEntityInstance(tei.uid())
                 .build();
 
-        briteDatabase.insert("Enrollment", enrollment.toContentValues());
+        briteDatabase.insert("Enrollment", enrollment.toContentValues(), SQLiteDatabase.CONFLICT_REPLACE);
         return enrollment;
     }
 
@@ -550,7 +553,7 @@ public class QRCodeGenerator implements QRInterface {
                 .trackedEntityInstance(tei.uid())
                 .value(data[1])
                 .build();
-        briteDatabase.insert("TrackedEntityAttributeValue", attribute.toContentValues());
+        briteDatabase.insert("TrackedEntityAttributeValue", attribute.toContentValues(), SQLiteDatabase.CONFLICT_REPLACE);
     }
 
     public Event saveEvent(Enrollment enrollment, String eventData) {
@@ -598,7 +601,7 @@ public class QRCodeGenerator implements QRInterface {
                 .state(State.valueOf(data[10]))
                 .build();
 
-        briteDatabase.insert("Event", event.toContentValues());
+        briteDatabase.insert("Event", event.toContentValues(), SQLiteDatabase.CONFLICT_REPLACE);
 
         return event;
     }
@@ -611,7 +614,7 @@ public class QRCodeGenerator implements QRInterface {
                 .value(data[1])
                 .event(event.uid())
                 .build();
-        briteDatabase.insert("TrackedEntityDataValue", dataValue.toContentValues());
+        briteDatabase.insert("TrackedEntityDataValue", dataValue.toContentValues(), SQLiteDatabase.CONFLICT_REPLACE);
 
     }
 

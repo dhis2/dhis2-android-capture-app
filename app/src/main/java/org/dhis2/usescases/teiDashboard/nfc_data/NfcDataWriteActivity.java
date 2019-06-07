@@ -1,5 +1,6 @@
 package org.dhis2.usescases.teiDashboard.nfc_data;
 
+import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -7,6 +8,7 @@ import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.MifareClassic;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.view.View;
 
 import androidx.annotation.Nullable;
@@ -18,6 +20,7 @@ import org.dhis2.data.nfc.NFCManager;
 import org.dhis2.data.qr.QRInterface;
 import org.dhis2.databinding.ActivityNfcWriteTrackerBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
+import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
 
 import javax.inject.Inject;
 
@@ -25,6 +28,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
+
+import static android.text.TextUtils.isEmpty;
 
 public class NfcDataWriteActivity extends ActivityGlobalAbstract {
 
@@ -44,18 +49,35 @@ public class NfcDataWriteActivity extends ActivityGlobalAbstract {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         ((App) getApplicationContext()).userComponent().plus(new NfcDataWriteModule()).inject(this);
         super.onCreate(savedInstanceState);
-        teiUid = getIntent().getExtras().getString("TEI_UID");
+        teiUid = getIntent().getExtras() != null ? getIntent().getExtras().getString("TEI_UID") : null;
         binding = DataBindingUtil.setContentView(this, R.layout.activity_nfc_write_tracker);
         nfcManager = new NFCManager(this);
         binding.mode.setOnCheckedChangeListener((buttonView, isChecked) -> deleteDataMode = isChecked);
         binding.readMode.setOnCheckedChangeListener((buttonView, isChecked) -> readMode = isChecked);
+
+        if (isEmpty(teiUid)) {
+            binding.readMode.setChecked(true);
+            binding.readMode.setEnabled(false);
+            binding.mode.setEnabled(false);
+            binding.mode.setVisibility(View.GONE);
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         disposable = new CompositeDisposable();
-        nfcManager.verifyNFC();
+        if (nfcManager.verifyNFC())
+            init();
+        else {
+            Intent setnfc = new Intent(Settings.ACTION_SETTINGS);
+            startActivity(setnfc);
+        }
+
+
+    }
+
+    public void init() {
         Intent nfcIntent = new Intent(this, this.getClass());
         nfcIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, nfcIntent, 0);
@@ -98,7 +120,8 @@ public class NfcDataWriteActivity extends ActivityGlobalAbstract {
     @Override
     protected void onPause() {
         disposable.clear();
-        nfcAdapter.disableForegroundDispatch(this);
+        if (nfcAdapter != null)
+            nfcAdapter.disableForegroundDispatch(this);
         super.onPause();
     }
 
@@ -117,8 +140,22 @@ public class NfcDataWriteActivity extends ActivityGlobalAbstract {
     private void applyNFCAction() {
         if (readMode) {
             String data = qrInterface.decompress(nfcManager.readTag(currentTag));
-            binding.currentMessage.setText(data);
-            qrInterface.saveData(data);
+            binding.currentMessage.setText("SAVING DATA IN DB. YOU CAN REMOVE THE CARD NOW.");
+            String teiUidWritten = qrInterface.saveData(data);
+            new AlertDialog.Builder(this)
+                    .setTitle("NFC Reader")
+                    .setMessage("Data was written. Do you want to open dashboard?")
+                    .setPositiveButton("Yes", (dialogInterface, i) -> {
+                        Bundle bundle = new Bundle();
+                        bundle.putString("TEI_UID", teiUidWritten);
+                        bundle.putString("PROGRAM_UID", null);
+                        startActivity(TeiDashboardMobileActivity.class, bundle, true, false, null);
+                    })
+                    .setNegativeButton("No", (dialogInterface, i) -> {
+                        binding.currentMessage.setText("Waiting for NFC");
+                        dialogInterface.dismiss();
+                    })
+                    .create().show();
         } else if (deleteDataMode) {
             nfcManager.clearTag(currentTag);
             binding.currentMessage.setText("Card cleared");

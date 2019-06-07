@@ -559,41 +559,6 @@ public class SearchRepositoryImpl implements SearchRepository {
             searchTei.setAttributeValueModels(attributeModels);
             return searchTei;
         }
-
-        /*DataSource dataSource = teiList.getDataSource().mapByPage(new Function<List<TrackedEntityInstance>, List<SearchTeiModel>>() {
-            @Override
-            public List<SearchTeiModel> apply(List<TrackedEntityInstance> list) {
-                List<SearchTeiModel> result = new ArrayList<>();
-                for (TrackedEntityInstance tei : list) {
-                    SearchTeiModel searchTei = new SearchTeiModel();
-                    if(d2.trackedEntityModule().trackedEntityInstances.byUid().eq(tei.uid()).one().exists()){
-                        TrackedEntityInstance localTei = d2.trackedEntityModule().trackedEntityInstances.byUid().eq(tei.uid()).one().get();
-                        searchTei.setTei(localTei);
-                        searchTei.setOnline(false);
-                        setEnrollmentInfo(searchTei);
-                        setAttributesInfo(searchTei, selectedProgram);
-                        setOverdueEvents(searchTei, selectedProgram);
-                    } else {
-                        searchTei.setTei(tei);
-                        List<TrackedEntityAttributeValueModel> attributeModels = new ArrayList<>();
-                        if (tei.trackedEntityAttributeValues() != null) {
-                            TrackedEntityAttributeValueModel.Builder attrValueBuilder = TrackedEntityAttributeValueModel.builder();
-                            for (TrackedEntityAttributeValue attrValue : tei.trackedEntityAttributeValues()) {
-                                attrValueBuilder.value(attrValue.value())
-                                        .created(attrValue.created())
-                                        .lastUpdated(attrValue.lastUpdated())
-                                        .trackedEntityAttribute(attrValue.trackedEntityAttribute())
-                                        .trackedEntityInstance(tei.uid());
-                                attributeModels.add(attrValueBuilder.build());
-                            }
-                        }
-                        searchTei.setAttributeValueModels(attributeModels);
-                    }
-                    result.add(searchTei);
-                }
-                return result;
-            }
-        });*/
     }
 
     // Private Region End//

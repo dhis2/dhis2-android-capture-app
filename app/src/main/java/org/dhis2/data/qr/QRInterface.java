@@ -26,5 +26,5 @@ public interface QRInterface {
 
     String decompress(byte[] dataToDecompress);
 
-    void saveData(String data);
+    String saveData(String data);
 }
