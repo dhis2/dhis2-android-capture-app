@@ -553,8 +553,8 @@ public final class RulesRepository {
                                     briteDatabase.createQuery(EventModel.TABLE, eventModel.enrollment() == null ? QUERY_OTHER_EVENTS : QUERY_OTHER_EVENTS_ENROLLMENTS,
                                             eventModel.enrollment() == null ? programModel.uid() : eventModel.enrollment(),
                                             eventUidToEvaluate == null ? "" : eventUidToEvaluate,
-                                            DateUtils.databaseDateFormat().format(eventModel.eventDate()),
-                                            DateUtils.databaseDateFormat().format(eventModel.eventDate()),
+                                            DateUtils.databaseDateFormat().format(eventModel.eventDate()!=null ? eventModel.eventDate() : eventModel.dueDate()),
+                                            DateUtils.databaseDateFormat().format(eventModel.eventDate()!=null ? eventModel.eventDate() : eventModel.dueDate()),
                                             DateUtils.databaseDateFormat().format(eventModel.lastUpdated()))
                                             .mapToList(cursor -> {
                                                 List<RuleDataValue> dataValues = new ArrayList<>();
