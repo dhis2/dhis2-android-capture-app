@@ -15,13 +15,15 @@ class NFCManager internal constructor(private val context: Context) {
     private var nfcProcessor: FlowableProcessor<String>? = null
     private var initProcessor: FlowableProcessor<Boolean>? = null
 
-    fun verifyNFC() {
+    fun verifyNFC() : Boolean {
         nfcAdt = NfcAdapter.getDefaultAdapter(context)
         if (nfcAdt == null)
             throw NFcNotEnabled()
 
         if (!nfcAdt.isEnabled)
-            throw NFcNotSupported()
+            return false
+
+        return true
     }
 
     fun requestProgressProcessor(): Flowable<String> {

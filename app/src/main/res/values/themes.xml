@@ -21,7 +21,7 @@
         <item name="period_button">@drawable/period_button</item>
         <item name="period_time_button">@drawable/period_time_button</item>
         <item name="toast_bg">@drawable/toast_bg</item>
-        <item name="android:windowBackground">@color/gray_f6f</item>
+        <item name="android:windowBackground">@color/white</item>
 
         <item name="android:fontFamily">@font/rubik_regular</item>
         <item name="textInputStyle">@style/Widget.Design.TextInputLayout</item>

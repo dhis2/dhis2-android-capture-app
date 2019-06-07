@@ -343,16 +343,33 @@ public final class RulesRepository {
         String attribute = cursor.getString(4);
 
         // Mime types of the attribute and data element.
-        String attributeType = cursor.getString(5);
-        String elementType = cursor.getString(6);
+        String attributeType = cursor.getString(6);
+        String elementType = cursor.getString(5);
 
         // String representation of value type.
         RuleValueType mimeType = null;
+
+        switch (ProgramRuleVariableSourceType.valueOf(sourceType)) {
+            case TEI_ATTRIBUTE:
+                if (!isEmpty(attributeType))
+                    mimeType = convertType(attributeType);
+                break;
+            case DATAELEMENT_CURRENT_EVENT:
+            case DATAELEMENT_PREVIOUS_EVENT:
+            case DATAELEMENT_NEWEST_EVENT_PROGRAM:
+            case DATAELEMENT_NEWEST_EVENT_PROGRAM_STAGE:
+                if (!isEmpty(elementType))
+                    mimeType = convertType(elementType);
+                break;
+            default:
+                break;
+        }
+      /*
         if (!isEmpty(attributeType)) {
             mimeType = convertType(attributeType);
         } else if (!isEmpty(elementType)) {
             mimeType = convertType(elementType);
-        }
+        }*/
 
         if (mimeType == null) {
             mimeType = RuleValueType.TEXT;
@@ -389,8 +406,8 @@ public final class RulesRepository {
         String attribute = cursor.getString(4);
 
         // Mime types of the attribute and data element.
-        String attributeType = cursor.getString(5);
-        String elementType = cursor.getString(6);
+        String attributeType = cursor.getString(6);
+        String elementType = cursor.getString(5);
 
         // String representation of value type.
         RuleValueType mimeType = null;
