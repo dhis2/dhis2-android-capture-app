@@ -118,7 +118,7 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
                                 this.catCombo = quartetFlowable.val2();
                                 view.setEvent(quartetFlowable.val0());
                                 view.setProgram(quartetFlowable.val1());
-                                view.setCatComboOptions(catCombo, quartetFlowable.val4());
+                                view.setCatComboOptions(catCombo, !quartetFlowable.val4().isEmpty() ? quartetFlowable.val4() : null);
                                 view.setProgramStage(quartetFlowable.val3());
                             }, Timber::d)
             );

@@ -125,17 +125,19 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     @Override
     public Flowable<Map<String, CategoryOption>> getOptionsFromCatOptionCombo(String eventId) {
         return Flowable.just(d2.eventModule().events.uid(eventUid).get())
-                .flatMap(event -> Flowable.zip(catCombo(event.program()).toFlowable(BackpressureStrategy.LATEST),
-                        Flowable.just(d2.categoryModule().categoryOptionCombos.uid(event.attributeOptionCombo()).withAllChildren().get()),
-                        (categoryCombo, categoryOptionCombo) -> {
-                            List<CategoryOption> selectedCatOptions = categoryOptionCombo.categoryOptions();
+                .flatMap(event -> catCombo(event.program()).toFlowable(BackpressureStrategy.LATEST)
+                        .flatMap(categoryCombo -> {
                             Map<String, CategoryOption> map = new HashMap<>();
-                            for (Category category : categoryCombo.categories()) {
-                                for (CategoryOption categoryOption : selectedCatOptions)
-                                    if (category.categoryOptions().contains(categoryOption))
-                                        map.put(category.uid(), categoryOption);
+                            if(!categoryCombo.isDefault() && event.attributeOptionCombo()!=null){
+                                List<CategoryOption> selectedCatOptions = d2.categoryModule().categoryOptionCombos.uid(event.attributeOptionCombo()).withAllChildren().get().categoryOptions();
+                                for (Category category : categoryCombo.categories()) {
+                                    for (CategoryOption categoryOption : selectedCatOptions)
+                                        if (category.categoryOptions().contains(categoryOption))
+                                            map.put(category.uid(), categoryOption);
+                                }
                             }
-                            return map;
+
+                            return Flowable.just(map);
                         }));
     }
 
@@ -358,7 +360,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
         if ((event.coordinate() == null && (!isEmpty(latitude) && !isEmpty(longitude))) ||
                 (event.coordinate() != null && (!String.valueOf(event.coordinate().latitude()).equals(latitude) || !String.valueOf(event.coordinate().longitude()).equals(longitude))))
             hasChanged = true;
-        if (!event.attributeOptionCombo().equals(catOptionCombo))
+        if (event.attributeOptionCombo()!=null && !event.attributeOptionCombo().equals(catOptionCombo))
             hasChanged = true;
 
         if (hasChanged) {
