@@ -21,8 +21,10 @@ import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.ValueUtils;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
+import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.State;
+import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.data.api.OuMode;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
@@ -31,6 +33,7 @@ import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
@@ -277,7 +280,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                     return Observable.error(new SQLiteConstraintException(message));
                 }
 
-                if(queryData.containsKey(Constants.ENROLLMENT_DATE_UID))
+                if (queryData.containsKey(Constants.ENROLLMENT_DATE_UID))
                     queryData.remove(Constants.ENROLLMENT_DATE_UID);
                 for (String key : queryData.keySet()) {
                     String dataValue = queryData.get(key);
@@ -286,7 +289,7 @@ public class SearchRepositoryImpl implements SearchRepository {
 
                     boolean isGenerated = d2.trackedEntityModule().trackedEntityAttributes.uid(key).get().generated();
 
-                    if(!isGenerated) {
+                    if (!isGenerated) {
                         TrackedEntityAttributeValueModel attributeValueModel =
                                 TrackedEntityAttributeValueModel.builder()
                                         .created(currentDate)
@@ -541,6 +544,10 @@ public class SearchRepositoryImpl implements SearchRepository {
             setEnrollmentInfo(searchTei);
             setAttributesInfo(searchTei, selectedProgram);
             setOverdueEvents(searchTei, selectedProgram);
+
+            searchTei.setProfilePicture(profilePictureUid(tei));
+            ObjectStyle os = d2.trackedEntityModule().trackedEntityTypes.withStyle().uid(tei.trackedEntityType()).get().style();
+            searchTei.setDefaultTypeIcon(os != null ? os.icon() : null);
             return searchTei;
         } else {
             searchTei.setTei(tei);
@@ -554,11 +561,33 @@ public class SearchRepositoryImpl implements SearchRepository {
                             .trackedEntityAttribute(attrValue.trackedEntityAttribute())
                             .trackedEntityInstance(tei.uid());
                     attributeModels.add(attrValueBuilder.build());
+                    if (attrIsProfileImage(attrValue.trackedEntityAttribute()))
+                        searchTei.setProfilePicture(attrValue.trackedEntityAttribute());
                 }
             }
             searchTei.setAttributeValueModels(attributeModels);
+            ObjectStyle os = d2.trackedEntityModule().trackedEntityTypes.withStyle().uid(tei.trackedEntityType()).get().style();
+            searchTei.setDefaultTypeIcon(os != null ? os.icon() : null);
             return searchTei;
         }
+    }
+
+    private String profilePictureUid(TrackedEntityInstance tei) {
+        List<TrackedEntityAttribute> imageAttributes = d2.trackedEntityModule().trackedEntityAttributes.byValueType().eq(ValueType.IMAGE).get();
+        List<String> imageAttributesUids = new ArrayList<>();
+        for (TrackedEntityAttribute attr : imageAttributes)
+            imageAttributesUids.add(attr.uid());
+
+        String attrUid = d2.trackedEntityModule().trackedEntityTypeAttributes
+                .byTrackedEntityTypeUid().eq(tei.trackedEntityType())
+                .byTrackedEntityAttributeUid().in(imageAttributesUids).one().get().trackedEntityAttribute().uid();
+        TrackedEntityAttributeValue attributeValue = d2.trackedEntityModule().trackedEntityAttributeValues.byTrackedEntityInstance().eq(tei.uid())
+                .byTrackedEntityAttribute().eq(attrUid).one().get();
+        return attributeValue != null ? attributeValue.trackedEntityAttribute() : null;
+    }
+
+    private boolean attrIsProfileImage(String attrUid) {
+        return d2.trackedEntityModule().trackedEntityAttributes.uid(attrUid).get().valueType() == ValueType.IMAGE;
     }
 
     // Private Region End//

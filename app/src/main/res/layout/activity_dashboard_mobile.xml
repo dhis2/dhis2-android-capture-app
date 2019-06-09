@@ -31,9 +31,10 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
+            android:elevation="8dp"
+            app:elevation="8dp"
             android:background="?colorPrimary"
-            android:clipToPadding="false"
-            android:elevation="8dp">
+            android:clipToPadding="false">
 
             <ImageView
                 android:id="@+id/back"
@@ -42,6 +43,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_arrow_back"
+                app:layout_constraintStart_toStartOf="parent"
                 tools:ignore="ContentDescription" />
 
             <TextView
@@ -102,6 +104,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:clipToPadding="false"
+            android:elevation="8dp"
             app:elevation="8dp"
             app:tabPaddingEnd="16dp"
             app:tabPaddingStart="16dp"

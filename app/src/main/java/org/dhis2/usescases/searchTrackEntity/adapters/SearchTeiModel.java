@@ -24,18 +24,9 @@ public class SearchTeiModel {
     private boolean isOnline;//8
 
     private TrackedEntityInstance tei;
-    private List<TrackedEntityAttributeValue> attributeValues;
-    private List<Enrollment> enrollments;
+    private String profilePictureUid;
+    private String defaultTypeIcon;
 
-    public SearchTeiModel(TrackedEntityInstanceModel tei, List<TrackedEntityAttributeValueModel> attributeValues) {
-        this.teiModel = tei;
-        this.enrollmentModels = new ArrayList<>();
-        this.enrollmentsInfo = new ArrayList<>();
-
-        this.attributeValueModels = new ArrayList<>();
-        this.attributeValueModels.addAll(attributeValues);
-        this.isOnline = true;
-    }
 
     public SearchTeiModel() {
         this.tei = null;
@@ -93,7 +84,6 @@ public class SearchTeiModel {
 
     public void resetEnrollments() {
         this.enrollmentModels.clear();
-        //this.enrollments.clear();
         this.enrollmentsInfo.clear();
     }
 
@@ -118,19 +108,19 @@ public class SearchTeiModel {
         return tei;
     }
 
-    public List<Enrollment> getEnrollments() {
-        return enrollments;
+    public void setProfilePicture(String profilePictureUid) {
+        this.profilePictureUid = profilePictureUid;
     }
 
-    public List<TrackedEntityAttributeValue> getAttributeValues() {
-        return attributeValues;
+    public String getProfilePictureUid() {
+        return profilePictureUid;
     }
 
-    public void addAttributeValues(TrackedEntityAttributeValue attributeValues) {
-        this.attributeValues.add(attributeValues);
+    public void setDefaultTypeIcon(String defaultTypeIcon){
+        this.defaultTypeIcon = defaultTypeIcon;
     }
 
-    public void addEnrollment(Enrollment enrollment) {
-        this.enrollments.add(enrollment);
+    public String getDefaultTypeIcon() {
+        return defaultTypeIcon;
     }
 }

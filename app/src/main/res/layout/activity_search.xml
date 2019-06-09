@@ -106,10 +106,10 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.coordinatorlayout.widget.CoordinatorLayout
+            android:id="@+id/coordinatorLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/mainToolbar"
-            android:background="@color/gray_f6f">
+            android:layout_below="@+id/mainToolbar">
 
             <!--SCROLLING VIEW-->
 
@@ -119,15 +119,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+                app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior" />
 
             <RelativeLayout
                 android:id="@+id/messageContainer"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/colorAccent"
+                android:background="@color/white"
                 android:visibility="visible"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior">
+                app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
                 <TextView
                     android:id="@+id/message"
@@ -146,7 +146,7 @@
                 android:layout_height="match_parent"
                 android:background="@color/colorAccent"
                 android:visibility="visible"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior">
+                app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
                 <ProgressBar
                     android:layout_width="match_parent"
