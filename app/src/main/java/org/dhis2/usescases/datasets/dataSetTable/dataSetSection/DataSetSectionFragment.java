@@ -350,7 +350,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
         cells.add(values);
 
         if (!existTotal)
-            dataElements.add(DataElement.builder().displayName(getString(R.string.total)).valueType(ValueType.INTEGER).build());
+            dataElements.add(DataElement.builder().uid("").displayName(getString(R.string.total)).valueType(ValueType.INTEGER).build());
     }
 
     private void setTotalRow(int totalRow, ArrayList<FieldViewModel> fields, ArrayList<String> values, int row, int column) {
