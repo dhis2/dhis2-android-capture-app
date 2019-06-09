@@ -14,6 +14,7 @@ import androidx.work.WorkManager;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.service.SyncDataWorker;
 import org.dhis2.data.service.SyncMetadataWorker;
+import org.dhis2.data.service.files.FilesWorker;
 import org.dhis2.usescases.login.LoginActivity;
 import org.dhis2.usescases.reservedValue.ReservedValueActivity;
 import org.dhis2.utils.Constants;
@@ -122,6 +123,14 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
                 .build());
         OneTimeWorkRequest request = syncDataBuilder.build();
         WorkManager.getInstance().beginUniqueWork(Constants.DATA_NOW, ExistingWorkPolicy.REPLACE, request).enqueue();
+
+        OneTimeWorkRequest.Builder fileBuilder = new OneTimeWorkRequest.Builder(FilesWorker.class);
+        fileBuilder.addTag("FILE_DOWNLOADER");
+        fileBuilder.setConstraints(new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build());
+        OneTimeWorkRequest requestFile = fileBuilder.build();
+        WorkManager.getInstance().beginUniqueWork("FILE_DOWNLOADER", ExistingWorkPolicy.REPLACE, requestFile).enqueue();
     }
 
     /**

@@ -23,6 +23,7 @@ import android.widget.Spinner;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
 import androidx.databinding.BindingMethod;
 import androidx.databinding.BindingMethods;
 import androidx.databinding.DataBindingUtil;
@@ -142,6 +143,17 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 v.performClick();
             }
             return true;
+        });
+
+        binding.appbatlayout.addOnOffsetChangedListener((appBarLayout, verticalOffset) -> {
+            float elevationPx = TypedValue.applyDimension(
+                    TypedValue.COMPLEX_UNIT_DIP,
+                    7,
+                    getResources().getDisplayMetrics()
+            );
+            boolean isHidden = binding.formRecycler.getHeight() + verticalOffset == 0;
+            ViewCompat.setElevation(binding.mainToolbar, isHidden ? elevationPx : 0);
+            ViewCompat.setElevation(appBarLayout, isHidden ? 0 : elevationPx);
         });
     }
 
