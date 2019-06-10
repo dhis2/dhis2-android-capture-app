@@ -6,7 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
-import android.graphics.BitmapFactory;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -23,7 +23,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.ContentLoadingProgressBar;
@@ -43,6 +42,7 @@ import org.dhis2.usescases.map.MapSelectorActivity;
 import org.dhis2.usescases.splash.SplashActivity;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.FileResourcesUtil;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.OnDialogClickListener;
 import org.dhis2.utils.SyncUtils;
@@ -50,8 +50,7 @@ import org.dhis2.utils.custom_views.CoordinatesView;
 import org.dhis2.utils.custom_views.CustomDialog;
 import org.dhis2.utils.custom_views.PictureView;
 
-import java.io.FileNotFoundException;
-import java.io.InputStream;
+import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
@@ -377,7 +376,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
                 case Constants.GALLERY_REQUEST:
                     try {
                         final Uri imageUri = data.getData();
-                        onPictureSelected.onSelected(imageUri.toString(), uuid);
+                        onPictureSelected.onSelected(FileResourcesUtil.getFileFromGallery(this, imageUri), imageUri.toString(), uuid);
                     } catch (Exception e) {
                         e.printStackTrace();
                         Toast.makeText(this, "Something went wrong", Toast.LENGTH_LONG).show();
@@ -385,9 +384,9 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
                     break;
                 case Constants.CAMERA_REQUEST:
                     if (data != null && data.hasExtra("data")) {
-                        Uri selectedImage = data.getData();
-                        if (selectedImage != null)
-                            onPictureSelected.onSelected(selectedImage.toString(), uuid);
+                        Bitmap bitmap = (Bitmap) data.getExtras().get("data");
+                        if (bitmap != null)
+                            onPictureSelected.onSelected(null, new File(FileResourcesUtil.getUploadDirectory(this), "test").getAbsolutePath(), uuid);
                     }
                     break;
             }

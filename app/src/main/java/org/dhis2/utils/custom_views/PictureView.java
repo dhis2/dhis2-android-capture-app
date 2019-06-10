@@ -3,11 +3,9 @@ package org.dhis2.utils.custom_views;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.AttributeSet;
 import android.view.View;
@@ -16,18 +14,22 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.FormPictureAccentBinding;
 import org.dhis2.databinding.FormPictureBinding;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.FilderUtil;
+import org.dhis2.utils.FileResourcesUtil;
 
 import java.io.File;
-import java.util.Locale;
 
 import io.reactivex.processors.FlowableProcessor;
 
@@ -36,11 +38,12 @@ import static android.text.TextUtils.isEmpty;
 public class PictureView extends FieldLayout implements View.OnClickListener, View.OnFocusChangeListener {
 
     private ViewDataBinding binding;
-    private FlowableProcessor<RowAction> processor;
     private String uid;
     private TextView errorView;
     private ImageView image;
     private OnIntentSelected onIntentSelected;
+    private String primaryUid;
+    private OnPictureSelected imageListener;
 
     public PictureView(Context context) {
         super(context);
@@ -123,20 +126,23 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
         setLayout();
     }
 
-    public void setProcessor(String uid, FlowableProcessor<RowAction> processor) {
-        this.processor = processor;
+    public void setProcessor(String primaryUid, String uid, FlowableProcessor<RowAction> processor) {
+        this.primaryUid = primaryUid;
         this.uid = uid;
     }
 
     public void setInitialValue(String value) {
-        File file = new File(value);
-        if(file.exists()){
-            Bitmap myBitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-            image.setImageBitmap(myBitmap);
+        Glide.with(image).clear(image);
+        File file = new File(FileResourcesUtil.getUploadDirectory(getContext()), primaryUid.concat(".").concat(uid));
+        if (file.exists()) {
+            Glide.with(image)
+                    .load(file)
+                    .apply(new RequestOptions().centerCrop())
+                    .apply(RequestOptions.skipMemoryCacheOf(true))
+                    .apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.NONE))
+                    .into(image);
         }
     }
-
-
 
 
     private void selectImage() {
@@ -144,40 +150,29 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
             PackageManager pm = image.getContext().getPackageManager();
             int hasPerm = pm.checkPermission(Manifest.permission.CAMERA, image.getContext().getPackageName());
             if (hasPerm == PackageManager.PERMISSION_GRANTED) {
-                final CharSequence[] options = {"Take Photo", "Choose From Gallery","Cancel"};
+                final CharSequence[] options = {"Take Photo", "Choose From Gallery", "Cancel"};
                 AlertDialog.Builder builder = new AlertDialog.Builder(image.getContext());
                 builder.setTitle("Select Option");
                 builder.setItems(options, (dialog, item) -> {
                     if (options[item].equals("Take Photo")) {
                         dialog.dismiss();
                         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                        PictureView.this.onIntentSelected.intentSelected(this.uid, intent, Constants.CAMERA_REQUEST, (value, uuid) -> {
-                            if (this.uid.equals(uuid)) {
-                                setInitialValue(value);
-                                if (uid != null) {
-                                    processor.onNext(
-                                            RowAction.create(uid,
-                                                    value)
-                                    );
-                                    nextFocus(this);
-                                }
-                            }
+                        Uri photoUri = FileProvider.getUriForFile(getContext(),
+                                "org.dhis2.provider",
+                                new File(FileResourcesUtil.getUploadDirectory(getContext()), primaryUid.concat(".").concat(uid)));
+                        intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                        PictureView.this.onIntentSelected.intentSelected(this.uid, intent, Constants.CAMERA_REQUEST, (file, value, uuid) -> {
+                            imageListener.onSelected(file, primaryUid.concat(".").concat(uid), uid);
                         });
                     } else if (options[item].equals("Choose From Gallery")) {
                         dialog.dismiss();
                         Intent pickPhoto = new Intent(Intent.ACTION_PICK);
+                        pickPhoto.putExtra("filename", primaryUid.concat(".").concat(uid));
                         pickPhoto.setType("image/*");
-                        PictureView.this.onIntentSelected.intentSelected(this.uid, pickPhoto, Constants.GALLERY_REQUEST, (value, uuid) -> {
-                            if (this.uid.equals(uuid)) {
-                                setInitialValue(value);
-                                if (uid != null) {
-                                    processor.onNext(
-                                            RowAction.create(uid,
-                                                    value)
-                                    );
-                                    nextFocus(this);
-                                }
-                            }
+                        PictureView.this.onIntentSelected.intentSelected(this.uid, pickPhoto, Constants.GALLERY_REQUEST, (file, value, uuid) -> {
+                            FileResourcesUtil.saveImageToUpload(file, new File(FileResourcesUtil.getUploadDirectory(getContext()), primaryUid.concat(".").concat(uid)));
+                            imageListener.onSelected(file, primaryUid.concat(".").concat(uid), uid);
                         });
                     } else if (options[item].equals("Cancel")) {
                         dialog.dismiss();
@@ -192,8 +187,12 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
         }
     }
 
+    public void setOnImageListener(OnPictureSelected onImageListener) {
+        this.imageListener = onImageListener;
+    }
+
     public interface OnPictureSelected {
-        public void onSelected(String value, String uuid);
+        void onSelected(File file, String value, String uid);
     }
 
     public interface OnIntentSelected {

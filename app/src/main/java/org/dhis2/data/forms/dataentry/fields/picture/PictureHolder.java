@@ -26,11 +26,19 @@ public class PictureHolder extends FormViewHolder {
         this.processor = processor;
         this.binding = binding;
         this.binding.formPictures.setOnIntentSelected(onIntentSelected);
+        this.binding.formPictures.setOnImageListener((file, value, uid) -> {
+            if (uid != null)
+                processor.onNext(
+                        RowAction.create(uid, value, getAdapterPosition()));
+        });
     }
 
     void update(PictureViewModel pictureViewModel) {
         this.model = pictureViewModel;
-        binding.formPictures.setProcessor(pictureViewModel.uid(), processor);
+        binding.formPictures.setProcessor(
+                pictureViewModel.uid().contains(".") ? pictureViewModel.uid().split("\\.")[0] : pictureViewModel.uid(),
+                pictureViewModel.uid().contains(".") ? pictureViewModel.uid().split("\\.")[1] : pictureViewModel.uid(),
+                processor);
         descriptionText = pictureViewModel.description();
         label = new StringBuilder(pictureViewModel.label());
         if (pictureViewModel.mandatory())
@@ -56,7 +64,7 @@ public class PictureHolder extends FormViewHolder {
     @Override
     public void performAction() {
         itemView.setBackground(AppCompatResources.getDrawable(itemView.getContext(), R.drawable.item_selected_bg));
-       // binding.formCoordinates.performOnFocusAction();
+        // binding.formCoordinates.performOnFocusAction();
     }
 
 }

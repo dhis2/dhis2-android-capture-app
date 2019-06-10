@@ -11,6 +11,7 @@ import org.hisp.dhis.android.core.common.ObjectStyleModel;
 
 @AutoValue
 public abstract class PictureViewModel extends FieldViewModel {
+
     public static PictureViewModel create(String id, String label, Boolean mandatory, String value, String section, Boolean editable, String description, ObjectStyleModel objectStyle) {
         return new AutoValue_PictureViewModel(id, label, mandatory, value, section, null, editable, null, null, null,description,objectStyle);
     }

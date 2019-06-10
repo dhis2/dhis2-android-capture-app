@@ -18,58 +18,58 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:padding="5dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:padding="5dp">
 
         <TextView
-            android:layout_margin="6dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             android:id="@+id/formLabel"
             android:layout_width="wrap_content"
-            android:textSize="@dimen/textSize_12"
             android:layout_height="wrap_content"
+            android:layout_margin="6dp"
             android:paddingStart="4dp"
             android:text="@{label}"
+            android:textSize="@dimen/textSize_12"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             tools:text="Form Name" />
 
         <ImageView
-            android:layout_margin="6dp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
             android:id="@+id/descriptionLabel"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:layout_margin="6dp"
             android:visibility="@{(label.length()>16||description!=null)?View.VISIBLE : View.GONE}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_info_outline"
             app:tint="?colorPrimary" />
 
 
         <ImageView
-            app:layout_constraintTop_toBottomOf="@id/formLabel"
-            android:background="@color/greyish"
-            app:srcCompat="@drawable/ic_camera"
             android:id="@+id/image"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:scaleType="centerInside"
-            android:minHeight="100dp"
-            android:maxHeight="200dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:background="@color/greyish"
+            android:maxHeight="200dp"
+            android:minHeight="100dp"
+            android:scaleType="centerInside"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/formLabel"
+            app:srcCompat="@drawable/ic_camera" />
 
         <TextView
-            app:layout_constraintTop_toBottomOf="@id/image"
             android:id="@+id/errorMessage"
             android:layout_width="match_parent"
-            android:textSize="@dimen/textSize_12"
             android:layout_height="wrap_content"
             android:padding="4dp"
+            android:textSize="@dimen/textSize_12"
             android:visibility="gone"
-            tools:textAppearance="@style/error_appearance"
+            app:layout_constraintTop_toBottomOf="@id/image"
             tools:text="This is a error warning"
-            tools:visibility="visible"/>
+            tools:textAppearance="@style/error_appearance"
+            tools:visibility="visible" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
