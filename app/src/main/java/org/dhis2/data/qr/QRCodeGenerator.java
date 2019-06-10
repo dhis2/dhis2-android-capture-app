@@ -1,5 +1,6 @@
 package org.dhis2.data.qr;
 
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.text.TextUtils;
 import android.util.Base64;
@@ -16,11 +17,14 @@ import com.squareup.sqlbrite2.BriteDatabase;
 import org.dhis2.usescases.qrCodes.QrViewModel;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.common.Coordinates;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
+import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.period.FeatureType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
@@ -33,7 +37,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -280,6 +286,12 @@ public class QRCodeGenerator implements QRInterface {
     }
 
     @Override
+    public Observable<byte[]> getNFCData(String teiUid) {
+        return Observable.fromCallable(() -> getData(teiUid))
+                .map(this::compress);
+    }
+
+    @Override
     public Observable<Boolean> setData(String inputData) {
         return Observable.fromCallable(() -> decompress(decodeData(inputData).getBytes()))
                 .map(data -> getTEIInfo(data));
@@ -287,7 +299,7 @@ public class QRCodeGenerator implements QRInterface {
 
     private Boolean getTEIInfo(String formattedData) {
         String initialString = TEI_PATTERN.matcher(formattedData).group(1);
-        String tei_substring = initialString.substring(0,initialString.indexOf(ENROLLMENT_FLAG));
+        String tei_substring = initialString.substring(0, initialString.indexOf(ENROLLMENT_FLAG));
 
         String[] tei_substring_split = tei_substring.split("|");
 
@@ -319,20 +331,22 @@ public class QRCodeGenerator implements QRInterface {
         return baos.toByteArray();
     }
 
+    @Override
     public String decompress(byte[] dataToDecompress) {
+        if (dataToDecompress == null)
+            return "DATA WAS NULL";
         try {
             Inflater decompresser = new Inflater();
             decompresser.setInput(dataToDecompress);
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream(dataToDecompress.length);
-            byte[] buffer = new byte[1024];
-            while (!decompresser.finished()) {
-                int count = decompresser.inflate(buffer);
-                outputStream.write(buffer, 0, count);
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            byte[] buffer = new byte[100];
+            while (decompresser.inflate(buffer) != 0) {
+                outputStream.write(buffer);
             }
+            decompresser.end();
             outputStream.close();
             byte[] output = outputStream.toByteArray();
-            decompresser.end();
-            return new String(output, 0, output.length, StandardCharsets.UTF_8);
+            return new String(output, StandardCharsets.UTF_8);
         } catch (DataFormatException e) {
             Timber.e(e);
             return "";
@@ -342,6 +356,9 @@ public class QRCodeGenerator implements QRInterface {
         }
     }
 
+    /**
+     * BUILD DATA STRING
+     */
     private String getData(String teiUid) {
         StringBuilder dataBuilder = new StringBuilder();
         dataBuilder.append(TEI_FLAG);
@@ -392,13 +409,14 @@ public class QRCodeGenerator implements QRInterface {
         data.add(event.status().name());
         data.add(event.coordinate() != null ? String.valueOf(event.coordinate().latitude()) : "");
         data.add(event.coordinate() != null ? String.valueOf(event.coordinate().longitude()) : "");
-        data.add(event.program());
         data.add(event.program()); //TEI OR ENROLLMENT?
         data.add(event.programStage());
         data.add(event.eventDate() != null ? DateUtils.databaseDateFormat().format(event.eventDate()) : "");
         data.add(event.completedDate() != null ? DateUtils.databaseDateFormat().format(event.completedDate()) : "");
         data.add(event.dueDate() != null ? DateUtils.databaseDateFormat().format(event.created()) : "");
         data.add(event.state() != null ? event.state().name() : "");
+        data.add(event.organisationUnit());
+
         return TextUtils.join("|", data);
     }
 
@@ -409,7 +427,7 @@ public class QRCodeGenerator implements QRInterface {
         data.add(tei.organisationUnit());
         data.add(tei.trackedEntityType());
         data.add(tei.featureType() != null ? tei.featureType().name() : "");
-        data.add(tei.coordinates());
+        data.add(tei.coordinates() != null ? tei.coordinates() : "");
         data.add(tei.state() != null ? tei.state().name() : "");
         return TextUtils.join("|", data);
     }
@@ -429,4 +447,175 @@ public class QRCodeGenerator implements QRInterface {
         data.add(enrollment.state().name());
         return TextUtils.join("|", data);
     }
+
+    /**
+     * BUILD DATA FROM STRING
+     */
+
+    @Override
+    public String saveData(String data) {
+        String[] teiData = data.split("\\$T");
+        String[] enrollment = teiData[1].split("\\$R");
+        TrackedEntityInstance tei = saveTeiData(enrollment[0]);
+        for (int i = 1; i < enrollment.length; i++) {
+            String[] attributes = enrollment[i].split("\\$A|\\$E");
+            String[] events = enrollment[i].split("\\$E");
+            Enrollment enrollmentModel = saveEnrollmentData(tei, attributes.length != 0 ? attributes[0] : events[0]);
+
+            for (int attr = 1; attr < attributes.length; attr++) {
+                saveAttribute(tei, attributes[attr]);
+            }
+
+            for (int ev = 1; ev < events.length; ev++) {
+                String[] dataElements = events[ev].split("\\$D");
+                Event event = saveEvent(enrollmentModel, dataElements[0]);
+                for (int de = 1; de < dataElements.length; de++) {
+                    saveDataElement(event, dataElements[de]);
+                }
+            }
+        }
+
+        return tei.uid();
+    }
+
+
+    private TrackedEntityInstance saveTeiData(String teiData) {
+        String[] data = teiData.split("\\|");
+        Date created = null;
+        try {
+            created = DateUtils.databaseDateFormat().parse(data[1]);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        TrackedEntityInstance tei = TrackedEntityInstance.builder()
+                .uid(data[0])
+                .created(created != null ? created : Calendar.getInstance().getTime())
+                .lastUpdated(Calendar.getInstance().getTime())
+                .organisationUnit(data[2])
+                .trackedEntityType(data[3])
+                .featureType(data[4].isEmpty() ? null : FeatureType.valueOf(data[4]))
+                .coordinates(data[5].isEmpty() ? null : data[5])
+                .state(State.valueOf(data[6]))
+                .build();
+
+        briteDatabase.insert("TrackedEntityInstance", tei.toContentValues(), SQLiteDatabase.CONFLICT_REPLACE); //CHECK IF INSERTED
+        return tei;
+    }
+
+    private Enrollment saveEnrollmentData(TrackedEntityInstance tei, String enrollmentData) {
+        String[] data = enrollmentData.split("\\|");
+        Date created = null;
+        Date enrollmentDate = null;
+        Date incidentDate = null;
+        try {
+            created = DateUtils.databaseDateFormat().parse(data[1]);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        try {
+            enrollmentDate = DateUtils.databaseDateFormat().parse(data[1]);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        if (!data[5].isEmpty())
+            try {
+                incidentDate = DateUtils.databaseDateFormat().parse(data[5]);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+        Enrollment enrollment = Enrollment.builder()
+                .uid(data[0])
+                .created(created != null ? created : Calendar.getInstance().getTime())
+                .lastUpdated(Calendar.getInstance().getTime())
+                .organisationUnit(data[2])
+                .program(data[3])
+                .enrollmentDate(enrollmentDate)
+                .incidentDate(incidentDate)
+                .followUp(data[6].equals("t"))
+                .status(EnrollmentStatus.valueOf(data[7]))
+                .coordinate(data[8].isEmpty() ? null : Coordinates.create(Double.valueOf(data[8]), Double.valueOf(data[9])))
+                .state(State.valueOf(data[10]))
+                .trackedEntityInstance(tei.uid())
+                .build();
+
+        briteDatabase.insert("Enrollment", enrollment.toContentValues(), SQLiteDatabase.CONFLICT_REPLACE);
+        return enrollment;
+    }
+
+    public void saveAttribute(TrackedEntityInstance tei, String attrData) {
+        String[] data = attrData.split("\\|");
+        TrackedEntityAttributeValue attribute = TrackedEntityAttributeValue.builder()
+                .created(Calendar.getInstance().getTime())
+                .lastUpdated(Calendar.getInstance().getTime())
+                .trackedEntityAttribute(data[0])
+                .trackedEntityInstance(tei.uid())
+                .value(data[1])
+                .build();
+        briteDatabase.insert("TrackedEntityAttributeValue", attribute.toContentValues(), SQLiteDatabase.CONFLICT_REPLACE);
+    }
+
+    public Event saveEvent(Enrollment enrollment, String eventData) {
+        String[] data = eventData.split("\\|");
+        Date created = null;
+        Date eventDate = null;
+        Date completeDate = null;
+        Date dueDate = null;
+        try {
+            created = DateUtils.databaseDateFormat().parse(data[1]);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        if (!data[7].isEmpty())
+            try {
+                eventDate = DateUtils.databaseDateFormat().parse(data[7]);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        if (!data[8].isEmpty())
+            try {
+                completeDate = DateUtils.databaseDateFormat().parse(data[8]);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        if (!data[9].isEmpty())
+            try {
+                dueDate = DateUtils.databaseDateFormat().parse(data[9]);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        Event event = Event.builder()
+                .uid(data[0])
+                .created(created)
+                .status(EventStatus.valueOf(data[2]))
+                .coordinate(data[3].isEmpty() ? null : Coordinates.create(Double.valueOf(data[3]), Double.valueOf(data[4])))
+                .organisationUnit(data[11])
+                .program(data[5])
+                .programStage(data[6])
+                .eventDate(eventDate)
+                .completedDate(completeDate)
+                .dueDate(dueDate)
+                .enrollment(enrollment.uid())
+                .lastUpdated(Calendar.getInstance().getTime())
+                .state(State.valueOf(data[10]))
+                .build();
+
+        briteDatabase.insert("Event", event.toContentValues(), SQLiteDatabase.CONFLICT_REPLACE);
+
+        return event;
+    }
+
+    public void saveDataElement(Event event, String deData) {
+        String[] data = deData.split("\\|");
+        TrackedEntityDataValue dataValue = TrackedEntityDataValue.builder()
+                .created(Calendar.getInstance().getTime())
+                .dataElement(data[0])
+                .value(data[1])
+                .event(event.uid())
+                .build();
+        briteDatabase.insert("TrackedEntityDataValue", dataValue.toContentValues(), SQLiteDatabase.CONFLICT_REPLACE);
+
+    }
+
 }

@@ -29,6 +29,7 @@ import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
@@ -630,8 +631,26 @@ public class EnrollmentFormRepository implements FormRepository {
     }
 
     @Override
-    public Observable<Trio<Boolean, CategoryComboModel, List<CategoryOptionComboModel>>> getProgramCategoryCombo() {
-        return null;
+    public Observable<Trio<Boolean, CategoryComboModel, List<CategoryOptionComboModel>>> getProgramCategoryCombo(String eventUid) {
+        return briteDatabase.createQuery(EventModel.TABLE, "SELECT * FROM Event WHERE Event.uid = ?", eventUid)
+                .mapToOne(EventModel::create)
+                .flatMap(eventModel -> briteDatabase.createQuery(CategoryComboModel.TABLE, "SELECT CategoryCombo.* FROM CategoryCombo " +
+                        "JOIN Program ON Program.categoryCombo = CategoryCombo.uid WHERE Program.uid = ?", eventModel.program())
+                        .mapToOne(CategoryComboModel::create)
+                        .flatMap(categoryComboModel ->
+                                briteDatabase.createQuery(CategoryOptionComboModel.TABLE, "SELECT * FROM CategoryOptionCombo " +
+                                        "WHERE categoryCombo = ?", categoryComboModel.uid())
+                                        .mapToList(CategoryOptionComboModel::create)
+                                        .map(categoryOptionComboModels -> {
+                                            boolean eventHastOptionSelected = false;
+                                            for (CategoryOptionComboModel options : categoryOptionComboModels) {
+                                                if (eventModel.attributeOptionCombo() != null && eventModel.attributeOptionCombo().equals(options.uid()))
+                                                    eventHastOptionSelected = true;
+                                            }
+                                            return Trio.create(eventHastOptionSelected, categoryComboModel, categoryOptionComboModels);
+                                        })
+                        )
+                );
     }
 
     @Override
@@ -799,4 +818,10 @@ public class EnrollmentFormRepository implements FormRepository {
                 })
                 .toFlowable(BackpressureStrategy.LATEST);
     }
+
+    public Flowable<ProgramStage> getProgramStage(String eventUid){
+        return Flowable.fromCallable(() -> d2.eventModule().events.byUid().eq(eventUid).one().get())
+                .map(event -> d2.programModule().programStages.byUid().eq(event.programStage()).one().get());
+    }
+
 }

@@ -54,9 +54,6 @@ public interface EventInitialRepository {
     Observable<String> updateTrackedEntityInstance(String eventId, String trackedEntityInstanceUid, String orgUnitUid);
 
     @NonNull
-    Observable<EventModel> newlyCreatedEvent(long rowId);
-
-    @NonNull
     Observable<ProgramStageModel> programStage(String programUid);
 
     @NonNull
@@ -65,9 +62,6 @@ public interface EventInitialRepository {
     @NonNull
     Observable<EventModel> editEvent(String trackedEntityInstance, String eventUid, String date, String orgUnitUid, String catComboUid, String catOptionCombo, String latitude, String longitude);
 
-    @NonNull
-    Observable<List<EventModel>> getEventsFromProgramStage(String programUid, String enrollmentUid, String programStageUid);
-
     Observable<Boolean> accessDataWrite(String programId);
 
     void deleteEvent(String eventId, String trackedEntityInstance);
@@ -75,4 +69,6 @@ public interface EventInitialRepository {
     boolean isEnrollmentOpen();
 
     Flowable<Map<String,CategoryOption>> getOptionsFromCatOptionCombo(String eventId);
+
+    Date getStageLastDate(String programStageUid,String enrollmentUid);
 }

@@ -13,6 +13,7 @@ import com.squareup.sqlbrite2.BriteDatabase;
 import org.dhis2.utils.CodeGenerator;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
 import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
@@ -125,18 +126,46 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     @Override
     public Flowable<Map<String, CategoryOption>> getOptionsFromCatOptionCombo(String eventId) {
         return Flowable.just(d2.eventModule().events.uid(eventUid).get())
-                .flatMap(event -> Flowable.zip(catCombo(event.program()).toFlowable(BackpressureStrategy.LATEST),
-                        Flowable.just(d2.categoryModule().categoryOptionCombos.uid(event.attributeOptionCombo()).withAllChildren().get()),
-                        (categoryCombo, categoryOptionCombo) -> {
-                            List<CategoryOption> selectedCatOptions = categoryOptionCombo.categoryOptions();
+                .flatMap(event -> catCombo(event.program()).toFlowable(BackpressureStrategy.LATEST)
+                        .flatMap(categoryCombo -> {
                             Map<String, CategoryOption> map = new HashMap<>();
-                            for (Category category : categoryCombo.categories()) {
-                                for (CategoryOption categoryOption : selectedCatOptions)
-                                    if (category.categoryOptions().contains(categoryOption))
-                                        map.put(category.uid(), categoryOption);
+                            if (!categoryCombo.isDefault() && event.attributeOptionCombo() != null) {
+                                List<CategoryOption> selectedCatOptions = d2.categoryModule().categoryOptionCombos.uid(event.attributeOptionCombo()).withAllChildren().get().categoryOptions();
+                                for (Category category : categoryCombo.categories()) {
+                                    for (CategoryOption categoryOption : selectedCatOptions)
+                                        if (category.categoryOptions().contains(categoryOption))
+                                            map.put(category.uid(), categoryOption);
+                                }
                             }
-                            return map;
+
+                            return Flowable.just(map);
                         }));
+    }
+
+    @Override
+    public Date getStageLastDate(String programStageUid, String enrollmentUid) {
+        List<Event> activeEvents = d2.eventModule().events.byEnrollmentUid().eq(enrollmentUid).byProgramStageUid().eq(programStageUid)
+                .orderByEventDate(RepositoryScope.OrderByDirection.DESC).get();
+        List<Event> scheduleEvents = d2.eventModule().events.byEnrollmentUid().eq(enrollmentUid).byProgramStageUid().eq(programStageUid)
+                .orderByDueDate(RepositoryScope.OrderByDirection.DESC).get();
+
+        Date activeDate = null;
+        Date scheduleDate = null;
+        if (!activeEvents.isEmpty()) {
+            activeDate = activeEvents.get(0).eventDate();
+        }
+        if (!scheduleEvents.isEmpty())
+            scheduleDate = scheduleEvents.get(0).dueDate();
+
+        if (activeDate != null && scheduleDate != null) {
+            return activeDate.before(scheduleDate) ? scheduleDate : activeDate;
+        } else if (activeDate != null) {
+            return activeDate;
+        } else if (scheduleDate != null){
+            return scheduleDate;
+        }else{
+            return Calendar.getInstance().getTime();
+        }
     }
 
     @NonNull
@@ -305,13 +334,6 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     @NonNull
     @Override
-    public Observable<EventModel> newlyCreatedEvent(long rowId) {
-        String SELECT_EVENT_WITH_ROWID = "SELECT * FROM " + EventModel.TABLE + " WHERE " + EventModel.Columns.ID + " = '" + rowId + "'" + " AND " + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "' LIMIT 1";
-        return briteDatabase.createQuery(EventModel.TABLE, SELECT_EVENT_WITH_ROWID).mapToOne(EventModel::create);
-    }
-
-    @NonNull
-    @Override
     public Observable<ProgramStageModel> programStage(String programUid) {
         String id = programUid == null ? "" : programUid;
         String SELECT_PROGRAM_STAGE = "SELECT * FROM " + ProgramStageModel.TABLE + " WHERE " + ProgramStageModel.Columns.PROGRAM + " = '" + id + "' LIMIT 1";
@@ -358,7 +380,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
         if ((event.coordinate() == null && (!isEmpty(latitude) && !isEmpty(longitude))) ||
                 (event.coordinate() != null && (!String.valueOf(event.coordinate().latitude()).equals(latitude) || !String.valueOf(event.coordinate().longitude()).equals(longitude))))
             hasChanged = true;
-        if (!event.attributeOptionCombo().equals(catOptionCombo))
+        if (event.attributeOptionCombo() != null && !event.attributeOptionCombo().equals(catOptionCombo))
             hasChanged = true;
 
         if (hasChanged) {
@@ -397,33 +419,6 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                 updateTei(trackedEntityInstance);
         }
         return event(eventUid).map(eventModel1 -> eventModel1);
-    }
-
-    @NonNull
-    @Override
-    public Observable<List<EventModel>> getEventsFromProgramStage(String programUid, String enrollmentUid, String programStageUid) {
-        String EVENTS_QUERY = String.format(
-                "SELECT Event.* FROM %s JOIN %s " +
-                        "ON %s.%s = %s.%s " +
-                        "WHERE %s.%s = ? " +
-                        "AND %s.%s = ? " +
-                        "AND %s.%s = ? " +
-                        "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'" +
-                        "AND " + EventModel.TABLE + "." + EventModel.Columns.EVENT_DATE + " > DATE() " +
-                        "ORDER BY CASE WHEN %s.%s > %s.%s " +
-                        "THEN %s.%s ELSE %s.%s END ASC",
-                EventModel.TABLE, EnrollmentModel.TABLE,
-                EnrollmentModel.TABLE, EnrollmentModel.Columns.UID, EventModel.TABLE, EventModel.Columns.ENROLLMENT,
-                EnrollmentModel.TABLE, EnrollmentModel.Columns.PROGRAM,
-                EnrollmentModel.TABLE, EnrollmentModel.Columns.UID,
-                EventModel.TABLE, EventModel.Columns.PROGRAM_STAGE,
-                EventModel.TABLE, EventModel.Columns.DUE_DATE, EventModel.TABLE, EventModel.Columns.EVENT_DATE,
-                EventModel.TABLE, EventModel.Columns.DUE_DATE, EventModel.TABLE, EventModel.Columns.EVENT_DATE);
-
-        return briteDatabase.createQuery(EventModel.TABLE, EVENTS_QUERY, programUid == null ? "" : programUid,
-                enrollmentUid == null ? "" : enrollmentUid,
-                programStageUid == null ? "" : programStageUid)
-                .mapToList(EventModel::create);
     }
 
     @Override

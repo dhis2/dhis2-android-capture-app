@@ -113,46 +113,6 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
                 handleDateInput(view, datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
             }
         }).show();
-       /*
-        LayoutInflater layoutInflater = LayoutInflater.from(getContext());
-        WidgetDatepickerBinding binding = WidgetDatepickerBinding.inflate(layoutInflater);
-        final DatePicker datePicker = binding.widgetDatepicker;
-
-        Calendar c = Calendar.getInstance();
-        int year = c.get(Calendar.YEAR);
-        int month = c.get(Calendar.MONTH);
-        int day = c.get(Calendar.DAY_OF_MONTH);
-
-        datePicker.updateDate(year, month, day);
-        datePicker.setMaxDate(c.getTimeInMillis());
-
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(getContext(), R.style.DatePickerTheme)
-                .setTitle(label);
-                *//*.setPositiveButton(R.string.action_accept, (dialog, which) -> handleDateInput(view, datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth()))
-                .setNeutralButton(getContext().getResources().getString(R.string.change_calendar), (dialog, which) -> showNativeCalendar(view));*//*
-
-        alertDialog.setView(binding.getRoot());
-        Dialog dialog = alertDialog.create();
-
-        binding.changeCalendarButton.setOnClickListener(calendarButton->{
-            showNativeCalendar(view);
-            dialog.dismiss();
-        });
-        binding.clearButton.setOnClickListener(clearButton->{
-            listener.onAgeSet(null);
-            date.setText(null);
-            this.day.setText(null);
-            this.month.setText(null);
-            this.year.setText(null);
-            dialog.dismiss();
-        });
-
-        binding.acceptButton.setOnClickListener(acceptButton->{
-            handleDateInput(view, datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
-            dialog.dismiss();
-        });
-
-        dialog.show();*/
     }
 
     public void setAgeChangedListener(OnAgeSet listener) {

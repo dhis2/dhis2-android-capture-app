@@ -22,4 +22,6 @@ interface FormPresenter {
     void saveCategoryOption(CategoryOptionComboModel selectedOption);
 
     void initializeSaveObservable();
+
+    void getNeedInitial(String eventUid);
 }

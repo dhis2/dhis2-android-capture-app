@@ -352,22 +352,6 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
         datePicker.setMaxDate(c.getTimeInMillis());
 
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(view.getContext(), R.style.DatePickerTheme);
-                /*.setPositiveButton(R.string.action_accept, (dialog, which) -> {
-                    Calendar selectedCalendar = Calendar.getInstance();
-                    selectedCalendar.set(Calendar.YEAR, datePicker.getYear());
-                    selectedCalendar.set(Calendar.MONTH, datePicker.getMonth());
-                    selectedCalendar.set(Calendar.DAY_OF_MONTH, datePicker.getDayOfMonth());
-                    selectedCalendar.set(Calendar.HOUR_OF_DAY, c.get(Calendar.HOUR_OF_DAY));
-                    selectedCalendar.set(Calendar.MINUTE, c.get(Calendar.MINUTE));
-                    Date selectedDate = selectedCalendar.getTime();
-                    String result = DateUtils.uiDateFormat().format(selectedDate);
-                    view.setDate(result);
-
-                    if (eventDetailModel.getProgramStage().accessDataWrite()) {
-                        dataEntryStore.updateEvent(selectedDate, eventDetailModel.getEventModel());
-                    }
-                })
-                .setNeutralButton(view.getContext().getResources().getString(R.string.change_calendar), (dialog, which) -> showNativeCalendar(futureOnly));*/
 
         if (eventDetailModel.getEventModel().status() != EventStatus.SCHEDULE && eventDetailModel.getEventModel().status() != EventStatus.OVERDUE) {
             datePicker.setMaxDate(System.currentTimeMillis());

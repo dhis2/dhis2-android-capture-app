@@ -3,11 +3,17 @@ package org.dhis2.utils.custom_views.orgUnitCascade;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.DialogFragment;
 
 import com.google.android.material.chip.Chip;
 import com.jakewharton.rxbinding2.widget.RxTextView;
@@ -15,7 +21,6 @@ import com.jakewharton.rxbinding2.widget.RxTextView;
 import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.databinding.DialogCascadeOrgunitBinding;
-import org.dhis2.utils.ColorUtils;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
@@ -25,11 +30,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.databinding.DataBindingUtil;
-import androidx.fragment.app.DialogFragment;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -96,9 +96,7 @@ public class OrgUnitCascadeDialog extends DialogFragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
 
         binding = DataBindingUtil.inflate(inflater, R.layout.dialog_cascade_orgunit, container, false);
-        binding.orgUnitSearchEditText.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_search, 0, 0, 0);
-        binding.orgUnitSearchLayout.setHint(title);
-        binding.orgUnitSearchEditText.setCompoundDrawables(ColorUtils.tintDrawableWithColor(AppCompatResources.getDrawable(getContext(), R.drawable.ic_search), R.color.icon_color), null, null, null);
+        binding.title.setText(title);
         disposable = new CompositeDisposable();
 
         setListeners();
@@ -200,6 +198,11 @@ public class OrgUnitCascadeDialog extends DialogFragment {
                 callbacks.textChangedConsumer(ou.uid(), ou.displayName());
                 dismiss();
             });
+            chip.setChipMinHeightResource(R.dimen.chip_minHeight);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                chip.setElevation(6f);
+            }
+            chip.setChipBackgroundColorResource(R.color.white);
             binding.results.addView(chip);
 
         }

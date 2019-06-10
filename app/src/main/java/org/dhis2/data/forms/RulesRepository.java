@@ -343,16 +343,33 @@ public final class RulesRepository {
         String attribute = cursor.getString(4);
 
         // Mime types of the attribute and data element.
-        String attributeType = cursor.getString(5);
-        String elementType = cursor.getString(6);
+        String attributeType = cursor.getString(6);
+        String elementType = cursor.getString(5);
 
         // String representation of value type.
         RuleValueType mimeType = null;
+
+        switch (ProgramRuleVariableSourceType.valueOf(sourceType)) {
+            case TEI_ATTRIBUTE:
+                if (!isEmpty(attributeType))
+                    mimeType = convertType(attributeType);
+                break;
+            case DATAELEMENT_CURRENT_EVENT:
+            case DATAELEMENT_PREVIOUS_EVENT:
+            case DATAELEMENT_NEWEST_EVENT_PROGRAM:
+            case DATAELEMENT_NEWEST_EVENT_PROGRAM_STAGE:
+                if (!isEmpty(elementType))
+                    mimeType = convertType(elementType);
+                break;
+            default:
+                break;
+        }
+      /*
         if (!isEmpty(attributeType)) {
             mimeType = convertType(attributeType);
         } else if (!isEmpty(elementType)) {
             mimeType = convertType(elementType);
-        }
+        }*/
 
         if (mimeType == null) {
             mimeType = RuleValueType.TEXT;
@@ -389,8 +406,8 @@ public final class RulesRepository {
         String attribute = cursor.getString(4);
 
         // Mime types of the attribute and data element.
-        String attributeType = cursor.getString(5);
-        String elementType = cursor.getString(6);
+        String attributeType = cursor.getString(6);
+        String elementType = cursor.getString(5);
 
         // String representation of value type.
         RuleValueType mimeType = null;
@@ -553,8 +570,8 @@ public final class RulesRepository {
                                     briteDatabase.createQuery(EventModel.TABLE, eventModel.enrollment() == null ? QUERY_OTHER_EVENTS : QUERY_OTHER_EVENTS_ENROLLMENTS,
                                             eventModel.enrollment() == null ? programModel.uid() : eventModel.enrollment(),
                                             eventUidToEvaluate == null ? "" : eventUidToEvaluate,
-                                            DateUtils.databaseDateFormat().format(eventModel.eventDate()),
-                                            DateUtils.databaseDateFormat().format(eventModel.eventDate()),
+                                            DateUtils.databaseDateFormat().format(eventModel.eventDate()!=null ? eventModel.eventDate() : eventModel.dueDate()),
+                                            DateUtils.databaseDateFormat().format(eventModel.eventDate()!=null ? eventModel.eventDate() : eventModel.dueDate()),
                                             DateUtils.databaseDateFormat().format(eventModel.lastUpdated()))
                                             .mapToList(cursor -> {
                                                 List<RuleDataValue> dataValues = new ArrayList<>();

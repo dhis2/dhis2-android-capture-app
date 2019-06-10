@@ -122,7 +122,7 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
                     editText.setEllipsize(TextUtils.TruncateAt.END);
                     break;
                 case LONG_TEXT:
-                    inputLayout.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 93, getResources().getDisplayMetrics());
+                    editText.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 93, getResources().getDisplayMetrics());
                     editText.setMaxLines(Integer.MAX_VALUE);
                     editText.setEllipsize(null);
                     editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
