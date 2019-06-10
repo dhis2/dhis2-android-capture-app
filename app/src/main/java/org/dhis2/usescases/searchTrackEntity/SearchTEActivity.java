@@ -214,22 +214,26 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         new Handler().postDelayed(() -> {
             FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
                     .title(getString(R.string.tuto_search_1_v2))
+                    .enableAutoTextPosition()
                     .closeOnTouch(true)
                     .build();
             FancyShowCaseView tuto2 = new FancyShowCaseView.Builder(getAbstractActivity())
                     .title(getString(R.string.tuto_search_2))
+                    .enableAutoTextPosition()
                     .focusShape(FocusShape.ROUNDED_RECTANGLE)
                     .focusOn(getAbstractActivity().findViewById(R.id.program_spinner))
                     .closeOnTouch(true)
                     .build();
             FancyShowCaseView tuto3 = new FancyShowCaseView.Builder(getAbstractActivity())
                     .title(getString(R.string.tuto_search_3_v2))
+                    .enableAutoTextPosition()
                     .focusOn(getAbstractActivity().findViewById(R.id.enrollmentButton))
                     .closeOnTouch(true)
                     .build();
             FancyShowCaseView tuto4 = new FancyShowCaseView.Builder(getAbstractActivity())
                     .focusOn(getAbstractActivity().findViewById(R.id.clear_button))
                     .title(getString(R.string.tuto_search_4_v2))
+                    .enableAutoTextPosition()
                     .closeOnTouch(true)
                     .build();
 
