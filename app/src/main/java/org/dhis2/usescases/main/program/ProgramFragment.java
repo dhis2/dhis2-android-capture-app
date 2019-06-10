@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,9 +49,9 @@ import java.util.Locale;
 import javax.inject.Inject;
 
 import io.reactivex.functions.Consumer;
-import me.toptas.fancyshowcase.DismissListener;
 import me.toptas.fancyshowcase.FancyShowCaseView;
 import me.toptas.fancyshowcase.FocusShape;
+import me.toptas.fancyshowcase.listener.DismissListener;
 import timber.log.Timber;
 
 import static org.dhis2.utils.Period.DAILY;
@@ -458,90 +459,99 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                 Constants.SHARE_PREFS, Context.MODE_PRIVATE);
         try {
 
-            if (getContext() != null && isAdded() && getAbstractActivity() != null) {
+            if (getContext() != null && isAdded()) {
                 new Handler().postDelayed(() -> {
-                    FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
-                            .title(getString(R.string.tuto_main_1))
-                            .closeOnTouch(true)
-                            .build();
-                    FancyShowCaseView tuto2 = new FancyShowCaseView.Builder(getAbstractActivity())
-                            .title(getString(R.string.tuto_main_2))
-                            .closeOnTouch(true)
-                            .build();
-
-                    FancyShowCaseView tuto3 = new FancyShowCaseView.Builder(getAbstractActivity())
-                            .title(getString(R.string.tuto_main_3))
-                            .focusOn(getAbstractActivity().findViewById(R.id.filter))
-                            .closeOnTouch(true)
-                            .dismissListener(new DismissListener() {
-                                @Override
-                                public void onDismiss(String id) {
-                                    if (getAbstractActivity() != null &&
-                                            getAbstractActivity().findViewById(R.id.filter_layout) != null &&
-                                            getAbstractActivity().findViewById(R.id.filter_layout).getVisibility() == View.GONE)
-                                        getAbstractActivity().findViewById(R.id.filter).performClick();
-                                }
-
-                                @Override
-                                public void onSkipped(String id) {
-                                    // do nothing
-                                }
-                            })
-                            .build();
-
-                    FancyShowCaseView tuto4 = new FancyShowCaseView.Builder(getAbstractActivity())
-                            .title(getString(R.string.tuto_main_4))
-                            .focusOn(binding.periodLayout)
-                            .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                            .closeOnTouch(true)
-                            .build();
-
-                    FancyShowCaseView tuto5 = new FancyShowCaseView.Builder(getAbstractActivity())
-                            .title(getString(R.string.tuto_main_5))
-                            .focusOn(binding.buttonOrgUnit)
-                            .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                            .closeOnTouch(true)
-                            .build();
-
-                    FancyShowCaseView tuto6 = new FancyShowCaseView.Builder(getAbstractActivity())
-                            .title(getString(R.string.tuto_main_6))
-                            .focusOn(getAbstractActivity().findViewById(R.id.menu))
-                            .closeOnTouch(true)
-                            .dismissListener(new DismissListener() {
-                                @Override
-                                public void onDismiss(String id) {
-                                    // do nothing
-                                }
-
-                                @Override
-                                public void onSkipped(String id) {
-                                    // do nothing
-                                }
-                            })
-                            .build();
-
-                    ArrayList<FancyShowCaseView> steps = new ArrayList<>();
-                    steps.add(tuto1);
-                    steps.add(tuto2);
-                    steps.add(tuto3);
-                    steps.add(tuto4);
-                    steps.add(tuto5);
-                    steps.add(tuto6);
-
-                    if (binding.programRecycler.getAdapter().getItemCount() > 0) {
-                        FancyShowCaseView tuto11 = new FancyShowCaseView.Builder(getAbstractActivity())
-                                .title(getString(R.string.tuto_main_11))
-                                .focusOn(getAbstractActivity().findViewById(R.id.sync_status))
+                    if(getAbstractActivity() !=null) {
+                        FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
+                                .title(getString(R.string.tuto_main_1))
+                                .enableAutoTextPosition()
                                 .closeOnTouch(true)
                                 .build();
-                        steps.add(tuto11);
-                    }
+                        FancyShowCaseView tuto2 = new FancyShowCaseView.Builder(getAbstractActivity())
+                                .title(getString(R.string.tuto_main_2))
+                                .enableAutoTextPosition()
+                                .closeOnTouch(true)
+                                .build();
 
-                    HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
+                        FancyShowCaseView tuto3 = new FancyShowCaseView.Builder(getAbstractActivity())
+                                .title(getString(R.string.tuto_main_3))
+                                .enableAutoTextPosition()
+                                .focusOn(getAbstractActivity().findViewById(R.id.filter))
+                                .closeOnTouch(true)
+                                .dismissListener(new DismissListener() {
+                                    @Override
+                                    public void onDismiss(String id) {
+                                        if (getAbstractActivity() != null &&
+                                                getAbstractActivity().findViewById(R.id.filter_layout) != null &&
+                                                getAbstractActivity().findViewById(R.id.filter_layout).getVisibility() == View.GONE)
+                                            getAbstractActivity().findViewById(R.id.filter).performClick();
+                                    }
 
-                    if (!prefs.getBoolean(Constants.TUTORIAL_HOME, false) && !BuildConfig.DEBUG) {
-                        HelpManager.getInstance().showHelp();
-                        prefs.edit().putBoolean(Constants.TUTORIAL_HOME, true).apply();
+                                    @Override
+                                    public void onSkipped(String id) {
+                                        // do nothing
+                                    }
+                                })
+                                .build();
+
+                        FancyShowCaseView tuto4 = new FancyShowCaseView.Builder(getAbstractActivity())
+                                .title(getString(R.string.tuto_main_4))
+                                .enableAutoTextPosition()
+                                .focusOn(binding.periodLayout)
+                                .focusShape(FocusShape.ROUNDED_RECTANGLE)
+                                .closeOnTouch(true)
+                                .build();
+
+                        FancyShowCaseView tuto5 = new FancyShowCaseView.Builder(getAbstractActivity())
+                                .title(getString(R.string.tuto_main_5))
+                                .enableAutoTextPosition()
+                                .focusOn(binding.buttonOrgUnit)
+                                .focusShape(FocusShape.ROUNDED_RECTANGLE)
+                                .closeOnTouch(true)
+                                .build();
+
+                        FancyShowCaseView tuto6 = new FancyShowCaseView.Builder(getAbstractActivity())
+                                .title(getString(R.string.tuto_main_6))
+                                .enableAutoTextPosition()
+                                .focusOn(getAbstractActivity().findViewById(R.id.menu))
+                                .closeOnTouch(true)
+                                .dismissListener(new DismissListener() {
+                                    @Override
+                                    public void onDismiss(String id) {
+                                        // do nothing
+                                    }
+
+                                    @Override
+                                    public void onSkipped(String id) {
+                                        // do nothing
+                                    }
+                                })
+                                .build();
+
+                        ArrayList<FancyShowCaseView> steps = new ArrayList<>();
+                        steps.add(tuto1);
+                        steps.add(tuto2);
+                        steps.add(tuto3);
+                        steps.add(tuto4);
+                        steps.add(tuto5);
+                        steps.add(tuto6);
+
+                        if (binding.programRecycler.getAdapter().getItemCount() > 0) {
+                            FancyShowCaseView tuto11 = new FancyShowCaseView.Builder(getAbstractActivity())
+                                    .title(getString(R.string.tuto_main_11))
+                                    .enableAutoTextPosition()
+                                    .focusOn(getAbstractActivity().findViewById(R.id.sync_status))
+                                    .closeOnTouch(true)
+                                    .build();
+                            steps.add(tuto11);
+                        }
+
+                        HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
+
+                        if (!prefs.getBoolean(Constants.TUTORIAL_HOME, false) && !BuildConfig.DEBUG) {
+                            HelpManager.getInstance().showHelp();
+                            prefs.edit().putBoolean(Constants.TUTORIAL_HOME, true).apply();
+                        }
                     }
 
                 }, 500);

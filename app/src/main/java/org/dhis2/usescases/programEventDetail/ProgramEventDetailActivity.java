@@ -580,10 +580,12 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         new Handler().postDelayed(() -> {
             FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
                     .title(getString(R.string.tuto_program_event_1))
+                    .enableAutoTextPosition()
                     .closeOnTouch(true)
                     .build();
             FancyShowCaseView tuto2 = new FancyShowCaseView.Builder(getAbstractActivity())
                     .title(getString(R.string.tuto_program_event_2))
+                    .enableAutoTextPosition()
                     .focusOn(getAbstractActivity().findViewById(R.id.addEventButton))
                     .closeOnTouch(true)
                     .build();

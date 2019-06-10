@@ -305,7 +305,7 @@ dependencies {
     implementation 'com.journeyapps:zxing-android-embedded:3.2.0@aar'
 
     //FancyShowCase
-    implementation 'com.github.faruktoptas:FancyShowCaseView:1.0.0'
+    implementation 'me.toptas.fancyshowcase:fancyshowcaseview:1.1.5'
 
     //Lottie animations
     implementation 'com.airbnb.android:lottie:2.8.0'

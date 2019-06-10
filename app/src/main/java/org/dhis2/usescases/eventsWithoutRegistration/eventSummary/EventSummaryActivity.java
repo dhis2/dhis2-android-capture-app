@@ -321,6 +321,7 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
 
             FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
                     .title(getString(R.string.tuto_event_summary))
+                    .enableAutoTextPosition()
                     .focusOn(binding.actionButton)
                     .closeOnTouch(true)
                     .focusShape(FocusShape.ROUNDED_RECTANGLE)

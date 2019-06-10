@@ -125,6 +125,7 @@
                 android:text="@string/sync_max_parameters" />
 
             <TableLayout
+                android:id="@+id/capacityLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:stretchColumns="*">

@@ -48,6 +48,7 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager.widget.ViewPager;
 import me.toptas.fancyshowcase.FancyShowCaseView;
 import me.toptas.fancyshowcase.FocusShape;
+import timber.log.Timber;
 
 /**
  * QUADRAM. Created by ppajuelo on 29/11/2017.
@@ -332,10 +333,12 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         new Handler().postDelayed(() -> {
             FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
                     .title(getString(R.string.tuto_dashboard_1))
+                    .enableAutoTextPosition()
                     .closeOnTouch(true)
                     .build();
             FancyShowCaseView tuto2 = new FancyShowCaseView.Builder(getAbstractActivity())
                     .title(getString(R.string.tuto_dashboard_2))
+                    .enableAutoTextPosition()
                     .focusOn(getAbstractActivity().findViewById(R.id.viewMore))
                     .focusShape(FocusShape.ROUNDED_RECTANGLE)
                     .titleGravity(Gravity.BOTTOM)
@@ -343,6 +346,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                     .build();
             FancyShowCaseView tuto3 = new FancyShowCaseView.Builder(getAbstractActivity())
                     .title(getString(R.string.tuto_dashboard_3))
+                    .enableAutoTextPosition()
                     .focusOn(getAbstractActivity().findViewById(R.id.shareContainer))
                     .focusShape(FocusShape.ROUNDED_RECTANGLE)
                     .titleGravity(Gravity.BOTTOM)
@@ -350,16 +354,19 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                     .build();
             FancyShowCaseView tuto4 = new FancyShowCaseView.Builder(getAbstractActivity())
                     .title(getString(R.string.tuto_dashboard_4))
+                    .enableAutoTextPosition()
                     .focusOn(getAbstractActivity().findViewById(R.id.follow_up))
                     .closeOnTouch(true)
                     .build();
             FancyShowCaseView tuto5 = new FancyShowCaseView.Builder(getAbstractActivity())
                     .title(getString(R.string.tuto_dashboard_5))
+                    .enableAutoTextPosition()
                     .focusOn(getAbstractActivity().findViewById(R.id.fab))
                     .closeOnTouch(true)
                     .build();
             FancyShowCaseView tuto6 = new FancyShowCaseView.Builder(getAbstractActivity())
                     .title(getString(R.string.tuto_dashboard_6))
+                    .enableAutoTextPosition()
                     .focusOn(getAbstractActivity().findViewById(R.id.tei_recycler))
                     .focusShape(FocusShape.ROUNDED_RECTANGLE)
                     .titleGravity(Gravity.TOP)
@@ -367,12 +374,14 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                     .build();
             FancyShowCaseView tuto7 = new FancyShowCaseView.Builder(getAbstractActivity())
                     .title(getString(R.string.tuto_dashboard_7))
+                    .enableAutoTextPosition()
                     .focusOn(getAbstractActivity().findViewById(R.id.tab_layout))
                     .focusShape(FocusShape.ROUNDED_RECTANGLE)
                     .closeOnTouch(true)
                     .build();
             FancyShowCaseView tuto8 = new FancyShowCaseView.Builder(getAbstractActivity())
                     .title(getString(R.string.tuto_dashboard_8))
+                    .enableAutoTextPosition()
                     .focusOn(getAbstractActivity().findViewById(R.id.program_selector_button))
                     .closeOnTouch(true)
                     .build();
