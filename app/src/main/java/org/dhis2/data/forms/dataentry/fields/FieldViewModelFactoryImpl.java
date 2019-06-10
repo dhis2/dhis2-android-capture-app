@@ -6,6 +6,7 @@ import org.dhis2.data.forms.dataentry.fields.datetime.DateTimeViewModel;
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
 import org.dhis2.data.forms.dataentry.fields.image.ImageViewModel;
 import org.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitViewModel;
+import org.dhis2.data.forms.dataentry.fields.picture.PictureViewModel;
 import org.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel;
@@ -101,6 +102,8 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
             case UNIT_INTERVAL:
             case URL:
                 return EditTextViewModel.create(id, label, mandatory, value, hintEnterText, 1, type, section, editable, description, fieldRendering,objectStyle);
+            case IMAGE:
+                return PictureViewModel.create(id, label, mandatory, value, section, editable, description, null);
             case TIME:
             case DATE:
             case DATETIME:
@@ -113,7 +116,6 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
             case ORGANISATION_UNIT:
                 return OrgUnitViewModel.create(id, label, mandatory, value, section, editable, description, objectStyle);
             case FILE_RESOURCE:
-            case IMAGE:
             case TRACKER_ASSOCIATE:
             case USERNAME:
                 return UnsupportedViewModel.create(id, label, mandatory, value, section, editable, description, objectStyle);

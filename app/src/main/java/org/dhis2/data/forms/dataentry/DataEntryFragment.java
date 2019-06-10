@@ -31,6 +31,7 @@ import org.dhis2.utils.OnDialogClickListener;
 import org.dhis2.utils.Preconditions;
 import org.dhis2.utils.custom_views.OptionSetDialog;
 import org.dhis2.utils.custom_views.OptionSetPopUp;
+import org.dhis2.utils.custom_views.PictureView;
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
@@ -58,6 +59,7 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
     private ProgressBar progressBar;
     private View dummyFocusView;
     private boolean isEnrollment;
+    private PictureView.OnIntentSelected onIntentSelected;
 
     @NonNull
     public static DataEntryFragment create(@NonNull DataEntryArguments arguments) {
@@ -74,6 +76,8 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
     public void onAttach(Context context) {
         super.onAttach(context);
         formFragment = ((ActivityGlobalAbstract) context).getSupportFragmentManager().getFragments().get(0);
+        if (context instanceof PictureView.OnIntentSelected)
+            onIntentSelected = (PictureView.OnIntentSelected) context;
         DataEntryArguments args = Preconditions.isNull(getArguments()
                 .getParcelable(ARGUMENTS), "dataEntryArguments == null");
 
@@ -188,7 +192,7 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
     private void setUpRecyclerView() {
         DataEntryArguments arguments = getArguments().getParcelable(ARGUMENTS);
         dataEntryAdapter = new DataEntryAdapter(LayoutInflater.from(getActivity()),
-                getChildFragmentManager(), arguments);
+                getChildFragmentManager(), arguments, onIntentSelected);
 
         RecyclerView.LayoutManager layoutManager;
         if (arguments.renderType() != null && arguments.renderType().equals(ProgramStageSectionRenderingType.MATRIX.name())) {

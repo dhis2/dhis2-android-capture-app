@@ -2,15 +2,22 @@ package org.dhis2.data.forms.dataentry;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.dhis2.R;
+import org.dhis2.utils.custom_views.PictureView;
 
 
-public class DataEntryActivity extends AppCompatActivity {
+public class DataEntryActivity extends AppCompatActivity implements PictureView.OnIntentSelected {
     private static final String ARGS = "args";
+    private PictureView.OnPictureSelected onPictureSelected;
+    private String uuid;
 
     @NonNull
     public static Intent create(@NonNull Activity activity, @NonNull DataEntryArguments arguments) {
@@ -28,5 +35,24 @@ public class DataEntryActivity extends AppCompatActivity {
                 .replace(R.id.frame_place_holder, DataEntryFragment
                         .create(getIntent().getParcelableExtra(ARGS)))
                 .commitNow();
+    }
+
+    @Override
+    public void intentSelected(String uuid, Intent intent, int request, PictureView.OnPictureSelected onPictureSelected) {
+        this.uuid = uuid;
+        this.onPictureSelected = onPictureSelected;
+        startActivityForResult(intent, request);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode == RESULT_OK){
+            if (data != null && data.hasExtra("data")) {
+                Uri selectedImage = data.getData();
+                if (selectedImage != null)
+                    onPictureSelected.onSelected(selectedImage.toString(), uuid);
+            }
+        }
     }
 }

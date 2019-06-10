@@ -46,6 +46,7 @@ import org.dhis2.utils.OnDialogClickListener;
 import org.dhis2.utils.SyncUtils;
 import org.dhis2.utils.custom_views.CoordinatesView;
 import org.dhis2.utils.custom_views.CustomDialog;
+import org.dhis2.utils.custom_views.PictureView;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -60,7 +61,7 @@ import timber.log.Timber;
  * QUADRAM. Created by Javi on 28/07/2017.
  */
 
-public abstract class ActivityGlobalAbstract extends AppCompatActivity implements AbstractActivityContracts.View, CoordinatesView.OnMapPositionClick {
+public abstract class ActivityGlobalAbstract extends AppCompatActivity implements AbstractActivityContracts.View, CoordinatesView.OnMapPositionClick, PictureView.OnIntentSelected {
 
     private BehaviorSubject<Status> lifeCycleObservable = BehaviorSubject.create();
     private CoordinatesView coordinatesView;
@@ -401,5 +402,10 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
     public void showSyncDialog(String programUid, SyncStatusDialog.ConflictType conflictType) {
         new SyncStatusDialog(programUid, conflictType)
                 .show(getSupportFragmentManager(), programUid);
+    }
+
+    @Override
+    public void intentSelected(String uuid, Intent intent, int request, PictureView.OnPictureSelected onPictureSelected) {
+
     }
 }
