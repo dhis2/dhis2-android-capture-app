@@ -24,5 +24,7 @@ public class ProgramStageSelectionContract {
         void getProgramStages(String programId, @NonNull String programUid, @NonNull View view);
 
         void onProgramStageClick(ProgramStage programStage);
+
+        int getStandardInterval(String programStageUid);
     }
 }

@@ -277,26 +277,6 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     }
 
     @Override
-    public void createEventPermanent(String enrollmentUid, String trackedEntityInstanceUid, String programStageModel, Date date, String orgUnitUid,
-                                     String catComboUid, String catOptionUid,
-                                     String latitude, String longitude) {
-        compositeDisposable.add(
-                eventInitialRepository.createEvent(enrollmentUid, trackedEntityInstanceUid, view.getContext(),
-                        programModel.uid(), programStageModel, date, orgUnitUid,
-                        catComboUid, catOptionUid,
-                        latitude, longitude)
-                        .switchMap(
-                                eventId -> eventInitialRepository.updateTrackedEntityInstance(eventId, trackedEntityInstanceUid, orgUnitUid)
-                        )
-                        .distinctUntilChanged()
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                eventUid -> view.onEventCreated(eventUid),
-                                t -> view.renderError(t.getMessage())));
-    }
-
-    @Override
     public void scheduleEventPermanent(String enrollmentUid, String trackedEntityInstanceUid, String programStageModel, Date dueDate, String orgUnitUid,
                                        String categoryOptionComboUid, String categoryOptionsUid,
                                        String latitude, String longitude) {
@@ -509,5 +489,10 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
             if (catOptComb.categoryOptions().containsAll(values))
                 attrOptionComb = catOptComb.uid();
         return attrOptionComb;
+    }
+
+    @Override
+    public Date getStageLastDate(String programStageUid, String enrollmentUid) {
+        return eventInitialRepository.getStageLastDate(programStageUid, enrollmentUid);
     }
 }
