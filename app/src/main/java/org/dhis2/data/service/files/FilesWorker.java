@@ -19,6 +19,7 @@ import org.dhis2.R;
 import org.dhis2.utils.FileResourcesUtil;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.ValueType;
+import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 
@@ -89,7 +90,7 @@ public class FilesWorker extends Worker {
         triggerNotification("File processor", "Uploading files...", file_upload_channel);
         File[] filesToUpload = FileResourcesUtil.getUploadDirectory(getApplicationContext()).listFiles();
         for (File file : filesToUpload) {
-            String[] fileName = file.getName().split("."); //tei, attr, extension
+            String[] fileName = file.getName().split("\\."); //enrollment/event, attr, extension
             upload(file, fileName[0], fileName[1]);
         }
     }
@@ -104,17 +105,23 @@ public class FilesWorker extends Worker {
         upload(file, teiUid, attrUid);
     }
 
-    private void upload(File file, String teiUid, String attrUid) {
+    private void upload(File file, String enrollmentOrEvent, String attrUid) {
         Completable.fromCallable(() -> {
             Response<ResponseBody> response = fileService.uploadFile(getFilePart(file)).execute();
 
             if (response.isSuccessful()) {
-                FileResourceResponse fileResourceResponse = new Gson().fromJson(response.body().string(), FileResourceResponse.class);
-                String updateAttr = String.format("UPDATE TrackedEntityAttributeValue SET value = %s " +
-                                "WHERE trackedEntityInstance = %s AND trackedEntityAttribute = %s",
-                        fileResourceResponse.getResponse().getId(), teiUid, attrUid);
-                SQLiteStatement update = d2.databaseAdapter().compileStatement(updateAttr);
-                return d2.databaseAdapter().executeUpdateDelete("TrackedEntityAttributeValue", update) != -1;
+                String jsonResponse = response.body().string();
+                FileResourceResponse fileResourceResponse = new Gson().fromJson(jsonResponse, FileResourceResponse.class);
+                Enrollment enrollment = d2.enrollmentModule().enrollments.uid(enrollmentOrEvent).get();
+
+                if(enrollment!=null) {
+                    String updateAttr = String.format("UPDATE TrackedEntityAttributeValue SET value = '%s' " +
+                                    "WHERE trackedEntityInstance = '%s' AND trackedEntityAttribute = '%s'",
+                            fileResourceResponse.getResponse().getFileResource().getId(), enrollment.trackedEntityInstance(), attrUid);
+                    SQLiteStatement update = d2.databaseAdapter().compileStatement(updateAttr);
+                    return d2.databaseAdapter().executeUpdateDelete("TrackedEntityAttributeValue", update) != -1;
+                }else
+                    return file.delete();
             } else
                 return false;
 

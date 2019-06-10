@@ -9,6 +9,7 @@ import androidx.work.ExistingWorkPolicy;
 import androidx.work.NetworkType;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkContinuation;
 import androidx.work.WorkManager;
 
 import org.dhis2.data.metadata.MetadataRepository;
@@ -122,9 +123,11 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build());
         OneTimeWorkRequest request = syncDataBuilder.build();
-        WorkManager.getInstance().beginUniqueWork(Constants.DATA_NOW, ExistingWorkPolicy.REPLACE, request).enqueue();
 
-        FileResourcesUtil.initDownloadWork();
+        FileResourcesUtil.initBulkFileUploadWork() //FIRST UPLOAD IMAGES
+                .then(request) //THEN UPLOAD AND SYNC DATA
+                .then(FileResourcesUtil.initDownloadRequest()) //FINALLY DOWNLOAD IMAGES
+                .enqueue();
     }
 
     /**

@@ -10,6 +10,7 @@ import androidx.work.Data;
 import androidx.work.ExistingWorkPolicy;
 import androidx.work.NetworkType;
 import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkContinuation;
 import androidx.work.WorkManager;
 
 import org.dhis2.data.service.files.FilesWorker;
@@ -55,7 +56,12 @@ public class FileResourcesUtil {
     }
 
 
-    public static void initBulkFileUploadWork() {
+    public static WorkContinuation initBulkFileUploadWork() {
+
+        return WorkManager.getInstance().beginUniqueWork(FilesWorker.TAG_UPLOAD, ExistingWorkPolicy.REPLACE, initBulkFileUploadRequest());
+    }
+
+    public static OneTimeWorkRequest initBulkFileUploadRequest() {
         OneTimeWorkRequest.Builder fileBuilder = new OneTimeWorkRequest.Builder(FilesWorker.class);
         fileBuilder.addTag(FilesWorker.TAG_UPLOAD);
         fileBuilder.setConstraints(new Constraints.Builder()
@@ -64,11 +70,14 @@ public class FileResourcesUtil {
         fileBuilder.setInputData(new Data.Builder()
                 .putString(FilesWorker.MODE, FilesWorker.FileMode.UPLOAD.name())
                 .build());
-        OneTimeWorkRequest requestFile = fileBuilder.build();
-        WorkManager.getInstance().beginUniqueWork(FilesWorker.TAG_UPLOAD, ExistingWorkPolicy.REPLACE, requestFile).enqueue();
+        return fileBuilder.build();
     }
 
-    public static void initDownloadWork() {
+    public static WorkContinuation initDownloadWork() {
+        return WorkManager.getInstance().beginUniqueWork(FilesWorker.TAG, ExistingWorkPolicy.REPLACE, initDownloadRequest());
+    }
+
+    public static OneTimeWorkRequest initDownloadRequest() {
         OneTimeWorkRequest.Builder fileBuilder = new OneTimeWorkRequest.Builder(FilesWorker.class);
         fileBuilder.addTag(FilesWorker.TAG);
         fileBuilder.setConstraints(new Constraints.Builder()
@@ -77,8 +86,7 @@ public class FileResourcesUtil {
         fileBuilder.setInputData(new Data.Builder()
                 .putString(FilesWorker.MODE, FilesWorker.FileMode.DOWNLOAD.name())
                 .build());
-        OneTimeWorkRequest requestFile = fileBuilder.build();
-        WorkManager.getInstance().beginUniqueWork(FilesWorker.TAG, ExistingWorkPolicy.REPLACE, requestFile).enqueue();
+        return fileBuilder.build();
     }
 
     public static void saveImageToUpload(File src, File dst) {
