@@ -54,6 +54,7 @@
                 tools:text="TEI NAME" />
 
             <ImageView
+                android:id="@+id/program_selector_button"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:onClick="@{()->presenter.onEnrollmentSelectorClick()}"
