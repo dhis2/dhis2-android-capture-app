@@ -34,7 +34,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="60dp">
+            android:layout_height="48dp">
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/guideline"
@@ -55,8 +55,7 @@
                 android:padding="5dp"
                 android:text='@{label}'
                 android:textColor="#787878"
-                android:textSize="18sp"
-                android:textStyle="bold"
+                android:textSize="14sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/guideline"
                 app:layout_constraintStart_toStartOf="parent"
@@ -74,8 +73,7 @@
                 android:gravity="center"
                 android:text="@{value}"
                 android:textColor="#444444"
-                android:textSize="18sp"
-                android:textStyle="bold"
+                android:textSize="14sp"
                 app:fromResBgColor="@{colorBg!=-1? colorBg : @color/gray_e7e}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
