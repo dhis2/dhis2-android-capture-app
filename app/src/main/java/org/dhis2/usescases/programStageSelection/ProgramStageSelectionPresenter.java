@@ -100,6 +100,8 @@ public class ProgramStageSelectionPresenter implements ProgramStageSelectionCont
 
     @Override
     public int getStandardInterval(String programStageUid) {
-        return programStageSelectionRepository.getStage(programStageUid).standardInterval();
+        return programStageSelectionRepository.getStage(programStageUid).standardInterval() != null ?
+                programStageSelectionRepository.getStage(programStageUid).standardInterval() :
+                0;
     }
 }
