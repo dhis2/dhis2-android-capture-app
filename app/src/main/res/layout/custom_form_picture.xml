@@ -2,18 +2,10 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <data>
-
-        <variable
-            name="listener"
-            type="org.dhis2.utils.custom_views.PictureView.OnIntentSelected" />
-
-    </data>
 
     <org.dhis2.utils.custom_views.PictureView
         android:id="@+id/formPictures"
         android:layout_width="wrap_content"
-        app:onIntentSelected="@{listener}"
         android:layout_height="wrap_content" />
 
 </layout>

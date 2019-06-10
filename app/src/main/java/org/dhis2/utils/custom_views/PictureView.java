@@ -23,6 +23,7 @@ import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.FormPictureAccentBinding;
 import org.dhis2.databinding.FormPictureBinding;
+import org.dhis2.utils.Constants;
 import org.dhis2.utils.FilderUtil;
 
 import java.io.File;
@@ -128,7 +129,7 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
     }
 
     public void setInitialValue(String value) {
-        File file = FilderUtil.getFilePath(value, image.getContext());
+        File file = new File(value);
         if(file.exists()){
             Bitmap myBitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
             image.setImageBitmap(myBitmap);
@@ -150,7 +151,7 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
                     if (options[item].equals("Take Photo")) {
                         dialog.dismiss();
                         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                        onIntentSelected.intentSelected(this, this.uid, intent, 100, (value, uuid) -> {
+                        PictureView.this.onIntentSelected.intentSelected(this.uid, intent, Constants.CAMERA_REQUEST, (value, uuid) -> {
                             if (this.uid.equals(uuid)) {
                                 setInitialValue(value);
                                 if (uid != null) {
@@ -164,8 +165,9 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
                         });
                     } else if (options[item].equals("Choose From Gallery")) {
                         dialog.dismiss();
-                        Intent pickPhoto = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                        onIntentSelected.intentSelected(this, this.uid, pickPhoto, 200, (value, uuid) -> {
+                        Intent pickPhoto = new Intent(Intent.ACTION_PICK);
+                        pickPhoto.setType("image/*");
+                        PictureView.this.onIntentSelected.intentSelected(this.uid, pickPhoto, Constants.GALLERY_REQUEST, (value, uuid) -> {
                             if (this.uid.equals(uuid)) {
                                 setInitialValue(value);
                                 if (uid != null) {
@@ -195,7 +197,7 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
     }
 
     public interface OnIntentSelected {
-        void intentSelected(PictureView pictureView, String uuid, Intent intent, int request, OnPictureSelected onPictureSelected);
+        void intentSelected(String uuid, Intent intent, int request, OnPictureSelected onPictureSelected);
     }
 
 

@@ -26,11 +26,11 @@ public class PictureHolder extends FormViewHolder {
         this.processor = processor;
         this.binding = binding;
         this.binding.formPictures.setOnIntentSelected(onIntentSelected);
-
     }
 
     void update(PictureViewModel pictureViewModel) {
         this.model = pictureViewModel;
+        binding.formPictures.setProcessor(pictureViewModel.uid(), processor);
         descriptionText = pictureViewModel.description();
         label = new StringBuilder(pictureViewModel.label());
         if (pictureViewModel.mandatory())

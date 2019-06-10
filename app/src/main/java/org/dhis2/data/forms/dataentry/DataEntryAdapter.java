@@ -89,8 +89,7 @@ public final class DataEntryAdapter extends Adapter {
 
     public DataEntryAdapter(@NonNull LayoutInflater layoutInflater,
                             @NonNull FragmentManager fragmentManager,
-                            @NonNull DataEntryArguments dataEntryArguments,
-                            PictureView.OnIntentSelected onIntentSelected) {
+                            @NonNull DataEntryArguments dataEntryArguments) {
         setHasStableIds(true);
         rows = new ArrayList<>();
         viewModels = new ArrayList<>();
@@ -113,15 +112,14 @@ public final class DataEntryAdapter extends Adapter {
         rows.add(UNSUPPORTED, new UnsupportedRow(layoutInflater));
         rows.add(LONG_TEXT, new EditTextRow(layoutInflater, processor, true, dataEntryArguments.renderType(), true));
         rows.add(DISPLAY, new DisplayRow(layoutInflater));
-        rows.add(PICTURE, new PictureRow(layoutInflater, onIntentSelected, processor, true));
+        rows.add(PICTURE, new PictureRow(layoutInflater, processor, true));
     }
 
     public DataEntryAdapter(@NonNull LayoutInflater layoutInflater,
                             @NonNull FragmentManager fragmentManager,
                             @NonNull DataEntryArguments dataEntryArguments,
                             @NonNull FlowableProcessor<RowAction> processor,
-                            @NonNull FlowableProcessor<Trio<String, String, Integer>> processorOptSet,
-                            PictureView.OnIntentSelected onIntentSelected) {
+                            @NonNull FlowableProcessor<Trio<String, String, Integer>> processorOptSet) {
         setHasStableIds(true);
         rows = new ArrayList<>();
         viewModels = new ArrayList<>();
@@ -144,7 +142,7 @@ public final class DataEntryAdapter extends Adapter {
         rows.add(UNSUPPORTED, new UnsupportedRow(layoutInflater));
         rows.add(LONG_TEXT, new EditTextRow(layoutInflater, processor, true, dataEntryArguments.renderType(), true));
         rows.add(DISPLAY, new DisplayRow(layoutInflater));
-        rows.add(PICTURE, new PictureRow(layoutInflater, onIntentSelected, processor, true));
+        rows.add(PICTURE, new PictureRow(layoutInflater, processor, true));
     }
 
     @NonNull

@@ -14,10 +14,8 @@ import org.dhis2.R;
 import org.dhis2.utils.custom_views.PictureView;
 
 
-public class DataEntryActivity extends AppCompatActivity implements PictureView.OnIntentSelected {
+public class DataEntryActivity extends AppCompatActivity {
     private static final String ARGS = "args";
-    private PictureView.OnPictureSelected onPictureSelected;
-    private String uuid;
 
     @NonNull
     public static Intent create(@NonNull Activity activity, @NonNull DataEntryArguments arguments) {
@@ -37,22 +35,4 @@ public class DataEntryActivity extends AppCompatActivity implements PictureView.
                 .commitNow();
     }
 
-    @Override
-    public void intentSelected(String uuid, Intent intent, int request, PictureView.OnPictureSelected onPictureSelected) {
-        this.uuid = uuid;
-        this.onPictureSelected = onPictureSelected;
-        startActivityForResult(intent, request);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if(resultCode == RESULT_OK){
-            if (data != null && data.hasExtra("data")) {
-                Uri selectedImage = data.getData();
-                if (selectedImage != null)
-                    onPictureSelected.onSelected(selectedImage.toString(), uuid);
-            }
-        }
-    }
 }

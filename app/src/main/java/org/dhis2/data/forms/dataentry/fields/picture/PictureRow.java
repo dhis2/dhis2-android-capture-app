@@ -23,27 +23,22 @@ public class PictureRow implements Row<PictureHolder, PictureViewModel> {
     private final boolean isBgTransparent;
     private final String renderType;
     private boolean isSearchMode = false;
-    private PictureView.OnIntentSelected onIntentSelected;
 
     public PictureRow(@NonNull LayoutInflater layoutInflater,
-                         PictureView.OnIntentSelected onIntentSelected,
                          @NonNull FlowableProcessor<RowAction> processor,
                       boolean isBgTransparent) {
         this.inflater = layoutInflater;
         this.processor = processor;
         this.isBgTransparent = isBgTransparent;
         this.renderType = null;
-        this.onIntentSelected = onIntentSelected;
         this.isSearchMode = true;
     }
 
     public PictureRow(@NonNull LayoutInflater layoutInflater,
-                      PictureView.OnIntentSelected onIntentSelected,
                       @NonNull FlowableProcessor<RowAction> processor,
                          boolean isBgTransparent, String renderType) {
         this.inflater = layoutInflater;
         this.processor = processor;
-        this.onIntentSelected = onIntentSelected;
         this.isBgTransparent = isBgTransparent;
         this.renderType = renderType;
     }
@@ -54,7 +49,9 @@ public class PictureRow implements Row<PictureHolder, PictureViewModel> {
         CustomFormPictureBinding binding = DataBindingUtil.inflate(inflater,
                 R.layout.custom_form_picture, parent, false);
         binding.formPictures.setIsBgTransparent(isBgTransparent);
-        return new PictureHolder(onIntentSelected, binding, processor, isSearchMode);
+        PictureView.OnIntentSelected onIntentSelected = (PictureView.OnIntentSelected) binding.formPictures.getContext();
+        return new PictureHolder(onIntentSelected,
+                binding, processor, isSearchMode);
     }
 
     @Override

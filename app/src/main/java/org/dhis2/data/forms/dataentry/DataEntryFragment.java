@@ -59,7 +59,6 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
     private ProgressBar progressBar;
     private View dummyFocusView;
     private boolean isEnrollment;
-    private PictureView.OnIntentSelected onIntentSelected;
 
     @NonNull
     public static DataEntryFragment create(@NonNull DataEntryArguments arguments) {
@@ -76,8 +75,7 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
     public void onAttach(Context context) {
         super.onAttach(context);
         formFragment = ((ActivityGlobalAbstract) context).getSupportFragmentManager().getFragments().get(0);
-        if (context instanceof PictureView.OnIntentSelected)
-            onIntentSelected = (PictureView.OnIntentSelected) context;
+
         DataEntryArguments args = Preconditions.isNull(getArguments()
                 .getParcelable(ARGUMENTS), "dataEntryArguments == null");
 
@@ -192,7 +190,7 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
     private void setUpRecyclerView() {
         DataEntryArguments arguments = getArguments().getParcelable(ARGUMENTS);
         dataEntryAdapter = new DataEntryAdapter(LayoutInflater.from(getActivity()),
-                getChildFragmentManager(), arguments, onIntentSelected);
+                getChildFragmentManager(), arguments);
 
         RecyclerView.LayoutManager layoutManager;
         if (arguments.renderType() != null && arguments.renderType().equals(ProgramStageSectionRenderingType.MATRIX.name())) {

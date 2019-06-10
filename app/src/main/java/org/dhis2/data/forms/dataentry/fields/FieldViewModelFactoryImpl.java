@@ -103,7 +103,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
             case URL:
                 return EditTextViewModel.create(id, label, mandatory, value, hintEnterText, 1, type, section, editable, description, fieldRendering,objectStyle);
             case IMAGE:
-                return PictureViewModel.create(id, label, mandatory, value, section, editable, description, null);
+                return PictureViewModel.create(id, label, mandatory, value, section, editable, description, objectStyle);
             case TIME:
             case DATE:
             case DATETIME:
