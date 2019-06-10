@@ -2,6 +2,8 @@ package org.dhis2.data.forms.dataentry.fields.age;
 
 import android.graphics.Color;
 
+import androidx.appcompat.content.res.AppCompatResources;
+
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
@@ -10,7 +12,6 @@ import org.dhis2.utils.DateUtils;
 
 import java.util.Objects;
 
-import androidx.appcompat.content.res.AppCompatResources;
 import io.reactivex.processors.FlowableProcessor;
 
 import static android.text.TextUtils.isEmpty;
@@ -47,9 +48,10 @@ public class AgeHolder extends FormViewHolder {
         if (ageViewModel.mandatory())
             label.append("*");
         binding.customAgeview.setLabel(label.toString(), ageViewModel.description());
-        if (!isEmpty(ageViewModel.value())) {
+        if (!isEmpty(ageViewModel.value()))
             binding.customAgeview.setInitialValue(ageViewModel.value());
-        }
+        else
+            binding.customAgeview.clearValues();
 
         if (ageViewModel.warning() != null)
             binding.customAgeview.setWarning(ageViewModel.warning());
