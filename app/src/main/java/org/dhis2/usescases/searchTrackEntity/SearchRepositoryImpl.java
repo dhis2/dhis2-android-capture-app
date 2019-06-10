@@ -579,11 +579,19 @@ public class SearchRepositoryImpl implements SearchRepository {
         for (TrackedEntityAttribute attr : imageAttributes)
             imageAttributesUids.add(attr.uid());
 
-        String attrUid = Objects.requireNonNull(d2.trackedEntityModule().trackedEntityTypeAttributes
+        TrackedEntityAttributeValue attributeValue = null;
+        if(d2.trackedEntityModule().trackedEntityTypeAttributes
                 .byTrackedEntityTypeUid().eq(tei.trackedEntityType())
-                .byTrackedEntityAttributeUid().in(imageAttributesUids).one().get()).trackedEntityAttribute().uid();
-        TrackedEntityAttributeValue attributeValue = d2.trackedEntityModule().trackedEntityAttributeValues.byTrackedEntityInstance().eq(tei.uid())
-                .byTrackedEntityAttribute().eq(attrUid).one().get();
+                .byTrackedEntityAttributeUid().in(imageAttributesUids).one().exists()){
+
+            String attrUid = Objects.requireNonNull(d2.trackedEntityModule().trackedEntityTypeAttributes
+                    .byTrackedEntityTypeUid().eq(tei.trackedEntityType())
+                    .byTrackedEntityAttributeUid().in(imageAttributesUids).one().get()).trackedEntityAttribute().uid();
+
+            attributeValue = d2.trackedEntityModule().trackedEntityAttributeValues.byTrackedEntityInstance().eq(tei.uid())
+                    .byTrackedEntityAttribute().eq(attrUid).one().get();
+        }
+
         return attributeValue != null ? attributeValue.trackedEntityAttribute() : null;
     }
 
