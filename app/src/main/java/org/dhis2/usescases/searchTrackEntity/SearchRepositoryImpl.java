@@ -54,6 +54,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Set;
 
 import io.reactivex.Flowable;
@@ -578,9 +579,9 @@ public class SearchRepositoryImpl implements SearchRepository {
         for (TrackedEntityAttribute attr : imageAttributes)
             imageAttributesUids.add(attr.uid());
 
-        String attrUid = d2.trackedEntityModule().trackedEntityTypeAttributes
+        String attrUid = Objects.requireNonNull(d2.trackedEntityModule().trackedEntityTypeAttributes
                 .byTrackedEntityTypeUid().eq(tei.trackedEntityType())
-                .byTrackedEntityAttributeUid().in(imageAttributesUids).one().get().trackedEntityAttribute().uid();
+                .byTrackedEntityAttributeUid().in(imageAttributesUids).one().get()).trackedEntityAttribute().uid();
         TrackedEntityAttributeValue attributeValue = d2.trackedEntityModule().trackedEntityAttributeValues.byTrackedEntityInstance().eq(tei.uid())
                 .byTrackedEntityAttribute().eq(attrUid).one().get();
         return attributeValue != null ? attributeValue.trackedEntityAttribute() : null;
