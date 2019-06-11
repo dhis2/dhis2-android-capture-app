@@ -369,7 +369,7 @@ public class Bindings {
     @BindingAdapter("eventWithoutRegistrationStatusIcon")
     public static void setEventWithoutRegistrationStatusIcon(ImageView imageView, ProgramEventViewModel event) {
 
-        if(event.eventStatus() == EventStatus.ACTIVE && !event.isExpired())
+        if (event.eventStatus() == EventStatus.ACTIVE && !event.isExpired())
             imageView.setImageResource(R.drawable.ic_edit);
         else
             imageView.setImageResource(R.drawable.ic_visibility);
@@ -544,5 +544,11 @@ public class Bindings {
         }
         fab.setColorFilter(Color.WHITE);
         fab.setImageDrawable(drawable);
+    }
+
+    @BindingAdapter("settingIcon")
+    public static void setSettingIcon(ImageView view, int drawableReference) {
+        Drawable drawable = AppCompatResources.getDrawable(view.getContext(),drawableReference);
+        view.setImageDrawable(drawable);
     }
 }

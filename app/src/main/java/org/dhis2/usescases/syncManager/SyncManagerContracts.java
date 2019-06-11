@@ -36,6 +36,8 @@ public class SyncManagerContracts {
 
     public interface Presenter {
 
+        void onItemClick(int itemPosition);
+
         void init(SyncManagerContracts.View view);
 
         void syncData(int seconds, String scheduleTag);

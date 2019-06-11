@@ -286,8 +286,8 @@
     <string name="share">Share</string>
     <string name="share_qr">Share QR</string>
     <string name="teiType_search_online">Search by type is not possible for online search.\nPlease select a program from the list.</string>
-    <string name="max">MAX</string>
-    <string name="current">CURRENT</string>
+    <string name="max">Max</string>
+    <string name="current">Current</string>
     <string name="tei">TEI</string>
     <string name="limit_by_organisation_unit">Limit by organisation unit</string>
     <string name="limit_by_program">Limit by program</string>
