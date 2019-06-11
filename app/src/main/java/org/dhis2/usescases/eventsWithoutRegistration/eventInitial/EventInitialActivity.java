@@ -952,6 +952,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
                 FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
                         .title(getString(R.string.tuto_event_initial_new_1))
+                        .enableAutoTextPosition()
                         .closeOnTouch(true)
                         .build();
                 steps.add(tuto1);
@@ -966,6 +967,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
                 FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
                         .title(getString(R.string.tuto_event_initial_1))
+                        .enableAutoTextPosition()
                         .focusOn(binding.percentage)
                         .closeOnTouch(true)
                         .build();

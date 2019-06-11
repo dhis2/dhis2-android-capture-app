@@ -260,6 +260,13 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
         year.setEnabled(editable);
     }
 
+    public void clearValues() {
+        date.setText(null);
+        day.setText(null);
+        month.setText(null);
+        year.setText(null);
+    }
+
     public interface OnAgeSet {
         void onAgeSet(Date ageDate);
     }

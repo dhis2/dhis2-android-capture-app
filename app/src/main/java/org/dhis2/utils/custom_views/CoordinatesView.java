@@ -284,6 +284,14 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
                     ACCESS_COARSE_LOCATION_PERMISSION_REQUEST);
         } else
             mFusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
+
+    }
+
+    public void clearValueData(){
+
+        this.latitude.setText(null);
+        this.longitude.setText(null);
+
     }
 }
 

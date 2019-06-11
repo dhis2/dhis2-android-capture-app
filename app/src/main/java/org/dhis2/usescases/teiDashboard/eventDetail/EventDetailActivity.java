@@ -256,11 +256,13 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
         new Handler().postDelayed(() -> {
             FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
                     .title(getString(R.string.tuto_tei_event_1))
+                    .enableAutoTextPosition()
                     .focusOn(getAbstractActivity().findViewById(R.id.moreOptions))
                     .closeOnTouch(true)
                     .build();
             FancyShowCaseView tuto2 = new FancyShowCaseView.Builder(getAbstractActivity())
                     .title(getString(R.string.tuto_tei_event_2))
+                    .enableAutoTextPosition()
                     .focusOn(getAbstractActivity().findViewById(R.id.deactivate_button))
                     .focusShape(FocusShape.ROUNDED_RECTANGLE)
                     .closeOnTouch(true)
