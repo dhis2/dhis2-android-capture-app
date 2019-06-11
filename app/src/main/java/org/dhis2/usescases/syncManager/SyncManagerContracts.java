@@ -32,6 +32,8 @@ public class SyncManagerContracts {
         void syncData();
 
         void syncMeta();
+
+        void openItem(int settingsItem);
     }
 
     public interface Presenter {

@@ -33,6 +33,7 @@
             android:paddingBottom="@dimen/default_top_margin">
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/settingsItemData"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:onClick="@{()->presenter.onItemClick(0)}"
@@ -41,9 +42,8 @@
                 <include
                     android:id="@+id/syncDataLayout"
                     layout="@layout/fragment_settings_item"
-                    app:icon='@{R.drawable.ic_error}'
-                    
-                    />
+                    app:icon="@{R.drawable.ic_sync_data}"
+                    app:title="@{@string/settingsSyncData}" />
 
                 <RadioGroup
                     android:id="@+id/dataRadioGroup"
@@ -51,7 +51,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="50dp"
                     android:layout_marginTop="20dp"
-                    android:visibility="visible"
+                    android:visibility="gone"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/syncDataLayout">
@@ -92,6 +92,22 @@
 
                 </RadioGroup>
 
+                <Button
+                    android:id="@+id/buttonSyncData"
+                    style="@style/TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:fontFamily="@font/rubik_medium"
+                    android:onClick='@{()->presenter.syncData()}'
+                    android:text="@string/SYNC_DATA"
+                    android:textAllCaps="true"
+                    android:textColor="?colorPrimary"
+                    android:textSize="12sp"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/dataRadioGroup" />
+
                 <View
                     android:layout_width="0dp"
                     android:layout_height="1dp"
@@ -100,20 +116,20 @@
                     android:background="#61333333"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/dataRadioGroup" />
+                    app:layout_constraintTop_toBottomOf="@id/buttonSyncData" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/settingsItemMeta"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:onClick="@{()->presenter.onItemClick(1)}"
-                android:paddingTop="8dp">
+                android:onClick="@{()->presenter.onItemClick(1)}">
 
                 <include
                     android:id="@+id/syncMetaLayout"
                     layout="@layout/fragment_settings_item"
-                    app:icon='@{R.drawable.ic_error}'
-                     />
+                    app:icon="@{R.drawable.ic_sync_configuration}"
+                    app:title="@{@string/settingsSyncMetadata}" />
 
                 <RadioGroup
                     android:id="@+id/metaRadioGroup"
@@ -121,13 +137,13 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="50dp"
                     android:layout_marginTop="20dp"
-                    android:visibility="visible"
+                    android:visibility="gone"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/syncMetaLayout">
 
                     <androidx.appcompat.widget.AppCompatRadioButton
-                        android:id="@+id/meta_hour"
+                        android:id="@+id/meta_day"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Daily"
@@ -154,6 +170,22 @@
 
                 </RadioGroup>
 
+                <Button
+                    android:id="@+id/buttonSyncMeta"
+                    style="@style/TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:fontFamily="@font/rubik_medium"
+                    android:onClick='@{()->presenter.syncMeta()}'
+                    android:text="@string/SYNC_META"
+                    android:textAllCaps="true"
+                    android:textColor="?colorPrimary"
+                    android:textSize="12sp"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/metaRadioGroup" />
+
                 <View
                     android:layout_width="0dp"
                     android:layout_height="1dp"
@@ -162,25 +194,28 @@
                     android:background="#61333333"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/metaRadioGroup" />
+                    app:layout_constraintTop_toBottomOf="@id/buttonSyncMeta" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/settingsItemParams"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:onClick="@{()->presenter.onItemClick(2)}"
-                android:paddingTop="8dp">
+                android:onClick="@{()->presenter.onItemClick(2)}">
 
                 <include
                     android:id="@+id/parameterLayout"
                     layout="@layout/fragment_settings_item"
-                    app:icon='@{R.drawable.ic_error}'
-                     />
+                    app:icon="@{R.drawable.ic_sync_parameters}"
+                    app:title="@{@string/settingsSyncParameters}"
+
+                    />
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/parameterData"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:visibility="gone"
                     app:layout_constraintTop_toBottomOf="@id/parameterLayout">
 
                     <androidx.appcompat.widget.SwitchCompat
@@ -307,6 +342,21 @@
                         </TableRow>
                     </TableLayout>
 
+                    <Button
+                        android:id="@+id/resetParametersButton"
+                        style="@style/TextButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="14dp"
+                        android:fontFamily="@font/rubik_medium"
+                        android:onClick="@{()->presenter.resetSyncParameters()}"
+                        android:text="@string/sync_default_parameters"
+                        android:textAllCaps="true"
+                        android:textColor="?colorPrimary"
+                        android:textSize="12sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/capacityLayout" />
+
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <View
@@ -320,18 +370,18 @@
                     app:layout_constraintTop_toBottomOf="@id/parameterData" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/settingsItemValues"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:onClick="@{()->presenter.onItemClick(3)}"
-                android:paddingTop="8dp">
+                android:onClick="@{()->presenter.onReservedValues()}">
 
                 <include
                     android:id="@+id/reservedValueLayout"
                     layout="@layout/fragment_settings_item"
-                    app:icon='@{R.drawable.ic_error}'
-                     />
+                    app:icon="@{R.drawable.ic_reserved_values}"
+                    app:message="@{@string/settingsReservedValues_descr}"
+                    app:title="@{@string/settingsReservedValues}" />
 
                 <View
                     android:layout_width="0dp"
@@ -345,16 +395,17 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/settingsItemLog"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:onClick="@{()->presenter.onItemClick(4)}"
-                android:paddingTop="8dp">
+                android:onClick='@{()->presenter.checkSyncErrors()}'>
 
                 <include
                     android:id="@+id/errorLogLayout"
                     layout="@layout/fragment_settings_item"
-                    app:icon='@{R.drawable.ic_error}'
-                     />
+                    app:icon="@{R.drawable.ic_open_sync_error_log}"
+                    app:message="@{@string/settingsErrorLog_descr}"
+                    app:title="@{@string/settingsErrorLog}" />
 
                 <View
                     android:layout_width="0dp"
@@ -368,16 +419,17 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/settingsItemDeleteData"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:onClick="@{()->presenter.onItemClick(5)}"
-                android:paddingTop="8dp">
+                android:onClick="@{()->presenter.onItemClick(5)}">
 
                 <include
                     android:id="@+id/deleteLayout"
                     layout="@layout/fragment_settings_item"
-                    app:icon='@{R.drawable.ic_error}'
-                     />
+                    app:icon="@{R.drawable.ic_delete_local_data}"
+                    app:message="@{@string/settingsDeleteLocalData_descr}"
+                    app:title="@{@string/settingsDeleteLocalData}" />
 
                 <Button
                     android:id="@+id/deleteDataButton"
@@ -385,10 +437,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/rubik_medium"
+                    android:onClick="@{()->presenter.onDeleteLocalData()}"
                     android:text="@string/action_accept"
                     android:textAllCaps="true"
                     android:textColor="#EB5757"
                     android:textSize="12sp"
+                    android:visibility="gone"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/deleteLayout" />
 
@@ -404,16 +458,17 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/settingsReset"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:onClick="@{()->presenter.onItemClick(6)}"
-                android:paddingTop="8dp">
+                android:onClick="@{()->presenter.onItemClick(6)}">
 
                 <include
                     android:id="@+id/resetLayout"
                     layout="@layout/fragment_settings_item"
-                    app:icon='@{R.drawable.ic_error}'
-                     />
+                    app:icon="@{R.drawable.ic_reset}"
+                    app:message="@{@string/settingsReset_descr}"
+                    app:title="@{@string/settingsReset}" />
 
                 <Button
                     android:id="@+id/resetButton"
@@ -421,10 +476,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/rubik_medium"
+                    android:onClick="@{()->presenter.onWipeData()}"
                     android:text="@string/action_accept"
                     android:textAllCaps="true"
                     android:textColor="#EB5757"
                     android:textSize="12sp"
+                    android:visibility="gone"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/resetLayout" />
 

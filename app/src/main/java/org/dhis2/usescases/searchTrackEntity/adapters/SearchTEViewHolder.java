@@ -69,25 +69,17 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
 
         itemView.setOnClickListener(view -> presenter.onTEIClick(searchTeiModel.getTei().uid(), searchTeiModel.isOnline()));
 
-        if (isEmpty(searchTeiModel.getProfilePictureUid())) {
-            String ramdomPictureUrl = String.format("https://randomuser.me/api/portraits/med/%s/%s.jpg", new Random().nextInt(2) == 0 ? "men" : "women", new Random().nextInt(100) + 1);
-            Glide.with(itemView.getContext())
-                    .load(Uri.parse(ramdomPictureUrl))
-                    .transition(withCrossFade())
-                    .transform(new CircleCrop())
-                    .into(binding.trackedEntityImage);
-        } else {
-            String fileName = searchTeiModel.getTei().uid() + "_" + searchTeiModel.getProfilePictureUid() + ".png";
-            File file = new File(itemView.getContext().getFilesDir(), fileName);
-            Drawable placeHolderId = ObjectStyleUtils.getIconResource(itemView.getContext(), searchTeiModel.getDefaultTypeIcon(),R.drawable.photo_temp_gray);
-            Glide.with(itemView.getContext())
-                    .load(file)
-                    .placeholder(placeHolderId)
-                    .error(placeHolderId)
-                    .transition(withCrossFade())
-                    .transform(new CircleCrop())
-                    .into(binding.trackedEntityImage);
-        }
+        String fileName = searchTeiModel.getTei().uid() + "_" + searchTeiModel.getProfilePictureUid() + ".png";
+        File file = new File(itemView.getContext().getFilesDir(), fileName);
+        Drawable placeHolderId = ObjectStyleUtils.getIconResource(itemView.getContext(), searchTeiModel.getDefaultTypeIcon(), R.drawable.photo_temp_gray);
+        Glide.with(itemView.getContext())
+                .load(file)
+                .placeholder(placeHolderId)
+                .error(placeHolderId)
+                .transition(withCrossFade())
+                .transform(new CircleCrop())
+                .into(binding.trackedEntityImage);
+
     }
 
 

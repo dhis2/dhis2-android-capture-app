@@ -103,31 +103,6 @@ public final class AttributeValueStore implements DataEntryStore {
                     }
                 })
                 .switchMap(this::updateEnrollment);
-      /*  return Flowable.defer(() -> {
-            valueType type = getValueType(uid);
-            return Flowable.just(Pair.create(currentValue(uid, type), type));
-        })
-                .filter(currentValueAndType -> currentValueAndType.val1() == valueType.ATTR && !Objects.equals(currentValueAndType.val0(), value == null ? "" : value))
-                .flatMap(currentValueAndType -> {
-                    if (checkUnique(uid, value)) {
-                        if (value == null)
-                            return Flowable.just(delete(uid, currentValueAndType.val1()));
-
-                        long updated = update(uid, value, currentValueAndType.val1());
-                        if (updated > 0) {
-                            return Flowable.just(updated);
-                        }
-
-                        return Flowable.just(insert(uid, value, currentValueAndType.val1()));
-                    } else
-                        return Flowable.just((long) -5);
-                })
-                .switchMap(status -> {
-                    if (status != -5)
-                        return updateEnrollment(status);
-                    else
-                        return Flowable.just(status);
-                });*/
     }
 
     @NonNull

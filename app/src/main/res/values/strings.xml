@@ -3,7 +3,7 @@
     <string name="logo_text">dhis</string>
     <string name="logo_number">2</string>
     <string name="google_api" translatable="false">AIzaSyATNJAcNH6YB8ZzkJbzh1vWOgMAKi7KEnQ</string>
-
+    <string name="tab" translatable="false">\u0009</string>
     <!-- Warnings and error messages -->
     <string name="error">Error</string>
     <string name="error_wrong_server_url">Wrong server url</string>
@@ -197,6 +197,21 @@
     <string name="last_metadata_sync_date">Last sync on: %s</string>
     <string name="refill_reserved_values">Refill</string>
     <!-- SEARCH TRACK ENTITY -->
+
+    <!--region SETTINCS-->
+    <string name="settingsSyncData">Sync data</string>
+    <string name="settingsSyncMetadata">Sync configuration</string>
+    <string name="settingsSyncParameters">Sync parameters</string>
+    <string name="settingsReservedValues">Reserved values</string>
+    <string name="settingsReservedValues_descr">Here you can see your number of values available offline and reserve new ones.</string>
+    <string name="settingsErrorLog">Open sync error log</string>
+    <string name="settingsErrorLog_descr">This log contains all errors caused by syncing your data and metadata.</string>
+    <string name="settingsDeleteLocalData">Delete local data</string>
+    <string name="settingsDeleteLocalData_descr">All Capture App data stored in your device will be deleted. Data which is not synced to the server will be lost.</string>
+    <string name="settingsReset">Reset app data &amp; configuration</string>
+    <string name="settingsReset_descr">Your configuration and App data stored in the device will be deleted. You will be asked to log in again and data which is not synced to the server will be lost.</string>
+    <!--endregion-->
+
     <string name="enrollmment_date">Enrollment date</string>
 
     <!-- SEARCH OPTION SET -->

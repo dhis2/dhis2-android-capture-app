@@ -75,24 +75,6 @@ public final class DataValueStore implements DataEntryStore {
                     }
                 })
                 .switchMap(this::updateEvent);
-      /*  return userCredentials
-                .map(userCredentialsModel -> Pair.create(userCredentialsModel, getValueType(uid)))
-                .filter(userCredentialAndType -> {
-                    String currentValue = currentValue(uid, userCredentialAndType.val1());
-                    return !Objects.equals(currentValue, value);
-                })
-                .switchMap((userCredentialAndType) -> {
-                    if (value == null)
-                        return Flowable.just(delete(uid, userCredentialAndType.val1()));
-
-                    long updated = update(uid, value, userCredentialAndType.val1());
-                    if (updated > 0) {
-                        return Flowable.just(updated);
-                    }
-
-                    return Flowable.just(insert(uid, value, userCredentialAndType.val0().username(), userCredentialAndType.val1()));
-                })
-                .switchMap(this::updateEvent);*/
     }
 
     @NonNull

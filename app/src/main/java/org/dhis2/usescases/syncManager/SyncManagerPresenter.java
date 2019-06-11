@@ -52,8 +52,8 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
     }
 
     @Override
-    public void onItemClick(int itemPosition) {
-        //Not in used at the moment
+    public void onItemClick(int settingsItem) {
+        view.openItem(settingsItem);
     }
 
     @Override
