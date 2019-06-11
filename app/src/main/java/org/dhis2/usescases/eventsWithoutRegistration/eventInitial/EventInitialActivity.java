@@ -371,8 +371,10 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                 if (eventCreationType != EventCreationType.SCHEDULE)
                     selectedDate = now.getTime();
                 else {
-                    now.setTime(presenter.getStageLastDate(programStageUid, enrollmentUid));
-                    now.add(Calendar.DAY_OF_YEAR, eventScheduleInterval);
+                    if (eventScheduleInterval > 0) {
+                        now.setTime(presenter.getStageLastDate(programStageUid, enrollmentUid));
+                        now.add(Calendar.DAY_OF_YEAR, eventScheduleInterval);
+                    }
                     selectedDate = DateUtils.getInstance().getNextPeriod(null, now.getTime(), 1);
                 }
 
