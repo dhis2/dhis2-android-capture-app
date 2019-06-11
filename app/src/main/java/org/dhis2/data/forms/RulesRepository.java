@@ -2,11 +2,14 @@ package org.dhis2.data.forms;
 
 import android.database.Cursor;
 
+import androidx.annotation.NonNull;
+
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Quartet;
 import org.dhis2.utils.DateUtils;
+import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
@@ -14,7 +17,8 @@ import org.hisp.dhis.android.core.constant.Constant;
 import org.hisp.dhis.android.core.constant.ConstantTableInfo;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
-import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitGroup;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramRuleActionModel;
 import org.hisp.dhis.android.core.program.ProgramRuleActionType;
@@ -62,7 +66,6 @@ import java.util.Objects;
 
 import javax.annotation.Nonnull;
 
-import androidx.annotation.NonNull;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -495,10 +498,10 @@ public final class RulesRepository {
 
         switch (actionType) {
             case DISPLAYTEXT:
-                if(location!=null)
+                if (location != null)
                     return createDisplayTextAction(content, data, location);
             case DISPLAYKEYVALUEPAIR:
-                if(location!=null)
+                if (location != null)
                     return createDisplayKeyValuePairAction(content, data, location);
             case HIDEFIELD:
                 return RuleActionHideField.create(content,
@@ -570,8 +573,8 @@ public final class RulesRepository {
                                     briteDatabase.createQuery(EventModel.TABLE, eventModel.enrollment() == null ? QUERY_OTHER_EVENTS : QUERY_OTHER_EVENTS_ENROLLMENTS,
                                             eventModel.enrollment() == null ? programModel.uid() : eventModel.enrollment(),
                                             eventUidToEvaluate == null ? "" : eventUidToEvaluate,
-                                            DateUtils.databaseDateFormat().format(eventModel.eventDate()!=null ? eventModel.eventDate() : eventModel.dueDate()),
-                                            DateUtils.databaseDateFormat().format(eventModel.eventDate()!=null ? eventModel.eventDate() : eventModel.dueDate()),
+                                            DateUtils.databaseDateFormat().format(eventModel.eventDate() != null ? eventModel.eventDate() : eventModel.dueDate()),
+                                            DateUtils.databaseDateFormat().format(eventModel.eventDate() != null ? eventModel.eventDate() : eventModel.dueDate()),
                                             DateUtils.databaseDateFormat().format(eventModel.lastUpdated()))
                                             .mapToList(cursor -> {
                                                 List<RuleDataValue> dataValues = new ArrayList<>();
@@ -607,10 +610,10 @@ public final class RulesRepository {
 
                                                 Calendar calendar = Calendar.getInstance();
                                                 calendar.setTime(eventDate);
-                                                calendar.add(Calendar.SECOND,count);
+                                                calendar.add(Calendar.SECOND, count);
                                                 eventDate = calendar.getTime();
                                                 calendar.setTime(dueDate);
-                                                calendar.add(Calendar.SECOND,count);
+                                                calendar.add(Calendar.SECOND, count);
                                                 dueDate = calendar.getTime();
                                                 count--;
 
@@ -744,5 +747,29 @@ public final class RulesRepository {
                     return RuleEnrollment.create(cursor.getString(0),
                             incidentDate, enrollmentDate, status, orgUnit, ouCode, attributeValues, programName);
                 }).toFlowable(BackpressureStrategy.LATEST);
+    }
+
+    @NonNull
+    public Flowable<Map<String, List<String>>> getSuplementaryData(D2 d2) {
+
+        return Flowable.fromCallable(() -> {
+            Map<String, List<String>> supData = new HashMap<>();
+
+            //ORG UNIT GROUPS
+            for (OrganisationUnitGroup ouGroup : d2.organisationUnitModule().organisationUnitGroups.get())
+                supData.put(ouGroup.code(), new ArrayList<>());
+
+            for (OrganisationUnit ou : d2.organisationUnitModule().organisationUnits.withOrganisationUnitGroups().get()) {
+                if (ou.organisationUnitGroups() != null) {
+                    for (OrganisationUnitGroup ouGroup : ou.organisationUnitGroups()) {
+                        List<String> groupOUs = supData.get(ouGroup.uid());
+                        if (groupOUs != null && !groupOUs.contains(ou.uid()))
+                            groupOUs.add(ou.uid());
+                    }
+                }
+            }
+
+            return supData;
+        });
     }
 }

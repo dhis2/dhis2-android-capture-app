@@ -14,7 +14,6 @@ import android.text.style.ImageSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -33,7 +32,7 @@ import org.dhis2.BuildConfig;
 import org.dhis2.Components;
 import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
-import org.dhis2.databinding.FragmentSyncManagerBinding;
+import org.dhis2.databinding.FragmentSettingsBinding;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.HelpManager;
@@ -51,9 +50,9 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
-import me.toptas.fancyshowcase.listener.DismissListener;
 import me.toptas.fancyshowcase.FancyShowCaseView;
 import me.toptas.fancyshowcase.FocusShape;
+import me.toptas.fancyshowcase.listener.DismissListener;
 import timber.log.Timber;
 
 import static org.dhis2.utils.Constants.DATA_NOW;
@@ -75,7 +74,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     @Inject
     SyncManagerContracts.Presenter presenter;
 
-    private FragmentSyncManagerBinding binding;
+    private FragmentSettingsBinding binding;
     private SharedPreferences prefs;
     private CompositeDisposable listenerDisposable;
     private Context context;
@@ -96,7 +95,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_sync_manager, container, false);
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_settings, container, false);
 
         binding.setPresenter(presenter);
         prefs = getAbstracContext().getSharedPreferences(
@@ -104,30 +103,8 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
         initRadioGroups();
 
-        binding.dataPeriods.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                if (dataInitializationCheck++ >= 1)
-                    saveTimeData(i);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-                /*NO USE*/
-            }
-        });
-        binding.metadataPeriods.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                if (metaInitializationCheck++ >= 1)
-                    saveTimeMeta(i);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-                /*NO USE*/
-            }
-        });
+        binding.dataRadioGroup.setOnCheckedChangeListener((group, checkedId) -> saveTimeData(checkedId));
+        binding.metaRadioGroup.setOnCheckedChangeListener((group, checkedId) -> saveTimeMeta(checkedId));
 
         return binding.getRoot();
     }
@@ -137,8 +114,8 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         super.onResume();
         WorkManager.getInstance().getStatusesByTagLiveData(META_NOW).observe(this, workStatuses -> {
             if (!workStatuses.isEmpty() && workStatuses.get(0).getState() == State.RUNNING) {
-                binding.metadataLastSync.setTextColor(ContextCompat.getColor(context, R.color.text_black_333));
-                binding.metadataLastSync.setText(R.string.syncing_configuration);
+                binding.syncMetaLayout.message.setTextColor(ContextCompat.getColor(context, R.color.text_black_333));
+                binding.syncMetaLayout.message.setText(R.string.syncing_configuration);
                 binding.buttonSyncMeta.setEnabled(false);
             } else {
                 binding.buttonSyncMeta.setEnabled(true);
@@ -148,8 +125,8 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         });
         WorkManager.getInstance().getStatusesByTagLiveData(DATA_NOW).observe(this, workStatuses -> {
             if (!workStatuses.isEmpty() && workStatuses.get(0).getState() == State.RUNNING) {
-                binding.dataLastSync.setTextColor(ContextCompat.getColor(context, R.color.text_black_333));
-                binding.dataLastSync.setText(R.string.syncing_data);
+                binding.syncDataLayout.message.setTextColor(ContextCompat.getColor(context, R.color.text_black_333));
+                binding.syncDataLayout.message.setText(R.string.syncing_data);
                 binding.buttonSyncData.setEnabled(false);
             } else {
                 binding.buttonSyncData.setEnabled(true);
@@ -205,12 +182,20 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     @Override
     public Consumer<Pair<Integer, Integer>> setSyncData() {
         return syncParameters -> {
-            binding.eventMaxData.setText(String.valueOf(prefs.getInt(Constants.EVENT_MAX, Constants.EVENT_MAX_DEFAULT)));
-            binding.teiMaxData.setText(String.valueOf(prefs.getInt(Constants.TEI_MAX, Constants.TEI_MAX_DEFAULT)));
-            binding.eventCurrentData.setText(String.valueOf(syncParameters.val0()));
-            binding.teiCurrentData.setText(String.valueOf(syncParameters.val1()));
+            String eventMax = String.valueOf(prefs.getInt(Constants.EVENT_MAX, Constants.EVENT_MAX_DEFAULT));
+            String teiMax = String.valueOf(prefs.getInt(Constants.TEI_MAX, Constants.TEI_MAX_DEFAULT));
+            String eventCurrent = String.valueOf(syncParameters.val0());
+            String teiCurrent = String.valueOf(syncParameters.val1());
+            binding.eventMaxData.setText(eventMax);
+            binding.teiMaxData.setText(teiMax);
+            binding.eventCurrentData.setText(eventCurrent);
+            binding.teiCurrentData.setText(teiCurrent);
             binding.limitByOrgUnit.setChecked(prefs.getBoolean(Constants.LIMIT_BY_ORG_UNIT, false));
             binding.limitByProgram.setChecked(prefs.getBoolean(Constants.LIMIT_BY_PROGRAM, false));
+            binding.parameterLayout.message.setText(
+                    String.format("Events:%smax:%s%scurrent:%s\nTEI:%smax:%s%scurrent:%s",
+                            getString(R.string.tab), eventMax, getString(R.string.tab), eventCurrent,
+                            getString(R.string.tab), teiMax, getString(R.string.tab), teiCurrent));
         };
     }
 
@@ -219,10 +204,10 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         boolean metaStatus = prefs.getBoolean(Constants.LAST_META_SYNC_STATUS, true);
 
         if (dataStatus) {
-            binding.dataLastSync.setText(String.format(getString(R.string.last_data_sync_date), prefs.getString(Constants.LAST_DATA_SYNC, "-")));
-            binding.metadataLastSync.setTextColor(ContextCompat.getColor(context, R.color.text_black_333));
+            binding.syncDataLayout.message.setText(String.format(getString(R.string.last_data_sync_date), prefs.getString(Constants.LAST_DATA_SYNC, "-")));
+            binding.syncDataLayout.message.setTextColor(ContextCompat.getColor(context, R.color.text_black_333));
         } else {
-            binding.dataLastSync.setText(getString(R.string.sync_error_text));
+            binding.syncDataLayout.message.setText(getString(R.string.sync_error_text));
         }
 
         if (presenter.dataHasErrors()) {
@@ -232,24 +217,24 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
             int eIndex = src.indexOf('$');
             str.setSpan(new ImageSpan(getContext(), R.drawable.ic_sync_warning), wIndex, wIndex + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             str.setSpan(new ImageSpan(getContext(), R.drawable.ic_sync_problem_red), eIndex, eIndex + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            binding.dataLastSync.setText(str);
-            binding.dataLastSync.setTextColor(ContextCompat.getColor(getContext(), R.color.red_060));
+            binding.syncDataLayout.message.setText(str);
+            binding.syncDataLayout.message.setTextColor(ContextCompat.getColor(getContext(), R.color.red_060));
 
         } else if (presenter.dataHasWarnings()) {
             String src = getString(R.string.data_sync_warning);
             SpannableString str = new SpannableString(src);
             int wIndex = src.indexOf('@');
             str.setSpan(new ImageSpan(getContext(), R.drawable.ic_sync_warning), wIndex, wIndex + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            binding.dataLastSync.setText(str);
-            binding.dataLastSync.setTextColor(ContextCompat.getColor(getContext(), R.color.colorPrimaryOrange));
+            binding.syncDataLayout.message.setText(str);
+            binding.syncDataLayout.message.setTextColor(ContextCompat.getColor(getContext(), R.color.colorPrimaryOrange));
         }
 
         if (metaStatus) {
-            binding.metadataLastSync.setText(String.format(getString(R.string.last_data_sync_date), prefs.getString(Constants.LAST_META_SYNC, "-")));
-            binding.metadataLastSync.setTextColor(ContextCompat.getColor(context, R.color.text_black_333));
-        }else {
-            binding.metadataLastSync.setText(getString(R.string.metadata_sync_error));
-            binding.metadataLastSync.setTextColor(ContextCompat.getColor(context, R.color.red_060));
+            binding.syncMetaLayout.message.setText(String.format(getString(R.string.last_data_sync_date), prefs.getString(Constants.LAST_META_SYNC, "-")));
+            binding.syncMetaLayout.message.setTextColor(ContextCompat.getColor(context, R.color.text_black_333));
+        } else {
+            binding.syncMetaLayout.message.setText(getString(R.string.metadata_sync_error));
+            binding.syncMetaLayout.message.setTextColor(ContextCompat.getColor(context, R.color.red_060));
         }
 
     }
@@ -260,84 +245,88 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
         switch (timeData) {
             case TIME_15M:
-                binding.dataPeriods.setSelection(0);
+                binding.dataRadioGroup.check(R.id.data_quarter);
                 break;
             case TIME_HOURLY:
-                binding.dataPeriods.setSelection(1);
+                binding.dataRadioGroup.check(R.id.data_hour);
                 break;
             case TIME_MANUAL:
-                binding.dataPeriods.setSelection(3);
+                binding.buttonSyncData.setVisibility(View.VISIBLE);
+                binding.dataRadioGroup.check(R.id.data_manual);
                 break;
             case TIME_DAILY:
             default:
-                binding.dataPeriods.setSelection(2);
+                binding.dataRadioGroup.check(R.id.data_day);
                 break;
         }
 
         switch (timeMeta) {
             case TIME_MANUAL:
-                binding.metadataPeriods.setSelection(2);
+                binding.buttonSyncMeta.setVisibility(View.VISIBLE);
+                binding.metaRadioGroup.check(R.id.meta_manual);
                 break;
             case TIME_WEEKLY:
-                binding.metadataPeriods.setSelection(1);
+                binding.metaRadioGroup.check(R.id.meta_weekly);
                 break;
             case TIME_DAILY:
             default:
-                binding.metadataPeriods.setSelection(0);
+                binding.metaRadioGroup.check(R.id.meta_day);
                 break;
         }
     }
 
-    private void saveTimeData(int i) {
+    private void saveTimeData(int checkedId) {
         int time;
 
-        switch (i) {
-            case 3:
-                time = TIME_MANUAL;
-                break;
-            case 0:
+        switch (checkedId) {
+            case R.id.data_quarter:
                 time = TIME_15M;
                 break;
-            case 1:
+            case R.id.data_hour:
                 time = TIME_HOURLY;
                 break;
-            case 2:
+            case R.id.data_day:
                 time = TIME_DAILY;
                 break;
+            case R.id.data_manual:
             default:
                 time = TIME_MANUAL;
                 break;
         }
         prefs.edit().putInt(Constants.TIME_DATA, time).apply();
-        if (time != TIME_MANUAL)
+        if (time != TIME_MANUAL) {
+            binding.buttonSyncData.setVisibility(View.GONE);
             presenter.syncData(time, Constants.DATA);
-        else
+        } else {
+            binding.buttonSyncData.setVisibility(View.VISIBLE);
             presenter.cancelPendingWork(Constants.DATA);
+        }
     }
 
     private void saveTimeMeta(int i) {
         int time;
 
         switch (i) {
-            case 1:
-                // 1 week
+            case R.id.meta_weekly:
                 time = TIME_WEEKLY;
                 break;
-            case 2:
+            case R.id.meta_manual:
                 time = TIME_MANUAL;
                 break;
-            case 0:
+            case R.id.meta_day:
             default:
-                // 1 day (default)
                 time = TIME_DAILY;
                 break;
         }
 
         prefs.edit().putInt(Constants.TIME_META, time).apply();
-        if (time != TIME_MANUAL)
+        if (time != TIME_MANUAL) {
+            binding.buttonSyncMeta.setVisibility(View.GONE);
             presenter.syncMeta(time, Constants.META);
-        else
+        } else {
+            binding.buttonSyncMeta.setVisibility(View.VISIBLE);
             presenter.cancelPendingWork(Constants.META);
+        }
     }
 
     @Override
@@ -389,7 +378,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
             new Handler().postDelayed(() -> {
                 if (getAbstractActivity() != null) {
                     FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
-                            .focusOn(getAbstractActivity().findViewById(R.id.dataPeriods))
+                            .focusOn(getAbstractActivity().findViewById(R.id.settingsItemData))
                             .title(getString(R.string.tuto_settings_1))
                             .enableAutoTextPosition()
                             .closeOnTouch(true)
@@ -397,7 +386,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                             .build();
 
                     FancyShowCaseView tuto2 = new FancyShowCaseView.Builder(getAbstractActivity())
-                            .focusOn(getAbstractActivity().findViewById(R.id.metadataPeriods))
+                            .focusOn(getAbstractActivity().findViewById(R.id.settingsItemMeta))
                             .title(getString(R.string.tuto_settings_2))
                             .enableAutoTextPosition()
                             .focusShape(FocusShape.ROUNDED_RECTANGLE)
@@ -405,7 +394,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                             .build();
 
                     FancyShowCaseView tuto3 = new FancyShowCaseView.Builder(getAbstractActivity())
-                            .focusOn(getAbstractActivity().findViewById(R.id.capacityLayout))
+                            .focusOn(getAbstractActivity().findViewById(R.id.settingsItemParams))
                             .title(getString(R.string.tuto_settings_3))
                             .enableAutoTextPosition()
                             .focusShape(FocusShape.ROUNDED_RECTANGLE)
@@ -414,7 +403,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                                 @Override
                                 public void onDismiss(String id) {
                                     if (scrollView != null) {
-                                        scrollView.scrollTo((int) getAbstractActivity().findViewById(R.id.reservedValue).getX(), (int) getAbstractActivity().findViewById(R.id.reservedValue).getY());
+                                        scrollView.scrollTo((int) getAbstractActivity().findViewById(R.id.settingsItemValues).getX(), (int) getAbstractActivity().findViewById(R.id.settingsItemValues).getY());
                                     }
                                 }
 
@@ -426,7 +415,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                             .build();
 
                     FancyShowCaseView tuto4 = new FancyShowCaseView.Builder(getAbstractActivity())
-                            .focusOn(getAbstractActivity().findViewById(R.id.reservedValue))
+                            .focusOn(getAbstractActivity().findViewById(R.id.settingsItemValues))
                             .title(getString(R.string.tuto_settings_reserved))
                             .enableAutoTextPosition()
                             .focusShape(FocusShape.ROUNDED_RECTANGLE)
@@ -434,7 +423,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                             .build();
 
                     FancyShowCaseView tuto5 = new FancyShowCaseView.Builder(getAbstractActivity())
-                            .focusOn(getAbstractActivity().findViewById(R.id.buttonSyncError))
+                            .focusOn(getAbstractActivity().findViewById(R.id.settingsItemLog))
                             .title(getString(R.string.tuto_settings_errors))
                             .enableAutoTextPosition()
                             .focusShape(FocusShape.ROUNDED_RECTANGLE)
@@ -442,7 +431,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                             .build();
 
                     FancyShowCaseView tuto6 = new FancyShowCaseView.Builder(getAbstractActivity())
-                            .focusOn(getAbstractActivity().findViewById(R.id.buttonDeleteLocalData))
+                            .focusOn(getAbstractActivity().findViewById(R.id.settingsItemDeleteData))
                             .title(getString(R.string.tuto_settings_reset))
                             .enableAutoTextPosition()
                             .focusShape(FocusShape.ROUNDED_RECTANGLE)
@@ -450,7 +439,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                             .build();
 
                     FancyShowCaseView tuto7 = new FancyShowCaseView.Builder(getAbstractActivity())
-                            .focusOn(getAbstractActivity().findViewById(R.id.wipeData))
+                            .focusOn(getAbstractActivity().findViewById(R.id.settingsReset))
                             .title(getString(R.string.tuto_settings_4))
                             .enableAutoTextPosition()
                             .closeOnTouch(true)
@@ -501,11 +490,38 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
     @Override
     public void syncData() {
-        binding.dataLastSync.setText(R.string.syncing_data);
+        binding.syncDataLayout.message.setText(R.string.syncing_data);
     }
 
     @Override
     public void syncMeta() {
-        binding.metadataLastSync.setText(R.string.syncing_configuration);
+        binding.syncMetaLayout.message.setText(R.string.syncing_configuration);
+    }
+
+    @Override
+    public void openItem(int settingsItem) {
+        binding.dataRadioGroup.setVisibility(View.GONE);
+        binding.metaRadioGroup.setVisibility(View.GONE);
+        binding.parameterData.setVisibility(View.GONE);
+        binding.deleteDataButton.setVisibility(View.GONE);
+        binding.resetButton.setVisibility(View.GONE);
+
+        switch (settingsItem) {
+            case 0:
+                binding.dataRadioGroup.setVisibility(View.VISIBLE);
+                break;
+            case 1:
+                binding.metaRadioGroup.setVisibility(View.VISIBLE);
+                break;
+            case 2:
+                binding.parameterData.setVisibility(View.VISIBLE);
+                break;
+            case 5:
+                binding.deleteDataButton.setVisibility(View.VISIBLE);
+                break;
+            case 6:
+                binding.resetButton.setVisibility(View.VISIBLE);
+                break;
+        }
     }
 }
