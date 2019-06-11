@@ -8,7 +8,6 @@ import android.text.method.DigitsKeyListener;
 import android.util.AttributeSet;
 import android.util.Patterns;
 import android.util.TypedValue;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -122,12 +121,13 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
                     editText.setEllipsize(TextUtils.TruncateAt.END);
                     break;
                 case LONG_TEXT:
-                    editText.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 93, getResources().getDisplayMetrics());
+                    editText.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
                     editText.setMaxLines(Integer.MAX_VALUE);
                     editText.setEllipsize(null);
                     editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
                     editText.setVerticalScrollBarEnabled(true);
                     editText.setScrollBarStyle(View.SCROLLBARS_INSIDE_INSET);
+                    editText.setOverScrollMode(View.OVER_SCROLL_ALWAYS);
                     editText.setSingleLine(false);
                     editText.setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
                     break;
