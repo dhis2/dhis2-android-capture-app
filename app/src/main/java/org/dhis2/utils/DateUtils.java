@@ -1168,7 +1168,7 @@ public class DateUtils {
         expiredBecouseOfCompletion = status == EventStatus.COMPLETED ?
                 isEventExpired(null, eventDate, compExpDays) : false;
 
-        if (programPeriodType != null || expDays > 0) {
+        if (programPeriodType != null) {
             Date expDate = getNextPeriod(programPeriodType, eventDate, 1); //Initial date of next period
             if (expDays > 0) {
                 Calendar calendar = getCalendar();

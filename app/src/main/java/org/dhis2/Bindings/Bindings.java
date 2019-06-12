@@ -203,7 +203,10 @@ public class Bindings {
             if (enrollmentStatus == EnrollmentStatus.ACTIVE) {
                 switch (status) {
                     case ACTIVE:
-                        if (DateUtils.getInstance().hasExpired(event, program.expiryDays(), program.completeEventsExpiryDays(), eventProgramStage.periodType() != null ? eventProgramStage.periodType() : program.expiryPeriodType())) {
+                        Date eventDate = event.eventDate();
+                        if(eventProgramStage.periodType()!=null && eventProgramStage.periodType().name().contains(PeriodType.Weekly.name()))
+                            eventDate = DateUtils.getInstance().getNextPeriod(eventProgramStage.periodType(),eventDate,0,true);
+                        if (DateUtils.getInstance().isEventExpired(eventDate, null, event.status(), program.completeEventsExpiryDays(), eventProgramStage.periodType() != null ? eventProgramStage.periodType() : program.expiryPeriodType(), program.expiryDays())) {
                             view.setImageDrawable(AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_eye_red));
                         } else {
                             view.setImageDrawable(AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_edit));
@@ -247,7 +250,7 @@ public class Bindings {
                 switch (status) {
                     case ACTIVE:
                         Date eventDate = event.eventDate();
-                        if(eventProgramStage.periodType().name().contains(PeriodType.Weekly.name()))
+                        if(eventProgramStage.periodType()!=null && eventProgramStage.periodType().name().contains(PeriodType.Weekly.name()))
                             eventDate = DateUtils.getInstance().getNextPeriod(eventProgramStage.periodType(),eventDate,0,true);
                         if (DateUtils.getInstance().isEventExpired(eventDate, null, event.status(), program.completeEventsExpiryDays(), eventProgramStage.periodType() != null ? eventProgramStage.periodType() : program.expiryPeriodType(), program.expiryDays())) {
                             view.setText(view.getContext().getString(R.string.event_expired));
@@ -297,7 +300,7 @@ public class Bindings {
                 switch (event.status()) {
                     case ACTIVE:
                         Date eventDate = event.eventDate();
-                        if(programStage.periodType().name().contains(PeriodType.Weekly.name()))
+                        if(programStage.periodType()!=null && programStage.periodType().name().contains(PeriodType.Weekly.name()))
                             eventDate = DateUtils.getInstance().getNextPeriod(programStage.periodType(),eventDate,0,true);
                         if (DateUtils.getInstance().isEventExpired(eventDate, null, event.status(), program.completeEventsExpiryDays(), programStage.periodType() != null ? programStage.periodType() : program.expiryPeriodType(), program.expiryDays())) {                            bgColor = R.drawable.item_event_dark_gray_ripple;
                         } else
@@ -376,24 +379,10 @@ public class Bindings {
 
     @BindingAdapter("eventWithoutRegistrationStatusIcon")
     public static void setEventWithoutRegistrationStatusIcon(ImageView imageView, ProgramEventViewModel event) {
-
         if (event.eventStatus() == EventStatus.ACTIVE && !event.isExpired())
             imageView.setImageResource(R.drawable.ic_edit);
         else
             imageView.setImageResource(R.drawable.ic_visibility);
-/*
-        switch (event.eventStatus()) {
-            case ACTIVE:
-                if (event.isExpired()) {
-                    imageView.setImageResource(R.drawable.ic_visibility);
-                } else
-                    imageView.setImageResource(R.drawable.ic_edit);
-                break;
-            default:
-                imageView.setImageResource(R.drawable.ic_visibility);
-                break;
-
-        }*/
     }
 
     @BindingAdapter("stateText")
@@ -555,15 +544,15 @@ public class Bindings {
     }
 
     @BindingAdapter("versionVisibility")
-    public static void setVisibility(LinearLayout linearLayout, boolean check){
-        if(check && Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP){
+    public static void setVisibility(LinearLayout linearLayout, boolean check) {
+        if (check && Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             linearLayout.setVisibility(View.GONE);
         }
     }
 
     @BindingAdapter("settingIcon")
     public static void setSettingIcon(ImageView view, int drawableReference) {
-        Drawable drawable = AppCompatResources.getDrawable(view.getContext(),drawableReference);
+        Drawable drawable = AppCompatResources.getDrawable(view.getContext(), drawableReference);
         view.setImageDrawable(drawable);
     }
 }
