@@ -483,5 +483,6 @@
     <string name="data_every_day">Daily</string>
     <string name="data_every_week">Weekly</string>
     <string name="sync_setting">Synchronization setting: %s</string>
+    <string name="relationship_without_enrollment">The record you are trying to access has no enrollment. You can\'t access the dashboard.</string>
 
 </resources>

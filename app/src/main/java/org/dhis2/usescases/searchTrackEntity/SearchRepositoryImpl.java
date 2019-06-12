@@ -72,11 +72,11 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     private final BriteDatabase briteDatabase;
 
-    private final String SELECT_PROGRAM_WITH_REGISTRATION = "SELECT Program.* FROM " + ProgramModel.TABLE +
+    private final String SELECT_PROGRAM_WITH_REGISTRATION = "SELECT DISTINCT Program.* FROM " + ProgramModel.TABLE +
             " JOIN OrganisationUnitProgramLink ON OrganisationUnitProgramLink.program = Program.uid " +
             " JOIN UserOrganisationUnit ON UserOrganisationUnit.organisationUnit = OrganisationUnitProgramLink.organisationUnit " +
             " WHERE Program.programType='WITH_REGISTRATION' AND Program.trackedEntityType = ? " +
-            " AND UserOrganisationUnit.organisationUnitScope = ?";
+            " AND UserOrganisationUnit.organisationUnitScope = ? ORDER BY Program.displayName";
     private final String SELECT_PROGRAM_ATTRIBUTES = "SELECT TrackedEntityAttribute.* FROM " + TrackedEntityAttributeModel.TABLE +
             " INNER JOIN " + ProgramTrackedEntityAttributeModel.TABLE +
             " ON " + TrackedEntityAttributeModel.TABLE + "." + TrackedEntityAttributeModel.Columns.UID + " = " + ProgramTrackedEntityAttributeModel.TABLE + "." + ProgramTrackedEntityAttributeModel.Columns.TRACKED_ENTITY_ATTRIBUTE +
