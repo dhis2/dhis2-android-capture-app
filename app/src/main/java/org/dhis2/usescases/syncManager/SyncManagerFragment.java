@@ -68,9 +68,6 @@ import static org.dhis2.utils.Constants.TIME_WEEKLY;
  */
 public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncManagerContracts.View {
 
-    private int metaInitializationCheck = 0;
-    private int dataInitializationCheck = 0;
-
     @Inject
     SyncManagerContracts.Presenter presenter;
 
@@ -78,7 +75,6 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     private SharedPreferences prefs;
     private CompositeDisposable listenerDisposable;
     private Context context;
-
 
     public SyncManagerFragment() {
         // Required empty public constructor
@@ -115,7 +111,8 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         WorkManager.getInstance().getStatusesByTagLiveData(META_NOW).observe(this, workStatuses -> {
             if (!workStatuses.isEmpty() && workStatuses.get(0).getState() == State.RUNNING) {
                 binding.syncMetaLayout.message.setTextColor(ContextCompat.getColor(context, R.color.text_black_333));
-                binding.syncMetaLayout.message.setText(R.string.syncing_configuration);
+                String metaText = metaSyncSettings().concat("\n").concat(context.getString(R.string.syncing_configuration));
+                binding.syncMetaLayout.message.setText(metaText);
                 binding.buttonSyncMeta.setEnabled(false);
             } else {
                 binding.buttonSyncMeta.setEnabled(true);
@@ -125,8 +122,9 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         });
         WorkManager.getInstance().getStatusesByTagLiveData(DATA_NOW).observe(this, workStatuses -> {
             if (!workStatuses.isEmpty() && workStatuses.get(0).getState() == State.RUNNING) {
+                String dataText = dataSyncSetting().concat("\n").concat(context.getString(R.string.syncing_data));
                 binding.syncDataLayout.message.setTextColor(ContextCompat.getColor(context, R.color.text_black_333));
-                binding.syncDataLayout.message.setText(R.string.syncing_data);
+                binding.syncDataLayout.message.setText(dataText);
                 binding.buttonSyncData.setEnabled(false);
             } else {
                 binding.buttonSyncData.setEnabled(true);
@@ -204,10 +202,12 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         boolean metaStatus = prefs.getBoolean(Constants.LAST_META_SYNC_STATUS, true);
 
         if (dataStatus) {
-            binding.syncDataLayout.message.setText(String.format(getString(R.string.last_data_sync_date), prefs.getString(Constants.LAST_DATA_SYNC, "-")));
+            String dataText = dataSyncSetting().concat("\n").concat(String.format(getString(R.string.last_data_sync_date), prefs.getString(Constants.LAST_DATA_SYNC, "-")));
+            binding.syncDataLayout.message.setText(dataText);
             binding.syncDataLayout.message.setTextColor(ContextCompat.getColor(context, R.color.text_black_333));
         } else {
-            binding.syncDataLayout.message.setText(getString(R.string.sync_error_text));
+            String dataText = dataSyncSetting().concat("\n").concat(getString(R.string.sync_error_text));
+            binding.syncDataLayout.message.setText(dataText);
         }
 
         if (presenter.dataHasErrors()) {
@@ -217,7 +217,8 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
             int eIndex = src.indexOf('$');
             str.setSpan(new ImageSpan(getContext(), R.drawable.ic_sync_warning), wIndex, wIndex + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             str.setSpan(new ImageSpan(getContext(), R.drawable.ic_sync_problem_red), eIndex, eIndex + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            binding.syncDataLayout.message.setText(str);
+            String dataText = dataSyncSetting().concat("\n").concat(str.toString());
+            binding.syncDataLayout.message.setText(dataText);
             binding.syncDataLayout.message.setTextColor(ContextCompat.getColor(getContext(), R.color.red_060));
 
         } else if (presenter.dataHasWarnings()) {
@@ -225,15 +226,18 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
             SpannableString str = new SpannableString(src);
             int wIndex = src.indexOf('@');
             str.setSpan(new ImageSpan(getContext(), R.drawable.ic_sync_warning), wIndex, wIndex + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            binding.syncDataLayout.message.setText(str);
+            String dataText = dataSyncSetting().concat("\n").concat(str.toString());
+            binding.syncDataLayout.message.setText(dataText);
             binding.syncDataLayout.message.setTextColor(ContextCompat.getColor(getContext(), R.color.colorPrimaryOrange));
         }
 
         if (metaStatus) {
-            binding.syncMetaLayout.message.setText(String.format(getString(R.string.last_data_sync_date), prefs.getString(Constants.LAST_META_SYNC, "-")));
+            String metaText = metaSyncSettings().concat("\n").concat(String.format(getString(R.string.last_data_sync_date), prefs.getString(Constants.LAST_META_SYNC, "-")));
+            binding.syncMetaLayout.message.setText(metaText);
             binding.syncMetaLayout.message.setTextColor(ContextCompat.getColor(context, R.color.text_black_333));
         } else {
-            binding.syncMetaLayout.message.setText(getString(R.string.metadata_sync_error));
+            String metaText = metaSyncSettings().concat("\n").concat(getString(R.string.metadata_sync_error));
+            binding.syncMetaLayout.message.setText(metaText);
             binding.syncMetaLayout.message.setTextColor(ContextCompat.getColor(context, R.color.red_060));
         }
 
@@ -490,12 +494,14 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
     @Override
     public void syncData() {
-        binding.syncDataLayout.message.setText(R.string.syncing_data);
+        String dataText = dataSyncSetting().concat("\n").concat(context.getString(R.string.syncing_data));
+        binding.syncDataLayout.message.setText(dataText);
     }
 
     @Override
     public void syncMeta() {
-        binding.syncMetaLayout.message.setText(R.string.syncing_configuration);
+        String metaText = metaSyncSettings().concat("\n").concat(getString(R.string.syncing_configuration));
+        binding.syncMetaLayout.message.setText(metaText);
     }
 
     @Override
@@ -523,5 +529,46 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 binding.resetButton.setVisibility(View.VISIBLE);
                 break;
         }
+    }
+
+    private String dataSyncSetting() {
+        int timeData = prefs.getInt("timeData", TIME_DAILY);
+        String setting;
+        switch (timeData) {
+            case TIME_15M:
+                setting = getString(R.string.data_every_fifteen_minutes);
+                break;
+            case TIME_HOURLY:
+                setting = getString(R.string.data_every_hour);
+                break;
+            case TIME_MANUAL:
+                setting = getString(R.string.Manual);
+                break;
+            case TIME_DAILY:
+            default:
+                setting = getString(R.string.data_every_day);
+                break;
+        }
+
+        return String.format(context.getString(R.string.sync_setting), setting);
+    }
+
+    private String metaSyncSettings() {
+        int timeMeta = prefs.getInt("timeMeta", TIME_DAILY);
+        String setting;
+        switch (timeMeta) {
+            case TIME_MANUAL:
+                setting = getString(R.string.Manual);
+                break;
+            case TIME_WEEKLY:
+                setting = getString(R.string.data_every_week);
+                break;
+            case TIME_DAILY:
+            default:
+                setting = getString(R.string.data_every_day);
+                break;
+        }
+
+        return String.format(context.getString(R.string.sync_setting), setting);
     }
 }

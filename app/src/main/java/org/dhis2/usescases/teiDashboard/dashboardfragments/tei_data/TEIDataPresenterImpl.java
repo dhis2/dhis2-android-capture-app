@@ -175,7 +175,7 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
         PopupMenu menu = new PopupMenu(view.getContext(), mView);
 
         menu.getMenu().add(Menu.NONE, Menu.NONE, 0, "QR");
-        menu.getMenu().add(Menu.NONE, Menu.NONE, 1, "NFC");
+//        menu.getMenu().add(Menu.NONE, Menu.NONE, 1, "NFC"); TODO: When NFC is ready, reactivate option
         //menu.getMenu().add(Menu.NONE, Menu.NONE, 1, "SMS"); TODO: When SMS is ready, reactivate option
 
         menu.setOnMenuItemClickListener(item -> {
