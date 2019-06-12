@@ -201,12 +201,29 @@ public class RelationshipPresenterImpl implements RelationshipContracts.Presente
     @Override
     public void openDashboard(String teiUid) {
         if (d2.trackedEntityModule().trackedEntityInstances.byUid().eq(teiUid).one().get().state() != State.RELATIONSHIP) {
-            Intent intent = new Intent(view.getContext(), TeiDashboardMobileActivity.class);
-            Bundle bundle = new Bundle();
-            bundle.putString("TEI_UID", teiUid);
-            bundle.putString("PROGRAM_UID", null);
-            intent.putExtras(bundle);
-            view.getAbstractActivity().startActivity(intent);
+            if(!d2.enrollmentModule().enrollments.byTrackedEntityInstance().eq(teiUid).get().isEmpty()) {
+                Intent intent = new Intent(view.getContext(), TeiDashboardMobileActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putString("TEI_UID", teiUid);
+                bundle.putString("PROGRAM_UID", null);
+                intent.putExtras(bundle);
+                view.getAbstractActivity().startActivity(intent);
+            }else
+                view.showInfoDialog(String.format(view.getContext().getString(R.string.resource_not_found), d2.trackedEntityModule().trackedEntityTypes.uid(teiType).get().displayName()),
+                        view.getContext().getString(R.string.relationship_without_enrollment),
+                        view.getContext().getString(R.string.ok),
+                        view.getContext().getString(R.string.no),
+                        new OnDialogClickListener() {
+                            @Override
+                            public void onPossitiveClick(AlertDialog alertDialog) {
+                                //not needed
+                            }
+
+                            @Override
+                            public void onNegativeClick(AlertDialog alertDialog) {
+                                //not needed
+                            }
+                        }).show();
         } else {
             view.showInfoDialog(String.format(view.getContext().getString(R.string.resource_not_found), d2.trackedEntityModule().trackedEntityTypes.uid(teiType).get().displayName()),
                     view.getContext().getString(R.string.relationship_not_found_message),
