@@ -203,7 +203,7 @@
     <string name="settingsSyncMetadata">Sync configuration</string>
     <string name="settingsSyncParameters">Sync parameters</string>
     <string name="settingsReservedValues">Reserved values</string>
-    <string name="settingsReservedValues_descr">Here you can see your number of values available offline and reserve new ones.</string>
+    <string name="settingsReservedValues_descr">Here you can see the number of values available offline and reserve new ones.</string>
     <string name="settingsErrorLog">Open sync error log</string>
     <string name="settingsErrorLog_descr">This log contains all errors caused by syncing your data and metadata.</string>
     <string name="settingsDeleteLocalData">Delete local data</string>
@@ -478,5 +478,10 @@
     <string name="relationship_error_recursive">You can\'t relate a record with itself</string>
     <string name="unblock_session">Unblock session</string>
     <string name="change_calendar_view">Change calendar view</string>
+    <string name="data_every_fifteen_minutes">15 minutes</string>
+    <string name="data_every_hour">Every hour</string>
+    <string name="data_every_day">Daily</string>
+    <string name="data_every_week">Weekly</string>
+    <string name="sync_setting">Synchronization setting: %s</string>
 
 </resources>

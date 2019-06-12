@@ -51,13 +51,14 @@
                     android:visibility="gone"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/syncDataLayout">
+                    app:layout_constraintTop_toBottomOf="@id/syncDataLayout"
+                    tools:visibility="visible">
 
                     <androidx.appcompat.widget.AppCompatRadioButton
                         android:id="@+id/data_quarter"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="15 minutes"
+                        android:text="@string/data_every_fifteen_minutes"
                         android:textSize="10sp"
                         app:buttonTint="?colorPrimary" />
 
@@ -65,7 +66,7 @@
                         android:id="@+id/data_hour"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Every hour"
+                        android:text="@string/data_every_hour"
                         android:textSize="10sp"
                         app:buttonTint="?colorPrimary" />
 
@@ -73,7 +74,7 @@
                         android:id="@+id/data_day"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Daily"
+                        android:text="@string/data_every_day"
                         android:textSize="10sp"
                         app:buttonTint="?colorPrimary" />
 
@@ -81,7 +82,7 @@
                         android:id="@+id/data_manual"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Manual"
+                        android:text="@string/Manual"
                         android:textSize="10sp"
                         app:buttonTint="?colorPrimary"
                         tools:checked="true" />
@@ -95,6 +96,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="14dp"
+                    android:layout_marginEnd="16dp"
                     android:fontFamily="@font/rubik_medium"
                     android:onClick='@{()->presenter.syncData()}'
                     android:text="@string/SYNC_DATA"
@@ -103,7 +105,8 @@
                     android:textSize="12sp"
                     android:visibility="gone"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/dataRadioGroup" />
+                    app:layout_constraintTop_toBottomOf="@id/dataRadioGroup"
+                    tools:visibility="visible" />
 
                 <View
                     android:layout_width="0dp"
@@ -136,13 +139,14 @@
                     android:visibility="gone"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/syncMetaLayout">
+                    app:layout_constraintTop_toBottomOf="@id/syncMetaLayout"
+                    tools:visibility="visible">
 
                     <androidx.appcompat.widget.AppCompatRadioButton
                         android:id="@+id/meta_day"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Daily"
+                        android:text="@string/data_every_day"
                         android:textSize="10sp"
                         app:buttonTint="?colorPrimary" />
 
@@ -150,7 +154,7 @@
                         android:id="@+id/meta_weekly"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Weekly"
+                        android:text="@string/data_every_week"
                         android:textSize="10sp"
                         app:buttonTint="?colorPrimary" />
 
@@ -158,7 +162,7 @@
                         android:id="@+id/meta_manual"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Manual"
+                        android:text="@string/Manual"
                         android:textSize="10sp"
                         app:buttonTint="?colorPrimary"
                         tools:checked="true" />
@@ -172,6 +176,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="14dp"
+                    android:layout_marginEnd="16dp"
                     android:fontFamily="@font/rubik_medium"
                     android:onClick='@{()->presenter.syncMeta()}'
                     android:text="@string/SYNC_META"
@@ -180,7 +185,8 @@
                     android:textSize="12sp"
                     android:visibility="gone"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/metaRadioGroup" />
+                    app:layout_constraintTop_toBottomOf="@id/metaRadioGroup"
+                    tools:visibility="visible" />
 
                 <View
                     android:layout_width="0dp"
@@ -210,13 +216,15 @@
                     android:id="@+id/parameterData"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:paddingEnd="16dp"
                     android:visibility="gone"
-                    app:layout_constraintTop_toBottomOf="@id/parameterLayout">
+                    app:layout_constraintTop_toBottomOf="@id/parameterLayout"
+                    tools:visibility="visible">
 
                     <androidx.appcompat.widget.SwitchCompat
                         android:id="@+id/limitByOrgUnit"
                         android:layout_width="wrap_content"
-                        android:layout_height="40dp"
+                        android:layout_height="wrap_content"
                         android:text="@string/limit_by_organisation_unit"
                         android:textColor="@color/text_black_333"
                         android:textSize="12sp"
@@ -227,7 +235,7 @@
                     <androidx.appcompat.widget.SwitchCompat
                         android:id="@+id/limitByProgram"
                         android:layout_width="wrap_content"
-                        android:layout_height="40dp"
+                        android:layout_height="wrap_content"
                         android:text="@string/limit_by_program"
                         android:textColor="@color/text_black_333"
                         android:textSize="12sp"
@@ -428,6 +436,7 @@
                     style="@style/TextButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
                     android:fontFamily="@font/rubik_medium"
                     android:onClick="@{()->presenter.onDeleteLocalData()}"
                     android:text="@string/action_accept"
@@ -436,7 +445,8 @@
                     android:textSize="12sp"
                     android:visibility="gone"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/deleteLayout" />
+                    app:layout_constraintTop_toBottomOf="@id/deleteLayout"
+                    tools:visibility="visible" />
 
                 <View
                     android:layout_width="0dp"
@@ -466,6 +476,7 @@
                     style="@style/TextButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
                     android:fontFamily="@font/rubik_medium"
                     android:onClick="@{()->presenter.onWipeData()}"
                     android:text="@string/action_accept"
@@ -474,7 +485,8 @@
                     android:textSize="12sp"
                     android:visibility="gone"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/resetLayout" />
+                    app:layout_constraintTop_toBottomOf="@id/resetLayout"
+                    tools:visibility="visible" />
 
                 <View
                     android:layout_width="0dp"
