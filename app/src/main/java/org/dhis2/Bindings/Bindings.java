@@ -30,6 +30,7 @@ import org.dhis2.R;
 import org.dhis2.usescases.programEventDetail.ProgramEventViewModel;
 import org.dhis2.utils.CatComboAdapter;
 import org.dhis2.utils.DateUtils;
+import org.dhis2.utils.Period;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.State;
@@ -38,6 +39,7 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.imports.ImportStatus;
+import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
@@ -244,7 +246,10 @@ public class Bindings {
             if (enrollmentStatus == EnrollmentStatus.ACTIVE) {
                 switch (status) {
                     case ACTIVE:
-                        if (DateUtils.getInstance().hasExpired(event, program.expiryDays(), program.completeEventsExpiryDays(), eventProgramStage.periodType() != null ? eventProgramStage.periodType() : program.expiryPeriodType())) {
+                        Date eventDate = event.eventDate();
+                        if(eventProgramStage.periodType().name().contains(PeriodType.Weekly.name()))
+                            eventDate = DateUtils.getInstance().getNextPeriod(eventProgramStage.periodType(),eventDate,0,true);
+                        if (DateUtils.getInstance().isEventExpired(eventDate, null, event.status(), program.completeEventsExpiryDays(), eventProgramStage.periodType() != null ? eventProgramStage.periodType() : program.expiryPeriodType(), program.expiryDays())) {
                             view.setText(view.getContext().getString(R.string.event_expired));
                         } else {
                             view.setText(view.getContext().getString(R.string.event_open));
@@ -291,8 +296,10 @@ public class Bindings {
             } else if (event.status() != null) {
                 switch (event.status()) {
                     case ACTIVE:
-                        if (DateUtils.getInstance().hasExpired(event, program.expiryDays(), program.completeEventsExpiryDays(), programStage.periodType() != null ? programStage.periodType() : program.expiryPeriodType())) {
-                            bgColor = R.drawable.item_event_dark_gray_ripple;
+                        Date eventDate = event.eventDate();
+                        if(programStage.periodType().name().contains(PeriodType.Weekly.name()))
+                            eventDate = DateUtils.getInstance().getNextPeriod(programStage.periodType(),eventDate,0,true);
+                        if (DateUtils.getInstance().isEventExpired(eventDate, null, event.status(), program.completeEventsExpiryDays(), programStage.periodType() != null ? programStage.periodType() : program.expiryPeriodType(), program.expiryDays())) {                            bgColor = R.drawable.item_event_dark_gray_ripple;
                         } else
                             bgColor = R.drawable.item_event_yellow_ripple;
                         break;
