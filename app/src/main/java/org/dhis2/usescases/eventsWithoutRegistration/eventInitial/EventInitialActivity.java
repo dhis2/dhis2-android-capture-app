@@ -83,6 +83,7 @@ import me.toptas.fancyshowcase.FancyShowCaseView;
 import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
+import static org.dhis2.utils.Constants.ADDNEW;
 import static org.dhis2.utils.Constants.ENROLLMENT_UID;
 import static org.dhis2.utils.Constants.EVENT_CREATION_TYPE;
 import static org.dhis2.utils.Constants.EVENT_PERIOD_TYPE;
@@ -397,9 +398,17 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         binding.date.setOnClickListener(view -> {
             if (periodType == null)
                 presenter.onDateClick(EventInitialActivity.this);
-            else
+            else {
+                Date minDate = DateUtils.getInstance().expDate(null, program.expiryDays(), periodType);
+                Date lastPeriodDate = DateUtils.getInstance().getNextPeriod(periodType, minDate,-1, true);
+
+                if (lastPeriodDate.after(DateUtils.getInstance().getNextPeriod(program.expiryPeriodType(), minDate, 0)))
+                    minDate = DateUtils.getInstance().getNextPeriod(periodType, lastPeriodDate, 0);
+
                 new PeriodDialog()
                         .setPeriod(periodType)
+                        .setMinDate(minDate)
+                        .setMaxDate(eventCreationType.equals(EventCreationType.ADDNEW) || eventCreationType.equals(EventCreationType.DEFAULT) ? DateUtils.getInstance().getToday() : null)
                         .setPossitiveListener(selectedDate -> {
                             this.selectedDate = selectedDate;
                             binding.date.setText(DateUtils.getInstance().getPeriodUIString(periodType, selectedDate, Locale.getDefault()));
@@ -409,6 +418,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                             presenter.filterOrgUnits(DateUtils.uiDateFormat().format(selectedDate));
                         })
                         .show(getSupportFragmentManager(), PeriodDialog.class.getSimpleName());
+            }
         });
 
         presenter.filterOrgUnits(DateUtils.uiDateFormat().format(selectedDate));

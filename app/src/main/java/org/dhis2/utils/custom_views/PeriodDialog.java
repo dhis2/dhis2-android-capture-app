@@ -42,7 +42,7 @@ public class PeriodDialog extends DialogFragment {
         possitiveListener = null;
         negativeListener = null;
         title = null;
-        currentDate = Calendar.getInstance().getTime();
+        currentDate = DateUtils.getInstance().getToday();
     }
 
     public PeriodDialog setPeriod(PeriodType period) {
@@ -104,18 +104,15 @@ public class PeriodDialog extends DialogFragment {
             currentDate = DateUtils.getInstance().getNextPeriod(period, currentDate, 0);
 
         binding.selectedPeriod.setText(DateUtils.getInstance().getPeriodUIString(period,currentDate, Locale.getDefault()));
+        checkConstraintDates();
 
         binding.periodBefore.setOnClickListener(view -> {
             previousPeriod();
             checkConstraintDates();
-
-
         });
         binding.periodNext.setOnClickListener(view -> {
             nextPeriod();
             checkConstraintDates();
-
-
         });
 
         return binding.getRoot();
@@ -150,7 +147,7 @@ public class PeriodDialog extends DialogFragment {
     }
 
     public PeriodDialog setMaxDate(Date maxDate) {
-        this.maxDate = maxDate;
+        this.maxDate = DateUtils.getInstance().getNextPeriod(period, maxDate, 0);
         return this;
     }
 
