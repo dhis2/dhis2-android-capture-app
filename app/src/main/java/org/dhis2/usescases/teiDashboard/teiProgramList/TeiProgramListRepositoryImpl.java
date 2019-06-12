@@ -19,8 +19,10 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
@@ -92,7 +94,19 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
     @Override
     public Observable<List<ProgramViewModel>> allPrograms(String trackedEntityId) {
         String trackedEntityType = d2.trackedEntityModule().trackedEntityInstances.byUid().eq(trackedEntityId).one().get().trackedEntityType();
-        return Observable.fromCallable(() -> d2.programModule().programs.byTrackedEntityTypeUid().eq(trackedEntityType).withStyle().get())
+        return Observable.just(d2.organisationUnitModule().organisationUnits.byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).get())
+                .map(captureOrgUnits -> {
+                    Iterator<OrganisationUnit> it = captureOrgUnits.iterator();
+                    List<String> captureOrgUnitUids = new ArrayList();
+                    while (it.hasNext()) {
+                        OrganisationUnit ou = it.next();
+                        captureOrgUnitUids.add(ou.uid());
+                    }
+                    return captureOrgUnitUids;
+                })
+                .flatMap(orgUnits->Observable.fromCallable(() -> d2.programModule().programs
+                        .byOrganisationUnitList(orgUnits)
+                        .byTrackedEntityTypeUid().eq(trackedEntityType).withStyle().get()))
                 .flatMapIterable(programs -> programs)
                 .map(program -> ProgramViewModel.create(
                         program.uid(),

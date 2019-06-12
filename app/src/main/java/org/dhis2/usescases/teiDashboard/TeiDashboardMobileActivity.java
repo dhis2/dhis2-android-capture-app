@@ -15,6 +15,15 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.PopupMenu;
+
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
 
@@ -35,17 +44,12 @@ import org.dhis2.utils.HelpManager;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 import javax.inject.Inject;
 
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.databinding.DataBindingUtil;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentStatePagerAdapter;
-import androidx.lifecycle.ViewModelProviders;
-import androidx.viewpager.widget.ViewPager;
 import me.toptas.fancyshowcase.FancyShowCaseView;
 import me.toptas.fancyshowcase.FocusShape;
 import timber.log.Timber;
@@ -73,6 +77,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     private DashboardViewModel dashboardViewModel;
     private boolean fromRelationship;
+    private boolean showTutorial;
 
 
     @Override
@@ -226,7 +231,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         if (getIntent().getStringExtra(Constants.EVENT_UID) != null && enrollmentStatus)
             dashboardViewModel.updateEventUid(getIntent().getStringExtra(Constants.EVENT_UID));
 
-        if (!HelpManager.getInstance().isTutorialReadyForScreen(getClass().getName())) {
+        if (!HelpManager.getInstance().isTutorialReadyForScreen(getClass().getName()) && !fromRelationship) {
             setTutorial();
         }
     }
@@ -331,7 +336,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                 Constants.SHARE_PREFS, Context.MODE_PRIVATE);
 
         new Handler().postDelayed(() -> {
-            if(getAbstractActivity()!=null) {
+            if (getAbstractActivity() != null) {
                 FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
                         .title(getString(R.string.tuto_dashboard_1))
                         .enableAutoTextPosition()
@@ -399,9 +404,10 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
                 HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
 
-                if (!prefs.getBoolean("TUTO_DASHBOARD_SHOWN", false) && !BuildConfig.DEBUG) {
-                    HelpManager.getInstance().showHelp();/* getAbstractActivity().fancyShowCaseQueue.show();*/
+                if (!prefs.getBoolean("TUTO_DASHBOARD_SHOWN", false) && !BuildConfig.DEBUG || showTutorial) {
+                    HelpManager.getInstance().showHelp();
                     prefs.edit().putBoolean("TUTO_DASHBOARD_SHOWN", true).apply();
+                    showTutorial = true;
                 }
             }
 
@@ -447,7 +453,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             prefs.edit().putInt(Constants.PROGRAM_THEME, programTheme).apply();
             binding.toolbar.setBackgroundColor(programColor);
             binding.tabLayout.setBackgroundColor(programColor);
-            if(getOrientation() == Configuration.ORIENTATION_LANDSCAPE)
+            if (getOrientation() == Configuration.ORIENTATION_LANDSCAPE)
                 if (binding.dotsIndicator.getVisibility() == View.VISIBLE) {
                     binding.dotsIndicator.setDotIndicatorColor(programColor);
                     binding.dotsIndicator.setStrokeDotsIndicatorColor(programColor);
@@ -474,7 +480,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             }
             binding.toolbar.setBackgroundColor(ContextCompat.getColor(this, colorPrimary));
             binding.tabLayout.setBackgroundColor(ContextCompat.getColor(this, colorPrimary));
-            if(getOrientation() == Configuration.ORIENTATION_LANDSCAPE)
+            if (getOrientation() == Configuration.ORIENTATION_LANDSCAPE)
                 if (binding.dotsIndicator.getVisibility() == View.VISIBLE) {
                     binding.dotsIndicator.setDotIndicatorColor(ContextCompat.getColor(this, colorPrimary));
                     binding.dotsIndicator.setStrokeDotsIndicatorColor(ContextCompat.getColor(this, colorPrimary));
@@ -494,4 +500,32 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             window.setStatusBarColor(colorToReturn);
         }
     }
+
+    public void showMoreOptions(View view) {
+        PopupMenu popupMenu = new PopupMenu(this, view, Gravity.BOTTOM);
+        try {
+            Field[] fields = popupMenu.getClass().getDeclaredFields();
+            for (Field field : fields) {
+                if ("mPopup".equals(field.getName())) {
+                    field.setAccessible(true);
+                    Object menuPopupHelper = field.get(popupMenu);
+                    Class<?> classPopupHelper = Class.forName(menuPopupHelper.getClass().getName());
+                    Method setForceIcons = classPopupHelper.getMethod("setForceShowIcon", boolean.class);
+                    setForceIcons.invoke(menuPopupHelper, true);
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            Timber.e(e);
+        }
+        popupMenu.getMenuInflater().inflate(R.menu.home_menu, popupMenu.getMenu());
+        popupMenu.setOnMenuItemClickListener(item -> {
+            this.showTutorial = true;
+            setTutorial();
+            return false;
+        });
+        popupMenu.show();
+    }
+
+    ;
 }

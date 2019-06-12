@@ -201,7 +201,7 @@
                             android:id="@+id/empty_teis"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:background="@color/bg_white_f9f"
+                            android:background="@color/white"
                             android:gravity="center"
                             android:padding="42dp"
                             android:text="@string/empty_tei_add"
