@@ -244,6 +244,7 @@ public class Bindings {
             if (enrollmentStatus == EnrollmentStatus.ACTIVE) {
                 switch (status) {
                     case ACTIVE:
+                        DateUtils.getInstance().isEventExpired(event.eventDate(), event.completedDate(), event.status(), program.completeEventsExpiryDays(), program.expiryPeriodType(), program.expiryDays());
                         if (DateUtils.getInstance().hasExpired(event, program.expiryDays(), program.completeEventsExpiryDays(), eventProgramStage.periodType() != null ? eventProgramStage.periodType() : program.expiryPeriodType())) {
                             view.setText(view.getContext().getString(R.string.event_expired));
                         } else {
@@ -369,24 +370,10 @@ public class Bindings {
 
     @BindingAdapter("eventWithoutRegistrationStatusIcon")
     public static void setEventWithoutRegistrationStatusIcon(ImageView imageView, ProgramEventViewModel event) {
-
         if (event.eventStatus() == EventStatus.ACTIVE && !event.isExpired())
             imageView.setImageResource(R.drawable.ic_edit);
         else
             imageView.setImageResource(R.drawable.ic_visibility);
-/*
-        switch (event.eventStatus()) {
-            case ACTIVE:
-                if (event.isExpired()) {
-                    imageView.setImageResource(R.drawable.ic_visibility);
-                } else
-                    imageView.setImageResource(R.drawable.ic_edit);
-                break;
-            default:
-                imageView.setImageResource(R.drawable.ic_visibility);
-                break;
-
-        }*/
     }
 
     @BindingAdapter("stateText")
@@ -548,15 +535,15 @@ public class Bindings {
     }
 
     @BindingAdapter("versionVisibility")
-    public static void setVisibility(LinearLayout linearLayout, boolean check){
-        if(check && Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP){
+    public static void setVisibility(LinearLayout linearLayout, boolean check) {
+        if (check && Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             linearLayout.setVisibility(View.GONE);
         }
     }
 
     @BindingAdapter("settingIcon")
     public static void setSettingIcon(ImageView view, int drawableReference) {
-        Drawable drawable = AppCompatResources.getDrawable(view.getContext(),drawableReference);
+        Drawable drawable = AppCompatResources.getDrawable(view.getContext(), drawableReference);
         view.setImageDrawable(drawable);
     }
 }

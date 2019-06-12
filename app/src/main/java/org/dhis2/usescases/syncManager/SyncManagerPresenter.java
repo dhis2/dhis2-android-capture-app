@@ -129,7 +129,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
         OneTimeWorkRequest request = syncDataBuilder.build();
         WorkManager.getInstance().beginUniqueWork(Constants.DATA_NOW, ExistingWorkPolicy.REPLACE, request).enqueue();
 
-        FileResourcesUtil.initDownloadWork();
+//        FileResourcesUtil.initDownloadWork();
     }
 
     /**
