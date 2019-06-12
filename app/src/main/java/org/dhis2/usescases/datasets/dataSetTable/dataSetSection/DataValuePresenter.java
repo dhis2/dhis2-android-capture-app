@@ -195,7 +195,7 @@ public class DataValuePresenter implements DataValueContract.Presenter{
 
     @Override
     public void onDettach() {
-
+        compositeDisposable.clear();
     }
 
     @Override

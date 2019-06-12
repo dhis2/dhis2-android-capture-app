@@ -105,6 +105,11 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
         return binding.getRoot();
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        presenterFragment.onDettach();
+    }
 
     void createTable(DataTableModel dataTableModel) {
         DataSetModel dataSet = dataTableModel.dataSet();
