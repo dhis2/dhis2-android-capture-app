@@ -47,6 +47,8 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
@@ -363,6 +365,32 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     public void onLocation2Click() {
         Intent intent = new Intent(view.getContext(), MapSelectorActivity.class);
         view.getAbstractActivity().startActivityForResult(intent, Constants.RQ_MAP_LOCATION);
+    }
+
+    @Override
+    public void onLatChanged(CharSequence s, int start, int before, int count) {
+        String latLongRegex = "^(\\-?\\d+(\\.\\d+)?)";
+        Pattern latLongPattern = Pattern.compile(latLongRegex, Pattern.MULTILINE);
+        Matcher latLOngMatcher = latLongPattern.matcher(s);
+        if (!latLOngMatcher.matches()) {
+            view.latitudeWarning(true);
+        } else {
+            view.longitudeWarning(false);
+            view.checkActionButtonVisibility();
+        }
+    }
+
+    @Override
+    public void onLonChanged(CharSequence s, int start, int before, int count) {
+        String latLongRegex = "^(\\-?\\d+(\\.\\d+)?)";
+        Pattern latLongPattern = Pattern.compile(latLongRegex, Pattern.MULTILINE);
+        Matcher latLOngMatcher = latLongPattern.matcher(s);
+        if (!latLOngMatcher.matches()) {
+            view.longitudeWarning(true);
+        } else {
+            view.longitudeWarning(false);
+            view.checkActionButtonVisibility();
+        }
     }
 
     @Override
