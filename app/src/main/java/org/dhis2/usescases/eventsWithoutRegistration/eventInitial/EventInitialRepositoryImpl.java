@@ -56,11 +56,13 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     private static final String SELECT_ORG_UNITS = "SELECT * FROM OrganisationUnit " +
             "JOIN OrganisationUnitProgramLink ON OrganisationUnitProgramLink .organisationUnit = OrganisationUnit.uid " +
-            "WHERE OrganisationUnitProgramLink .program = ?";
+            "WHERE OrganisationUnit.uid IN (SELECT UserOrganisationUnit.organisationUnit FROM UserOrganisationUnit WHERE UserOrganisationUnit.organisationUnitScope = 'SCOPE_DATA_CAPTURE') " +
+            "AND OrganisationUnitProgramLink .program = ?";
 
     private static final String SELECT_ORG_UNITS_FILTERED = "SELECT * FROM " + OrganisationUnitModel.TABLE +
             " JOIN OrganisationUnitProgramLink ON OrganisationUnitProgramLink .organisationUnit = OrganisationUnit.uid " +
-            " WHERE ("
+            " WHERE OrganisationUnit.uid IN (SELECT UserOrganisationUnit.organisationUnit FROM UserOrganisationUnit WHERE UserOrganisationUnit.organisationUnitScope = 'SCOPE_DATA_CAPTURE') " +
+            " AND ("
             + OrganisationUnitModel.Columns.OPENING_DATE + " IS NULL OR " +
             " date(" + OrganisationUnitModel.Columns.OPENING_DATE + ") <= date(?)) AND ("
             + OrganisationUnitModel.Columns.CLOSED_DATE + " IS NULL OR " +
