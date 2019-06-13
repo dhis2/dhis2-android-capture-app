@@ -107,13 +107,13 @@ class LoginPresenter internal constructor(private val configurationRepository: C
     }
 
     override fun logIn(serverUrl: String, userName: String, pass: String) {
-        val baseUrl = HttpUrl.parse(canonizeUrl(serverUrl)) ?: return
+        val baseUrl = HttpUrl.parse(canonizeUrl(serverUrl+"/api")) ?: return
         disposable.add(
                 configurationRepository.configure(baseUrl)
                         .map { config -> (view.abstractActivity.applicationContext as App).createServerComponent(config).userManager() }
                         .switchMap { userManager ->
                             val prefs = view.abstractActivity.getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE)
-                            prefs.edit().putString(Constants.SERVER, serverUrl).apply()
+                            prefs.edit().putString(Constants.SERVER, serverUrl+"/api").apply()
                             this.userManager = userManager
                             userManager.logIn(userName.trim { it <= ' ' }, pass).map<Response<Any>> { user ->
                                 if (user == null)
@@ -158,17 +158,16 @@ class LoginPresenter internal constructor(private val configurationRepository: C
 
     override fun logOut() {
         userManager?.let {
-            disposable.add(Observable.fromCallable<org.hisp.dhis.android.core.common.Unit>(it.d2.userModule().logOut())
+            disposable.add(it.d2.userModule().logOut()
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
-                            { data ->
-                                val prefs = view.abstracContext.sharedPreferences
+                            {   val prefs = view.abstracContext.sharedPreferences
                                 prefs.edit().putBoolean("SessionLocked", false).apply()
                                 prefs.edit().putString("pin", null).apply()
                                 view.handleLogout()
                             },
-                            { t -> view.handleLogout() }
+                            { view.handleLogout() }
                     )
             )
         }

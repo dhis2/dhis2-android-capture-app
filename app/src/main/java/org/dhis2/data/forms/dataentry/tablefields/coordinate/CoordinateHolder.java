@@ -84,7 +84,7 @@ public class CoordinateHolder extends FormViewHolder {
             processor.onNext(
                     RowAction.create(model.uid(),
                             String.format(Locale.US,
-                                    "[%.5f,%.5f]", latitude, longitude), model.dataElement(), model.listCategoryOption(), model.catCombo(), model.row(), model.column())
+                                    "[%.5f,%.5f]", latitude, longitude), model.dataElement(), model.categoryOptionCombo(), model.catCombo(), model.row(), model.column())
             );
             alertDialog.dismiss();
         });

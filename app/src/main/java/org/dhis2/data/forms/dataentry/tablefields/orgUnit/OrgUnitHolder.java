@@ -51,7 +51,7 @@ public class OrgUnitHolder extends FormViewHolder {
                     .setMultiSelection(false)
                     .setOrgUnits(this.orgUnits)
                     .setPossitiveListener(data -> {
-                        processor.onNext(RowAction.create(model.uid(), orgUnitDialog.getSelectedOrgUnit(), model.dataElement(), model.listCategoryOption(),model.catCombo(), model.row(), model.column()));
+                        processor.onNext(RowAction.create(model.uid(), orgUnitDialog.getSelectedOrgUnit(), model.dataElement(), model.categoryOptionCombo(),model.catCombo(), model.row(), model.column()));
                         this.editText.setText(orgUnitDialog.getSelectedOrgUnitName());
                         orgUnitDialog.dismiss();
                         editText.setEnabled(true);

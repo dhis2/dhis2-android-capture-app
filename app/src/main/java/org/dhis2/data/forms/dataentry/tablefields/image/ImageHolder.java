@@ -52,7 +52,7 @@ public class ImageHolder extends FormViewHolder {
 
                 if (imageSelector != null)
                     imageSelector.onNext(value);
-                processor.onNext(RowAction.create(uids[0], value, "", new ArrayList<>(),"", 0, 0));
+                processor.onNext(RowAction.create(uids[0], value, "", "","", 0, 0));
 
             }
         });

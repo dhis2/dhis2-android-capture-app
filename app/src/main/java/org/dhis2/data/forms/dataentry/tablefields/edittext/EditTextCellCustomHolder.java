@@ -57,7 +57,7 @@ final class EditTextCellCustomHolder extends FormViewHolder {
         customBinding.inputEditText.setOnFocusChangeListener((v, hasFocus) -> {
             if (editTextModel != null && editTextModel.editable() && !editText.getText().toString().equals(editTextModel.value())) {
                 if (validate())
-                    processor.onNext(RowAction.create(editTextModel.uid(), editText.getText().toString(), editTextModel.dataElement(), editTextModel.listCategoryOption(), editTextModel.catCombo(), editTextModel.row(), editTextModel.column()));
+                    processor.onNext(RowAction.create(editTextModel.uid(), editText.getText().toString(), editTextModel.dataElement(), editTextModel.categoryOptionCombo(), editTextModel.catCombo(), editTextModel.row(), editTextModel.column()));
             }
             if (!hasFocus)
                 closeKeyboard(editText);
@@ -184,7 +184,7 @@ final class EditTextCellCustomHolder extends FormViewHolder {
 
             if (editTextModel != null && editTextModel.editable() && !editText.getText().toString().equals(editTextModel.value())) {
                 if (!isEmpty(editText.getText()) && validate())
-                    processor.onNext(RowAction.create(editTextModel.uid(), editText.getText().toString(), editTextModel.dataElement(), editTextModel.listCategoryOption(), editTextModel.catCombo(), editTextModel.row(), editTextModel.column()));
+                    processor.onNext(RowAction.create(editTextModel.uid(), editText.getText().toString(), editTextModel.dataElement(), editTextModel.categoryOptionCombo(), editTextModel.catCombo(), editTextModel.row(), editTextModel.column()));
 
             }
         });

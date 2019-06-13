@@ -31,7 +31,7 @@ public interface DataValueRepository {
 
     Flowable<Map<String, List<CategoryOptionComboModel>>> getCatOptionCombo();
 
-    Flowable<List<DataSetTableModel>> getDataValues(String orgUnitUid, String periodType, String initPeriodType, String catOptionComb, String section);
+    Flowable<List<DataSetTableModel>> getDataValues(String orgUnitUid, String initPeriodType, String attributeOptionCombo, String section);
 
     Flowable<Map<String, Map<String, List<String>>>> getGreyedFields(List<String> categoryOptionCombo, String section);
 
