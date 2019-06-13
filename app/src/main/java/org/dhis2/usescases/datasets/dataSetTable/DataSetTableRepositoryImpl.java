@@ -66,5 +66,13 @@ public class DataSetTableRepositoryImpl implements DataSetTableRepository {
         return Flowable.fromCallable(() -> d2.categoryModule().categoryOptionCombos.uid(catcomboUid).get().displayName());
     }
 
+    @Override
+    public String getCatOptComboFromOptionList(List<String> catOpts) {
+        if(catOpts.isEmpty())
+            return d2.categoryModule().categoryOptionCombos.byDisplayName().like("default").one().get().uid();
+        else
+            return d2.categoryModule().categoryOptionCombos.byCategoryOptions(catOpts).one().get().uid();
+    }
+
 
 }

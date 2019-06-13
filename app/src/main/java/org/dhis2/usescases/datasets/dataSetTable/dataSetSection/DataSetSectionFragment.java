@@ -178,7 +178,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
 
                         for(CategoryOptionModel catOption: dataTableModel.catOptions()){
                             for(String option: catOpts){
-                                //Revert this when Jose tell us how to do disabled CategoryOptions
+                                //todo Revert this when Jose tell us how to do disabled CategoryOptions
                                 /*if(catOption.uid().equals(option) && !catOption.accessDataWrite())
                                     editable = false;*/
                             }
@@ -213,7 +213,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
                             //If value type is null, it is due to is dataElement for Total row/column
                             fields.add(fieldFactory.create("", "", de.valueType(),
                                     compulsory, de.optionSet(), "", section, true,
-                                    editable, null, null, de.uid() == null ? "" : de.uid(), catOpts, "", row, column, ""/*SET CATEGORYOPTIONCOMBO*/, catCombo));
+                                    editable, null, null, de.uid() == null ? "" : de.uid(), catOpts, "", row, column, presenter.getCatOptComboFromOptionList(catOpts), catCombo));
 
                             values.add("");
                         }

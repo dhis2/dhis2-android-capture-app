@@ -9,9 +9,9 @@ import org.dhis2.R;
 import org.dhis2.data.dagger.PerServer;
 import org.hisp.dhis.android.BuildConfig;
 import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.arch.api.authentication.internal.Authenticator;
+import org.hisp.dhis.android.core.arch.api.authentication.internal.BasicAuthenticatorFactory;
 import org.hisp.dhis.android.core.configuration.Configuration;
-import org.hisp.dhis.android.core.data.api.Authenticator;
-import org.hisp.dhis.android.core.data.api.BasicAuthenticatorFactory;
 import org.hisp.dhis.android.core.data.database.DatabaseAdapter;
 
 import java.security.KeyStore;

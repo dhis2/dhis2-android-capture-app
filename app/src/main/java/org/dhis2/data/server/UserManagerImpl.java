@@ -17,13 +17,13 @@ public class UserManagerImpl implements UserManager {
     @NonNull
     @Override
     public Observable<User> logIn(@NonNull String username, @NonNull String password) {
-        return Observable.defer(() -> Observable.fromCallable(d2.userModule().logIn(username, password)));
+        return Observable.defer(() -> d2.userModule().logIn(username, password).toObservable());
     }
 
     @NonNull
     @Override
     public Observable<Boolean> isUserLoggedIn() {
-        return Observable.defer(() -> Observable.fromCallable(d2.userModule().isLogged()));
+        return Observable.defer(() -> d2.userModule().isLogged().toObservable());
     }
 
     @Override

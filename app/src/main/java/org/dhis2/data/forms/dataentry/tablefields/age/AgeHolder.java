@@ -91,7 +91,7 @@ public class AgeHolder extends FormViewHolder {
 
         ageView.setAgeChangedListener(ageDate -> {
                     if (ageViewModel.value() == null || !ageViewModel.value().equals(DateUtils.databaseDateFormat().format(ageDate)))
-                        processor.onNext(RowAction.create(ageViewModel.uid(), DateUtils.databaseDateFormat().format(ageDate), ageViewModel.dataElement(), ageViewModel.listCategoryOption(), ageViewModel.catCombo(), ageViewModel.row(), ageViewModel.column()));
+                        processor.onNext(RowAction.create(ageViewModel.uid(), DateUtils.databaseDateFormat().format(ageDate), ageViewModel.dataElement(), ageViewModel.categoryOptionCombo(), ageViewModel.catCombo(), ageViewModel.row(), ageViewModel.column()));
                     alertDialog.dismiss();
         });
         alertDialog.setView(view);
