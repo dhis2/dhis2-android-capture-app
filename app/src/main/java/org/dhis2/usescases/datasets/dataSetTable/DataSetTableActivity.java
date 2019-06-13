@@ -86,18 +86,14 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
         binding.dataSetName.setText(String.format("%s - %s", orgUnitName, periodInitialDate));
 
         setViewPager();
-    }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
         presenter.init(this, orgUnitUid, periodTypeName, catOptCombo, periodInitialDate, periodId);
     }
 
     @Override
-    protected void onPause() {
+    protected void onDestroy() {
+        super.onDestroy();
         presenter.onDettach();
-        super.onPause();
     }
 
     private void setViewPager() {

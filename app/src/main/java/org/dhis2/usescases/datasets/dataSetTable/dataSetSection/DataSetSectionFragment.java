@@ -98,18 +98,18 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_dataset_section, container, false);
         currentTablePosition.observe(this, this::loadHeader);
         binding.setPresenter(presenterFragment);
-        return binding.getRoot();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
         section = getArguments().getString(Constants.DATA_SET_SECTION);
         presenterFragment.init(this, presenter.getOrgUnitUid(), presenter.getPeriodTypeName(),
                 presenter.getPeriodFinalDate(), presenter.getCatCombo(), section, presenter.getPeriodId());
         presenterFragment.getData(this, section);
+        return binding.getRoot();
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        presenterFragment.onDettach();
+    }
 
     void createTable(DataTableModel dataTableModel) {
         DataSetModel dataSet = dataTableModel.dataSet();
