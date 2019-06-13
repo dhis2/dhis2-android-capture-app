@@ -21,7 +21,8 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="wrap_content"
+        android:minHeight="56dp"
         android:layout_marginTop="8dp"
         android:background="@color/bg_gray_f2f"
         android:paddingStart="16dp"
@@ -40,7 +41,7 @@
             app:layout_constraintEnd_toStartOf="@id/tei_relationship_link"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="Mother" />
+            tools:text="Mother\nMother" />
 
         <TextView
             android:layout_width="0dp"
@@ -55,7 +56,8 @@
             app:layout_constraintEnd_toStartOf="@id/tei_relationship_link"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/relationshipName"
-            tools:text="James Johnson" />
+            tools:text="James
+            \nJohnson" />
 
         <ImageView
             android:id="@+id/clear_relationship_button"

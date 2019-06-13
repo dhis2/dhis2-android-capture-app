@@ -213,6 +213,8 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                             action.programRuleActionType() == ProgramRuleActionType.SHOWERROR ||
                             action.programRuleActionType() == ProgramRuleActionType.HIDEOPTIONGROUP ||
                             action.programRuleActionType() == ProgramRuleActionType.HIDEOPTION ||
+                            action.programRuleActionType() == ProgramRuleActionType.DISPLAYKEYVALUEPAIR ||
+                            action.programRuleActionType() == ProgramRuleActionType.DISPLAYTEXT ||
                             action.programRuleActionType() == ProgramRuleActionType.SETMANDATORYFIELD)
                         if (!mandatoryRules.contains(rule))
                             mandatoryRules.add(rule);
