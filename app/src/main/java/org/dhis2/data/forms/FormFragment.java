@@ -116,6 +116,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     private DataEntryFragment enrollmentFragment;
     private boolean needInitial;
     private String programStageUid;
+    private String enrollmentUid;
 
     public View getDatesLayout() {
         return datesLayout;
@@ -271,6 +272,8 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
             }
 
             this.isEnrollment = getArguments().getBoolean(IS_ENROLLMENT);
+            if (isEnrollment)
+                enrollmentUid = arguments.uid();
         }
     }
 
@@ -382,7 +385,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
             enrollmentTrio = trio;
             progressBar.setVisibility(View.VISIBLE);
             formPresenter.checkMandatoryFields();
-            if(trio.val2()!=null)
+            if (trio.val2() != null)
                 formPresenter.getNeedInitial(trio.val2());
         };
     }
@@ -575,13 +578,25 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
                 if (!enrollmentTrio.val2().isEmpty()) { //val0 is teiUid uid, val1 is programUid, val2 is event uid
                     this.programUid = enrollmentTrio.val1();
                     this.teiUid = enrollmentTrio.val0();
-                    if(needInitial){
-                        Intent eventInitialIntent= new Intent(getAbstracContext(), EventInitialActivity.class);
-                        eventInitialIntent.putExtra(Constants.PROGRAM_UID, programUid);
+                    if (needInitial) {
+                        Bundle bundle = EventInitialActivity.getBundle(
+                                programUid,
+                                enrollmentTrio.val2(),
+                                null,
+                                enrollmentTrio.val0(),
+                                null,
+                                formPresenter.getEnrollmentOu(enrollmentUid),
+                                programStageUid,
+                                enrollmentUid,
+                                0,
+                                EnrollmentStatus.ACTIVE);
+                        Intent eventInitialIntent = new Intent(getAbstracContext(), EventInitialActivity.class);
+                        eventInitialIntent.putExtras(bundle);
+                      /*  eventInitialIntent.putExtra(Constants.PROGRAM_UID, programUid);
                         eventInitialIntent.putExtra(Constants.EVENT_UID, enrollmentTrio.val2());
-                        eventInitialIntent.putExtra(Constants.PROGRAM_STAGE_UID, programStageUid);
+                        eventInitialIntent.putExtra(Constants.PROGRAM_STAGE_UID, programStageUid);*/
                         startActivityForResult(eventInitialIntent, RQ_EVENT);
-                    }else {
+                    } else {
                         Intent eventCreationIntent = new Intent(getAbstracContext(), EventCaptureActivity.class);
                         eventCreationIntent.putExtras(EventCaptureActivity.getActivityBundle(enrollmentTrio.val2(), enrollmentTrio.val1()));
                         eventCreationIntent.putExtra(Constants.TRACKED_ENTITY_INSTANCE, enrollmentTrio.val0());

@@ -14,7 +14,7 @@
         android:layout_height="match_parent"
         android:clipToPadding="true"
         android:fillViewport="true"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
         <!-- <FrameLayout
              android:layout_width="match_parent"
@@ -66,8 +66,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:contentScrim="?attr/colorPrimary"
-            app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed"
             app:titleEnabled="false">
+            <!--app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed"-->
+
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
