@@ -27,7 +27,7 @@ public class UserManagerImpl implements UserManager {
     }
 
     @Override
-    public D2 getD2(){
+    public D2 getD2() {
         return d2;
     }
 }

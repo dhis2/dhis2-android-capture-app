@@ -162,7 +162,8 @@ class LoginPresenter internal constructor(private val configurationRepository: C
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
-                            {   val prefs = view.abstracContext.sharedPreferences
+                            {
+                                val prefs = view.abstracContext.sharedPreferences
                                 prefs.edit().putBoolean("SessionLocked", false).apply()
                                 prefs.edit().putString("pin", null).apply()
                                 view.handleLogout()

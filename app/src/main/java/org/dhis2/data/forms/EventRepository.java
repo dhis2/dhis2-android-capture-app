@@ -393,10 +393,13 @@ public class EventRepository implements FormRepository {
     @NonNull
     @Override
     public Observable<String> getTrackedEntityInstanceUid() {
-        String SELECT_TE = "SELECT " + EventModel.TABLE + "." + EventModel.Columns.TRACKED_ENTITY_INSTANCE +
-                " FROM " + EventModel.TABLE +
-                " WHERE " + EventModel.Columns.UID + " = ? LIMIT 1";
-        return briteDatabase.createQuery(EnrollmentModel.TABLE, SELECT_TE, eventUid == null ? "" : eventUid).mapToOne(cursor -> cursor.getString(0));
+        return Observable.just(d2.eventModule().events.uid(eventUid).get())
+                .map(event -> {
+                    if(event.enrollment()!=null)
+                        return d2.enrollmentModule().enrollments.uid(event.enrollment()).get().trackedEntityInstance();
+                    else
+                        return "";
+                });
     }
 
     @Override
