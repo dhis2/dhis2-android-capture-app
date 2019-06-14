@@ -4,6 +4,8 @@ package org.dhis2.data.forms.dataentry.fields.coordinate;
 import android.annotation.SuppressLint;
 import android.graphics.Color;
 
+import androidx.appcompat.content.res.AppCompatResources;
+
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
@@ -12,7 +14,6 @@ import org.dhis2.utils.custom_views.CoordinatesView;
 
 import java.util.Locale;
 
-import androidx.appcompat.content.res.AppCompatResources;
 import io.reactivex.processors.FlowableProcessor;
 
 import static android.text.TextUtils.isEmpty;
@@ -58,6 +59,8 @@ public class CoordinateHolder extends FormViewHolder {
 
         if (!isEmpty(coordinateViewModel.value()))
             binding.formCoordinates.setInitialValue(coordinateViewModel.value());
+        else
+            binding.formCoordinates.clearValueData();
 
         if (coordinateViewModel.warning() != null)
             binding.formCoordinates.setWarning(coordinateViewModel.warning());

@@ -235,4 +235,8 @@
         <item name="colorPrimary">@color/text_black_333</item>
     </style>
 
+    <style name="radioPrimary">
+        <item name="colorAccent">?colorPrimaryLight</item>
+    </style>
+
 </resources>

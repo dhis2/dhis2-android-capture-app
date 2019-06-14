@@ -30,6 +30,7 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.option.OptionModel;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
@@ -71,7 +72,11 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     private final BriteDatabase briteDatabase;
 
-    private final String SELECT_PROGRAM_WITH_REGISTRATION = "SELECT * FROM " + ProgramModel.TABLE + " WHERE Program.programType='WITH_REGISTRATION' AND Program.trackedEntityType = ";
+    private final String SELECT_PROGRAM_WITH_REGISTRATION = "SELECT DISTINCT Program.* FROM " + ProgramModel.TABLE +
+            " JOIN OrganisationUnitProgramLink ON OrganisationUnitProgramLink.program = Program.uid " +
+            " JOIN UserOrganisationUnit ON UserOrganisationUnit.organisationUnit = OrganisationUnitProgramLink.organisationUnit " +
+            " WHERE Program.programType='WITH_REGISTRATION' AND Program.trackedEntityType = ? " +
+            " AND UserOrganisationUnit.organisationUnitScope = ? ORDER BY Program.displayName";
     private final String SELECT_PROGRAM_ATTRIBUTES = "SELECT TrackedEntityAttribute.* FROM " + TrackedEntityAttributeModel.TABLE +
             " INNER JOIN " + ProgramTrackedEntityAttributeModel.TABLE +
             " ON " + TrackedEntityAttributeModel.TABLE + "." + TrackedEntityAttributeModel.Columns.UID + " = " + ProgramTrackedEntityAttributeModel.TABLE + "." + ProgramTrackedEntityAttributeModel.Columns.TRACKED_ENTITY_ATTRIBUTE +
@@ -188,7 +193,7 @@ public class SearchRepositoryImpl implements SearchRepository {
     @Override
     public Observable<List<ProgramModel>> programsWithRegistration(String programTypeId) {
         String id = programTypeId == null ? "" : programTypeId;
-        return briteDatabase.createQuery(ProgramModel.TABLE, SELECT_PROGRAM_WITH_REGISTRATION + "'" + id + "'")
+        return briteDatabase.createQuery(ProgramModel.TABLE, SELECT_PROGRAM_WITH_REGISTRATION, id, OrganisationUnit.Scope.SCOPE_DATA_CAPTURE.name())
                 .mapToList(ProgramModel::create);
     }
 
@@ -579,11 +584,19 @@ public class SearchRepositoryImpl implements SearchRepository {
         for (TrackedEntityAttribute attr : imageAttributes)
             imageAttributesUids.add(attr.uid());
 
-        String attrUid = Objects.requireNonNull(d2.trackedEntityModule().trackedEntityTypeAttributes
+        TrackedEntityAttributeValue attributeValue = null;
+        if (d2.trackedEntityModule().trackedEntityTypeAttributes
                 .byTrackedEntityTypeUid().eq(tei.trackedEntityType())
-                .byTrackedEntityAttributeUid().in(imageAttributesUids).one().get()).trackedEntityAttribute().uid();
-        TrackedEntityAttributeValue attributeValue = d2.trackedEntityModule().trackedEntityAttributeValues.byTrackedEntityInstance().eq(tei.uid())
-                .byTrackedEntityAttribute().eq(attrUid).one().get();
+                .byTrackedEntityAttributeUid().in(imageAttributesUids).one().exists()) {
+
+            String attrUid = Objects.requireNonNull(d2.trackedEntityModule().trackedEntityTypeAttributes
+                    .byTrackedEntityTypeUid().eq(tei.trackedEntityType())
+                    .byTrackedEntityAttributeUid().in(imageAttributesUids).one().get()).trackedEntityAttribute().uid();
+
+            attributeValue = d2.trackedEntityModule().trackedEntityAttributeValues.byTrackedEntityInstance().eq(tei.uid())
+                    .byTrackedEntityAttribute().eq(attrUid).one().get();
+        }
+
         return attributeValue != null ? attributeValue.trackedEntityAttribute() : null;
     }
 

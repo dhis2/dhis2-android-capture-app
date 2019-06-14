@@ -6,9 +6,7 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
-import android.net.Uri;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.recyclerview.widget.RecyclerView;
@@ -22,13 +20,13 @@ import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.ItemSearchTrackedEntityBinding;
 import org.dhis2.usescases.searchTrackEntity.SearchTEContractsModule;
 import org.dhis2.utils.ColorUtils;
+import org.dhis2.utils.FileResourcesUtil;
 import org.dhis2.utils.ObjectStyleUtils;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 
 import java.io.File;
 import java.util.List;
-import java.util.Random;
 
 import timber.log.Timber;
 
@@ -69,25 +67,16 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
 
         itemView.setOnClickListener(view -> presenter.onTEIClick(searchTeiModel.getTei().uid(), searchTeiModel.isOnline()));
 
-        if (isEmpty(searchTeiModel.getProfilePictureUid())) {
-            String ramdomPictureUrl = String.format("https://randomuser.me/api/portraits/med/%s/%s.jpg", new Random().nextInt(2) == 0 ? "men" : "women", new Random().nextInt(100) + 1);
-            Glide.with(itemView.getContext())
-                    .load(Uri.parse(ramdomPictureUrl))
-                    .transition(withCrossFade())
-                    .transform(new CircleCrop())
-                    .into(binding.trackedEntityImage);
-        } else {
-            String fileName = searchTeiModel.getTei().uid() + "_" + searchTeiModel.getProfilePictureUid() + ".png";
-            File file = new File(itemView.getContext().getFilesDir(), fileName);
-            Drawable placeHolderId = ObjectStyleUtils.getIconResource(itemView.getContext(), searchTeiModel.getDefaultTypeIcon(),R.drawable.photo_temp_gray);
-            Glide.with(itemView.getContext())
-                    .load(file)
-                    .placeholder(placeHolderId)
-                    .error(placeHolderId)
-                    .transition(withCrossFade())
-                    .transform(new CircleCrop())
-                    .into(binding.trackedEntityImage);
-        }
+        File file = FileResourcesUtil.getFileForAttribute(itemView.getContext(), searchTeiModel.getTei().uid() + "." + searchTeiModel.getProfilePictureUid() + ".png");
+        Drawable placeHolderId = ObjectStyleUtils.getIconResource(itemView.getContext(), searchTeiModel.getDefaultTypeIcon(), R.drawable.photo_temp_gray);
+        Glide.with(itemView.getContext())
+                .load(file)
+                .placeholder(placeHolderId)
+                .error(placeHolderId)
+                .transition(withCrossFade())
+                .transform(new CircleCrop())
+                .into(binding.trackedEntityImage);
+
     }
 
 

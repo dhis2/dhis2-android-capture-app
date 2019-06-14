@@ -213,6 +213,8 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                             action.programRuleActionType() == ProgramRuleActionType.SHOWERROR ||
                             action.programRuleActionType() == ProgramRuleActionType.HIDEOPTIONGROUP ||
                             action.programRuleActionType() == ProgramRuleActionType.HIDEOPTION ||
+                            action.programRuleActionType() == ProgramRuleActionType.DISPLAYKEYVALUEPAIR ||
+                            action.programRuleActionType() == ProgramRuleActionType.DISPLAYTEXT ||
                             action.programRuleActionType() == ProgramRuleActionType.SETMANDATORYFIELD)
                         if (!mandatoryRules.contains(rule))
                             mandatoryRules.add(rule);
@@ -362,7 +364,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         Event event = d2.eventModule().events.uid(eventUid).withAllChildren().get();
         Program program = d2.programModule().programs.uid(event.program()).withAllChildren().get();
         ProgramStage stage = d2.programModule().programStages.uid(event.programStage()).get();
-        boolean isExpired = DateUtils.getInstance().isEventExpired(event.eventDate(), event.completedDate(), event.status(), program.completeEventsExpiryDays(), stage.periodType(), program.expiryDays());
+        boolean isExpired = DateUtils.getInstance().isEventExpired(event.eventDate(), event.completedDate(), event.status(), program.completeEventsExpiryDays(), stage.periodType() != null ? stage.periodType() : program.expiryPeriodType(), program.expiryDays());
         boolean blockAfterComplete = event.status() == EventStatus.COMPLETED && stage.blockEntryForm();
         boolean editable = isEnrollmentOpen() && !blockAfterComplete && !isExpired && getAccessDataWrite() && inOrgUnitRange(eventUid);
         return !editable;

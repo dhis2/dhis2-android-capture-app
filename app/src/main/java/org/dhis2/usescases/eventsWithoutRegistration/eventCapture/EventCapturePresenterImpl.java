@@ -428,16 +428,17 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         rulesUtils.applyRuleEffects(fieldViewModels, calcResult, this);
 
         //Remove fields for MATRIX/SEQUENTIAL and actions HIDEOPTION/HIDEOPTIONGROUP
-        Iterator<FieldViewModel> fieldIterator = fieldViewModels.values().iterator();
         for (String optionUidToHide : optionsToHide) {
+            Iterator<FieldViewModel> fieldIterator = fieldViewModels.values().iterator();
             while (fieldIterator.hasNext()) {
                 FieldViewModel field = fieldIterator.next();
                 if (field instanceof ImageViewModel && field.uid().contains(optionUidToHide))
                     fieldIterator.remove();
             }
         }
-        fieldIterator = fieldViewModels.values().iterator();
+
         for (String optionGroupToHide : optionsGroupsToHide) {
+            Iterator<FieldViewModel> fieldIterator = fieldViewModels.values().iterator();
             while (fieldIterator.hasNext()) {
                 FieldViewModel field = fieldIterator.next();
                 if (field instanceof ImageViewModel && eventCaptureRepository.optionIsInOptionGroup(field.uid().split(".")[1], optionGroupToHide))

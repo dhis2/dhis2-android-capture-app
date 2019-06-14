@@ -205,8 +205,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                                 selectedOrgUnit,
                                 null,
                                 catOptionComboUid,
-                                isEmpty(binding.lat.getText()) ? null : binding.lat.getText().toString(),
-                                isEmpty(binding.lon.getText()) ? null : binding.lon.getText().toString()
+                                isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? null : binding.lat.getText().toString(),
+                                isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? null : binding.lon.getText().toString()
                         );
                     } else if (eventCreationType == EventCreationType.SCHEDULE || eventCreationType == EventCreationType.REFERAL) {
                         presenter.scheduleEvent(
@@ -216,8 +216,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                                 selectedOrgUnit,
                                 null,
                                 catOptionComboUid,
-                                isEmpty(binding.lat.getText()) ? null : binding.lat.getText().toString(),
-                                isEmpty(binding.lon.getText()) ? null : binding.lon.getText().toString()
+                                isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? null : binding.lat.getText().toString(),
+                                isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? null : binding.lon.getText().toString()
                         );
                     } else {
                         presenter.createEvent(
@@ -227,8 +227,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                                 selectedOrgUnit,
                                 null,
                                 catOptionComboUid,
-                                isEmpty(binding.lat.getText()) ? null : binding.lat.getText().toString(),
-                                isEmpty(binding.lon.getText()) ? null : binding.lon.getText().toString(),
+                                isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? null : binding.lat.getText().toString(),
+                                isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? null : binding.lon.getText().toString(),
                                 getTrackedEntityInstance);
                     }
                 } else {
@@ -237,8 +237,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                             eventUid,
                             DateUtils.databaseDateFormat().format(selectedDate), selectedOrgUnit, null,
                             catOptionComboUid,
-                            isEmpty(binding.lat.getText()) ? null : binding.lat.getText().toString(),
-                            isEmpty(binding.lon.getText()) ? null : binding.lon.getText().toString()
+                            isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? null : binding.lat.getText().toString(),
+                            isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? null : binding.lon.getText().toString()
                     );
                 }
             });
@@ -303,7 +303,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void checkActionButtonVisibility() {
-
         if (eventUid == null) {
             if (isFormCompleted())
                 binding.actionButton.setVisibility(View.VISIBLE); //If creating a new event, show only if minimun data is completed
@@ -371,8 +370,10 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                 if (eventCreationType != EventCreationType.SCHEDULE)
                     selectedDate = now.getTime();
                 else {
-                    now.setTime(presenter.getStageLastDate(programStageUid, enrollmentUid));
-                    now.add(Calendar.DAY_OF_YEAR, eventScheduleInterval);
+                    if (eventScheduleInterval > 0) {
+                        now.setTime(presenter.getStageLastDate(programStageUid, enrollmentUid));
+                        now.add(Calendar.DAY_OF_YEAR, eventScheduleInterval);
+                    }
                     selectedDate = DateUtils.getInstance().getNextPeriod(null, now.getTime(), 1);
                 }
 
@@ -395,9 +396,17 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         binding.date.setOnClickListener(view -> {
             if (periodType == null)
                 presenter.onDateClick(EventInitialActivity.this);
-            else
+            else {
+                Date minDate = DateUtils.getInstance().expDate(null, program.expiryDays(), periodType);
+                Date lastPeriodDate = DateUtils.getInstance().getNextPeriod(periodType, minDate, -1, true);
+
+                if (lastPeriodDate.after(DateUtils.getInstance().getNextPeriod(program.expiryPeriodType(), minDate, 0)))
+                    minDate = DateUtils.getInstance().getNextPeriod(periodType, lastPeriodDate, 0);
+
                 new PeriodDialog()
                         .setPeriod(periodType)
+                        .setMinDate(minDate)
+                        .setMaxDate(eventCreationType.equals(EventCreationType.ADDNEW) || eventCreationType.equals(EventCreationType.DEFAULT) ? DateUtils.getInstance().getToday() : null)
                         .setPossitiveListener(selectedDate -> {
                             this.selectedDate = selectedDate;
                             binding.date.setText(DateUtils.getInstance().getPeriodUIString(periodType, selectedDate, Locale.getDefault()));
@@ -407,6 +416,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                             presenter.filterOrgUnits(DateUtils.uiDateFormat().format(selectedDate));
                         })
                         .show(getSupportFragmentManager(), PeriodDialog.class.getSimpleName());
+            }
         });
 
         presenter.filterOrgUnits(DateUtils.uiDateFormat().format(selectedDate));
@@ -852,6 +862,17 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         return eventCreationType;
     }
 
+    @Override
+    public void latitudeWarning(boolean showWarning) {
+        binding.lat.setError(showWarning ? getString(R.string.formatting_error) : null);
+    }
+
+    @Override
+    public void longitudeWarning(boolean showWarning) {
+        binding.lon.setError(showWarning ? getString(R.string.formatting_error) : null);
+
+    }
+
     private int calculateCompletedFields(@NonNull List<FieldViewModel> updates) {
         int total = 0;
         for (FieldViewModel fieldViewModel : updates) {
@@ -952,6 +973,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
                 FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
                         .title(getString(R.string.tuto_event_initial_new_1))
+                        .enableAutoTextPosition()
                         .closeOnTouch(true)
                         .build();
                 steps.add(tuto1);
@@ -966,6 +988,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
                 FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
                         .title(getString(R.string.tuto_event_initial_1))
+                        .enableAutoTextPosition()
                         .focusOn(binding.percentage)
                         .closeOnTouch(true)
                         .build();

@@ -31,6 +31,7 @@
         </FrameLayout>
 
         <LinearLayout
+            app:versionVisibility="@{true}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
@@ -47,7 +48,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_weight="1"
-                android:text="Change calendar view"
+                android:text="@string/change_calendar_view"
                 android:textColor="@color/text_black_4d4d4d"
                 android:textSize="12sp" />
         </LinearLayout>

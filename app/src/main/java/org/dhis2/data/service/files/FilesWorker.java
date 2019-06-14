@@ -89,8 +89,10 @@ public class FilesWorker extends Worker {
     private void uploadBulkResources() {
         triggerNotification("File processor", "Uploading files...", file_upload_channel);
         File[] filesToUpload = FileResourcesUtil.getUploadDirectory(getApplicationContext()).listFiles();
+        int count = 1;
         for (File file : filesToUpload) {
-            String[] fileName = file.getName().split("\\."); //enrollment/event, attr, extension
+            triggerNotification("File processor", String.format("Uploading file %s/%s", count++, filesToUpload.length), file_upload_channel);
+            String[] fileName = file.getName().split("\\."); //tei/event, attr/de, extension
             upload(file, fileName[0], fileName[1]);
         }
     }
@@ -114,13 +116,13 @@ public class FilesWorker extends Worker {
                 FileResourceResponse fileResourceResponse = new Gson().fromJson(jsonResponse, FileResourceResponse.class);
                 Enrollment enrollment = d2.enrollmentModule().enrollments.uid(enrollmentOrEvent).get();
 
-                if(enrollment!=null) {
+                if (enrollment != null) {
                     String updateAttr = String.format("UPDATE TrackedEntityAttributeValue SET value = '%s' " +
                                     "WHERE trackedEntityInstance = '%s' AND trackedEntityAttribute = '%s'",
                             fileResourceResponse.getResponse().getFileResource().getId(), enrollment.trackedEntityInstance(), attrUid);
                     SQLiteStatement update = d2.databaseAdapter().compileStatement(updateAttr);
                     return d2.databaseAdapter().executeUpdateDelete("TrackedEntityAttributeValue", update) != -1;
-                }else
+                } else
                     return file.delete();
             } else
                 return false;
@@ -142,15 +144,16 @@ public class FilesWorker extends Worker {
         List<TrackedEntityAttributeValue> imageValues = d2.trackedEntityModule().trackedEntityAttributeValues
                 .byTrackedEntityAttribute().in(attrUids).get();
 
+        int downloadCount = 1;
         for (TrackedEntityAttributeValue attributeValue : imageValues) {
-
+            triggerNotification("File processor", String.format("Downloading file %s/%s", downloadCount++, imageValues.size()), file_download_channel);
             Completable.fromCallable(() -> {
                 Response<ResponseBody> response = fileService.getFile(attributeValue.trackedEntityInstance(),
                         attributeValue.trackedEntityAttribute()).execute();
                 if (response.isSuccessful()) {
                     String fileName = response.headers().get("Content-Disposition") != null ?
                             response.headers().get("Content-Disposition").split("=")[1] : "file_" + System.currentTimeMillis();
-                    return writeResponseBodyToDisk(response.body(), fileName, attributeValue.trackedEntityInstance() + "_" + attributeValue.trackedEntityAttribute());
+                    return writeResponseBodyToDisk(response.body(), fileName, FileResourcesUtil.generateFileName(attributeValue.trackedEntityInstance(), attributeValue.trackedEntityAttribute()));
                 } else
                     return false;
             }).blockingAwait();
@@ -158,9 +161,9 @@ public class FilesWorker extends Worker {
         }
     }
 
-    private boolean writeResponseBodyToDisk(ResponseBody body, String fileName, String teiUid_attrUid) {
+    private boolean writeResponseBodyToDisk(ResponseBody body, String fileName, String generatedFileName) {
         try {
-            File futureStudioIconFile = new File(getApplicationContext().getFilesDir() + File.separator + "images" + File.separator + teiUid_attrUid + ".png");
+            File futureStudioIconFile = new File(FileResourcesUtil.getDownloadDirectory(getApplicationContext()), generatedFileName);
 
             InputStream inputStream = null;
             OutputStream outputStream = null;

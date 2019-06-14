@@ -193,7 +193,6 @@
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:background="@drawable/photo_temp"
-                android:tint="@color/white"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_tei_default"

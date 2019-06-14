@@ -133,7 +133,9 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
 
     public void setInitialValue(String value) {
         Glide.with(image).clear(image);
-        File file = new File(FileResourcesUtil.getUploadDirectory(getContext()), primaryUid.concat(".").concat(uid));
+
+        File file = FileResourcesUtil.getFileForAttribute(getContext(), primaryUid.concat(".").concat(uid).concat(".png"));
+
         if (file.exists()) {
             Glide.with(image)
                     .load(file)
@@ -171,7 +173,7 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
                         pickPhoto.putExtra("filename", primaryUid.concat(".").concat(uid));
                         pickPhoto.setType("image/*");
                         PictureView.this.onIntentSelected.intentSelected(this.uid, pickPhoto, Constants.GALLERY_REQUEST, (file, value, uuid) -> {
-                            FileResourcesUtil.saveImageToUpload(file, new File(FileResourcesUtil.getUploadDirectory(getContext()), primaryUid.concat(".").concat(uid)));
+                            FileResourcesUtil.saveImageToUpload(file, new File(FileResourcesUtil.getUploadDirectory(getContext()), FileResourcesUtil.generateFileName(primaryUid,uid)));
                             imageListener.onSelected(file, primaryUid.concat(".").concat(uid), uid);
                         });
                     } else if (options[item].equals("Cancel")) {

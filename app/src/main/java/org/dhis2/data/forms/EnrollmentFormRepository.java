@@ -533,6 +533,9 @@ public class EnrollmentFormRepository implements FormRepository {
                     if (!generatedByEnrollmentDate && incidentDate != null)
                         cal.setTime(incidentDate);
 
+                    if(generatedByEnrollmentDate)
+                        cal.setTime(enrollmentDate);
+
                     cal.set(Calendar.HOUR_OF_DAY, 0);
                     cal.set(Calendar.MINUTE, 0);
                     cal.set(Calendar.SECOND, 0);

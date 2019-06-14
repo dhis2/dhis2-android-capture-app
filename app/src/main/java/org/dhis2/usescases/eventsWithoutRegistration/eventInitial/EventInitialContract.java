@@ -2,6 +2,9 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventInitial;
 
 import android.app.DatePickerDialog;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.unnamed.b.atv.model.TreeNode;
 
 import org.dhis2.data.forms.FormSectionViewModel;
@@ -21,8 +24,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import io.reactivex.functions.Consumer;
 
 /**
@@ -80,6 +81,10 @@ public class EventInitialContract {
         void renderObjectStyle(ObjectStyleModel objectStyleModel);
 
         EventCreationType eventcreateionType();
+
+        void latitudeWarning(boolean showWarning);
+
+        void longitudeWarning(boolean showWarning);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
@@ -113,6 +118,10 @@ public class EventInitialContract {
 
         void onLocation2Click();
 
+        void onLatChanged(CharSequence s, int start, int before, int count);
+
+        void onLonChanged(CharSequence s, int start, int before, int count);
+
         void onFieldChanged(CharSequence s, int start, int before, int count);
 
         void filterOrgUnits(String date);
@@ -137,7 +146,7 @@ public class EventInitialContract {
 
         String getCatOptionCombo(List<CategoryOptionCombo> categoryOptionCombos, List<CategoryOption> values);
 
-        Date getStageLastDate(String programStageUid,String enrollmentUid);
+        Date getStageLastDate(String programStageUid, String enrollmentUid);
     }
 
 }

@@ -5,6 +5,8 @@ import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 
+import java.io.File;
+
 import io.reactivex.functions.Consumer;
 
 public class TeiDataDetailContracts {
@@ -17,6 +19,8 @@ public class TeiDataDetailContracts {
         Consumer<EnrollmentStatus> handleStatus();
 
         void setLocation(double latitude, double longitude);
+
+        void showTeiImage(String fileName);
     }
 
     public interface Presenter {

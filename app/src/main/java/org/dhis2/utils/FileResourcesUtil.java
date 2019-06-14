@@ -120,4 +120,14 @@ public class FileResourcesUtil {
         return new File(s);
     }
 
+    public static File getFileForAttribute(Context context, String fileName) {
+        File fromUpload = new File(FileResourcesUtil.getUploadDirectory(context), fileName);
+        File fromDownload = new File(FileResourcesUtil.getDownloadDirectory(context), fileName);
+
+        return fromUpload.exists() ? fromUpload : fromDownload;
+    }
+
+    public static String generateFileName(String primaryUid, String secundaryUid) {
+        return String.format("%s.%s.png", primaryUid, secundaryUid);
+    }
 }

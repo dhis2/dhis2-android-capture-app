@@ -161,7 +161,7 @@ final class EnrollmentRepository implements DataEntryRepository {
         }
 
         if(valueType == ValueType.IMAGE)
-            uid = enrollment+"."+uid;
+            uid = d2.enrollmentModule().enrollments.uid(enrollment).get().trackedEntityInstance()+"."+uid;
 
         int optionCount = 0;
         if (!isEmpty(optionSet))

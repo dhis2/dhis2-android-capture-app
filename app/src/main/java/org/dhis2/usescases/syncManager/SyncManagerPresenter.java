@@ -53,6 +53,11 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
     }
 
     @Override
+    public void onItemClick(int settingsItem) {
+        view.openItem(settingsItem);
+    }
+
+    @Override
     public void init(SyncManagerContracts.View view) {
         this.view = view;
         this.compositeDisposable = new CompositeDisposable();
