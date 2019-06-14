@@ -46,6 +46,7 @@ import org.dhis2.utils.OnDialogClickListener;
 import org.dhis2.utils.SyncUtils;
 import org.dhis2.utils.custom_views.CoordinatesView;
 import org.dhis2.utils.custom_views.CustomDialog;
+import org.hisp.dhis.android.core.period.FeatureType;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -352,7 +353,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
     @Override
     public void onMapPositionClick(CoordinatesView coordinatesView) {
         this.coordinatesView = coordinatesView;
-        startActivityForResult(MapSelectorActivity.create(this), Constants.RQ_MAP_LOCATION_VIEW);
+        startActivityForResult(MapSelectorActivity.create(this, FeatureType.POINT), Constants.RQ_MAP_LOCATION_VIEW);
     }
 
     @Override

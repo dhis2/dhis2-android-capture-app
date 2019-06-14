@@ -501,7 +501,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     public void onMapPositionClick(CoordinatesView coordinatesView) {
         this.coordinatesView = coordinatesView;
         if (getActivity() != null && isAdded()) {
-            startActivityForResult(MapSelectorActivity.create(getActivity()), Constants.RQ_MAP_LOCATION_VIEW);
+            startActivityForResult(MapSelectorActivity.create(getActivity(), null), Constants.RQ_MAP_LOCATION_VIEW);
         }
     }
 
