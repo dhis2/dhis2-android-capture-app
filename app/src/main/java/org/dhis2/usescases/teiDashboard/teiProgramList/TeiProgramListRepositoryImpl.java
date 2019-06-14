@@ -183,7 +183,7 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
     @Override
     public Observable<List<OrganisationUnit>> getOrgUnits(String programUid) {
         if (programUid != null) {
-            return Observable.just(d2.organisationUnitModule().organisationUnits.withPrograms().get())
+            return Observable.just(d2.organisationUnitModule().organisationUnits.byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).withPrograms().get())
                     .flatMapIterable(organisationUnits -> organisationUnits)
                     .filter(organisationUnit -> {
                         boolean result = false;
@@ -196,7 +196,7 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
                     .toList()
                     .toObservable();
         } else
-            return Observable.just(d2.organisationUnitModule().organisationUnits.get());
+            return Observable.just(d2.organisationUnitModule().organisationUnits.byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).get());
     }
 
     @Override
