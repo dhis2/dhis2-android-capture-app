@@ -23,6 +23,7 @@ public class OrgUnitItem {
     private String parentUid;
     private boolean hasCaptureOrgUnits;
     private final OrganisationUnit.Scope ouScope;
+    private Integer maxLevel;
 
 
     public OrgUnitItem(OrganisationUnitCollectionRepository ouRepo, OrgUnitCascadeDialog.OUSelectionType ouSelectionType) {
@@ -54,7 +55,7 @@ public class OrgUnitItem {
 
         List<OrganisationUnit> orgUnitList = finalOuRepo.get();
         int nextLevel = level + 1;
-        while (orgUnitList.isEmpty())
+        while (orgUnitList.isEmpty() && nextLevel <= maxLevel)
             orgUnitList = ouRepo.byLevel().eq(nextLevel++).get();
 
         if (orgUnitList.isEmpty())//When parent is set and list is empty the ou has not been downloaded, we have to get it from the uidPath
@@ -128,5 +129,9 @@ public class OrgUnitItem {
 
     public void setLevel(int level) {
         this.level = level;
+    }
+
+    public void setMaxLevel(Integer maxLevel) {
+        this.maxLevel = maxLevel;
     }
 }
