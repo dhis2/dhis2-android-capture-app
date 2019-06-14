@@ -11,6 +11,7 @@ import org.hisp.dhis.android.core.dataset.DataSet;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import io.reactivex.Flowable;
@@ -85,7 +86,15 @@ public class DataSetInitialRepositoryImpl implements DataSetInitialRepository {
     @Override
     public Observable<List<CategoryOption>> catCombo(String categoryUid) {
         return Observable.just(d2.categoryModule().categories.withCategoryOptions().byUid().eq(categoryUid).one().get())
-                .map(Category::categoryOptions);
+                .map(Category::categoryOptions)
+                .map(list -> {
+                    Iterator<CategoryOption> iterator = list.iterator();
+                    while(iterator.hasNext())
+                        if(!iterator.next().access().data().write())
+                            iterator.remove();
+
+                    return list;
+                });
     }
 
     @NonNull
