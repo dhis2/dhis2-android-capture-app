@@ -45,6 +45,7 @@ public class DataSetTableContract {
 
         void onClickSelectTable(int numTable);
 
+        String getCatOptComboFromOptionList(List<String> catOpts);
     }
 
 }

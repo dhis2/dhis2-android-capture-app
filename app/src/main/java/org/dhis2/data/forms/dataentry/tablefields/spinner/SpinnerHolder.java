@@ -89,7 +89,7 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
                     .setClearListener(view -> {
                                 processor.onNext(
                                         RowAction.create(viewModel.uid(),viewModel.value(), viewModel.dataElement(),
-                                                viewModel.listCategoryOption(), viewModel.catCombo(), viewModel.row(), viewModel.column() ));
+                                                viewModel.categoryOptionCombo(), viewModel.catCombo(), viewModel.row(), viewModel.column() ));
                                 viewModel.withValue(null);
                                 dialog.dismiss();
                             }
@@ -127,7 +127,7 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
         editText.setText(optionDisplayName);
         processor.onNext(
                 RowAction.create(viewModel.uid(),optionCode, viewModel.dataElement(),
-                        viewModel.listCategoryOption(), viewModel.catCombo(), viewModel.row(), viewModel.column())
+                        viewModel.categoryOptionCombo(), viewModel.catCombo(), viewModel.row(), viewModel.column())
         );
 
     }

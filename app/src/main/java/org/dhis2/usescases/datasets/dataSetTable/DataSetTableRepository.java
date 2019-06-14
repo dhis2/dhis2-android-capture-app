@@ -16,4 +16,5 @@ public interface DataSetTableRepository {
 
     Flowable<String> getCatComboName(String catcomboUid);
 
+    String getCatOptComboFromOptionList(List<String> catOpts);
 }
