@@ -76,7 +76,7 @@ class OrgUnitCascadeHolder extends RecyclerView.ViewHolder {
         setLevelLabel();
 
         binding.levelText.setOnClickListener(view -> {
-            if (!isEmpty(ouItem.getParentUid()))
+            if (ouItem.getLevel() == 1 || !isEmpty(ouItem.getParentUid()))
                 menu.show();
         });
 

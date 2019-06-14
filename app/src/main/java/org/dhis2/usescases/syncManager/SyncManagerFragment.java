@@ -211,23 +211,21 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         }
 
         if (presenter.dataHasErrors()) {
-            String src = getString(R.string.data_sync_error);
+            String src = dataSyncSetting().concat("\n").concat(getString(R.string.data_sync_error));
             SpannableString str = new SpannableString(src);
             int wIndex = src.indexOf('@');
             int eIndex = src.indexOf('$');
             str.setSpan(new ImageSpan(getContext(), R.drawable.ic_sync_warning), wIndex, wIndex + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             str.setSpan(new ImageSpan(getContext(), R.drawable.ic_sync_problem_red), eIndex, eIndex + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            String dataText = dataSyncSetting().concat("\n").concat(str.toString());
-            binding.syncDataLayout.message.setText(dataText);
+            binding.syncDataLayout.message.setText(str);
             binding.syncDataLayout.message.setTextColor(ContextCompat.getColor(getContext(), R.color.red_060));
 
         } else if (presenter.dataHasWarnings()) {
-            String src = getString(R.string.data_sync_warning);
+            String src =dataSyncSetting().concat("\n").concat(getString(R.string.data_sync_warning));
             SpannableString str = new SpannableString(src);
             int wIndex = src.indexOf('@');
             str.setSpan(new ImageSpan(getContext(), R.drawable.ic_sync_warning), wIndex, wIndex + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            String dataText = dataSyncSetting().concat("\n").concat(str.toString());
-            binding.syncDataLayout.message.setText(dataText);
+            binding.syncDataLayout.message.setText(str);
             binding.syncDataLayout.message.setTextColor(ContextCompat.getColor(getContext(), R.color.colorPrimaryOrange));
         }
 
