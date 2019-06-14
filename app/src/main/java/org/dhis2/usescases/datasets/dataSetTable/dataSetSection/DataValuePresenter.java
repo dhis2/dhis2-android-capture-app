@@ -220,30 +220,21 @@ public class DataValuePresenter implements DataValueContract.Presenter {
 
         compositeDisposable.add(dataSetSectionFragment.rowActions()
                 .flatMap(rowAction -> {
-                    boolean exists = false;
                     dataValuesChanged.clear();
 
-                    DataSetTableModel dataSetTableModel = null;
+                    DataSetTableModel dataSetTableModel;
                     for (DataSetTableModel dataValue : dataTableModel.dataValues()) {
 
                         if (dataValue.dataElement().equals(rowAction.dataElement()) && dataValue.categoryOptionCombo().equals(rowAction.catOptCombo())) {
-                            dataSetTableModel = DataSetTableModel.create(dataValue.id(), dataValue.dataElement(),
-                                    dataValue.period(), dataValue.organisationUnit(),
-                                    dataValue.categoryOptionCombo(), dataValue.attributeOptionCombo(),
-                                    rowAction.value() == null ? "" : rowAction.value(), dataValue.storedBy(),
-                                    dataValue.catOption(), dataValue.listCategoryOption(), rowAction.catCombo());
-                            dataTableModel.dataValues().remove(dataValue);
-                            dataTableModel.dataValues().add(dataSetTableModel);
-                            exists = true;
+                            dataValue.setValue(rowAction.value());
                             setValueIntoFieldViewModel(rowAction.value(), rowAction.dataElement(), dataValue.categoryOptionCombo());
-                            dataSetSectionFragment.updateData(rowAction, dataSetTableModel.catCombo());
-                            repository.insertDataValue(tranformDataSetTableModelToDataValueModel(dataSetTableModel));
-                            break;
+                            dataSetSectionFragment.updateData(rowAction, rowAction.catCombo());
+                            return repository.updateValue(tranformDataSetTableModelToDataValueModel(dataValue));
                         }
                     }
-                    if (!exists && rowAction.value() != null && !rowAction.value().isEmpty()) {
+                    if (rowAction.value() != null && !rowAction.value().isEmpty()) {
                         dataSetTableModel = DataSetTableModel.create(Long.parseLong("0"), rowAction.dataElement(), periodId, orgUnitUid,
-                                rowAction.catOptCombo(), attributeOptionCombo, rowAction.value() != null ? rowAction.value() : "", "",
+                                rowAction.catOptCombo(), attributeOptionCombo, rowAction.value(), "",
                                 "", rowAction.listCategoryOption(), rowAction.catCombo());
 
                         dataTableModel.dataValues().add(dataSetTableModel);
@@ -266,9 +257,7 @@ public class DataValuePresenter implements DataValueContract.Presenter {
         for (List<FieldViewModel> rowFields : cells) {
             for (int i = 0; i < rowFields.size(); i++) {
                 if (rowFields.get(i).dataElement().equals(dateElement) && rowFields.get(i).categoryOptionCombo().equals(catOptionCombo)){
-                    FieldViewModel field = rowFields.get(i);
-                    rowFields.remove(i);
-                    rowFields.add(i, field.setValue(value));
+                    rowFields.set(i, rowFields.get(i).setValue(value));
                 }
             }
         }

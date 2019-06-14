@@ -262,13 +262,19 @@ public class DataValueRepositoryImpl implements DataValueRepository {
 
     @Override
     public Flowable<Long> insertDataValue(DataValueModel dataValue) {
+        return Flowable.just(briteDatabase.insert(DataValueModel.TABLE, dataValue.toContentValues()));
+    }
 
+    public Flowable<Integer> updateValue(DataValueModel dataValue){
         String where = DataValueModel.Columns.DATA_ELEMENT + " = '" + dataValue.dataElement() + "' AND " + DataValueModel.Columns.PERIOD + " = '" + dataValue.period() +
                 "' AND " + DataValueModel.Columns.ATTRIBUTE_OPTION_COMBO + " = '" + dataValue.attributeOptionCombo() +
                 "' AND " + DataValueModel.Columns.CATEGORY_OPTION_COMBO + " = '" + dataValue.categoryOptionCombo() + "'";
-        briteDatabase.delete(DataValueModel.TABLE, where);
 
-        return Flowable.just(briteDatabase.insert(DataValueModel.TABLE, dataValue.toContentValues()));
+        if(dataValue.value()!=null && !dataValue.value().isEmpty())
+            return Flowable.just(briteDatabase.update(DataValueModel.TABLE, dataValue.toContentValues(), where));
+        else
+            return Flowable.just(briteDatabase.delete(DataValueModel.TABLE, where));
+
     }
 
     @Override
