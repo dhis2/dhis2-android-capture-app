@@ -15,6 +15,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.CompoundButton;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -27,6 +29,7 @@ import androidx.work.State;
 import androidx.work.WorkManager;
 
 import com.google.android.material.snackbar.Snackbar;
+import com.jakewharton.rxbinding2.widget.RxCompoundButton;
 import com.jakewharton.rxbinding2.widget.RxTextView;
 
 import org.dhis2.BuildConfig;
@@ -182,6 +185,22 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                         Timber::d
                 ));
 
+        listenerDisposable.add(RxTextView.textChanges(binding.settingsSms.findViewById(R.id.settings_sms_receiver))
+                .debounce(1000, TimeUnit.MILLISECONDS, Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        data -> presenter.smsNumberSet(data.toString()),
+                        Timber::d
+                ));
+
+        listenerDisposable.add(RxCompoundButton.checkedChanges(binding.settingsSms.findViewById(R.id.settings_sms_switch))
+                .debounce(1000, TimeUnit.MILLISECONDS, Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        isChecked -> presenter.smsSwitch(isChecked),
+                        Timber::d
+                ));
+
         binding.limitByOrgUnit.setOnCheckedChangeListener((buttonView, isChecked) -> prefs.edit().putBoolean(Constants.LIMIT_BY_ORG_UNIT, isChecked).apply());
         binding.limitByProgram.setOnCheckedChangeListener((buttonView, isChecked) -> prefs.edit().putBoolean(Constants.LIMIT_BY_PROGRAM, isChecked).apply());
 
@@ -212,6 +231,14 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
             binding.limitByOrgUnit.setChecked(prefs.getBoolean(Constants.LIMIT_BY_ORG_UNIT, false));
             binding.limitByProgram.setChecked(prefs.getBoolean(Constants.LIMIT_BY_PROGRAM, false));
         };
+    }
+
+    @Override
+    public void showSmsSettings(boolean enabled, String number) {
+        ((CompoundButton) binding.settingsSms.findViewById(R.id.settings_sms_switch))
+                .setChecked(enabled);
+        ((TextView) binding.settingsSms.findViewById(R.id.settings_sms_receiver))
+                .setText(number);
     }
 
     private void setLastSyncDate() {

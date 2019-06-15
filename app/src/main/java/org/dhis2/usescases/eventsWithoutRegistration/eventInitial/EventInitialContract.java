@@ -77,6 +77,8 @@ public class EventInitialContract {
         void setHideSection(String sectionUid);
 
         void renderObjectStyle(ObjectStyleModel objectStyleModel);
+
+        void runSmsSubmission();
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {

@@ -29,6 +29,8 @@ public class SyncManagerContracts {
 
         void showLocalDataDeleted(boolean error);
 
+        void showSmsSettings(boolean enabled, String number);
+
         void syncData();
 
         void syncMeta();
@@ -69,5 +71,9 @@ public class SyncManagerContracts {
         boolean dataHasErrors();
 
         boolean dataHasWarnings();
+
+        void smsNumberSet(String number);
+
+        void smsSwitch(boolean isChecked);
     }
 }

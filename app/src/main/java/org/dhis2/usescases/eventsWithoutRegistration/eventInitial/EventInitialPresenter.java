@@ -200,7 +200,7 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
 
     @Override
     public void onShareClick(View mView) {
-        view.showQR();
+        view.runSmsSubmission();
     }
 
     @Override

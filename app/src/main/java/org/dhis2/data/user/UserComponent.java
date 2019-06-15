@@ -45,6 +45,8 @@ import org.dhis2.usescases.reservedValue.ReservedValueComponent;
 import org.dhis2.usescases.reservedValue.ReservedValueModule;
 import org.dhis2.usescases.searchTrackEntity.SearchTEComponent;
 import org.dhis2.usescases.searchTrackEntity.SearchTEModule;
+import org.dhis2.usescases.sms.SmsComponent;
+import org.dhis2.usescases.sms.SmsModule;
 import org.dhis2.usescases.syncManager.SyncManagerComponent;
 import org.dhis2.usescases.syncManager.SyncManagerModule;
 import org.dhis2.usescases.teiDashboard.TeiDashboardComponent;
@@ -57,6 +59,7 @@ import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListComponent;
 import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListModule;
 
 import androidx.annotation.NonNull;
+
 import dagger.Subcomponent;
 
 @PerUser
@@ -146,4 +149,6 @@ public interface UserComponent {
     @NonNull
     EnrollmentComponent plus(EnrollmentModule enrollmentModule);
 
+    @NonNull
+    SmsComponent plus(SmsModule smsModule);
 }

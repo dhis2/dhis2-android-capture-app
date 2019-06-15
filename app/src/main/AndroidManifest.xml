@@ -8,6 +8,10 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.READ_SMS" />
 
     <!--<uses-permission android:name="android.permission.USE_BIOMETRIC" />-->
 
@@ -103,6 +107,11 @@
         <activity android:name=".usescases.sync.SyncActivity" />
         <activity android:name=".usescases.enrollment.EnrollmentActivity" />
         <activity android:name=".usescases.development.DevelopmentActivity" />
+        <activity
+            android:name=".usescases.sms.SmsSubmitActivity"
+            android:theme="@style/Theme.AppCompat.Translucent" />
+
+        <service android:name=".usescases.sms.SmsSendingService" />
     </application>
 
 </manifest>

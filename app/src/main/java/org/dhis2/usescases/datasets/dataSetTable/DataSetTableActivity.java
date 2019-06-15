@@ -1,6 +1,7 @@
 package org.dhis2.usescases.datasets.dataSetTable;
 
 
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.view.View;
@@ -18,6 +19,8 @@ import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.databinding.ActivityDatasetTableBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
+import org.dhis2.usescases.sms.InputArguments;
+import org.dhis2.usescases.sms.SmsSubmitActivity;
 import org.dhis2.utils.Constants;
 import org.hisp.dhis.android.core.dataset.DataSet;
 
@@ -219,6 +222,15 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     @Override
     public void isDataSetSynced(boolean dataSetIsSynced) {
         binding.syncState.setImageResource(dataSetIsSynced ? R.drawable.ic_sync_green : R.drawable.ic_sync_problem_grey);
+    }
+
+    @Override
+    public void runSmsSubmission() {
+        Intent intent = new Intent(this, SmsSubmitActivity.class);
+        Bundle args = new Bundle();
+        InputArguments.setDataSet(args, dataSetUid, orgUnitUid, periodId, catOptCombo);
+        intent.putExtras(args);
+        startActivity(intent);
     }
 
     public void update() {

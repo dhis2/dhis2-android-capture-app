@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#55000000"
+    android:orientation="vertical">
+
+    <View
+        android:id="@+id/smsLogOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/smsLogTitleBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/sms_sync_title_bar"
+        android:padding="15dp">
+
+        <ImageView
+            android:id="@+id/smsLogIcon"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@drawable/sms_sync_icon_bg"
+            android:padding="3dp"
+            android:src="@drawable/sms_sync_icon"
+            android:tint="@color/sms_sync_last_event"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/smsLogTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:textColor="@color/text_black_333"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            app:layout_constraintLeft_toRightOf="@id/smsLogIcon"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Cool data SMS sync" />
+
+        <TextView
+            android:id="@+id/smsLogState"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:textColor="@color/text_black_333"
+            android:textSize="13sp"
+            app:layout_constraintLeft_toLeftOf="@id/smsLogTitle"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/smsLogTitle"
+            tools:text="Sending" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/smsLogRecycler"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:background="@color/white" />
+</LinearLayout>
