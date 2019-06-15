@@ -72,7 +72,7 @@ public class ProgramPresenter implements ProgramContract.Presenter {
                         .flatMap(datePeriodOrgs -> Flowable.zip(homeRepository.programModels(datePeriodOrgs.val0(), datePeriodOrgs.val1()),
                                 homeRepository.aggregatesModels(datePeriodOrgs.val0(), datePeriodOrgs.val1()), (programs, dataSets) -> {
                                     //programs.addAll(dataSets);
-                                    programs.clear();
+                                    //programs.clear();
                                     programs.addAll(dataSets);
                                     return programs;
                                 }))
