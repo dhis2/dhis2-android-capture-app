@@ -42,7 +42,7 @@ public class FileResourcesUtil {
 
     public static void initFileUploadWork(String teiUid, String attrUid) {
         OneTimeWorkRequest.Builder fileBuilder = new OneTimeWorkRequest.Builder(FilesWorker.class);
-        fileBuilder.addTag(teiUid.concat(".").concat(attrUid));
+        fileBuilder.addTag(teiUid.concat("_").concat(attrUid));
         fileBuilder.setConstraints(new Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build());
@@ -128,6 +128,6 @@ public class FileResourcesUtil {
     }
 
     public static String generateFileName(String primaryUid, String secundaryUid) {
-        return String.format("%s.%s.png", primaryUid, secundaryUid);
+        return String.format("%s_%s.png", primaryUid, secundaryUid);
     }
 }

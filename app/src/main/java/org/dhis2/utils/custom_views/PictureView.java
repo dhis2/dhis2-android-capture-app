@@ -134,7 +134,7 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
     public void setInitialValue(String value) {
         Glide.with(image).clear(image);
 
-        File file = FileResourcesUtil.getFileForAttribute(getContext(), primaryUid.concat(".").concat(uid).concat(".png"));
+        File file = FileResourcesUtil.getFileForAttribute(getContext(), primaryUid.concat("_").concat(uid).concat(".png"));
 
         if (file.exists()) {
             Glide.with(image)
@@ -161,20 +161,20 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
                         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                         Uri photoUri = FileProvider.getUriForFile(getContext(),
                                 "org.dhis2.provider",
-                                new File(FileResourcesUtil.getUploadDirectory(getContext()), primaryUid.concat(".").concat(uid)));
+                                new File(FileResourcesUtil.getUploadDirectory(getContext()), FileResourcesUtil.generateFileName(primaryUid,uid)));
                         intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
                         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                         PictureView.this.onIntentSelected.intentSelected(this.uid, intent, Constants.CAMERA_REQUEST, (file, value, uuid) -> {
-                            imageListener.onSelected(file, primaryUid.concat(".").concat(uid), uid);
+                            imageListener.onSelected(file, primaryUid.concat("_").concat(uid), uid);
                         });
                     } else if (options[item].equals("Choose From Gallery")) {
                         dialog.dismiss();
                         Intent pickPhoto = new Intent(Intent.ACTION_PICK);
-                        pickPhoto.putExtra("filename", primaryUid.concat(".").concat(uid));
+                        pickPhoto.putExtra("filename", primaryUid.concat("_").concat(uid));
                         pickPhoto.setType("image/*");
                         PictureView.this.onIntentSelected.intentSelected(this.uid, pickPhoto, Constants.GALLERY_REQUEST, (file, value, uuid) -> {
                             FileResourcesUtil.saveImageToUpload(file, new File(FileResourcesUtil.getUploadDirectory(getContext()), FileResourcesUtil.generateFileName(primaryUid,uid)));
-                            imageListener.onSelected(file, primaryUid.concat(".").concat(uid), uid);
+                            imageListener.onSelected(file, primaryUid.concat("_").concat(uid), uid);
                         });
                     } else if (options[item].equals("Cancel")) {
                         dialog.dismiss();
