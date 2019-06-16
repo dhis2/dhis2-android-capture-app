@@ -202,8 +202,13 @@
     <string name="refill_reserved_values">Refill</string>
     <string name="settings_sms_module_title">SMS module:</string>
     <string name="settings_sms_receiver_number">SMS gateway</string>
+    <string name="settings_sms_result_sender_number">SMS result sender</string>
+    <string name="settings_sms_result_timeout">SMS result timeout</string>
+    <string name="settings_sms_result_timeout_hint">seconds</string>
+    <string name="settings_sms_result_sender_hint">number</string>
     <string name="settings_sms_receiver_number_hint">number</string>
     <string name="settings_sms_module_switch">Enable SMS submission</string>
+    <string name="settings_sms_response_wait_switch">Wait for SMS result response</string>
     <!-- SEARCH TRACK ENTITY -->
     <string name="enrollmment_date">Enrollment date</string>
 

@@ -3,7 +3,6 @@ package org.dhis2.usescases.syncManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import androidx.core.util.Pair;
 import androidx.work.Constraints;
 import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.ExistingWorkPolicy;
@@ -26,7 +25,6 @@ import org.hisp.dhis.android.core.sms.domain.interactor.ConfigCase;
 import java.io.File;
 import java.util.concurrent.TimeUnit;
 
-import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.observers.DisposableCompletableObserver;
@@ -74,16 +72,13 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
         );
 
         ConfigCase smsConfig = d2.smsModule().configCase();
-        compositeDisposable.add(Single.zip(
-                smsConfig.getGatewayNumber(),
-                smsConfig.isModuleEnabled(),
-                Pair::create
-        ).subscribeOn(Schedulers.io()
+        compositeDisposable.add(smsConfig.getSmsModuleConfig().subscribeOn(Schedulers.io()
         ).observeOn(AndroidSchedulers.mainThread()
-        ).subscribeWith(new DisposableSingleObserver<Pair<String, Boolean>>() {
+        ).subscribeWith(new DisposableSingleObserver<ConfigCase.SmsConfig>() {
             @Override
-            public void onSuccess(Pair<String, Boolean> config) {
-                view.showSmsSettings(config.second, config.first);
+            public void onSuccess(ConfigCase.SmsConfig c) {
+                view.showSmsSettings(c.isModuleEnabled(), c.getGateway(), c.isWaitingForResult(),
+                        c.getResultSender(), c.getResultWaitingTimeout());
             }
 
             @Override
@@ -192,6 +187,54 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
                     @Override
                     public void onComplete() {
                         Timber.d("SMS module enabled: %s", isChecked);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Timber.e(e);
+                    }
+                }));
+    }
+
+    @Override
+    public void smsResponseSenderSet(String number) {
+        compositeDisposable.add(d2.smsModule().configCase().setConfirmationSenderNumber(number)
+                .subscribeWith(new DisposableCompletableObserver() {
+                    @Override
+                    public void onComplete() {
+                        Timber.d("SMS response sender set to %s", number);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Timber.e(e);
+                    }
+                }));
+    }
+
+    @Override
+    public void smsWaitForResponse(boolean waitForResponse) {
+        compositeDisposable.add(d2.smsModule().configCase().setWaitingForResultEnabled(waitForResponse)
+                .subscribeWith(new DisposableCompletableObserver() {
+                    @Override
+                    public void onComplete() {
+                        Timber.d("SMS waiting for response: %b", waitForResponse);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Timber.e(e);
+                    }
+                }));
+    }
+
+    @Override
+    public void smsWaitForResponseTimeout(int timeout) {
+        compositeDisposable.add(d2.smsModule().configCase().setWaitingResultTimeout(timeout)
+                .subscribeWith(new DisposableCompletableObserver() {
+                    @Override
+                    public void onComplete() {
+                        Timber.d("SMS waiting for response timeout: %d", timeout);
                     }
 
                     @Override

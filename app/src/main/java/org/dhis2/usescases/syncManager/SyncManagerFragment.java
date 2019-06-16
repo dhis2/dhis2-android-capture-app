@@ -201,6 +201,30 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                         Timber::d
                 ));
 
+        listenerDisposable.add(RxCompoundButton.checkedChanges(binding.settingsSms.findViewById(R.id.settings_sms_response_wait_switch))
+                .debounce(1000, TimeUnit.MILLISECONDS, Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        isChecked -> presenter.smsWaitForResponse(isChecked),
+                        Timber::d
+                ));
+
+        listenerDisposable.add(RxTextView.textChanges(binding.settingsSms.findViewById(R.id.settings_sms_result_sender))
+                .debounce(1000, TimeUnit.MILLISECONDS, Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        number -> presenter.smsResponseSenderSet(number.toString()),
+                        Timber::d
+                ));
+
+        listenerDisposable.add(RxTextView.textChanges(binding.settingsSms.findViewById(R.id.settings_sms_result_timeout))
+                .debounce(1000, TimeUnit.MILLISECONDS, Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        value -> presenter.smsWaitForResponseTimeout(Integer.valueOf(value.toString())),
+                        Timber::d
+                ));
+
         binding.limitByOrgUnit.setOnCheckedChangeListener((buttonView, isChecked) -> prefs.edit().putBoolean(Constants.LIMIT_BY_ORG_UNIT, isChecked).apply());
         binding.limitByProgram.setOnCheckedChangeListener((buttonView, isChecked) -> prefs.edit().putBoolean(Constants.LIMIT_BY_PROGRAM, isChecked).apply());
 
@@ -234,11 +258,17 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     }
 
     @Override
-    public void showSmsSettings(boolean enabled, String number) {
+    public void showSmsSettings(boolean enabled, String number, boolean waitForResponse, String responseSender, int timeout) {
         ((CompoundButton) binding.settingsSms.findViewById(R.id.settings_sms_switch))
                 .setChecked(enabled);
         ((TextView) binding.settingsSms.findViewById(R.id.settings_sms_receiver))
                 .setText(number);
+        ((CompoundButton) binding.settingsSms.findViewById(R.id.settings_sms_response_wait_switch))
+                .setChecked(waitForResponse);
+        ((TextView) binding.settingsSms.findViewById(R.id.settings_sms_result_sender))
+                .setText(responseSender);
+        ((TextView) binding.settingsSms.findViewById(R.id.settings_sms_result_timeout))
+                .setText(Integer.toString(timeout));
     }
 
     private void setLastSyncDate() {
@@ -274,7 +304,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         if (metaStatus) {
             binding.metadataLastSync.setText(String.format(getString(R.string.last_data_sync_date), prefs.getString(Constants.LAST_META_SYNC, "-")));
             binding.metadataLastSync.setTextColor(ContextCompat.getColor(context, R.color.text_black_333));
-        }else {
+        } else {
             binding.metadataLastSync.setText(getString(R.string.metadata_sync_error));
             binding.metadataLastSync.setTextColor(ContextCompat.getColor(context, R.color.red_060));
         }
