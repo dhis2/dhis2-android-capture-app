@@ -36,8 +36,8 @@ public class PictureHolder extends FormViewHolder {
     void update(PictureViewModel pictureViewModel) {
         this.model = pictureViewModel;
         binding.formPictures.setProcessor(
-                pictureViewModel.uid().contains(".") ? pictureViewModel.uid().split("\\.")[0] : pictureViewModel.uid(),
-                pictureViewModel.uid().contains(".") ? pictureViewModel.uid().split("\\.")[1] : pictureViewModel.uid(),
+                pictureViewModel.uid().contains("_") ? pictureViewModel.uid().split("_")[0] : pictureViewModel.uid(),
+                pictureViewModel.uid().contains("_") ? pictureViewModel.uid().split("_")[1] : pictureViewModel.uid(),
                 processor);
         descriptionText = pictureViewModel.description();
         label = new StringBuilder(pictureViewModel.label());

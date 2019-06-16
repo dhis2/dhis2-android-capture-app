@@ -82,7 +82,7 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
                             .byTrackedEntityInstance().eq(teiUid)
                             .byTrackedEntityAttribute().in(attrUids)
                             .one().get();
-                }).map(attrValue -> teiUid + "." + attrValue.trackedEntityAttribute() + ".png")
+                }).map(attrValue -> teiUid + "_" + attrValue.trackedEntityAttribute() + ".png")
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
