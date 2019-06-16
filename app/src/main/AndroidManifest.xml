@@ -113,7 +113,7 @@
 
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="org.dhis2.provider"
+            android:authorities="@string/content_provider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data

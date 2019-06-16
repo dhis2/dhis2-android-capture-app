@@ -98,12 +98,37 @@ android {
 
             // Using dataentry.jks to sign debug build type.
             signingConfig = signingConfigs.debug
+
+            resValue "string", "content_provider", "com.dhis2.debug.provider"
         }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             ext.enableCrashlytics = true
             signingConfig signingConfigs.release
+
+            resValue "string", "content_provider", "com.dhis2.provider"
+
+        }
+
+        experimental {
+            // custom application suffix which allows to
+            // install debug and release builds at the same time
+            applicationIdSuffix = ".experimental"
+
+            // jacoco test coverage reports both for
+            // androidTest and test source sets
+            testCoverageEnabled = false
+
+            // Using dataentry.jks to sign debug build type.
+            signingConfig = signingConfigs.debug
+            debuggable = true
+            jniDebuggable = true
+            renderscriptDebuggable = true
+            matchingFallbacks = ['debug']
+
+            resValue "string", "content_provider", "com.dhis2.experimental.provider"
+
         }
     }
 
@@ -149,7 +174,7 @@ android {
         resolutionStrategy {
             preferProjectModules()
 
-            force 'junit:junit:4.12','com.squareup.okhttp3:okhttp:3.12.0'
+            force 'junit:junit:4.12', 'com.squareup.okhttp3:okhttp:3.12.0'
 
             forcedModules = ['com.squareup.okhttp3:okhttp:3.12.0']
         }
