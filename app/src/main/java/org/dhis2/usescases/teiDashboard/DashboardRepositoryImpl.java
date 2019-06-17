@@ -470,8 +470,10 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
     @Override
     public Observable<String> getAttributeImage(String teiUid) {
-        return Observable.defer(() -> Observable.fromCallable(() -> {
-            Iterator<TrackedEntityAttribute> iterator = d2.trackedEntityModule().trackedEntityAttributes.byValueType().eq(ValueType.IMAGE).get().iterator();
+        return Observable.fromCallable(() -> {
+            Iterator<TrackedEntityAttribute> iterator = d2.trackedEntityModule().trackedEntityAttributes
+                    .byValueType().eq(ValueType.IMAGE)
+                    .get().iterator();
             List<String> attrUids = new ArrayList<>();
             while (iterator.hasNext())
                 attrUids.add(iterator.next().uid());
@@ -482,7 +484,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                     .one().get().trackedEntityAttribute();
 
             return FileResourcesUtil.generateFileName(teiUid, attrUid);
-        }));
+        });
     }
 
     @Override

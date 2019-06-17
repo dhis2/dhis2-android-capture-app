@@ -54,7 +54,7 @@ public class NfcDataWriteActivity extends ActivityGlobalAbstract {
         nfcManager = new NFCManager(this);
         binding.mode.setOnCheckedChangeListener((buttonView, isChecked) -> deleteDataMode = isChecked);
         binding.readMode.setOnCheckedChangeListener((buttonView, isChecked) -> readMode = isChecked);
-
+        binding.menu.setOnClickListener(view -> onBackPressed());
         if (isEmpty(teiUid)) {
             binding.readMode.setChecked(true);
             binding.readMode.setEnabled(false);
@@ -119,9 +119,9 @@ public class NfcDataWriteActivity extends ActivityGlobalAbstract {
 
     @Override
     protected void onPause() {
-        disposable.clear();
         if (nfcAdapter != null)
             nfcAdapter.disableForegroundDispatch(this);
+        disposable.clear();
         super.onPause();
     }
 
@@ -129,7 +129,7 @@ public class NfcDataWriteActivity extends ActivityGlobalAbstract {
     protected void onNewIntent(Intent intent) {
         currentTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
 
-        binding.currentMessage.setText("NFC card detected");
+        binding.currentMessage.setText("NFC card detected. Please do not remove it.");
         binding.nfcBg.setVisibility(View.VISIBLE);
         binding.nfcBg.animate().scaleX(100).scaleY(100).setDuration(1500)
                 .withEndAction(this::applyNFCAction);
@@ -141,21 +141,27 @@ public class NfcDataWriteActivity extends ActivityGlobalAbstract {
         if (readMode) {
             String data = qrInterface.decompress(nfcManager.readTag(currentTag));
             binding.currentMessage.setText("SAVING DATA IN DB. YOU CAN REMOVE THE CARD NOW.");
-            String teiUidWritten = qrInterface.saveData(data);
-            new AlertDialog.Builder(this)
-                    .setTitle("NFC Reader")
-                    .setMessage("Data was written. Do you want to open dashboard?")
-                    .setPositiveButton("Yes", (dialogInterface, i) -> {
-                        Bundle bundle = new Bundle();
-                        bundle.putString("TEI_UID", teiUidWritten);
-                        bundle.putString("PROGRAM_UID", null);
-                        startActivity(TeiDashboardMobileActivity.class, bundle, true, false, null);
-                    })
-                    .setNegativeButton("No", (dialogInterface, i) -> {
-                        binding.currentMessage.setText("Waiting for NFC");
-                        dialogInterface.dismiss();
-                    })
-                    .create().show();
+            try {
+                String teiUidWritten = qrInterface.saveData(data);
+                binding.currentMessage.setText("Waiting for NFC card.");
+                new AlertDialog.Builder(this,R.style.CustomDialog)
+                        .setTitle("NFC Reader")
+                        .setMessage("Data was written. Do you want to open dashboard?")
+                        .setPositiveButton("Yes", (dialogInterface, i) -> {
+                            Bundle bundle = new Bundle();
+                            bundle.putString("TEI_UID", teiUidWritten);
+                            bundle.putString("PROGRAM_UID", null);
+                            startActivity(TeiDashboardMobileActivity.class, bundle, true, false, null);
+                        })
+                        .setNegativeButton("No", (dialogInterface, i) -> {
+                            binding.currentMessage.setText("Waiting for NFC");
+                            dialogInterface.dismiss();
+                        })
+                        .create().show();
+            } catch (Exception e) {
+                binding.currentMessage.setText("Error reading data, please. Try again.");
+            }
+
         } else if (deleteDataMode) {
             nfcManager.clearTag(currentTag);
             binding.currentMessage.setText("Card cleared");
