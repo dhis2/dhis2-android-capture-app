@@ -16,7 +16,6 @@ import org.dhis2.App;
 import org.dhis2.R;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.sms.domain.interactor.SmsSubmitCase;
-import org.hisp.dhis.android.core.sms.domain.repository.SmsRepository;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -24,9 +23,10 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import io.reactivex.Completable;
 import io.reactivex.Single;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.observers.DisposableObserver;
+import io.reactivex.observers.DisposableCompletableObserver;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
@@ -210,16 +210,24 @@ public class SmsSendingService extends Service {
 
     private void executeSending() {
         startBackgroundSubmissionNotification();
-        disposables.add(smsSender.send().subscribeOn(Schedulers.newThread()
-        ).observeOn(Schedulers.newThread()
-        ).subscribeWith(new DisposableObserver<SmsRepository.SmsSendingState>() {
-            @Override
-            public void onNext(SmsRepository.SmsSendingState state) {
-                if (!isLastStateTheSame(state.getSent(), state.getTotal())) {
-                    reportState(State.SENDING, state.getSent(), state.getTotal());
-                }
-            }
 
+        disposables.add(smsSender.send().doOnNext(state -> {
+            if (!isLastSendingStateTheSame(state.getSent(), state.getTotal())) {
+                reportState(State.SENDING, state.getSent(), state.getTotal());
+            }
+        }).ignoreElements().doOnComplete(() -> reportState(State.SENT, 0, 0)).andThen(
+                d2.smsModule().configCase().getSmsModuleConfig()
+        ).flatMapCompletable(config -> {
+            if (config.isWaitingForResult()) {
+                reportState(State.WAITING_RESULT, 0, 0);
+                return smsSender.checkConfirmationSms(true).doOnComplete(() ->
+                        reportState(State.RESULT_CONFIRMED, 0, 0));
+            } else {
+                return Completable.complete();
+            }
+        }).subscribeOn(Schedulers.newThread()
+        ).observeOn(Schedulers.newThread()
+        ).subscribeWith(new DisposableCompletableObserver() {
             @Override
             public void onError(Throwable e) {
                 reportError(e);
@@ -237,7 +245,7 @@ public class SmsSendingService extends Service {
     }
 
 
-    private boolean isLastStateTheSame(int sent, int total) {
+    private boolean isLastSendingStateTheSame(int sent, int total) {
         if (statesList == null || statesList.size() == 0) return false;
         SendingStatus last = statesList.get(statesList.size() - 1);
         return last.state == State.SENDING && last.sent == sent && last.total == total;
@@ -259,7 +267,8 @@ public class SmsSendingService extends Service {
 
     public enum State implements Serializable {
         STARTED, CONVERTED, ITEM_NOT_READY, WAITING_COUNT_CONFIRMATION,
-        COUNT_NOT_ACCEPTED, SENDING, COMPLETED, ERROR
+        COUNT_NOT_ACCEPTED, SENDING, SENT, WAITING_RESULT, RESULT_CONFIRMED,
+        COMPLETED, ERROR
     }
 
     class LocalBinder extends Binder {

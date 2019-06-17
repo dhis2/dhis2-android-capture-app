@@ -19,8 +19,14 @@ public class StatusText {
                 return r.getString(R.string.sms_count_error);
             case SENDING:
                 return r.getString(R.string.sms_sending, state.sent, state.total);
-            case COMPLETED:
+            case SENT:
                 return r.getString(R.string.sms_all_sent);
+            case WAITING_RESULT:
+                return r.getString(R.string.sms_waiting_confirmation);
+            case RESULT_CONFIRMED:
+                return r.getString(R.string.sms_confirmed);
+            case COMPLETED:
+                return r.getString(R.string.sms_submission_completed);
             case ERROR:
                 return getErrorText(r, state.error);
             case ITEM_NOT_READY:

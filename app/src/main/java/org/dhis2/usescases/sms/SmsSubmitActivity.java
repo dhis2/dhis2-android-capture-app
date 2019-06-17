@@ -192,6 +192,9 @@ public class SmsSubmitActivity extends ActivityGlobalAbstract {
             case STARTED:
             case CONVERTED:
             case SENDING:
+            case WAITING_RESULT:
+            case RESULT_CONFIRMED:
+            case SENT:
                 state.setText(R.string.sms_bar_state_sending);
                 break;
             case ITEM_NOT_READY:
