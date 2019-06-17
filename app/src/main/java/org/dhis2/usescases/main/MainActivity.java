@@ -1,8 +1,10 @@
 package org.dhis2.usescases.main;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -10,6 +12,8 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ObservableInt;
 import androidx.fragment.app.Fragment;
@@ -41,6 +45,7 @@ import io.reactivex.functions.Consumer;
 
 public class MainActivity extends ActivityGlobalAbstract implements MainContracts.View {
 
+    private static final int PERMISSION_REQUEST = 1987;
     public ActivityMainBinding binding;
     @Inject
     MainContracts.Presenter presenter;
@@ -113,6 +118,15 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
     protected void onResume() {
         super.onResume();
         presenter.init(this);
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                || ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA},
+                    PERMISSION_REQUEST);
+        }
+
     }
 
     @Override

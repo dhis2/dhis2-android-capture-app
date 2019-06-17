@@ -22,6 +22,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 
+import org.dhis2.BuildConfig;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.FormPictureAccentBinding;
@@ -160,7 +161,7 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
                         dialog.dismiss();
                         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                         Uri photoUri = FileProvider.getUriForFile(getContext(),
-                                "org.dhis2.provider",
+                                BuildConfig.APPLICATION_ID+".provider",
                                 new File(FileResourcesUtil.getUploadDirectory(getContext()), FileResourcesUtil.generateFileName(primaryUid,uid)));
                         intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
                         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
