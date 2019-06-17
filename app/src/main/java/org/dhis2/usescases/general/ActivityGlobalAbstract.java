@@ -387,7 +387,8 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
                         Bitmap bitmap = (Bitmap) data.getExtras().get("data");
                         if (bitmap != null)
                             onPictureSelected.onSelected(null, new File(FileResourcesUtil.getUploadDirectory(this), "test").getAbsolutePath(), uuid);
-                    }
+                    } else
+                        onPictureSelected.onSelected(null, null, uuid);
                     break;
             }
         }
