@@ -317,16 +317,17 @@ public class DataValueRepositoryImpl implements DataValueRepository {
     public Flowable<Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>>> getCatOptions(String sectionName) {
         Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>> map = new HashMap<>();
 
-        return Flowable.just(d2.dataSetModule().sections.withDataElements().byDataSetUid().eq(dataSetUid).byName().eq(sectionName).one().get())
+        //TODO finish to build this method
+        Flowable.just(d2.dataSetModule().sections.withDataElements().byDataSetUid().eq(dataSetUid).byName().eq(sectionName).one().get())
                 .flatMapIterable(section -> section.dataElements())
                 .flatMap(dataElement ->
                         Flowable.just(d2.dataSetModule().dataSets.withDataSetElements().byUid().eq(dataSetUid).one().get().dataSetElements())
                                 .map(dataElementOverrides -> transformDataElement(dataElement, dataElementOverrides)))
                                 .map(dataElement-> {
-                                    d2.categoryModule().categoryCombos.withCategories().byUid().eq("").one().get().categories().get(0).categoryOptions();
+                                    return d2.categoryModule().categoryCombos.withCategories().byUid().eq("").one().get().categories().get(0).categoryOptions();
                                 })
                 .toList().toFlowable();
-
+        return null;
         /*Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>> map = new HashMap<>();
         String query = CATEGORY_OPTION;
 
