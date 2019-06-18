@@ -199,6 +199,7 @@ public class SmsSubmitActivity extends ActivityGlobalAbstract {
                 break;
             case ITEM_NOT_READY:
             case COUNT_NOT_ACCEPTED:
+            case WAITING_RESULT_TIMEOUT:
             case ERROR:
                 titleBar.setBackgroundColor(ContextCompat.getColor(this, R.color.sms_sync_title_bar_error));
                 state.setText(R.string.sms_bar_state_failed);

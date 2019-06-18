@@ -25,6 +25,8 @@ public class StatusText {
                 return r.getString(R.string.sms_waiting_confirmation);
             case RESULT_CONFIRMED:
                 return r.getString(R.string.sms_confirmed);
+            case WAITING_RESULT_TIMEOUT:
+                return r.getString(R.string.sms_waiting_timeout);
             case COMPLETED:
                 return r.getString(R.string.sms_submission_completed);
             case ERROR:

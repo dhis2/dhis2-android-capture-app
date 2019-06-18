@@ -488,6 +488,7 @@
     <string name="sms_all_sent">All sent</string>
     <string name="sms_submission_completed">Submission completed</string>
     <string name="sms_waiting_confirmation">Waiting for confirmation SMS</string>
+    <string name="sms_waiting_timeout">Not received confirmation message</string>
     <string name="sms_confirmed">Confirmation received</string>
     <string name="sms_error">Error sending</string>
     <string name="sms_error_item_not_ready">Data item not ready to be sent</string>

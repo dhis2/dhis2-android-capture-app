@@ -16,9 +16,11 @@ import org.dhis2.App;
 import org.dhis2.R;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.sms.domain.interactor.SmsSubmitCase;
+import org.hisp.dhis.android.core.sms.domain.repository.SmsRepository;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -210,7 +212,7 @@ public class SmsSendingService extends Service {
 
     private void executeSending() {
         startBackgroundSubmissionNotification();
-
+        Date startDate = new Date();
         disposables.add(smsSender.send().doOnNext(state -> {
             if (!isLastSendingStateTheSame(state.getSent(), state.getTotal())) {
                 reportState(State.SENDING, state.getSent(), state.getTotal());
@@ -220,8 +222,13 @@ public class SmsSendingService extends Service {
         ).flatMapCompletable(config -> {
             if (config.isWaitingForResult()) {
                 reportState(State.WAITING_RESULT, 0, 0);
-                return smsSender.checkConfirmationSms(true).doOnComplete(() ->
-                        reportState(State.RESULT_CONFIRMED, 0, 0));
+                return smsSender.checkConfirmationSms(startDate)
+                        .doOnError(throwable -> {
+                            if (throwable instanceof SmsRepository.TimeoutException) {
+                                reportState(State.WAITING_RESULT_TIMEOUT, 0, 0);
+                            }
+                        }).doOnComplete(() ->
+                                reportState(State.RESULT_CONFIRMED, 0, 0));
             } else {
                 return Completable.complete();
             }
@@ -268,7 +275,7 @@ public class SmsSendingService extends Service {
     public enum State implements Serializable {
         STARTED, CONVERTED, ITEM_NOT_READY, WAITING_COUNT_CONFIRMATION,
         COUNT_NOT_ACCEPTED, SENDING, SENT, WAITING_RESULT, RESULT_CONFIRMED,
-        COMPLETED, ERROR
+        WAITING_RESULT_TIMEOUT, COMPLETED, ERROR
     }
 
     class LocalBinder extends Binder {
