@@ -106,8 +106,9 @@ android {
             signingConfig signingConfigs.release
         }
         beta {
-            matchingFallbacks = ['release']
-            signingConfig signingConfigs.release
+            applicationIdSuffix = ".beta"
+            matchingFallbacks = ['debug']
+            signingConfig signingConfigs.debug
         }
     }
 
