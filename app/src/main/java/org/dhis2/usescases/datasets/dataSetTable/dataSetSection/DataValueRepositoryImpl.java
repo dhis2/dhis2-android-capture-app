@@ -1,7 +1,9 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection;
 
 import android.content.ContentValues;
+import android.util.Log;
 
+import com.google.common.collect.Lists;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.tuples.Pair;
@@ -19,18 +21,24 @@ import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.dataelement.DataElement;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
+import org.hisp.dhis.android.core.dataset.DataInputPeriod;
 import org.hisp.dhis.android.core.dataset.DataInputPeriodModel;
+import org.hisp.dhis.android.core.dataset.DataSet;
 import org.hisp.dhis.android.core.dataset.DataSetCompleteRegistration;
+import org.hisp.dhis.android.core.dataset.DataSetDataElementLinkModel;
 import org.hisp.dhis.android.core.dataset.DataSetElement;
 import org.hisp.dhis.android.core.dataset.DataSetModel;
+import org.hisp.dhis.android.core.dataset.Section;
 import org.hisp.dhis.android.core.dataset.SectionGreyedFieldsLinkModel;
 import org.hisp.dhis.android.core.dataset.SectionModel;
 import org.hisp.dhis.android.core.datavalue.DataValue;
 import org.hisp.dhis.android.core.datavalue.DataValueModel;
+import org.hisp.dhis.android.core.period.Period;
 import org.hisp.dhis.android.core.period.PeriodModel;
 import org.hisp.dhis.android.core.period.PeriodType;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -145,17 +153,13 @@ public class DataValueRepositoryImpl implements DataValueRepository {
     }
 
     @Override
-    public Flowable<PeriodModel> getPeriod(String periodId) {
-        return briteDatabase.createQuery(PeriodModel.TABLE, SELECT_PERIOD, periodId)
-                .mapToOne(PeriodModel::create)
-                .toFlowable(BackpressureStrategy.LATEST);
-    }
+    public Flowable<Period> getPeriod(String periodId) {
+        return Flowable.fromCallable(() -> d2.periodModule().periods.byPeriodId().eq(periodId).one().get());
+    }//d2.dataSetModule().dataSets.withDataSetElements().byUid().eq(dataSetUid).one().get().dataSetElements()
 
     @Override
-    public Flowable<List<DataInputPeriodModel>> getDataInputPeriod() {
-        return briteDatabase.createQuery(DataInputPeriodModel.TABLE, SELECT_DATA_INPUT_PERIOD, dataSetUid/*, periodId*/)
-                .mapToList(DataInputPeriodModel::create)
-                .toFlowable(BackpressureStrategy.LATEST);
+    public Flowable<List<DataInputPeriod>> getDataInputPeriod() {
+        return Flowable.fromCallable(()-> d2.dataSetModule().dataSets.withDataInputPeriods().byUid().eq(dataSetUid).one().get().dataInputPeriods());
     }
 
     @Override
@@ -176,88 +180,61 @@ public class DataValueRepositoryImpl implements DataValueRepository {
     }
 
     @Override
-    public Flowable<List<DataElementModel>> getDataElements(String section) {
-        String query = DATA_ELEMENTS;
-        if (!section.equals("NO_SECTION")) {
-            query = query + "WHERE Section.dataSet = ? AND Section.name = ? and DataSetDataElementLink.dataSet = ? GROUP BY DataElement.uid ";
-            query = query + " ORDER BY SectionDataElementLink.sortOrder ";
-            return briteDatabase.createQuery(DataElementModel.TABLE, query, dataSetUid, section, dataSetUid)
-                    .mapToList(cursor -> {
-                        String catComboOverride = cursor.getString(cursor.getColumnIndex("CategoryComboOverride"));
+    public Flowable<List<DataElement>> getDataElements(String sectionName) {
+        if (!sectionName.equals("NO_SECTION"))
+            return Flowable.just(d2.dataSetModule().sections.withDataElements().byDataSetUid().eq(dataSetUid).byName().eq(sectionName).one().get())
+                    .flatMapIterable(section -> section.dataElements())
+                    .flatMap(dataElement ->
+                            Flowable.just(d2.dataSetModule().dataSets.withDataSetElements().byUid().eq(dataSetUid).one().get().dataSetElements())
+                                    .map(dataElementOverrides -> transformDataElement(dataElement, dataElementOverrides))).toList().toFlowable();
 
-                        DataElementModel dataElementModel = DataElementModel.builder()
-                                .uid(cursor.getString(cursor.getColumnIndex(DataElementModel.Columns.UID)))
-                                .code(cursor.getString(cursor.getColumnIndex(DataElementModel.Columns.CODE)))
-                                .name(cursor.getString(cursor.getColumnIndex(DataElementModel.Columns.NAME)))
-                                .displayName(cursor.getString(cursor.getColumnIndex(DataElementModel.Columns.DISPLAY_NAME)))
-                                .shortName(cursor.getString(cursor.getColumnIndex(DataElementModel.Columns.SHORT_NAME)))
-                                .displayShortName(cursor.getString(cursor.getColumnIndex(DataElementModel.Columns.DISPLAY_SHORT_NAME)))
-                                .description(cursor.getString(cursor.getColumnIndex(DataElementModel.Columns.DESCRIPTION)))
-                                .displayDescription(cursor.getString(cursor.getColumnIndex(DataElementModel.Columns.DISPLAY_DESCRIPTION)))
-                                .valueType(ValueType.valueOf(cursor.getString(cursor.getColumnIndex(DataElementModel.Columns.VALUE_TYPE))))
-                                .zeroIsSignificant(cursor.getInt(cursor.getColumnIndex(DataElementModel.Columns.ZERO_IS_SIGNIFICANT)) == 0 ? false : true)
-                                .aggregationType(cursor.getString(cursor.getColumnIndex(DataElementModel.Columns.AGGREGATION_TYPE)))
-                                .formName(cursor.getString(cursor.getColumnIndex(DataElementModel.Columns.FORM_NAME)))
-                                .domainType(cursor.getString(cursor.getColumnIndex(DataElementModel.Columns.DOMAIN_TYPE)))
-                                .displayFormName(cursor.getString(cursor.getColumnIndex(DataElementModel.Columns.DISPLAY_FORM_NAME)))
-                                .optionSet(cursor.getString(cursor.getColumnIndex(DataElementModel.Columns.OPTION_SET)))
-                                .categoryCombo(catComboOverride != null && !catComboOverride.isEmpty() ? catComboOverride : cursor.getString(cursor.getColumnIndex(DataElementModel.Columns.CATEGORY_COMBO)))
-                                .build();
+        return Flowable.just(d2.dataSetModule().dataSets.withDataSetElements().byUid().eq(dataSetUid).one().get())
+                .flatMapIterable(dataSet -> {
+                    List<String> uids = new ArrayList<>();
+                    for(DataSetElement dataSetElement: dataSet.dataSetElements())
+                        uids.add(dataSetElement.dataElement().uid());
 
-                        return dataElementModel;
-                    }).toFlowable(BackpressureStrategy.LATEST);
-        }
-        query = query + "WHERE DataSetDataElementLink.dataSet = ? GROUP BY DataElement.uid  ORDER BY SectionDataElementLink.sortOrder";
-        return briteDatabase.createQuery(DataElementModel.TABLE, query, dataSetUid)
-                .mapToList(DataElementModel::create).toFlowable(BackpressureStrategy.LATEST);
+                    return d2.dataElementModule().dataElements.byUid().in(uids).get();
+                })
+                .flatMap(dataElement ->
+                        Flowable.just(d2.dataSetModule().dataSets.withDataSetElements().byUid().eq(dataSetUid).one().get().dataSetElements())
+                                .map(dataElementOverrides ->  transformDataElement(dataElement, dataElementOverrides))).toList().toFlowable();
+
     }
 
-    public Flowable<List<CategoryCombo>> getCatCombo(String section) {
+    public Flowable<List<CategoryCombo>> getCatCombo(String sectionName){
+        if (!sectionName.equals("NO_SECTION"))
+            return Flowable.just(d2.dataSetModule().sections.withDataElements().byDataSetUid().eq(dataSetUid).byName().eq(sectionName).one().get())
+                    .flatMapIterable(section -> section.dataElements())
+                    .flatMap(dataElement ->
+                            Flowable.just(d2.dataSetModule().dataSets.withDataSetElements().byUid().eq(dataSetUid).one().get().dataSetElements())
+                                    .map(dataElementOverrides -> {
+                                        for(DataSetElement dataSetElement: dataElementOverrides)
+                                            if(dataSetElement.dataElement().uid().equals(dataElement.uid()) && dataSetElement.categoryCombo() != null)
+                                                return d2.categoryModule().categoryCombos.byUid().eq(dataSetElement.categoryCombo().uid()).one().get();
 
-        String query = CAT_COMBO;
-        if (!section.equals("NO_SECTION")) {
-            query = query + " AND Section.name = ? ";
-            query = query + " GROUP BY CategoryCombo.uid ORDER BY SectionDataElementLink.sortOrder";
-            return briteDatabase.createQuery(DataElementModel.TABLE, query, dataSetUid, section)
-                    .mapToList(CategoryCombo::create).toFlowable(BackpressureStrategy.LATEST);
-        }
+                                        return d2.categoryModule().categoryCombos.byUid().eq(dataElement.categoryCombo().uid()).one().withAllChildren().get();
+                                    })).toList().toFlowable();
 
-        query = query + "GROUP BY CategoryCombo.uid ORDER BY SectionDataElementLink.sortOrder";
-        return briteDatabase.createQuery(DataElementModel.TABLE, query, dataSetUid)
-                .mapToList(CategoryCombo::create).toFlowable(BackpressureStrategy.LATEST);
+
+        return Flowable.just(d2.dataSetModule().dataSets.byUid().eq(dataSetUid).withDataSetElements().one().get())
+                .flatMapIterable(dataSet -> dataSet.dataSetElements())
+                .map(dataSetElement ->{
+                    if(dataSetElement.categoryCombo() != null)
+                        return d2.categoryModule().categoryCombos.byUid().eq(dataSetElement.categoryCombo().uid()).one().withAllChildren().get();
+
+                    DataElement dataElement = d2.dataElementModule().dataElements.byUid().eq(dataSetElement.dataElement().uid()).one().get();
+
+                    return d2.categoryModule().categoryCombos.byUid().eq(dataElement.categoryCombo().uid()).one().withAllChildren().get();
+                })
+                .toList().toFlowable();
     }
 
     @Override
-    public Flowable<DataSetModel> getDataSet() {
-        return briteDatabase.createQuery(DataSetModel.TABLE, DATA_SET, dataSetUid)
-                .mapToOne(cursor -> DataSetModel.builder()
-                        .uid(cursor.getString(cursor.getColumnIndex(DataSetModel.Columns.UID)))
-                        .code(cursor.getString(cursor.getColumnIndex(DataSetModel.Columns.CODE)))
-                        .name(cursor.getString(cursor.getColumnIndex(DataSetModel.Columns.NAME)))
-                        .displayName(cursor.getString(cursor.getColumnIndex(DataSetModel.Columns.DISPLAY_NAME)))
-                        .created(DateUtils.databaseDateFormat().parse(cursor.getString(cursor.getColumnIndex(DataSetModel.Columns.CREATED))))
-                        .lastUpdated(DateUtils.databaseDateFormat().parse(cursor.getString(cursor.getColumnIndex(DataSetModel.Columns.LAST_UPDATED))))
-                        .shortName(cursor.getString(cursor.getColumnIndex(DataSetModel.Columns.SHORT_NAME)))
-                        .displayShortName(cursor.getString(cursor.getColumnIndex(DataSetModel.Columns.DISPLAY_SHORT_NAME)))
-                        .description(cursor.getString(cursor.getColumnIndex(DataSetModel.Columns.DESCRIPTION)))
-                        .displayDescription(cursor.getString(cursor.getColumnIndex(DataSetModel.Columns.DISPLAY_DESCRIPTION)))
-                        .periodType(PeriodType.valueOf(cursor.getString(cursor.getColumnIndex(DataSetModel.Columns.PERIOD_TYPE))))
-                        .categoryCombo(cursor.getString(cursor.getColumnIndex(DataSetModel.Columns.CATEGORY_COMBO)))
-                        .mobile(cursor.getInt(cursor.getColumnIndex(DataSetModel.Columns.MOBILE)) == 1)
-                        .version(cursor.getInt(cursor.getColumnIndex(DataSetModel.Columns.VERSION)))
-                        .expiryDays(cursor.getInt(cursor.getColumnIndex(DataSetModel.Columns.EXPIRY_DAYS)))
-                        .timelyDays(cursor.getInt(cursor.getColumnIndex(DataSetModel.Columns.TIMELY_DAYS)))
-                        .notifyCompletingUser(cursor.getInt(cursor.getColumnIndex(DataSetModel.Columns.NOTIFY_COMPLETING_USER)) == 1)
-                        .openFuturePeriods(cursor.getInt(cursor.getColumnIndex(DataSetModel.Columns.OPEN_FUTURE_PERIODS)))
-                        .fieldCombinationRequired(cursor.getInt(cursor.getColumnIndex(DataSetModel.Columns.FIELD_COMBINATION_REQUIRED)) == 1)
-                        .validCompleteOnly(cursor.getInt(cursor.getColumnIndex(DataSetModel.Columns.VALID_COMPLETE_ONLY)) == 1)
-                        .noValueRequiresComment(cursor.getInt(cursor.getColumnIndex(DataSetModel.Columns.NO_VALUE_REQUIRES_COMMENT)) == 1)
-                        .skipOffline(cursor.getInt(cursor.getColumnIndex(DataSetModel.Columns.SKIP_OFFLINE)) == 1)
-                        .dataElementDecoration(cursor.getInt(cursor.getColumnIndex(DataSetModel.Columns.DATA_ELEMENT_DECORATION)) == 1)
-                        .renderAsTabs(cursor.getInt(cursor.getColumnIndex(DataSetModel.Columns.RENDER_AS_TABS)) == 1)
-                        .renderHorizontally(cursor.getInt(cursor.getColumnIndex(DataSetModel.Columns.RENDER_HORIZONTALLY)) == 1)
-                        .accessDataWrite(cursor.getInt(cursor.getColumnIndex(DataSetModel.Columns.ACCESS_DATA_WRITE)) == 1)
-                        .build()).toFlowable(BackpressureStrategy.LATEST);
+    public Flowable<DataSet> getDataSet() {
+
+        return Flowable.fromCallable(() -> d2.dataSetModule().dataSets.byUid().eq(dataSetUid).one().get());
+
     }
 
     @Override
@@ -299,13 +276,23 @@ public class DataValueRepositoryImpl implements DataValueRepository {
 
 
     @Override
-    public Flowable<Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>>> getCatOptions(String section) {
-
+    public Flowable<Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>>> getCatOptions(String sectionName) {
         Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>> map = new HashMap<>();
+
+        //TODO finish to build this method
+        /*Flowable.just(d2.dataSetModule().sections.withDataElements().byDataSetUid().eq(dataSetUid).byName().eq(sectionName).one().get())
+                .flatMapIterable(section -> section.dataElements())
+                .flatMap(dataElement ->
+                        Flowable.just(d2.dataSetModule().dataSets.withDataSetElements().byUid().eq(dataSetUid).one().get().dataSetElements())
+                                .map(dataElementOverrides -> transformDataElement(dataElement, dataElementOverrides)))
+                .map(dataElement-> {
+                    return d2.categoryModule().categoryCombos.withCategories().byUid().eq("").one().get().categories().get(0).categoryOptions();
+                })
+                .toList().toFlowable();*/
         String query = CATEGORY_OPTION;
 
-        if (!section.equals("NO_SECTION")) {
-            query = query + "AND section.name = '" + section + "' ";
+        if (!sectionName.equals("NO_SECTION")) {
+            query = query + "AND section.name = '" + sectionName + "' ";
         }
         query = query + "GROUP BY  CategoryOption.uid,Category.uid, SectionName,catCombo, CategoryCategoryOptionLink.sortOrder " +
                 "ORDER BY section.uid, CategoryCategoryComboLink.sortOrder, CategoryCategoryOptionLink.sortOrder";
@@ -339,64 +326,75 @@ public class DataValueRepositoryImpl implements DataValueRepository {
                 }).flatMap(categoryOptionComboModels -> Observable.just(map)).toFlowable(BackpressureStrategy.LATEST);
     }
 
+    private DataElement transformDataElement(DataElement dataElement, List<DataSetElement> override){
+        for(DataSetElement dataSetElement: override)
+            if(dataSetElement.dataElement().uid().equals(dataElement.uid()) && dataSetElement.categoryCombo() != null)
+                return DataElement.builder()
+                        .uid(dataElement.uid())
+                        .code(dataElement.code())
+                        .name(dataElement.name())
+                        .displayName(dataElement.displayName())
+                        .shortName(dataElement.shortName())
+                        .displayShortName(dataElement.displayShortName())
+                        .description(dataElement.description())
+                        .displayDescription(dataElement.displayDescription())
+                        .valueType(dataElement.valueType())
+                        .zeroIsSignificant(dataElement.zeroIsSignificant())
+                        .aggregationType(dataElement.aggregationType())
+                        .formName(dataElement.formName())
+                        .domainType(dataElement.domainType())
+                        .displayFormName(dataElement.displayFormName())
+                        .optionSet(dataElement.optionSet())
+                        .categoryCombo(dataSetElement.categoryCombo()).build();
+
+        return dataElement;
+    }
+
     @Override
-    public Flowable<List<DataSetTableModel>> getDataValues(String orgUnitUid, String initPeriodType, String attributeOptionCombo, String section) {
+    public Flowable<List<DataSetTableModel>> getDataValues(String orgUnitUid, String periodType, String initPeriodType, String catOptionComb, String sectionName) {
 
-        return Flowable.fromCallable(() -> {
-            List<DataElement> de;
-            if (section.equals("NO_SECTION")) {
-                List<String> deUids = new ArrayList<>();
-                Iterator<DataSetElement> it = d2.dataSetModule().dataSets.uid(dataSetUid).withAllChildren().get().dataSetElements().iterator();
-                while (it.hasNext()){
-                    deUids.add(it.next().dataElement().uid());
-                }
-                de = d2.dataElementModule().dataElements.byUid().in(deUids).get();
-            }else
-                de = d2.dataSetModule().sections.byDataSetUid().eq(dataSetUid).byDisplayName().eq(section).one().withAllChildren().get().dataElements();
+        Map<String, String> mapDataElementCatCombo = new HashMap<>();
 
-            List<String> deUids = new ArrayList<>();
-            List<String> catOptCombList = new ArrayList<>();
-            for (DataElement dataElement : de) {
-                deUids.add(dataElement.uid());
-                List<CategoryOptionCombo> catoptionList = d2.categoryModule().categoryOptionCombos.byCategoryComboUid().eq(dataElement.categoryComboUid()).get();
-                for(CategoryOptionCombo coc : catoptionList)
-                    if (!catOptCombList.contains(coc.uid()))
-                        catOptCombList.add(coc.uid());
-            }
+        return Flowable.just(d2.dataSetModule().dataSets.withSections().withDataSetElements().byUid().eq(dataSetUid).one().get())
+                .flatMapIterable(dataSet ->{
+                    List<DataSetElement> dataElements = new ArrayList<>();
+                    if(!sectionName.equals("NO_SECTION")) {
+                        List<DataElement> dataElementSection = d2.dataSetModule().sections.withDataElements().byName().eq(sectionName).one().get().dataElements();
+                        for(DataElement dataElement: dataElementSection){
+                            for(DataSetElement dataSetElement: dataSet.dataSetElements())
+                                if(dataSetElement.dataElement().uid().equals(dataElement.uid()))
+                                    dataElements.add(dataSetElement);
+                        }
+                    }else
+                        dataElements = dataSet.dataSetElements();
 
-            List<DataValue> dv = d2.dataValueModule().dataValues
-                    .byDataElementUid().in(deUids)
-                    .byCategoryOptionComboUid().in(catOptCombList)
-                    .byPeriod().eq(initPeriodType)
-                    .byAttributeOptionComboUid().eq(attributeOptionCombo)
-                    .byOrganisationUnitUid().eq(orgUnitUid).get();
+                    return dataElements;
+                })
+                .flatMapIterable(dataSetElement ->{
+                    if(dataSetElement.categoryCombo() != null)
+                        mapDataElementCatCombo.put(dataSetElement.dataElement().uid(), dataSetElement.categoryCombo().uid());
+                    else
+                        mapDataElementCatCombo.put(dataSetElement.dataElement().uid(),
+                                d2.dataElementModule().dataElements.byUid().eq(dataSetElement.dataElement().uid()).one().get().categoryCombo().uid());
 
-            return dv;
-        }).map(dataValues -> {
-            List<DataSetTableModel> dataSetTableModels = new ArrayList<>();
-            for (DataValue dataValue : dataValues) {
+                    return d2.dataValueModule().dataValues.byDataElementUid().eq(dataSetElement.dataElement().uid())
+                            .byAttributeOptionComboUid().eq(catOptionComb)
+                            .byPeriod().eq(initPeriodType)
+                            .byOrganisationUnitUid().eq(orgUnitUid)
+                            .get();}
+                ).map(dataValue -> {
+                    List<CategoryOption> categoryOptions = d2.categoryModule().categoryOptionCombos.withCategoryOptions()
+                            .byUid().eq(dataValue.categoryOptionCombo()).one().get().categoryOptions();
+                    List<String> uidCatOptions = new ArrayList<>();
+                    for(CategoryOption catOption: categoryOptions)
+                        uidCatOptions.add(catOption.uid());
 
-                List<CategoryOption> categoryOptions = d2.categoryModule().categoryOptionCombos.byUid().eq(dataValue.categoryOptionCombo()).withCategoryOptions().one().get().categoryOptions();
-                List<String> catOptionsUids = new ArrayList<>();
-                for (CategoryOption categoryOption : categoryOptions)
-                    catOptionsUids.add(categoryOption.uid());
+                    return DataSetTableModel.create(dataValue.id(), dataValue.dataElement(), dataValue.period(),
+                            dataValue.organisationUnit(), dataValue.categoryOptionCombo(), dataValue.attributeOptionCombo(),
+                            dataValue.value(), dataValue.storedBy(), "",//no used anywhere, remove this field
+                            uidCatOptions, mapDataElementCatCombo.get(dataValue.dataElement()));
 
-                dataSetTableModels.add(DataSetTableModel.create(
-                        dataValue.id(),
-                        dataValue.dataElement(),
-                        dataValue.period(),
-                        dataValue.organisationUnit(),
-                        dataValue.categoryOptionCombo(),
-                        dataValue.attributeOptionCombo(),
-                        dataValue.value(),
-                        dataValue.storedBy(),
-                        null,
-                        catOptionsUids,
-                        d2.categoryModule().categoryOptionCombos.byUid().eq(dataValue.categoryOptionCombo()).one().get().categoryCombo().uid()
-                ));
-            }
-            return dataSetTableModels;
-        });
+                }).toList().toFlowable();
     }
 
     @Override

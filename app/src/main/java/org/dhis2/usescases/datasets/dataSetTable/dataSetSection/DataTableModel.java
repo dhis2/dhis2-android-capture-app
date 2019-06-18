@@ -9,7 +9,9 @@ import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel;
 import org.hisp.dhis.android.core.category.CategoryModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
+import org.hisp.dhis.android.core.dataelement.DataElement;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
+import org.hisp.dhis.android.core.dataset.DataSet;
 import org.hisp.dhis.android.core.dataset.DataSetModel;
 import org.hisp.dhis.android.core.dataset.SectionModel;
 
@@ -35,11 +37,11 @@ public abstract class DataTableModel {
         public static final String CAT_OPTIONS = "catOptions";
     }
 
-    public static DataTableModel create(SectionModel section, Map<String, List<List<CategoryOptionModel>>> headers, List<DataElementModel> rows,
-                                        List<DataSetTableModel> dataValues,List<Pair<String, List<String>>> dataElementDisabled,
+    public static DataTableModel create(SectionModel section, Map<String, List<List<CategoryOptionModel>>> headers, List<DataElement> rows,
+                                        List<DataSetTableModel> dataValues, List<Pair<String, List<String>>> dataElementDisabled,
                                         Map<String, List<String>> compulsoryCells, Map<String, List<String>> catOptionComboCatOption,
                                         Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>> listCatOptionsCatComboOptions,
-                                        DataSetModel dataSet, Map<String, String> catCombos, List<CategoryOptionModel> catOptions) {
+                                        DataSet dataSet, Map<String, String> catCombos, List<CategoryOptionModel> catOptions) {
         return new AutoValue_DataTableModel(section, headers, rows, dataValues, dataElementDisabled, compulsoryCells, catOptionComboCatOption, listCatOptionsCatComboOptions, dataSet,
                 catCombos, catOptions);
     }
@@ -54,7 +56,7 @@ public abstract class DataTableModel {
 
     @Nullable
     @ColumnName(DataTableModel.Columns.ROWS)
-    public abstract List<DataElementModel> rows();
+    public abstract List<DataElement> rows();
 
     @Nullable
     @ColumnName(DataTableModel.Columns.DATA_VALUES)
@@ -78,7 +80,7 @@ public abstract class DataTableModel {
 
     @Nullable
     @ColumnName(DataTableModel.Columns.DATA_SET)
-    public abstract DataSetModel dataSet();
+    public abstract DataSet dataSet();
 
     @Nullable
     @ColumnName(Columns.CAT_COMBOS)

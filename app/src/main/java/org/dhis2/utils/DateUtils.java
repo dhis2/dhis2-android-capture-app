@@ -1,5 +1,6 @@
 package org.dhis2.utils;
 
+import org.hisp.dhis.android.core.dataset.DataInputPeriod;
 import org.hisp.dhis.android.core.dataset.DataInputPeriodModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
@@ -1061,7 +1062,7 @@ public class DateUtils {
         return Calendar.getInstance().getTime().getTime() > periodInitialDate.getTime() + TimeUnit.DAYS.toMillis(expiredDays);
     }
 
-    public Boolean isInsideInputPeriod(DataInputPeriodModel dataInputPeriodModel){
+    public Boolean isInsideInputPeriod(DataInputPeriod dataInputPeriodModel){
         if(dataInputPeriodModel.openingDate() == null && dataInputPeriodModel.closingDate() != null)
             return Calendar.getInstance().getTime().getTime() < dataInputPeriodModel.closingDate().getTime();
 
