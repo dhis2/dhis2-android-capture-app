@@ -27,7 +27,7 @@ public interface DataValueRepository {
 
     Flowable<Integer> updateValue(DataValueModel dataValue);
 
-    Flowable<DataSetModel> getDataSet();
+    Flowable<DataSet> getDataSet();
 
     Flowable<List<DataElement>> getDataElements(String section);
 

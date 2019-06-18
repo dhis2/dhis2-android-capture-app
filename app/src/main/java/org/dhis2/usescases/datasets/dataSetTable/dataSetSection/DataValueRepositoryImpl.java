@@ -280,7 +280,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
         Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>> map = new HashMap<>();
 
         //TODO finish to build this method
-        Flowable.just(d2.dataSetModule().sections.withDataElements().byDataSetUid().eq(dataSetUid).byName().eq(sectionName).one().get())
+        /*Flowable.just(d2.dataSetModule().sections.withDataElements().byDataSetUid().eq(dataSetUid).byName().eq(sectionName).one().get())
                 .flatMapIterable(section -> section.dataElements())
                 .flatMap(dataElement ->
                         Flowable.just(d2.dataSetModule().dataSets.withDataSetElements().byUid().eq(dataSetUid).one().get().dataSetElements())
@@ -288,13 +288,11 @@ public class DataValueRepositoryImpl implements DataValueRepository {
                 .map(dataElement-> {
                     return d2.categoryModule().categoryCombos.withCategories().byUid().eq("").one().get().categories().get(0).categoryOptions();
                 })
-                .toList().toFlowable();
-        return null;
-        /*Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>> map = new HashMap<>();
+                .toList().toFlowable();*/
         String query = CATEGORY_OPTION;
 
-        if (!section.equals("NO_SECTION")) {
-            query = query + "AND section.name = '" + section + "' ";
+        if (!sectionName.equals("NO_SECTION")) {
+            query = query + "AND section.name = '" + sectionName + "' ";
         }
         query = query + "GROUP BY  CategoryOption.uid,Category.uid, SectionName,catCombo, CategoryCategoryOptionLink.sortOrder " +
                 "ORDER BY section.uid, CategoryCategoryComboLink.sortOrder, CategoryCategoryOptionLink.sortOrder";
@@ -325,7 +323,31 @@ public class DataValueRepositoryImpl implements DataValueRepository {
                     }
 
                     return catOption;
-                }).flatMap(categoryOptionComboModels -> Observable.just(map)).toFlowable(BackpressureStrategy.LATEST);*/
+                }).flatMap(categoryOptionComboModels -> Observable.just(map)).toFlowable(BackpressureStrategy.LATEST);
+    }
+
+    private DataElement transformDataElement(DataElement dataElement, List<DataSetElement> override){
+        for(DataSetElement dataSetElement: override)
+            if(dataSetElement.dataElement().uid().equals(dataElement.uid()) && dataSetElement.categoryCombo() != null)
+                return DataElement.builder()
+                        .uid(dataElement.uid())
+                        .code(dataElement.code())
+                        .name(dataElement.name())
+                        .displayName(dataElement.displayName())
+                        .shortName(dataElement.shortName())
+                        .displayShortName(dataElement.displayShortName())
+                        .description(dataElement.description())
+                        .displayDescription(dataElement.displayDescription())
+                        .valueType(dataElement.valueType())
+                        .zeroIsSignificant(dataElement.zeroIsSignificant())
+                        .aggregationType(dataElement.aggregationType())
+                        .formName(dataElement.formName())
+                        .domainType(dataElement.domainType())
+                        .displayFormName(dataElement.displayFormName())
+                        .optionSet(dataElement.optionSet())
+                        .categoryCombo(dataSetElement.categoryCombo()).build();
+
+        return dataElement;
     }
 
     @Override
