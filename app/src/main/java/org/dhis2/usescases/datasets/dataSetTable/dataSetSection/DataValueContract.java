@@ -7,8 +7,10 @@ import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.hisp.dhis.android.core.category.CategoryModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
+import org.hisp.dhis.android.core.dataset.DataInputPeriod;
 import org.hisp.dhis.android.core.dataset.DataInputPeriodModel;
 import org.hisp.dhis.android.core.option.OptionModel;
+import org.hisp.dhis.android.core.period.Period;
 import org.hisp.dhis.android.core.period.PeriodModel;
 
 import java.util.List;
@@ -26,7 +28,7 @@ public class DataValueContract {
 
         void onComplete();
 
-        void setPeriod(PeriodModel periodModel);
+        void setPeriod(Period periodModel);
 
         void goToTable(int numTable);
 
@@ -64,8 +66,8 @@ public class DataValueContract {
 
         void addCells(int table, List<List<FieldViewModel>> cells);
 
-        DataInputPeriodModel checkHasInputPeriod();
+        DataInputPeriod checkHasInputPeriod();
 
-        List<DataInputPeriodModel> getDataInputPeriodModel();
+        List<DataInputPeriod> getDataInputPeriodModel();
     }
 }
