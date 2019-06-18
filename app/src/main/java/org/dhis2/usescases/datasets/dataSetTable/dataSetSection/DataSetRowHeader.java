@@ -8,6 +8,7 @@ import org.dhis2.R;
 import org.dhis2.databinding.ItemDatasetRowBinding;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.custom_views.CustomDialog;
+import org.hisp.dhis.android.core.dataelement.DataElement;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
 
 import java.util.Objects;
@@ -29,7 +30,7 @@ public class DataSetRowHeader extends AbstractViewHolder {
         this.binding = binding;
     }
 
-    public void bind(DataElementModel dataElement, ObservableField<DataSetTableAdapter.TableScale> currentTableScale) {
+    public void bind(DataElement dataElement, ObservableField<DataSetTableAdapter.TableScale> currentTableScale) {
         binding.setTableScale(currentTableScale);
         binding.title.setText(!isEmpty(dataElement.displayFormName()) ? dataElement.displayFormName() : dataElement.displayName());
 

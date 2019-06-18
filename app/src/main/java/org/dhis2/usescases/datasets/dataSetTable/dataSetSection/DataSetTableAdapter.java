@@ -42,6 +42,7 @@ import org.dhis2.data.forms.dataentry.tablefields.unsupported.UnsupportedViewMod
 import org.dhis2.data.tuples.Trio;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.common.ValueType;
+import org.hisp.dhis.android.core.dataelement.DataElement;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 import org.jetbrains.annotations.NotNull;
@@ -55,7 +56,7 @@ import io.reactivex.processors.FlowableProcessor;
  * QUADRAM. Created by ppajuelo on 02/10/2018.
  */
 
-public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, DataElementModel, String> {
+public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, DataElement, String> {
     private static final int EDITTEXT = 0;
     private static final int BUTTON = 1;
     private static final int CHECKBOX = 2;
