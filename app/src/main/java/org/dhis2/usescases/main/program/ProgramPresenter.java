@@ -124,6 +124,11 @@ public class ProgramPresenter implements ProgramContract.Presenter {
     }
 
     @Override
+    public void onSyncStatusClick(ProgramViewModel program) {
+        view.showSyncDialog(program.id(), SyncStatusDialog.ConflictType.PROGRAM);
+    }
+
+    @Override
     public boolean areFiltersApplied() {
         return !currentDateFilter.isEmpty() || !currentOrgUnitFilter.isEmpty();
     }
@@ -211,7 +216,8 @@ public class ProgramPresenter implements ProgramContract.Presenter {
 
     @Override
     public void showDescription(String description) {
-        view.showDescription(description);
+        if (!isEmpty(description))
+            view.showDescription(description);
     }
 
 }

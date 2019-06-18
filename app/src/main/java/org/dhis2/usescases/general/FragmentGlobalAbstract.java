@@ -7,20 +7,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
-import org.dhis2.utils.Constants;
-import org.dhis2.utils.OnDialogClickListener;
-
-import java.lang.reflect.Type;
-import java.util.List;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.fragment.app.Fragment;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import org.dhis2.usescases.main.program.SyncStatusDialog;
+import org.dhis2.utils.Constants;
+import org.dhis2.utils.OnDialogClickListener;
+
+import java.lang.reflect.Type;
+import java.util.List;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -126,4 +127,8 @@ public abstract class FragmentGlobalAbstract extends Fragment implements Abstrac
         Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
     }
 
+    @Override
+    public void showSyncDialog(String programUid, SyncStatusDialog.ConflictType conflictType) {
+        getAbstractActivity().showSyncDialog(programUid,conflictType);
+    }
 }

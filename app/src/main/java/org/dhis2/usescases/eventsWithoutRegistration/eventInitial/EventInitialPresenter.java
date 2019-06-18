@@ -8,6 +8,10 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 
@@ -22,6 +26,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryAc
 import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryRepository;
 import org.dhis2.usescases.map.MapSelectorActivity;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.EventCreationType;
 import org.dhis2.utils.OrgUnitUtils;
 import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.D2;
@@ -42,12 +47,12 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
@@ -115,7 +120,7 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
                                 this.catCombo = quartetFlowable.val2();
                                 view.setEvent(quartetFlowable.val0());
                                 view.setProgram(quartetFlowable.val1());
-                                view.setCatComboOptions(catCombo, quartetFlowable.val4());
+                                view.setCatComboOptions(catCombo, !quartetFlowable.val4().isEmpty() ? quartetFlowable.val4() : null);
                                 view.setProgramStage(quartetFlowable.val3());
                             }, Timber::d)
             );
@@ -274,23 +279,22 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     }
 
     @Override
-    public void createEventPermanent(String enrollmentUid, String trackedEntityInstanceUid, String programStageModel, Date date, String orgUnitUid,
-                                     String catComboUid, String catOptionUid,
-                                     String latitude, String longitude) {
-        compositeDisposable.add(
-                eventInitialRepository.createEvent(enrollmentUid, trackedEntityInstanceUid, view.getContext(),
-                        programModel.uid(), programStageModel, date, orgUnitUid,
-                        catComboUid, catOptionUid,
-                        latitude, longitude)
-                        .switchMap(
-                                eventId -> eventInitialRepository.updateTrackedEntityInstance(eventId, trackedEntityInstanceUid, orgUnitUid)
-                        )
-                        .distinctUntilChanged()
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                eventUid -> view.onEventCreated(eventUid),
-                                t -> view.renderError(t.getMessage())));
+    public void scheduleEventPermanent(String enrollmentUid, String trackedEntityInstanceUid, String programStageModel, Date dueDate, String orgUnitUid,
+                                       String categoryOptionComboUid, String categoryOptionsUid,
+                                       String latitude, String longitude) {
+        if (programModel != null)
+            compositeDisposable.add(
+                    eventInitialRepository.scheduleEvent(enrollmentUid, null, view.getContext(), programModel.uid(),
+                            programStageModel, dueDate, orgUnitUid,
+                            categoryOptionComboUid, categoryOptionsUid,
+                            latitude, longitude)
+                            .subscribeOn(Schedulers.io())
+                            .switchMap(
+                                    eventId -> eventInitialRepository.updateTrackedEntityInstance(eventId, trackedEntityInstanceUid, orgUnitUid)
+                            )
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(view::onEventCreated, t -> view.renderError(t.getMessage()))
+            );
     }
 
     @Override
@@ -364,6 +368,32 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     }
 
     @Override
+    public void onLatChanged(CharSequence s, int start, int before, int count) {
+        String latLongRegex = "^(\\-?\\d+(\\.\\d+)?)";
+        Pattern latLongPattern = Pattern.compile(latLongRegex, Pattern.MULTILINE);
+        Matcher latLOngMatcher = latLongPattern.matcher(s);
+        if (!latLOngMatcher.matches()) {
+            view.latitudeWarning(true);
+        } else {
+            view.longitudeWarning(false);
+            view.checkActionButtonVisibility();
+        }
+    }
+
+    @Override
+    public void onLonChanged(CharSequence s, int start, int before, int count) {
+        String latLongRegex = "^(\\-?\\d+(\\.\\d+)?)";
+        Pattern latLongPattern = Pattern.compile(latLongRegex, Pattern.MULTILINE);
+        Matcher latLOngMatcher = latLongPattern.matcher(s);
+        if (!latLOngMatcher.matches()) {
+            view.longitudeWarning(true);
+        } else {
+            view.longitudeWarning(false);
+            view.checkActionButtonVisibility();
+        }
+    }
+
+    @Override
     public void onFieldChanged(CharSequence s, int start, int before, int count) {
         view.checkActionButtonVisibility();
     }
@@ -380,16 +410,22 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
 
     @Override
     public void filterOrgUnits(String date) {
-        compositeDisposable.add(eventInitialRepository.filteredOrgUnits(date, programId)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        orgUnits -> {
-                            this.orgUnits = orgUnits;
-                            view.addTree(OrgUnitUtils.renderTree(view.getContext(), orgUnits, true));
-                        },
-                        throwable -> view.showNoOrgUnits()
-                ));
+
+        Observable<List<OrganisationUnitModel>> orgUnitObservable =
+                view.eventcreateionType() != EventCreationType.REFERAL ? eventInitialRepository.filteredOrgUnits(date, programId) :
+                        eventInitialRepository.searchOrgUnits(date, programId);
+
+        compositeDisposable.add(
+                orgUnitObservable
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                orgUnits -> {
+                                    this.orgUnits = orgUnits;
+                                    view.addTree(OrgUnitUtils.renderTree(view.getContext(), orgUnits, true));
+                                },
+                                throwable -> view.showNoOrgUnits()
+                        ));
     }
 
     @Override
@@ -481,5 +517,10 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
             if (catOptComb.categoryOptions().containsAll(values))
                 attrOptionComb = catOptComb.uid();
         return attrOptionComb;
+    }
+
+    @Override
+    public Date getStageLastDate(String programStageUid, String enrollmentUid) {
+        return eventInitialRepository.getStageLastDate(programStageUid, enrollmentUid);
     }
 }

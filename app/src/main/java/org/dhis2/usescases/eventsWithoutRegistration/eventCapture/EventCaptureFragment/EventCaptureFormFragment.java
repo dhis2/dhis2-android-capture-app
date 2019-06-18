@@ -1,11 +1,13 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureFragment;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -29,6 +31,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.SectionSelecto
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.utils.ColorUtils;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.List;
@@ -62,7 +65,7 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NotNull Context context) {
         super.onAttach(context);
         this.activity = (EventCaptureActivity) context;
         setRetainInstance(true);
@@ -96,15 +99,8 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
         });
 
         activity.getPresenter().initCompletionPercentage(sectionSelectorAdapter.completionPercentage());
-//        activity.getPresenter().subscribeToSection();
 
         return binding.getRoot();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-
     }
 
     public void setSectionTitle(DataEntryArguments arguments, FormSectionViewModel formSectionViewModel) {
@@ -139,8 +135,6 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
 
         dataEntryAdapter = new DataEntryAdapter(LayoutInflater.from(activity),
                 activity.getSupportFragmentManager(), arguments,
-                activity.getPresenter().getOrgUnits(),
-                new ObservableBoolean(true),
                 flowableProcessor,
                 flowableOptions);
 
@@ -154,16 +148,30 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
         binding.formRecycler.setLayoutManager(layoutManager);
         binding.formRecycler.setAdapter(dataEntryAdapter);
 
-
+        binding.formRecycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
+                    dataEntryAdapter.setLastFocusItem(null);
+                    InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(recyclerView.getWindowToken(), 0);
+                    binding.dummyFocusView.requestFocus();
+                    activity.getPresenter().clearLastFocusItem();
+                }
+            }
+        });
     }
 
-    @NonNull
-    public void showFields(List<FieldViewModel> updates) {
+    public void showFields(List<FieldViewModel> updates, String lastFocusItem) {
         binding.progress.setVisibility(View.GONE);
 
         if (currentSection.equals("NO_SECTION") ||
                 (!updates.isEmpty() && updates.get(0).programStageSection().equals(currentSection))) {
+
+            if (!isEmpty(lastFocusItem))
+                dataEntryAdapter.setLastFocusItem(lastFocusItem);
             dataEntryAdapter.swap(updates);
+
             int completedValues = 0;
             HashMap<String, Boolean> fields = new HashMap<>();
             for (FieldViewModel fieldViewModel : updates) {
@@ -192,15 +200,18 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
         }
     }
 
-    public View getSectionSelector() {
-        return binding.sectionSelector.getRoot();
-    }
-
     public Flowable<Trio<String, String, Integer>> optionSetActions() {
         return dataEntryAdapter.asFlowableOption();
     }
 
     public void updateAdapter(RowAction rowAction) {
-        activity.runOnUiThread(() -> dataEntryAdapter.notifyChanges(rowAction));
+        activity.runOnUiThread(() -> {
+            dataEntryAdapter.notifyChanges(rowAction);
+            if (rowAction.lastFocusPosition() != -1)
+                if (rowAction.lastFocusPosition() >= dataEntryAdapter.getItemCount())
+                    binding.formRecycler.smoothScrollToPosition(rowAction.lastFocusPosition());
+                else
+                    binding.formRecycler.smoothScrollToPosition(rowAction.lastFocusPosition() + 1);
+        });
     }
 }

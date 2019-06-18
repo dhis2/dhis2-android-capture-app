@@ -47,8 +47,6 @@ public interface DashboardRepository {
 
     Consumer<Pair<String, Boolean>> handleNote();
 
-    Observable<Boolean> handleNote(Pair<String,Boolean> pair);
-
     void setDashboardDetails(String teiUid, String programUid);
 
     Observable<List<TrackedEntityAttributeValueModel>> mainTrackedEntityAttributes(String teiUid);

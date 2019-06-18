@@ -3,7 +3,6 @@ package org.dhis2.usescases.teiDashboard.teiDataDetail;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.util.Log;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -57,8 +56,8 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
                     dashboardRepository.getTEIEnrollmentEvents(programUid, uid),
                     metadataRepository.getProgramTrackedEntityAttributes(programUid),
                     dashboardRepository.getTEIAttributeValues(programUid, uid),
-                    metadataRepository.getTeiOrgUnit(uid),
-                    metadataRepository.getTeiActivePrograms(uid),
+                    metadataRepository.getTeiOrgUnits(uid),
+                    metadataRepository.getTeiActivePrograms(uid, false),
                     DashboardProgramModel::new)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -92,8 +91,8 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
                     metadataRepository.getTrackedEntityInstance(uid),
                     metadataRepository.getProgramTrackedEntityAttributes(null),
                     dashboardRepository.getTEIAttributeValues(null, uid),
-                    metadataRepository.getTeiOrgUnit(uid),
-                    metadataRepository.getTeiActivePrograms(uid),
+                    metadataRepository.getTeiOrgUnits(uid),
+                    metadataRepository.getTeiActivePrograms(uid, false),
                     metadataRepository.getTEIEnrollments(uid),
                     DashboardProgramModel::new)
                     .subscribeOn(Schedulers.io())
@@ -108,7 +107,6 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
     public void onBackPressed() {
         view.getAbstracContext().onBackPressed();
     }
-
 
     @Override
     public void onDeactivate(DashboardProgramModel dashboardProgramModel) {
@@ -189,7 +187,7 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
         }
         mFusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
             if (location != null) {
-                saveLocation(location.getLatitude(),location.getLongitude());
+                saveLocation(location.getLatitude(), location.getLongitude());
             }
         });
     }
@@ -198,6 +196,11 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
     public void onLocation2Click() {
         Intent intent = new Intent(view.getContext(), MapSelectorActivity.class);
         view.getAbstractActivity().startActivityForResult(intent, Constants.RQ_MAP_LOCATION);
+    }
+
+    @Override
+    public void onDestroy() {
+        disposable.clear();
     }
 
     @Override

@@ -77,7 +77,9 @@ public class IndicatorsPresenterImpl implements IndicatorsContracts.Presenter {
                                         .toList()
                         )
                         .flatMap(Single::toFlowable)
-                        .flatMap(indicators -> ruleEngineRepository.updateRuleEngine().flatMap(ruleEngine -> ruleEngineRepository.reCalculate()).map(this::applyRuleEffects) //Restart rule engine to take into account value changes
+                        .flatMap(indicators -> ruleEngineRepository.updateRuleEngine()
+                                .flatMap(ruleEngine -> ruleEngineRepository.reCalculate())
+                                .map(this::applyRuleEffects) //Restart rule engine to take into account value changes
                                 .map(ruleIndicators -> {
                                     indicators.addAll(ruleIndicators);
                                     return indicators;
@@ -102,17 +104,17 @@ public class IndicatorsPresenterImpl implements IndicatorsContracts.Presenter {
 
         for (RuleEffect ruleEffect : calcResult.items()) {
             RuleAction ruleAction = ruleEffect.ruleAction();
-            if (ruleAction instanceof RuleActionDisplayKeyValuePair) {
-                Trio<ProgramIndicatorModel, String, String> indicator = Trio.create(
-                        ProgramIndicatorModel.builder().displayName(((RuleActionDisplayKeyValuePair) ruleAction).content()).build(),
-                        ruleEffect.data(), "");
-                indicators.add(indicator);
-            } else if (ruleAction instanceof RuleActionDisplayText) {
-                Trio<ProgramIndicatorModel, String, String> indicator = Trio.create(
-                        ProgramIndicatorModel.builder().displayName(((RuleActionDisplayText) ruleAction).content()).build(),
-                        ruleEffect.data(), "");
-                indicators.add(indicator);
-            }
+            if (!ruleEffect.data().contains("#{")) //Avoid display unavailable variables
+                if (ruleAction instanceof RuleActionDisplayKeyValuePair) {
+                    Trio<ProgramIndicatorModel, String, String> indicator = Trio.create(
+                            ProgramIndicatorModel.builder().displayName(((RuleActionDisplayKeyValuePair) ruleAction).content()).build(),
+                            ruleEffect.data(), "");
+                    indicators.add(indicator);
+                } else if (ruleAction instanceof RuleActionDisplayText) {
+                    Trio<ProgramIndicatorModel, String, String> indicator = Trio.create(null,
+                            ((RuleActionDisplayText) ruleAction).content() + ruleEffect.data(), "");
+                    indicators.add(indicator);
+                }
         }
 
         return indicators;

@@ -100,7 +100,7 @@ public class ProgramStageSelectionActivity extends ActivityGlobalAbstract implem
         bundle.putBoolean(EVENT_REPEATABLE, repeatable);
         bundle.putSerializable(EVENT_PERIOD_TYPE, periodType);
         bundle.putString(Constants.PROGRAM_STAGE_UID, programStageUid);
-        bundle.putInt(EVENT_SCHEDULE_INTERVAL, getIntent().getIntExtra(EVENT_SCHEDULE_INTERVAL, 0));
+        bundle.putInt(EVENT_SCHEDULE_INTERVAL, presenter.getStandardInterval(programStageUid));
         intent.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT);
         intent.putExtras(bundle);
         startActivity(intent);

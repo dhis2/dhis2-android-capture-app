@@ -3,7 +3,7 @@
 
     <item
         android:id="@+id/main_option"
-        android:icon="@drawable/ic_add"
+        android:icon="@drawable/ic_add_accent"
         android:title="" />
 
     <item

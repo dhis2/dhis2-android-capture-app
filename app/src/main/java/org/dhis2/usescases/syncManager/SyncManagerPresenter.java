@@ -3,18 +3,6 @@ package org.dhis2.usescases.syncManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import org.dhis2.data.metadata.MetadataRepository;
-import org.dhis2.data.service.SyncDataWorker;
-import org.dhis2.data.service.SyncMetadataWorker;
-import org.dhis2.usescases.login.LoginActivity;
-import org.dhis2.usescases.reservedValue.ReservedValueActivity;
-import org.dhis2.utils.Constants;
-import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.android.core.maintenance.D2Error;
-
-import java.io.File;
-import java.util.concurrent.TimeUnit;
-
 import androidx.work.Constraints;
 import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.ExistingWorkPolicy;
@@ -22,6 +10,21 @@ import androidx.work.NetworkType;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
+
+import org.dhis2.data.metadata.MetadataRepository;
+import org.dhis2.data.service.SyncDataWorker;
+import org.dhis2.data.service.SyncMetadataWorker;
+import org.dhis2.usescases.login.LoginActivity;
+import org.dhis2.usescases.reservedValue.ReservedValueActivity;
+import org.dhis2.utils.Constants;
+import org.dhis2.utils.FileResourcesUtil;
+import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.common.State;
+import org.hisp.dhis.android.core.maintenance.D2Error;
+
+import java.io.File;
+import java.util.concurrent.TimeUnit;
+
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.processors.FlowableProcessor;
@@ -46,6 +49,11 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
         this.metadataRepository = metadataRepository;
         this.d2 = d2;
         checkData = PublishProcessor.create();
+    }
+
+    @Override
+    public void onItemClick(int settingsItem) {
+        view.openItem(settingsItem);
     }
 
     @Override
@@ -112,6 +120,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
      */
     @Override
     public void syncData() {
+        view.syncData();
         OneTimeWorkRequest.Builder syncDataBuilder = new OneTimeWorkRequest.Builder(SyncDataWorker.class);
         syncDataBuilder.addTag(Constants.DATA_NOW);
         syncDataBuilder.setConstraints(new Constraints.Builder()
@@ -119,6 +128,8 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
                 .build());
         OneTimeWorkRequest request = syncDataBuilder.build();
         WorkManager.getInstance().beginUniqueWork(Constants.DATA_NOW, ExistingWorkPolicy.REPLACE, request).enqueue();
+
+//        FileResourcesUtil.initDownloadWork();
     }
 
     /**
@@ -126,6 +137,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
      */
     @Override
     public void syncMeta() {
+        view.syncMeta();
         OneTimeWorkRequest.Builder syncDataBuilder = new OneTimeWorkRequest.Builder(SyncMetadataWorker.class);
         syncDataBuilder.addTag(Constants.META_NOW);
         syncDataBuilder.setConstraints(new Constraints.Builder()
@@ -142,6 +154,16 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
     }
 
     @Override
+    public boolean dataHasErrors() {
+        return !d2.eventModule().events.byState().in(State.ERROR).get().isEmpty() || !d2.trackedEntityModule().trackedEntityInstances.byState().in(State.ERROR).get().isEmpty();
+    }
+
+    @Override
+    public boolean dataHasWarnings() {
+        return !d2.eventModule().events.byState().in(State.WARNING).get().isEmpty() || !d2.trackedEntityModule().trackedEntityInstances.byState().in(State.WARNING).get().isEmpty();
+    }
+
+    @Override
     public void disponse() {
         compositeDisposable.clear();
     }
@@ -155,6 +177,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
         editor.putInt(Constants.EVENT_MAX, Constants.EVENT_MAX_DEFAULT);
         editor.putInt(Constants.TEI_MAX, Constants.TEI_MAX_DEFAULT);
         editor.putBoolean(Constants.LIMIT_BY_ORG_UNIT, false);
+        editor.putBoolean(Constants.LIMIT_BY_PROGRAM, false);
 
         editor.apply();
 

@@ -3,13 +3,16 @@ package org.dhis2.data.forms.dataentry;
 import android.content.ContentValues;
 import android.database.Cursor;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.squareup.sqlbrite2.BriteDatabase;
 
-import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.user.UserRepository;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.State;
+import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
@@ -23,11 +26,10 @@ import java.util.Objects;
 
 import javax.annotation.Nonnull;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 
+import static android.text.TextUtils.isEmpty;
 import static org.dhis2.data.forms.dataentry.DataEntryStore.valueType.ATTR;
 import static org.dhis2.data.forms.dataentry.DataEntryStore.valueType.DATA_ELEMENT;
 
@@ -57,24 +59,28 @@ public final class DataValueStore implements DataEntryStore {
     @NonNull
     @Override
     public Flowable<Long> save(@NonNull String uid, @Nullable String value) {
-        return userCredentials
-                .map(userCredentialsModel -> Pair.create(userCredentialsModel, getValueType(uid)))
-                .filter(userCredentialAndType -> {
-                    String currentValue = currentValue(uid, userCredentialAndType.val1());
-                    return !Objects.equals(currentValue, value);
-                })
-                .switchMap((userCredentialAndType) -> {
-                    if (value == null)
-                        return Flowable.just(delete(uid, userCredentialAndType.val1()));
+        return Flowable.just(getValueType(uid))
+                .filter(valueType -> currentValue(uid, valueType, value))
+                .switchMap(valueType -> {
+                    if (isEmpty(value))
+                        return Flowable.just(delete(uid, valueType));
+                    else {
+                        long updated = update(uid, value, valueType);
+                        if (updated > 0) {
+                            return Flowable.just(updated);
 
-                    long updated = update(uid, value, userCredentialAndType.val1());
-                    if (updated > 0) {
-                        return Flowable.just(updated);
+                        } else
+                            return userCredentials
+                                    .map(userCredentialsModel -> insert(uid, value, userCredentialsModel.username(), valueType));
                     }
-
-                    return Flowable.just(insert(uid, value, userCredentialAndType.val0().username(), userCredentialAndType.val1()));
                 })
                 .switchMap(this::updateEvent);
+    }
+
+    @NonNull
+    @Override
+    public Flowable<Boolean> checkUnique(@NonNull String uid, @Nullable String value) {
+        return Flowable.just(true);
     }
 
 
@@ -132,8 +138,11 @@ public final class DataValueStore implements DataEntryStore {
         return attrUid != null ? ATTR : valueType.DATA_ELEMENT;
     }
 
-    private String currentValue(@NonNull String uid, valueType valueType) {
-        String value = "";
+    private boolean currentValue(@NonNull String uid, valueType valueType, String currentValue) {
+        String value = null;
+        if (currentValue != null && (currentValue.equals("0.0") || currentValue.isEmpty()))
+            currentValue = null;
+
         if (valueType == DATA_ELEMENT) {
             try (Cursor cursor = briteDatabase.query("SELECT TrackedEntityDataValue.value FROM TrackedEntityDataValue " +
                     "WHERE dataElement = ? AND event = ?", uid, eventUid)) {
@@ -150,7 +159,7 @@ public final class DataValueStore implements DataEntryStore {
                     value = cursor.getString(0);
             }
         }
-        return value;
+        return !Objects.equals(value, currentValue);
     }
 
     private long insert(@NonNull String uid, @Nullable String value, @NonNull String storedBy, valueType valueType) {
@@ -233,6 +242,20 @@ public final class DataValueStore implements DataEntryStore {
                     }
 
                     if (eventModel.enrollment() != null) {
+                        EnrollmentModel enrollment = null;
+
+                        try (Cursor enrollmentCursor = briteDatabase.query("SELECT Enrollment.* FROM Enrollment " +
+                                "WHERE Enrollment.uid = ?", eventModel.enrollment())) {
+                            if (enrollmentCursor.moveToFirst())
+                                enrollment = EnrollmentModel.create(enrollmentCursor);
+                        } finally {
+                            if (enrollment != null) {
+                                ContentValues cv = enrollment.toContentValues();
+                                cv.put(TrackedEntityInstanceModel.Columns.STATE, enrollment.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
+                                cv.put(TrackedEntityInstanceModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
+                                briteDatabase.update(EnrollmentModel.TABLE, cv, "uid = ?", eventModel.enrollment());
+                            }
+                        }
                         TrackedEntityInstanceModel tei = null;
                         try (Cursor teiCursor = briteDatabase.query("SELECT TrackedEntityInstance .* FROM TrackedEntityInstance " +
                                 "JOIN Enrollment ON Enrollment.trackedEntityInstance = TrackedEntityInstance.uid WHERE Enrollment.uid = ?", eventModel.enrollment())) {
@@ -243,7 +266,6 @@ public final class DataValueStore implements DataEntryStore {
                                 ContentValues cv = tei.toContentValues();
                                 cv.put(TrackedEntityInstanceModel.Columns.STATE, tei.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
                                 cv.put(TrackedEntityInstanceModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
-
                                 briteDatabase.update(TrackedEntityInstanceModel.TABLE, cv, "uid = ?", tei.uid());
                             }
                         }

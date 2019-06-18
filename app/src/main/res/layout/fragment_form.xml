@@ -14,17 +14,31 @@
         android:layout_height="match_parent"
         android:clipToPadding="true"
         android:fillViewport="true"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
         <!-- <FrameLayout
              android:layout_width="match_parent"
              android:layout_height="match_parent">
- -->
-        <androidx.viewpager.widget.ViewPager
-            android:id="@+id/viewpager_dataentry"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/bg_white_f9f" />
+ -->    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+            <androidx.viewpager.widget.ViewPager
+                android:id="@+id/viewpager_dataentry"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/bg_white_f9f" />
+            <ProgressBar
+                android:id="@+id/progress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:visibility="gone"
+                android:layout_margin="5dp"
+                />
+        </RelativeLayout>
+
 
         <!--</FrameLayout>-->
     </androidx.core.widget.NestedScrollView>
@@ -52,8 +66,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:contentScrim="?attr/colorPrimary"
-            app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed"
             app:titleEnabled="false">
+            <!--app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed"-->
+
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"

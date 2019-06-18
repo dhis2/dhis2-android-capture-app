@@ -1,6 +1,9 @@
 package org.dhis2.data.forms.dataentry.fields.datetime;
 
+import android.graphics.Color;
+
 import org.dhis2.BR;
+import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.FormDateTextBinding;
@@ -11,6 +14,7 @@ import org.hisp.dhis.android.core.common.ValueType;
 
 import java.util.Date;
 
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.databinding.ViewDataBinding;
 import io.reactivex.processors.FlowableProcessor;
 
@@ -24,14 +28,14 @@ import static android.text.TextUtils.isEmpty;
 public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
 
     private final FlowableProcessor<RowAction> processor;
-    private final FlowableProcessor<Integer> currentPosition;
+    private final boolean isSearchMode;
 
     private DateTimeViewModel dateTimeViewModel;
 
-    DateTimeHolder(ViewDataBinding binding, FlowableProcessor<RowAction> processor, FlowableProcessor<Integer> currentPosition) {
+    DateTimeHolder(ViewDataBinding binding, FlowableProcessor<RowAction> processor, boolean isSearchMode) {
         super(binding);
         this.processor = processor;
-        this.currentPosition = currentPosition;
+        this.isSearchMode = isSearchMode;
 
         if (binding instanceof FormTimeTextBinding) {
             ((FormTimeTextBinding) binding).timeView.setDateListener(this);
@@ -116,19 +120,28 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
                 dateFormatted = DateUtils.databaseDateFormatNoMillis().format(date);
             }
         }
-        RowAction rowAction = RowAction.create(dateTimeViewModel.uid(), date != null ? dateFormatted : null);
+        RowAction rowAction = RowAction.create(dateTimeViewModel.uid(), date != null ? dateFormatted : null, getAdapterPosition());
         if (processor != null) {
             processor.onNext(rowAction);
+            if (!isSearchMode)
+                itemView.setBackgroundColor(Color.WHITE);
         }
-
-        if (currentPosition != null) {
-            currentPosition.onNext(getAdapterPosition());
-        }
-
     }
 
     @Override
     public void dispose() {
 
+    }
+
+    @Override
+    public void performAction() {
+        itemView.setBackground(AppCompatResources.getDrawable(itemView.getContext(), R.drawable.item_selected_bg));
+
+        if (binding instanceof FormTimeTextBinding)
+            ((FormTimeTextBinding) binding).timeView.performOnFocusAction();
+        if (binding instanceof FormDateTextBinding)
+            ((FormDateTextBinding) binding).dateView.performOnFocusAction();
+        if (binding instanceof FormDateTimeTextBinding)
+            ((FormDateTimeTextBinding) binding).dateTimeView.performOnFocusAction();
     }
 }

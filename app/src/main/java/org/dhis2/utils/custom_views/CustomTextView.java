@@ -7,10 +7,12 @@ import android.text.TextUtils;
 import android.text.method.DigitsKeyListener;
 import android.util.AttributeSet;
 import android.util.Patterns;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.databinding.DataBindingUtil;
@@ -19,7 +21,9 @@ import androidx.databinding.ViewDataBinding;
 import com.google.android.material.textfield.TextInputLayout;
 
 import org.dhis2.BR;
+import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
+import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
@@ -29,7 +33,7 @@ import static android.text.TextUtils.isEmpty;
  * QUADRAM. Created by frodriguez on 1/17/2018.
  */
 
-public class CustomTextView extends RelativeLayout implements View.OnFocusChangeListener {
+public class CustomTextView extends FieldLayout implements View.OnFocusChangeListener {
 
     private boolean isBgTransparent;
     private TextInputAutoCompleteTextView editText;
@@ -42,6 +46,8 @@ public class CustomTextView extends RelativeLayout implements View.OnFocusChange
 
     private LayoutInflater inflater;
     private TextInputLayout inputLayout;
+    private boolean isLongText;
+    private View descriptionLabel;
 
     public CustomTextView(Context context) {
         super(context);
@@ -58,25 +64,47 @@ public class CustomTextView extends RelativeLayout implements View.OnFocusChange
         init(context);
     }
 
-    private void init(Context context) {
+    public void init(Context context) {
         inflater = LayoutInflater.from(context);
     }
 
+    @Override
+    public void performOnFocusAction() {
+        editText.requestFocus();
+        editText.performClick();
+    }
+
     private void setLayout() {
-        if (isBgTransparent)
+        if (isBgTransparent && !isLongText)
             binding = DataBindingUtil.inflate(inflater, R.layout.custom_text_view, this, true);
-        else
+        else if (!isBgTransparent && !isLongText)
             binding = DataBindingUtil.inflate(inflater, R.layout.custom_text_view_accent, this, true);
+        else if (isBgTransparent && isLongText)
+            binding = DataBindingUtil.inflate(inflater, R.layout.custom_long_text_view, this, true);
+        else
+            binding = DataBindingUtil.inflate(inflater, R.layout.custom_long_text_view_accent, this, true);
 
         inputLayout = findViewById(R.id.input_layout);
         editText = findViewById(R.id.input_editText);
         icon = findViewById(R.id.renderImage);
+        descriptionLabel = binding.getRoot().findViewById(R.id.descriptionLabel);
+
         editText.setOnFocusChangeListener(this);
+    }
+
+    public void setDescription(String description) {
+        descriptionLabel.setVisibility(label.length() > 16 || description != null ? View.VISIBLE : View.GONE);
     }
 
     private void configureViews() {
 
         editText.setFilters(new InputFilter[]{});
+
+        TextInputLayout.LayoutParams lp = new TextInputLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
+        lp.weight = 1f;
+        inputLayout.setLayoutParams(lp);
+        editText.setMaxLines(1);
+        editText.setVerticalScrollBarEnabled(false);
 
         if (valueType != null)
             switch (valueType) {
@@ -93,9 +121,15 @@ public class CustomTextView extends RelativeLayout implements View.OnFocusChange
                     editText.setEllipsize(TextUtils.TruncateAt.END);
                     break;
                 case LONG_TEXT:
-                    editText.setInputType(InputType.TYPE_CLASS_TEXT);
-                    editText.setLines(1);
-                    editText.setEllipsize(TextUtils.TruncateAt.END);
+                    editText.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                    editText.setMaxLines(Integer.MAX_VALUE);
+                    editText.setEllipsize(null);
+                    editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+                    editText.setVerticalScrollBarEnabled(true);
+                    editText.setScrollBarStyle(View.SCROLLBARS_INSIDE_INSET);
+                    editText.setOverScrollMode(View.OVER_SCROLL_ALWAYS);
+                    editText.setSingleLine(false);
+                    editText.setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
                     break;
                 case LETTER:
                     editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
@@ -139,9 +173,9 @@ public class CustomTextView extends RelativeLayout implements View.OnFocusChange
         binding.executePendingBindings();
     }
 
-
-    public void setIsBgTransparent(boolean mIsBgTransparent) {
-        isBgTransparent = mIsBgTransparent;
+    public void setLayoutData(boolean isBgTransparent, boolean isLongText) {
+        this.isBgTransparent = isBgTransparent;
+        this.isLongText = isLongText;
         setLayout();
     }
 
@@ -156,14 +190,15 @@ public class CustomTextView extends RelativeLayout implements View.OnFocusChange
         editText.setEnabled(editable);
     }
 
-    public void setWarning(String msg) {
-        inputLayout.setErrorTextAppearance(R.style.warning_appearance);
-        inputLayout.setError(msg);
-    }
-
-    public void setError(String msg) {
-        inputLayout.setErrorTextAppearance(R.style.error_appearance);
-        inputLayout.setError(msg);
+    public void setWarning(String warning, String error) {
+        if (!isEmpty(error)) {
+            inputLayout.setErrorTextAppearance(R.style.error_appearance);
+            inputLayout.setError(error);
+        } else if (!isEmpty(warning)) {
+            inputLayout.setErrorTextAppearance(R.style.warning_appearance);
+            inputLayout.setError(warning);
+        } else
+            inputLayout.setError(null);
     }
 
     public void setText(String text) {
@@ -172,9 +207,15 @@ public class CustomTextView extends RelativeLayout implements View.OnFocusChange
                 0 : editText.getText().length());
     }
 
-    public void setLabel(String label) {
-        binding.setVariable(BR.label, label);
-        binding.executePendingBindings();
+    public void setLabel(String label, boolean mandatory) {
+        if (inputLayout.getHint() == null || !inputLayout.getHint().toString().equals(label)) {
+            StringBuilder labelBuilder = new StringBuilder(label);
+            if (mandatory)
+                labelBuilder.append("*");
+            this.label = labelBuilder.toString();
+            inputLayout.setHint(this.label);
+            binding.setVariable(BR.label, this.label);
+        }
     }
 
     public TextInputAutoCompleteTextView getEditText() {
@@ -261,6 +302,15 @@ public class CustomTextView extends RelativeLayout implements View.OnFocusChange
     }
 
     public void setOnEditorActionListener(TextView.OnEditorActionListener actionListener) {
-        editText.setOnEditorActionListener(actionListener);
+        editText.setOnEditorActionListener((v, actionId, event) -> {
+            if (validate())
+                return actionListener.onEditorAction(v, actionId, event);
+            return true;
+        });
+    }
+
+
+    public void setObjectSyle(ObjectStyleModel objectStyle) {
+        Bindings.setObjectStyle(icon, this, objectStyle);
     }
 }

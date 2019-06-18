@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -57,7 +58,7 @@ import static org.dhis2.utils.Constants.TRACKED_ENTITY_INSTANCE;
  * -Created by ppajuelo on 29/11/2017.
  */
 
-public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataContracts.View, DialogClickListener {
+public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataContracts.View {
 
     private static final int REQ_DETAILS = 1001;
     private static final int REQ_EVENT = 2001;
@@ -138,13 +139,19 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
         dashboardViewModel.eventUid().observe(this, this::displayGenerateEvent);
     }
 
+    @Override
+    public void onPause() {
+        presenter.onDettach();
+        super.onPause();
+    }
+
     public void setData(DashboardProgramModel nprogram) {
         this.dashboardModel = nprogram;
-        presenter.setDashboardProgram(this.dashboardModel);
 
         if (nprogram != null && nprogram.getCurrentEnrollment() != null) {
+            presenter.setDashboardProgram(this.dashboardModel);
             SharedPreferences prefs = context.getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE);
-            hasCatComb = !nprogram.getCurrentProgram().categoryCombo().equals(prefs.getString(Constants.DEFAULT_CAT_COMBO, ""));
+            hasCatComb = nprogram.getCurrentProgram() != null && !nprogram.getCurrentProgram().categoryCombo().equals(prefs.getString(Constants.DEFAULT_CAT_COMBO, ""));
             List<EventModel> events = new ArrayList<>();
             adapter = new EventAdapter(presenter, nprogram.getProgramStages(), events, nprogram.getCurrentEnrollment(), nprogram.getCurrentProgram());
             binding.teiRecycler.setLayoutManager(new LinearLayoutManager(getAbstracContext()));
@@ -171,6 +178,12 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
         binding.executePendingBindings();
 
+        if (getSharedPreferences().getString("COMPLETED_EVENT", null) != null) {
+            presenter.displayGenerateEvent(getSharedPreferences().getString("COMPLETED_EVENT", null));
+            getSharedPreferences().edit().remove("COMPLETED_EVENT").apply();
+        }
+
+
     }
 
     public static int getDetailsRequestCode() {
@@ -194,8 +207,12 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
             presenter.getTEIEvents();
             if (data != null) {
                 lastModifiedEventUid = data.getStringExtra(Constants.EVENT_UID);
-                if (lastModifiedEventUid != null)
-                    presenter.displayGenerateEvent(lastModifiedEventUid);
+                if (((TeiDashboardMobileActivity) context).getOrientation() != Configuration.ORIENTATION_LANDSCAPE)
+                    getSharedPreferences().edit().putString("COMPLETED_EVENT", lastModifiedEventUid).apply();
+                else {
+                    if (lastModifiedEventUid != null)
+                        presenter.displayGenerateEvent(lastModifiedEventUid);
+                }
             }
 
         }
@@ -204,17 +221,27 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     @Override
     public Consumer<List<EventModel>> setEvents() {
         return events -> {
-            adapter.swapItems(events);
-            for (EventModel event : events) {
-                if (event.eventDate() != null) {
-                    if (event.eventDate().after(DateUtils.getInstance().getToday()))
-                        binding.teiRecycler.scrollToPosition(events.indexOf(event));
+            if (events.isEmpty()) {
+                binding.emptyTeis.setVisibility(View.VISIBLE);
+                if (binding.fab.getVisibility() == View.VISIBLE) {
+                    binding.emptyTeis.setText(R.string.empty_tei_add);
+                } else {
+                    binding.emptyTeis.setText(R.string.empty_tei_no_add);
                 }
-                if (hasCatComb && event.attributeOptionCombo() == null && !catComboShowed.contains(event)) {
-                    presenter.getCatComboOptions(event);
-                    catComboShowed.add(event);
-                } else if (!hasCatComb && event.attributeOptionCombo() == null)
-                    presenter.setDefaultCatOptCombToEvent(event.uid());
+            } else {
+                binding.emptyTeis.setVisibility(View.GONE);
+                adapter.swapItems(events);
+                for (EventModel event : events) {
+                    if (event.eventDate() != null) {
+                        if (event.eventDate().after(DateUtils.getInstance().getToday()))
+                            binding.teiRecycler.scrollToPosition(events.indexOf(event));
+                    }
+                    if (hasCatComb && event.attributeOptionCombo() == null && !catComboShowed.contains(event)) {
+                        presenter.getCatComboOptions(event);
+                        catComboShowed.add(event);
+                    } else if (!hasCatComb && event.attributeOptionCombo() == null)
+                        presenter.setDefaultCatOptCombToEvent(event.uid());
+                }
             }
         };
     }
@@ -231,7 +258,18 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
                         getString(R.string.button_ok),
                         getString(R.string.cancel),
                         RC_GENERATE_EVENT,
-                        this);
+                        new DialogClickListener() {
+                            @Override
+                            public void onPositive() {
+                                createEvent(EventCreationType.SCHEDULE, programStageFromEvent.standardInterval() != null ? programStageFromEvent.standardInterval() : 0);
+                            }
+
+                            @Override
+                            public void onNegative() {
+                                if (programStageFromEvent.remindCompleted())
+                                    presenter.areEventsCompleted();
+                            }
+                        });
                 dialog.show();
             } else if (programStageModel.remindCompleted())
                 showDialogCloseProgram();
@@ -239,6 +277,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     }
 
     private void showDialogCloseProgram() {
+
         dialog = new CustomDialog(
                 getContext(),
                 getString(R.string.event_completed),
@@ -246,7 +285,16 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
                 getString(R.string.button_ok),
                 getString(R.string.cancel),
                 RC_EVENTS_COMPLETED,
-                this);
+                new DialogClickListener() {
+                    @Override
+                    public void onPositive() {
+                        presenter.completeEnrollment();
+                    }
+
+                    @Override
+                    public void onNegative() {
+                    }
+                });
         dialog.show();
     }
 
@@ -261,7 +309,16 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
                         getString(R.string.button_ok),
                         getString(R.string.cancel),
                         RC_EVENTS_COMPLETED,
-                        this);
+                        new DialogClickListener() {
+                            @Override
+                            public void onPositive() {
+                                presenter.completeEnrollment();
+                            }
+
+                            @Override
+                            public void onNegative() {
+                            }
+                        });
                 dialog.show();
             }
 
@@ -274,20 +331,6 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
             if (enrollmentStatus == EnrollmentStatus.COMPLETED)
                 activity.getPresenter().getData();
         };
-    }
-
-    @Override
-    public void onPositive() {
-        switch (dialog.getRequestCode()) {
-            case RC_EVENTS_COMPLETED:
-                presenter.completeEnrollment();
-                break;
-            case RC_GENERATE_EVENT:
-                createEvent(EventCreationType.SCHEDULE, programStageFromEvent.standardInterval() != null ? programStageFromEvent.standardInterval() : 0);
-                break;
-            default:
-                break;
-        }
     }
 
     private void createEvent(EventCreationType eventCreationType, Integer scheduleIntervalDays) {
@@ -306,12 +349,6 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     }
 
     @Override
-    public void onNegative() {
-        if (dialog.getRequestCode() == RC_GENERATE_EVENT && programStageFromEvent.remindCompleted())
-            presenter.areEventsCompleted();
-    }
-
-    @Override
     public void showCatComboDialog(String eventId, CategoryCombo categoryCombo) {
         CategoryComboDialog dialog = new CategoryComboDialog(getAbstracContext(), categoryCombo, 123,
                 selectedOption -> presenter.changeCatOption(eventId, selectedOption), categoryCombo.displayName());
@@ -327,8 +364,10 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
     @Override
     public void displayGenerateEvent(String eventUid) {
-        if (eventUid != null)
+        if (eventUid != null) {
             presenter.displayGenerateEvent(eventUid);
+            dashboardViewModel.updateEventUid(null);
+        }
     }
 
     @Override
@@ -344,7 +383,6 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
     @Override
     public void showQR(Intent intent) {
-
         startActivity(intent);
     }
 
@@ -356,6 +394,10 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     @Override
     public void openEventInitial(Intent intent) {
         this.startActivityForResult(intent, REQ_EVENT, null);
+    }
 
+    @Override
+    public void openEventCapture(Intent intent) {
+        this.startActivityForResult(intent, REQ_EVENT, null);
     }
 }

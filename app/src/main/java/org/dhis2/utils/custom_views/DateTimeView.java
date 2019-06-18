@@ -5,6 +5,7 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
+import android.widget.DatePicker;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -12,6 +13,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.datetime.OnDateSelected;
 import org.dhis2.databinding.DateTimeViewBinding;
+import org.dhis2.utils.DatePickerUtils;
 import org.dhis2.utils.DateUtils;
 
 import java.text.DateFormat;
@@ -76,12 +78,12 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
             try {
                 date = DateUtils.databaseDateFormat().parse(data);
             } catch (ParseException e) {
-                Timber.e(e);
+                Timber.w(e);
             }
 
             if (date == null)
                 try {
-                    if(DateUtils.dateHasNoSeconds(data))
+                    if (DateUtils.dateHasNoSeconds(data))
                         date = DateUtils.databaseDateFormatNoSeconds().parse(data);
                     else
                         date = DateUtils.databaseDateFormatNoMillis().parse(data);
@@ -139,28 +141,27 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
 
     @Override
     public void onClick(View view) {
-        Calendar c = Calendar.getInstance();
-        if (date != null)
-            c.setTime(date);
-        int year = c.get(Calendar.YEAR);
-        int month = c.get(Calendar.MONTH);
-        int day = c.get(Calendar.DAY_OF_MONTH);
+        showCustomCalendar(view);
+    }
 
-        dateDialog = new DatePickerDialog(getContext(), (
-                (datePicker, year1, month1, day1) -> {
-                    selectedCalendar.set(Calendar.YEAR, year1);
-                    selectedCalendar.set(Calendar.MONTH, month1);
-                    selectedCalendar.set(Calendar.DAY_OF_MONTH, day1);
-                    showTimePicker(view);
-                }),
-                year,
-                month,
-                day);
-        dateDialog.setTitle(binding.getLabel());
-        if (!allowFutureDates) {
-            dateDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
-        }
-        dateDialog.show();
+    private void showCustomCalendar(View view) {
+
+        DatePickerUtils.getDatePickerDialog(getContext(), label, date, allowFutureDates,
+                new DatePickerUtils.OnDatePickerClickListener() {
+                    @Override
+                    public void onNegativeClick() {
+                        editText.setText(null);
+                        listener.onDateSelected(null);
+                    }
+
+                    @Override
+                    public void onPositiveClick(DatePicker datePicker) {
+                        selectedCalendar.set(Calendar.YEAR, datePicker.getYear());
+                        selectedCalendar.set(Calendar.MONTH, datePicker.getMonth());
+                        selectedCalendar.set(Calendar.DAY_OF_MONTH, datePicker.getDayOfMonth());
+                        showTimePicker(view);
+                    }
+                }).show();
     }
 
     private void showTimePicker(View view) {
@@ -177,7 +178,7 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
             String result = dateFormat.format(selectedDate);
             editText.setText(result);
             listener.onDateSelected(selectedDate);
-//            nextFocus(view);
+            nextFocus(view);
         },
                 hour,
                 minute,

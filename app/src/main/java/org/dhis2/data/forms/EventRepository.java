@@ -3,7 +3,7 @@ package org.dhis2.data.forms;
 import android.content.ContentValues;
 import android.database.Cursor;
 
-import com.google.android.gms.maps.model.LatLng;
+import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
@@ -23,6 +23,7 @@ import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
@@ -317,10 +318,22 @@ public class EventRepository implements FormRepository {
 
     @NonNull
     @Override
+    public Observable<Long> saveReportDate(String date) {
+        return Observable.empty();
+    }
+
+    @NonNull
+    @Override
     public Consumer<String> storeIncidentDate() {
         return data -> {
             //incident date is only for tracker events
         };
+    }
+
+    @NonNull
+    @Override
+    public Observable<Long> saveIncidentDate(String date) {
+        return Observable.empty();
     }
 
     @NonNull
@@ -400,7 +413,7 @@ public class EventRepository implements FormRepository {
     }
 
     @Override
-    public Observable<Trio<Boolean, CategoryComboModel, List<CategoryOptionComboModel>>> getProgramCategoryCombo() {
+    public Observable<Trio<Boolean, CategoryComboModel, List<CategoryOptionComboModel>>> getProgramCategoryCombo(String event) {
         return briteDatabase.createQuery(EventModel.TABLE, "SELECT * FROM Event WHERE Event.uid = ?", eventUid)
                 .mapToOne(EventModel::create)
                 .flatMap(eventModel -> briteDatabase.createQuery(CategoryComboModel.TABLE, "SELECT CategoryCombo.* FROM CategoryCombo " +
@@ -444,6 +457,11 @@ public class EventRepository implements FormRepository {
     public Observable<OrganisationUnit> getOrgUnitDates() {
         return Observable.defer(() -> Observable.just(d2.eventModule().events.uid(eventUid).get()))
                 .switchMap(event -> Observable.just(d2.organisationUnitModule().organisationUnits.uid(event.organisationUnit()).get()));
+    }
+
+    @Override
+    public Flowable<ProgramStage> getProgramStage(String eventUid) {
+        return null;
     }
 
     @NonNull
@@ -495,6 +513,10 @@ public class EventRepository implements FormRepository {
             if (objStyleCursor.moveToFirst())
                 objectStyle = ObjectStyleModel.create(objStyleCursor);
         }
+        if (valueType == ValueType.ORGANISATION_UNIT && !isEmpty(dataValue)) {
+            dataValue = dataValue + "_ou_" + d2.organisationUnitModule().organisationUnits.uid(dataValue).get().displayName();
+        }
+
         return fieldFactory.create(uid, isEmpty(formLabel) ? label : formLabel, valueType,
                 mandatory, optionSetUid, dataValue, section, allowFutureDates,
                 status == EventStatus.ACTIVE, null, description, fieldRendering, optionCount, objectStyle);

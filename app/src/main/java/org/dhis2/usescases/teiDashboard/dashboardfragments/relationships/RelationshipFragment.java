@@ -21,8 +21,6 @@ import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
-import org.hisp.dhis.android.core.relationship.Relationship;
-import org.hisp.dhis.android.core.relationship.RelationshipType;
 import org.hisp.dhis.android.core.relationship.RelationshipTypeModel;
 import org.jetbrains.annotations.NotNull;
 
@@ -33,7 +31,7 @@ import javax.inject.Inject;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.databinding.DataBindingUtil;
 import io.reactivex.functions.Consumer;
 
@@ -88,10 +86,15 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
     }
 
     @Override
-    public Consumer<List<Pair<Relationship, RelationshipType>>> setRelationships() {
+    public Consumer<List<RelationshipViewModel>> setRelationships() {
         return relationships -> {
             if (relationshipAdapter != null) {
                 relationshipAdapter.addItems(relationships);
+            }
+            if (relationships != null && !relationships.isEmpty()) {
+                binding.emptyRelationships.setVisibility(View.GONE);
+            } else {
+                binding.emptyRelationships.setVisibility(View.VISIBLE);
             }
         };
     }
@@ -103,6 +106,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
 
     @Override
     public void goToAddRelationship(Intent intent) {
+        ((TeiDashboardMobileActivity) getActivity()).toRelationships();
         this.startActivityForResult(intent, Constants.REQ_ADD_RELATIONSHIP);
     }
 
@@ -143,7 +147,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
                     .setLabel(relationshipType.displayName())
                     .setResId(resource)
                     .setLabelTextBold(true)
-                    .setLabelBackgroundDrawable(ContextCompat.getDrawable(getAbstracContext(), R.drawable.bg_chip))
+                    .setLabelBackgroundDrawable(AppCompatResources.getDrawable(getAbstracContext(), R.drawable.bg_chip))
                     .setIconNormalColor(ColorUtils.getPrimaryColor(getAbstracContext(), ColorUtils.ColorType.PRIMARY_DARK))
                     .setWrapper(Pair.create(relationshipType, trio.val1()))
             );

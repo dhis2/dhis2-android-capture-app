@@ -1,10 +1,12 @@
 package org.dhis2.utils.custom_views;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.RelativeLayout;
 
 import org.dhis2.utils.ColorUtils;
@@ -18,6 +20,7 @@ public abstract class FieldLayout extends RelativeLayout {
 
     protected boolean isBgTransparent;
     protected LayoutInflater inflater;
+    protected String label;
 
 
     public FieldLayout(Context context) {
@@ -41,17 +44,19 @@ public abstract class FieldLayout extends RelativeLayout {
 
     public abstract void performOnFocusAction();
 
-   /* @Override TODO: DISABLED FOR 1.1.0
+    @Override
     protected void onFocusChanged(boolean gainFocus, int direction, @Nullable Rect previouslyFocusedRect) {
         super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
-        if (gainFocus) {
+       /* if(gainFocus)
+            performOnFocusAction();*/
+       /* if (gainFocus) {
             setBackgroundColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY_LIGHT));
             performOnFocusAction();
         } else if (isBgTransparent) {
             setBackgroundColor(0x00000000);
         } else
-            setBackgroundColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY));
-    }*/
+            setBackgroundColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY));*/
+    }
 
     public void nextFocus(View view) {
         View nextView;

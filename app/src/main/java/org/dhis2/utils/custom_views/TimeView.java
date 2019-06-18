@@ -2,9 +2,11 @@ package org.dhis2.utils.custom_views;
 
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.text.format.DateFormat;
 import android.util.AttributeSet;
 import android.view.View;
+import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -147,9 +149,15 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
                 editText.setText(calendarTime);
             }
             listener.onDateSelected(selectedDate);
-//            nextFocus(view);
+            nextFocus(view);
         }, hour, minute, is24HourFormat);
         dialog.setTitle(label);
+
+        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, getContext().getString(R.string.date_dialog_clear), (timeDialog, which) -> {
+            editText.setText(null);
+            listener.onDateSelected(null);
+        });
+
         dialog.show();
     }
 

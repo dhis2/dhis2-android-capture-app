@@ -7,6 +7,8 @@ import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 
 interface FormPresenter {
 
+    String getEnrollmentOu(String enrollmentUid);
+
     @UiThread
     void onAttach(@NonNull FormView view);
 
@@ -20,4 +22,8 @@ interface FormPresenter {
     void deleteCascade();
 
     void saveCategoryOption(CategoryOptionComboModel selectedOption);
+
+    void initializeSaveObservable();
+
+    void getNeedInitial(String eventUid);
 }

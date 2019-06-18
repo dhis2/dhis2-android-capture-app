@@ -9,17 +9,28 @@ import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
+import android.text.method.ScrollingMovementMethod;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
+
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.content.ContextCompat;
+import androidx.databinding.BindingAdapter;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.dhis2.R;
 import org.dhis2.usescases.programEventDetail.ProgramEventViewModel;
 import org.dhis2.utils.CatComboAdapter;
 import org.dhis2.utils.DateUtils;
+import org.dhis2.utils.Period;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.State;
@@ -27,6 +38,8 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.imports.ImportStatus;
+import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
@@ -36,10 +49,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import androidx.core.content.ContextCompat;
-import androidx.databinding.BindingAdapter;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import timber.log.Timber;
 
 /**
@@ -56,6 +65,13 @@ public class Bindings {
             Drawable drawable = view.getResources().getDrawable(android.R.drawable.dialog_holo_light_frame);
             drawable.setColorFilter(new PorterDuffColorFilter(view.getResources().getColor(R.color.colorGreyDefault), PorterDuff.Mode.MULTIPLY));
             view.setBackground(drawable);
+        }
+    }
+
+    @BindingAdapter("scrollingTextView")
+    public static void setScrollingTextView(TextView textView, boolean canScroll) {
+        if (canScroll) {
+            textView.setMovementMethod(new ScrollingMovementMethod());
         }
     }
 
@@ -134,16 +150,16 @@ public class Bindings {
             status = EnrollmentStatus.ACTIVE;
         switch (status) {
             case ACTIVE:
-                lock = ContextCompat.getDrawable(view.getContext(), R.drawable.ic_lock_open_green);
+                lock = AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_lock_open_green);
                 break;
             case COMPLETED:
-                lock = ContextCompat.getDrawable(view.getContext(), R.drawable.ic_lock_completed);
+                lock = AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_lock_completed);
                 break;
             case CANCELLED:
-                lock = ContextCompat.getDrawable(view.getContext(), R.drawable.ic_lock_inactive);
+                lock = AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_lock_inactive);
                 break;
             default:
-                lock = ContextCompat.getDrawable(view.getContext(), R.drawable.ic_lock_read_only);
+                lock = AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_lock_read_only);
                 break;
         }
 
@@ -187,31 +203,34 @@ public class Bindings {
             if (enrollmentStatus == EnrollmentStatus.ACTIVE) {
                 switch (status) {
                     case ACTIVE:
-                        if (DateUtils.getInstance().hasExpired(event, program.expiryDays(), program.completeEventsExpiryDays(), eventProgramStage.periodType() != null ? eventProgramStage.periodType() : program.expiryPeriodType())) {
-                            view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_eye_red));
+                        Date eventDate = event.eventDate();
+                        if(eventProgramStage.periodType()!=null && eventProgramStage.periodType().name().contains(PeriodType.Weekly.name()))
+                            eventDate = DateUtils.getInstance().getNextPeriod(eventProgramStage.periodType(),eventDate,0,true);
+                        if (DateUtils.getInstance().isEventExpired(eventDate, null, event.status(), program.completeEventsExpiryDays(), eventProgramStage.periodType() != null ? eventProgramStage.periodType() : program.expiryPeriodType(), program.expiryDays())) {
+                            view.setImageDrawable(AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_eye_red));
                         } else {
-                            view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_edit));
+                            view.setImageDrawable(AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_edit));
                         }
                         break;
                     case OVERDUE:
                     case COMPLETED:
                     case SKIPPED:
-                        view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_visibility));
+                        view.setImageDrawable(AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_visibility));
                         break;
                     case SCHEDULE:
-                        view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_edit));
+                        view.setImageDrawable(AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_edit));
                         break;
                     case VISITED:
-                        view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_edit));
+                        view.setImageDrawable(AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_edit));
                         break;
                     default:
-                        view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_edit));
+                        view.setImageDrawable(AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_edit));
                         break;
                 }
             } else if (enrollmentStatus == EnrollmentStatus.COMPLETED) {
-                view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_visibility));
+                view.setImageDrawable(AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_visibility));
             } else { //EnrollmentStatus = CANCELLED
-                view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_visibility));
+                view.setImageDrawable(AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_visibility));
             }
         }
     }
@@ -230,7 +249,10 @@ public class Bindings {
             if (enrollmentStatus == EnrollmentStatus.ACTIVE) {
                 switch (status) {
                     case ACTIVE:
-                        if (DateUtils.getInstance().hasExpired(event, program.expiryDays(), program.completeEventsExpiryDays(), eventProgramStage.periodType() != null ? eventProgramStage.periodType() : program.expiryPeriodType())) {
+                        Date eventDate = event.eventDate();
+                        if(eventProgramStage.periodType()!=null && eventProgramStage.periodType().name().contains(PeriodType.Weekly.name()))
+                            eventDate = DateUtils.getInstance().getNextPeriod(eventProgramStage.periodType(),eventDate,0,true);
+                        if (DateUtils.getInstance().isEventExpired(eventDate, null, event.status(), program.completeEventsExpiryDays(), eventProgramStage.periodType() != null ? eventProgramStage.periodType() : program.expiryPeriodType(), program.expiryDays())) {
                             view.setText(view.getContext().getString(R.string.event_expired));
                         } else {
                             view.setText(view.getContext().getString(R.string.event_open));
@@ -277,8 +299,10 @@ public class Bindings {
             } else if (event.status() != null) {
                 switch (event.status()) {
                     case ACTIVE:
-                        if (DateUtils.getInstance().hasExpired(event, program.expiryDays(), program.completeEventsExpiryDays(), programStage.periodType() != null ? programStage.periodType() : program.expiryPeriodType())) {
-                            bgColor = R.drawable.item_event_dark_gray_ripple;
+                        Date eventDate = event.eventDate();
+                        if(programStage.periodType()!=null && programStage.periodType().name().contains(PeriodType.Weekly.name()))
+                            eventDate = DateUtils.getInstance().getNextPeriod(programStage.periodType(),eventDate,0,true);
+                        if (DateUtils.getInstance().isEventExpired(eventDate, null, event.status(), program.completeEventsExpiryDays(), programStage.periodType() != null ? programStage.periodType() : program.expiryPeriodType(), program.expiryDays())) {                            bgColor = R.drawable.item_event_dark_gray_ripple;
                         } else
                             bgColor = R.drawable.item_event_yellow_ripple;
                         break;
@@ -303,8 +327,28 @@ public class Bindings {
             } else {
                 bgColor = R.drawable.item_event_red_ripple;
             }
-            view.setBackground(ContextCompat.getDrawable(view.getContext(), bgColor));
+            view.setBackground(AppCompatResources.getDrawable(view.getContext(), bgColor));
         }
+    }
+
+    @BindingAdapter("statusColor")
+    public static void setStatusColor(ImageView view, ImportStatus status) {
+        Drawable icon;
+        switch (status) {
+            case ERROR:
+                icon = AppCompatResources.getDrawable(view.getContext(), R.drawable.red_circle);
+                break;
+            case SUCCESS:
+                icon = AppCompatResources.getDrawable(view.getContext(), R.drawable.green_circle);
+                break;
+            case WARNING:
+                icon = AppCompatResources.getDrawable(view.getContext(), R.drawable.yellow_circle);
+                break;
+            default:
+                icon = null;
+                break;
+        }
+        view.setImageDrawable(icon);
     }
 
     @BindingAdapter("eventWithoutRegistrationStatusText")
@@ -313,53 +357,32 @@ public class Bindings {
             case ACTIVE:
                 if (event.isExpired()) {
                     textView.setText(textView.getContext().getString(R.string.event_editing_expired));
-                    textView.setTextColor(ContextCompat.getColor(textView.getContext(), R.color.red_060));
                 } else {
                     textView.setText(textView.getContext().getString(R.string.event_open));
-                    textView.setTextColor(ContextCompat.getColor(textView.getContext(), R.color.yellow_fdd));
                 }
                 break;
             case COMPLETED:
                 if (event.isExpired()) {
                     textView.setText(textView.getContext().getString(R.string.event_editing_expired));
-                    textView.setTextColor(ContextCompat.getColor(textView.getContext(), R.color.red_060));
                 } else {
                     textView.setText(textView.getContext().getString(R.string.event_completed));
-                    textView.setTextColor(ContextCompat.getColor(textView.getContext(), R.color.gray_b2b));
                 }
                 break;
             case SKIPPED:
                 textView.setText(textView.getContext().getString(R.string.event_editing_expired));
-                textView.setTextColor(ContextCompat.getColor(textView.getContext(), R.color.red_060));
                 break;
             default:
                 textView.setText(textView.getContext().getString(R.string.read_only));
-                textView.setTextColor(ContextCompat.getColor(textView.getContext(), R.color.green_7ed));
                 break;
         }
     }
 
     @BindingAdapter("eventWithoutRegistrationStatusIcon")
     public static void setEventWithoutRegistrationStatusIcon(ImageView imageView, ProgramEventViewModel event) {
-        switch (event.eventStatus()) {
-            case ACTIVE:
-                if (event.isExpired()) {
-                    imageView.setImageResource(R.drawable.ic_eye_red);
-                } else
-                    imageView.setImageResource(R.drawable.ic_edit_yellow);
-                break;
-            case COMPLETED:
-                if (event.isExpired()) {
-                    imageView.setImageResource(R.drawable.ic_eye_red);
-                } else
-                    imageView.setImageResource(R.drawable.ic_eye_grey);
-                break;
-            default:
-                // TODO CRIS: HERE CHECK THE EVENT APPROVAL
-                imageView.setImageResource(R.drawable.ic_eye_green);
-                break;
-
-        }
+        if (event.eventStatus() == EventStatus.ACTIVE && !event.isExpired())
+            imageView.setImageResource(R.drawable.ic_edit);
+        else
+            imageView.setImageResource(R.drawable.ic_visibility);
     }
 
     @BindingAdapter("stateText")
@@ -390,11 +413,7 @@ public class Bindings {
         if (state != null) {
             switch (state) {
                 case TO_POST:
-                    imageView.setImageResource(R.drawable.ic_sync_problem_grey);
-                    break;
                 case TO_UPDATE:
-                    imageView.setImageResource(R.drawable.ic_sync_problem_grey);
-                    break;
                 case TO_DELETE:
                     imageView.setImageResource(R.drawable.ic_sync_problem_grey);
                     break;
@@ -403,6 +422,13 @@ public class Bindings {
                     break;
                 case SYNCED:
                     imageView.setImageResource(R.drawable.ic_sync);
+                    break;
+                case WARNING:
+                    imageView.setImageResource(R.drawable.ic_sync_warning);
+                    break;
+                case SENT_VIA_SMS:
+                case SYNCED_VIA_SMS:
+                    imageView.setImageResource(R.drawable.ic_sync_sms);
                     break;
                 default:
                     break;
@@ -478,7 +504,7 @@ public class Bindings {
         if (objectStyle.color() != null) {
             String color = objectStyle.color().startsWith("#") ? objectStyle.color() : "#" + objectStyle.color();
             int colorRes;
-            if(color.length() == 4)
+            if (color.length() == 4)
                 colorRes = ContextCompat.getColor(view.getContext(), R.color.colorPrimary);
             else
                 colorRes = Color.parseColor(color);
@@ -503,5 +529,30 @@ public class Bindings {
 
         imageView.setBackground(drawable);
 
+    }
+
+    @BindingAdapter("searchOrAdd")
+    public static void setFabIcoin(FloatingActionButton fab, boolean needSearch) {
+        Drawable drawable;
+        if (needSearch) {
+            drawable = AppCompatResources.getDrawable(fab.getContext(), R.drawable.ic_search);
+        } else {
+            drawable = AppCompatResources.getDrawable(fab.getContext(), R.drawable.ic_add_accent);
+        }
+        fab.setColorFilter(Color.WHITE);
+        fab.setImageDrawable(drawable);
+    }
+
+    @BindingAdapter("versionVisibility")
+    public static void setVisibility(LinearLayout linearLayout, boolean check) {
+        if (check && Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            linearLayout.setVisibility(View.GONE);
+        }
+    }
+
+    @BindingAdapter("settingIcon")
+    public static void setSettingIcon(ImageView view, int drawableReference) {
+        Drawable drawable = AppCompatResources.getDrawable(view.getContext(), drawableReference);
+        view.setImageDrawable(drawable);
     }
 }

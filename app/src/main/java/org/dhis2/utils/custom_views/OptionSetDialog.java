@@ -1,16 +1,18 @@
 package org.dhis2.utils.custom_views;
 
 import android.app.Dialog;
-import androidx.databinding.DataBindingUtil;
+import android.content.DialogInterface;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.DialogFragment;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.jakewharton.rxbinding2.widget.RxTextView;
 
@@ -20,6 +22,7 @@ import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.DialogOptionSetBinding;
 import org.dhis2.utils.EndlessRecyclerViewScrollListener;
 import org.hisp.dhis.android.core.option.OptionModel;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,10 +57,11 @@ public class OptionSetDialog extends DialogFragment {
         return instace;
     }
 
-    public static Boolean isCreated(){
+    public static Boolean isCreated() {
         return instace != null;
     }
 
+    @NotNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Dialog dialog = super.onCreateDialog(savedInstanceState);
@@ -65,6 +69,13 @@ public class OptionSetDialog extends DialogFragment {
         dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 
         return dialog;
+    }
+
+    @Override
+    public void onCancel(@NonNull DialogInterface dialog) {
+        instace = null;
+        disposable.clear();
+        super.onCancel(dialog);
     }
 
     @Override
@@ -118,7 +129,11 @@ public class OptionSetDialog extends DialogFragment {
     }
 
     public OptionSetDialog setOptions(List<OptionModel> options) {
-        adapter.setOptions(options,endlessScrollListener.getCurrentPage());
+        if (options.isEmpty() && adapter.isLastItemLoading(adapter.getItemCount())) {
+            adapter.remove();
+        } else {
+            adapter.setOptions(options, endlessScrollListener.getCurrentPage());
+        }
         return this;
     }
 

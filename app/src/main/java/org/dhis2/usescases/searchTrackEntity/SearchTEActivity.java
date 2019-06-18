@@ -8,25 +8,31 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
-import androidx.databinding.BindingMethod;
-import androidx.databinding.BindingMethods;
-import androidx.databinding.DataBindingUtil;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.RecyclerView;
 import android.util.TypedValue;
-import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.Spinner;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
+import androidx.databinding.BindingMethod;
+import androidx.databinding.BindingMethods;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ObservableBoolean;
+import androidx.lifecycle.LiveData;
+import androidx.paging.PagedList;
+import androidx.recyclerview.widget.DividerItemDecoration;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.dhis2.App;
 import org.dhis2.BuildConfig;
@@ -34,20 +40,17 @@ import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.ProgramAdapter;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.metadata.MetadataRepository;
-import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.ActivitySearchBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.searchTrackEntity.adapters.FormAdapter;
-import org.dhis2.usescases.searchTrackEntity.adapters.SearchRelationshipAdapter;
-import org.dhis2.usescases.searchTrackEntity.adapters.SearchTEAdapter;
+import org.dhis2.usescases.searchTrackEntity.adapters.RelationshipLiveAdapter;
+import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiLiveAdapter;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.custom_views.OptionSetDialog;
-import org.dhis2.utils.EndlessRecyclerViewScrollListener;
 import org.dhis2.utils.HelpManager;
-import org.dhis2.utils.NetworkUtils;
+import org.dhis2.utils.custom_views.OptionSetDialog;
 import org.dhis2.utils.custom_views.OptionSetPopUp;
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -61,8 +64,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.reactivex.Flowable;
-import io.reactivex.functions.Consumer;
-import io.reactivex.processors.PublishProcessor;
 import me.toptas.fancyshowcase.FancyShowCaseView;
 import me.toptas.fancyshowcase.FocusShape;
 import timber.log.Timber;
@@ -83,8 +84,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     private String initialProgram;
     private String tEType;
-    private SearchTEAdapter searchTEAdapter;
-    private SearchRelationshipAdapter searchRelationshipAdapter;
 
     private boolean fromRelationship = false;
     private String fromRelationshipTeiUid;
@@ -95,10 +94,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
         }
     };
-    private ProgramModel program;
-    private static PublishProcessor<Integer> onlinePagerProcessor;
-    private PublishProcessor<Integer> offlinePagerProcessor;
-    private EndlessRecyclerViewScrollListener endlessRecyclerViewScrollListener;
+
+    ObservableBoolean needsSearch = new ObservableBoolean(true);
+
+    private SearchTeiLiveAdapter liveAdapter;
+    private RelationshipLiveAdapter relationshipLiveAdapter;
     //---------------------------------------------------------------------------------------------
     //region LIFECYCLE
 
@@ -113,6 +113,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         binding = DataBindingUtil.setContentView(this, R.layout.activity_search);
         binding.setPresenter(presenter);
         initialProgram = getIntent().getStringExtra("PROGRAM_UID");
+        binding.setNeedsSearch(needsSearch);
 
         try {
             fromRelationship = getIntent().getBooleanExtra("FROM_RELATIONSHIP", false);
@@ -122,46 +123,47 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         }
 
         if (fromRelationship) {
-            searchRelationshipAdapter = new SearchRelationshipAdapter(presenter, metadataRepository, false);
-            binding.scrollView.setAdapter(searchRelationshipAdapter);
+            relationshipLiveAdapter = new RelationshipLiveAdapter(presenter);
+            binding.scrollView.setAdapter(relationshipLiveAdapter);
         } else {
-            searchTEAdapter = new SearchTEAdapter(presenter, metadataRepository);
-            binding.scrollView.setAdapter(searchTEAdapter);
+            liveAdapter = new SearchTeiLiveAdapter(presenter);
+            binding.scrollView.setAdapter(liveAdapter);
         }
 
         binding.scrollView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
-        binding.formRecycler.setAdapter(new FormAdapter(getSupportFragmentManager(), LayoutInflater.from(this), presenter.getOrgUnits(), this));
+        binding.formRecycler.setAdapter(new FormAdapter(getSupportFragmentManager(), this));
 
-        onlinePagerProcessor = PublishProcessor.create();
-        offlinePagerProcessor = PublishProcessor.create();
-        endlessRecyclerViewScrollListener = new EndlessRecyclerViewScrollListener(binding.scrollView.getLayoutManager(), 2,
-                NetworkUtils.isOnline(this) ? 1 : 0) {
-            @Override
-            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                if (NetworkUtils.isOnline(SearchTEActivity.this))
-                    onlinePagerProcessor.onNext(page);
-                else {
-                    if(program != null)
-                        if(program.maxTeiCountToReturn() != 0 && totalItemsCount >= program.maxTeiCountToReturn())
-                            offlinePagerProcessor.onNext(page);
-                    else
-                        if(totalItemsCount >= 20)
-                            offlinePagerProcessor.onNext(page);
-                }
+        binding.enrollmentButton.setOnTouchListener((v, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                v.requestFocus();
             }
-        };
-        binding.scrollView.addOnScrollListener(endlessRecyclerViewScrollListener);
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                v.clearFocus();
+                v.performClick();
+            }
+            return true;
+        });
 
+        binding.appbatlayout.addOnOffsetChangedListener((appBarLayout, verticalOffset) -> {
+            float elevationPx = TypedValue.applyDimension(
+                    TypedValue.COMPLEX_UNIT_DIP,
+                    7,
+                    getResources().getDisplayMetrics()
+            );
+            boolean isHidden = binding.formRecycler.getHeight() + verticalOffset == 0;
+            ViewCompat.setElevation(binding.mainToolbar, isHidden ? elevationPx : 0);
+            ViewCompat.setElevation(appBarLayout, isHidden ? 0 : elevationPx);
+        });
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         presenter.init(this, tEType, initialProgram);
+        presenter.initSearch(this);
         registerReceiver(networkReceiver, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
     }
-
 
     @Override
     protected void onPause() {
@@ -177,8 +179,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     public void setForm(List<TrackedEntityAttributeModel> trackedEntityAttributeModels, @Nullable ProgramModel program, HashMap<String, String> queryData) {
-
-        this.program = program;
 
         if (!HelpManager.getInstance().isTutorialReadyForScreen(getClass().getName()))
             setTutorial();
@@ -196,31 +196,14 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     }
 
     @Override
-    public Flowable<Trio<String, String, Integer>> optionSetActions(){
+    public Flowable<Trio<String, String, Integer>> optionSetActions() {
         return ((FormAdapter) binding.formRecycler.getAdapter()).asFlowableOption();
-    }
-
-    @Override
-    public Flowable<Integer> onlinePage() {
-        if (program != null)
-            return onlinePagerProcessor;
-        else
-            return Flowable.just(-1);
-    }
-
-    @Override
-    public Flowable<Integer> offlinePage() {
-        return offlinePagerProcessor;
     }
 
     @Override
     public void clearData() {
         binding.progressLayout.setVisibility(View.VISIBLE);
-        endlessRecyclerViewScrollListener.resetState(NetworkUtils.isOnline(this) ? 1 : 0);
-        if (fromRelationship)
-            searchRelationshipAdapter.clear();
-        else
-            searchTEAdapter.clear();
+        binding.scrollView.setVisibility(View.GONE);
     }
 
     @Override
@@ -230,23 +213,27 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
         new Handler().postDelayed(() -> {
             FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
-                    .title(getString(R.string.tuto_search_1))
+                    .title(getString(R.string.tuto_search_1_v2))
+                    .enableAutoTextPosition()
                     .closeOnTouch(true)
                     .build();
             FancyShowCaseView tuto2 = new FancyShowCaseView.Builder(getAbstractActivity())
                     .title(getString(R.string.tuto_search_2))
+                    .enableAutoTextPosition()
                     .focusShape(FocusShape.ROUNDED_RECTANGLE)
                     .focusOn(getAbstractActivity().findViewById(R.id.program_spinner))
                     .closeOnTouch(true)
                     .build();
             FancyShowCaseView tuto3 = new FancyShowCaseView.Builder(getAbstractActivity())
-                    .title(getString(R.string.tuto_search_3))
+                    .title(getString(R.string.tuto_search_3_v2))
+                    .enableAutoTextPosition()
                     .focusOn(getAbstractActivity().findViewById(R.id.enrollmentButton))
                     .closeOnTouch(true)
                     .build();
             FancyShowCaseView tuto4 = new FancyShowCaseView.Builder(getAbstractActivity())
                     .focusOn(getAbstractActivity().findViewById(R.id.clear_button))
-                    .title(getString(R.string.tuto_search_4))
+                    .title(getString(R.string.tuto_search_4_v2))
+                    .enableAutoTextPosition()
                     .closeOnTouch(true)
                     .build();
 
@@ -258,9 +245,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
             HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
 
-            if (!prefs.getBoolean("TUTO_SEARCH_SHOWN", false) && !BuildConfig.DEBUG) {
+            if (!prefs.getBoolean(Constants.TUTORIAL_SEARCH, false) && !BuildConfig.DEBUG) {
                 HelpManager.getInstance().showHelp();/* getAbstractActivity().fancyShowCaseQueue.show();*/
-                prefs.edit().putBoolean("TUTO_SEARCH_SHOWN", true).apply();
+                prefs.edit().putBoolean(Constants.TUTORIAL_SEARCH, true).apply();
             }
 
         }, 500);
@@ -272,35 +259,45 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     //region TEI LIST
 
     @Override
-    public Consumer<Pair<List<SearchTeiModel>, String>> swapTeiListData() {
-        return data -> {
-            binding.progressLayout.setVisibility(View.GONE);
-            if (!fromRelationship) {
+    public void setLiveData(LiveData<PagedList<SearchTeiModel>> liveData) {
+        if (!fromRelationship) {
+            liveData.observeForever(searchTeiModels -> {
+                Trio<PagedList<SearchTeiModel>, String, Boolean> data = presenter.getMessage(searchTeiModels);
                 if (data.val1().isEmpty()) {
                     binding.messageContainer.setVisibility(View.GONE);
-                    searchTEAdapter.setTeis(data.val0());
-                } else if (searchTEAdapter.getItemCount() == 0) {
+                    binding.scrollView.setVisibility(View.VISIBLE);
+                    liveAdapter.submitList(data.val0());
+                    binding.progressLayout.setVisibility(View.GONE);
+                } else {
+                    binding.progressLayout.setVisibility(View.GONE);
                     binding.messageContainer.setVisibility(View.VISIBLE);
                     binding.message.setText(data.val1());
                 }
 
+                if (!presenter.getQueryData().isEmpty() && data.val2())
+                    setFabIcon(false);
 
-            } else {
+            });
+        } else {
+            liveData.observeForever(searchTeiModels -> {
+                Trio<PagedList<SearchTeiModel>, String, Boolean> data = presenter.getMessage(searchTeiModels);
                 if (data.val1().isEmpty()) {
                     binding.messageContainer.setVisibility(View.GONE);
-                    searchRelationshipAdapter.setItems(data.val0());
-                } else if (searchTEAdapter.getItemCount() == 0) {
+                    binding.scrollView.setVisibility(View.VISIBLE);
+                    relationshipLiveAdapter.submitList(data.val0());
+                    binding.progressLayout.setVisibility(View.GONE);
+                } else {
+                    binding.progressLayout.setVisibility(View.GONE);
                     binding.messageContainer.setVisibility(View.VISIBLE);
                     binding.message.setText(data.val1());
                 }
-            }
-        };
+            });
+        }
     }
 
     @Override
     public void clearList(String uid) {
         this.initialProgram = uid;
-
         if (uid == null)
             binding.programSpinner.setSelection(0);
     }
@@ -333,10 +330,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     ProgramModel selectedProgram = (ProgramModel) adapterView.getItemAtPosition(pos - 1);
                     setProgramColor(presenter.getProgramColor(selectedProgram.uid()));
                     presenter.setProgram((ProgramModel) adapterView.getItemAtPosition(pos - 1));
-                    binding.enrollmentButton.setVisibility(View.VISIBLE);
                 } else {
                     presenter.setProgram(null);
-                    binding.enrollmentButton.setVisibility(View.GONE);
                 }
             }
 
@@ -418,5 +413,21 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             OptionSetDialog.newInstance().setOptions(options);
         else if (OptionSetPopUp.isCreated())
             OptionSetPopUp.getInstance().setOptions(options);
+    }
+
+    @Override
+    public void setFabIcon(boolean needsSearch) {
+        this.needsSearch.set(needsSearch);
+        animSearchFab(needsSearch);
+    }
+
+    private void animSearchFab(boolean hasQuery) {
+        if (hasQuery) {
+            binding.enrollmentButton.startAnimation(
+                    AnimationUtils.loadAnimation(binding.enrollmentButton.getContext(), R.anim.bounce_animation));
+        } else {
+            binding.enrollmentButton.clearAnimation();
+            hideKeyboard();
+        }
     }
 }

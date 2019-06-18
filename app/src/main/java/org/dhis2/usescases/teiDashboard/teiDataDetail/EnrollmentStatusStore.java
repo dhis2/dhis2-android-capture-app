@@ -129,8 +129,8 @@ public final class EnrollmentStatusStore implements EnrollmentStatusEntryStore {
                 .switchMap(tei -> {
                     if (State.SYNCED.equals(tei.state()) || State.TO_DELETE.equals(tei.state()) ||
                             State.ERROR.equals(tei.state())) {
-                        ContentValues values = tei.toContentValues();
-                        values.put(TrackedEntityInstanceModel.Columns.STATE, State.TO_UPDATE.toString());
+                        ContentValues values = new ContentValues();
+                        values.put(TrackedEntityInstanceModel.Columns.STATE, tei.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
 
                         if (briteDatabase.update(TrackedEntityInstanceModel.TABLE, values,
                                 TrackedEntityInstanceModel.Columns.UID + " = ?", tei.uid()) <= 0) {
@@ -138,6 +138,14 @@ public final class EnrollmentStatusStore implements EnrollmentStatusEntryStore {
                             throw new IllegalStateException(String.format(Locale.US, "Tei=[%s] " +
                                     "has not been successfully updated", tei.uid()));
                         }
+
+                        if(briteDatabase.update(EnrollmentModel.TABLE, values,
+                                EnrollmentModel.Columns.UID + " = ?", enrollment == null ? "" : enrollment) <= 0){
+
+                            throw new IllegalStateException(String.format(Locale.US, "Enrollment=[%s] " +
+                                    "has not been successfully updated", enrollment));
+                        }
+
                     }
 
                     return Flowable.just(status);

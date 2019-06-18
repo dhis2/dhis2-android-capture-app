@@ -127,7 +127,6 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
                 program.completeEventsExpiryDays(),
                 program.expiryPeriodType(),
                 program.expiryDays());
-
     }
 
     private boolean checkOrgUnitRange(String orgUnitUid, Date eventDate) {

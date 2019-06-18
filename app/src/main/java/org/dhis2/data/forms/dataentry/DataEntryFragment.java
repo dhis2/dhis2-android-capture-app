@@ -1,25 +1,29 @@
 package org.dhis2.data.forms.dataentry;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.databinding.ObservableBoolean;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.dhis2.App;
+import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
 import org.dhis2.data.forms.FormFragment;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
+import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
@@ -30,12 +34,16 @@ import org.dhis2.utils.custom_views.OptionSetPopUp;
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
+import java.util.Iterator;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import io.reactivex.Flowable;
 import io.reactivex.functions.Consumer;
+import io.reactivex.processors.FlowableProcessor;
+
+import static android.text.TextUtils.isEmpty;
 
 public final class DataEntryFragment extends FragmentGlobalAbstract implements DataEntryView {
     private static final String ARGUMENTS = "args";
@@ -47,6 +55,9 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
     private RecyclerView recyclerView;
     private Fragment formFragment;
     private String section;
+    private ProgressBar progressBar;
+    private View dummyFocusView;
+    private boolean isEnrollment;
 
     @NonNull
     public static DataEntryFragment create(@NonNull DataEntryArguments arguments) {
@@ -67,7 +78,7 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
                 .getParcelable(ARGUMENTS), "dataEntryArguments == null");
 
         this.section = args.section();
-
+        this.isEnrollment = args.enrollment()!=null;
         if (((App) context.getApplicationContext()).formComponent() != null)
             ((App) context.getApplicationContext())
                     .formComponent()
@@ -83,7 +94,11 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_data_entry, container, false);
+        View view = inflater.inflate(R.layout.fragment_data_entry, container, false);
+        progressBar = view.findViewById(R.id.progress);
+        dummyFocusView = view.findViewById(R.id.dummyFocusView);
+        Bindings.setProgressColor(progressBar, R.color.colorPrimary);
+        return view;
     }
 
     @Override
@@ -121,10 +136,37 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
         return dataEntryAdapter.asFlowableOption();
     }
 
+    @Override
+    public FlowableProcessor<RowAction> getActionProcessor() {
+        return dataEntryAdapter.asFlowable();
+    }
+
     @NonNull
     @Override
     public Consumer<List<FieldViewModel>> showFields() {
-        return updates -> dataEntryAdapter.swap(updates);
+        return updates -> {
+            progressBar.setVisibility(View.INVISIBLE);
+            if (!isEmpty(dataEntryPresenter.getLastFocusItem()))
+                dataEntryAdapter.setLastFocusItem(dataEntryPresenter.getLastFocusItem());
+
+            if(isEnrollment){
+               Iterator<FieldViewModel> iterator = updates.iterator();
+               while (iterator.hasNext()){
+                   if(iterator.next() instanceof DisplayViewModel)
+                       iterator.remove();
+               }
+            }
+
+            dataEntryAdapter.swap(updates);
+
+        };
+    }
+
+    @Override
+    public void nextFocus() {
+        if (!isEmpty(dataEntryPresenter.getLastFocusItem()))
+            dataEntryAdapter.setLastFocusItem(dataEntryPresenter.getLastFocusItem());
+        dataEntryAdapter.swapWithoutList();
     }
 
     @Override
@@ -146,9 +188,7 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
     private void setUpRecyclerView() {
         DataEntryArguments arguments = getArguments().getParcelable(ARGUMENTS);
         dataEntryAdapter = new DataEntryAdapter(LayoutInflater.from(getActivity()),
-                getChildFragmentManager(), arguments,
-                dataEntryPresenter.getOrgUnits(),
-                new ObservableBoolean(true));
+                getChildFragmentManager(), arguments);
 
         RecyclerView.LayoutManager layoutManager;
         if (arguments.renderType() != null && arguments.renderType().equals(ProgramStageSectionRenderingType.MATRIX.name())) {
@@ -159,10 +199,27 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
         recyclerView.setAdapter(dataEntryAdapter);
         recyclerView.setLayoutManager(layoutManager);
 
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                if (newState != RecyclerView.SCROLL_STATE_IDLE) {
+                    dataEntryAdapter.setLastFocusItem(null);
+                    InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(recyclerView.getWindowToken(), 0);
+                    dummyFocusView.requestFocus();
+                    dataEntryPresenter.clearLastFocusItem();
+                }
+            }
+        });
+
     }
 
     public boolean checkErrors() {
         return dataEntryAdapter.hasError();
+    }
+
+    public String getErrorFields() {
+        return dataEntryAdapter.getErrorFieldNames();
     }
 
     @Override
@@ -193,7 +250,14 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
 
     @Override
     public void updateAdapter(RowAction rowAction) {
-        getActivity().runOnUiThread(() -> dataEntryAdapter.notifyChanges(rowAction));
+        getActivity().runOnUiThread(() -> {
+            dataEntryAdapter.notifyChanges(rowAction);
+            if (rowAction.lastFocusPosition() != -1)
+                if (rowAction.lastFocusPosition() >= dataEntryAdapter.getItemCount())
+                    recyclerView.smoothScrollToPosition(rowAction.lastFocusPosition());
+                else
+                    recyclerView.smoothScrollToPosition(rowAction.lastFocusPosition() + 1);
+        });
 
     }
 }

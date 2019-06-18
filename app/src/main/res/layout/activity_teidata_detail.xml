@@ -122,6 +122,7 @@
                             android:layout_width="64dp"
                             android:layout_height="64dp"
                             app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
                             app:srcCompat="@drawable/photo_temp"
                             tools:ignore="ContentDescription" />
 
@@ -135,7 +136,7 @@
                             android:text='@{dashboardModel.getTrackedEntityAttributeValueBySortOrder(1) +" "+ dashboardModel.getTrackedEntityAttributeValueBySortOrder(2)}'
                             android:textColor="@color/gray_444"
                             android:textSize="16sp"
-                            app:layout_constraintEnd_toStartOf="@id/program_lock_text"
+                            app:layout_constraintEnd_toStartOf="@id/program_lock_layout"
                             app:layout_constraintStart_toEndOf="@id/tei_image"
                             app:layout_constraintTop_toTopOf="parent"
                             tools:text="Sarah Thompson" />
@@ -149,39 +150,46 @@
                             android:text='@{dashboardModel.getTrackedEntityAttributeValueBySortOrder(3)}'
                             android:textColor="@color/gray_444"
                             android:textSize="14sp"
-                            app:layout_constraintEnd_toStartOf="@id/program_lock_text"
+                            app:layout_constraintEnd_toStartOf="@id/program_lock_layout"
                             app:layout_constraintStart_toEndOf="@id/tei_image"
                             app:layout_constraintTop_toBottomOf="@id/main_attributes"
-
                             tools:text="26dp" />
 
-                        <ImageView
-                            android:id="@+id/program_lock"
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:id="@+id/program_lock_layout"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="20dp"
-                            app:enrolmentIcon='@{dashboardModel.currentEnrollment.enrollmentStatus()}'
                             app:layout_constraintEnd_toEndOf="parent"
-                            app:srcCompat="@drawable/ic_lock_open_green"
-                            tools:ignore="ContentDescription,MissingConstraints"
-                            tools:layout_editor_absoluteY="5dp" />
+                            app:layout_constraintTop_toTopOf="parent">
 
-                        <TextView
-                            android:id="@+id/program_lock_text"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="sans-serif"
-                            android:gravity="center_horizontal"
-                            android:maxWidth="60dp"
-                            android:textColor="#787878"
-                            android:textSize="14sp"
-                            android:textStyle="normal"
-                            app:enrolmentText='@{dashboardModel.currentEnrollment.enrollmentStatus()}'
-                            app:layout_constraintEnd_toEndOf="@id/program_lock"
-                            app:layout_constraintStart_toStartOf="@id/program_lock"
-                            app:layout_constraintTop_toBottomOf="@id/program_lock"
-                            tools:text="Abierto" />
+                            <ImageView
+                                android:id="@+id/program_lock"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                app:enrolmentIcon='@{dashboardModel.currentEnrollment.enrollmentStatus()}'
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:srcCompat="@drawable/ic_lock_open_green"
+                                tools:ignore="ContentDescription,MissingConstraints"
+                                tools:layout_editor_absoluteY="5dp" />
 
+                            <TextView
+                                android:id="@+id/program_lock_text"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="sans-serif"
+                                android:gravity="center_horizontal"
+                                android:maxWidth="60dp"
+                                android:textColor="#787878"
+                                android:textSize="14sp"
+                                android:textStyle="normal"
+                                app:enrolmentText='@{dashboardModel.currentEnrollment.enrollmentStatus()}'
+                                app:layout_constraintEnd_toEndOf="@id/program_lock"
+                                app:layout_constraintStart_toStartOf="@id/program_lock"
+                                app:layout_constraintTop_toBottomOf="@id/program_lock"
+                                tools:text="Abierto" />
+                        </androidx.constraintlayout.widget.ConstraintLayout>
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
                     <androidx.constraintlayout.widget.ConstraintLayout
@@ -197,6 +205,7 @@
                             android:text='@{program.incidentDateLabel(),default="Incident date"}'
                             android:textColor="@color/icon_color"
                             android:textSize="14sp"
+                            app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
                             tools:text="Date of diagnosis:" />
 
@@ -208,6 +217,7 @@
                             android:text='@{program.enrollmentDateLabel(),default="Enrolment date"}'
                             android:textColor="@color/icon_color"
                             android:textSize="14sp"
+                            app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@id/incident_date_label"
                             tools:text="Date of enrollment:" />
 
@@ -219,6 +229,7 @@
                             android:text="@string/enrolling_ou"
                             android:textColor="@color/icon_color"
                             android:textSize="14sp"
+                            app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@id/enrollment_date_label" />
 
                         <TextView
@@ -254,7 +265,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="10dp"
                             android:gravity="end"
-                            android:text='@{dashboardModel.getOrgUnit().displayName(),default="OrgUnit"}'
+                            android:text='@{dashboardModel.getCurrentOrgUnit().displayName(),default="OrgUnit"}'
                             android:textColor="@color/gray_444"
                             android:textSize="14sp"
                             app:layout_constraintEnd_toEndOf="parent"
@@ -286,8 +297,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:enabled="@{dashboardModel.currentEnrollment.enrollmentStatus()==EnrollmentStatus.ACTIVE}"
-                            android:focusable="false"
-                            android:inputType="numberDecimal"
+                            android:inputType="numberDecimal|numberSigned"
                             android:text='@{dashboardModel.currentEnrollment!=null?dashboardModel.currentEnrollment.latitude():""}'
                             android:textSize="15sp" />
 
@@ -306,8 +316,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:enabled="@{dashboardModel.currentEnrollment.enrollmentStatus()==EnrollmentStatus.ACTIVE}"
-                            android:focusable="false"
-                            android:inputType="numberDecimal"
+                            android:inputType="numberDecimal|numberSigned"
                             android:text='@{dashboardModel.currentEnrollment!=null?dashboardModel.currentEnrollment.longitude():""}'
                             android:textSize="15sp" />
 
@@ -347,60 +356,31 @@
                     </RelativeLayout>
                 </LinearLayout>
 
-
-                <FrameLayout
-                    android:id="@+id/dataFragment"
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="match_parent">
+                    <FrameLayout
+                        android:id="@+id/dataFragment"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <Button
+                        android:id="@+id/next"
+                        style="@style/ButtonRoundedGrey"
+                        android:layout_gravity="end|bottom"
+                        android:layout_margin="16dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginBottom="8dp"
+                        android:elevation="8dp"
+                        android:text="@string/save"
+                        app:elevation="8dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
-
-        <com.dekoservidoni.omfm.OneMoreFabMenu
-            android:id="@+id/fabActive"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="@{enrollmentStatus== EnrollmentStatus.ACTIVE?View.VISIBLE:View.GONE}"
-            app:close_on_click="true"
-            app:color_main_button="?colorPrimary"
-            app:color_secondary_buttons="?colorPrimaryDark"
-            app:content_options="@menu/tei_detail_options_active"
-            app:expanded_background_color="@android:color/transparent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:size_main_button="@integer/omfm_fab_size_normal"
-            app:size_secondary_buttons="@integer/omfm_fab_size_mini" />
-
-        <com.dekoservidoni.omfm.OneMoreFabMenu
-            android:id="@+id/fabCancelled"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="@{enrollmentStatus == EnrollmentStatus.CANCELLED?View.VISIBLE:View.GONE}"
-            app:close_on_click="true"
-            app:color_main_button="?colorPrimary"
-            app:color_secondary_buttons="?colorPrimaryDark"
-            app:content_options="@menu/tei_detail_options_cancelled"
-            app:expanded_background_color="@android:color/transparent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:size_main_button="@integer/omfm_fab_size_normal"
-            app:size_secondary_buttons="@integer/omfm_fab_size_mini" />
-
-        <com.dekoservidoni.omfm.OneMoreFabMenu
-            android:id="@+id/fabCompleted"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="@{enrollmentStatus == EnrollmentStatus.COMPLETED?View.VISIBLE:View.GONE}"
-            app:close_on_click="true"
-            app:color_main_button="?colorPrimary"
-            app:color_secondary_buttons="?colorPrimaryDark"
-            app:content_options="@menu/tei_detail_options_completed"
-            app:expanded_background_color="@android:color/transparent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:size_main_button="@integer/omfm_fab_size_normal"
-            app:size_secondary_buttons="@integer/omfm_fab_size_mini" />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 </layout>

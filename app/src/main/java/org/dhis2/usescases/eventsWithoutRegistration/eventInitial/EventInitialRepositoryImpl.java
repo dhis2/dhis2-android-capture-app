@@ -5,17 +5,22 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.utils.CodeGenerator;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
 import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.State;
+import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
@@ -24,6 +29,7 @@ import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
 import java.text.ParseException;
@@ -35,8 +41,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -52,16 +56,29 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     private static final String SELECT_ORG_UNITS = "SELECT * FROM OrganisationUnit " +
             "JOIN OrganisationUnitProgramLink ON OrganisationUnitProgramLink .organisationUnit = OrganisationUnit.uid " +
-            "WHERE OrganisationUnitProgramLink .program = ?";
+            "WHERE OrganisationUnit.uid IN (SELECT UserOrganisationUnit.organisationUnit FROM UserOrganisationUnit WHERE UserOrganisationUnit.organisationUnitScope = 'SCOPE_DATA_CAPTURE') " +
+            "AND OrganisationUnitProgramLink .program = ?";
 
     private static final String SELECT_ORG_UNITS_FILTERED = "SELECT * FROM " + OrganisationUnitModel.TABLE +
             " JOIN OrganisationUnitProgramLink ON OrganisationUnitProgramLink .organisationUnit = OrganisationUnit.uid " +
-            " WHERE ("
+            " WHERE OrganisationUnit.uid IN (SELECT UserOrganisationUnit.organisationUnit FROM UserOrganisationUnit WHERE UserOrganisationUnit.organisationUnitScope = 'SCOPE_DATA_CAPTURE') " +
+            " AND ("
             + OrganisationUnitModel.Columns.OPENING_DATE + " IS NULL OR " +
             " date(" + OrganisationUnitModel.Columns.OPENING_DATE + ") <= date(?)) AND ("
             + OrganisationUnitModel.Columns.CLOSED_DATE + " IS NULL OR " +
             " date(" + OrganisationUnitModel.Columns.CLOSED_DATE + ") >= date(?)) " +
             "AND OrganisationUnitProgramLink .program = ?";
+
+    private static final String SEARCH_ORG_UNITS_FILTERED = "SELECT OrganisationUnit.* FROM " + OrganisationUnitModel.TABLE +
+            " JOIN OrganisationUnitProgramLink ON OrganisationUnitProgramLink .organisationUnit = OrganisationUnit.uid " +
+            " WHERE OrganisationUnit.uid IN (SELECT UserOrganisationUnit.organisationUnit FROM UserOrganisationUnit)" +
+            " AND ("
+            + OrganisationUnitModel.Columns.OPENING_DATE + " IS NULL OR " +
+            " date(" + OrganisationUnitModel.Columns.OPENING_DATE + ") <= date(?)) AND ("
+            + OrganisationUnitModel.Columns.CLOSED_DATE + " IS NULL OR " +
+            " date(" + OrganisationUnitModel.Columns.CLOSED_DATE + ") >= date(?)) " +
+            "AND OrganisationUnitProgramLink .program = ? ";
+
 
     private final BriteDatabase briteDatabase;
     private final CodeGenerator codeGenerator;
@@ -111,18 +128,46 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     @Override
     public Flowable<Map<String, CategoryOption>> getOptionsFromCatOptionCombo(String eventId) {
         return Flowable.just(d2.eventModule().events.uid(eventUid).get())
-                .flatMap(event -> Flowable.zip(catCombo(event.program()).toFlowable(BackpressureStrategy.LATEST),
-                        Flowable.just(d2.categoryModule().categoryOptionCombos.uid(event.attributeOptionCombo()).withAllChildren().get()),
-                        (categoryCombo, categoryOptionCombo) -> {
-                            List<CategoryOption> selectedCatOptions = categoryOptionCombo.categoryOptions();
+                .flatMap(event -> catCombo(event.program()).toFlowable(BackpressureStrategy.LATEST)
+                        .flatMap(categoryCombo -> {
                             Map<String, CategoryOption> map = new HashMap<>();
-                            for (Category category : categoryCombo.categories()) {
-                                for (CategoryOption categoryOption : selectedCatOptions)
-                                    if (category.categoryOptions().contains(categoryOption))
-                                        map.put(category.uid(), categoryOption);
+                            if (!categoryCombo.isDefault() && event.attributeOptionCombo() != null) {
+                                List<CategoryOption> selectedCatOptions = d2.categoryModule().categoryOptionCombos.uid(event.attributeOptionCombo()).withAllChildren().get().categoryOptions();
+                                for (Category category : categoryCombo.categories()) {
+                                    for (CategoryOption categoryOption : selectedCatOptions)
+                                        if (category.categoryOptions().contains(categoryOption))
+                                            map.put(category.uid(), categoryOption);
+                                }
                             }
-                            return map;
+
+                            return Flowable.just(map);
                         }));
+    }
+
+    @Override
+    public Date getStageLastDate(String programStageUid, String enrollmentUid) {
+        List<Event> activeEvents = d2.eventModule().events.byEnrollmentUid().eq(enrollmentUid).byProgramStageUid().eq(programStageUid)
+                .orderByEventDate(RepositoryScope.OrderByDirection.DESC).get();
+        List<Event> scheduleEvents = d2.eventModule().events.byEnrollmentUid().eq(enrollmentUid).byProgramStageUid().eq(programStageUid)
+                .orderByDueDate(RepositoryScope.OrderByDirection.DESC).get();
+
+        Date activeDate = null;
+        Date scheduleDate = null;
+        if (!activeEvents.isEmpty()) {
+            activeDate = activeEvents.get(0).eventDate();
+        }
+        if (!scheduleEvents.isEmpty())
+            scheduleDate = scheduleEvents.get(0).dueDate();
+
+        if (activeDate != null && scheduleDate != null) {
+            return activeDate.before(scheduleDate) ? scheduleDate : activeDate;
+        } else if (activeDate != null) {
+            return activeDate;
+        } else if (scheduleDate != null){
+            return scheduleDate;
+        }else{
+            return Calendar.getInstance().getTime();
+        }
     }
 
     @NonNull
@@ -131,6 +176,18 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
         if (date == null)
             return orgUnits(programId);
         return briteDatabase.createQuery(OrganisationUnitModel.TABLE, SELECT_ORG_UNITS_FILTERED,
+                date,
+                date,
+                programId == null ? "" : programId)
+                .mapToList(OrganisationUnitModel::create);
+    }
+
+    @NonNull
+    @Override
+    public Observable<List<OrganisationUnitModel>> searchOrgUnits(String date, String programId) {
+        if (date == null)
+            return orgUnits(programId);
+        return briteDatabase.createQuery(OrganisationUnitModel.TABLE, SEARCH_ORG_UNITS_FILTERED,
                 date,
                 date,
                 programId == null ? "" : programId)
@@ -189,9 +246,11 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                     orgUnitUid, programStage);
             return Observable.error(new SQLiteConstraintException(message));
         } else {
+            if (enrollmentUid != null)
+                updateEnrollment(enrollmentUid);
             if (trackedEntityInstanceUid != null)
                 updateTei(trackedEntityInstanceUid);
-            updateProgramTable(createDate, programUid);
+
             return Observable.just(uid);
         }
     }
@@ -243,19 +302,14 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                     orgUnitUid, programStage);
             return Observable.error(new SQLiteConstraintException(message));
         } else {
-            if (trackedEntityInstanceUid != null)
-                updateTei(trackedEntityInstanceUid);
-            updateTrackedEntityInstance(uid, trackedEntityInstanceUid, orgUnitUid);
-            updateProgramTable(createDate, program);
+            if (enrollmentUid != null)
+                updateEnrollment(enrollmentUid);
+            String tei = d2.enrollmentModule().enrollments.uid(enrollmentUid).get().trackedEntityInstance();
+            if (!isEmpty(tei))
+                updateTei(tei);
+
             return Observable.just(uid);
         }
-    }
-
-    private void updateProgramTable(Date lastUpdated, String programUid) {
-        //TODO: Update program causes crash
-        /* ContentValues program = new ContentValues();
-        program.put(EnrollmentModel.Columns.LAST_UPDATED, BaseIdentifiableObject.DATE_FORMAT.format(lastUpdated));
-        briteDatabase.update(ProgramModel.TABLE, program, ProgramModel.Columns.UID + " = ?", programUid);*/
     }
 
     @Override
@@ -279,13 +333,6 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                 });
     }
 
-
-    @NonNull
-    @Override
-    public Observable<EventModel> newlyCreatedEvent(long rowId) {
-        String SELECT_EVENT_WITH_ROWID = "SELECT * FROM " + EventModel.TABLE + " WHERE " + EventModel.Columns.ID + " = '" + rowId + "'" + " AND " + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "' LIMIT 1";
-        return briteDatabase.createQuery(EventModel.TABLE, SELECT_EVENT_WITH_ROWID).mapToOne(EventModel::create);
-    }
 
     @NonNull
     @Override
@@ -335,7 +382,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
         if ((event.coordinate() == null && (!isEmpty(latitude) && !isEmpty(longitude))) ||
                 (event.coordinate() != null && (!String.valueOf(event.coordinate().latitude()).equals(latitude) || !String.valueOf(event.coordinate().longitude()).equals(longitude))))
             hasChanged = true;
-        if (!event.attributeOptionCombo().equals(catOptionCombo))
+        if (event.attributeOptionCombo() != null && !event.attributeOptionCombo().equals(catOptionCombo))
             hasChanged = true;
 
         if (hasChanged) {
@@ -368,39 +415,12 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                 String message = String.format(Locale.US, "Failed to update event for uid=[%s]", eventUid);
                 return Observable.error(new SQLiteConstraintException(message));
             }
+            if (event.enrollment() != null)
+                updateEnrollment(event.enrollment());
             if (trackedEntityInstance != null)
                 updateTei(trackedEntityInstance);
         }
-        return event(eventUid).map(eventModel1 -> {
-            return eventModel1;
-        });
-    }
-
-    @NonNull
-    @Override
-    public Observable<List<EventModel>> getEventsFromProgramStage(String programUid, String enrollmentUid, String programStageUid) {
-        String EVENTS_QUERY = String.format(
-                "SELECT Event.* FROM %s JOIN %s " +
-                        "ON %s.%s = %s.%s " +
-                        "WHERE %s.%s = ? " +
-                        "AND %s.%s = ? " +
-                        "AND %s.%s = ? " +
-                        "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'" +
-                        "AND " + EventModel.TABLE + "." + EventModel.Columns.EVENT_DATE + " > DATE() " +
-                        "ORDER BY CASE WHEN %s.%s > %s.%s " +
-                        "THEN %s.%s ELSE %s.%s END ASC",
-                EventModel.TABLE, EnrollmentModel.TABLE,
-                EnrollmentModel.TABLE, EnrollmentModel.Columns.UID, EventModel.TABLE, EventModel.Columns.ENROLLMENT,
-                EnrollmentModel.TABLE, EnrollmentModel.Columns.PROGRAM,
-                EnrollmentModel.TABLE, EnrollmentModel.Columns.UID,
-                EventModel.TABLE, EventModel.Columns.PROGRAM_STAGE,
-                EventModel.TABLE, EventModel.Columns.DUE_DATE, EventModel.TABLE, EventModel.Columns.EVENT_DATE,
-                EventModel.TABLE, EventModel.Columns.DUE_DATE, EventModel.TABLE, EventModel.Columns.EVENT_DATE);
-
-        return briteDatabase.createQuery(EventModel.TABLE, EVENTS_QUERY, programUid == null ? "" : programUid,
-                enrollmentUid == null ? "" : enrollmentUid,
-                programStageUid == null ? "" : programStageUid)
-                .mapToList(EventModel::create);
+        return event(eventUid).map(eventModel1 -> eventModel1);
     }
 
     @Override
@@ -456,30 +476,21 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
 
     private void updateEnrollment(String enrollmentUid) {
-        String selectEnrollment = "SELECT * FROM Enrollment WHERE uid = ?";
-        try (Cursor enrollmentCursor = briteDatabase.query(selectEnrollment, enrollmentUid)) {
-            if (enrollmentCursor != null && enrollmentCursor.moveToFirst()) {
-                EnrollmentModel enrollment = EnrollmentModel.create(enrollmentCursor);
-                ContentValues cv = enrollment.toContentValues();
-                cv.put(EnrollmentModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
-                cv.put(EnrollmentModel.Columns.STATE,
-                        enrollment.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
-                briteDatabase.update(EnrollmentModel.TABLE, cv, "uid = ?", enrollmentUid);
-            }
-        }
+        Enrollment enrollment = d2.enrollmentModule().enrollments.uid(enrollmentUid).get();
+        ContentValues cv = enrollment.toContentValues();
+        cv.put(EnrollmentModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
+        cv.put(EnrollmentModel.Columns.STATE, enrollment.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
+        int enrollmentUpdated = briteDatabase.update(EnrollmentModel.TABLE, cv, "uid = ?", enrollmentUid);
+        Timber.d("ENROLLMENT %s UPDATED (%s)", enrollmentUid, enrollmentUpdated);
     }
 
     private void updateTei(String teiUid) {
-        String selectTei = "SELECT * FROM TrackedEntityInstance WHERE uid = ?";
-        try (Cursor teiCursor = briteDatabase.query(selectTei, teiUid)) {
-            if (teiCursor != null && teiCursor.moveToFirst()) {
-                TrackedEntityInstanceModel teiModel = TrackedEntityInstanceModel.create(teiCursor);
-                ContentValues cv = teiModel.toContentValues();
-                cv.put(TrackedEntityInstanceModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
-                cv.put(TrackedEntityInstanceModel.Columns.STATE,
-                        teiModel.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
-                briteDatabase.update(TrackedEntityInstanceModel.TABLE, cv, "uid = ?", teiUid);
-            }
-        }
+        TrackedEntityInstance tei = d2.trackedEntityModule().trackedEntityInstances.uid(teiUid).get();
+        ContentValues cv = tei.toContentValues();
+        cv.put(TrackedEntityInstanceModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
+        cv.put(TrackedEntityInstanceModel.Columns.STATE, tei.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
+        int teiUpdated = briteDatabase.update(TrackedEntityInstanceModel.TABLE, cv, "uid = ?", teiUid);
+        Timber.d("TEI %s UPDATED (%s)", teiUid, teiUpdated);
+
     }
 }

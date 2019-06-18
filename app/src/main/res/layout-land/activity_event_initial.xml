@@ -299,8 +299,8 @@
                                     android:id="@+id/lat"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:inputType="numberDecimal"
-                                    android:onTextChanged="@{presenter::onFieldChanged}"
+                                    android:inputType="numberDecimal|numberSigned"
+                                    android:onTextChanged="@{presenter::onLatChanged}"
                                     android:textSize="15sp" />
 
                             </com.google.android.material.textfield.TextInputLayout>
@@ -318,8 +318,8 @@
                                     android:id="@+id/lon"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:inputType="numberDecimal"
-                                    android:onTextChanged="@{presenter::onFieldChanged}"
+                                    android:inputType="numberDecimal|numberSigned"
+                                    android:onTextChanged="@{presenter::onLonChanged}"
                                     android:textSize="15sp" />
 
                             </com.google.android.material.textfield.TextInputLayout>
@@ -375,7 +375,7 @@
                     android:background="?attr/selector_button_round_7"
                     android:paddingStart="10dp"
                     android:paddingEnd="10dp"
-                    android:text="@string/create"
+                    android:text="@string/next"
                     android:textAllCaps="true"
                     android:textColor="@color/white" />
             </RelativeLayout>

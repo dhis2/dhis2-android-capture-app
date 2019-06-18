@@ -44,8 +44,6 @@ public class OrgUnitHolder_2 extends TreeNode.BaseNodeViewHolder<OrganisationUni
         final View view = layoutInflater.inflate(R.layout.item_node, null, false);
         textView = view.findViewById(R.id.org_unit_name);
         imageView = view.findViewById(R.id.org_unit_icon);
-        int textSize = 21 - (value.level());
-        textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
         textView.setText(value.displayName());
         checkBox = view.findViewById(R.id.checkbox);
         checkBox.setChecked(isMultiSelection & node.isSelectable());
@@ -88,7 +86,6 @@ public class OrgUnitHolder_2 extends TreeNode.BaseNodeViewHolder<OrganisationUni
     public void update() {
         if (node != null) {
             node.setSelected(!node.isSelected());
-            textView.setTextColor(node.isSelected() ? ContextCompat.getColor(context, R.color.colorPrimary) : ContextCompat.getColor(context, R.color.gray_444));
             checkBox.setChecked(node.isSelected());
         }
         setSelectedSizeText();

@@ -1,15 +1,19 @@
 package org.dhis2.utils;
 
 import android.content.Context;
+import android.text.TextUtils;
 
 import org.dhis2.R;
 import org.hisp.dhis.android.core.maintenance.D2Error;
+import org.hisp.dhis.android.core.systeminfo.DHISVersion;
 
 public class D2ErrorUtils {
 
     public static String getErrorMessage(Context context, Throwable throwable) {
-        if (throwable instanceof D2Error)
-            return handleD2Error(context, (D2Error) throwable);
+        if (throwable.getCause() instanceof D2Error)
+            return handleD2Error(context, (D2Error) throwable.getCause());
+        else if (throwable instanceof D2Error)
+            return handleD2Error(context,(D2Error)throwable);
         else
             return throwable.getLocalizedMessage();
     }
@@ -45,7 +49,7 @@ public class D2ErrorUtils {
             case USER_ACCOUNT_LOCKED:
                 return d2Error.errorDescription();
             case INVALID_DHIS_VERSION:
-                return context.getString(R.string.login_error_dhis_version_v2);
+                return String.format(context.getString(R.string.login_error_dhis_version_v2), TextUtils.join(", ", DHISVersion.allowedVersionsAsStr()));
             case ALREADY_AUTHENTICATED:
                 return d2Error.errorDescription();
             case NO_AUTHENTICATED_USER:

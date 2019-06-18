@@ -6,6 +6,7 @@ import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.rules.models.RuleEffect;
 
@@ -35,8 +36,6 @@ public class EventCaptureContract {
 
         Consumer<Float> updatePercentage();
 
-        void setMandatoryWarning(Map<String, FieldViewModel> emptyMandatoryFields);
-
         void attemptToFinish(boolean canComplete);
 
         void showCompleteActions(boolean canComplete);
@@ -65,6 +64,10 @@ public class EventCaptureContract {
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
+        String getLastFocusItem();
+
+        void clearLastFocusItem();
+
         void init(EventCaptureContract.View view);
 
         void onBackClick();
@@ -100,6 +103,8 @@ public class EventCaptureContract {
         boolean canWrite();
 
         boolean hasExpired();
+
+        Observable<List<OrganisationUnitLevel>> getLevels();
     }
 
     public interface EventCaptureRepository {
@@ -146,6 +151,10 @@ public class EventCaptureContract {
         boolean isEnrollmentCancelled();
 
         boolean isEventExpired(String eventUid);
+
+        Observable<List<OrganisationUnitLevel>> getOrgUnitLevels();
+
+        boolean optionIsInOptionGroup(String optionUid, String optionGroupToHide);
     }
 
 }

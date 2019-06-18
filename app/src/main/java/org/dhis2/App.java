@@ -4,10 +4,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Looper;
+import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 import com.facebook.stetho.Stetho;
 import com.google.android.gms.security.ProviderInstaller;
+import com.mapbox.mapboxsdk.Mapbox;
 
 import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.dagger.PerServer;
@@ -45,6 +47,7 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.multidex.MultiDex;
 import androidx.multidex.MultiDexApplication;
 import io.fabric.sdk.android.Fabric;
+import io.ona.kujaku.KujakuLibrary;
 import io.reactivex.Scheduler;
 import io.reactivex.android.plugins.RxAndroidPlugins;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -104,6 +107,10 @@ public class App extends MultiDexApplication implements Components {
             Stetho.initializeWithDefaults(this);
             Timber.d("STETHO INITIALIZATION END AT %s", System.currentTimeMillis() - startTime);
         }
+
+        KujakuLibrary.setEnableMapDownloadResume(false);
+        KujakuLibrary.init(this);
+
         Fabric.with(this, new Crashlytics());
         Timber.d("FABRIC INITIALIZATION END AT %s", System.currentTimeMillis() - startTime);
 
@@ -184,7 +191,6 @@ public class App extends MultiDexApplication implements Components {
                 .appModule(new AppModule(this))
                 .schedulerModule(new SchedulerModule(new SchedulersProviderImpl()))
                 .metadataModule(new MetadataModule())
-                .qrModule(new QRModule())
                 .utilModule(new UtilsModule());
     }
 

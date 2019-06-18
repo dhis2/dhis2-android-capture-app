@@ -8,11 +8,15 @@
         <import type="android.view.View" />
 
         <variable
-            name="indicator"
-            type="org.hisp.dhis.android.core.program.ProgramIndicatorModel" />
+            name="label"
+            type="java.lang.String" />
 
         <variable
             name="value"
+            type="java.lang.String" />
+
+        <variable
+            name="description"
             type="java.lang.String" />
 
         <variable
@@ -30,7 +34,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="60dp">
+            android:layout_height="48dp">
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/guideline"
@@ -49,10 +53,9 @@
                 android:gravity="center|start"
                 android:maxLines="2"
                 android:padding="5dp"
-                android:text='@{indicator.displayName()}'
+                android:text='@{label}'
                 android:textColor="#787878"
-                android:textSize="18sp"
-                android:textStyle="bold"
+                android:textSize="14sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/guideline"
                 app:layout_constraintStart_toStartOf="parent"
@@ -64,14 +67,13 @@
                 android:id="@+id/indicator_value"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:layout_marginStart="10dp"
+                android:paddingStart="10dp"
                 android:background="@{colorBg!=-1? colorBg : @color/gray_e7e}"
                 android:fontFamily="sans-serif"
                 android:gravity="center"
                 android:text="@{value}"
                 android:textColor="#444444"
-                android:textSize="18sp"
-                android:textStyle="bold"
+                android:textSize="14sp"
                 app:fromResBgColor="@{colorBg!=-1? colorBg : @color/gray_e7e}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -85,7 +87,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:tint="?colorPrimary"
-                android:visibility="@{indicator.displayDescription()!=null? View.VISIBLE: View.GONE}"
+                android:visibility="@{description!=null? View.VISIBLE: View.GONE}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/indicator_value"
                 app:srcCompat="@drawable/ic_info_outline" />

@@ -32,16 +32,15 @@
             type="androidx.databinding.ObservableBoolean" />
     </data>
 
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/card_data"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:focusableInTouchMode="true"
-        android:paddingStart="12dp"
-        android:paddingTop="7dp"
-        android:paddingEnd="12dp"
-        android:paddingBottom="7dp"
+        android:paddingStart="16dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="8dp"
         android:transitionName="user_info">
 
         <ImageView
@@ -64,8 +63,7 @@
             style="@style/ButtonRoundedGrey"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="2.5dp"
-            android:layout_marginEnd="5dp"
+            android:layout_marginStart="3.5dp"
             android:gravity="center"
             android:onClick="@{(view)->presenter.onShareClick(view)}"
             android:padding="5dp"
@@ -85,10 +83,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="6dp"
+                android:fontFamily="@font/rubik_medium"
                 android:text="@string/share"
+                android:textAllCaps="true"
                 android:textColor="@color/white"
-                android:textSize="13sp"
-                android:textStyle="bold" />
+                android:textSize="12sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -96,8 +95,7 @@
             style="@style/ButtonRoundedGrey"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginStart="5dp"
-            android:layout_marginEnd="2.5dp"
+            android:layout_marginEnd="3.5dp"
             android:gravity="center"
             android:onClick="@{() -> presenter.seeDetails(cardData, dashboardModel)}"
             android:visibility="@{program == null ? View.INVISIBLE : View.VISIBLE}"
@@ -121,10 +119,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="6dp"
+                android:fontFamily="@font/rubik_medium"
                 android:text="@string/see_details"
+                android:textAllCaps="true"
                 android:textColor="@color/white"
-                android:textSize="13sp"
-                android:textStyle="bold"
+                android:textSize="12sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/viewMoreIcon"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -132,12 +131,11 @@
 
         <ImageView
             android:id="@+id/follow_up"
-            android:layout_width="27dp"
-            android:layout_height="27dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:layout_gravity="center_vertical"
             android:background='@{followup ? @drawable/ic_circle_red : null}'
             android:onClick='@{() -> presenter.onFollowUp(dashboardModel)}'
-            android:padding="6dp"
             android:tint="@{followup ? @color/white : @color/text_black_333}"
             android:visibility="@{program!=null?View.VISIBLE:View.GONE}"
             app:layout_constraintEnd_toEndOf="parent"
@@ -156,10 +154,10 @@
 
             <ImageView
                 android:id="@+id/program_lock"
-                android:layout_width="27dp"
-                android:layout_height="27dp"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:layout_centerHorizontal="true"
-                android:layout_marginEnd="10dp"
+                android:layout_marginEnd="8dp"
                 app:enrolmentIcon='@{enrollment.enrollmentStatus()}'
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -173,15 +171,11 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/program_lock"
                 android:layout_centerHorizontal="true"
-                android:gravity="center_horizontal"
                 android:lines="1"
                 android:maxWidth="80dp"
                 android:textColor="#787878"
                 android:textSize="9sp"
-                android:textStyle="normal"
                 app:enrolmentText='@{enrollment.enrollmentStatus()}'
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/program_lock"
                 tools:text="Completado" />
 
         </RelativeLayout>
@@ -190,17 +184,18 @@
             android:id="@+id/teiData"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:padding="5dp"
             app:layout_constraintEnd_toStartOf="@id/program_lock_layout"
-            app:layout_constraintStart_toStartOf="parent">
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
                 android:id="@+id/tei_image"
-                android:layout_width="56dp"
-                android:layout_height="56dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:background="@drawable/photo_temp"
                 android:tint="@color/white"
                 app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_tei_default"
                 tools:ignore="ContentDescription" />
 
@@ -211,7 +206,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:text='@{dashboardModel.getTrackedEntityAttributeValueBySortOrder(1) +" "+ dashboardModel.getTrackedEntityAttributeValueBySortOrder(2)}'
-                android:textColor="@color/text_black_333"
+                android:textColor="@color/text_black_4d4d4d"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toEndOf="@id/tei_image"
@@ -225,7 +220,7 @@
                 android:layout_marginStart="10dp"
                 android:text='@{dashboardModel.getTrackedEntityAttributeValueBySortOrder(3)}'
                 android:textColor="@color/text_black_333"
-                android:textSize="14sp"
+                android:textSize="12sp"
                 android:visibility="@{dashboardModel.trackedEntityAttributeValues.size()>2 ? View.VISIBLE : View.GONE}"
                 app:layout_constraintStart_toEndOf="@id/tei_image"
                 app:layout_constraintTop_toBottomOf="@id/main_attributes"
@@ -250,18 +245,20 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginBottom="5dp"
-                android:padding="5dp">
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp">
 
                 <TextView
                     android:id="@+id/incident_date_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
-                    android:text='@{@string/text_plus_colon(program.incidentDateLabel()!=null?program.incidentDateLabel():@string/incident_date)}'
-                    android:textColor="@color/icon_color"
-                    android:textSize="14sp"
-                    android:visibility="@{(dashboardModel.currentEnrollment.incidentDate()!=null &amp;&amp; program.displayIncidentDate()) ? View.VISIBLE : View.GONE}"
+                    android:fontFamily="@font/rubik_medium"
+                    android:text='@{@string/text_plus_colon((program != null &amp;&amp; program.incidentDateLabel()!=null)?program.incidentDateLabel():@string/incident_date)}'
+                    android:textColor="@color/text_black_4d4d4d"
+                    android:textSize="12sp"
+                    android:visibility="@{(dashboardModel.currentEnrollment.incidentDate()!=null &amp;&amp; program != null &amp;&amp; program.displayIncidentDate()) ? View.VISIBLE : View.GONE}"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     tools:text="Date of diagnosis:" />
 
@@ -270,10 +267,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
-                    android:text='@{@string/text_plus_colon(program.enrollmentDateLabel()!=null?program.enrollmentDateLabel():@string/enrollmment_date)}'
-                    android:textColor="@color/icon_color"
-                    android:textSize="14sp"
+                    android:fontFamily="@font/rubik_medium"
+                    android:text='@{@string/text_plus_colon(program != null &amp;&amp; program.enrollmentDateLabel()!=null?program.enrollmentDateLabel():@string/enrollmment_date)}'
+                    android:textColor="@color/text_black_4d4d4d"
+                    android:textSize="12sp"
                     android:visibility="@{dashboardModel.currentEnrollment.enrollmentDate()==null?View.GONE:View.VISIBLE}"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/incident_date_label"
                     tools:text="Date of enrollment:" />
 
@@ -282,9 +281,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
+                    android:fontFamily="@font/rubik_medium"
                     android:text="@string/enrolling_ou"
-                    android:textColor="@color/icon_color"
-                    android:textSize="14sp"
+                    android:textColor="@color/text_black_4d4d4d"
+                    android:textSize="12sp"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/enrollment_date_label" />
 
                 <TextView
@@ -292,10 +293,11 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
+                    android:fontFamily="@font/rubik_medium"
                     android:gravity="end"
-                    android:textColor="@color/gray_444"
-                    android:textSize="14sp"
-                    android:visibility="@{(dashboardModel.currentEnrollment.incidentDate()!=null &amp;&amp; program.displayIncidentDate()) ? View.VISIBLE : View.GONE}"
+                    android:textColor="@color/text_black_4d4d4d"
+                    android:textSize="12sp"
+                    android:visibility="@{(dashboardModel.currentEnrollment.incidentDate()!=null &amp;&amp; program != null &amp;&amp; program.displayIncidentDate()) ? View.VISIBLE : View.GONE}"
                     app:date="@{dashboardModel.currentEnrollment.incidentDate ()}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/incident_date_label"
@@ -307,9 +309,10 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
+                    android:fontFamily="@font/rubik_medium"
                     android:gravity="end"
-                    android:textColor="@color/gray_444"
-                    android:textSize="14sp"
+                    android:textColor="@color/text_black_4d4d4d"
+                    android:textSize="12sp"
                     android:visibility="@{dashboardModel.currentEnrollment.enrollmentDate()==null?View.GONE:View.VISIBLE}"
                     app:date="@{dashboardModel.currentEnrollment.enrollmentDate()}"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -321,10 +324,11 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
+                    android:fontFamily="@font/rubik_medium"
                     android:gravity="end"
-                    android:text='@{dashboardModel.getOrgUnit().displayName(),default="OrgUnit"}'
-                    android:textColor="@color/gray_444"
-                    android:textSize="14sp"
+                    android:text='@{dashboardModel.getCurrentOrgUnit().displayName(),default="OrgUnit"}'
+                    android:textColor="@color/text_black_4d4d4d"
+                    android:textSize="12sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@id/org_unit_label" />
             </androidx.constraintlayout.widget.ConstraintLayout>

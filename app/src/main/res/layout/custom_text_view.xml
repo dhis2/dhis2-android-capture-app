@@ -45,18 +45,20 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/input_layout"
+                style="@style/ValueType_Text"
+                android:theme="@style/loginInputText"
                 android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:hint='@{label}'
-                android:layout_height="wrap_content"
-                android:theme="@style/loginInputText"
                 android:textColorHint="@color/text_black_808"
                 tools:hint="hint">
 
                 <org.dhis2.utils.custom_views.TextInputAutoCompleteTextView
                     android:id="@+id/input_editText"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="start"
                     android:imeOptions="actionNext"
                     android:maxLines="1"
                     android:textAlignment="textStart"
@@ -70,6 +72,7 @@
                 android:id="@+id/descriptionLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:visibility="visible"
                 app:srcCompat="@drawable/ic_info_outline"
                 app:tint="?colorPrimary" />
         </LinearLayout>

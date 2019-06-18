@@ -12,9 +12,11 @@ http://developer.android.com/guide/topics/appwidgets/index.html#CreatingLayout
     <dimen name="section_margin">20dp</dimen>
     <dimen name="item_margin">10dp</dimen>
     <dimen name="primaryTextSize">17sp</dimen>
+    <dimen name="textSize_12">12sp</dimen>
     <dimen name="secondaryTextSize">10sp</dimen>
     <dimen name="sectionSelectorHeight">48dp</dimen>
     <dimen name="sectionSelectorWidth">150dp</dimen>
     <dimen name="itemSectionSelectorHeight">48dp</dimen>
+    <dimen name="chip_minHeight">32dp</dimen>
 
 </resources>

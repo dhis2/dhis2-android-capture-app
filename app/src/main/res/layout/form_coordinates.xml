@@ -35,46 +35,77 @@
             tools:srcCompat="@drawable/sierra_leone"
             tools:visibility="visible" />
 
+        <TextView
+            android:id="@+id/formLabel"
+            android:layout_width="match_parent"
+            android:textSize="@dimen/textSize_12"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/renderImage"
+            android:paddingStart="4dp"
+            android:text="@{label}"
+            tools:text="Form Name" />
+
         <LinearLayout
+            android:id="@+id/fieldLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/renderImage">
+            android:gravity="center_vertical"
+            android:layout_below="@id/formLabel">
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/inputLayout"
+                android:id="@+id/latitudeInputLayout"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:hint="@{label}"
+                android:hint="@string/latitude"
                 android:textColorHint="@color/text_black_808"
                 android:theme="@style/loginInputText">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/latlong"
+                    android:id="@+id/latitude"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="numberDecimal"
+                    android:inputType="numberDecimal|numberSigned"
+                    android:imeOptions="actionNext"
                     android:textColor="@color/text_black_333"
                     android:textSize="15sp" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/longInputLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="@string/longitude"
+                android:textColorHint="@color/text_black_808"
+                android:theme="@style/loginInputText">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/longitude"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="numberDecimal|numberSigned"
+                    android:textColor="@color/text_black_333"
+                    android:imeOptions="actionDone"
+                    android:textSize="15sp" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
             <ImageButton
+                style="@style/ActionIcon"
                 android:id="@+id/location1"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_margin="10dp"
-                android:background="@drawable/selector_gray_button_round_7"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:padding="6dp"
                 app:srcCompat="@drawable/ic_my_location"
                 tools:ignore="ContentDescription" />
 
             <ImageButton
+                style="@style/ActionIcon"
                 android:id="@+id/location2"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_margin="10dp"
-                android:background="@drawable/selector_gray_button_round_7"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:padding="6dp"
                 app:srcCompat="@drawable/ic_map"
                 tools:ignore="ContentDescription" />
@@ -87,5 +118,17 @@
                 app:srcCompat="@drawable/ic_info_outline"
                 app:tint="?colorPrimary" />
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/errorMessage"
+            android:layout_width="match_parent"
+            android:textSize="@dimen/textSize_12"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/fieldLayout"
+            android:padding="4dp"
+            android:visibility="gone"
+            tools:textAppearance="@style/error_appearance"
+            tools:text="This is a error warning"
+            tools:visibility="visible"/>
     </RelativeLayout>
 </layout>

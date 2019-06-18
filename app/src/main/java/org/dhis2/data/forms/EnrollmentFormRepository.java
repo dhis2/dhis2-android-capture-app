@@ -3,7 +3,9 @@ package org.dhis2.data.forms;
 import android.content.ContentValues;
 import android.database.Cursor;
 
-import com.google.android.gms.maps.model.LatLng;
+import androidx.annotation.NonNull;
+
+import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
@@ -27,6 +29,7 @@ import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
@@ -35,13 +38,13 @@ import org.hisp.dhis.rules.RuleEngineContext;
 import org.hisp.dhis.rules.RuleExpressionEvaluator;
 import org.hisp.dhis.rules.models.TriggerEnvironment;
 
+import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import androidx.annotation.NonNull;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -357,11 +360,73 @@ public class EnrollmentFormRepository implements FormRepository {
 
     @NonNull
     @Override
+    public Observable<Long> saveReportDate(String reportDate) {
+        try {
+
+            String reportDateToStore = null;
+            if (!isEmpty(reportDate)) {
+
+                Calendar cal = Calendar.getInstance();
+                Date date = DateUtils.databaseDateFormat().parse(reportDate);
+                cal.setTime(date);
+                cal.set(Calendar.HOUR_OF_DAY, 0);
+                cal.set(Calendar.MINUTE, 0);
+                cal.set(Calendar.SECOND, 0);
+                cal.set(Calendar.MILLISECOND, 0);
+                reportDateToStore = DateUtils.databaseDateFormat().format(cal.getTime());
+            }
+
+            ContentValues enrollment = new ContentValues();
+            enrollment.put(EnrollmentModel.Columns.ENROLLMENT_DATE, reportDateToStore);
+            enrollment.put(EnrollmentModel.Columns.STATE, State.TO_UPDATE.name()); // TODO: Check if state is TO_POST
+            // TODO: and if so, keep the TO_POST state
+
+            long updated = briteDatabase.update(EnrollmentModel.TABLE, enrollment,
+                    EnrollmentModel.Columns.UID + " = ?", enrollmentUid == null ? "" : enrollmentUid);
+
+            return Observable.just(updated);
+        } catch (ParseException e) {
+            return Observable.error(new Exception("Error saving reportDate"));
+        }
+
+    }
+
+    @NonNull
+    @Override
+    public Observable<Long> saveIncidentDate(String incidentDate) {
+        try {
+            String incidentDateToStore = null;
+            if (!isEmpty(incidentDate)) {
+                Calendar cal = Calendar.getInstance();
+                Date date = DateUtils.databaseDateFormat().parse(incidentDate);
+                cal.setTime(date);
+                cal.set(Calendar.HOUR_OF_DAY, 0);
+                cal.set(Calendar.MINUTE, 0);
+                cal.set(Calendar.SECOND, 0);
+                cal.set(Calendar.MILLISECOND, 0);
+                incidentDateToStore = DateUtils.databaseDateFormat().format(cal.getTime());
+            }
+            ContentValues enrollment = new ContentValues();
+            enrollment.put(EnrollmentModel.Columns.INCIDENT_DATE, incidentDateToStore);
+            enrollment.put(EnrollmentModel.Columns.STATE, State.TO_UPDATE.name()); // TODO: Check if state is TO_POST
+            // TODO: and if so, keep the TO_POST state
+
+            long updated = briteDatabase.update(EnrollmentModel.TABLE, enrollment,
+                    EnrollmentModel.Columns.UID + " = ?", enrollmentUid == null ? "" : enrollmentUid);
+
+            return Observable.just(updated);
+        } catch (ParseException e) {
+            return Observable.error(new Exception("Error saving reportDate"));
+        }
+    }
+
+    @NonNull
+    @Override
     public Consumer<LatLng> storeCoordinates() {
         return latLng -> {
             ContentValues enrollment = new ContentValues();
-            enrollment.put(EnrollmentModel.Columns.LATITUDE, latLng.latitude);
-            enrollment.put(EnrollmentModel.Columns.LONGITUDE, latLng.longitude); // TODO: Check if state is TO_POST
+            enrollment.put(EnrollmentModel.Columns.LATITUDE, latLng.getLatitude());
+            enrollment.put(EnrollmentModel.Columns.LONGITUDE, latLng.getLongitude()); // TODO: Check if state is TO_POST
             // TODO: and if so, keep the TO_POST state
 
             briteDatabase.update(EnrollmentModel.TABLE, enrollment,
@@ -468,6 +533,9 @@ public class EnrollmentFormRepository implements FormRepository {
                     if (!generatedByEnrollmentDate && incidentDate != null)
                         cal.setTime(incidentDate);
 
+                    if (generatedByEnrollmentDate)
+                        cal.setTime(enrollmentDate);
+
                     cal.set(Calendar.HOUR_OF_DAY, 0);
                     cal.set(Calendar.MINUTE, 0);
                     cal.set(Calendar.SECOND, 0);
@@ -566,8 +634,26 @@ public class EnrollmentFormRepository implements FormRepository {
     }
 
     @Override
-    public Observable<Trio<Boolean, CategoryComboModel, List<CategoryOptionComboModel>>> getProgramCategoryCombo() {
-        return null;
+    public Observable<Trio<Boolean, CategoryComboModel, List<CategoryOptionComboModel>>> getProgramCategoryCombo(String eventUid) {
+        return briteDatabase.createQuery(EventModel.TABLE, "SELECT * FROM Event WHERE Event.uid = ?", eventUid)
+                .mapToOne(EventModel::create)
+                .flatMap(eventModel -> briteDatabase.createQuery(CategoryComboModel.TABLE, "SELECT CategoryCombo.* FROM CategoryCombo " +
+                        "JOIN Program ON Program.categoryCombo = CategoryCombo.uid WHERE Program.uid = ?", eventModel.program())
+                        .mapToOne(CategoryComboModel::create)
+                        .flatMap(categoryComboModel ->
+                                briteDatabase.createQuery(CategoryOptionComboModel.TABLE, "SELECT * FROM CategoryOptionCombo " +
+                                        "WHERE categoryCombo = ?", categoryComboModel.uid())
+                                        .mapToList(CategoryOptionComboModel::create)
+                                        .map(categoryOptionComboModels -> {
+                                            boolean eventHastOptionSelected = false;
+                                            for (CategoryOptionComboModel options : categoryOptionComboModels) {
+                                                if (eventModel.attributeOptionCombo() != null && eventModel.attributeOptionCombo().equals(options.uid()))
+                                                    eventHastOptionSelected = true;
+                                            }
+                                            return Trio.create(eventHastOptionSelected, categoryComboModel, categoryOptionComboModels);
+                                        })
+                        )
+                );
     }
 
     @Override
@@ -637,6 +723,10 @@ public class EnrollmentFormRepository implements FormRepository {
         try (Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", uid)) {
             if (objStyleCursor != null && objStyleCursor.moveToFirst())
                 objectStyle = ObjectStyleModel.create(objStyleCursor);
+        }
+
+        if (valueType == ValueType.ORGANISATION_UNIT && !isEmpty(dataValue)) {
+            dataValue = dataValue + "_ou_" + d2.organisationUnitModule().organisationUnits.uid(dataValue).get().displayName();
         }
 
         return fieldFactory.create(uid, label, valueType, mandatory, optionSetUid, dataValue, section,
@@ -731,4 +821,10 @@ public class EnrollmentFormRepository implements FormRepository {
                 })
                 .toFlowable(BackpressureStrategy.LATEST);
     }
+
+    public Flowable<ProgramStage> getProgramStage(String eventUid) {
+        return Flowable.fromCallable(() -> d2.eventModule().events.byUid().eq(eventUid).one().get())
+                .map(event -> d2.programModule().programStages.byUid().eq(event.programStage()).one().get());
+    }
+
 }

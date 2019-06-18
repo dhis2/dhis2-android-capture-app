@@ -2,22 +2,22 @@ package org.dhis2.utils.custom_views;
 
 import android.app.Dialog;
 import android.content.Context;
-import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.DialogFragment;
 
 import org.dhis2.R;
 import org.dhis2.databinding.DialogPeriodBinding;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.period.PeriodType;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
@@ -42,7 +42,7 @@ public class PeriodDialog extends DialogFragment {
         possitiveListener = null;
         negativeListener = null;
         title = null;
-        currentDate = Calendar.getInstance().getTime();
+        currentDate = DateUtils.getInstance().getToday();
     }
 
     public PeriodDialog setPeriod(PeriodType period) {
@@ -103,19 +103,16 @@ public class PeriodDialog extends DialogFragment {
         else
             currentDate = DateUtils.getInstance().getNextPeriod(period, currentDate, 0);
 
-        binding.selectedPeriod.setText(DateUtils.getInstance().getPeriodUIString(period,currentDate, Locale.getDefault()));
+        binding.selectedPeriod.setText(DateUtils.getInstance().getPeriodUIString(period, currentDate, Locale.getDefault()));
+        checkConstraintDates();
 
         binding.periodBefore.setOnClickListener(view -> {
             previousPeriod();
             checkConstraintDates();
-
-
         });
         binding.periodNext.setOnClickListener(view -> {
             nextPeriod();
             checkConstraintDates();
-
-
         });
 
         return binding.getRoot();
@@ -150,7 +147,7 @@ public class PeriodDialog extends DialogFragment {
     }
 
     public PeriodDialog setMaxDate(Date maxDate) {
-        this.maxDate = maxDate;
+        this.maxDate = maxDate != null ? DateUtils.getInstance().getNextPeriod(period, maxDate, 0) : null;
         return this;
     }
 

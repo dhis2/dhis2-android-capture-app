@@ -1,14 +1,16 @@
 package org.dhis2.data.forms;
 
-import com.google.android.gms.maps.model.LatLng;
+import com.mapbox.mapboxsdk.geometry.LatLng;
 
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
+import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.rules.RuleEngine;
 
 import java.util.List;
@@ -40,7 +42,13 @@ public interface FormRepository {
     Consumer<String> storeReportDate();
 
     @NonNull
+    Observable<Long> saveReportDate(String date);
+
+    @NonNull
     Consumer<String> storeIncidentDate();
+
+    @NonNull
+    Observable<Long> saveIncidentDate(String date);
 
     @NonNull
     Consumer<LatLng> storeCoordinates();
@@ -74,11 +82,13 @@ public interface FormRepository {
     @NonNull
     Observable<String> getTrackedEntityInstanceUid();
 
-    Observable<Trio<Boolean, CategoryComboModel, List<CategoryOptionComboModel>>> getProgramCategoryCombo();
+    Observable<Trio<Boolean, CategoryComboModel, List<CategoryOptionComboModel>>> getProgramCategoryCombo(String eventUid);
 
     void saveCategoryOption(CategoryOptionComboModel selectedOption);
 
     Observable<Boolean> captureCoodinates();
 
     Observable<OrganisationUnit> getOrgUnitDates();
+
+    Flowable<ProgramStage> getProgramStage(String eventUid);
 }

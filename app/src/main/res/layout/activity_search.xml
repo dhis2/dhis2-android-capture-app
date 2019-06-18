@@ -9,6 +9,10 @@
             name="presenter"
             type="org.dhis2.usescases.searchTrackEntity.SearchTEContractsModule.Presenter" />
 
+        <variable
+            name="needsSearch"
+            type="androidx.databinding.ObservableBoolean" />
+
     </data>
 
     <RelativeLayout
@@ -102,10 +106,10 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.coordinatorlayout.widget.CoordinatorLayout
+            android:id="@+id/coordinatorLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/mainToolbar"
-            android:background="@color/gray_f6f">
+            android:layout_below="@+id/mainToolbar">
 
             <!--SCROLLING VIEW-->
 
@@ -115,15 +119,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+                app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior" />
 
             <RelativeLayout
                 android:id="@+id/messageContainer"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/colorAccent"
+                android:background="@color/white"
                 android:visibility="visible"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior">
+                app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
                 <TextView
                     android:id="@+id/message"
@@ -142,7 +146,7 @@
                 android:layout_height="match_parent"
                 android:background="@color/colorAccent"
                 android:visibility="visible"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior">
+                app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
                 <ProgressBar
                     android:layout_width="match_parent"
@@ -160,13 +164,14 @@
                 android:layout_alignParentBottom="true"
                 android:layout_gravity="end|bottom"
                 android:layout_margin="15dp"
-                android:onClick="@{(view)->presenter.onFabClick(view)}"
+                android:focusableInTouchMode="true"
+                android:onClick="@{(view)->presenter.onFabClick(view, needsSearch)}"
                 android:tint="@color/white"
                 app:backgroundTint="?attr/colorPrimary"
                 app:elevation="7dp"
                 app:fabSize="normal"
                 app:layout_behavior="org.dhis2.utils.FixedBottomViewBehavior"
-                app:srcCompat='@{@drawable/ic_add}' />
+                app:searchOrAdd='@{ needsSearch }' />
 
             <!--END OF SCROLLING VIEW-->
 

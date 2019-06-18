@@ -2,11 +2,15 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventInitial;
 
 import android.app.DatePickerDialog;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.unnamed.b.atv.model.TreeNode;
 
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.usescases.general.AbstractActivityContracts;
+import org.dhis2.utils.EventCreationType;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
@@ -20,8 +24,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import io.reactivex.functions.Consumer;
 
 /**
@@ -77,6 +79,12 @@ public class EventInitialContract {
         void setHideSection(String sectionUid);
 
         void renderObjectStyle(ObjectStyleModel objectStyleModel);
+
+        EventCreationType eventcreateionType();
+
+        void latitudeWarning(boolean showWarning);
+
+        void longitudeWarning(boolean showWarning);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
@@ -90,10 +98,9 @@ public class EventInitialContract {
                          String catOption, String catOptionCombo,
                          String latitude, String longitude, String trackedEntityInstance);
 
-        void createEventPermanent(String enrollmentUid, String trackedEntityInstanceUid, String programStageModel,
-                                  Date date, String orgUnitUid,
-                                  String catOption, String catOptionCombo,
-                                  String latitude, String longitude);
+        void scheduleEventPermanent(String enrollmentUid, String trackedEntityInstanceUid, String programStageModel, Date dueDate, String orgUnitUid,
+                                    String categoryOptionComboUid, String categoryOptionsUid,
+                                    String latitude, String longitude);
 
         void scheduleEvent(String enrollmentUid, String programStageModel, Date dueDate, String orgUnitUid,
                            String catOption, String catOptionCombo,
@@ -110,6 +117,10 @@ public class EventInitialContract {
         void onLocationClick();
 
         void onLocation2Click();
+
+        void onLatChanged(CharSequence s, int start, int before, int count);
+
+        void onLonChanged(CharSequence s, int start, int before, int count);
 
         void onFieldChanged(CharSequence s, int start, int before, int count);
 
@@ -134,6 +145,8 @@ public class EventInitialContract {
         void getStageObjectStyle(String uid);
 
         String getCatOptionCombo(List<CategoryOptionCombo> categoryOptionCombos, List<CategoryOption> values);
+
+        Date getStageLastDate(String programStageUid, String enrollmentUid);
     }
 
 }

@@ -3,11 +3,10 @@ package org.dhis2.data.forms.dataentry.fields.edittext;
 
 import android.widget.ArrayAdapter;
 
-import androidx.annotation.NonNull;
-
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
@@ -20,6 +19,8 @@ import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
 import java.lang.reflect.Type;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.content.res.AppCompatResources;
 import io.reactivex.processors.FlowableProcessor;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -33,6 +34,8 @@ import static java.lang.String.valueOf;
 
 final class EditTextCustomHolder extends FormViewHolder {
 
+    private final FlowableProcessor<RowAction> processor;
+    private final boolean isSearchMode;
     private List<String> autoCompleteValues;
     private FormEditTextCustomBinding binding;
     private EditTextViewModel editTextModel;
@@ -40,56 +43,58 @@ final class EditTextCustomHolder extends FormViewHolder {
     EditTextCustomHolder(FormEditTextCustomBinding binding, FlowableProcessor<RowAction> processor, boolean isSearchMode) {
         super(binding);
         this.binding = binding;
-        binding.customEdittext.setFocusChangedListener((v, hasFocus) -> {
-            if(hasFocus)
-                openKeyboard(binding.customEdittext.getEditText());
-            if (isSearchMode || (!hasFocus && editTextModel != null && editTextModel.editable() && valueHasChanged())) {
-                if (!isEmpty(binding.customEdittext.getEditText().getText())) {
-                    checkAutocompleteRendering();
-                    editTextModel.withValue(binding.customEdittext.getEditText().getText().toString());
-                    processor.onNext(RowAction.create(editTextModel.uid(), binding.customEdittext.getEditText().getText().toString()));
+        this.processor = processor;
+        this.isSearchMode = isSearchMode;
 
-                } else {
-                    processor.onNext(RowAction.create(editTextModel.uid(), null));
-                }
+        binding.customEdittext.setFocusChangedListener((v, hasFocus) -> {
+            if (hasFocus) {
+                openKeyboard(binding.customEdittext.getEditText());
+                setSelectedBackground(isSearchMode);
+            } else
+                clearBackground(isSearchMode);
+
+            if (isSearchMode || (!hasFocus && editTextModel != null && editTextModel.editable() && valueHasChanged())) {
+                sendAction();
             }
         });
         binding.customEdittext.setOnEditorActionListener((v, actionId, event) -> {
-            binding.customEdittext.getEditText().clearFocus();
+            sendAction();
             closeKeyboard(binding.customEdittext.getEditText());
-            return false;
+            sendAction();
+            return true;
         });
     }
 
-    public void update(@NonNull FieldViewModel model) {
+    private void sendAction() {
+        if (!isEmpty(binding.customEdittext.getEditText().getText())) {
+            checkAutocompleteRendering();
+            editTextModel.withValue(binding.customEdittext.getEditText().getText().toString());
+            processor.onNext(RowAction.create(editTextModel.uid(), binding.customEdittext.getEditText().getText().toString(), getAdapterPosition()));
 
+        } else {
+            processor.onNext(RowAction.create(editTextModel.uid(), null, getAdapterPosition()));
+        }
+
+        clearBackground(isSearchMode);
+    }
+
+    public void update(@NonNull FieldViewModel model) {
         this.editTextModel = (EditTextViewModel) model;
 
-        descriptionText = editTextModel.description();
-        binding.customEdittext.setValueType(editTextModel.valueType());
+        binding.customEdittext.setObjectSyle(model.objectStyle());
+        label = new StringBuilder(model.label());
+        binding.customEdittext.setLabel(model.label(), model.mandatory());
+        descriptionText = model.description();
+        binding.customEdittext.setDescription(descriptionText);
+        binding.customEdittext.setWarning(model.warning(), model.error());
+
+        binding.customEdittext.setText(editTextModel.value());
         binding.customEdittext.setEditable(model.editable());
 
-        label = new StringBuilder(editTextModel.label());
-        if (editTextModel.mandatory())
-            label.append("*");
-        binding.customEdittext.setLabel(label.toString());
-
-        if (editTextModel.warning() != null)
-            binding.customEdittext.setWarning(editTextModel.warning());
-        else if (editTextModel.error() != null)
-            binding.customEdittext.setError(editTextModel.error());
-        else
-            binding.customEdittext.setError(null);
-
-
-        if (editTextModel.value() != null)
-            binding.customEdittext.setText(editTextModel.value());
-        else
-            binding.customEdittext.setText(null);
+        binding.customEdittext.setValueType(editTextModel.valueType());
 
         setRenderingType(editTextModel.fieldRendering());
 
-        binding.executePendingBindings();
     }
 
     private void checkAutocompleteRendering() {
@@ -133,5 +138,11 @@ final class EditTextCustomHolder extends FormViewHolder {
 
     public void dispose() {
 
+    }
+
+    @Override
+    public void performAction() {
+        itemView.setBackground(AppCompatResources.getDrawable(itemView.getContext(), R.drawable.item_selected_bg));
+        binding.customEdittext.performOnFocusAction();
     }
 }

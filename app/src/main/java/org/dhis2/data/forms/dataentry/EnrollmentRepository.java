@@ -5,6 +5,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
 
+import androidx.annotation.NonNull;
+
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.R;
@@ -17,6 +19,7 @@ import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.maintenance.D2Error;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 
@@ -24,7 +27,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import androidx.annotation.NonNull;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import timber.log.Timber;
 
@@ -46,7 +50,8 @@ final class EnrollmentRepository implements DataEntryRepository {
             "  Enrollment.status,\n" +
             "  Field.displayDescription,\n" +
             "  Field.pattern, \n" +
-            "  Field.formName \n" +
+            "  Field.formName, \n" +
+            "  Field.formOrder \n" +
             "FROM (Enrollment INNER JOIN Program ON Program.uid = Enrollment.program)\n" +
             "  LEFT OUTER JOIN (\n" +
             "      SELECT\n" +
@@ -56,6 +61,7 @@ final class EnrollmentRepository implements DataEntryRepository {
             "        TrackedEntityAttribute.pattern AS pattern,\n" +
             "        TrackedEntityAttribute.optionSet AS optionSet,\n" +
             "        ProgramTrackedEntityAttribute.program AS program,\n" +
+            "        ProgramTrackedEntityAttribute.sortOrder AS formOrder,\n" +
             "        ProgramTrackedEntityAttribute.mandatory AS mandatory,\n" +
             "        ProgramTrackedEntityAttribute.allowFutureDate AS allowFutureDate,\n" +
             "        TrackedEntityAttribute.generated AS generated,\n" +
@@ -70,7 +76,8 @@ final class EnrollmentRepository implements DataEntryRepository {
             "  LEFT OUTER JOIN Option ON (\n" +
             "    Field.optionSet = Option.optionSet AND Value.value = Option.code\n" +
             "  )\n" +
-            "WHERE Enrollment.uid = ?";
+            "WHERE Enrollment.uid = ? " +
+            "ORDER BY Field.formOrder ASC;";
 
 
     @NonNull
@@ -97,10 +104,17 @@ final class EnrollmentRepository implements DataEntryRepository {
 
     @NonNull
     @Override
-    public Observable<List<FieldViewModel>> list() {
+    public Flowable<List<FieldViewModel>> list() {
         return briteDatabase
-                .createQuery(TrackedEntityAttributeValueModel.TABLE, QUERY, enrollment == null ? "" : enrollment)
-                .mapToList(this::transform);
+                .createQuery(TrackedEntityAttributeValueModel.TABLE, QUERY, enrollment)
+                .mapToList(this::transform)
+                .map(list -> list)
+                .toFlowable(BackpressureStrategy.BUFFER);
+    }
+
+    @Override
+    public Observable<List<OrganisationUnitLevel>> getOrgUnitLevels() {
+        return Observable.just(d2.organisationUnitModule().organisationUnitLevels.get());
     }
 
     public List<FieldViewModel> fieldList() {
@@ -140,7 +154,7 @@ final class EnrollmentRepository implements DataEntryRepository {
         EnrollmentStatus enrollmentStatus = EnrollmentStatus.valueOf(cursor.getString(10));
         String description = cursor.getString(11);
         String pattern = cursor.getString(12);
-        String formName = cursor.getString(13);
+        String formName = cursor.getString(13); //TODO: WE NEED THE DISPLAY FORM NAME WHEN AVAILABLE IN THE SDK
 
         if (!isEmpty(optionCodeName)) {
             dataValue = optionCodeName;
@@ -217,14 +231,18 @@ final class EnrollmentRepository implements DataEntryRepository {
                 objectStyle = ObjectStyleModel.create(objStyleCursor);
         }
 
+        if (valueType == ValueType.ORGANISATION_UNIT && !isEmpty(dataValue)) {
+            dataValue = dataValue + "_ou_" + d2.organisationUnitModule().organisationUnits.uid(dataValue).get().displayName();
+        }
+
         if (warning != null) {
             return fieldFactory.create(uid,
-                    formName != null && !formName.isEmpty()? formName: label, valueType, mandatory, optionSet, dataValue, null, allowFutureDates,
+                    label, valueType, mandatory, optionSet, dataValue, null, allowFutureDates,
                     false, null, description, fieldRendering, optionCount, objectStyle)
                     .withWarning(warning);
         } else {
             return fieldFactory.create(uid,
-                    formName != null && !formName.isEmpty()? formName: label, valueType, mandatory, optionSet, dataValue, null, allowFutureDates,
+                    label, valueType, mandatory, optionSet, dataValue, null, allowFutureDates,
                     !generated && enrollmentStatus == EnrollmentStatus.ACTIVE, null, description, fieldRendering, optionCount, objectStyle);
         }
     }

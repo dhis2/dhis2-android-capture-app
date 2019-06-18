@@ -38,6 +38,8 @@ public class TeiDataDetailContracts {
 
         void onLocation2Click();
 
+        void onDestroy();
+
     }
 
 }

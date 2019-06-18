@@ -1,14 +1,19 @@
 package org.dhis2.usescases.teiDashboard.teiProgramList;
 
 import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.content.DialogInterface;
+import android.view.LayoutInflater;
+import android.widget.DatePicker;
+
+import androidx.appcompat.app.AlertDialog;
 
 import org.dhis2.R;
+import org.dhis2.databinding.WidgetDatepickerBinding;
 import org.dhis2.usescases.main.program.ProgramViewModel;
-import org.dhis2.utils.DateUtils;
-import org.dhis2.utils.custom_views.OrgUnitDialog;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
-import org.hisp.dhis.android.core.program.ProgramModel;
+import org.dhis2.utils.custom_views.OrgUnitDialog_2;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
+import org.hisp.dhis.android.core.program.Program;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -48,18 +53,7 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
         getPrograms();
     }
 
-    @Override
-    public void enroll(String programUid, String uid) {
-        selectedEnrollmentDate = Calendar.getInstance().getTime();
-
-        OrgUnitDialog orgUnitDialog = OrgUnitDialog.getInstace().setMultiSelection(false);
-        orgUnitDialog.setTitle("Enrollment Org Unit")
-                .setPossitiveListener(v -> {
-                    if (orgUnitDialog.getSelectedOrgUnit() != null && !orgUnitDialog.getSelectedOrgUnit().isEmpty())
-                        enrollInOrgUnit(orgUnitDialog.getSelectedOrgUnit(), programUid, uid, selectedEnrollmentDate);
-                    orgUnitDialog.dismiss();
-                })
-                .setNegativeListener(v -> orgUnitDialog.dismiss());
+    private void showNativeCalendar(String programUid, String uid, OrgUnitDialog_2 orgUnitDialog) {
 
         Calendar c = Calendar.getInstance();
         int year = c.get(Calendar.YEAR);
@@ -77,15 +71,14 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
                     selectedCalendar.set(Calendar.SECOND, 0);
                     selectedCalendar.set(Calendar.MILLISECOND, 0);
                     selectedEnrollmentDate = selectedCalendar.getTime();
-                    String enrollmentDate = DateUtils.uiDateFormat().format(selectedEnrollmentDate);
 
                     compositeDisposable.add(getOrgUnits(programUid)
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(
                                     allOrgUnits -> {
-                                        ArrayList<OrganisationUnitModel> orgUnits = new ArrayList<>();
-                                        for (OrganisationUnitModel orgUnit : allOrgUnits) {
+                                        ArrayList<OrganisationUnit> orgUnits = new ArrayList<>();
+                                        for (OrganisationUnit orgUnit : allOrgUnits) {
                                             boolean afterOpening = false;
                                             boolean beforeClosing = false;
                                             if (orgUnit.openingDate() == null || !selectedEnrollmentDate.before(orgUnit.openingDate()))
@@ -111,7 +104,7 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
                 year,
                 month,
                 day);
-        ProgramModel selectedProgram = getProgramFromUid(programUid);
+        Program selectedProgram = getProgramFromUid(programUid);
         if (selectedProgram != null && !selectedProgram.selectEnrollmentDatesInFuture()) {
             dateDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
         }
@@ -121,11 +114,109 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
         dateDialog.setButton(DialogInterface.BUTTON_NEGATIVE, view.getContext().getString(R.string.date_dialog_clear), (dialog, which) -> {
             dialog.dismiss();
         });
-        dateDialog.show();
 
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            dateDialog.setButton(DialogInterface.BUTTON_NEUTRAL, view.getContext().getResources().getString(R.string.change_calendar), (dialog, which) -> {
+                dateDialog.dismiss();
+                showCustomCalendar(programUid, uid, orgUnitDialog);
+            });
+        }
+
+        dateDialog.show();
     }
 
-    private ProgramModel getProgramFromUid(String programUid) {
+    private void showCustomCalendar(String programUid, String uid, OrgUnitDialog_2 orgUnitDialog) {
+        LayoutInflater layoutInflater = LayoutInflater.from(view.getContext());
+//        View datePickerView = layoutInflater.inflate(R.layout.widget_datepicker, null);
+        WidgetDatepickerBinding binding = WidgetDatepickerBinding.inflate(layoutInflater);
+        final DatePicker datePicker = binding.widgetDatepicker;
+
+        Calendar c = Calendar.getInstance();
+        datePicker.updateDate(
+                c.get(Calendar.YEAR),
+                c.get(Calendar.MONTH),
+                c.get(Calendar.DAY_OF_MONTH));
+
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(view.getContext(), R.style.DatePickerTheme);
+
+        Program selectedProgram = getProgramFromUid(programUid);
+        if (selectedProgram != null && !selectedProgram.selectEnrollmentDatesInFuture()) {
+            datePicker.setMaxDate(System.currentTimeMillis());
+        }
+
+        if (selectedProgram != null) {
+            alertDialog.setTitle(selectedProgram.enrollmentDateLabel());
+        }
+
+        alertDialog.setView(binding.getRoot());
+        Dialog dialog = alertDialog.create();
+
+        binding.changeCalendarButton.setOnClickListener(changeButton -> {
+            showNativeCalendar(programUid, uid, orgUnitDialog);
+            dialog.dismiss();
+        });
+
+        binding.clearButton.setOnClickListener(clearButton -> dialog.dismiss());
+        binding.acceptButton.setOnClickListener(acceptButton -> {
+            Calendar selectedCalendar = Calendar.getInstance();
+            selectedCalendar.set(Calendar.YEAR, datePicker.getYear());
+            selectedCalendar.set(Calendar.MONTH, datePicker.getMonth());
+            selectedCalendar.set(Calendar.DAY_OF_MONTH, datePicker.getDayOfMonth());
+            selectedCalendar.set(Calendar.HOUR_OF_DAY, 0);
+            selectedCalendar.set(Calendar.MINUTE, 0);
+            selectedCalendar.set(Calendar.SECOND, 0);
+            selectedCalendar.set(Calendar.MILLISECOND, 0);
+            selectedEnrollmentDate = selectedCalendar.getTime();
+
+            compositeDisposable.add(getOrgUnits(programUid)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
+                            allOrgUnits -> {
+                                ArrayList<OrganisationUnit> orgUnits = new ArrayList<>();
+                                for (OrganisationUnit orgUnit : allOrgUnits) {
+                                    boolean afterOpening = false;
+                                    boolean beforeClosing = false;
+                                    if (orgUnit.openingDate() == null || !selectedEnrollmentDate.before(orgUnit.openingDate()))
+                                        afterOpening = true;
+                                    if (orgUnit.closedDate() == null || !selectedEnrollmentDate.after(orgUnit.closedDate()))
+                                        beforeClosing = true;
+                                    if (afterOpening && beforeClosing)
+                                        orgUnits.add(orgUnit);
+                                }
+                                if (orgUnits.size() > 1) {
+                                    orgUnitDialog.setOrgUnits(orgUnits);
+                                    if (!orgUnitDialog.isAdded())
+                                        orgUnitDialog.show(view.getAbstracContext().getSupportFragmentManager(), "OrgUnitEnrollment");
+                                } else if (!orgUnits.isEmpty())
+                                    enrollInOrgUnit(orgUnits.get(0).uid(), programUid, uid, selectedEnrollmentDate);
+                                else
+                                    view.displayMessage(view.getContext().getString(R.string.no_org_units));
+                            },
+                            Timber::d
+                    ));
+        });
+
+        dialog.show();
+    }
+
+    @Override
+    public void enroll(String programUid, String uid) {
+        selectedEnrollmentDate = Calendar.getInstance().getTime();
+
+        OrgUnitDialog_2 orgUnitDialog = OrgUnitDialog_2.getInstace().setMultiSelection(false);
+        orgUnitDialog.setTitle("Enrollment Org Unit")
+                .setPossitiveListener(v -> {
+                    if (orgUnitDialog.getSelectedOrgUnit() != null && !orgUnitDialog.getSelectedOrgUnit().isEmpty())
+                        enrollInOrgUnit(orgUnitDialog.getSelectedOrgUnit(), programUid, uid, selectedEnrollmentDate);
+                    orgUnitDialog.dismiss();
+                })
+                .setNegativeListener(v -> orgUnitDialog.dismiss());
+
+        showCustomCalendar(programUid, uid, orgUnitDialog);
+    }
+
+    private Program getProgramFromUid(String programUid) {
         return teiProgramListRepository.getProgram(programUid);
     }
 
@@ -141,7 +232,7 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
         );
     }
 
-    public Observable<List<OrganisationUnitModel>> getOrgUnits(String programUid) {
+    public Observable<List<OrganisationUnit>> getOrgUnits(String programUid) {
         return teiProgramListRepository.getOrgUnits(programUid);
     }
 
@@ -185,19 +276,19 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
         );
     }
 
-    private void deleteRepeatedPrograms(List<ProgramViewModel> allPrograms, List<ProgramModel> alreadyEnrolledPrograms) {
+    private void deleteRepeatedPrograms(List<ProgramViewModel> allPrograms, List<Program> alreadyEnrolledPrograms) {
         ArrayList<ProgramViewModel> programListToPrint = new ArrayList<>();
-        for (ProgramViewModel programModel1 : allPrograms) {
+        for (ProgramViewModel programViewModel : allPrograms) {
             boolean isAlreadyEnrolled = false;
             boolean onlyEnrollOnce = false;
-            for (ProgramModel programModel2 : alreadyEnrolledPrograms) {
-                if (programModel1.id().equals(programModel2.uid())) {
+            for (Program program : alreadyEnrolledPrograms) {
+                if (programViewModel.id().equals(program.uid())) {
                     isAlreadyEnrolled = true;
-                    onlyEnrollOnce = programModel2.onlyEnrollOnce();
+                    onlyEnrollOnce = program.onlyEnrollOnce();
                 }
             }
             if (!isAlreadyEnrolled || !onlyEnrollOnce) {
-                programListToPrint.add(programModel1);
+                programListToPrint.add(programViewModel);
             }
         }
         view.setPrograms(programListToPrint);

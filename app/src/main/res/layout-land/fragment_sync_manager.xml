@@ -83,6 +83,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/guideline"
                     app:layout_constraintTop_toTopOf="parent" />
+
                 <androidx.appcompat.widget.AppCompatSpinner
                     android:id="@+id/metadataPeriods"
                     android:layout_width="0dp"
@@ -90,7 +91,7 @@
                     android:entries="@array/metadata_sync_periods"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/guideline"
-                    app:layout_constraintTop_toBottomOf="@id/metadata_title"/>
+                    app:layout_constraintTop_toBottomOf="@id/metadata_title" />
 
                 <TextView
                     android:id="@+id/metadata_last_sync"
@@ -124,6 +125,7 @@
                 android:text="@string/sync_max_parameters" />
 
             <TableLayout
+                android:id="@+id/capacityLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:stretchColumns="*">
@@ -212,6 +214,14 @@
                 android:text="@string/limit_by_organisation_unit"
                 app:switchPadding="15dp" />
 
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/limitByProgram"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text="@string/limit_by_program"
+                app:switchPadding="15dp" />
+
             <LinearLayout
                 android:id="@+id/buttonResetParameters"
                 android:layout_width="wrap_content"
@@ -230,8 +240,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@android:color/transparent"
-                    app:srcCompat="@drawable/ic_refresh"
-                    android:tint="?colorPrimary" />
+                    android:tint="?colorPrimary"
+                    app:srcCompat="@drawable/ic_refresh" />
             </LinearLayout>
 
             <Button

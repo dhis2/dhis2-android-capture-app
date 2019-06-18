@@ -2,7 +2,9 @@ package org.dhis2.usescases.programEventDetail;
 
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -14,7 +16,19 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.DatePicker;
 import android.widget.PopupMenu;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.content.res.ResourcesCompat;
+import androidx.core.view.GravityCompat;
+import androidx.databinding.DataBindingUtil;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.lifecycle.LiveData;
+import androidx.paging.PagedList;
+import androidx.recyclerview.widget.DividerItemDecoration;
 
 import com.google.android.flexbox.FlexboxLayout;
 import com.unnamed.b.atv.model.TreeNode;
@@ -26,6 +40,7 @@ import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ActivityProgramEventDetailBinding;
 import org.dhis2.databinding.CatCombFilterBinding;
+import org.dhis2.databinding.WidgetDatepickerBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.main.program.OrgUnitHolder;
 import org.dhis2.utils.Constants;
@@ -49,19 +64,11 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.core.content.ContextCompat;
-import androidx.core.content.res.ResourcesCompat;
-import androidx.core.view.GravityCompat;
-import androidx.databinding.DataBindingUtil;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.lifecycle.LiveData;
-import androidx.paging.PagedList;
 import io.reactivex.functions.Consumer;
 import me.toptas.fancyshowcase.FancyShowCaseView;
 import timber.log.Timber;
 
+import static org.dhis2.R.layout.activity_program_event_detail;
 import static org.dhis2.utils.Period.DAILY;
 import static org.dhis2.utils.Period.MONTHLY;
 import static org.dhis2.utils.Period.NONE;
@@ -114,7 +121,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         chosenDateMonth.add(new Date());
         chosenDateYear.add(new Date());
 
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_program_event_detail);
+        binding = DataBindingUtil.setContentView(this, activity_program_event_detail);
 
         binding.setPresenter(presenter);
 
@@ -122,6 +129,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
         liveAdapter = new ProgramEventDetailLiveAdapter(presenter);
         binding.recycler.setAdapter(liveAdapter);
+        binding.recycler.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
     }
 
@@ -217,21 +225,81 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                     },
                     Timber::d);
         } else if (currentPeriod == DAILY) {
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(chosenDateDay);
-            DatePickerDialog pickerDialog;
-            pickerDialog = new DatePickerDialog(getContext(), (datePicker, year, monthOfYear, dayOfMonth) -> {
-                calendar.set(year, monthOfYear, dayOfMonth);
-                Date[] dates = DateUtils.getInstance().getDateFromDateAndPeriod(calendar.getTime(), currentPeriod);
-                ArrayList<Date> selectedDates = new ArrayList<>();
-                selectedDates.add(dates[0]);
-
-                presenter.updateDateFilter(DateUtils.getInstance().getDatePeriodListFor(selectedDates, currentPeriod));
-                binding.buttonPeriodText.setText(DateUtils.getInstance().formatDate(dates[0]));
-                chosenDateDay = dates[0];
-            }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
-            pickerDialog.show();
+            showCustomCalendar(calendar);
         }
+    }
+
+    private void showNativeCalendar(Calendar calendar) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(chosenDateDay);
+        DatePickerDialog pickerDialog;
+        pickerDialog = new DatePickerDialog(getContext(), (datePicker, year, monthOfYear, dayOfMonth) -> {
+            calendar.set(year, monthOfYear, dayOfMonth);
+            Date[] dates = DateUtils.getInstance().getDateFromDateAndPeriod(calendar.getTime(), currentPeriod);
+            ArrayList<Date> selectedDates = new ArrayList<>();
+            selectedDates.add(dates[0]);
+
+            presenter.updateDateFilter(DateUtils.getInstance().getDatePeriodListFor(selectedDates, currentPeriod));
+            binding.buttonPeriodText.setText(DateUtils.getInstance().formatDate(dates[0]));
+            chosenDateDay = dates[0];
+        }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            pickerDialog.setButton(DialogInterface.BUTTON_NEUTRAL, getContext().getResources().getString(R.string.change_calendar), (dialog, which) -> {
+                pickerDialog.dismiss();
+                showCustomCalendar(calendar);
+            });
+        }
+
+        pickerDialog.show();
+    }
+
+    private void showCustomCalendar(Calendar calendar) {
+        LayoutInflater layoutInflater = LayoutInflater.from(getContext());
+//        View datePickerView = layoutInflater.inflate(R.layout.widget_datepicker, null);
+        WidgetDatepickerBinding widgetBinding = WidgetDatepickerBinding.inflate(layoutInflater);
+        final DatePicker datePicker = widgetBinding.widgetDatepicker;
+
+        Calendar c = Calendar.getInstance();
+        datePicker.updateDate(
+                c.get(Calendar.YEAR),
+                c.get(Calendar.MONTH),
+                c.get(Calendar.DAY_OF_MONTH));
+
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(getContext(), R.style.DatePickerTheme);
+            /*    .setPositiveButton(R.string.action_accept, (dialog, which) -> {
+                    calendar.set(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
+                    Date[] dates = DateUtils.getInstance().getDateFromDateAndPeriod(calendar.getTime(), currentPeriod);
+                    ArrayList<Date> selectedDates = new ArrayList<>();
+                    selectedDates.add(dates[0]);
+
+                    presenter.updateDateFilter(DateUtils.getInstance().getDatePeriodListFor(selectedDates, currentPeriod));
+                    binding.buttonPeriodText.setText(DateUtils.getInstance().formatDate(dates[0]));
+                    chosenDateDay = dates[0];
+                })
+                .setNeutralButton(getContext().getResources().getString(R.string.change_calendar), (dialog, which) -> showNativeCalendar(calendar));*/
+
+        alertDialog.setView(widgetBinding.getRoot());
+        Dialog dialog = alertDialog.create();
+
+        widgetBinding.changeCalendarButton.setOnClickListener(calendarButton -> {
+            showNativeCalendar(calendar);
+            dialog.dismiss();
+        });
+        widgetBinding.clearButton.setOnClickListener(clearButton -> dialog.dismiss());
+        widgetBinding.acceptButton.setOnClickListener(acceptButton -> {
+            calendar.set(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
+            Date[] dates = DateUtils.getInstance().getDateFromDateAndPeriod(calendar.getTime(), currentPeriod);
+            ArrayList<Date> selectedDates = new ArrayList<>();
+            selectedDates.add(dates[0]);
+
+            presenter.updateDateFilter(DateUtils.getInstance().getDatePeriodListFor(selectedDates, currentPeriod));
+            binding.buttonPeriodText.setText(DateUtils.getInstance().formatDate(dates[0]));
+            chosenDateDay = dates[0];
+            dialog.dismiss();
+        });
+
+        dialog.show();
     }
 
 
@@ -244,23 +312,23 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         switch (currentPeriod) {
             case NONE:
                 currentPeriod = DAILY;
-                drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_view_day);
+                drawable = AppCompatResources.getDrawable(getContext(), R.drawable.ic_view_day);
                 break;
             case DAILY:
                 currentPeriod = WEEKLY;
-                drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_view_week);
+                drawable = AppCompatResources.getDrawable(getContext(), R.drawable.ic_view_week);
                 break;
             case WEEKLY:
                 currentPeriod = MONTHLY;
-                drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_view_month);
+                drawable = AppCompatResources.getDrawable(getContext(), R.drawable.ic_view_month);
                 break;
             case MONTHLY:
                 currentPeriod = YEARLY;
-                drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_view_year);
+                drawable = AppCompatResources.getDrawable(getContext(), R.drawable.ic_view_year);
                 break;
             case YEARLY:
                 currentPeriod = NONE;
-                drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_view_none);
+                drawable = AppCompatResources.getDrawable(getContext(), R.drawable.ic_view_none);
                 break;
         }
         binding.buttonTime.setImageDrawable(drawable);
@@ -373,7 +441,17 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void setLiveData(LiveData<PagedList<ProgramEventViewModel>> pagedListLiveData) {
-        pagedListLiveData.observe(this, liveAdapter::submitList);
+        pagedListLiveData.observe(this, pagedList -> {
+            binding.programProgress.setVisibility(View.GONE);
+            liveAdapter.submitList(pagedList, () -> {
+                if (binding.recycler.getAdapter() != null && binding.recycler.getAdapter().getItemCount() == 0) {
+                    binding.emptyTeis.setVisibility(View.VISIBLE);
+                } else {
+                    binding.emptyTeis.setVisibility(View.GONE);
+                }
+            });
+
+        });
 
     }
 
@@ -484,6 +562,11 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     @Override
     public void setWritePermission(Boolean canWrite) {
         binding.addEventButton.setVisibility(canWrite ? View.VISIBLE : View.GONE);
+        if (binding.addEventButton.getVisibility() == View.VISIBLE) {
+            binding.emptyTeis.setText(R.string.empty_tei_add);
+        } else {
+            binding.emptyTeis.setText(R.string.empty_tei_no_add);
+        }
     }
 
     @Override
@@ -497,10 +580,12 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         new Handler().postDelayed(() -> {
             FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
                     .title(getString(R.string.tuto_program_event_1))
+                    .enableAutoTextPosition()
                     .closeOnTouch(true)
                     .build();
             FancyShowCaseView tuto2 = new FancyShowCaseView.Builder(getAbstractActivity())
                     .title(getString(R.string.tuto_program_event_2))
+                    .enableAutoTextPosition()
                     .focusOn(getAbstractActivity().findViewById(R.id.addEventButton))
                     .closeOnTouch(true)
                     .build();

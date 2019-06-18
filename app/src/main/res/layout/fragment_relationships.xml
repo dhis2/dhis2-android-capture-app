@@ -12,8 +12,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/bg_white_f9f">
+        android:layout_height="match_parent">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/relationship_recycler"
@@ -22,30 +21,37 @@
             android:clipToPadding="false"
             android:paddingBottom="50dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            tools:listitem="@layout/item_relationship"/>
+            tools:listitem="@layout/item_relationship" />
 
+        <TextView
+            android:id="@+id/empty_relationships"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/white"
+            android:gravity="center"
+            android:padding="42dp"
+            android:text="@string/empty_relationships"
+            android:textSize="@dimen/primaryTextSize" />
 
         <com.wangjie.rapidfloatingactionbutton.RapidFloatingActionLayout
             android:id="@+id/rfabLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginBottom="16dp"
             android:layout_marginEnd="16dp"
-           >
+            android:layout_marginBottom="16dp">
 
             <com.wangjie.rapidfloatingactionbutton.RapidFloatingActionButton
                 android:id="@+id/rfab"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
                 android:layout_alignParentBottom="true"
                 app:rfab_color_normal="?colorPrimary"
                 app:rfab_color_pressed="?colorPrimaryDark"
-                android:layout_alignParentEnd="true"
-                tools:rfab_shadow_radius="7dp"
                 tools:rfab_shadow_color="#999999"
                 tools:rfab_shadow_dx="0dp"
                 tools:rfab_shadow_dy="9dp"
-                />
+                tools:rfab_shadow_radius="7dp" />
         </com.wangjie.rapidfloatingactionbutton.RapidFloatingActionLayout>
 
 

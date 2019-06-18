@@ -6,17 +6,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.FragmentManager;
+
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import org.dhis2.R;
 import org.dhis2.databinding.FormBottomDialogBinding;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.databinding.DataBindingUtil;
-import androidx.fragment.app.FragmentManager;
 
 /**
  * QUADRAM. Created by ppajuelo on 17/01/2019.
@@ -92,7 +92,10 @@ public class FormBottomDialog extends BottomSheetDialogFragment {
         binding.setCanWrite(accessDataWrite);
         binding.setIsEnrollmentOpen(isEnrollmentOpen);
         binding.setHasExpired(hasExpired);
-        binding.setListener(listener);
+        binding.setListener(actionType -> {
+            listener.onActionSelected(actionType);
+            dismiss();
+        });
         binding.setCanComplete(canComplete);
         binding.setReopen(reopen);
         binding.setSkip(skip);
@@ -102,7 +105,7 @@ public class FormBottomDialog extends BottomSheetDialogFragment {
 
     //This is necessary to show the bottomSheet dialog with full height on landscape
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         view.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
             BottomSheetDialog dialog = (BottomSheetDialog) getDialog();

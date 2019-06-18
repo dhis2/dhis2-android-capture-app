@@ -7,77 +7,70 @@
 
     </data>
 
-    <androidx.core.widget.NestedScrollView
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:paddingStart="16dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="16dp">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/noteInputLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/bg_white_f9f">
+            android:layout_height="140dp"
+            android:gravity="top"
+            android:hint="@string/write_new_note"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-            <EditText
-                android:id="@+id/edit_note"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editNote"
                 android:layout_width="match_parent"
-                android:layout_height="100dp"
-                android:layout_marginEnd="9dp"
-                android:layout_marginStart="9dp"
-                android:layout_marginTop="3dp"
-                android:background="@drawable/gray_border_box"
-                android:fadeScrollbars="true"
+                android:layout_height="match_parent"
                 android:gravity="start"
-                android:hint="@string/write_new_note"
-                android:inputType="textMultiLine"
-                android:maxHeight="200dp"
-                android:overScrollMode="always"
-                android:padding="16dp"
                 android:scrollbars="vertical"
-                android:textColor="@color/gray_444"
-                android:textColorHighlight="?colorPrimary"
-                android:textColorHint="@color/gray_d7d"
-                android:textCursorDrawable="@null"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
+                android:textSize="12sp"
                 tools:text="@tools:sample/lorem/random" />
+        </com.google.android.material.textfield.TextInputLayout>
 
-            <Button
-                android:id="@+id/button_delete"
-                style="@style/ButtonRoundedGrey"
-                android:layout_width="wrap_content"
-                android:layout_height="36dp"
-                android:layout_marginEnd="9dp"
-                android:layout_marginTop="16dp"
-                android:text="@string/clear"
-                app:backgroundTint="@color/red_060"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/edit_note" />
+        <ImageButton
+            android:id="@+id/buttonDelete"
+            style="@style/ActionIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="@id/noteInputLayout"
+            app:layout_constraintTop_toTopOf="@id/noteInputLayout"
+            app:srcCompat="@drawable/ic_clear"
+            android:tint="#5C5C5C"
+            android:visibility="gone"
+            />
 
-            <Button
-                android:id="@+id/button_add"
-                style="@style/ButtonRoundedGrey"
-                android:layout_width="wrap_content"
-                android:layout_height="36dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginTop="16dp"
-                android:text="@string/add_note"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toStartOf="@id/button_delete"
-                app:layout_constraintTop_toBottomOf="@id/edit_note" />
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/notes_recycler"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="24dp"
+            android:background="@android:color/white"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/noteInputLayout"
+            tools:listitem="@layout/item_notes" />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/notes_recycler"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="30dp"
-                android:background="@android:color/white"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/button_add"
-                tools:listitem="@layout/item_notes" />
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/addNoteButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:focusableInTouchMode="true"
+            android:tint="@color/white"
+            app:backgroundTint="?attr/colorPrimary"
+            app:elevation="7dp"
+            app:fabSize="normal"
+            app:layout_behavior="org.dhis2.utils.FixedBottomViewBehavior"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:srcCompat="@drawable/ic_add_accent" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.core.widget.NestedScrollView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
