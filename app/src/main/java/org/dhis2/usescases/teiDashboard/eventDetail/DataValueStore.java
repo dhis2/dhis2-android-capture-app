@@ -12,6 +12,7 @@ import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
+import org.hisp.dhis.android.core.user.UserCredentials;
 import org.hisp.dhis.android.core.user.UserCredentialsModel;
 
 import java.util.Calendar;
@@ -32,7 +33,7 @@ final class DataValueStore implements DataEntryStore {
     private final BriteDatabase briteDatabase;
 
     @NonNull
-    private final Flowable<UserCredentialsModel> userCredentials;
+    private final Flowable<UserCredentials> userCredentials;
 
     @NonNull
     private final String eventUid;

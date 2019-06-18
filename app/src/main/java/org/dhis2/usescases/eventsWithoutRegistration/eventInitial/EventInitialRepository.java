@@ -4,9 +4,8 @@ import android.content.Context;
 
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
-import org.hisp.dhis.android.core.event.EventModel;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModule;
+import org.hisp.dhis.android.core.event.Event;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
 import java.util.Date;
@@ -25,19 +24,19 @@ import io.reactivex.Observable;
 public interface EventInitialRepository {
 
     @NonNull
-    Observable<EventModel> event(String eventId);
+    Observable<Event> event(String eventId);
 
     @NonNull
-    Observable<List<OrganisationUnitModel>> orgUnits(String programId);
+    Observable<List<OrganisationUnit>> orgUnits(String programId);
 
     @NonNull
     Observable<CategoryCombo> catCombo(String programUid);
 
     @NonNull
-    Observable<List<OrganisationUnitModel>> filteredOrgUnits(String date, String programId);
+    Observable<List<OrganisationUnit>> filteredOrgUnits(String date, String programId);
 
     @NonNull
-    Observable<List<OrganisationUnitModel>> searchOrgUnits(String date, String programId);
+    Observable<List<OrganisationUnit>> searchOrgUnits(String date, String programId);
 
     Observable<String> createEvent(String enrollmentUid, @Nullable String trackedEntityInstanceUid,
                                    @NonNull Context context, @NonNull String program,
@@ -60,7 +59,7 @@ public interface EventInitialRepository {
     Observable<ProgramStageModel> programStageWithId(String programStageUid);
 
     @NonNull
-    Observable<EventModel> editEvent(String trackedEntityInstance, String eventUid, String date, String orgUnitUid, String catComboUid, String catOptionCombo, String latitude, String longitude);
+    Observable<Event> editEvent(String trackedEntityInstance, String eventUid, String date, String orgUnitUid, String catComboUid, String catOptionCombo, String latitude, String longitude);
 
     Observable<Boolean> accessDataWrite(String programId);
 
