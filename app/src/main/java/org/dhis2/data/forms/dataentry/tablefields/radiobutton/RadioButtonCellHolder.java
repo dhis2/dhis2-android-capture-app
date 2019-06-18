@@ -98,16 +98,16 @@ public class RadioButtonCellHolder extends FormViewHolder {
             switch (checkedId) {
                 case R.id.yes:
                     if (checkedRadioButton.isChecked()) {
-                        rowAction = RowAction.create(viewModel.uid(), String.valueOf(true), viewModel.dataElement(), viewModel.listCategoryOption(), viewModel.catCombo(), viewModel.row(), viewModel.column());
+                        rowAction = RowAction.create(viewModel.uid(), String.valueOf(true), viewModel.dataElement(), viewModel.categoryOptionCombo(), viewModel.catCombo(), viewModel.row(), viewModel.column());
                         break;
                     }
                 case R.id.no:
                     if (checkedRadioButton.isChecked()) {
-                        rowAction = RowAction.create(viewModel.uid(), String.valueOf(false), viewModel.dataElement(), viewModel.listCategoryOption(), viewModel.catCombo(), viewModel.row(), viewModel.column());
+                        rowAction = RowAction.create(viewModel.uid(), String.valueOf(false), viewModel.dataElement(), viewModel.categoryOptionCombo(), viewModel.catCombo(), viewModel.row(), viewModel.column());
                         break;
                     }
                 default:
-                    rowAction = RowAction.create(viewModel.uid(), null, viewModel.dataElement(), viewModel.listCategoryOption(), viewModel.catCombo(), viewModel.row(), viewModel.column());
+                    rowAction = RowAction.create(viewModel.uid(), null, viewModel.dataElement(), viewModel.categoryOptionCombo(), viewModel.catCombo(), viewModel.row(), viewModel.column());
                     break;
             }
             processor.onNext(rowAction);

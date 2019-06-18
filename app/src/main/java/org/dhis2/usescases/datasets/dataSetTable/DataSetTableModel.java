@@ -32,6 +32,10 @@ public abstract class DataSetTableModel{
         return new AutoValue_DataSetTableModel(id, dataElement, period, organisationUnit, categoryOptionCombo, attributeOptionCombo, value, storedBy, catOption, listCategory, catCombo);
     }
 
+    public DataSetTableModel setValue(String value) {
+        return new AutoValue_DataSetTableModel(id(), dataElement(), period(), organisationUnit(), categoryOptionCombo(),
+                attributeOptionCombo(), value, storedBy(), catOption(), listCategoryOption(),catCombo());
+    }
 
     public static final String TABLE = "DataValue";
 

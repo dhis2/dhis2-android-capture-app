@@ -3,6 +3,8 @@ package org.dhis2.usescases.datasets.dataSetTable;
 import org.dhis2.data.tuples.Pair;
 import org.hisp.dhis.android.core.common.State;
 
+import java.util.List;
+
 import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -115,6 +117,11 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
     @Override
     public void onClickSelectTable(int numTable) {
         view.goToTable(numTable);
+    }
+
+    @Override
+    public String getCatOptComboFromOptionList(List<String> catOpts) {
+        return tableRepository.getCatOptComboFromOptionList(catOpts);
     }
 
 }

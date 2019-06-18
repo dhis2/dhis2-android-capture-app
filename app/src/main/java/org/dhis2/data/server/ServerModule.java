@@ -3,15 +3,16 @@ package org.dhis2.data.server;
 import android.content.Context;
 import android.os.Build;
 
+import androidx.annotation.NonNull;
+
 import com.facebook.stetho.okhttp3.StethoInterceptor;
 
-import org.dhis2.R;
 import org.dhis2.data.dagger.PerServer;
 import org.hisp.dhis.android.BuildConfig;
 import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.arch.api.authentication.internal.Authenticator;
+import org.hisp.dhis.android.core.arch.api.authentication.internal.BasicAuthenticatorFactory;
 import org.hisp.dhis.android.core.configuration.Configuration;
-import org.hisp.dhis.android.core.data.api.Authenticator;
-import org.hisp.dhis.android.core.data.api.BasicAuthenticatorFactory;
 import org.hisp.dhis.android.core.data.database.DatabaseAdapter;
 
 import java.security.KeyStore;
@@ -25,14 +26,12 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
-import androidx.annotation.NonNull;
 import dagger.Module;
 import dagger.Provides;
 import okhttp3.ConnectionSpec;
 import okhttp3.Dispatcher;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.Response;
 import okhttp3.TlsVersion;
 import timber.log.Timber;
 

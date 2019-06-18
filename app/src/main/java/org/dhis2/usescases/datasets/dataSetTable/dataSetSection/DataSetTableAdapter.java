@@ -6,6 +6,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ObservableBoolean;
+import androidx.databinding.ObservableField;
+
 import com.evrencoskun.tableview.TableView;
 import com.evrencoskun.tableview.adapter.AbstractTableAdapter;
 import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder;
@@ -45,10 +50,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.databinding.DataBindingUtil;
-import androidx.databinding.ObservableBoolean;
-import androidx.databinding.ObservableField;
 import io.reactivex.processors.FlowableProcessor;
 
 /**
@@ -131,12 +132,12 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionMode
     }
 
     public void initializeRows(Boolean accessDataWrite) {
-        rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, new ObservableBoolean(accessDataWrite), (TableView) getTableView(),currentTableScale));
-        rows.add(BUTTON, new FileCellRow(layoutInflater, processor,currentTableScale));
-        rows.add(CHECKBOX, new RadioButtonRow(layoutInflater, processor, accessDataWrite,currentTableScale));
-        rows.add(SPINNER, new SpinnerCellRow(layoutInflater, processor, accessDataWrite, processorOptionSet,currentTableScale));
-        rows.add(COORDINATES, new CoordinateRow(layoutInflater, processor, accessDataWrite,currentTableScale));
-        rows.add(TIME, new DateTimeRow(layoutInflater, processor, TIME, true, accessDataWrite,currentTableScale));
+        rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, new ObservableBoolean(accessDataWrite), (TableView) getTableView(), currentTableScale));
+        rows.add(BUTTON, new FileCellRow(layoutInflater, processor, currentTableScale));
+        rows.add(CHECKBOX, new RadioButtonRow(layoutInflater, processor, accessDataWrite, currentTableScale));
+        rows.add(SPINNER, new SpinnerCellRow(layoutInflater, processor, accessDataWrite, processorOptionSet, currentTableScale));
+        rows.add(COORDINATES, new CoordinateRow(layoutInflater, processor, accessDataWrite, currentTableScale));
+        rows.add(TIME, new DateTimeRow(layoutInflater, processor, TIME, true, accessDataWrite, currentTableScale));
         rows.add(DATE, new DateTimeRow(layoutInflater, processor, DATE, true, accessDataWrite, currentTableScale));
         rows.add(DATETIME, new DateTimeRow(layoutInflater, processor, DATETIME, true, accessDataWrite, currentTableScale));
         rows.add(AGEVIEW, new AgeRow(layoutInflater, processor, accessDataWrite, currentTableScale));
@@ -265,7 +266,7 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionMode
     @Override
     public void onBindRowHeaderViewHolder(AbstractViewHolder holder, Object rowHeaderItemModel, int
             position) {
-        ((DataSetRowHeader) holder).bind(mRowHeaderItems.get(position),currentTableScale);
+        ((DataSetRowHeader) holder).bind(mRowHeaderItems.get(position), currentTableScale);
         holder.itemView.getLayoutParams().height = currentHeight;
     }
 
@@ -375,11 +376,11 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionMode
         return showColumnTotal;
     }
 
-    public void setCatCombo(String catCombo){
+    public void setCatCombo(String catCombo) {
         this.catCombo = catCombo;
     }
 
-    public String getCatCombo(){
+    public String getCatCombo() {
         return catCombo;
     }
 

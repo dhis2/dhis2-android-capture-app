@@ -25,7 +25,9 @@ import io.reactivex.Flowable;
 public interface DataValueRepository {
     Flowable<Long> insertDataValue(DataValueModel dataValues);
 
-    Flowable<DataSet> getDataSet();
+    Flowable<Integer> updateValue(DataValueModel dataValue);
+
+    Flowable<DataSetModel> getDataSet();
 
     Flowable<List<DataElement>> getDataElements(String section);
 
