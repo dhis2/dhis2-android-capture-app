@@ -105,6 +105,11 @@ android {
             ext.enableCrashlytics = true
             signingConfig signingConfigs.release
         }
+        beta {
+            applicationIdSuffix = ".beta"
+            matchingFallbacks = ['debug']
+            signingConfig signingConfigs.debug
+        }
     }
 
     flavorDimensions "default"
