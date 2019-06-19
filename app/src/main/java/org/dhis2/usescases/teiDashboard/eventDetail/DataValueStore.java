@@ -8,6 +8,7 @@ import org.dhis2.data.user.UserRepository;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.State;
+import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
@@ -67,7 +68,7 @@ final class DataValueStore implements DataEntryStore {
     }
 
     @Override
-    public void updateEventStatus(EventModel eventModel) {
+    public void updateEventStatus(Event eventModel) {
         if (eventModel.status() == EventStatus.OVERDUE)
             skipEvent(eventModel);
         else {
@@ -100,7 +101,7 @@ final class DataValueStore implements DataEntryStore {
     }
 
     @Override
-    public void skipEvent(EventModel eventModel) {
+    public void skipEvent(Event eventModel) {
         ContentValues contentValues = new ContentValues();
         Date currentDate = Calendar.getInstance().getTime();
         contentValues.put(EventModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(currentDate));
@@ -114,7 +115,7 @@ final class DataValueStore implements DataEntryStore {
     }
 
     @Override
-    public void rescheduleEvent(EventModel eventModel, Date newDate) {
+    public void rescheduleEvent(Event eventModel, Date newDate) {
         ContentValues contentValues = new ContentValues();
         Date currentDate = Calendar.getInstance().getTime();
         contentValues.put(EventModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(currentDate));
@@ -125,7 +126,7 @@ final class DataValueStore implements DataEntryStore {
     }
 
     @Override
-    public void updateEvent(@NonNull Date eventDate, @NonNull EventModel eventModel) {
+    public void updateEvent(@NonNull Date eventDate, @NonNull Event eventModel) {
         if (eventModel.status() == EventStatus.OVERDUE)
             rescheduleEvent(eventModel, eventDate);
         else {

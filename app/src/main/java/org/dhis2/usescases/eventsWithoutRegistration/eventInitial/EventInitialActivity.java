@@ -518,7 +518,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             binding.date.setText(DateUtils.uiDateFormat().format(selectedDate));
         }
 
-        if (event.coordinate().latitude() != null && event.coordinate().longitude() != null) {
+        if (event.coordinate() != null) {
             runOnUiThread(() -> {
                 if (isEmpty(savedLat)) {
                     binding.lat.setText(String.valueOf(event.coordinate().latitude()));
