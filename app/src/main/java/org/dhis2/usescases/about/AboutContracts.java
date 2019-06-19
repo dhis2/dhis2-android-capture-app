@@ -1,5 +1,6 @@
 package org.dhis2.usescases.about;
 
+import org.hisp.dhis.android.core.user.UserCredentials;
 import org.hisp.dhis.android.core.user.UserCredentialsModel;
 
 /**
@@ -7,7 +8,7 @@ import org.hisp.dhis.android.core.user.UserCredentialsModel;
  */
 public class AboutContracts {
     public interface AboutView{
-        void renderUserCredentials(UserCredentialsModel userCredentialsModel);
+        void renderUserCredentials(UserCredentials userCredentialsModel);
         void renderServerUrl(String serverUrl);
     }
 

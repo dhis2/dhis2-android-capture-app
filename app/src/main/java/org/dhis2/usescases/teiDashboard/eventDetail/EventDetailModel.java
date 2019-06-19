@@ -2,14 +2,14 @@ package org.dhis2.usescases.teiDashboard.eventDetail;
 
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.utils.DateUtils;
+import org.hisp.dhis.android.core.category.CategoryOptionCombo;
+import org.hisp.dhis.android.core.category.CategoryOptionComboEntityDIModule;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
-import org.hisp.dhis.android.core.event.EventModel;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
-import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.program.ProgramStageDataElementModel;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
-import org.hisp.dhis.android.core.program.ProgramStageSectionModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
+import org.hisp.dhis.android.core.event.Event;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
+import org.hisp.dhis.android.core.program.Program;
+import org.hisp.dhis.android.core.program.ProgramStage;
+
 
 import java.util.Date;
 import java.util.List;
@@ -22,35 +22,35 @@ import androidx.databinding.BaseObservable;
 
 public class EventDetailModel extends BaseObservable {
 
-    private final ProgramStageModel programStage;
+    private final ProgramStage programStage;
     private final List<CategoryOptionComboModel> optionComboList;
-    private final ProgramModel programModel;
+    private final Program program;
     private final String catComboName;
     private final boolean isEnrollmentActive;
-    private EventModel eventModel;
-    private final OrganisationUnitModel orgUnit;
+    private Event event;
+    private final OrganisationUnit orgUnit;
 
-    EventDetailModel(EventModel eventModel,
-                     ProgramStageModel programStage,
-                     OrganisationUnitModel orgUnit,
+    EventDetailModel(Event event,
+                     ProgramStage programStage,
+                     OrganisationUnit orgUnit,
                      Pair<String, List<CategoryOptionComboModel>> optionComboList,
-                     ProgramModel programModel,
+                     Program program,
                      boolean isEnrollmentActive) {
-        this.eventModel = eventModel;
+        this.event = event;
         this.programStage = programStage;
         this.orgUnit = orgUnit;
         this.catComboName = optionComboList.val0();
         this.optionComboList = optionComboList.val1();
-        this.programModel = programModel;
+        this.program = program;
         this.isEnrollmentActive = isEnrollmentActive;
 
     }
 
-    EventModel getEventModel() {
-        return eventModel;
+    Event getEvent() {
+        return event;
     }
 
-    public ProgramStageModel getProgramStage() {
+    public ProgramStage getProgramStage() {
         return programStage;
     }
 
@@ -75,14 +75,15 @@ public class EventDetailModel extends BaseObservable {
     }
 
     public boolean hasExpired() {
-        return eventModel.completedDate() != null && DateUtils.getInstance().hasExpired(eventModel, programModel.expiryDays(), programModel.completeEventsExpiryDays(), programModel.expiryPeriodType());
+        return event.completedDate() != null &&
+                DateUtils.getInstance().isEventExpired(event.eventDate(), event.completedDate(), event.status(), program.completeEventsExpiryDays(), programStage.periodType() != null ? programStage.periodType() : program.expiryPeriodType(), program.expiryDays());
     }
 
     public String getEventCatComboOptionName() {
         String eventCatComboOptionName = null;
 
         for (CategoryOptionComboModel option : optionComboList) {
-            if (option.uid().equals(eventModel.attributeOptionCombo()))
+            if (option.uid().equals(event.attributeOptionCombo()))
                 eventCatComboOptionName = option.name();
         }
 
@@ -93,7 +94,7 @@ public class EventDetailModel extends BaseObservable {
         return isEnrollmentActive;
     }
 
-    public ProgramModel getProgram() {
-        return programModel;
+    public Program getProgram() {
+        return program;
     }
 }
