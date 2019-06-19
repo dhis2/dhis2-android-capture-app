@@ -116,12 +116,13 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                     }
                                     if(selectedProgram==null && programsWithTEType.size()==1) {
                                         setProgram(programsWithTEType.get(0));
-                                    } else if (selectedProgram != null)
+                                    } else if (selectedProgram != null) {
                                         setProgram(selectedProgram);
-                                    else
+                                        view.setPrograms(programModels);
+                                    } else {
                                         setProgram(null);
-
-                                    view.setPrograms(programModels);
+                                        view.setPrograms(programModels);
+                                    }
 
                                 }, Timber::d
                         ));
