@@ -11,8 +11,11 @@ import org.dhis2.data.tuples.Quartet;
 import org.dhis2.data.tuples.Sextet;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel;
+import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryModel;
+import org.hisp.dhis.android.core.category.CategoryOption;
+import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.common.State;
@@ -49,7 +52,7 @@ public class DataValuePresenter implements DataValueContract.Presenter{
     private String periodFinalDate;
     private String attributeOptionCombo;
 
-    private Trio<List<DataElement>, Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>>, List<CategoryCombo>> tableData;
+    private Trio<List<DataElement>, Map<String, List<List<Pair<CategoryOption, Category>>>>, List<CategoryCombo>> tableData;
 
     private DataValueRepository repository;
     private DataValueContract.View view;
@@ -343,12 +346,12 @@ public class DataValuePresenter implements DataValueContract.Presenter{
         return list;
     }
 
-    public List<CategoryOptionModel> getCatOptions() {
-        Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>> map = tableData.val1();
-        List<CategoryOptionModel> listCatOption = new ArrayList<>();
-        for (Map.Entry<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>> entry : map.entrySet()) {
-            for (List<Pair<CategoryOptionModel, CategoryModel>> list : entry.getValue()) {
-                for (Pair<CategoryOptionModel, CategoryModel> listPair : list)
+    public List<CategoryOption> getCatOptions() {
+        Map<String, List<List<Pair<CategoryOption, Category>>>> map = tableData.val1();
+        List<CategoryOption> listCatOption = new ArrayList<>();
+        for (Map.Entry<String, List<List<Pair<CategoryOption, Category>>>> entry : map.entrySet()) {
+            for (List<Pair<CategoryOption, Category>> list : entry.getValue()) {
+                for (Pair<CategoryOption, Category> listPair : list)
                     listCatOption.add(listPair.val0());
             }
         }
@@ -356,16 +359,16 @@ public class DataValuePresenter implements DataValueContract.Presenter{
     }
 
     @Override
-    public Map<String, List<List<CategoryOptionModel>>> transformCategories(@NonNull Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>> map) {
-        Map<String, List<List<CategoryOptionModel>>> mapTransform = new HashMap<>();
-        for (Map.Entry<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>> entry : map.entrySet()) {
+    public Map<String, List<List<CategoryOption>>> transformCategories(@NonNull Map<String, List<List<Pair<CategoryOption, Category>>>> map) {
+        Map<String, List<List<CategoryOption>>> mapTransform = new HashMap<>();
+        for (Map.Entry<String, List<List<Pair<CategoryOption, Category>>>> entry : map.entrySet()) {
             mapTransform.put(entry.getKey(), new ArrayList<>());
             int repeat = 1;
             int nextCategory = 0;
-            for (List<Pair<CategoryOptionModel, CategoryModel>> list : map.get(entry.getKey())) {
-                List<CategoryOptionModel> catOptions = new ArrayList<>();
+            for (List<Pair<CategoryOption, Category>> list : map.get(entry.getKey())) {
+                List<CategoryOption> catOptions = new ArrayList<>();
                 for (int x = 0; x < repeat; x++) {
-                    for (Pair<CategoryOptionModel, CategoryModel> pair : list) {
+                    for (Pair<CategoryOption, Category> pair : list) {
                         catOptions.add(pair.val0());
                         nextCategory++;
                     }
@@ -381,7 +384,7 @@ public class DataValuePresenter implements DataValueContract.Presenter{
     }
 
     @Override
-    public List<List<String>> getCatOptionCombos(List<List<Pair<CategoryOptionModel, CategoryModel>>> listCategories, int num, List<List<String>> result, List<String> current) {
+    public List<List<String>> getCatOptionCombos(List<List<Pair<CategoryOption, Category>>> listCategories, int num, List<List<String>> result, List<String> current) {
         if (num == listCategories.size()) {
             List<String> resultHelp = new ArrayList<>();
             for (String option : current)
@@ -401,11 +404,11 @@ public class DataValuePresenter implements DataValueContract.Presenter{
         return result;
     }
 
-    private List<String> getUidCatOptionsCombo(Map<String, List<CategoryOptionComboModel>> map) {
+    private List<String> getUidCatOptionsCombo(Map<String, List<CategoryOptionCombo>> map) {
         List<String> catOptionsCombo = new ArrayList<>();
 
-        for (Map.Entry<String, List<CategoryOptionComboModel>> entry : map.entrySet()) {
-            for (CategoryOptionComboModel category : entry.getValue()) {
+        for (Map.Entry<String, List<CategoryOptionCombo>> entry : map.entrySet()) {
+            for (CategoryOptionCombo category : entry.getValue()) {
                 catOptionsCombo.add("'" + category.uid() + "'");
             }
         }
