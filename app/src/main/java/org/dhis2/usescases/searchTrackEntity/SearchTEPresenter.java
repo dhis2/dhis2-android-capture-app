@@ -105,24 +105,27 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         })
                         .subscribeOn(AndroidSchedulers.mainThread())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .flatMap(programModels -> {
-                            for (ProgramModel programModel : programModels)
-                                if (programModel.uid().equals(initialProgram))
-                                    this.selectedProgram = programModel;
-                            view.setPrograms(programModels);
+                        .subscribe(programModels -> {
 
-                            if (selectedProgram != null)
-                                return searchRepository.programAttributes(selectedProgram.uid());
-                            else
-                                return searchRepository.programAttributes();
+                                    List<ProgramModel> programsWithTEType = new ArrayList<>();
+                                    for (ProgramModel programModel : programModels) {
+                                        if (programModel.trackedEntityType().equals(trackedEntityType))
+                                            programsWithTEType.add(programModel);
+                                        if (programModel.uid().equals(initialProgram))
+                                            this.selectedProgram = programModel;
+                                    }
+                                    if(selectedProgram==null && programsWithTEType.size()==1) {
+                                        setProgram(programsWithTEType.get(0));
+                                    } else if (selectedProgram != null) {
+                                        setProgram(selectedProgram);
+                                        view.setPrograms(programModels);
+                                    } else {
+                                        setProgram(null);
+                                        view.setPrograms(programModels);
+                                    }
 
-                        })
-                        .subscribeOn(AndroidSchedulers.mainThread())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                data -> view.setForm(data, selectedProgram, queryData),
-                                Timber::d)
-        );
+                                }, Timber::d
+                        ));
 
         compositeDisposable.add(
                 metadataRepository.getOrganisationUnits()
