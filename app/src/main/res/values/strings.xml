@@ -504,7 +504,7 @@
     <string name="sms_completed">Completed</string>
     <string name="sms_count_error">SMS count not accepted</string>
     <string name="sms_state_started">Started sms submission</string>
-    <string name="sms_state_converted">Data read and converted</string>
+    <string name="sms_state_converted">Data read and converted. Submission id: %d</string>
     <string name="sms_general_error">Error sending sms submission</string>
     <string name="sms_title_enrollment">SMS TEI registration and enrollment</string>
     <string name="sms_title_event">SMS event submission</string>

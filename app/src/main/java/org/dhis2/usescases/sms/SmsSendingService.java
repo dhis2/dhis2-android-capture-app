@@ -152,7 +152,8 @@ public class SmsSendingService extends Service {
     }
 
     private void reportState(State state, int sent, int total) {
-        SendingStatus currentStatus = new SendingStatus(state, null, sent, total);
+        Integer submissionId = (smsSender != null) ? smsSender.getSubmissionId() : null;
+        SendingStatus currentStatus = new SendingStatus(submissionId, state, null, sent, total);
         statesList.add(currentStatus);
         states.postValue(statesList);
 
@@ -164,7 +165,8 @@ public class SmsSendingService extends Service {
 
     private void reportError(Throwable throwable) {
         Timber.tag(SmsSendingService.class.getSimpleName()).e(throwable);
-        statesList.add(new SendingStatus(State.ERROR, throwable, 0, 0));
+        Integer submissionId = (smsSender != null) ? smsSender.getSubmissionId() : null;
+        statesList.add(new SendingStatus(submissionId, State.ERROR, throwable, 0, 0));
         states.postValue(statesList);
     }
 
@@ -259,12 +261,14 @@ public class SmsSendingService extends Service {
     }
 
     public static class SendingStatus implements Serializable {
+        public final Integer submissionId;
         public final State state;
         public final int sent;
         public final int total;
         public final Throwable error;
 
-        SendingStatus(State state, Throwable error, int sent, int total) {
+        SendingStatus(Integer submissionId, State state, Throwable error, int sent, int total) {
+            this.submissionId = submissionId;
             this.state = state;
             this.sent = sent;
             this.total = total;

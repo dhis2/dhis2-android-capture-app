@@ -12,7 +12,7 @@ public class StatusText {
             case STARTED:
                 return r.getString(R.string.sms_state_started);
             case CONVERTED:
-                return r.getString(R.string.sms_state_converted);
+                return r.getString(R.string.sms_state_converted, state.submissionId);
             case WAITING_COUNT_CONFIRMATION:
                 return r.getString(R.string.sms_waiting_amount_confirm, state.total);
             case COUNT_NOT_ACCEPTED:
