@@ -15,6 +15,7 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel;
 import org.dhis2.data.forms.dataentry.fields.image.ImageViewModel;
+import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.tuples.Quartet;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureFragment.EventCaptureFormFragment;
@@ -22,8 +23,6 @@ import org.dhis2.utils.OnDialogClickListener;
 import org.dhis2.utils.Result;
 import org.dhis2.utils.RulesActionCallbacks;
 import org.dhis2.utils.RulesUtilsProvider;
-import org.dhis2.utils.custom_views.OptionSetDialog;
-import org.dhis2.utils.custom_views.OptionSetPopUp;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
@@ -38,7 +37,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -351,8 +349,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                             EventCaptureFormFragment.getInstance().setSingleSection(arguments, formSectionViewModel);
                                         }
 
-                                        subscribeToActions();
-
                                         EventCaptureFormFragment.getInstance().setSectionProgress(
                                                 getFinalSections().indexOf(formSectionViewModel),
                                                 getFinalSections().size());
@@ -385,27 +381,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                             Timber::d)
             );
         }
-
     }
 
-    private void subscribeToActions() {
-        compositeDisposable.add(
-                EventCaptureFormFragment.getInstance().optionSetActions()
-                        .switchMap(
-                                data -> metadataRepository.searchOptions(data.val0(), data.val1(), data.val2(), optionsToHide, optionsGroupsToHide).toFlowable(BackpressureStrategy.LATEST)
-                        )
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                options -> {
-                                    if (OptionSetDialog.isCreated())
-                                        OptionSetDialog.newInstance().setOptions(options);
-                                    else if (OptionSetPopUp.isCreated())
-                                        OptionSetPopUp.getInstance().setOptions(options);
-                                },
-                                Timber::e
-                        ));
-    }
 
     @NonNull
     private List<FieldViewModel> applyEffects(
@@ -453,6 +430,10 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                 if (iter.next().getValue() instanceof DisplayViewModel)
                     iter.remove();
         }
+
+        for (FieldViewModel fieldViewModel : fieldViewModels.values())
+            if (fieldViewModel instanceof SpinnerViewModel)
+                ((SpinnerViewModel) fieldViewModel).setOptionsToHide(optionsToHide, optionsGroupsToHide);
 
         return new ArrayList<>(fieldViewModels.values());
     }

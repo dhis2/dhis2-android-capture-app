@@ -1,13 +1,15 @@
 package org.dhis2.data.forms.dataentry.fields.spinner;
 
+import androidx.annotation.NonNull;
+
 import com.google.auto.value.AutoValue;
 
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
 
-import javax.annotation.Nonnull;
+import java.util.List;
 
-import androidx.annotation.NonNull;
+import javax.annotation.Nonnull;
 
 /**
  * QUADRAM. Created by frodriguez on 1/24/2018.
@@ -15,6 +17,9 @@ import androidx.annotation.NonNull;
 
 @AutoValue
 public abstract class SpinnerViewModel extends FieldViewModel {
+
+    private List<String> optionsToHide;
+    private List<String> optionGroupsToHide;
 
     @NonNull
     public abstract String hint();
@@ -32,30 +37,43 @@ public abstract class SpinnerViewModel extends FieldViewModel {
 
     @Override
     public FieldViewModel setMandatory() {
-        return new AutoValue_SpinnerViewModel(uid(), label(), true, value(), programStageSection(), allowFutureDate(), editable(), warning(), error(), description(),objectStyle(), hint(), optionSet(), numberOfOptions());
+        return new AutoValue_SpinnerViewModel(uid(), label(), true, value(), programStageSection(), allowFutureDate(), editable(), warning(), error(), description(), objectStyle(), hint(), optionSet(), numberOfOptions());
     }
 
     @NonNull
     @Override
     public FieldViewModel withError(@NonNull String error) {
-        return new AutoValue_SpinnerViewModel(uid(), label(), mandatory(), value(), programStageSection(), allowFutureDate(), editable(), warning(), error, description(),objectStyle(), hint(), optionSet(), numberOfOptions());
+        return new AutoValue_SpinnerViewModel(uid(), label(), mandatory(), value(), programStageSection(), allowFutureDate(), editable(), warning(), error, description(), objectStyle(), hint(), optionSet(), numberOfOptions());
     }
 
     @NonNull
     @Override
     public FieldViewModel withWarning(@NonNull String warning) {
-        return new AutoValue_SpinnerViewModel(uid(), label(), mandatory(), value(), programStageSection(), allowFutureDate(), editable(), warning, error(), description(),objectStyle(), hint(), optionSet(), numberOfOptions());
+        return new AutoValue_SpinnerViewModel(uid(), label(), mandatory(), value(), programStageSection(), allowFutureDate(), editable(), warning, error(), description(), objectStyle(), hint(), optionSet(), numberOfOptions());
     }
 
     @Nonnull
     @Override
     public FieldViewModel withValue(String data) {
-        return new AutoValue_SpinnerViewModel(uid(), label(), mandatory(), data, programStageSection(), allowFutureDate(), false, warning(), error(), description(),objectStyle(), hint(), optionSet(), numberOfOptions());
+        return new AutoValue_SpinnerViewModel(uid(), label(), mandatory(), data, programStageSection(), allowFutureDate(), false, warning(), error(), description(), objectStyle(), hint(), optionSet(), numberOfOptions());
     }
 
     @NonNull
     @Override
     public FieldViewModel withEditMode(boolean isEditable) {
-        return new AutoValue_SpinnerViewModel(uid(), label(), mandatory(), value(), programStageSection(), allowFutureDate(), isEditable, warning(), error(), description(),objectStyle(), hint(), optionSet(), numberOfOptions());
+        return new AutoValue_SpinnerViewModel(uid(), label(), mandatory(), value(), programStageSection(), allowFutureDate(), isEditable, warning(), error(), description(), objectStyle(), hint(), optionSet(), numberOfOptions());
+    }
+
+    public void setOptionsToHide(List<String> optionsToHide, List<String> optionsGroupsToHide) {
+        this.optionsToHide = optionsToHide;
+        this.optionGroupsToHide = optionsGroupsToHide;
+    }
+
+    public List<String> getOptionsToHide() {
+        return optionsToHide;
+    }
+
+    public List<String> getOptionGroupsToHide() {
+        return optionGroupsToHide;
     }
 }

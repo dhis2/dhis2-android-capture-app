@@ -409,10 +409,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     public void setListOptions(List<OptionModel> options) {
-        if (OptionSetDialog.isCreated())
-            OptionSetDialog.newInstance().setOptions(options);
-        else if (OptionSetPopUp.isCreated())
-            OptionSetPopUp.getInstance().setOptions(options);
     }
 
     @Override

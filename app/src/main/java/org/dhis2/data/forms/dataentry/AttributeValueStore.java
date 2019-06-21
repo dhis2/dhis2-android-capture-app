@@ -115,8 +115,8 @@ public final class AttributeValueStore implements DataEntryStore {
                     " WHERE TrackedEntityAttribute.uid = ? AND" +
                     " TrackedEntityAttribute.uniqueProperty = ? AND" +
                     " TrackedEntityAttributeValue.value = ?", uid, "1", value)) {
-                if (uniqueCursor != null && uniqueCursor.getCount() > 0) {
-                    delete(uid, ATTR);
+                if (uniqueCursor != null && uniqueCursor.getCount() > 0 && !uniqueCursor.getString(0).equals(value)) {
+                    delete(uid, ATTR); //TODO: TEST IF DELETE IS THE RIGHT WAY
                     return Flowable.just(false);
                 } else
                     return Flowable.just(true);

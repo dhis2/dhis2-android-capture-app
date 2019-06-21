@@ -72,7 +72,7 @@ class FormPresenterImpl implements FormPresenter {
     private final D2 d2;
     private FormView view;
 
-    private boolean isEvent = false;
+    private boolean isEvent;
 
     FormPresenterImpl(@NonNull FormViewArguments formViewArguments,
                       @NonNull SchedulerProvider schedulerProvider,

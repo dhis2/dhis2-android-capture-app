@@ -1,6 +1,7 @@
 package org.dhis2.utils.custom_views;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -12,16 +13,17 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.DialogFragment;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.jakewharton.rxbinding2.widget.RxTextView;
 
+import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
-import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.DialogOptionSetBinding;
-import org.dhis2.utils.EndlessRecyclerViewScrollListener;
-import org.hisp.dhis.android.core.option.OptionModel;
+import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.common.UidsHelper;
+import org.hisp.dhis.android.core.option.Option;
+import org.hisp.dhis.android.core.option.OptionCollectionRepository;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -30,35 +32,38 @@ import java.util.concurrent.TimeUnit;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
+import static android.text.TextUtils.isEmpty;
+
 public class OptionSetDialog extends DialogFragment {
 
-    private static OptionSetDialog instace;
-    private DialogOptionSetBinding binding;
+    public static final String TAG = OptionSetDialog.class.getName();
+    private final List<String> optionsToHide;
+    private final List<String> optionGroupsToHide;
+
     private CompositeDisposable disposable;
-    //1st param is text to search, 2nd param is uid of optionSet,3rd param is page
-    private FlowableProcessor<Trio<String, String, Integer>> processor;
     private OptionSetAdapter adapter;
     private SpinnerViewModel optionSet;
 
     private OptionSetOnClickListener listener;
-    private View.OnClickListener cancelListener;
     private View.OnClickListener clearListener;
+    private D2 d2;
 
-    private EndlessRecyclerViewScrollListener endlessScrollListener;
-
-    public static OptionSetDialog newInstance() {
-        if (instace == null) {
-            instace = new OptionSetDialog();
-        }
-        return instace;
+    public OptionSetDialog(SpinnerViewModel view, OptionSetOnClickListener optionSetListener,
+                           View.OnClickListener clearListener) {
+        this.optionSet = view;
+        this.listener = optionSetListener;
+        this.clearListener = clearListener;
+        this.optionsToHide = view.getOptionsToHide();
+        this.optionGroupsToHide = view.getOptionGroupsToHide();
     }
 
-    public static Boolean isCreated() {
-        return instace != null;
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        d2 = ((App) context.getApplicationContext()).serverComponent().userManager().getD2();
     }
 
     @NotNull
@@ -73,42 +78,63 @@ public class OptionSetDialog extends DialogFragment {
 
     @Override
     public void onCancel(@NonNull DialogInterface dialog) {
-        instace = null;
         disposable.clear();
         super.onCancel(dialog);
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        binding = DataBindingUtil.inflate(inflater, R.layout.dialog_option_set, container, false);
 
-
+        DialogOptionSetBinding binding = DataBindingUtil.inflate(inflater, R.layout.dialog_option_set, container, false);
         binding.title.setText(optionSet.label());
-        disposable = new CompositeDisposable();
 
-        endlessScrollListener = new EndlessRecyclerViewScrollListener(binding.recycler.getLayoutManager(), 2, 0) {
-            @Override
-            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                processor.onNext(Trio.create(binding.txtSearch.getText().toString(), optionSet.optionSet(), page));
-            }
-        };
-        binding.recycler.addOnScrollListener(endlessScrollListener);
-        adapter = new OptionSetAdapter(listener);
-        adapter.setOptions(new ArrayList<>(), endlessScrollListener.getCurrentPage());
+        disposable = new CompositeDisposable();
+        adapter = new OptionSetAdapter((option) -> {
+            listener.onSelectOption(option);
+            this.dismiss();
+        });
         binding.recycler.setAdapter(adapter);
 
-        processor.onNext(Trio.create("", optionSet.optionSet(), 0));
+        binding.clearButton.setOnClickListener((view) -> {
+            clearListener.onClick(view);
+            this.dismiss();
+        });
+        binding.cancelButton.setOnClickListener(view ->
+                this.dismiss());
 
-        binding.clearButton.setOnClickListener(clearListener);
-        binding.cancelButton.setOnClickListener(cancelListener);
         disposable.add(RxTextView.textChanges(binding.txtSearch)
-                .debounce(500, TimeUnit.MILLISECONDS)
+                .startWith("")
+                .debounce(500, TimeUnit.MILLISECONDS, Schedulers.io())
+                .map(textToSearch ->
+                {
+                    OptionCollectionRepository optionRepository = d2.optionModule().options
+                            .byOptionSetUid().eq(optionSet.optionSet());
+
+                    List<String> finalOptionsToHide = new ArrayList<>();
+                    if (!optionsToHide.isEmpty())
+                        finalOptionsToHide.addAll(optionsToHide);
+
+                    if (!optionGroupsToHide.isEmpty()) {
+                        for (String groupUid : optionGroupsToHide) {
+                            finalOptionsToHide.addAll(
+                                    UidsHelper.getUidsList(d2.optionModule().optionGroups.withOptions().uid(groupUid).get().options())
+                            );
+                        }
+                    }
+                    if (!finalOptionsToHide.isEmpty())
+                        optionRepository = optionRepository
+                                .byUid().notIn(finalOptionsToHide);
+
+                    if (!isEmpty(textToSearch))
+                        optionRepository = optionRepository
+                                .byDisplayName().like("%" + textToSearch + "%");
+                    return optionRepository.getPaged(20);
+                })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(data -> {
-                            endlessScrollListener.resetState();
-                            processor.onNext(Trio.create(data.toString(), optionSet.optionSet(), 0));
-                        },
+                .subscribe(options ->
+                                options.observe(this, optionList ->
+                                        adapter.submitList(optionList)),
                         Timber::e
                 ));
 
@@ -118,42 +144,15 @@ public class OptionSetDialog extends DialogFragment {
 
     @Override
     public void dismiss() {
-        instace = null;
         disposable.clear();
         super.dismiss();
     }
 
-    public OptionSetDialog setOnClick(OptionSetOnClickListener listener) {
-        this.listener = listener;
-        return this;
-    }
+    public interface OnOptionSetDialogButtonClickListener {
+        void onCancelClick();
 
-    public OptionSetDialog setOptions(List<OptionModel> options) {
-        if (options.isEmpty() && adapter.isLastItemLoading(adapter.getItemCount())) {
-            adapter.remove();
-        } else {
-            adapter.setOptions(options, endlessScrollListener.getCurrentPage());
-        }
-        return this;
-    }
+        void onClearClick();
 
-    public OptionSetDialog setOptionSetUid(SpinnerViewModel view) {
-        this.optionSet = view;
-        return this;
-    }
-
-    public OptionSetDialog setProcessor(FlowableProcessor<Trio<String, String, Integer>> processor) {
-        this.processor = processor;
-        return this;
-    }
-
-    public OptionSetDialog setCancelListener(View.OnClickListener cancelListener) {
-        this.cancelListener = cancelListener;
-        return this;
-    }
-
-    public OptionSetDialog setClearListener(View.OnClickListener clearListener) {
-        this.clearListener = clearListener;
-        return this;
+        void onOptionSelected(Option option);
     }
 }

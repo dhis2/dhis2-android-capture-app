@@ -130,12 +130,6 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
         return dataEntryAdapter.asFlowable();
     }
 
-    @NonNull
-    @Override
-    public Flowable<Trio<String, String, Integer>> optionSetActions() {
-        return dataEntryAdapter.asFlowableOption();
-    }
-
     @Override
     public FlowableProcessor<RowAction> getActionProcessor() {
         return dataEntryAdapter.asFlowable();
@@ -167,18 +161,6 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
         if (!isEmpty(dataEntryPresenter.getLastFocusItem()))
             dataEntryAdapter.setLastFocusItem(dataEntryPresenter.getLastFocusItem());
         dataEntryAdapter.swapWithoutList();
-    }
-
-    @Override
-    public void removeSection(String sectionUid) {
-        if (formFragment instanceof FormFragment) {
-            ((FormFragment) formFragment).hideSections(sectionUid);
-        }
-    }
-
-    @Override
-    public void messageOnComplete(String message, boolean canComplete) {
-        //TODO: When event/enrollment ends if there is a message it should be shown. Only if canComplete, user can finish
     }
 
     public boolean checkMandatory() {
@@ -223,14 +205,6 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
     }
 
     @Override
-    public void setListOptions(List<OptionModel> options) {
-        if (OptionSetDialog.isCreated())
-            OptionSetDialog.newInstance().setOptions(options);
-        else if (OptionSetPopUp.isCreated())
-            OptionSetPopUp.getInstance().setOptions(options);
-    }
-
-    @Override
     public void showMessage(int messageId) {
         AlertDialog dialog = showInfoDialog(getString(R.string.error), getString(R.string.unique_warning), new OnDialogClickListener() {
 
@@ -246,18 +220,5 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
         });
         dialog.show();
         dialog.setCanceledOnTouchOutside(false);
-    }
-
-    @Override
-    public void updateAdapter(RowAction rowAction) {
-        getActivity().runOnUiThread(() -> {
-            dataEntryAdapter.notifyChanges(rowAction);
-            if (rowAction.lastFocusPosition() != -1)
-                if (rowAction.lastFocusPosition() >= dataEntryAdapter.getItemCount())
-                    recyclerView.smoothScrollToPosition(rowAction.lastFocusPosition());
-                else
-                    recyclerView.smoothScrollToPosition(rowAction.lastFocusPosition() + 1);
-        });
-
     }
 }

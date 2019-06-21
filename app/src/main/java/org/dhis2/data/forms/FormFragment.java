@@ -551,10 +551,6 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
         }
     }
 
-    public void hideSections(String uid) {
-        formPresenter.checkSections();
-    }
-
     @Override
     public void messageOnComplete(String content, boolean canComplete) {
         this.messageOnComplete = content;
