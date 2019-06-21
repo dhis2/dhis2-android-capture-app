@@ -18,7 +18,7 @@ import org.dhis2.databinding.ActivityTeidataDetailBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.map.MapSelectorActivity;
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
-import org.dhis2.utils.Constants;
+
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 
 import java.util.Locale;
@@ -160,7 +160,7 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == Constants.RQ_MAP_LOCATION && resultCode == RESULT_OK) {
+        if (requestCode == RQ_MAP_LOCATION && resultCode == RESULT_OK) {
             String savedLat = data.getStringExtra(MapSelectorActivity.LATITUDE);
             String savedLon = data.getStringExtra(MapSelectorActivity.LONGITUDE);
             setLocation(Double.valueOf(savedLat), Double.valueOf(savedLon));

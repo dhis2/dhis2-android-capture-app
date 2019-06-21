@@ -8,7 +8,7 @@ import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.databinding.EnrollmentActivityBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
-import org.dhis2.utils.Constants;
+
 import org.hisp.dhis.android.core.period.FeatureType;
 
 import javax.inject.Inject;
@@ -16,6 +16,8 @@ import javax.inject.Inject;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import io.reactivex.functions.Consumer;
+
+import static org.dhis2.utils.ConstantsKt.ENROLLMENT_UID;
 
 public class EnrollmentActivity extends ActivityGlobalAbstract implements EnrollmentContracts.View {
 
@@ -25,7 +27,7 @@ public class EnrollmentActivity extends ActivityGlobalAbstract implements Enroll
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        String enrollmentUid = getIntent().getStringExtra(Constants.ENROLLMENT_UID);
+        String enrollmentUid = getIntent().getStringExtra(ENROLLMENT_UID);
         EnrollmentComponent enrollmentComponent = ((App) getApplicationContext()).userComponent().plus(new EnrollmentModule(enrollmentUid));
         enrollmentComponent.inject(this);
         super.onCreate(savedInstanceState);

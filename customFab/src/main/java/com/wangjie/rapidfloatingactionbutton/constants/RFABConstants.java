@@ -1,11 +1,11 @@
-package com.wangjie.rapidfloatingactionbutton.constants;
+package com.wangjie.rapidfloatingactionbutton.
 
 /**
  * Author: wangjie
  * Email: tiantian.china.2@gmail.com
  * Date: 4/30/15.
  */
-public class RFABConstants {
+public class RFAB{
 
     public static class SIZE {
         /**

@@ -15,7 +15,7 @@ import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableContract;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
-import org.dhis2.utils.Constants;
+
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
 
@@ -36,7 +36,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
     @NonNull
     public static DataSetSectionFragment create(@NonNull String sectionUid) {
         Bundle bundle = new Bundle();
-        bundle.putString(Constants.DATA_SET_SECTION, sectionUid);
+        bundle.putString(DATA_SET_SECTION, sectionUid);
 
         DataSetSectionFragment dataSetSectionFragment = new DataSetSectionFragment();
         dataSetSectionFragment.setArguments(bundle);
@@ -65,7 +65,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
         adapter = new DataSetTableAdapter(getAbstracContext());
         binding.tableView.setAdapter(adapter);
 
-        String dataSetSection = getArguments().getString(Constants.DATA_SET_SECTION);
+        String dataSetSection = getArguments().getString(DATA_SET_SECTION);
 
         List<DataElementModel> dataElements = presenter.getDataElements(dataSetSection);
         List<CategoryOptionComboModel> catOptions = presenter.getCatOptionCombos(dataSetSection);

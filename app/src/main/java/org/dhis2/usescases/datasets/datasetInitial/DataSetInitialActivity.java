@@ -13,7 +13,7 @@ import org.dhis2.R;
 import org.dhis2.databinding.ActivityDatasetInitialBinding;
 import org.dhis2.databinding.ItemCategoryComboBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
-import org.dhis2.utils.Constants;
+
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.custom_views.OrgUnitDialog;
 import org.dhis2.utils.custom_views.PeriodDialog;
@@ -48,7 +48,7 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        dataSetUid = getIntent().getStringExtra(Constants.DATA_SET_UID);
+        dataSetUid = getIntent().getStringExtra(DATA_SET_UID);
         ((App) getApplicationContext()).userComponent().plus(new DataSetInitialModule(dataSetUid)).inject(this);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dataset_initial);

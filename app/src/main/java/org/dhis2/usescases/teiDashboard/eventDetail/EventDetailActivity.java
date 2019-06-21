@@ -19,7 +19,7 @@ import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.databinding.ActivityEventDetailBinding;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
-import org.dhis2.utils.Constants;
+
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.HelpManager;
@@ -45,6 +45,9 @@ import io.reactivex.functions.Consumer;
 import me.toptas.fancyshowcase.FancyShowCaseView;
 import me.toptas.fancyshowcase.FocusShape;
 import timber.log.Timber;
+
+import static org.dhis2.utils.ConstantsKt.EVENT_UID;
+import static org.dhis2.utils.ConstantsKt.SHARE_PREFS;
 
 /**
  * QUADRAM. Created by Cristian E. on 18/12/2017.
@@ -184,7 +187,7 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
         if (changedEventStatus) {
             Intent intent = new Intent();
             if (eventDetailModel.getEventModel().status() == EventStatus.COMPLETED)
-                intent.putExtra(Constants.EVENT_UID, eventUid);
+                intent.putExtra(EVENT_UID, eventUid);
             setResult(Activity.RESULT_OK, intent);
         }
         finish();
@@ -251,7 +254,7 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
         super.setTutorial();
 
         SharedPreferences prefs = getAbstracContext().getSharedPreferences(
-                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
+                SHARE_PREFS, Context.MODE_PRIVATE);
 
         new Handler().postDelayed(() -> {
             FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())

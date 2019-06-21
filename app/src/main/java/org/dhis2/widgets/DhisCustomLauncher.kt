@@ -8,7 +8,7 @@ import android.content.Intent
 import android.widget.RemoteViews
 import org.dhis2.R
 import org.dhis2.usescases.splash.SplashActivity
-import org.dhis2.utils.Constants
+import org.dhis2.utils.SHARE_PREFS
 
 
 /**
@@ -46,7 +46,7 @@ class DhisCustomLauncher : AppWidgetProvider() {
         internal fun updateAppWidget(context: Context, appWidgetManager: AppWidgetManager,
                                      appWidgetId: Int) {
 
-            val prefs = context.getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE)
+            val prefs = context.getSharedPreferences(SHARE_PREFS, Context.MODE_PRIVATE)
             val widgetImage = prefs.getString("FLAG", null)
             var icon = 0
             if (widgetImage != null) {

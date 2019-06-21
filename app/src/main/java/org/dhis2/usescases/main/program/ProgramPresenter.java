@@ -11,7 +11,7 @@ import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity;
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity;
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity;
 import org.dhis2.utils.ColorUtils;
-import org.dhis2.utils.Constants;
+
 import org.dhis2.utils.OrgUnitUtils;
 import org.dhis2.utils.Period;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
@@ -33,6 +33,8 @@ import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
+import static org.dhis2.utils.ConstantsKt.PROGRAM_THEME;
+import static org.dhis2.utils.ConstantsKt.SHARE_PREFS;
 
 /**
  * Created by ppajuelo on 18/10/2017.f
@@ -151,11 +153,11 @@ public class ProgramPresenter implements ProgramContract.Presenter {
 
         int programTheme = ColorUtils.getThemeFromColor(programModel.color());
         SharedPreferences prefs = view.getAbstracContext().getSharedPreferences(
-                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
+                SHARE_PREFS, Context.MODE_PRIVATE);
         if (programTheme != -1) {
-            prefs.edit().putInt(Constants.PROGRAM_THEME, programTheme).apply();
+            prefs.edit().putInt(PROGRAM_THEME, programTheme).apply();
         } else
-            prefs.edit().remove(Constants.PROGRAM_THEME).apply();
+            prefs.edit().remove(PROGRAM_THEME).apply();
 
         if (programModel.programType().equals(ProgramType.WITH_REGISTRATION.name())) {
             view.startActivity(SearchTEActivity.class, bundle, false, false, null);

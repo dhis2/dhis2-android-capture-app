@@ -33,7 +33,7 @@ import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerRow;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedRow;
 import org.dhis2.data.tuples.Trio;
-import org.dhis2.utils.Constants;
+
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -119,7 +119,7 @@ public class FormAdapter extends RecyclerView.Adapter {
         FieldViewModel viewModel;
         if (position < programData) {
             viewModel = DateTimeViewModel.create(
-                    position == 0 ? Constants.ENROLLMENT_DATE_UID : Constants.INCIDENT_DATE_UID,
+                    position == 0 ? ENROLLMENT_DATE_UID : INCIDENT_DATE_UID,
                     holder.getAdapterPosition() == 0 ?
                             !isEmpty(programModel.enrollmentDateLabel()) ? programModel.enrollmentDateLabel() : context.getString(R.string.enrollmment_date) :
                             !isEmpty(programModel.incidentDateLabel()) ? programModel.incidentDateLabel() : context.getString(R.string.incident_date),

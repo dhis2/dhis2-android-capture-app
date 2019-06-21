@@ -12,8 +12,10 @@ import androidx.databinding.ViewDataBinding;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.dhis2.R;
-import org.dhis2.utils.Constants;
+
 import org.dhis2.utils.custom_views.CustomDialog;
+
+import static org.dhis2.utils.ConstantsKt.DESCRIPTION_DIALOG;
 
 /**
  * QUADRAM. Created by ppajuelo on 06/11/2017.
@@ -38,7 +40,7 @@ public abstract class FormViewHolder extends RecyclerView.ViewHolder {
                             descriptionText != null ? descriptionText : itemView.getContext().getString(R.string.empty_description),
                             itemView.getContext().getString(R.string.action_close),
                             null,
-                            Constants.DESCRIPTION_DIALOG,
+                            DESCRIPTION_DIALOG,
                             null
                     ).show());
         }

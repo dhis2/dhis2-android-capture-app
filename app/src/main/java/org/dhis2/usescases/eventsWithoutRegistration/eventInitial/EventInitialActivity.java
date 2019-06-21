@@ -42,7 +42,6 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureAc
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.map.MapSelectorActivity;
 import org.dhis2.usescases.qrCodes.eventsworegistration.QrEventsWORegistrationActivity;
-import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.EventCreationType;
@@ -83,14 +82,7 @@ import me.toptas.fancyshowcase.FancyShowCaseView;
 import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
-import static org.dhis2.utils.Constants.ENROLLMENT_UID;
-import static org.dhis2.utils.Constants.EVENT_CREATION_TYPE;
-import static org.dhis2.utils.Constants.EVENT_PERIOD_TYPE;
-import static org.dhis2.utils.Constants.ONE_TIME;
-import static org.dhis2.utils.Constants.ORG_UNIT;
-import static org.dhis2.utils.Constants.PERMANENT;
-import static org.dhis2.utils.Constants.PROGRAM_UID;
-import static org.dhis2.utils.Constants.TRACKED_ENTITY_INSTANCE;
+import static org.dhis2.utils.t.*;
 
 
 /**
@@ -143,16 +135,16 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                                    String teiUid, PeriodType eventPeriodType, String orgUnit, String stageUid,
                                    String enrollmentUid, int eventScheduleInterval, EnrollmentStatus enrollmentStatus) {
         Bundle bundle = new Bundle();
-        bundle.putString(Constants.PROGRAM_UID, programUid);
-        bundle.putString(Constants.EVENT_UID, eventUid);
-        bundle.putString(Constants.EVENT_CREATION_TYPE, eventCreationType);
-        bundle.putString(Constants.TRACKED_ENTITY_INSTANCE, teiUid);
-        bundle.putString(Constants.ENROLLMENT_UID, enrollmentUid);
-        bundle.putString(Constants.ORG_UNIT, orgUnit);
-        bundle.putSerializable(Constants.EVENT_PERIOD_TYPE, eventPeriodType);
-        bundle.putString(Constants.PROGRAM_STAGE_UID, stageUid);
-        bundle.putInt(Constants.EVENT_SCHEDULE_INTERVAL, eventScheduleInterval);
-        bundle.putSerializable(Constants.ENROLLMENT_STATUS, enrollmentStatus);
+        bundle.putString(PROGRAM_UID, programUid);
+        bundle.putString(EVENT_UID, eventUid);
+        bundle.putString(EVENT_CREATION_TYPE, eventCreationType);
+        bundle.putString(TRACKED_ENTITY_INSTANCE, teiUid);
+        bundle.putString(ENROLLMENT_UID, enrollmentUid);
+        bundle.putString(ORG_UNIT, orgUnit);
+        bundle.putSerializable(EVENT_PERIOD_TYPE, eventPeriodType);
+        bundle.putString(PROGRAM_STAGE_UID, stageUid);
+        bundle.putInt(EVENT_SCHEDULE_INTERVAL, eventScheduleInterval);
+        bundle.putSerializable(ENROLLMENT_STATUS, enrollmentStatus);
         return bundle;
     }
 
@@ -162,7 +154,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         super.onCreate(savedInstanceState);
 
         programUid = getIntent().getStringExtra(PROGRAM_UID);
-        eventUid = getIntent().getStringExtra(Constants.EVENT_UID);
+        eventUid = getIntent().getStringExtra(EVENT_UID);
         eventCreationType = getIntent().getStringExtra(EVENT_CREATION_TYPE) != null ?
                 EventCreationType.valueOf(getIntent().getStringExtra(EVENT_CREATION_TYPE)) :
                 EventCreationType.DEFAULT;
@@ -170,9 +162,9 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         enrollmentUid = getIntent().getStringExtra(ENROLLMENT_UID);
         selectedOrgUnit = getIntent().getStringExtra(ORG_UNIT);
         periodType = (PeriodType) getIntent().getSerializableExtra(EVENT_PERIOD_TYPE);
-        programStageUid = getIntent().getStringExtra(Constants.PROGRAM_STAGE_UID);
-        enrollmentStatus = (EnrollmentStatus) getIntent().getSerializableExtra(Constants.ENROLLMENT_STATUS);
-        eventScheduleInterval = getIntent().getIntExtra(Constants.EVENT_SCHEDULE_INTERVAL, 0);
+        programStageUid = getIntent().getStringExtra(PROGRAM_STAGE_UID);
+        enrollmentStatus = (EnrollmentStatus) getIntent().getSerializableExtra(ENROLLMENT_STATUS);
+        eventScheduleInterval = getIntent().getIntExtra(EVENT_SCHEDULE_INTERVAL, 0);
 
         ((App) getApplicationContext()).userComponent().plus(new EventInitialModule(eventUid)).inject(this);
 
@@ -774,7 +766,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == Constants.RQ_MAP_LOCATION && resultCode == RESULT_OK) {
+        if (requestCode == RQ_MAP_LOCATION && resultCode == RESULT_OK) {
             savedLat = data.getStringExtra(MapSelectorActivity.LATITUDE);
             savedLon = data.getStringExtra(MapSelectorActivity.LONGITUDE);
             setLocation(Double.valueOf(savedLat), Double.valueOf(savedLon));
@@ -951,7 +943,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     @Override
     public void showQR() {
         Intent intent = new Intent(EventInitialActivity.this, QrEventsWORegistrationActivity.class);
-        intent.putExtra(Constants.EVENT_UID, eventUid);
+        intent.putExtra(EVENT_UID, eventUid);
         startActivity(intent);
     }
 
@@ -964,7 +956,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         super.setTutorial();
 
         SharedPreferences prefs = getAbstracContext().getSharedPreferences(
-                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
+                SHARE_PREFS, Context.MODE_PRIVATE);
 
         new Handler().postDelayed(() -> {
             ArrayList<FancyShowCaseView> steps = new ArrayList<>();

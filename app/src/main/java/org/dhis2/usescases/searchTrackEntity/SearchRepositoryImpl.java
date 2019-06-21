@@ -16,7 +16,7 @@ import com.squareup.sqlbrite2.BriteDatabase;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.utils.CodeGenerator;
-import org.dhis2.utils.Constants;
+
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.ValueUtils;
 import org.hisp.dhis.android.core.D2;
@@ -63,6 +63,7 @@ import io.reactivex.Observable;
 import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
+import static org.dhis2.utils.ConstantsKt.ENROLLMENT_DATE_UID;
 
 /**
  * QUADRAM. Created by ppajuelo on 02/11/2017.
@@ -204,15 +205,15 @@ public class SearchRepositoryImpl implements SearchRepository {
                                                                             @Nullable HashMap<String, String> queryData) {
 
         TrackedEntityInstanceQuery.Builder queryBuilder = setQueryBuilder(selectedProgram, orgUnits);
-        if (queryData != null && !isEmpty(queryData.get(Constants.ENROLLMENT_DATE_UID))) {
+        if (queryData != null && !isEmpty(queryData.get(ENROLLMENT_DATE_UID))) {
             try {
-                Date enrollmentDate = DateUtils.uiDateFormat().parse(queryData.get(Constants.ENROLLMENT_DATE_UID));
+                Date enrollmentDate = DateUtils.uiDateFormat().parse(queryData.get(ENROLLMENT_DATE_UID));
                 queryBuilder.programStartDate(enrollmentDate);
                 queryBuilder.programEndDate(enrollmentDate);
             } catch (ParseException ex) {
                 Timber.d(ex.getMessage());
             }
-            queryData.remove(Constants.ENROLLMENT_DATE_UID);
+            queryData.remove(ENROLLMENT_DATE_UID);
         }
 
         List<QueryItem> filterList = formatQueryData(queryData, queryBuilder);
@@ -235,15 +236,15 @@ public class SearchRepositoryImpl implements SearchRepository {
                                                                         @Nullable HashMap<String, String> queryData) {
 
         TrackedEntityInstanceQuery.Builder queryBuilder = setQueryBuilder(selectedProgram, orgUnits);
-        if (queryData != null && !isEmpty(queryData.get(Constants.ENROLLMENT_DATE_UID))) {
+        if (queryData != null && !isEmpty(queryData.get(ENROLLMENT_DATE_UID))) {
             try {
-                Date enrollmentDate = DateUtils.uiDateFormat().parse(queryData.get(Constants.ENROLLMENT_DATE_UID));
+                Date enrollmentDate = DateUtils.uiDateFormat().parse(queryData.get(ENROLLMENT_DATE_UID));
                 queryBuilder.programStartDate(enrollmentDate);
                 queryBuilder.programEndDate(enrollmentDate);
             } catch (ParseException ex) {
                 Timber.d(ex.getMessage());
             }
-            queryData.remove(Constants.ENROLLMENT_DATE_UID);
+            queryData.remove(ENROLLMENT_DATE_UID);
         }
 
         List<QueryItem> filterList = formatQueryData(queryData, queryBuilder);
@@ -286,8 +287,8 @@ public class SearchRepositoryImpl implements SearchRepository {
                     return Observable.error(new SQLiteConstraintException(message));
                 }
 
-                if (queryData.containsKey(Constants.ENROLLMENT_DATE_UID))
-                    queryData.remove(Constants.ENROLLMENT_DATE_UID);
+                if (queryData.containsKey(ENROLLMENT_DATE_UID))
+                    queryData.remove(ENROLLMENT_DATE_UID);
                 for (String key : queryData.keySet()) {
                     String dataValue = queryData.get(key);
                     if (dataValue.contains("_os_"))

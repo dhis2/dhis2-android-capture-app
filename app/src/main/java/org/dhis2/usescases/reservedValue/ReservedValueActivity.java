@@ -7,7 +7,7 @@ import org.dhis2.BR;
 import org.dhis2.R;
 import org.dhis2.databinding.ActivityReservedValueBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
-import org.dhis2.utils.Constants;
+
 import org.dhis2.utils.custom_views.CustomDialog;
 
 import java.util.List;
@@ -71,7 +71,7 @@ public class ReservedValueActivity extends ActivityGlobalAbstract implements Res
                 getString(R.string.no_reserved_values),
                 getString(R.string.action_accept),
                 null,
-                Constants.DESCRIPTION_DIALOG,
+                DESCRIPTION_DIALOG,
                 null
         ).show());
     }

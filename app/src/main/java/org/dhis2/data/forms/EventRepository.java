@@ -185,13 +185,13 @@ public class EventRepository implements FormRepository {
                         rulesRepository.ruleVariables(program),
                         rulesRepository.otherEvents(eventUid),
                         rulesRepository.enrollment(eventUid),
-                        rulesRepository.queryConstants(),
-                        (rules, variables, events, enrollment, constants) -> {
+                        rulesRepository.query),
+                        (rules, variables, events, enrollment,  -> {
 
                             RuleEngine.Builder builder = RuleEngineContext.builder(evaluator)
                                     .rules(rules)
                                     .ruleVariables(variables)
-                                    .constantsValue(constants)
+                                    .alue(
                                     .calculatedValueMap(new HashMap<>())
                                     .supplementaryData(new HashMap<>())
                                     .build().toEngineBuilder();
@@ -213,13 +213,13 @@ public class EventRepository implements FormRepository {
                         rulesRepository.ruleVariables(program),
                         rulesRepository.otherEvents(eventUid),
                         rulesRepository.enrollment(eventUid),
-                        rulesRepository.queryConstants(),
-                        (rules, variables, events, enrollment, constants) -> {
+                        rulesRepository.query),
+                        (rules, variables, events, enrollment,  -> {
 
                             RuleEngine.Builder builder = RuleEngineContext.builder(evaluator)
                                     .rules(rules)
                                     .ruleVariables(variables)
-                                    .constantsValue(constants)
+                                    .alue(
                                     .calculatedValueMap(new HashMap<>())
                                     .supplementaryData(new HashMap<>())
                                     .build().toEngineBuilder();

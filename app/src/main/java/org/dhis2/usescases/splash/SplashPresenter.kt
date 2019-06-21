@@ -9,7 +9,7 @@ import org.dhis2.data.server.UserManager
 import org.dhis2.usescases.login.LoginActivity
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.sync.SyncActivity
-import org.dhis2.utils.Constants
+import org.dhis2.utils.SHARE_PREFS
 import org.dhis2.utils.SyncUtils
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
@@ -45,7 +45,7 @@ class SplashPresenter internal constructor(private val userManager: UserManager?
                     .subscribe(
                             {
                                 val prefs = view!!.abstracContext.getSharedPreferences(
-                                        Constants.SHARE_PREFS, Context.MODE_PRIVATE)
+                                        SHARE_PREFS, Context.MODE_PRIVATE)
                                 if (it!! && !prefs.getBoolean("SessionLocked", false)) {
                                     navigateTo(MainActivity::class.java)
                                 } else {

@@ -35,7 +35,7 @@ public class SyncUtils {
     }
 
     public static boolean isSyncRunning() {
-        return isSyncRunning(Constants.META) || isSyncRunning(Constants.DATA);
+        return isSyncRunning(META) || isSyncRunning(DATA);
     }
 
 }

@@ -22,7 +22,7 @@ import org.dhis2.data.server.ConfigurationRepository
 import org.dhis2.data.server.UserManager
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.qrScanner.QRActivity
-import org.dhis2.utils.Constants
+import org.dhis2.utils.*
 import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.maintenance.D2ErrorCode
 import org.hisp.dhis.android.core.systeminfo.SystemInfo
@@ -50,7 +50,7 @@ class LoginPresenter internal constructor(private val configurationRepository: C
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe({ isUserLoggedIn ->
                         val prefs = view.abstracContext.getSharedPreferences(
-                                Constants.SHARE_PREFS, Context.MODE_PRIVATE)
+                                SHARE_PREFS, Context.MODE_PRIVATE)
                         if (isUserLoggedIn && !prefs.getBoolean("SessionLocked", false)) {
                             view.startActivity(MainActivity::class.java, null, true, true, null)
                         } else if (prefs.getBoolean("SessionLocked", false)) {
@@ -69,9 +69,9 @@ class LoginPresenter internal constructor(private val configurationRepository: C
                             .subscribe(
                                     { systemInfo ->
                                         if (systemInfo.contextPath() != null) {
-                                            val prefs = view.abstractActivity.getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE)
+                                            val prefs = view.abstractActivity.getSharedPreferences(SHARE_PREFS, Context.MODE_PRIVATE)
                                             view.setUrl(systemInfo.contextPath() ?: "")
-                                            view.setUser(prefs.getString(Constants.USER, "")!!)
+                                            view.setUser(prefs.getString(USER, "")!!)
                                         } else
                                             view.setUrl(view.context.getString(R.string.login_https))
                                     },
@@ -85,7 +85,7 @@ class LoginPresenter internal constructor(private val configurationRepository: C
                     .hasBiometricSupport(view.context)
                     .filter { canHandleBiometrics ->
                         this.canHandleBiometrics = canHandleBiometrics
-                        canHandleBiometrics && SecurePreferences.contains(Constants.SECURE_SERVER_URL)
+                        canHandleBiometrics && SecurePreferences.contains(SECURE_SERVER_URL)
                     }
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -99,8 +99,8 @@ class LoginPresenter internal constructor(private val configurationRepository: C
     override fun onButtonClick() {
         view.hideKeyboard()
         val prefs = view.abstracContext.getSharedPreferences(
-                Constants.SHARE_PREFS, Context.MODE_PRIVATE)
-        if (!prefs.getBoolean(Constants.USER_ASKED_CRASHLYTICS, false))
+                SHARE_PREFS, Context.MODE_PRIVATE)
+        if (!prefs.getBoolean(USER_ASKED_CRASHLYTICS, false))
             view.showCrashlyticsDialog()
         else
             view.showLoginProgress(true)
@@ -112,14 +112,14 @@ class LoginPresenter internal constructor(private val configurationRepository: C
                 configurationRepository.configure(baseUrl)
                         .map { config -> (view.abstractActivity.applicationContext as App).createServerComponent(config).userManager() }
                         .switchMap { userManager ->
-                            val prefs = view.abstractActivity.getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE)
-                            prefs.edit().putString(Constants.SERVER, serverUrl).apply()
+                            val prefs = view.abstractActivity.getSharedPreferences(SHARE_PREFS, Context.MODE_PRIVATE)
+                            prefs.edit().putString(SERVER, serverUrl).apply()
                             this.userManager = userManager
                             userManager.logIn(userName.trim { it <= ' ' }, pass).map<Response<Any>> { user ->
                                 if (user == null)
                                     Response.error<Any>(404, ResponseBody.create(MediaType.parse("text"), "NOT FOUND"))
                                 else {
-                                    prefs.edit().putString(Constants.USER, user.userCredentials()?.username()).apply()
+                                    prefs.edit().putString(USER, user.userCredentials()?.username()).apply()
                                     prefs.edit().putBoolean("SessionLocked", false).apply()
                                     prefs.edit().putString("pin", null).apply()
                                     Response.success<Any>(null)
@@ -141,12 +141,12 @@ class LoginPresenter internal constructor(private val configurationRepository: C
 
     override fun onQRClick(v: View) {
         val intent = Intent(view.context, QRActivity::class.java)
-        view.abstractActivity.startActivityForResult(intent, Constants.RQ_QR_SCANNER)
+        view.abstractActivity.startActivityForResult(intent, RQ_QR_SCANNER)
     }
 
     override fun unlockSession(pin: String) {
         val prefs = view.abstracContext.getSharedPreferences(
-                Constants.SHARE_PREFS, Context.MODE_PRIVATE)
+                SHARE_PREFS, Context.MODE_PRIVATE)
         if (prefs.getString("pin", "") == pin) {
             prefs.edit().putBoolean("SessionLocked", false).apply()
             view.startActivity(MainActivity::class.java, null, true, true, null)
@@ -186,7 +186,7 @@ class LoginPresenter internal constructor(private val configurationRepository: C
     override fun handleError(throwable: Throwable) {
         Timber.e(throwable)
         if (throwable is D2Error && throwable.errorCode() == D2ErrorCode.ALREADY_AUTHENTICATED) {
-            val prefs = view.abstractActivity.getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE)
+            val prefs = view.abstractActivity.getSharedPreferences(SHARE_PREFS, Context.MODE_PRIVATE)
             prefs.edit().putBoolean("SessionLocked", false).apply()
             prefs.edit().putString("pin", null).apply()
             view.alreadyAuthenticated()

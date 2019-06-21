@@ -16,8 +16,8 @@ import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
-import com.wangjie.rapidfloatingactionbutton.constants.RFABConstants;
-import com.wangjie.rapidfloatingactionbutton.constants.RFABSize;
+import com.wangjie.rapidfloatingactionbutton.RFAB
+import com.wangjie.rapidfloatingactionbutton.RFABSize;
 import com.wangjie.rapidfloatingactionbutton.listener.OnRapidFloatingActionListener;
 import com.wangjie.rapidfloatingactionbutton.listener.OnRapidFloatingButtonSeparateListener;
 import com.wangjie.rapidfloatingactionbutton.util.RFABImageUtil;
@@ -161,7 +161,7 @@ public class RapidFloatingActionButton extends FrameLayout implements View.OnCli
     private void initAfterConstructor() {
         this.setOnClickListener(this);
         // 中间图片大小24dp
-        buttonDrawableSize = RFABTextUtil.dip2px(getContext(), RFABConstants.SIZE.RFAB_DRAWABLE_SIZE_DP);
+        buttonDrawableSize = RFABTextUtil.dip2px(getContext(), RFABSIZE.RFAB_DRAWABLE_SIZE_DP);
 
         refreshRFABDisplay();
     }

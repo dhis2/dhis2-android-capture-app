@@ -11,7 +11,7 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.FormEditTextCustomBinding;
-import org.dhis2.utils.Constants;
+
 import org.dhis2.utils.Preconditions;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
@@ -123,12 +123,12 @@ final class EditTextCustomHolder extends FormViewHolder {
     private void saveListToPreference(String key, List<String> list) {
         Gson gson = new Gson();
         String json = gson.toJson(list);
-        binding.customEdittext.getContext().getSharedPreferences(Constants.SHARE_PREFS, MODE_PRIVATE).edit().putString(key, json).apply();
+        binding.customEdittext.getContext().getSharedPreferences(SHARE_PREFS, MODE_PRIVATE).edit().putString(key, json).apply();
     }
 
     private List<String> getListFromPreference(String key) {
         Gson gson = new Gson();
-        String json = binding.customEdittext.getContext().getSharedPreferences(Constants.SHARE_PREFS, MODE_PRIVATE).getString(key, "[]");
+        String json = binding.customEdittext.getContext().getSharedPreferences(SHARE_PREFS, MODE_PRIVATE).getString(key, "[]");
         Type type = new TypeToken<List<String>>() {
         }.getType();
 

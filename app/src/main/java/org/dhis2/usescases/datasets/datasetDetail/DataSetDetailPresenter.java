@@ -6,7 +6,7 @@ import androidx.annotation.IntDef;
 
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialActivity;
-import org.dhis2.utils.Constants;
+
 import org.dhis2.utils.OrgUnitUtils;
 import org.dhis2.utils.Period;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
@@ -23,6 +23,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
+
+import static org.dhis2.utils.ConstantsKt.DATA_SET_UID;
 
 
 public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
@@ -91,7 +93,7 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
     @Override
     public void addDataSet() {
         Bundle bundle = new Bundle();
-        bundle.putString(Constants.DATA_SET_UID, view.dataSetUid());
+        bundle.putString(DATA_SET_UID, view.dataSetUid());
 
         view.startActivity(DataSetInitialActivity.class,bundle,false,false,null);
     }

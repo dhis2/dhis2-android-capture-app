@@ -39,7 +39,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialAc
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.usescases.map.MapSelectorActivity;
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
-import org.dhis2.utils.Constants;
+
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.custom_views.CategoryComboDialog;
 import org.dhis2.utils.custom_views.CoordinatesView;
@@ -66,6 +66,9 @@ import io.reactivex.subjects.PublishSubject;
 import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
+import static org.dhis2.utils.ConstantsKt.EVENT_UID;
+import static org.dhis2.utils.ConstantsKt.RQ_MAP_LOCATION_VIEW;
+import static org.dhis2.utils.ConstantsKt.TRACKED_ENTITY_INSTANCE;
 
 
 public class FormFragment extends FragmentGlobalAbstract implements FormView, CoordinatesView.OnMapPositionClick, CoordinatesView.OnCurrentLocationClick {
@@ -504,7 +507,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     public void onMapPositionClick(CoordinatesView coordinatesView) {
         this.coordinatesView = coordinatesView;
         if (getActivity() != null && isAdded()) {
-            startActivityForResult(MapSelectorActivity.create(getActivity()), Constants.RQ_MAP_LOCATION_VIEW);
+            startActivityForResult(MapSelectorActivity.create(getActivity()), RQ_MAP_LOCATION_VIEW);
         }
     }
 
@@ -516,7 +519,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-            case Constants.RQ_MAP_LOCATION_VIEW:
+            case RQ_MAP_LOCATION_VIEW:
                 if (data != null && data.getStringExtra(MapSelectorActivity.LATITUDE) != null && data.getStringExtra(MapSelectorActivity.LONGITUDE) != null) {
                     coordinatesView.updateLocation(Double.valueOf(data.getStringExtra(MapSelectorActivity.LATITUDE)), Double.valueOf(data.getStringExtra(MapSelectorActivity.LONGITUDE)));
                     publishCoordinatesChanged(Double.valueOf(data.getStringExtra(MapSelectorActivity.LATITUDE)), Double.valueOf(data.getStringExtra(MapSelectorActivity.LONGITUDE)));
@@ -525,7 +528,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
                 break;
             case RQ_EVENT:
                 if (data != null)
-                    openDashboard(data.getStringExtra(Constants.EVENT_UID));
+                    openDashboard(data.getStringExtra(EVENT_UID));
                 break;
             default:
                 break;
@@ -538,7 +541,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
         bundle.putString("PROGRAM_UID", programUid);
         bundle.putString("TEI_UID", teiUid);
         if (eventUid != null)
-            bundle.putString(Constants.EVENT_UID, eventUid);
+            bundle.putString(EVENT_UID, eventUid);
         startActivity(TeiDashboardMobileActivity.class, bundle, false, false, null);
         if (getActivity() != null && isAdded()) {
             getActivity().finish();
@@ -592,14 +595,14 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
                                 EnrollmentStatus.ACTIVE);
                         Intent eventInitialIntent = new Intent(getAbstracContext(), EventInitialActivity.class);
                         eventInitialIntent.putExtras(bundle);
-                      /*  eventInitialIntent.putExtra(Constants.PROGRAM_UID, programUid);
-                        eventInitialIntent.putExtra(Constants.EVENT_UID, enrollmentTrio.val2());
-                        eventInitialIntent.putExtra(Constants.PROGRAM_STAGE_UID, programStageUid);*/
+                      /*  eventInitialIntent.putExtra(PROGRAM_UID, programUid);
+                        eventInitialIntent.putExtra(EVENT_UID, enrollmentTrio.val2());
+                        eventInitialIntent.putExtra(PROGRAM_STAGE_UID, programStageUid);*/
                         startActivityForResult(eventInitialIntent, RQ_EVENT);
                     } else {
                         Intent eventCreationIntent = new Intent(getAbstracContext(), EventCaptureActivity.class);
                         eventCreationIntent.putExtras(EventCaptureActivity.getActivityBundle(enrollmentTrio.val2(), enrollmentTrio.val1()));
-                        eventCreationIntent.putExtra(Constants.TRACKED_ENTITY_INSTANCE, enrollmentTrio.val0());
+                        eventCreationIntent.putExtra(TRACKED_ENTITY_INSTANCE, enrollmentTrio.val0());
                         startActivityForResult(eventCreationIntent, RQ_EVENT);
                     }
                 } else if (!enrollmentFragment.checkErrors()) { //val0 is program uid, val1 is trackedEntityInstance, val2 is empty

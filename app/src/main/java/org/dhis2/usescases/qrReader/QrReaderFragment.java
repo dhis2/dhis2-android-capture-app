@@ -23,7 +23,6 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialAc
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.usescases.main.MainActivity;
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
-import org.dhis2.utils.Constants;
 import org.dhis2.utils.NetworkUtils;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 import org.json.JSONArray;
@@ -45,8 +44,8 @@ import me.dm7.barcodescanner.zxing.ZXingScannerView;
 import timber.log.Timber;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
-import static org.dhis2.utils.Constants.ORG_UNIT;
-import static org.dhis2.utils.Constants.PROGRAM_UID;
+import static org.dhis2.utils.t.*;
+
 
 
 /**
@@ -189,7 +188,7 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
     public void goToEvent(String eventUid, String programId, String orgUnit) {
         Bundle bundle = new Bundle();
         bundle.putString(PROGRAM_UID, programId);
-        bundle.putString(Constants.EVENT_UID, eventUid);
+        bundle.putString(EVENT_UID, eventUid);
         bundle.putString(ORG_UNIT, orgUnit);
         startActivity(EventInitialActivity.class, bundle, false, false, null);
     }

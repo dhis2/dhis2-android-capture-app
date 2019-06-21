@@ -48,7 +48,7 @@ import org.dhis2.usescases.searchTrackEntity.adapters.RelationshipLiveAdapter;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiLiveAdapter;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.utils.ColorUtils;
-import org.dhis2.utils.Constants;
+
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.custom_views.OptionSetDialog;
 import org.dhis2.utils.custom_views.OptionSetPopUp;
@@ -67,6 +67,11 @@ import io.reactivex.Flowable;
 import me.toptas.fancyshowcase.FancyShowCaseView;
 import me.toptas.fancyshowcase.FocusShape;
 import timber.log.Timber;
+
+import static org.dhis2.utils.ConstantsKt.PROGRAM_THEME;
+import static org.dhis2.utils.ConstantsKt.SHARE_PREFS;
+import static org.dhis2.utils.ConstantsKt.THEME;
+import static org.dhis2.utils.ConstantsKt.TUTORIAL_SEARCH;
 
 /**
  * QUADRAM. Created by ppajuelo on 02/11/2017 .
@@ -245,9 +250,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
             HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
 
-            if (!prefs.getBoolean(Constants.TUTORIAL_SEARCH, false) && !BuildConfig.DEBUG) {
+            if (!prefs.getBoolean(TUTORIAL_SEARCH, false) && !BuildConfig.DEBUG) {
                 HelpManager.getInstance().showHelp();/* getAbstractActivity().fancyShowCaseQueue.show();*/
-                prefs.edit().putBoolean(Constants.TUTORIAL_SEARCH, true).apply();
+                prefs.edit().putBoolean(TUTORIAL_SEARCH, true).apply();
             }
 
         }, 500);
@@ -357,16 +362,16 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
 
         SharedPreferences prefs = getAbstracContext().getSharedPreferences(
-                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
+                SHARE_PREFS, Context.MODE_PRIVATE);
         if (programTheme != -1) {
-            prefs.edit().putInt(Constants.PROGRAM_THEME, programTheme).apply();
+            prefs.edit().putInt(PROGRAM_THEME, programTheme).apply();
             binding.enrollmentButton.setBackgroundTintList(ColorStateList.valueOf(programColor));
             binding.mainToolbar.setBackgroundColor(programColor);
             binding.appbatlayout.setBackgroundColor(programColor);
         } else {
-            prefs.edit().remove(Constants.PROGRAM_THEME).apply();
+            prefs.edit().remove(PROGRAM_THEME).apply();
             int colorPrimary;
-            switch (prefs.getInt(Constants.THEME, R.style.AppTheme)) {
+            switch (prefs.getInt(THEME, R.style.AppTheme)) {
                 case R.style.AppTheme:
                     colorPrimary = R.color.colorPrimary;
                     break;
@@ -389,7 +394,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         }
 
         binding.executePendingBindings();
-        setTheme(prefs.getInt(Constants.PROGRAM_THEME, prefs.getInt(Constants.THEME, R.style.AppTheme)));
+        setTheme(prefs.getInt(PROGRAM_THEME, prefs.getInt(THEME, R.style.AppTheme)));
 
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();

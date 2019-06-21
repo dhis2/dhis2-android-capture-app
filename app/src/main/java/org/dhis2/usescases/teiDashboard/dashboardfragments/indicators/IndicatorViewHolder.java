@@ -10,9 +10,11 @@ import org.dhis2.R;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.ItemIndicatorBinding;
 
-import org.dhis2.utils.Constants;
+
 import org.dhis2.utils.custom_views.CustomDialog;
 import org.hisp.dhis.android.core.program.ProgramIndicatorModel;
+
+import static org.dhis2.utils.ConstantsKt.DESCRIPTION_DIALOG;
 
 /**
  * QUADRAM. Created by ppajuelo on 29/11/2017.
@@ -50,7 +52,7 @@ public class IndicatorViewHolder extends RecyclerView.ViewHolder {
                 programIndicatorModel.displayDescription(),
                 itemView.getContext().getString(R.string.action_accept),
                 null,
-                Constants.DESCRIPTION_DIALOG,
+                DESCRIPTION_DIALOG,
                 null
         ).show();
     }

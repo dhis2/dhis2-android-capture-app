@@ -11,7 +11,7 @@ import com.google.zxing.Result;
 import org.dhis2.R;
 import org.dhis2.databinding.ActivityQrBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
-import org.dhis2.utils.Constants;
+
 
 import java.util.ArrayList;
 
@@ -23,6 +23,7 @@ import androidx.databinding.DataBindingUtil;
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
+import static org.dhis2.utils.ConstantsKt.EXTRA_DATA;
 
 /**
  * QUADRAM. Created by ppajuelo on 15/01/2018.
@@ -88,7 +89,7 @@ public class QRActivity extends ActivityGlobalAbstract implements ZXingScannerVi
     public void handleResult(Result result) {
         String url = result.getText();
         Intent data = new Intent();
-        data.putExtra(Constants.EXTRA_DATA, url);
+        data.putExtra(EXTRA_DATA, url);
         setResult(RESULT_OK, data);
         finish();
     }

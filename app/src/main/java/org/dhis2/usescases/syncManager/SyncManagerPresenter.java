@@ -16,7 +16,7 @@ import org.dhis2.data.service.SyncDataWorker;
 import org.dhis2.data.service.SyncMetadataWorker;
 import org.dhis2.usescases.login.LoginActivity;
 import org.dhis2.usescases.reservedValue.ReservedValueActivity;
-import org.dhis2.utils.Constants;
+
 import org.dhis2.utils.FileResourcesUtil;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.State;
@@ -31,6 +31,16 @@ import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
+
+import static org.dhis2.utils.ConstantsKt.DATA_NOW;
+import static org.dhis2.utils.ConstantsKt.EVENT_MAX;
+import static org.dhis2.utils.ConstantsKt.EVENT_MAX_DEFAULT;
+import static org.dhis2.utils.ConstantsKt.LIMIT_BY_ORG_UNIT;
+import static org.dhis2.utils.ConstantsKt.LIMIT_BY_PROGRAM;
+import static org.dhis2.utils.ConstantsKt.META_NOW;
+import static org.dhis2.utils.ConstantsKt.SHARE_PREFS;
+import static org.dhis2.utils.ConstantsKt.TEI_MAX;
+import static org.dhis2.utils.ConstantsKt.TEI_MAX_DEFAULT;
 
 /**
  * QUADRAM. Created by lmartin on 21/03/2018.
@@ -122,12 +132,12 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
     public void syncData() {
         view.syncData();
         OneTimeWorkRequest.Builder syncDataBuilder = new OneTimeWorkRequest.Builder(SyncDataWorker.class);
-        syncDataBuilder.addTag(Constants.DATA_NOW);
+        syncDataBuilder.addTag(DATA_NOW);
         syncDataBuilder.setConstraints(new Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build());
         OneTimeWorkRequest request = syncDataBuilder.build();
-        WorkManager.getInstance().beginUniqueWork(Constants.DATA_NOW, ExistingWorkPolicy.REPLACE, request).enqueue();
+        WorkManager.getInstance().beginUniqueWork(DATA_NOW, ExistingWorkPolicy.REPLACE, request).enqueue();
 
 //        FileResourcesUtil.initDownloadWork();
     }
@@ -139,12 +149,12 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
     public void syncMeta() {
         view.syncMeta();
         OneTimeWorkRequest.Builder syncDataBuilder = new OneTimeWorkRequest.Builder(SyncMetadataWorker.class);
-        syncDataBuilder.addTag(Constants.META_NOW);
+        syncDataBuilder.addTag(META_NOW);
         syncDataBuilder.setConstraints(new Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build());
         OneTimeWorkRequest request = syncDataBuilder.build();
-        WorkManager.getInstance().beginUniqueWork(Constants.META_NOW, ExistingWorkPolicy.REPLACE, request).enqueue();
+        WorkManager.getInstance().beginUniqueWork(META_NOW, ExistingWorkPolicy.REPLACE, request).enqueue();
     }
 
 
@@ -171,13 +181,13 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
     @Override
     public void resetSyncParameters() {
         SharedPreferences prefs = view.getAbstracContext().getSharedPreferences(
-                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
+                SHARE_PREFS, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
 
-        editor.putInt(Constants.EVENT_MAX, Constants.EVENT_MAX_DEFAULT);
-        editor.putInt(Constants.TEI_MAX, Constants.TEI_MAX_DEFAULT);
-        editor.putBoolean(Constants.LIMIT_BY_ORG_UNIT, false);
-        editor.putBoolean(Constants.LIMIT_BY_PROGRAM, false);
+        editor.putInt(EVENT_MAX, EVENT_MAX_DEFAULT);
+        editor.putInt(TEI_MAX, TEI_MAX_DEFAULT);
+        editor.putBoolean(LIMIT_BY_ORG_UNIT, false);
+        editor.putBoolean(LIMIT_BY_PROGRAM, false);
 
         editor.apply();
 

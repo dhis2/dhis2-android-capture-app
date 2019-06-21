@@ -17,7 +17,7 @@ import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
 import org.dhis2.databinding.FormSpinnerAccentBinding;
 import org.dhis2.databinding.FormSpinnerBinding;
-import org.dhis2.utils.Constants;
+
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
@@ -180,7 +180,7 @@ public class OptionSetView extends FieldLayout implements PopupMenu.OnMenuItemCl
     }
 
     public boolean openOptionDialog() {
-        return numberOfOptions > getContext().getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE).getInt(Constants.OPTION_SET_DIALOG_THRESHOLD, 15);
+        return numberOfOptions > getContext().getSharedPreferences(SHARE_PREFS, Context.MODE_PRIVATE).getInt(OPTION_SET_DIALOG_THRESHOLD, 15);
     }
 
     public interface OnSelectedOption {

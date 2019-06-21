@@ -34,7 +34,6 @@ import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.FragmentSettingsBinding;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
-import org.dhis2.utils.Constants;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.SyncUtils;
 import org.hisp.dhis.android.core.imports.TrackerImportConflict;
@@ -55,13 +54,7 @@ import me.toptas.fancyshowcase.FocusShape;
 import me.toptas.fancyshowcase.listener.DismissListener;
 import timber.log.Timber;
 
-import static org.dhis2.utils.Constants.DATA_NOW;
-import static org.dhis2.utils.Constants.META_NOW;
-import static org.dhis2.utils.Constants.TIME_15M;
-import static org.dhis2.utils.Constants.TIME_DAILY;
-import static org.dhis2.utils.Constants.TIME_HOURLY;
-import static org.dhis2.utils.Constants.TIME_MANUAL;
-import static org.dhis2.utils.Constants.TIME_WEEKLY;
+import static org.dhis2.utils.t.*;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -95,7 +88,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
         binding.setPresenter(presenter);
         prefs = getAbstracContext().getSharedPreferences(
-                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
+                SHARE_PREFS, Context.MODE_PRIVATE);
 
         initRadioGroups();
 
@@ -146,19 +139,19 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         listenerDisposable.add(RxTextView.textChanges(binding.eventMaxData).debounce(1000, TimeUnit.MILLISECONDS, Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        data -> prefs.edit().putInt(Constants.EVENT_MAX, Integer.valueOf(data.toString())).apply(),
+                        data -> prefs.edit().putInt(EVENT_MAX, Integer.valueOf(data.toString())).apply(),
                         Timber::d
                 ));
 
         listenerDisposable.add(RxTextView.textChanges(binding.teiMaxData).debounce(1000, TimeUnit.MILLISECONDS, Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        data -> prefs.edit().putInt(Constants.TEI_MAX, Integer.valueOf(data.toString())).apply(),
+                        data -> prefs.edit().putInt(TEI_MAX, Integer.valueOf(data.toString())).apply(),
                         Timber::d
                 ));
 
-        binding.limitByOrgUnit.setOnCheckedChangeListener((buttonView, isChecked) -> prefs.edit().putBoolean(Constants.LIMIT_BY_ORG_UNIT, isChecked).apply());
-        binding.limitByProgram.setOnCheckedChangeListener((buttonView, isChecked) -> prefs.edit().putBoolean(Constants.LIMIT_BY_PROGRAM, isChecked).apply());
+        binding.limitByOrgUnit.setOnCheckedChangeListener((buttonView, isChecked) -> prefs.edit().putBoolean(LIMIT_BY_ORG_UNIT, isChecked).apply());
+        binding.limitByProgram.setOnCheckedChangeListener((buttonView, isChecked) -> prefs.edit().putBoolean(LIMIT_BY_PROGRAM, isChecked).apply());
 
         setLastSyncDate();
     }
@@ -180,16 +173,16 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     @Override
     public Consumer<Pair<Integer, Integer>> setSyncData() {
         return syncParameters -> {
-            String eventMax = String.valueOf(prefs.getInt(Constants.EVENT_MAX, Constants.EVENT_MAX_DEFAULT));
-            String teiMax = String.valueOf(prefs.getInt(Constants.TEI_MAX, Constants.TEI_MAX_DEFAULT));
+            String eventMax = String.valueOf(prefs.getInt(EVENT_MAX, EVENT_MAX_DEFAULT));
+            String teiMax = String.valueOf(prefs.getInt(TEI_MAX, TEI_MAX_DEFAULT));
             String eventCurrent = String.valueOf(syncParameters.val0());
             String teiCurrent = String.valueOf(syncParameters.val1());
             binding.eventMaxData.setText(eventMax);
             binding.teiMaxData.setText(teiMax);
             binding.eventCurrentData.setText(eventCurrent);
             binding.teiCurrentData.setText(teiCurrent);
-            binding.limitByOrgUnit.setChecked(prefs.getBoolean(Constants.LIMIT_BY_ORG_UNIT, false));
-            binding.limitByProgram.setChecked(prefs.getBoolean(Constants.LIMIT_BY_PROGRAM, false));
+            binding.limitByOrgUnit.setChecked(prefs.getBoolean(LIMIT_BY_ORG_UNIT, false));
+            binding.limitByProgram.setChecked(prefs.getBoolean(LIMIT_BY_PROGRAM, false));
             binding.parameterLayout.message.setText(
                     String.format("Events:%smax:%s%scurrent:%s\nTEI:%smax:%s%scurrent:%s",
                             getString(R.string.tab), eventMax, getString(R.string.tab), eventCurrent,
@@ -198,11 +191,11 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     }
 
     private void setLastSyncDate() {
-        boolean dataStatus = prefs.getBoolean(Constants.LAST_DATA_SYNC_STATUS, true);
-        boolean metaStatus = prefs.getBoolean(Constants.LAST_META_SYNC_STATUS, true);
+        boolean dataStatus = prefs.getBoolean(LAST_DATA_SYNC_STATUS, true);
+        boolean metaStatus = prefs.getBoolean(LAST_META_SYNC_STATUS, true);
 
         if (dataStatus) {
-            String dataText = dataSyncSetting().concat("\n").concat(String.format(getString(R.string.last_data_sync_date), prefs.getString(Constants.LAST_DATA_SYNC, "-")));
+            String dataText = dataSyncSetting().concat("\n").concat(String.format(getString(R.string.last_data_sync_date), prefs.getString(LAST_DATA_SYNC, "-")));
             binding.syncDataLayout.message.setText(dataText);
             binding.syncDataLayout.message.setTextColor(ContextCompat.getColor(context, R.color.text_black_333));
         } else {
@@ -230,7 +223,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         }
 
         if (metaStatus) {
-            String metaText = metaSyncSettings().concat("\n").concat(String.format(getString(R.string.last_data_sync_date), prefs.getString(Constants.LAST_META_SYNC, "-")));
+            String metaText = metaSyncSettings().concat("\n").concat(String.format(getString(R.string.last_data_sync_date), prefs.getString(LAST_META_SYNC, "-")));
             binding.syncMetaLayout.message.setText(metaText);
             binding.syncMetaLayout.message.setTextColor(ContextCompat.getColor(context, R.color.text_black_333));
         } else {
@@ -295,13 +288,13 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 time = TIME_MANUAL;
                 break;
         }
-        prefs.edit().putInt(Constants.TIME_DATA, time).apply();
+        prefs.edit().putInt(TIME_DATA, time).apply();
         if (time != TIME_MANUAL) {
             binding.buttonSyncData.setVisibility(View.GONE);
-            presenter.syncData(time, Constants.DATA);
+            presenter.syncData(time, DATA);
         } else {
             binding.buttonSyncData.setVisibility(View.VISIBLE);
-            presenter.cancelPendingWork(Constants.DATA);
+            presenter.cancelPendingWork(DATA);
         }
     }
 
@@ -321,13 +314,13 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 break;
         }
 
-        prefs.edit().putInt(Constants.TIME_META, time).apply();
+        prefs.edit().putInt(TIME_META, time).apply();
         if (time != TIME_MANUAL) {
             binding.buttonSyncMeta.setVisibility(View.GONE);
-            presenter.syncMeta(time, Constants.META);
+            presenter.syncMeta(time, META);
         } else {
             binding.buttonSyncMeta.setVisibility(View.VISIBLE);
-            presenter.cancelPendingWork(Constants.META);
+            presenter.cancelPendingWork(META);
         }
     }
 

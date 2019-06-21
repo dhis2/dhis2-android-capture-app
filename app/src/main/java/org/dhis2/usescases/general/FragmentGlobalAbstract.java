@@ -17,7 +17,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import org.dhis2.usescases.main.program.SyncStatusDialog;
-import org.dhis2.utils.Constants;
+
 import org.dhis2.utils.OnDialogClickListener;
 
 import java.lang.reflect.Type;
@@ -110,7 +110,7 @@ public abstract class FragmentGlobalAbstract extends Fragment implements Abstrac
     @Override
     public <T> List<T> getListFromPreference(String key) {
         Gson gson = new Gson();
-        String json = getAbstracContext().getSharedPreferences(Constants.SHARE_PREFS, MODE_PRIVATE).getString(key, null);
+        String json = getAbstracContext().getSharedPreferences(SHARE_PREFS, MODE_PRIVATE).getString(key, null);
         Type type = new TypeToken<List<T>>() {
         }.getType();
 

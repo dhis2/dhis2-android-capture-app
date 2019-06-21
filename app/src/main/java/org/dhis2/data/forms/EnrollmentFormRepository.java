@@ -13,7 +13,7 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.utils.CodeGenerator;
-import org.dhis2.utils.Constants;
+
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
@@ -53,6 +53,8 @@ import io.reactivex.functions.Consumer;
 import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
+import static org.dhis2.utils.ConstantsKt.ENROLLMENT_DATE;
+import static org.dhis2.utils.ConstantsKt.INCIDENT_DATE;
 
 @SuppressWarnings({
         "PMD.AvoidDuplicateLiterals"
@@ -230,14 +232,14 @@ public class EnrollmentFormRepository implements FormRepository {
                         rulesRepository.rulesNew(program),
                         rulesRepository.ruleVariables(program),
                         rulesRepository.enrollmentEvents(enrollmentUid),
-                        rulesRepository.queryConstants(),
-                        (rules, variables, events, constants) -> {
+                        rulesRepository.query),
+                        (rules, variables, events,  -> {
                             RuleEngine.Builder builder = RuleEngineContext.builder(expressionEvaluator)
                                     .rules(rules)
                                     .ruleVariables(variables)
                                     .calculatedValueMap(new HashMap<>())
                                     .supplementaryData(new HashMap<>())
-                                    .constantsValue(constants)
+                                    .alue(
                                     .build().toEngineBuilder();
                             builder.triggerEnvironment(TriggerEnvironment.ANDROIDCLIENT);
                             builder.events(events);
@@ -253,14 +255,14 @@ public class EnrollmentFormRepository implements FormRepository {
                         rulesRepository.rulesNew(program),
                         rulesRepository.ruleVariables(program),
                         rulesRepository.enrollmentEvents(enrollmentUid),
-                        rulesRepository.queryConstants(),
-                        (rules, variables, events, constants) -> {
+                        rulesRepository.query),
+                        (rules, variables, events,  -> {
                             RuleEngine.Builder builder = RuleEngineContext.builder(expressionEvaluator)
                                     .rules(rules)
                                     .ruleVariables(variables)
                                     .calculatedValueMap(new HashMap<>())
                                     .supplementaryData(new HashMap<>())
-                                    .constantsValue(constants)
+                                    .alue(
                                     .build().toEngineBuilder();
                             builder.triggerEnvironment(TriggerEnvironment.ANDROIDCLIENT);
                             builder.events(events);
@@ -519,10 +521,10 @@ public class EnrollmentFormRepository implements FormRepository {
                     Date eventDate;
                     Calendar cal = DateUtils.getInstance().getCalendar();
                     switch (reportDateToUse) {
-                        case Constants.ENROLLMENT_DATE:
+                        case ENROLLMENT_DATE:
                             cal.setTime(enrollmentDate != null ? enrollmentDate : Calendar.getInstance().getTime());
                             break;
-                        case Constants.INCIDENT_DATE:
+                        case INCIDENT_DATE:
                             cal.setTime(incidentDate != null ? incidentDate : Calendar.getInstance().getTime());
                             break;
                         default:

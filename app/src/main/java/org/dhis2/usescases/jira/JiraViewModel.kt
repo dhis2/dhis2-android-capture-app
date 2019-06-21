@@ -14,7 +14,8 @@ import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import org.dhis2.Bindings.default
 import org.dhis2.utils.BiometricStorage
-import org.dhis2.utils.Constants
+import org.dhis2.utils.JIRA_AUTH
+import org.dhis2.utils.JIRA_USER
 import org.dhis2.utils.jira.IssueRequest
 import org.dhis2.utils.jira.JiraIssueListRequest
 import org.hisp.dhis.android.core.utils.support.StringUtils.isEmpty
@@ -42,7 +43,7 @@ class JiraViewModel : ViewModel(), JiraActions {
 
         issueService = retrofit.create<JiraIssueService>(JiraIssueService::class.java)
 
-        if (SecurePreferences.contains(Constants.JIRA_USER))
+        if (SecurePreferences.contains(JIRA_USER))
             getJiraIssues()
     }
 
@@ -63,7 +64,7 @@ class JiraViewModel : ViewModel(), JiraActions {
 
     fun getJiraIssues() {
         val basic = String.format("Basic %s", session.value)
-        val request = JiraIssueListRequest(SecurePreferences.getStringValue(Constants.JIRA_USER, userName.value), 20)
+        val request = JiraIssueListRequest(SecurePreferences.getStringValue(JIRA_USER, userName.value), 20)
         val requestBody = RequestBody.create(MediaType.parse("application/json"), Gson().toJson(request))
         issueService.getJiraIssues(basic, requestBody).enqueue(getJiraIssueListCallback())
     }
@@ -73,7 +74,7 @@ class JiraViewModel : ViewModel(), JiraActions {
         return object : Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 if (response.isSuccessful) {
-                    if (rememberCredentials.value!! && !SecurePreferences.contains(Constants.JIRA_AUTH)) {
+                    if (rememberCredentials.value!! && !SecurePreferences.contains(JIRA_AUTH)) {
                         BiometricStorage.saveJiraCredentials(getAuth())
                         BiometricStorage.saveJiraUser(userName.value!!)
                     }
@@ -96,12 +97,12 @@ class JiraViewModel : ViewModel(), JiraActions {
         isSessionOpen.set(false)
     }
 
-    private val session = MutableLiveData<String?>().default(SecurePreferences.getStringValue(Constants.JIRA_AUTH, null))
+    private val session = MutableLiveData<String?>().default(SecurePreferences.getStringValue(JIRA_AUTH, null))
     private val isSessionOpen = ObservableField<Boolean>(false)
 
     private val userName = MutableLiveData<String>()
     private val pass = MutableLiveData<String>()
-    private val rememberCredentials = MutableLiveData<Boolean>().default(SecurePreferences.contains(Constants.JIRA_AUTH))
+    private val rememberCredentials = MutableLiveData<Boolean>().default(SecurePreferences.contains(JIRA_AUTH))
 
     private val summary = MutableLiveData<String>()
     private val description = MutableLiveData<String>()

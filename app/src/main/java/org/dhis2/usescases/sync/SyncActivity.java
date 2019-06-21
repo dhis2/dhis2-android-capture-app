@@ -18,7 +18,7 @@ import org.dhis2.databinding.ActivitySynchronizationBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.main.MainActivity;
 import org.dhis2.utils.ColorUtils;
-import org.dhis2.utils.Constants;
+
 
 import javax.inject.Inject;
 
@@ -50,15 +50,15 @@ public class SyncActivity extends ActivityGlobalAbstract implements SyncContract
         syncComponent.inject(this);
         super.onCreate(savedInstanceState);
 
-        WorkManager.getInstance().getStatusesForUniqueWorkLiveData(Constants.META).observe(this, status -> {
+        WorkManager.getInstance().getStatusesForUniqueWorkLiveData(META).observe(this, status -> {
             if (status != null && !status.isEmpty()) {
-                Timber.d("WORK %s WITH STATUS %s", Constants.META, status.get(0).getState().name());
+                Timber.d("WORK %s WITH STATUS %s", META, status.get(0).getState().name());
                 handleMetaState(status.get(0).getState());
             }
         });
-        WorkManager.getInstance().getStatusesForUniqueWorkLiveData(Constants.DATA).observe(this, status -> {
+        WorkManager.getInstance().getStatusesForUniqueWorkLiveData(DATA).observe(this, status -> {
             if (status != null && !status.isEmpty()) {
-                Timber.d("WORK %s WITH STATUS %s", Constants.DATA, status.get(0).getState().name());
+                Timber.d("WORK %s WITH STATUS %s", DATA, status.get(0).getState().name());
                 handleDataState(status.get(0).getState());
             }
         });
@@ -66,7 +66,7 @@ public class SyncActivity extends ActivityGlobalAbstract implements SyncContract
         binding = DataBindingUtil.setContentView(this, R.layout.activity_synchronization);
         binding.setPresenter(presenter);
         presenter.init(this);
-        presenter.syncMeta(getSharedPreferences().getInt(Constants.TIME_META, Constants.TIME_DAILY), Constants.META);
+        presenter.syncMeta(getSharedPreferences().getInt(TIME_META, TIME_DAILY), META);
     }
 
     private void handleMetaState(State metadataState) {
@@ -81,7 +81,7 @@ public class SyncActivity extends ActivityGlobalAbstract implements SyncContract
                     binding.metadataText.setText(getString(R.string.configuration_ready));
                     Bindings.setDrawableEnd(binding.metadataText, AppCompatResources.getDrawable(this, R.drawable.animator_done));
                     presenter.getTheme();
-                    presenter.syncData(getSharedPreferences().getInt(Constants.TIME_DATA, Constants.TIME_DAILY), Constants.DATA);
+                    presenter.syncData(getSharedPreferences().getInt(TIME_DATA, TIME_DAILY), DATA);
                 }
                 break;
         }
@@ -132,8 +132,8 @@ public class SyncActivity extends ActivityGlobalAbstract implements SyncContract
     @Override
     public void saveTheme(Integer themeId) {
         SharedPreferences prefs = getAbstracContext().getSharedPreferences(
-                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
-        prefs.edit().putInt(Constants.THEME, themeId).apply();
+                SHARE_PREFS, Context.MODE_PRIVATE);
+        prefs.edit().putInt(THEME, themeId).apply();
         setTheme(themeId);
 
         int startColor = ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY);
@@ -152,7 +152,7 @@ public class SyncActivity extends ActivityGlobalAbstract implements SyncContract
     @Override
     public void saveFlag(String s) {
         SharedPreferences prefs = getAbstracContext().getSharedPreferences(
-                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
+                SHARE_PREFS, Context.MODE_PRIVATE);
         prefs.edit().putString("FLAG", s).apply();
 
         binding.logoFlag.setImageResource(getResources().getIdentifier(s, "drawable", getPackageName()));

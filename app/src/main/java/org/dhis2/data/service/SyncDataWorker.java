@@ -11,7 +11,7 @@ import com.google.firebase.perf.metrics.AddTrace;
 
 import org.dhis2.App;
 import org.dhis2.R;
-import org.dhis2.utils.Constants;
+
 import org.dhis2.utils.DateUtils;
 
 import java.util.Calendar;
@@ -26,6 +26,9 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 import timber.log.Timber;
+
+import static org.dhis2.utils.ConstantsKt.LAST_DATA_SYNC;
+import static org.dhis2.utils.ConstantsKt.LAST_DATA_SYNC_STATUS;
 
 /**
  * QUADRAM. Created by ppajuelo on 23/10/2018.
@@ -74,9 +77,9 @@ public class SyncDataWorker extends Worker {
 
         String lastDataSyncDate = DateUtils.dateTimeFormat().format(Calendar.getInstance().getTime());
 
-        SharedPreferences prefs = getApplicationContext().getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE);
-        prefs.edit().putString(Constants.LAST_DATA_SYNC, lastDataSyncDate).apply();
-        prefs.edit().putBoolean(Constants.LAST_DATA_SYNC_STATUS, isEventOk && isTeiOk).apply();
+        SharedPreferences prefs = getApplicationContext().getSharedPreferences(SHARE_PREFS, Context.MODE_PRIVATE);
+        prefs.edit().putString(LAST_DATA_SYNC, lastDataSyncDate).apply();
+        prefs.edit().putBoolean(LAST_DATA_SYNC_STATUS, isEventOk && isTeiOk).apply();
 
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(new Intent("action_sync").putExtra("dataSyncInProgress", false));
 

@@ -9,7 +9,7 @@ import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.databinding.ActivityDatasetTableBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
-import org.dhis2.utils.Constants;
+
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
 import org.hisp.dhis.android.core.dataset.DataSetModel;
@@ -18,6 +18,12 @@ import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
+
+import static org.dhis2.utils.ConstantsKt.CAT_COMB;
+import static org.dhis2.utils.ConstantsKt.DATA_SET_UID;
+import static org.dhis2.utils.ConstantsKt.ORG_UNIT;
+import static org.dhis2.utils.ConstantsKt.PERIOD_TYPE;
+import static org.dhis2.utils.ConstantsKt.PERIOD_TYPE_DATE;
 
 public class DataSetTableActivity extends ActivityGlobalAbstract implements DataSetTableContract.View {
 
@@ -37,11 +43,11 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
                                    @NonNull String periodInitialDate,
                                    @NonNull String catCombo) {
         Bundle bundle = new Bundle();
-        bundle.putString(Constants.DATA_SET_UID, dataSetUid);
-        bundle.putString(Constants.ORG_UNIT, orgUnitUid);
-        bundle.putString(Constants.PERIOD_TYPE, periodTypeName);
-        bundle.putString(Constants.PERIOD_TYPE_DATE, periodInitialDate);
-        bundle.putString(Constants.CAT_COMB, catCombo);
+        bundle.putString(DATA_SET_UID, dataSetUid);
+        bundle.putString(ORG_UNIT, orgUnitUid);
+        bundle.putString(PERIOD_TYPE, periodTypeName);
+        bundle.putString(PERIOD_TYPE_DATE, periodInitialDate);
+        bundle.putString(CAT_COMB, catCombo);
         return bundle;
     }
 
@@ -49,11 +55,11 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        orgUnitUid = getIntent().getStringExtra(Constants.ORG_UNIT);
-        periodTypeName = getIntent().getStringExtra(Constants.PERIOD_TYPE);
-        periodInitialDate = getIntent().getStringExtra(Constants.PERIOD_TYPE_DATE);
-        catCombo = getIntent().getStringExtra(Constants.CAT_COMB);
-        String dataSetUid = getIntent().getStringExtra(Constants.DATA_SET_UID);
+        orgUnitUid = getIntent().getStringExtra(ORG_UNIT);
+        periodTypeName = getIntent().getStringExtra(PERIOD_TYPE);
+        periodInitialDate = getIntent().getStringExtra(PERIOD_TYPE_DATE);
+        catCombo = getIntent().getStringExtra(CAT_COMB);
+        String dataSetUid = getIntent().getStringExtra(DATA_SET_UID);
         ((App) getApplicationContext()).userComponent().plus(new DataSetTableModule(dataSetUid)).inject(this);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dataset_table);

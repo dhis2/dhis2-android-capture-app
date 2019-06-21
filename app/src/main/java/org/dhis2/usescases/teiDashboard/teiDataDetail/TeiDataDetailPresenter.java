@@ -11,7 +11,7 @@ import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.usescases.map.MapSelectorActivity;
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import org.dhis2.usescases.teiDashboard.DashboardRepository;
-import org.dhis2.utils.Constants;
+
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 
 import androidx.core.app.ActivityCompat;
@@ -195,7 +195,7 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
     @Override
     public void onLocation2Click() {
         Intent intent = new Intent(view.getContext(), MapSelectorActivity.class);
-        view.getAbstractActivity().startActivityForResult(intent, Constants.RQ_MAP_LOCATION);
+        view.getAbstractActivity().startActivityForResult(intent, RQ_MAP_LOCATION);
     }
 
     @Override

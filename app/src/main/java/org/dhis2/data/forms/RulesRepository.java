@@ -75,7 +75,7 @@ import static android.text.TextUtils.isEmpty;
 
 @SuppressWarnings("PMD")
 public final class RulesRepository {
-    private static final String QUERY_CONSTANTS = "SELECT * " +
+    private static final String QUERY_= "SELECT * " +
             "FROM Constant";
 
 
@@ -273,15 +273,15 @@ public final class RulesRepository {
     }
 
     @NonNull
-    public Flowable<Map<String, String>> queryConstants() {
-        return briteDatabase.createQuery(ConstantTableInfo.TABLE_INFO.name(), QUERY_CONSTANTS)
+    public Flowable<Map<String, String>> query) {
+        return briteDatabase.createQuery(ConstantTableInfo.TABLE_INFO.name(), QUERY_
                 .mapToList(Constant::create)
-                .map(constants -> {
-                    Map<String, String> constantsMap = new HashMap<>();
-                    for (Constant constant : constants) {
-                        constantsMap.put(constant.uid(), Objects.requireNonNull(constant.value()).toString());
+                .map(-> {
+                    Map<String, String> ap = new HashMap<>();
+                    for (Constant constant :  {
+                        ap.put(constant.uid(), Objects.requireNonNull(constant.value()).toString());
                     }
-                    return constantsMap;
+                    return ap;
                 })
                 .toFlowable(BackpressureStrategy.LATEST);
     }
@@ -447,14 +447,14 @@ public final class RulesRepository {
     }
 
     @NonNull
-    private static Map<String, String> mapToConstantsMap(@NonNull Cursor cursor) {
+    private static Map<String, String> mapToap(@NonNull Cursor cursor) {
         String uid = cursor.getString(0);
         String value = cursor.getString(1);
 
-        Map<String, String> constants = new HashMap<>();
+        Map<String, String> = new HashMap<>();
         if (cursor.moveToFirst())
-            constants.put(uid, value);
-        return constants;
+            put(uid, value);
+        return
     }
 
     @NonNull

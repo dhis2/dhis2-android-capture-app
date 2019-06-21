@@ -39,7 +39,7 @@ import org.dhis2.usescases.teiDashboard.adapters.DashboardPagerTabletAdapter;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.TEIDataFragment;
 import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListActivity;
 import org.dhis2.utils.ColorUtils;
-import org.dhis2.utils.Constants;
+
 import org.dhis2.utils.HelpManager;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.jetbrains.annotations.NotNull;
@@ -82,10 +82,10 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        setTheme(getSharedPreferences().getInt(Constants.PROGRAM_THEME, getSharedPreferences().getInt(Constants.THEME, R.style.AppTheme)));
-        if (savedInstanceState != null && savedInstanceState.containsKey(Constants.TRACKED_ENTITY_INSTANCE)) {
-            teiUid = savedInstanceState.getString(Constants.TRACKED_ENTITY_INSTANCE);
-            programUid = savedInstanceState.getString(Constants.PROGRAM_UID);
+        setTheme(getSharedPreferences().getInt(PROGRAM_THEME, getSharedPreferences().getInt(THEME, R.style.AppTheme)));
+        if (savedInstanceState != null && savedInstanceState.containsKey(TRACKED_ENTITY_INSTANCE)) {
+            teiUid = savedInstanceState.getString(TRACKED_ENTITY_INSTANCE);
+            programUid = savedInstanceState.getString(PROGRAM_UID);
         } else {
             teiUid = getIntent().getStringExtra("TEI_UID");
             programUid = getIntent().getStringExtra("PROGRAM_UID");
@@ -102,8 +102,8 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         binding.toolbarTitle.setLines(1);
         binding.toolbarTitle.setEllipsize(TextUtils.TruncateAt.END);
 
-        getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE)
-                .edit().putString(Constants.PREVIOUS_DASHBOARD_PROGRAM, programUid).apply();
+        getSharedPreferences(SHARE_PREFS, Context.MODE_PRIVATE)
+                .edit().putString(PREVIOUS_DASHBOARD_PROGRAM, programUid).apply();
     }
 
 
@@ -116,8 +116,8 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                     .createDashboardComponent(new TeiDashboardModule(teiUid, programUid))
                     .inject(this);
 
-        String prevDashboardProgram = getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE)
-                .getString(Constants.PREVIOUS_DASHBOARD_PROGRAM, null);
+        String prevDashboardProgram = getSharedPreferences(SHARE_PREFS, Context.MODE_PRIVATE)
+                .getString(PREVIOUS_DASHBOARD_PROGRAM, null);
         if (!changingProgram && prevDashboardProgram != null && !prevDashboardProgram.equals(programUid)) {
             finish();
         } else {
@@ -137,15 +137,15 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         orientation = Resources.getSystem().getConfiguration().orientation;
-        teiUid = savedInstanceState.getString(Constants.TRACKED_ENTITY_INSTANCE);
-        programUid = savedInstanceState.getString(Constants.PROGRAM_UID);
+        teiUid = savedInstanceState.getString(TRACKED_ENTITY_INSTANCE);
+        programUid = savedInstanceState.getString(PROGRAM_UID);
     }
 
     @Override
     protected void onSaveInstanceState(@NotNull Bundle outState) {
         outState.clear();
-        outState.putString(Constants.TRACKED_ENTITY_INSTANCE, teiUid);
-        outState.putString(Constants.PROGRAM_UID, programUid);
+        outState.putString(TRACKED_ENTITY_INSTANCE, teiUid);
+        outState.putString(PROGRAM_UID, programUid);
         super.onSaveInstanceState(outState);
     }
 
@@ -228,8 +228,8 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                     .commitAllowingStateLoss();
 
         Boolean enrollmentStatus = program.getCurrentEnrollment() != null && program.getCurrentEnrollment().enrollmentStatus() == EnrollmentStatus.ACTIVE;
-        if (getIntent().getStringExtra(Constants.EVENT_UID) != null && enrollmentStatus)
-            dashboardViewModel.updateEventUid(getIntent().getStringExtra(Constants.EVENT_UID));
+        if (getIntent().getStringExtra(EVENT_UID) != null && enrollmentStatus)
+            dashboardViewModel.updateEventUid(getIntent().getStringExtra(EVENT_UID));
 
         if (!HelpManager.getInstance().isTutorialReadyForScreen(getClass().getName()) && !fromRelationship) {
             setTutorial();
@@ -295,7 +295,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     public void goToEnrollmentList(Bundle extras) {
         Intent intent = new Intent(this, TeiProgramListActivity.class);
         intent.putExtras(extras);
-        startActivityForResult(intent, Constants.RQ_ENROLLMENTS);
+        startActivityForResult(intent, RQ_ENROLLMENTS);
     }
 
     @Override
@@ -309,7 +309,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == Constants.RQ_ENROLLMENTS && resultCode == RESULT_OK) {
+        if (requestCode == RQ_ENROLLMENTS && resultCode == RESULT_OK) {
             if (data.hasExtra("GO_TO_ENROLLMENT")) {
                 FormViewArguments formViewArguments = FormViewArguments.createForEnrollment(data.getStringExtra("GO_TO_ENROLLMENT"));
                 startActivity(FormActivity.create(this, formViewArguments, true));
@@ -333,7 +333,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         super.setTutorial();
 
         SharedPreferences prefs = getAbstracContext().getSharedPreferences(
-                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
+                SHARE_PREFS, Context.MODE_PRIVATE);
 
         new Handler().postDelayed(() -> {
             if (getAbstractActivity() != null) {
@@ -448,9 +448,9 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
 
         SharedPreferences prefs = getAbstracContext().getSharedPreferences(
-                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
+                SHARE_PREFS, Context.MODE_PRIVATE);
         if (programTheme != -1) {
-            prefs.edit().putInt(Constants.PROGRAM_THEME, programTheme).apply();
+            prefs.edit().putInt(PROGRAM_THEME, programTheme).apply();
             binding.toolbar.setBackgroundColor(programColor);
             binding.tabLayout.setBackgroundColor(programColor);
             if (getOrientation() == Configuration.ORIENTATION_LANDSCAPE)
@@ -459,9 +459,9 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                     binding.dotsIndicator.setStrokeDotsIndicatorColor(programColor);
                 }
         } else {
-            prefs.edit().remove(Constants.PROGRAM_THEME).apply();
+            prefs.edit().remove(PROGRAM_THEME).apply();
             int colorPrimary;
-            switch (prefs.getInt(Constants.THEME, R.style.AppTheme)) {
+            switch (prefs.getInt(THEME, R.style.AppTheme)) {
                 case R.style.AppTheme:
                     colorPrimary = R.color.colorPrimary;
                     break;
@@ -488,7 +488,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         }
 
         binding.executePendingBindings();
-        setTheme(prefs.getInt(Constants.PROGRAM_THEME, prefs.getInt(Constants.THEME, R.style.AppTheme)));
+        setTheme(prefs.getInt(PROGRAM_THEME, prefs.getInt(THEME, R.style.AppTheme)));
 
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();

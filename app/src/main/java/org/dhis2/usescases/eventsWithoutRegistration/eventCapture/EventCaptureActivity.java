@@ -22,7 +22,7 @@ import org.dhis2.databinding.ActivityEventCaptureBinding;
 import org.dhis2.databinding.WidgetDatepickerBinding;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
-import org.dhis2.utils.Constants;
+import org.dhis2.utils.t;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.custom_views.CustomDialog;
@@ -46,7 +46,8 @@ import androidx.databinding.DataBindingUtil;
 import io.reactivex.functions.Consumer;
 import timber.log.Timber;
 
-import static org.dhis2.utils.Constants.PROGRAM_UID;
+import static org.dhis2.utils.t.*;
+
 
 /**
  * QUADRAM. Created by ppajuelo on 19/11/2018.
@@ -67,8 +68,8 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
     public static Bundle getActivityBundle(@NonNull String eventUid, @NonNull String programUid) {
         Bundle bundle = new Bundle();
-        bundle.putString(Constants.EVENT_UID, eventUid);
-        bundle.putString(Constants.PROGRAM_UID, programUid);
+        bundle.putString(EVENT_UID, eventUid);
+        bundle.putString(PROGRAM_UID, programUid);
         return bundle;
     }
 
@@ -76,8 +77,8 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         ((App) getApplicationContext()).userComponent().plus(
                 new EventCaptureModule(
-                        getIntent().getStringExtra(Constants.EVENT_UID),
-                        getIntent().getStringExtra(Constants.PROGRAM_UID)))
+                        getIntent().getStringExtra(EVENT_UID),
+                        getIntent().getStringExtra(PROGRAM_UID)))
                 .inject(this);
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_event_capture);
@@ -303,7 +304,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     @Override
     public void restartDataEntry() {
         Bundle bundle = new Bundle();
-        bundle.putString(PROGRAM_UID, getIntent().getStringExtra(Constants.PROGRAM_UID));
+        bundle.putString(PROGRAM_UID, getIntent().getStringExtra(PROGRAM_UID));
         startActivity(EventInitialActivity.class, bundle, true, false, null);
     }
 
@@ -311,7 +312,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     public void finishDataEntry() {
         Intent intent = new Intent();
         if (isEventCompleted)
-            intent.putExtra(Constants.EVENT_UID, getIntent().getStringExtra(Constants.EVENT_UID));
+            intent.putExtra(EVENT_UID, getIntent().getStringExtra(EVENT_UID));
         setResult(RESULT_OK, intent);
         finish();
     }
@@ -324,7 +325,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                 getAbstracContext().getString(R.string.error_fields_events),
                 getAbstracContext().getString(R.string.button_ok),
                 "Check",
-                Constants.RQ_MANDATORY_EVENTS,
+                RQ_MANDATORY_EVENTS,
                 new DialogClickListener() {
                     @Override
                     public void onPositive() {
@@ -410,10 +411,10 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
     private void goToInitialScreen() {
         Bundle bundle = new Bundle();
-        bundle.putString(PROGRAM_UID, getIntent().getStringExtra(Constants.PROGRAM_UID));
-        bundle.putString(Constants.EVENT_UID, getIntent().getStringExtra(Constants.EVENT_UID));
-        bundle.putString(Constants.EVENT_UID, getIntent().getStringExtra(Constants.EVENT_UID));
-        bundle.putString(Constants.PROGRAM_STAGE_UID, programStageUid);
+        bundle.putString(PROGRAM_UID, getIntent().getStringExtra(PROGRAM_UID));
+        bundle.putString(EVENT_UID, getIntent().getStringExtra(EVENT_UID));
+        bundle.putString(EVENT_UID, getIntent().getStringExtra(EVENT_UID));
+        bundle.putString(PROGRAM_STAGE_UID, programStageUid);
         startActivity(EventInitialActivity.class, bundle, true, false, null);
     }
 

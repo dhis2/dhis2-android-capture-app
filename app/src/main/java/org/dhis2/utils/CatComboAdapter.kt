@@ -1,4 +1,4 @@
-package org.dhis2.utils.kotlin
+package org.dhis2.utils
 
 import android.content.Context
 import android.view.LayoutInflater

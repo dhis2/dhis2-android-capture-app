@@ -40,7 +40,7 @@ import org.dhis2.usescases.main.program.SyncStatusDialog;
 import org.dhis2.usescases.map.MapSelectorActivity;
 import org.dhis2.usescases.splash.SplashActivity;
 import org.dhis2.utils.ColorUtils;
-import org.dhis2.utils.Constants;
+
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.OnDialogClickListener;
 import org.dhis2.utils.SyncUtils;
@@ -55,6 +55,15 @@ import java.util.List;
 import rx.Observable;
 import rx.subjects.BehaviorSubject;
 import timber.log.Timber;
+
+import static org.dhis2.utils.ConstantsKt.DESCRIPTION_DIALOG;
+import static org.dhis2.utils.ConstantsKt.PROGRAM_THEME;
+import static org.dhis2.utils.ConstantsKt.RQ_MAP_LOCATION_VIEW;
+import static org.dhis2.utils.ConstantsKt.SCREEN_NAME;
+import static org.dhis2.utils.ConstantsKt.SERVER;
+import static org.dhis2.utils.ConstantsKt.SHARE_PREFS;
+import static org.dhis2.utils.ConstantsKt.THEME;
+import static org.dhis2.utils.ConstantsKt.USER;
 
 /**
  * QUADRAM. Created by Javi on 28/07/2017.
@@ -90,7 +99,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
     //LIFECYCLE REGION
 
     public void setScreenName(String name) {
-        Crashlytics.setString(Constants.SCREEN_NAME, name);
+        Crashlytics.setString(SCREEN_NAME, name);
     }
 
     @Override
@@ -104,17 +113,17 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
             getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
         SharedPreferences prefs = getSharedPreferences();
         if (this instanceof MainActivity || this instanceof LoginActivity || this instanceof SplashActivity) {
-            prefs.edit().remove(Constants.PROGRAM_THEME).apply();
+            prefs.edit().remove(PROGRAM_THEME).apply();
         }
 
         if (!(this instanceof SplashActivity))
-            setTheme(prefs.getInt(Constants.PROGRAM_THEME, prefs.getInt(Constants.THEME, R.style.AppTheme)));
+            setTheme(prefs.getInt(PROGRAM_THEME, prefs.getInt(THEME, R.style.AppTheme)));
 
-        Crashlytics.setString(Constants.SERVER, prefs.getString(Constants.SERVER, null));
-        String userName = prefs.getString(Constants.USER, null);
+        Crashlytics.setString(SERVER, prefs.getString(SERVER, null));
+        String userName = prefs.getString(USER, null);
         if (userName != null)
-            Crashlytics.setString(Constants.USER, userName);
-        mFirebaseAnalytics.setUserId(prefs.getString(Constants.SERVER, null));
+            Crashlytics.setString(USER, userName);
+        mFirebaseAnalytics.setUserId(prefs.getString(SERVER, null));
 
         super.onCreate(savedInstanceState);
 //        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
@@ -227,7 +236,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
         Gson gson = new Gson();
         String json = gson.toJson(list);
 
-        getSharedPreferences(Constants.SHARE_PREFS, MODE_PRIVATE).edit().putString(key, json).apply();
+        getSharedPreferences(SHARE_PREFS, MODE_PRIVATE).edit().putString(key, json).apply();
     }
 
     @Override
@@ -242,7 +251,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
 
     @Override
     public SharedPreferences getSharedPreferences() {
-        return getSharedPreferences(Constants.SHARE_PREFS, MODE_PRIVATE);
+        return getSharedPreferences(SHARE_PREFS, MODE_PRIVATE);
     }
 
     public Observable<Status> observableLifeCycle() {
@@ -352,12 +361,12 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
     @Override
     public void onMapPositionClick(CoordinatesView coordinatesView) {
         this.coordinatesView = coordinatesView;
-        startActivityForResult(MapSelectorActivity.create(this), Constants.RQ_MAP_LOCATION_VIEW);
+        startActivityForResult(MapSelectorActivity.create(this), RQ_MAP_LOCATION_VIEW);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == Constants.RQ_MAP_LOCATION_VIEW) {
+        if (requestCode == RQ_MAP_LOCATION_VIEW) {
             if (coordinatesView != null && resultCode == RESULT_OK && data.getExtras() != null) {
                 coordinatesView.updateLocation(Double.valueOf(data.getStringExtra(MapSelectorActivity.LATITUDE)), Double.valueOf(data.getStringExtra(MapSelectorActivity.LONGITUDE)));
             }
@@ -374,7 +383,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
                 description,
                 getString(R.string.action_close),
                 null,
-                Constants.DESCRIPTION_DIALOG,
+                DESCRIPTION_DIALOG,
                 null
         ).show();
     }

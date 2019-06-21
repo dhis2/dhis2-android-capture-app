@@ -9,7 +9,7 @@ import androidx.work.WorkManager;
 
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.usescases.login.LoginActivity;
-import org.dhis2.utils.Constants;
+
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.user.User;
 
@@ -57,8 +57,8 @@ final class MainPresenter implements MainContracts.Presenter {
                         .subscribe(
                                 id -> {
                                     SharedPreferences prefs = view.getAbstracContext().getSharedPreferences(
-                                            Constants.SHARE_PREFS, Context.MODE_PRIVATE);
-                                    prefs.edit().putString(Constants.DEFAULT_CAT_COMBO, id).apply();
+                                            SHARE_PREFS, Context.MODE_PRIVATE);
+                                    prefs.edit().putString(DEFAULT_CAT_COMBO, id).apply();
                                 },
                                 Timber::e
                         )
@@ -80,7 +80,7 @@ final class MainPresenter implements MainContracts.Presenter {
     @Override
     public void blockSession(String pin) {
         SharedPreferences prefs = view.getAbstracContext().getSharedPreferences(
-                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
+                SHARE_PREFS, Context.MODE_PRIVATE);
         prefs.edit().putBoolean("SessionLocked", true).apply();
         if (pin != null) {
             prefs.edit().putString("pin", pin).apply();

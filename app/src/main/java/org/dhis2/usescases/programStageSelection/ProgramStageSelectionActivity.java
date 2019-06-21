@@ -10,7 +10,6 @@ import org.dhis2.R;
 import org.dhis2.databinding.ActivityProgramStageSelectionBinding;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
-import org.dhis2.utils.Constants;
 import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.ProgramStage;
 
@@ -22,14 +21,7 @@ import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.GridLayoutManager;
 
-import static org.dhis2.utils.Constants.ENROLLMENT_UID;
-import static org.dhis2.utils.Constants.EVENT_CREATION_TYPE;
-import static org.dhis2.utils.Constants.EVENT_PERIOD_TYPE;
-import static org.dhis2.utils.Constants.EVENT_REPEATABLE;
-import static org.dhis2.utils.Constants.EVENT_SCHEDULE_INTERVAL;
-import static org.dhis2.utils.Constants.ORG_UNIT;
-import static org.dhis2.utils.Constants.PROGRAM_UID;
-import static org.dhis2.utils.Constants.TRACKED_ENTITY_INSTANCE;
+import static org.dhis2.utils.t.*;
 
 
 /**
@@ -99,7 +91,7 @@ public class ProgramStageSelectionActivity extends ActivityGlobalAbstract implem
         bundle.putString(EVENT_CREATION_TYPE, getIntent().getStringExtra(EVENT_CREATION_TYPE));
         bundle.putBoolean(EVENT_REPEATABLE, repeatable);
         bundle.putSerializable(EVENT_PERIOD_TYPE, periodType);
-        bundle.putString(Constants.PROGRAM_STAGE_UID, programStageUid);
+        bundle.putString(PROGRAM_STAGE_UID, programStageUid);
         bundle.putInt(EVENT_SCHEDULE_INTERVAL, presenter.getStandardInterval(programStageUid));
         intent.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT);
         intent.putExtras(bundle);

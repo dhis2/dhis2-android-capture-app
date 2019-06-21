@@ -11,7 +11,7 @@ import com.google.firebase.perf.metrics.AddTrace;
 
 import org.dhis2.App;
 import org.dhis2.R;
-import org.dhis2.utils.Constants;
+
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.NetworkUtils;
 
@@ -78,10 +78,10 @@ public class SyncMetadataWorker extends Worker {
 
             String lastDataSyncDate = DateUtils.dateTimeFormat().format(Calendar.getInstance().getTime());
 
-            SharedPreferences prefs = getApplicationContext().getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE);
-            prefs.edit().putString(Constants.LAST_META_SYNC, lastDataSyncDate).apply();
-            prefs.edit().putBoolean(Constants.LAST_META_SYNC_STATUS, isMetaOk).apply();
-            prefs.edit().putBoolean(Constants.LAST_META_SYNC_NO_NETWORK, noNetwork).apply();
+            SharedPreferences prefs = getApplicationContext().getSharedPreferences(SHARE_PREFS, Context.MODE_PRIVATE);
+            prefs.edit().putString(LAST_META_SYNC, lastDataSyncDate).apply();
+            prefs.edit().putBoolean(LAST_META_SYNC_STATUS, isMetaOk).apply();
+            prefs.edit().putBoolean(LAST_META_SYNC_NO_NETWORK, noNetwork).apply();
 
             LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(new Intent("action_sync").putExtra("metaSyncInProgress", false));
 

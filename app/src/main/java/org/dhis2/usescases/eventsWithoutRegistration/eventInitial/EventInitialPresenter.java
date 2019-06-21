@@ -25,7 +25,7 @@ import org.dhis2.data.tuples.Quintet;
 import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryActivity;
 import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryRepository;
 import org.dhis2.usescases.map.MapSelectorActivity;
-import org.dhis2.utils.Constants;
+
 import org.dhis2.utils.EventCreationType;
 import org.dhis2.utils.OrgUnitUtils;
 import org.dhis2.utils.Result;
@@ -58,6 +58,8 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import rx.exceptions.OnErrorNotImplementedException;
 import timber.log.Timber;
+
+import static org.dhis2.utils.ConstantsKt.RQ_MAP_LOCATION;
 
 /**
  * QUADRAM. Created by Cristian on 01/03/2018.
@@ -364,7 +366,7 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     @Override
     public void onLocation2Click() {
         Intent intent = new Intent(view.getContext(), MapSelectorActivity.class);
-        view.getAbstractActivity().startActivityForResult(intent, Constants.RQ_MAP_LOCATION);
+        view.getAbstractActivity().startActivityForResult(intent, RQ_MAP_LOCATION);
     }
 
     @Override

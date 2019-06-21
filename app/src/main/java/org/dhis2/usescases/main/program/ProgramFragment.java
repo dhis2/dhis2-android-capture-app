@@ -30,7 +30,7 @@ import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.FragmentProgramBinding;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
-import org.dhis2.utils.Constants;
+
 import org.dhis2.utils.DatePickerUtils;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.HelpManager;
@@ -54,6 +54,8 @@ import me.toptas.fancyshowcase.FocusShape;
 import me.toptas.fancyshowcase.listener.DismissListener;
 import timber.log.Timber;
 
+import static org.dhis2.utils.ConstantsKt.SHARE_PREFS;
+import static org.dhis2.utils.ConstantsKt.TUTORIAL_HOME;
 import static org.dhis2.utils.Period.DAILY;
 import static org.dhis2.utils.Period.MONTHLY;
 import static org.dhis2.utils.Period.NONE;
@@ -456,7 +458,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
     @Override
     public void setTutorial() {
         SharedPreferences prefs = getAbstracContext().getSharedPreferences(
-                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
+                SHARE_PREFS, Context.MODE_PRIVATE);
         try {
 
             if (getContext() != null && isAdded()) {
@@ -548,9 +550,9 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
 
                         HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
 
-                        if (!prefs.getBoolean(Constants.TUTORIAL_HOME, false) && !BuildConfig.DEBUG) {
+                        if (!prefs.getBoolean(TUTORIAL_HOME, false) && !BuildConfig.DEBUG) {
                             HelpManager.getInstance().showHelp();
-                            prefs.edit().putBoolean(Constants.TUTORIAL_HOME, true).apply();
+                            prefs.edit().putBoolean(TUTORIAL_HOME, true).apply();
                         }
                     }
 

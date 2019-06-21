@@ -31,8 +31,8 @@ import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.sync.SyncActivity
 import org.dhis2.utils.*
-import org.dhis2.utils.Constants.ACCOUNT_RECOVERY
-import org.dhis2.utils.Constants.RQ_QR_SCANNER
+import org.dhis2.utils.ACCOUNT_RECOVERY
+import org.dhis2.utils.RQ_QR_SCANNER
 import org.dhis2.utils.WebViewActivity.Companion.WEB_VIEW_URL
 import timber.log.Timber
 import java.io.BufferedReader
@@ -222,13 +222,13 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
                 getString(R.string.action_agree), getString(R.string.cancel),
                 object : OnDialogClickListener {
                     override fun onPossitiveClick(alertDialog: AlertDialog) {
-                        sharedPreferences.edit().putBoolean(Constants.USER_ASKED_CRASHLYTICS, true).apply()
-                        sharedPreferences.edit().putString(Constants.USER, binding.userName.editText?.text.toString()).apply()
+                        sharedPreferences.edit().putBoolean(USER_ASKED_CRASHLYTICS, true).apply()
+                        sharedPreferences.edit().putString(USER, binding.userName.editText?.text.toString()).apply()
                         showLoginProgress(true)
                     }
 
                     override fun onNegativeClick(alertDialog: AlertDialog) {
-                        sharedPreferences.edit().putBoolean(Constants.USER_ASKED_CRASHLYTICS, true).apply()
+                        sharedPreferences.edit().putBoolean(USER_ASKED_CRASHLYTICS, true).apply()
                         showLoginProgress(true)
                     }
                 })?.show()
@@ -263,8 +263,8 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         binding.serverUrlEdit.dropDownWidth = resources.displayMetrics.widthPixels
         binding.userNameEdit.dropDownWidth = resources.displayMetrics.widthPixels
 
-        urls = getListFromPreference(Constants.PREFS_URLS)
-        users = getListFromPreference(Constants.PREFS_USERS)
+        urls = getListFromPreference(PREFS_URLS)
+        users = getListFromPreference(PREFS_USERS)
 
         urls?.let {
             for (testingCredential in testingCredentials) {
@@ -273,14 +273,14 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
             }
         }
 
-        saveListToPreference(Constants.PREFS_URLS, urls)
+        saveListToPreference(PREFS_URLS, urls)
 
         users?.let {
-            if (!it.contains(Constants.USER_TEST_ANDROID))
-                it.add(Constants.USER_TEST_ANDROID)
+            if (!it.contains(USER_TEST_ANDROID))
+                it.add(USER_TEST_ANDROID)
         }
 
-        saveListToPreference(Constants.PREFS_USERS, users)
+        saveListToPreference(PREFS_USERS, users)
 
         urls?.let {
             val urlAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, it)
@@ -297,14 +297,14 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         urls?.let {
             if (!it.contains(binding.serverUrlEdit.text.toString())) {
                 it.add(binding.serverUrlEdit.text.toString())
-                saveListToPreference(Constants.PREFS_URLS, it)
+                saveListToPreference(PREFS_URLS, it)
             }
         }
 
         users?.let {
             if (!it.contains(binding.userNameEdit.text.toString())) {
                 it.add(binding.userNameEdit.text.toString())
-                saveListToPreference(Constants.PREFS_USERS, it)
+                saveListToPreference(PREFS_USERS, it)
             }
         }
 
@@ -346,7 +346,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == RQ_QR_SCANNER && resultCode == Activity.RESULT_OK) {
-            qrUrl = data?.getStringExtra(Constants.EXTRA_DATA)
+            qrUrl = data?.getStringExtra(EXTRA_DATA)
         }
     }
 
@@ -356,12 +356,12 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     }
 
     override fun checkSecuredCredentials() {
-        if (SecurePreferences.contains(Constants.SECURE_SERVER_URL) &&
-                SecurePreferences.contains(Constants.SECURE_USER_NAME) &&
-                SecurePreferences.contains(Constants.SECURE_PASS)) {
-            binding.serverUrlEdit.setText(SecurePreferences.getStringValue(Constants.SECURE_SERVER_URL, null))
-            binding.userNameEdit.setText(SecurePreferences.getStringValue(Constants.SECURE_USER_NAME, null))
-            binding.userPassEdit.setText(SecurePreferences.getStringValue(Constants.SECURE_PASS, null))
+        if (SecurePreferences.contains(SECURE_SERVER_URL) &&
+                SecurePreferences.contains(SECURE_USER_NAME) &&
+                SecurePreferences.contains(SECURE_PASS)) {
+            binding.serverUrlEdit.setText(SecurePreferences.getStringValue(SECURE_SERVER_URL, null))
+            binding.userNameEdit.setText(SecurePreferences.getStringValue(SECURE_USER_NAME, null))
+            binding.userPassEdit.setText(SecurePreferences.getStringValue(SECURE_PASS, null))
             showLoginProgress(true)
         } else
             showInfoDialog(getString(R.string.biometrics_dialog_title), getString(R.string.biometrics_first_use_text))

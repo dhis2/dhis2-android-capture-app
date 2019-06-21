@@ -20,7 +20,7 @@ import org.dhis2.databinding.FragmentRelationshipsBinding;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
 import org.dhis2.utils.ColorUtils;
-import org.dhis2.utils.Constants;
+
 import org.hisp.dhis.android.core.relationship.RelationshipTypeModel;
 import org.jetbrains.annotations.NotNull;
 
@@ -107,13 +107,13 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
     @Override
     public void goToAddRelationship(Intent intent) {
         ((TeiDashboardMobileActivity) getActivity()).toRelationships();
-        this.startActivityForResult(intent, Constants.REQ_ADD_RELATIONSHIP);
+        this.startActivityForResult(intent, REQ_ADD_RELATIONSHIP);
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == Constants.REQ_ADD_RELATIONSHIP) {
+        if (requestCode == REQ_ADD_RELATIONSHIP) {
             if (resultCode == RESULT_OK) {
                 if (data != null) {
                     String tei_a = data.getStringExtra("TEI_A_UID");

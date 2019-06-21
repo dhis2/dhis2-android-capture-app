@@ -11,7 +11,6 @@ import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.main.program.SyncStatusDialog;
-import org.dhis2.utils.Constants;
 import org.dhis2.utils.OrgUnitUtils;
 import org.dhis2.utils.Period;
 import org.hisp.dhis.android.core.category.CategoryOption;
@@ -33,9 +32,7 @@ import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
-import static org.dhis2.utils.Constants.ORG_UNIT;
-import static org.dhis2.utils.Constants.PROGRAM_UID;
-
+import static org.dhis2.utils.t.*;
 
 /**
  * QUADRAM. Created by Cristian on 13/02/2018.
@@ -208,7 +205,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     public void onEventClick(String eventId, String orgUnit) {
         Bundle bundle = new Bundle();
         bundle.putString(PROGRAM_UID, programId);
-        bundle.putString(Constants.EVENT_UID, eventId);
+        bundle.putString(EVENT_UID, eventId);
         bundle.putString(ORG_UNIT, orgUnit);
         view.startActivity(EventCaptureActivity.class,
                 EventCaptureActivity.getActivityBundle(eventId, programId),
