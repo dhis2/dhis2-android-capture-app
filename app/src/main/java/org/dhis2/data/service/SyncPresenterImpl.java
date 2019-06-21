@@ -41,7 +41,6 @@ final class SyncPresenterImpl implements SyncPresenter {
         boolean limitByProgram = prefs.getBoolean(Constants.LIMIT_BY_PROGRAM, false);
         Completable.fromObservable(d2.trackedEntityModule()
                 .downloadTrackedEntityInstances(teiLimit, limitByOU, limitByProgram)
-                .asObservable()
                 .doOnNext(data -> Timber.d(data.percentage() + "% " + data.doneCalls().size() + "/" + data.totalCalls())))
                 .blockingAwait();
     }
@@ -50,7 +49,7 @@ final class SyncPresenterImpl implements SyncPresenter {
     public void syncAndDownloadDataValues() throws Exception {
         d2.dataValueModule().dataValues.upload().call();
         d2.dataSetModule().dataSetCompleteRegistrations.upload().call();
-        Completable.fromObservable(d2.aggregatedModule().data().download().asObservable()).blockingAwait();
+        Completable.fromObservable(d2.aggregatedModule().data().download()).blockingAwait();
     }
 
     @Override
