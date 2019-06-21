@@ -157,7 +157,7 @@ public final class DataEntryAdapter extends Adapter {
         rows.get(holder.getItemViewType()).onBind(holder,
                 viewModels.get(holder.getAdapterPosition()));
 
-        if (position != 0 && position == nextFocusPosition && lastFocusPosition!= nextFocusPosition && holder instanceof FormViewHolder) {
+        if (position != 0 && position == nextFocusPosition && lastFocusPosition != nextFocusPosition && holder instanceof FormViewHolder) {
             lastFocusPosition = position;
             ((FormViewHolder) holder).performAction();
             if (!(holder instanceof ImageHolder))
@@ -222,10 +222,6 @@ public final class DataEntryAdapter extends Adapter {
     @NonNull
     public FlowableProcessor<RowAction> asFlowable() {
         return processor;
-    }
-
-    public FlowableProcessor<Trio<String, String, Integer>> asFlowableOption() {
-        return processorOptionSet;
     }
 
     public void swap(@NonNull List<FieldViewModel> updates) {
