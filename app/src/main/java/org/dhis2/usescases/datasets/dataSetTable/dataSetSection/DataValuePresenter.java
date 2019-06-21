@@ -233,7 +233,7 @@ public class DataValuePresenter implements DataValueContract.Presenter{
                     for (DataSetTableModel dataValue : dataTableModel.dataValues()) {
 
                         if (dataValue.dataElement().equals(rowAction.dataElement()) && dataValue.categoryOptionCombo().equals(rowAction.catOptCombo())) {
-                            dataValue.setValue(rowAction.value());
+                            dataValue = dataValue.setValue(rowAction.value());
                             setValueIntoFieldViewModel(rowAction.value(), rowAction.dataElement(), dataValue.categoryOptionCombo());
                             dataSetSectionFragment.updateData(rowAction, rowAction.catCombo());
                             return repository.updateValue(tranformDataSetTableModelToDataValueModel(dataValue));

@@ -245,11 +245,18 @@ public class DataValueRepositoryImpl implements DataValueRepository {
 
     public Flowable<Integer> updateValue(DataValueModel dataValue){
         String where = DataValueModel.Columns.DATA_ELEMENT + " = '" + dataValue.dataElement() + "' AND " + DataValueModel.Columns.PERIOD + " = '" + dataValue.period() +
+                "' AND " + DataValueModel.Columns.ORGANISATION_UNIT + " = '" + dataValue.organisationUnit() +
                 "' AND " + DataValueModel.Columns.ATTRIBUTE_OPTION_COMBO + " = '" + dataValue.attributeOptionCombo() +
                 "' AND " + DataValueModel.Columns.CATEGORY_OPTION_COMBO + " = '" + dataValue.categoryOptionCombo() + "'";
 
-        if(dataValue.value()!=null && !dataValue.value().isEmpty())
-            return Flowable.just(briteDatabase.update(DataValueModel.TABLE, dataValue.toContentValues(), where));
+        if(dataValue.value()!=null && !dataValue.value().isEmpty()) {
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(DataValueModel.Columns.VALUE, dataValue.value());
+            contentValues.put(DataValueModel.Columns.STATE, dataValue.state().name());
+            contentValues.put(DataValueModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(dataValue.lastUpdated()));
+
+            return Flowable.just(briteDatabase.update(DataValueModel.TABLE, contentValues, where));
+        }
         else
             return Flowable.just(briteDatabase.delete(DataValueModel.TABLE, where));
 
