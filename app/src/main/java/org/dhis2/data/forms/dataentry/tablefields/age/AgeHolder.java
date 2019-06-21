@@ -80,7 +80,12 @@ public class AgeHolder extends FormViewHolder {
 
     private void showEditDialog() {
 
-        AlertDialog alertDialog = new AlertDialog.Builder(context).create();
+        AlertDialog alertDialog = new AlertDialog.Builder(context, R.style.CustomDialog)
+                .setPositiveButton(R.string.action_accept, (dialog, which) -> dialog.dismiss())
+                .setNegativeButton(R.string.clear, (dialog, which) -> processor.onNext(
+                        RowAction.create(ageViewModel.uid(), null, ageViewModel.dataElement(), ageViewModel.categoryOptionCombo(), ageViewModel.catCombo(), ageViewModel.row(), ageViewModel.column())))
+                .create();
+
         View view = LayoutInflater.from(context).inflate(R.layout.form_age_custom, null);
         AgeView ageView = view.findViewById(R.id.custom_ageview);
         ageView.setIsBgTransparent(true);
@@ -92,7 +97,6 @@ public class AgeHolder extends FormViewHolder {
         ageView.setAgeChangedListener(ageDate -> {
                     if (ageViewModel.value() == null || !ageViewModel.value().equals(DateUtils.databaseDateFormat().format(ageDate)))
                         processor.onNext(RowAction.create(ageViewModel.uid(), DateUtils.databaseDateFormat().format(ageDate), ageViewModel.dataElement(), ageViewModel.categoryOptionCombo(), ageViewModel.catCombo(), ageViewModel.row(), ageViewModel.column()));
-                    alertDialog.dismiss();
         });
         alertDialog.setView(view);
 

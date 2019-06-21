@@ -70,7 +70,12 @@ public class CoordinateHolder extends FormViewHolder {
 
     private void showEditDialog() {
 
-        AlertDialog alertDialog = new AlertDialog.Builder(context).create();
+        AlertDialog alertDialog = new AlertDialog.Builder(context, R.style.CustomDialog)
+                .setPositiveButton(R.string.action_accept, (dialog, which) -> dialog.dismiss())
+                .setNegativeButton(R.string.clear, (dialog, which) -> processor.onNext(
+                        RowAction.create(model.uid(), null, model.dataElement(), model.categoryOptionCombo(), model.catCombo(), model.row(), model.column())))
+                .create();
+
         View view = LayoutInflater.from(context).inflate(R.layout.custom_form_coordinate, null);
         CoordinatesView coordinatesView = view.findViewById(R.id.formCoordinates);
         coordinatesView.setIsBgTransparent(true);
@@ -79,13 +84,9 @@ public class CoordinateHolder extends FormViewHolder {
 
         coordinatesView.setLabel(model.label());
 
-
         coordinatesView.setCurrentLocationListener((latitude, longitude) -> {
-            processor.onNext(
-                    RowAction.create(model.uid(),
-                            String.format(Locale.US,
-                                    "[%.5f,%.5f]", latitude, longitude), model.dataElement(), model.categoryOptionCombo(), model.catCombo(), model.row(), model.column())
-            );
+            coordinatesView.setLatLongText(String.format(Locale.US, "[%.5f,%.5f]", latitude, longitude));
+            processor.onNext(RowAction.create(model.uid(), coordinatesView.getLatLongText(), model.dataElement(), model.categoryOptionCombo(), model.catCombo(), model.row(), model.column()));
             alertDialog.dismiss();
         });
 

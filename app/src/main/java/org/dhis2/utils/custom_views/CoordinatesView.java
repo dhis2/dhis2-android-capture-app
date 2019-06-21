@@ -241,5 +241,13 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
         } else
             mFusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
     }
+
+    public String getLatLongText() {
+        return latLong.getText() != null ? latLong.getText().toString() : "";
+    }
+
+    public void setLatLongText(String latLong) {
+        this.latLong.setText(latLong);
+    }
 }
 
