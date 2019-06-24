@@ -199,15 +199,4 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
             binding.currentSectionTitle.root.setVisibility(binding.currentSectionTitle.root.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
         }
     }
-
-    public void updateAdapter(RowAction rowAction) {
-        activity.runOnUiThread(() -> {
-            dataEntryAdapter.notifyChanges(rowAction);
-            if (rowAction.lastFocusPosition() != -1)
-                if (rowAction.lastFocusPosition() >= dataEntryAdapter.getItemCount())
-                    binding.formRecycler.smoothScrollToPosition(rowAction.lastFocusPosition());
-                else
-                    binding.formRecycler.smoothScrollToPosition(rowAction.lastFocusPosition() + 1);
-        });
-    }
 }

@@ -4,7 +4,6 @@ import android.os.Handler;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.databinding.ObservableField;
 
 import org.dhis2.R;
@@ -19,7 +18,6 @@ import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.tuples.Quartet;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureFragment.EventCaptureFormFragment;
-import org.dhis2.utils.OnDialogClickListener;
 import org.dhis2.utils.Result;
 import org.dhis2.utils.RulesActionCallbacks;
 import org.dhis2.utils.RulesUtilsProvider;
@@ -378,17 +376,16 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
             );
 
             compositeDisposable.add(EventCaptureFormFragment.getInstance().dataEntryFlowable().onBackpressureBuffer()
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(Schedulers.io())
-                            .switchMap(action -> {
-                                        if (action.lastFocusPosition() != null && action.lastFocusPosition() >= 0) { //Triggered by form field
-                                            this.lastFocusItem = action.id();
-                                        }
-                                        eventCaptureRepository.setLastUpdated(action.id());
-//                                EventCaptureFormFragment.getInstance().updateAdapter(action);
-                                        return dataEntryStore.save(action.id(), action.value());
-                                    }
-                            ).subscribe(result -> Timber.d("SAVED VALUE AT %s", System.currentTimeMillis()),
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(Schedulers.io())
+                    .switchMap(action -> {
+                                if (action.lastFocusPosition() != null && action.lastFocusPosition() >= 0) { //Triggered by form field
+                                    this.lastFocusItem = action.id();
+                                }
+                                eventCaptureRepository.setLastUpdated(action.id());
+                                return dataEntryStore.save(action.id(), action.value());
+                            }
+                    ).subscribe(result -> Timber.d("SAVED VALUE AT %s", System.currentTimeMillis()),
                             Timber::d)
             );
         }
@@ -409,6 +406,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         optionsToHide.clear();
         optionsGroupsToHide.clear();
         sectionsToHide.clear();
+        errors.clear();
         completeMessage = null;
         canComplete = true;
 
@@ -488,10 +486,10 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         } else {
             if (eventStatus != EventStatus.ACTIVE) {
                 setUpActionByStatus(eventStatus);
-            } else if (!emptyMandatoryFields.isEmpty()) {
-                view.finishDataEntry();
             } else if (!this.errors.isEmpty()) {
                 view.setShowError(errors);
+            } else if (!emptyMandatoryFields.isEmpty()) {
+                view.finishDataEntry();
             } else {
                 compositeDisposable.add(
                         Observable.just(completeMessage != null ? completeMessage : "")
@@ -694,47 +692,13 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     }
 
     @Override
-    public void setShowError(@NonNull RuleActionShowError showError, FieldViewModel model) {
+    public void setShowError(@NonNull RuleActionShowError showError, @Nullable FieldViewModel model) {
         canComplete = false;
-        if (!snackBarIsShowing) {
-            snackBarIsShowing = true;
-            view.getAbstractActivity().runOnUiThread(() ->
-                    view.showInfoDialog(view.getContext().getString(R.string.error),
-                            showError.content(),
-                            view.getContext().getString(R.string.action_accept),
-                            null, new OnDialogClickListener() {
-                                @Override
-                                public void onPossitiveClick(AlertDialog alertDialog) {
-                                    snackBarIsShowing = false;
-                                }
-
-                                @Override
-                                public void onNegativeClick(AlertDialog alertDialog) {
-                                    snackBarIsShowing = false;
-                                }
-                            }).show()
-            );
-
-          /*  Snackbar.make(view.getSnackbarAnchor(), showError.content(), Snackbar.LENGTH_INDEFINITE)
-                    .setAction(view.getAbstracContext().getString(R.string.delete), v1 -> {
-                        if (model != null)
-                            save(model.uid(), null);
-                    })
-                    .addCallback(new Snackbar.Callback() {
-                        @Override
-                        public void onDismissed(Snackbar transientBottomBar, int event) {
-                            snackBarIsShowing = false;
-                            super.onDismissed(transientBottomBar, event);
-                        }
-                    })
-                    .show();*/
-        }
-
+        errors.put(eventCaptureRepository.getSectionFor(showError.field()), showError.field());
     }
 
     @Override
     public void unsupportedRuleAction() {
-//        view.displayMessage(view.getContext().getString(R.string.unsupported_program_rule));
         Timber.d(view.getContext().getString(R.string.unsupported_program_rule));
     }
 

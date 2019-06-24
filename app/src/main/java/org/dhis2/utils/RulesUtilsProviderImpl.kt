@@ -72,7 +72,7 @@ class RulesUtilsProviderImpl(private val codeGenerator: CodeGenerator) : RulesUt
         if (model != null)
             fieldViewModels[showError.field()] = model.withError(showError.content())
 
-        rulesActionCallbacks.setShowError(showError, model!!)
+        rulesActionCallbacks.setShowError(showError, model)
     }
 
     private fun hideField(hideField: RuleActionHideField, fieldViewModels: MutableMap<String, FieldViewModel>,

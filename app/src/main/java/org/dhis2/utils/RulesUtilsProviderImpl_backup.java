@@ -131,7 +131,7 @@ public class RulesUtilsProviderImpl_backup implements RulesUtilsProvider_backup 
         String uid = displayText.content();
 
         DisplayViewModel displayViewModel = DisplayViewModel.create(uid, "",
-                displayText.content()+ruleEffect.data(), "Display");
+                displayText.content() + ruleEffect.data(), "Display");
         fieldViewModels.put(uid, displayViewModel);
     }
 

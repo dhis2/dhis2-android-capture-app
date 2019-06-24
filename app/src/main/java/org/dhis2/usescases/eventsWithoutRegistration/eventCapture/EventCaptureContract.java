@@ -155,6 +155,8 @@ public class EventCaptureContract {
         Observable<List<OrganisationUnitLevel>> getOrgUnitLevels();
 
         boolean optionIsInOptionGroup(String optionUid, String optionGroupToHide);
+
+        String getSectionFor(String field);
     }
 
 }

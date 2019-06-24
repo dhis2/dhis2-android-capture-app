@@ -22,6 +22,7 @@ import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.ObjectWithUid;
 import org.hisp.dhis.android.core.common.State;
+import org.hisp.dhis.android.core.common.UidsHelper;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
@@ -40,6 +41,7 @@ import org.hisp.dhis.android.core.program.ProgramRuleActionType;
 import org.hisp.dhis.android.core.program.ProgramRuleVariable;
 import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
+import org.hisp.dhis.android.core.program.ProgramStageSection;
 import org.hisp.dhis.android.core.program.ProgramStageSectionDeviceRendering;
 import org.hisp.dhis.android.core.program.ProgramStageSectionModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
@@ -809,5 +811,18 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                     isInGroup = true;
 
         return isInGroup;
+    }
+
+    @Override
+    public String getSectionFor(String field) {
+        String sectionToReturn = "NO_SECTION";
+        List<ProgramStageSection> programStages = d2.programModule().programStageSections.byProgramStageUid().eq(currentEvent.programStage()).withDataElements().get();
+        for(ProgramStageSection section : programStages){
+            if(UidsHelper.getUidsList(section.dataElements()).contains(field)) {
+                sectionToReturn = section.uid();
+                break;
+            }
+        }
+        return sectionToReturn;
     }
 }
