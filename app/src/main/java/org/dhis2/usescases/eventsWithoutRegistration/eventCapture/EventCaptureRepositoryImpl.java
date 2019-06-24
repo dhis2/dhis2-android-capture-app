@@ -765,6 +765,8 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                     String optionName = cursor.getString(6);
                     if (!isEmpty(optionCode) && !isEmpty(optionName))
                         value = useCode ? optionCode : optionName; //If de has optionSet then check if value should be code or name for program rules
+                    if (d2.dataElementModule().dataElements.uid(dataElement).get().valueType() == ValueType.AGE)
+                        value = value.split("T")[0];
                     return RuleDataValue.create(eventDate, programStage,
                             dataElement, value);
                 }).toFlowable(BackpressureStrategy.LATEST);
