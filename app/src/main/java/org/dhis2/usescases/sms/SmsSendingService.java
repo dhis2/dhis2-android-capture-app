@@ -226,8 +226,12 @@ public class SmsSendingService extends Service {
                 reportState(State.WAITING_RESULT, 0, 0);
                 return smsSender.checkConfirmationSms(startDate)
                         .doOnError(throwable -> {
-                            if (throwable instanceof SmsRepository.TimeoutException) {
-                                reportState(State.WAITING_RESULT_TIMEOUT, 0, 0);
+                            if (throwable instanceof SmsRepository.ResultResponseException) {
+                                SmsRepository.ResultResponseIssue reason =
+                                        ((SmsRepository.ResultResponseException) throwable).getReason();
+                                if (reason == SmsRepository.ResultResponseIssue.TIMEOUT) {
+                                    reportState(State.WAITING_RESULT_TIMEOUT, 0, 0);
+                                }
                             }
                         }).doOnComplete(() ->
                                 reportState(State.RESULT_CONFIRMED, 0, 0));
