@@ -295,25 +295,6 @@ public final class AttributeValueStore implements DataEntryStore {
         return eventUid;
     }
 
-   /* private boolean checkUnique(String attribute, String value) {
-        if (attribute != null && value != null) {
-            Cursor uniqueCursor = briteDatabase.query("SELECT TrackedEntityAttributeValue.value FROM TrackedEntityAttributeValue" +
-                    " JOIN TrackedEntityAttribute ON TrackedEntityAttribute.uid = TrackedEntityAttributeValue.trackedEntityAttribute" +
-                    " WHERE TrackedEntityAttribute.uid = ? AND" +
-                    " TrackedEntityAttribute.uniqueProperty = ? AND" +
-                    " TrackedEntityAttributeValue.value = ?", attribute, "1", value);
-
-            if (uniqueCursor == null)
-                return true;
-            else {
-                boolean hasValue = uniqueCursor.getCount() > 0;
-                uniqueCursor.close();
-                return !hasValue;
-            }
-        } else
-            return true;
-    }*/
-
     @NonNull
     private Flowable<Long> updateEnrollment(long status) {
         return briteDatabase.createQuery(EnrollmentModel.TABLE, "SELECT Enrollment.* FROM Enrollment WHERE uid = ?", enrollment)

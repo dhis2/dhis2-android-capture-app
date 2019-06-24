@@ -413,16 +413,10 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     @NonNull
     @Override
     public Flowable<List<FieldViewModel>> list(String sectionUid) {
-        return briteDatabase
-                .createQuery(TrackedEntityDataValueModel.TABLE, prepareStatement(sectionUid, eventUid))
+        return briteDatabase.createQuery(TrackedEntityDataValueModel.TABLE, prepareStatement(sectionUid, eventUid))
                 .mapToList(this::transform)
-                .map(fieldViewModels -> {
-                    Timber.d("CHECK RENDERING FOR SECTION");
-                    return checkRenderType(fieldViewModels);
-                })
-                .toFlowable(BackpressureStrategy.LATEST)
-                .doOnSubscribe(subscription -> Timber.d("LIST SUBSCRIBED! at %s", System.currentTimeMillis()))
-                ;
+                .map(this::checkRenderType)
+                .toFlowable(BackpressureStrategy.LATEST);
     }
 
     private ProgramStageSectionRenderingType renderingType(String sectionUid) {
@@ -490,9 +484,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 .createQuery(TrackedEntityDataValueModel.TABLE, prepareStatement(eventUid))
                 .mapToList(this::transform)
                 .map(fieldViewModels -> checkRenderType(fieldViewModels))
-                .toFlowable(BackpressureStrategy.BUFFER)
-                .doOnNext(onNext -> Timber.d("LIST ON NEXT! at %s", System.currentTimeMillis()))
-                ;
+                .toFlowable(BackpressureStrategy.LATEST);
     }
 
 
@@ -600,13 +592,14 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 .map(dataValues -> eventBuilder.dataValues(dataValues).build())
                 .switchMap(
                         event -> formRepository.ruleEngine()
-                                .switchMap(ruleEngine -> {
+                                .map(ruleEngine -> {
                                     if (isEmpty(lastUpdatedUid))
-                                        return Flowable.fromCallable(ruleEngine.evaluate(event, trasformToRule(rules)));
-                                    else
-                                        return Flowable.just(dataElementRules.get(lastUpdatedUid) != null ? dataElementRules.get(lastUpdatedUid) : new ArrayList<Rule>())
-                                                .map(updatedRules -> updatedRules.isEmpty() ? trasformToRule(rules) : updatedRules)
-                                                .flatMap(rules -> Flowable.fromCallable(ruleEngine.evaluate(event, rules)));
+                                        return ruleEngine.evaluate(event, trasformToRule(rules)).call();
+                                    else {
+                                        List<Rule> updatedRules = dataElementRules.get(lastUpdatedUid) != null ? dataElementRules.get(lastUpdatedUid) : new ArrayList<Rule>();
+                                        List<Rule> finalRules = updatedRules.isEmpty() ? trasformToRule(rules) : updatedRules;
+                                        return ruleEngine.evaluate(event, finalRules).call();
+                                    }
                                 })
                                 .map(Result::success)
                                 .onErrorReturn(error -> Result.failure(new Exception(error)))
@@ -743,7 +736,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 .map(Event::status);
     }
 
-    private static final String QUERY_VALUES = "SELECT " +
+    private static final String QUERY_VALUES = "SELECT DISTINCT" +
             "  Event.eventDate," +
             "  Event.programStage," +
             "  TrackedEntityDataValue.dataElement," +

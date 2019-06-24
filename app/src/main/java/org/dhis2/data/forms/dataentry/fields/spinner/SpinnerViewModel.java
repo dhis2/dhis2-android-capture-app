@@ -7,6 +7,7 @@ import com.google.auto.value.AutoValue;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Nonnull;
@@ -65,8 +66,10 @@ public abstract class SpinnerViewModel extends FieldViewModel {
     }
 
     public void setOptionsToHide(List<String> optionsToHide, List<String> optionsGroupsToHide) {
-        this.optionsToHide = optionsToHide;
-        this.optionGroupsToHide = optionsGroupsToHide;
+        this.optionGroupsToHide = new ArrayList<>();
+        this.optionsToHide = new ArrayList<>();
+        this.optionsToHide.addAll(optionsToHide);
+        this.optionGroupsToHide.addAll(optionsGroupsToHide);
     }
 
     public List<String> getOptionsToHide() {

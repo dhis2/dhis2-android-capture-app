@@ -56,8 +56,8 @@ public class OptionSetDialog extends DialogFragment {
         this.optionSet = view;
         this.listener = optionSetListener;
         this.clearListener = clearListener;
-        this.optionsToHide = view.getOptionsToHide();
-        this.optionGroupsToHide = view.getOptionGroupsToHide();
+        this.optionsToHide = view.getOptionsToHide() != null ? view.getOptionsToHide() : new ArrayList<>();
+        this.optionGroupsToHide = view.getOptionGroupsToHide() != null ? view.getOptionGroupsToHide() : new ArrayList<>();
     }
 
     @Override
