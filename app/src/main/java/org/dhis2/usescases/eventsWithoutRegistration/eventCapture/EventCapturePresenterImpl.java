@@ -28,6 +28,7 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.rules.models.RuleActionShowError;
 import org.hisp.dhis.rules.models.RuleEffect;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -266,7 +267,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                     });
         } else {
             return Flowable.zip(
-                    eventCaptureRepository.list(sectionUid),
+                    eventCaptureRepository.list(sectionUid).subscribeOn(Schedulers.computation()),
                     eventCaptureRepository.calculate().subscribeOn(Schedulers.computation()),
                     this::applyEffects)
                     .map(fields -> {
@@ -374,7 +375,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                     this.lastFocusItem = action.id();
                                 }
                                 eventCaptureRepository.setLastUpdated(action.id());
-                                EventCaptureFormFragment.getInstance().updateAdapter(action);
+//                                EventCaptureFormFragment.getInstance().updateAdapter(action);
                                 return dataEntryStore.save(action.id(), action.value());
                             }
                     ).subscribe(result -> Timber.d("SAVED VALUE AT %s", System.currentTimeMillis()),
@@ -432,8 +433,9 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         }
 
         for (FieldViewModel fieldViewModel : fieldViewModels.values())
-            if (fieldViewModel instanceof SpinnerViewModel)
+            if (fieldViewModel instanceof SpinnerViewModel) {
                 ((SpinnerViewModel) fieldViewModel).setOptionsToHide(optionsToHide, optionsGroupsToHide);
+            }
 
         return new ArrayList<>(fieldViewModels.values());
     }
@@ -727,7 +729,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     }
 
     @Override
-    public void save(@NonNull String uid, @Nullable String value) {
+    public void save(@NotNull @NonNull String uid, @Nullable String value) {
         EventCaptureFormFragment.getInstance().dataEntryFlowable().onNext(RowAction.create(uid, value));
     }
 
@@ -737,7 +739,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     }
 
     @Override
-    public void sethideSection(String sectionUid) {
+    public void setHideSection(String sectionUid) {
         if (!sectionsToHide.contains(sectionUid))
             sectionsToHide.add(sectionUid);
     }

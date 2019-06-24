@@ -1,12 +1,10 @@
 package org.dhis2.utils;
 
+import androidx.annotation.NonNull;
+
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel;
-import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
-import org.hisp.dhis.android.core.common.ObjectStyleModel;
-import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.program.ProgramStage;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.rules.models.RuleAction;
 import org.hisp.dhis.rules.models.RuleActionAssign;
 import org.hisp.dhis.rules.models.RuleActionCreateEvent;
@@ -28,20 +26,18 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import androidx.annotation.NonNull;
-
 /**
  * QUADRAM. Created by ppajuelo on 13/06/2018.
  */
 
-public class RulesUtilsProviderImpl implements RulesUtilsProvider {
+public class RulesUtilsProviderImpl_backup implements RulesUtilsProvider_backup {
 
     private final CodeGenerator codeGenerator;
 
     private HashMap<String, FieldViewModel> currentFieldViewModels;
 
 
-    public RulesUtilsProviderImpl(CodeGenerator codeGenerator) {
+    public RulesUtilsProviderImpl_backup(CodeGenerator codeGenerator) {
         this.codeGenerator = codeGenerator;
     }
 
@@ -154,7 +150,7 @@ public class RulesUtilsProviderImpl implements RulesUtilsProvider {
 
     private void hideSection(RuleActionHideSection hideSection,
                              Map<String, FieldViewModel> fieldViewModels, RulesActionCallbacks rulesActionCallbacks) {
-        rulesActionCallbacks.sethideSection(hideSection.programStageSection());
+        rulesActionCallbacks.setHideSection(hideSection.programStageSection());
         for (FieldViewModel field : fieldViewModels.values()) {
             if (Objects.equals(field.programStageSection(), hideSection.programStageSection()) && field.value() != null) {
                 String uid = field.uid().contains(".") ? field.uid().split("\\.")[0] : field.uid();
