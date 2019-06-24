@@ -848,8 +848,8 @@ public class DateUtils {
                 calendar.set(Calendar.DAY_OF_MONTH, 1);
                 break;
             case Quarterly:
-                extra = 1 + 4 - (calendar.get(Calendar.MONTH) + 1) % 4;
-                calendar.add(Calendar.MONTH, page * extra);
+                calendar.add(Calendar.MONTH, -1 * ((calendar.get(Calendar.MONTH) + 1) % 4)+1);
+                calendar.add(Calendar.MONTH, page * 4);
                 calendar.set(Calendar.DAY_OF_MONTH, 1);
                 break;
             case SixMonthly:

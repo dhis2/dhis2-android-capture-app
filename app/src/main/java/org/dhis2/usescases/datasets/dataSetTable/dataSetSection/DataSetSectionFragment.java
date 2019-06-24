@@ -242,9 +242,9 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
                 if (adapter.getShowRowTotal())
                     for (int i = 0; i < columnHeaderItems.size(); i++) {
                         if (i == columnHeaderItems.size() - 1)
-                            columnHeaderItems.get(i).add(CategoryOption.builder().displayName(getString(R.string.total)).build());
+                            columnHeaderItems.get(i).add(CategoryOption.builder().uid("").displayName(getString(R.string.total)).build());
                         else
-                            columnHeaderItems.get(i).add(CategoryOption.builder().displayName("").build());
+                            columnHeaderItems.get(i).add(CategoryOption.builder().uid("").displayName("").build());
                     }
 
             }
