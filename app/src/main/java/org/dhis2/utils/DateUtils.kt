@@ -22,7 +22,7 @@ class DateUtils {
         const val DATE_FORMAT_EXPRESSION = "yyyy-MM-dd"
 
         private var instance: DateUtils? = null
-        lateinit var currentDateCalendar: Calendar
+        private var currentDateCalendar: Calendar? = null
 
         public fun getInstance(): DateUtils {
             if (instance == null)
@@ -209,7 +209,7 @@ class DateUtils {
 
     fun getCalendar(): Calendar {
         if (currentDateCalendar != null)
-            return currentDateCalendar
+            return currentDateCalendar!!
 
         val calendar = Calendar.getInstance()
         calendar.set(Calendar.HOUR_OF_DAY, 0)
