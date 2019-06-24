@@ -36,86 +36,81 @@
             tools:srcCompat="@drawable/sierra_leone"
             tools:visibility="visible" />
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/formLabel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/renderImage">
+            android:layout_below="@id/renderImage"
+            android:paddingStart="4dp"
+            android:text="@{label}"
+            android:textColor="?colorAccent"
+            android:textSize="@dimen/textSize_12"
+            tools:text="Form Name" />
+
+        <LinearLayout
+            android:id="@+id/fieldLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/formLabel"
+            android:gravity="center_vertical">
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/inputLayout"
+                android:id="@+id/latitudeInputLayout"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:hint="@{label}"
+                android:hint="@string/latitude"
                 android:textColorHint="@drawable/edit_text_hint_accent"
-                tools:hint="Hint"
                 android:theme="@style/loginInputTextAccent">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/latlong"
+                    android:id="@+id/latitude"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="numberDecimal"
-                    tools:text="Text"
-                    android:textColor="@color/white"
+                    android:imeOptions="actionNext"
+                    android:inputType="numberDecimal|numberSigned"
+                    android:textColor="@color/text_black_333"
                     android:textSize="15sp" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/longInputLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="@string/longitude"
+                android:textColorHint="@drawable/edit_text_hint_accent"
+                android:theme="@style/loginInputTextAccent">
 
-            <!-- <android.support.design.widget.TextInputLayout
-                 android:layout_width="0dp"
-                 android:layout_height="wrap_content"
-                 android:layout_weight="1"
-                 android:hint="@string/latitude"
-                 android:textColorHint="@drawable/edit_text_hint_accent"
-                 android:theme="@style/loginInputTextAccent">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/longitude"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionDone"
+                    android:inputType="numberDecimal|numberSigned"
+                    android:textColor="@color/text_black_333"
+                    android:textSize="15sp" />
 
-                 <android.support.design.widget.TextInputEditText
-                     android:id="@+id/lat"
-                     android:layout_width="match_parent"
-                     android:layout_height="wrap_content"
-                     android:inputType="numberDecimal"
-                     android:textSize="15sp" />
-
-             </android.support.design.widget.TextInputLayout>
-
-
-             <android.support.design.widget.TextInputLayout
-                 android:layout_width="0dp"
-                 android:layout_height="wrap_content"
-                 android:layout_weight="1"
-                 android:hint="@string/longitude"
-                 android:textColorHint="@drawable/edit_text_hint_accent"
-                 android:theme="@style/loginInputTextAccent">
-
-                 <android.support.design.widget.TextInputEditText
-                     android:id="@+id/lon"
-                     android:layout_width="match_parent"
-                     android:layout_height="wrap_content"
-                     android:inputType="numberDecimal"
-                     android:textSize="15sp" />
-
-             </android.support.design.widget.TextInputLayout>-->
-
+            </com.google.android.material.textfield.TextInputLayout>
 
             <ImageButton
                 android:id="@+id/location1"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_margin="10dp"
-                android:background="@drawable/selector_gray_button_round_7"
+                style="@style/ActionIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:padding="6dp"
+                android:tint="?colorAccent"
                 app:backgroundTint="@color/white"
                 app:srcCompat="@drawable/ic_my_location" />
 
             <ImageButton
                 android:id="@+id/location2"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_margin="10dp"
-                android:background="@drawable/selector_gray_button_round_7"
+                style="@style/ActionIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:padding="6dp"
+                android:tint="?colorAccent"
                 app:backgroundTint="@color/white"
                 app:srcCompat="@drawable/ic_map" />
 
@@ -129,6 +124,17 @@
                 app:tint="?colorAccent" />
         </LinearLayout>
 
+        <TextView
+            android:id="@+id/errorMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/fieldLayout"
+            android:padding="4dp"
+            android:textSize="@dimen/textSize_12"
+            android:visibility="gone"
+            tools:text="This is a error warning"
+            tools:textAppearance="@style/error_appearance"
+            tools:visibility="visible" />
     </RelativeLayout>
 
 </layout>

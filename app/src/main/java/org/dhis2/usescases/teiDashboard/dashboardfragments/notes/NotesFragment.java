@@ -2,10 +2,15 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.notes;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
 
 import org.dhis2.App;
 import org.dhis2.R;
@@ -18,10 +23,9 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.databinding.DataBindingUtil;
 import io.reactivex.functions.Consumer;
+
+import static android.text.TextUtils.isEmpty;
 
 /**
  * QUADRAM. Created by ppajuelo on 29/11/2017.
@@ -52,19 +56,24 @@ public class NotesFragment extends FragmentGlobalAbstract implements NotesContra
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_notes, container, false);
         noteAdapter = new NotesAdapter();
         binding.notesRecycler.setAdapter(noteAdapter);
-        binding.buttonAdd.setOnClickListener(this::addNote);
-        binding.buttonDelete.setOnClickListener(this::clearNote);
-        binding.editNote.setOnTouchListener((v, event) -> {
-            if (v.getId() == R.id.edit_note) {
-                v.getParent().requestDisallowInterceptTouchEvent(true);
-                switch (event.getAction() & MotionEvent.ACTION_MASK) {
-                    case MotionEvent.ACTION_UP:
-                        v.getParent().requestDisallowInterceptTouchEvent(false);
-                        break;
-                }
+        binding.editNote.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
             }
-            return false;
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                binding.buttonDelete.setVisibility(isEmpty(s) ? View.GONE : View.VISIBLE);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
         });
+        binding.addNoteButton.setOnClickListener(this::addNote);
+        binding.buttonDelete.setOnClickListener(this::clearNote);
         return binding.getRoot();
     }
 

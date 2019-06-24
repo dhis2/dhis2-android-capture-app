@@ -27,7 +27,69 @@
 
     </data>
 
-    <RelativeLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:minHeight="96dp">
+
+        <ImageView
+            android:id="@+id/tracked_entity_image"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_tei_default"
+            tools:background="@drawable/photo_temp_gray"
+            tools:ignore="ContentDescription" />
+
+        <TextView
+            android:id="@+id/entity_attribute_1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="5dp"
+            android:fontFamily="@font/rubik_medium"
+            android:text='@{attribute.size()>0 ? attribute.get(0).value() : "" , default="attribute 1"}'
+            android:textColor="@color/text_black_4d4d4d"
+            android:textSize="14sp"
+            android:visibility='@{attribute.size()>0?View.VISIBLE:View.GONE}'
+            app:layout_constraintStart_toEndOf="@id/tracked_entity_image"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/entity_attribute_2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="5dp"
+            android:fontFamily="@font/rubik_medium"
+            android:text='@{attribute.size() > 1 ? attribute.get(1).value() : "" , default="attribute 2"}'
+            android:textColor="@color/text_black_4d4d4d"
+            android:textSize="14sp"
+            android:visibility='@{attribute.size() > 1 ? View.VISIBLE : View.GONE}'
+            app:layout_constraintStart_toEndOf="@id/tracked_entity_image"
+            app:layout_constraintTop_toBottomOf="@id/entity_attribute_1" />
+
+        <TextView
+            android:id="@+id/entity_attribute_3"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="5dp"
+            android:text='@{attribute.size() > 2 ? attribute.get(2).value() : "", default="attribute 3"}'
+            android:textColor="@color/text_black_4d4d4d"
+            android:textSize="12sp"
+            android:visibility='@{attribute.size() > 2 ? View.VISIBLE : View.GONE}'
+            app:layout_constraintStart_toEndOf="@id/tracked_entity_image"
+            app:layout_constraintTop_toBottomOf="@id/entity_attribute_2" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+  <!--  <RelativeLayout
         android:id="@+id/tracked_entity_card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -52,8 +114,8 @@
                 android:id="@+id/follow_up"
                 android:layout_width="34dp"
                 android:layout_height="34dp"
-                android:layout_alignBottom="@id/tracked_entity_image"
                 android:layout_alignEnd="@id/tracked_entity_image"
+                android:layout_alignBottom="@id/tracked_entity_image"
                 android:layout_gravity="center_vertical"
                 android:padding="8dp"
                 android:visibility='@{followUp ? View.VISIBLE : View.GONE}'
@@ -91,21 +153,7 @@
                     android:visibility='@{attribute.size() > 1 ? View.VISIBLE : View.GONE}' />
 
             </LinearLayout>
-<!--
-            <android.support.v7.widget.AppCompatSpinner
-                android:id="@+id/relationship_spinner"
-                android:layout_width="150dp"
-                android:layout_height="36dp"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:layout_marginEnd="9dp"
-                android:layout_marginTop="9dp"
-                android:background="?attr/button_selector"
-                android:prompt="@string/add_relation_button"
-                android:spinnerMode="dropdown"
-                tools:text="Add as..."/>-->
-
         </RelativeLayout>
 
-    </RelativeLayout>
+    </RelativeLayout>-->
 </layout>

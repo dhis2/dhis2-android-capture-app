@@ -1,11 +1,7 @@
 package org.dhis2.data.forms.dataentry.fields.edittext;
 
 
-import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
-
-import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -17,13 +13,14 @@ import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.FormEditTextCustomBinding;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.Preconditions;
-import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
 
 import java.lang.reflect.Type;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.content.res.AppCompatResources;
 import io.reactivex.processors.FlowableProcessor;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -145,7 +142,7 @@ final class EditTextCustomHolder extends FormViewHolder {
 
     @Override
     public void performAction() {
-        itemView.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.item_selected_bg));
+        itemView.setBackground(AppCompatResources.getDrawable(itemView.getContext(), R.drawable.item_selected_bg));
         binding.customEdittext.performOnFocusAction();
     }
 }

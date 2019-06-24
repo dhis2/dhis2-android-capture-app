@@ -17,6 +17,9 @@ import javax.annotation.Nonnull;
 @AutoValue
 public abstract class SpinnerViewModel extends FieldViewModel {
 
+    private List<String> optionsToHide;
+    private List<String> optionGroupsToHide;
+
     @NonNull
     public abstract String hint();
 
@@ -53,5 +56,18 @@ public abstract class SpinnerViewModel extends FieldViewModel {
     @Override
     public FieldViewModel withValue(String data) {
         return new AutoValue_SpinnerViewModel(uid(),label(),mandatory(),data,programStageSection(),allowFutureDate(),editable(),warning(),error(),description(),dataElement(),listCategoryOption(),storeBy(), row(), column(),categoryOptionCombo(), catCombo(),hint(),optionSet());
+    }
+
+    public void setOptionsToHide(List<String> optionsToHide, List<String> optionsGroupsToHide) {
+        this.optionsToHide = optionsToHide;
+        this.optionGroupsToHide = optionsGroupsToHide;
+    }
+
+    public List<String> getOptionsToHide() {
+        return optionsToHide;
+    }
+
+    public List<String> getOptionGroupsToHide() {
+        return optionGroupsToHide;
     }
 }

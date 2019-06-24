@@ -4,7 +4,7 @@ package org.dhis2.data.forms.dataentry.fields.coordinate;
 import android.annotation.SuppressLint;
 import android.graphics.Color;
 
-import androidx.core.content.ContextCompat;
+import androidx.appcompat.content.res.AppCompatResources;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
@@ -59,6 +59,8 @@ public class CoordinateHolder extends FormViewHolder {
 
         if (!isEmpty(coordinateViewModel.value()))
             binding.formCoordinates.setInitialValue(coordinateViewModel.value());
+        else
+            binding.formCoordinates.clearValueData();
 
         if (coordinateViewModel.warning() != null)
             binding.formCoordinates.setWarning(coordinateViewModel.warning());
@@ -78,7 +80,7 @@ public class CoordinateHolder extends FormViewHolder {
 
     @Override
     public void performAction() {
-        itemView.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.item_selected_bg));
+        itemView.setBackground(AppCompatResources.getDrawable(itemView.getContext(), R.drawable.item_selected_bg));
         binding.formCoordinates.performOnFocusAction();
     }
 }

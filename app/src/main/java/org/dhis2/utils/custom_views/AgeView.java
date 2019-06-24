@@ -1,17 +1,11 @@
 package org.dhis2.utils.custom_views;
 
-import android.app.DatePickerDialog;
-import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.text.InputFilter;
 import android.util.AttributeSet;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.DatePicker;
-import android.widget.Toast;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.databinding.ViewDataBinding;
 
 import com.google.android.material.textfield.TextInputEditText;
@@ -20,6 +14,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import org.dhis2.R;
 import org.dhis2.databinding.AgeCustomViewAccentBinding;
 import org.dhis2.databinding.AgeCustomViewBinding;
+import org.dhis2.utils.DatePickerUtils;
 import org.dhis2.utils.DateUtils;
 
 import java.text.DateFormat;
@@ -101,49 +96,23 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
         showCustomCalendar(view);
     }
 
-    private void showNativeCalendar(View view) {
-        Calendar c = Calendar.getInstance();
-        int year = c.get(Calendar.YEAR);
-        int month = c.get(Calendar.MONTH);
-        int day = c.get(Calendar.DAY_OF_MONTH);
-
-        DatePickerDialog dateDialog = new DatePickerDialog(getContext(), (
-                (datePicker, year1, month1, day1) -> handleDateInput(view, year1, month1, day1)),
-                year,
-                month,
-                day);
-        dateDialog.getDatePicker().setMaxDate(c.getTimeInMillis());
-        dateDialog.setTitle(label);
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            dateDialog.setButton(DialogInterface.BUTTON_NEUTRAL, getContext().getResources().getString(R.string.change_calendar), (dialog, which) -> {
-                dateDialog.dismiss();
-                showCustomCalendar(view);
-            });
-        }
-        dateDialog.show();
-    }
-
     private void showCustomCalendar(View view) {
-        LayoutInflater layoutInflater = LayoutInflater.from(getContext());
-        View datePickerView = layoutInflater.inflate(R.layout.widget_datepicker, null);
-        final DatePicker datePicker = datePickerView.findViewById(R.id.widget_datepicker);
 
-        Calendar c = Calendar.getInstance();
-        int year = c.get(Calendar.YEAR);
-        int month = c.get(Calendar.MONTH);
-        int day = c.get(Calendar.DAY_OF_MONTH);
+        DatePickerUtils.getDatePickerDialog(getContext(), label, null, true, new DatePickerUtils.OnDatePickerClickListener() {
+            @Override
+            public void onNegativeClick() {
+                listener.onAgeSet(null);
+                date.setText(null);
+                AgeView.this.day.setText(null);
+                AgeView.this.month.setText(null);
+                AgeView.this.year.setText(null);
+            }
 
-        datePicker.updateDate(year, month, day);
-        datePicker.setMaxDate(c.getTimeInMillis());
-
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(getContext(), R.style.DatePickerTheme)
-                .setTitle(label)
-                .setPositiveButton(R.string.action_accept, (dialog, which) -> handleDateInput(view, datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth()))
-                .setNeutralButton(getContext().getResources().getString(R.string.change_calendar), (dialog, which) -> showNativeCalendar(view));
-
-        alertDialog.setView(datePickerView);
-        Dialog dialog = alertDialog.create();
-        dialog.show();
+            @Override
+            public void onPositiveClick(DatePicker datePicker) {
+                handleDateInput(view, datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
+            }
+        }).show();
     }
 
     public void setAgeChangedListener(OnAgeSet listener) {
@@ -155,14 +124,15 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
         if (!hasFocus)
             switch (v.getId()) {
                 case R.id.input_days:
+                    handleSingleInputs(true);
                 case R.id.input_month:
                 case R.id.input_year:
-                    handleSingleInputs();
+                    handleSingleInputs(false);
                     break;
             }
     }
 
-    protected void handleSingleInputs() {
+    protected void handleSingleInputs(boolean finish) {
 
         Calendar calendar = Calendar.getInstance();
 
@@ -177,7 +147,8 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
         String birthDate = DateUtils.uiDateFormat().format(calendar.getTime());
         if (!date.getText().toString().equals(birthDate)) {
             date.setText(birthDate);
-            listener.onAgeSet(calendar.getTime());
+            if (finish)
+                listener.onAgeSet(calendar.getTime());
         }
     }
 
@@ -289,6 +260,13 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
         day.setEnabled(editable);
         month.setEnabled(editable);
         year.setEnabled(editable);
+    }
+
+    public void clearValues() {
+        date.setText(null);
+        day.setText(null);
+        month.setText(null);
+        year.setText(null);
     }
 
     public interface OnAgeSet {

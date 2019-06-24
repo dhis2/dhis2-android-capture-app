@@ -12,6 +12,7 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.period.DatePeriod;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import io.reactivex.Flowable;
@@ -73,7 +74,17 @@ class HomeRepositoryImpl implements HomeRepository {
     @Override
     public Flowable<List<ProgramViewModel>> programModels(List<DatePeriod> dateFilter, List<String> orgUnitFilter) {
 
-        return Flowable.just(d2.programModule().programs)
+        return Flowable.just(d2.organisationUnitModule().organisationUnits.byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).get())
+                .map(captureOrgUnits -> {
+                    Iterator<OrganisationUnit> it = captureOrgUnits.iterator();
+                    List<String> captureOrgUnitUids = new ArrayList();
+                    while (it.hasNext()) {
+                        OrganisationUnit ou = it.next();
+                        captureOrgUnitUids.add(ou.uid());
+                    }
+                    return captureOrgUnitUids;
+                })
+                .flatMap(orgUnits -> Flowable.just(d2.programModule().programs.byOrganisationUnitList(orgUnits)))
                 .flatMap(programRepo -> {
                     if (orgUnitFilter != null && !orgUnitFilter.isEmpty())
                         return Flowable.fromIterable(programRepo.byOrganisationUnitList(orgUnitFilter).withStyle().withAllChildren().get());
@@ -135,34 +146,18 @@ class HomeRepositoryImpl implements HomeRepository {
                                         .byProgramUids(programUids)
                                         .byLastUpdated().inDatePeriods(dateFilter)
                                         .byOrganisationUnitUid().in(orgUnitFilter).count();
-                              /*  count = d2.eventModule().events
-                                        .byProgramUid().eq(program.uid())
-                                        .byEventDate().inDatePeriods(dateFilter)
-                                        .byOrganisationUnitUid().in(orgUnitFilter)
-                                        .countTrackedEntityInstances();*/
                             } else {
                                 count = d2.trackedEntityModule().trackedEntityInstances
                                         .byProgramUids(programUids)
                                         .byLastUpdated().inDatePeriods(dateFilter).count();
-                               /* count = d2.eventModule().events
-                                        .byProgramUid().eq(program.uid())
-                                        .byEventDate().inDatePeriods(dateFilter)
-                                        .countTrackedEntityInstances();*/
                             }
                         } else if (!orgUnitFilter.isEmpty()) {
                             count = d2.trackedEntityModule().trackedEntityInstances
                                     .byProgramUids(programUids)
                                     .byOrganisationUnitUid().in(orgUnitFilter).count();
-                          /*  count = d2.eventModule().events
-                                    .byProgramUid().eq(program.uid())
-                                    .byOrganisationUnitUid().in(orgUnitFilter)
-                                    .countTrackedEntityInstances();*/
                         } else {
                             count = d2.trackedEntityModule().trackedEntityInstances
                                     .byProgramUids(programUids).count();
-                           /* count = d2.eventModule().events
-                                    .byProgramUid().eq(program.uid())
-                                    .countTrackedEntityInstances();*/
                         }
 
                         if (!d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().in(State.ERROR, State.WARNING).get().isEmpty())
@@ -201,13 +196,6 @@ class HomeRepositoryImpl implements HomeRepository {
                         .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
                         .get()
         ));
-        /*String SELECT_ORG_UNITS_BY_PARENT = "SELECT OrganisationUnit.* FROM OrganisationUnit " +
-                "JOIN UserOrganisationUnit ON UserOrganisationUnit.organisationUnit = OrganisationUnit.uid " +
-                "WHERE OrganisationUnit.parent = ? AND UserOrganisationUnit.organisationUnitScope = 'SCOPE_DATA_CAPTURE' " +
-                "ORDER BY OrganisationUnit.displayName ASC";
-
-        return briteDatabase.createQuery(OrganisationUnitModel.TABLE, SELECT_ORG_UNITS_BY_PARENT, parentUid)
-                .mapToList(OrganisationUnitModel::create);*/
     }
 
 
@@ -221,13 +209,5 @@ class HomeRepositoryImpl implements HomeRepository {
                         .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
                         .get()
         ));
-    /*    String SELECT_ORG_UNITS =
-                "SELECT * FROM " + OrganisationUnitModel.TABLE + ", " + UserOrganisationUnitLinkModel.TABLE + " " +
-                        "WHERE " + OrganisationUnitModel.TABLE + "." + OrganisationUnitModel.Columns.UID + " = " + UserOrganisationUnitLinkModel.TABLE + "." + UserOrganisationUnitLinkModel.Columns.ORGANISATION_UNIT +
-                        " AND " + UserOrganisationUnitLinkModel.TABLE + "." + UserOrganisationUnitLinkModel.Columns.ORGANISATION_UNIT_SCOPE + " = '" + OrganisationUnitModel.Scope.SCOPE_DATA_CAPTURE +
-                        "' AND UserOrganisationUnit.root = '1' " +
-                        " ORDER BY " + OrganisationUnitModel.TABLE + "." + OrganisationUnitModel.Columns.DISPLAY_NAME + " ASC";
-        return briteDatabase.createQuery(OrganisationUnitModel.TABLE, SELECT_ORG_UNITS)
-                .mapToList(OrganisationUnitModel::create);*/
     }
 }

@@ -49,6 +49,12 @@ android {
 
         buildConfigField "String", "SDK_VERSION", "\"" + libraries.dhis2sdk + "\""
         buildConfigField "String", "MAPBOX_ACCESS_TOKEN", "\"pk.eyJ1Ijoib3Jpa2dnIiwiYSI6ImNqdWpqb24zYTFsOXo0M2xwcXRseGx3aXkifQ.6N9aqvpqdrrSBwO9GyfjUw\""
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                includeCompileClasspath true
+            }
+        }
     }
 
     testOptions {
@@ -226,7 +232,7 @@ dependencies {
 
     // annotation processor which hoops up into compilation process
     api "com.google.auto.value:auto-value:${libraries.autovalue}"
-    annotationProcessor "com.google.auto.value:auto-value:${libraries.autovalue}"
+    kapt "com.google.auto.value:auto-value:${libraries.autovalue}"
 
     // Extension which generates mappers for work with cursors
     kapt "com.gabrielittner.auto.value:auto-value-cursor:${libraries.autovaluecursor}"
@@ -288,8 +294,11 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     testImplementation 'org.robolectric:robolectric:4.1'
-    testImplementation 'org.robolectric:shadows-multidex:4.0.1'
-    testImplementation 'org.mockito:mockito-all:1.8.4'
+    testImplementation "org.robolectric:shadows-multidex:4.0.1"
+    androidTestImplementation 'org.mockito:mockito-android:2.28.2'
+    testImplementation 'org.mockito:mockito-core:2.28.2'
+
+
     testImplementation 'com.google.truth:truth:0.43'
     implementation 'com.facebook.stetho:stetho:1.5.0'
     implementation 'com.facebook.stetho:stetho-okhttp3:1.5.0'
@@ -307,14 +316,14 @@ dependencies {
     implementation 'com.journeyapps:zxing-android-embedded:3.2.0@aar'
 
     //FancyShowCase
-    implementation 'com.github.faruktoptas:FancyShowCaseView:1.0.0'
+    implementation 'me.toptas.fancyshowcase:fancyshowcaseview:1.1.5'
 
     //Lottie animations
     implementation 'com.airbnb.android:lottie:2.8.0'
 
     //Glide load images
-    implementation 'com.github.bumptech.glide:glide:4.8.0'
-    kapt 'com.github.bumptech.glide:compiler:4.8.0'
+    implementation 'com.github.bumptech.glide:glide:4.9.0'
+    kapt 'com.github.bumptech.glide:compiler:4.9.0'
 
     //Paperwork
     implementation "hu.supercluster:paperwork:${libraries.paperwork}"

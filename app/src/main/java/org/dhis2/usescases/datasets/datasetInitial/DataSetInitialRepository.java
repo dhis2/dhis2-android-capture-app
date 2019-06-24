@@ -4,7 +4,9 @@ import androidx.annotation.NonNull;
 
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
+import org.hisp.dhis.android.core.period.PeriodType;
 
+import java.util.Date;
 import java.util.List;
 
 import io.reactivex.Flowable;
@@ -26,4 +28,7 @@ public interface DataSetInitialRepository {
 
     @NonNull
     Flowable<String> getCategoryOptionCombo(List<String> catOptions, String catCombo);
+
+    @NonNull
+    Flowable<String> getPeriodId(PeriodType periodType, Date date);
 }

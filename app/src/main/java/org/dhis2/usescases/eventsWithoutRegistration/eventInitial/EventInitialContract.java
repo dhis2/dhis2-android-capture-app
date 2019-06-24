@@ -2,16 +2,21 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventInitial;
 
 import android.app.DatePickerDialog;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.unnamed.b.atv.model.TreeNode;
 
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.usescases.general.AbstractActivityContracts;
+import org.dhis2.utils.EventCreationType;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
-import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.event.Event;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
@@ -20,8 +25,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import io.reactivex.functions.Consumer;
 
 /**
@@ -45,7 +48,7 @@ public class EventInitialContract {
 
         void addTree(TreeNode treeNode);
 
-        void setEvent(EventModel event);
+        void setEvent(Event event);
 
         void setLocation(double latitude, double longitude);
 
@@ -68,7 +71,7 @@ public class EventInitialContract {
 
         void setAccessDataWrite(Boolean canWrite);
 
-        void showOrgUnitSelector(List<OrganisationUnitModel> orgUnits);
+        void showOrgUnitSelector(List<OrganisationUnit> orgUnits);
 
         void showQR();
 
@@ -77,6 +80,12 @@ public class EventInitialContract {
         void setHideSection(String sectionUid);
 
         void renderObjectStyle(ObjectStyleModel objectStyleModel);
+
+        EventCreationType eventcreateionType();
+
+        void latitudeWarning(boolean showWarning);
+
+        void longitudeWarning(boolean showWarning);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
@@ -89,11 +98,6 @@ public class EventInitialContract {
         void createEvent(String enrollmentUid, String programStageModel, Date date, String orgUnitUid,
                          String catOption, String catOptionCombo,
                          String latitude, String longitude, String trackedEntityInstance);
-
-        void createEventPermanent(String enrollmentUid, String trackedEntityInstanceUid, String programStageModel,
-                                  Date date, String orgUnitUid,
-                                  String catOption, String catOptionCombo,
-                                  String latitude, String longitude);
 
         void scheduleEventPermanent(String enrollmentUid, String trackedEntityInstanceUid, String programStageModel, Date dueDate, String orgUnitUid,
                                     String categoryOptionComboUid, String categoryOptionsUid,
@@ -115,6 +119,10 @@ public class EventInitialContract {
 
         void onLocation2Click();
 
+        void onLatChanged(CharSequence s, int start, int before, int count);
+
+        void onLonChanged(CharSequence s, int start, int before, int count);
+
         void onFieldChanged(CharSequence s, int start, int before, int count);
 
         void filterOrgUnits(String date);
@@ -127,7 +135,7 @@ public class EventInitialContract {
 
         void getEventSections(@NonNull String eventId);
 
-        List<OrganisationUnitModel> getOrgUnits();
+        List<OrganisationUnit> getOrgUnits();
 
         void onShareClick(android.view.View mView);
 
@@ -138,6 +146,8 @@ public class EventInitialContract {
         void getStageObjectStyle(String uid);
 
         String getCatOptionCombo(List<CategoryOptionCombo> categoryOptionCombos, List<CategoryOption> values);
+
+        Date getStageLastDate(String programStageUid, String enrollmentUid);
     }
 
 }

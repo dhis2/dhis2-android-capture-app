@@ -178,6 +178,8 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
     override fun showUnlockButton() {
         binding.unlockLayout?.visibility = View.VISIBLE
+        onUnlockClick(binding.unlockLayout)
+
     }
 
     override fun renderError(throwable: Throwable) {
@@ -209,6 +211,10 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
             binding.credentialLayout.visibility = View.VISIBLE
             binding.progressLayout.visibility = View.GONE
         }
+    }
+
+    override fun alreadyAuthenticated(){
+        startActivity(MainActivity::class.java, null, true, true, null)
     }
 
     override fun showCrashlyticsDialog() {
@@ -243,6 +249,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
             }
         })
+        binding.pinLayout.title.text = getString(R.string.unblock_session)
         binding.pinLayout.root.visibility = View.VISIBLE
         isPinScreenVisible = true
     }

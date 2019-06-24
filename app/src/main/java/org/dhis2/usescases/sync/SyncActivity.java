@@ -22,7 +22,7 @@ import org.dhis2.utils.Constants;
 
 import javax.inject.Inject;
 
-import androidx.core.content.ContextCompat;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.databinding.DataBindingUtil;
 import androidx.work.State;
 import androidx.work.WorkManager;
@@ -51,7 +51,7 @@ public class SyncActivity extends ActivityGlobalAbstract implements SyncContract
         super.onCreate(savedInstanceState);
 
         WorkManager.getInstance().getStatusesForUniqueWorkLiveData(Constants.META).observe(this, status -> {
-            if (status != null && !status.isEmpty()){
+            if (status != null && !status.isEmpty()) {
                 Timber.d("WORK %s WITH STATUS %s", Constants.META, status.get(0).getState().name());
                 handleMetaState(status.get(0).getState());
             }
@@ -73,13 +73,13 @@ public class SyncActivity extends ActivityGlobalAbstract implements SyncContract
         switch (metadataState) {
             case RUNNING:
                 metadataRunning = true;
-                Bindings.setDrawableEnd(binding.metadataText, ContextCompat.getDrawable(this, R.drawable.animator_sync));
+                Bindings.setDrawableEnd(binding.metadataText, AppCompatResources.getDrawable(this, R.drawable.animator_sync));
                 break;
             case ENQUEUED:
                 if (metadataRunning) {
                     metadataDone = true;
                     binding.metadataText.setText(getString(R.string.configuration_ready));
-                    Bindings.setDrawableEnd(binding.metadataText, ContextCompat.getDrawable(this, R.drawable.animator_done));
+                    Bindings.setDrawableEnd(binding.metadataText, AppCompatResources.getDrawable(this, R.drawable.animator_done));
                     presenter.getTheme();
                     presenter.syncData(getSharedPreferences().getInt(Constants.TIME_DATA, Constants.TIME_DAILY), Constants.DATA);
                 }
@@ -92,14 +92,14 @@ public class SyncActivity extends ActivityGlobalAbstract implements SyncContract
             case RUNNING:
                 dataRunning = true;
                 binding.eventsText.setText(getString(R.string.syncing_data));
-                Bindings.setDrawableEnd(binding.eventsText, ContextCompat.getDrawable(this, R.drawable.animator_sync));
+                Bindings.setDrawableEnd(binding.eventsText, AppCompatResources.getDrawable(this, R.drawable.animator_sync));
                 binding.eventsText.setAlpha(1.0f);
                 break;
             case ENQUEUED:
                 if (dataRunning && metadataDone) {
                     dataDone = true;
                     binding.eventsText.setText(getString(R.string.data_ready));
-                    Bindings.setDrawableEnd(binding.eventsText, ContextCompat.getDrawable(this, R.drawable.animator_done));
+                    Bindings.setDrawableEnd(binding.eventsText, AppCompatResources.getDrawable(this, R.drawable.animator_done));
                     presenter.syncReservedValues();
                     startMain();
                 }

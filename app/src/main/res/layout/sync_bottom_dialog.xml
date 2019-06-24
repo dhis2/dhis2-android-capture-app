@@ -6,6 +6,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:minHeight="150dp"
         android:orientation="vertical">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -17,8 +18,8 @@
             <ImageView
                 android:layout_width="36dp"
                 android:layout_height="36dp"
-                android:layout_marginStart="22dp"
-                app:srcCompat="@drawable/ic_circle_white"
+                android:layout_marginStart="16dp"
+                app:srcCompat="@drawable/ic_oval_shape_white"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -27,8 +28,7 @@
                 android:id="@+id/syncIcon"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
-                android:layout_marginStart="22dp"
-                android:padding="1.5dp"
+                android:layout_marginStart="16dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -43,11 +43,11 @@
                 android:layout_marginEnd="16dp"
                 android:textColor="@color/text_black_333"
                 android:textSize="10sp"
-                android:textStyle="bold"
+                android:fontFamily="@font/rubik_medium"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/syncIcon"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="Inpatient Morbidity and MOrtality" />
+                tools:text="Inpatient Morbidity and Mortality" />
 
             <TextView
                 android:id="@+id/lastUpdated"
