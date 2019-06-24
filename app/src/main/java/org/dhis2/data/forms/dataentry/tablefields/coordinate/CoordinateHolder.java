@@ -46,6 +46,8 @@ public class CoordinateHolder extends FormViewHolder {
 
         if (!isEmpty(coordinateViewModel.value()))
             textView.setText(coordinateViewModel.value());
+        else
+            textView.setText(null);
 
         if(!(accessDataWrite && coordinateViewModel.editable())) {
             textView.setEnabled(false);
