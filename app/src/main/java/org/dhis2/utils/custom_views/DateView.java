@@ -161,6 +161,7 @@ public class DateView extends FieldLayout implements View.OnClickListener {
                     public void onNegativeClick() {
                         editText.setText(null);
                         listener.onDateSelected(null);
+                        date = null;
                     }
 
                     @Override
@@ -175,6 +176,7 @@ public class DateView extends FieldLayout implements View.OnClickListener {
                         editText.setText(result);
                         listener.onDateSelected(selectedDate);
                         nextFocus(DateView.this);
+                        date = null;
                     }
                 }).show();
     }
