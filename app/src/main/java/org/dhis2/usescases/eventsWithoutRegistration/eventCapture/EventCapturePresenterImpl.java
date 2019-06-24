@@ -225,6 +225,16 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
         compositeDisposable.add(
                 sectionProcessor
+                        .observeOn(Schedulers.io())
+                        .subscribeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                data -> currentSection.set(data),
+                                Timber::e
+                        )
+        );
+
+        compositeDisposable.add(
+                sectionProcessor
                         .switchMap(section -> getFieldFlowable(section)
                                 .map(fields -> {
                                     HashMap<String, List<FieldViewModel>> fieldMap = new HashMap<>();
@@ -368,17 +378,17 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
             );
 
             compositeDisposable.add(EventCaptureFormFragment.getInstance().dataEntryFlowable().onBackpressureBuffer()
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(Schedulers.io())
-                    .switchMap(action -> {
-                                if (action.lastFocusPosition() != null && action.lastFocusPosition() >= 0) { //Triggered by form field
-                                    this.lastFocusItem = action.id();
-                                }
-                                eventCaptureRepository.setLastUpdated(action.id());
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(Schedulers.io())
+                            .switchMap(action -> {
+                                        if (action.lastFocusPosition() != null && action.lastFocusPosition() >= 0) { //Triggered by form field
+                                            this.lastFocusItem = action.id();
+                                        }
+                                        eventCaptureRepository.setLastUpdated(action.id());
 //                                EventCaptureFormFragment.getInstance().updateAdapter(action);
-                                return dataEntryStore.save(action.id(), action.value());
-                            }
-                    ).subscribe(result -> Timber.d("SAVED VALUE AT %s", System.currentTimeMillis()),
+                                        return dataEntryStore.save(action.id(), action.value());
+                                    }
+                            ).subscribe(result -> Timber.d("SAVED VALUE AT %s", System.currentTimeMillis()),
                             Timber::d)
             );
         }
