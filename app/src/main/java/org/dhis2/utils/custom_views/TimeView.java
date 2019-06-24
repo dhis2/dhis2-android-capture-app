@@ -150,12 +150,14 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
             }
             listener.onDateSelected(selectedDate);
             nextFocus(view);
+            date = null;
         }, hour, minute, is24HourFormat);
         dialog.setTitle(label);
 
         dialog.setButton(DialogInterface.BUTTON_NEGATIVE, getContext().getString(R.string.date_dialog_clear), (timeDialog, which) -> {
             editText.setText(null);
             listener.onDateSelected(null);
+            date=null;
         });
 
         dialog.show();

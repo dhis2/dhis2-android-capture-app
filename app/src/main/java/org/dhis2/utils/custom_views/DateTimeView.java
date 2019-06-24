@@ -152,6 +152,7 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
                     public void onNegativeClick() {
                         editText.setText(null);
                         listener.onDateSelected(null);
+                        date = null;
                     }
 
                     @Override
@@ -179,6 +180,7 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
             editText.setText(result);
             listener.onDateSelected(selectedDate);
             nextFocus(view);
+            date = null;
         },
                 hour,
                 minute,
