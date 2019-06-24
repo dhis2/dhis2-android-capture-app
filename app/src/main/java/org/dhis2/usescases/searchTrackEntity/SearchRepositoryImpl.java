@@ -435,7 +435,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                     attributes.moveToFirst();
                     for (int i = 0; i < attributes.getCount(); i++) {
                         if (searchTei != null)
-                            searchTei.addAttributeValuesModels(ValueUtils.transform(briteDatabase, attributes));
+                            searchTei.addAttributeValuesModels(ValueUtils.INSTANCE.transform(briteDatabase, attributes));
                         attributes.moveToNext();
                     }
                 }
@@ -450,7 +450,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                     attributes.moveToFirst();
                     for (int i = 0; i < attributes.getCount(); i++) {
                         if (searchTei != null)
-                            searchTei.addAttributeValuesModels(ValueUtils.transform(briteDatabase, attributes));
+                            searchTei.addAttributeValuesModels(ValueUtils.INSTANCE.transform(briteDatabase, attributes));
                         attributes.moveToNext();
                     }
                 }

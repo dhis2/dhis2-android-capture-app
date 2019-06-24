@@ -7,16 +7,16 @@ import androidx.annotation.NonNull;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import org.dhis2.utils.Preconditions;
 import org.hisp.dhis.android.core.data.database.DatabaseAdapter;
 import org.hisp.dhis.android.core.data.database.Transaction;
 
-import static org.dhis2.utils.Preconditions.isNull;
 
 class SqlBriteDatabaseAdapter implements DatabaseAdapter {
     private final BriteDatabase sqlBriteDatabase;
 
     SqlBriteDatabaseAdapter(@NonNull BriteDatabase briteDatabase) {
-        isNull(briteDatabase, "briteDatabase == null");
+        Preconditions.INSTANCE.isNull(briteDatabase, "briteDatabase == null");
         sqlBriteDatabase = briteDatabase;
     }
 

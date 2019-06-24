@@ -129,7 +129,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         });
         presenter.init(this);
 
-        if (SyncUtils.isSyncRunning()) {
+        if (SyncUtils.INSTANCE.isSyncRunning()) {
             binding.buttonSyncData.setEnabled(false);
             binding.buttonSyncMeta.setEnabled(false);
         }
@@ -453,11 +453,11 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                     steps.add(tuto6);
                     steps.add(tuto7);
 
-                    HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
-                    HelpManager.getInstance().setScroll(scrollView);
+                    HelpManager.INSTANCE.setScreenHelp(getClass().getName(), steps);
+                    HelpManager.INSTANCE.setScrollView(scrollView);
 
                     if (prefs != null && !prefs.getBoolean("TUTO_SETTINGS_SHOWN", false) && !BuildConfig.DEBUG) {
-                        HelpManager.getInstance().showHelp();
+                        HelpManager.INSTANCE.showHelp();
                         prefs.edit().putBoolean("TUTO_SETTINGS_SHOWN", true).apply();
                     }
                 }

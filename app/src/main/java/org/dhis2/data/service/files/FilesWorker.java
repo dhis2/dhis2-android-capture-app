@@ -87,7 +87,7 @@ public class FilesWorker extends Worker {
 
     private void uploadBulkResources() {
         triggerNotification("File processor", "Uploading files...", file_upload_channel);
-        File[] filesToUpload = FileResourcesUtil.getUploadDirectory(getApplicationContext()).listFiles();
+        File[] filesToUpload = FileResourcesUtil.FileResourcesUtil.getUploadDirectory(getApplicationContext()).listFiles();
         for (File file : filesToUpload) {
             String[] fileName = file.getName().split("."); //tei, attr, extension
             upload(file, fileName[0], fileName[1]);
@@ -100,7 +100,7 @@ public class FilesWorker extends Worker {
         String fileName = d2.trackedEntityModule().trackedEntityAttributeValues
                 .byTrackedEntityAttribute().eq(attrUid)
                 .byTrackedEntityInstance().eq(teiUid).one().get().value();
-        File file = new File(FileResourcesUtil.getUploadDirectory(getApplicationContext()), fileName);
+        File file = new File(FileResourcesUtil.FileResourcesUtil.getUploadDirectory(getApplicationContext()), fileName);
         upload(file, teiUid, attrUid);
     }
 

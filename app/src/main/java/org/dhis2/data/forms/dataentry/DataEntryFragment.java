@@ -74,7 +74,7 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
     public void onAttach(Context context) {
         super.onAttach(context);
         formFragment = ((ActivityGlobalAbstract) context).getSupportFragmentManager().getFragments().get(0);
-        DataEntryArguments args = Preconditions.isNull(getArguments()
+        DataEntryArguments args = Preconditions.INSTANCE.isNull(getArguments()
                 .getParcelable(ARGUMENTS), "dataEntryArguments == null");
 
         this.section = args.section();

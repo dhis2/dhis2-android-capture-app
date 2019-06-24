@@ -131,7 +131,7 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
                             false, true), "EVENT_DATA_ENTRY")
                     .commit();
 
-            if (!HelpManager.getInstance().isTutorialReadyForScreen(getClass().getName()))
+            if (!HelpManager.INSTANCE.isTutorialReadyForScreen(getClass().getName()))
                 setTutorial();
         }
     }
@@ -276,10 +276,10 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
             steps.add(tuto1);
             steps.add(tuto2);
 
-            HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
+            HelpManager.INSTANCE.setScreenHelp(getClass().getName(), steps);
 
             if (!prefs.getBoolean("TUTO_TEI_EVENT", false) && !BuildConfig.DEBUG) {
-                HelpManager.getInstance().showHelp();
+                HelpManager.INSTANCE.showHelp();
                 prefs.edit().putBoolean("TUTO_TEI_EVENT", true).apply();
             }
 

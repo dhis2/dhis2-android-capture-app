@@ -120,7 +120,7 @@ public class RulesUtilsProviderImplTest {
                 RuleActionShowWarning.create("content", "action_data", testUid),
                 "data")
         );
-        Result<RuleEffect> ruleEffect = Result.success(testRuleEffects);
+        Result<RuleEffect> ruleEffect = Result.Companion.success(testRuleEffects);
 
         ruleUtils.applyRuleEffects(testFieldViewModels, ruleEffect, actionCallbacks);
 
@@ -136,7 +136,7 @@ public class RulesUtilsProviderImplTest {
                 RuleActionShowError.create("content", "action_data", testUid),
                 "data")
         );
-        Result<RuleEffect> ruleEffect = Result.success(testRuleEffects);
+        Result<RuleEffect> ruleEffect = Result.Companion.success(testRuleEffects);
 
         ruleUtils.applyRuleEffects(testFieldViewModels, ruleEffect, actionCallbacks);
 
@@ -152,7 +152,7 @@ public class RulesUtilsProviderImplTest {
                 RuleActionHideField.create("content", testUid),
                 "data")
         );
-        Result<RuleEffect> ruleEffect = Result.success(testRuleEffects);
+        Result<RuleEffect> ruleEffect = Result.Companion.success(testRuleEffects);
 
         ruleUtils.applyRuleEffects(testFieldViewModels, ruleEffect, actionCallbacks);
 
@@ -169,7 +169,7 @@ public class RulesUtilsProviderImplTest {
                 RuleActionDisplayText.createForIndicators("content", "data"),
                 "data")
         );
-        Result<RuleEffect> ruleEffect = Result.success(testRuleEffects);
+        Result<RuleEffect> ruleEffect = Result.Companion.success(testRuleEffects);
 
         ruleUtils.applyRuleEffects(testFieldViewModels, ruleEffect, actionCallbacks);
 

@@ -152,7 +152,7 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
         compositeDisposable.add(dataSetDetailRepository.orgUnits()
                 .map(orgUnits -> {
                     this.orgUnits = orgUnits;
-                    return OrgUnitUtils.renderTree(view.getContext(), orgUnits, true);
+                    return OrgUnitUtils.INSTANCE.renderTree(view.getContext(), orgUnits, true);
                 })
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())

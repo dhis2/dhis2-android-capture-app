@@ -42,7 +42,7 @@ public class SearchRelationshipViewHolder extends RecyclerView.ViewHolder {
         binding.trackedEntityImage.setBackground(AppCompatResources.getDrawable(itemView.getContext(), R.drawable.photo_temp_gray));
         String fileName = teiModel.getTei().uid() + "_" + teiModel.getProfilePictureUid() + ".png";
         File file = new File(itemView.getContext().getFilesDir(), fileName);
-        Drawable placeHolderId = ObjectStyleUtils.getIconResource(itemView.getContext(), teiModel.getDefaultTypeIcon(), R.drawable.photo_temp_gray);
+        Drawable placeHolderId = ObjectStyleUtils.INSTANCE.getIconResource(itemView.getContext(), teiModel.getDefaultTypeIcon(), R.drawable.photo_temp_gray);
         Glide.with(itemView.getContext())
                 .load(file)
                 .placeholder(placeHolderId)

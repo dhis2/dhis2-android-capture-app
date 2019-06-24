@@ -13,6 +13,7 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
+import org.dhis2.utils.Preconditions;
 import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
@@ -48,7 +49,6 @@ import rx.exceptions.OnErrorNotImplementedException;
 import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
-import static org.dhis2.utils.Preconditions.isNull;
 
 
 class FormPresenterImpl implements FormPresenter {
@@ -105,7 +105,7 @@ class FormPresenterImpl implements FormPresenter {
 
     @Override
     public void onAttach(@NonNull FormView view) {
-        isNull(view, "FormView must not be null");
+        Preconditions.INSTANCE.isNull(view, "FormView must not be null");
         this.view = view;
 
         compositeDisposable.add(formRepository.title()
@@ -160,7 +160,7 @@ class FormPresenterImpl implements FormPresenter {
         //region SECTIONS
         Flowable<List<FormSectionViewModel>> sectionsFlowable = formRepository.sections();
         Flowable<Result<RuleEffect>> ruleEffectFlowable = ruleEngineRepository.calculate()
-                .subscribeOn(schedulerProvider.computation()).onErrorReturn(throwable -> Result.failure(new Exception(throwable)));
+                .subscribeOn(schedulerProvider.computation()).onErrorReturn(throwable -> (Result<RuleEffect>) Result.Companion.failure(new Exception(throwable)));
 
         // Combining results of two repositories into a single stream.
         Flowable<List<FormSectionViewModel>> sectionModelsFlowable = Flowable.zip(
@@ -351,7 +351,7 @@ class FormPresenterImpl implements FormPresenter {
         else {
             Flowable<List<FormSectionViewModel>> sectionsFlowable = formRepository.sections();
             Flowable<Result<RuleEffect>> ruleEffectFlowable = ruleEngineRepository.calculate()
-                    .subscribeOn(schedulerProvider.computation()).onErrorReturn(throwable -> Result.failure(new Exception(throwable)));
+                    .subscribeOn(schedulerProvider.computation()).onErrorReturn(throwable -> (Result<RuleEffect>) Result.Companion.failure(new Exception(throwable)));
 
             // Combining results of two repositories into a single stream.
             Flowable<List<FormSectionViewModel>> sectionModelsFlowable = Flowable.zip(
@@ -370,7 +370,7 @@ class FormPresenterImpl implements FormPresenter {
     public void checkMandatoryFields() {
         Observable<List<FieldViewModel>> values = formRepository.fieldValues();
         Observable<Result<RuleEffect>> ruleEffect = ruleEngineRepository.calculate().toObservable()
-                .subscribeOn(schedulerProvider.computation()).onErrorReturn(throwable -> Result.failure(new Exception(throwable)));
+                .subscribeOn(schedulerProvider.computation()).onErrorReturn(throwable -> (Result<RuleEffect>) Result.Companion.failure(new Exception(throwable)));
 
         Observable<List<FieldViewModel>> fieldValues = Observable.zip(
                 values, ruleEffect, this::applyFieldViewEffects);
@@ -392,7 +392,7 @@ class FormPresenterImpl implements FormPresenter {
     public Observable<Boolean> checkMandatory() {
         Observable<List<FieldViewModel>> values = formRepository.fieldValues();
         Observable<Result<RuleEffect>> ruleEffect = ruleEngineRepository.calculate().toObservable()
-                .subscribeOn(schedulerProvider.computation()).onErrorReturn(throwable -> Result.failure(new Exception(throwable)));
+                .subscribeOn(schedulerProvider.computation()).onErrorReturn(throwable -> (Result<RuleEffect>) Result.Companion.failure(new Exception(throwable)));
 
         Observable<List<FieldViewModel>> fieldValues = Observable.zip(
                 values, ruleEffect, this::applyFieldViewEffects);

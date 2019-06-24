@@ -216,7 +216,7 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
             }
         }
 
-        if (!HelpManager.getInstance().isTutorialReadyForScreen(getClass().getName()))
+        if (!HelpManager.INSTANCE.isTutorialReadyForScreen(getClass().getName()))
             setTutorial();
     }
 
@@ -328,10 +328,10 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
                     .build();
             steps.add(tuto1);
 
-            HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
+            HelpManager.INSTANCE.setScreenHelp(getClass().getName(), steps);
 
             if (!prefs.getBoolean("TUTO_EVENT_SUMMARY", false) && !BuildConfig.DEBUG) {
-                HelpManager.getInstance().showHelp();
+                HelpManager.INSTANCE.showHelp();
                 prefs.edit().putBoolean("TUTO_EVENT_SUMMARY", true).apply();
             }
 

@@ -21,7 +21,7 @@ public class ReservedValueViewHolder extends RecyclerView.ViewHolder {
         //TODO cambiarlo en el xml tambien
         binding.setVariable(BR.dataElement, dataElement);
         binding.setVariable(BR.presenter, presenter);
-        binding.setVariable(BR.isConnected, NetworkUtils.isOnline(binding.reservedValue.getContext()));
+        binding.setVariable(BR.isConnected, NetworkUtils.INSTANCE.isOnline(binding.reservedValue.getContext()));
     }
 
 }

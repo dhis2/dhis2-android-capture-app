@@ -182,7 +182,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     public void setForm(List<TrackedEntityAttributeModel> trackedEntityAttributeModels, @Nullable ProgramModel program, HashMap<String, String> queryData) {
 
-        if (!HelpManager.getInstance().isTutorialReadyForScreen(getClass().getName()))
+        if (!HelpManager.INSTANCE.isTutorialReadyForScreen(getClass().getName()))
             setTutorial();
 
         //TODO: refreshData for recycler
@@ -245,10 +245,10 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             steps.add(tuto3);
             steps.add(tuto4);
 
-            HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
+            HelpManager.INSTANCE.setScreenHelp(getClass().getName(), steps);
 
             if (!prefs.getBoolean(TUTORIAL_SEARCH, false) && !BuildConfig.DEBUG) {
-                HelpManager.getInstance().showHelp();/* getAbstractActivity().fancyShowCaseQueue.show();*/
+                HelpManager.INSTANCE.showHelp();/* getAbstractActivity().fancyShowCaseQueue.show();*/
                 prefs.edit().putBoolean(TUTORIAL_SEARCH, true).apply();
             }
 

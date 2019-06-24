@@ -549,10 +549,10 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                             steps.add(tuto11);
                         }
 
-                        HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
+                        HelpManager.INSTANCE.setScreenHelp(getClass().getName(), steps);
 
                         if (!prefs.getBoolean(TUTORIAL_HOME, false) && !BuildConfig.DEBUG) {
-                            HelpManager.getInstance().showHelp();
+                            HelpManager.INSTANCE.showHelp();
                             prefs.edit().putBoolean(TUTORIAL_HOME, true).apply();
                         }
                     }

@@ -109,7 +109,7 @@ final class EditTextCustomHolder extends FormViewHolder {
 
     @NonNull
     private Boolean valueHasChanged() {
-        return !Preconditions.equals(isEmpty(binding.customEdittext.getEditText().getText()) ? "" : binding.customEdittext.getEditText().getText().toString(),
+        return !Preconditions.INSTANCE.equals(isEmpty(binding.customEdittext.getEditText().getText()) ? "" : binding.customEdittext.getEditText().getText().toString(),
                 editTextModel.value() == null ? "" : valueOf(editTextModel.value()));
     }
 

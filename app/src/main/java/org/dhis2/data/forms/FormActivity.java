@@ -11,8 +11,7 @@ import android.view.MenuItem;
 import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
-
-import static org.dhis2.utils.Preconditions.isNull;
+import org.dhis2.utils.Preconditions;
 
 public class FormActivity extends ActivityGlobalAbstract {
     private static final String ARGUMENTS = "formViewArguments";
@@ -23,8 +22,8 @@ public class FormActivity extends ActivityGlobalAbstract {
     public static Intent create(@NonNull Context context,
                                 @NonNull FormViewArguments formViewArguments,
                                 boolean isEnrollment) {
-        isNull(context, "context must not be null");
-        isNull(formViewArguments, "formViewArguments must not be null");
+        Preconditions.INSTANCE.isNull(context, "context must not be null");
+        Preconditions.INSTANCE.isNull(formViewArguments, "formViewArguments must not be null");
 
         Intent intent = new Intent(context, FormActivity.class);
         intent.putExtra(ARGUMENTS, formViewArguments);
@@ -36,8 +35,8 @@ public class FormActivity extends ActivityGlobalAbstract {
     public static Intent create(@NonNull Activity activity,
                                 @NonNull FormViewArguments formViewArguments,
                                 boolean isEnrollment, Bundle bundle) {
-        isNull(activity, "activity must not be null");
-        isNull(formViewArguments, "formViewArguments must not be null");
+        Preconditions.INSTANCE.isNull(activity, "activity must not be null");
+        Preconditions.INSTANCE.isNull(formViewArguments, "formViewArguments must not be null");
 
         Intent intent = new Intent(activity, FormActivity.class);
         intent.putExtra(ARGUMENTS, formViewArguments);

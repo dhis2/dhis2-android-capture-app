@@ -34,7 +34,7 @@ public class QrFragment extends FragmentGlobalAbstract {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        bitmap = Preconditions.isNull(getArguments().getParcelable(ARGUMENTS), "bitmap == null");
+        bitmap = Preconditions.INSTANCE.isNull(getArguments().getParcelable(ARGUMENTS), "bitmap == null");
     }
 
     @Override

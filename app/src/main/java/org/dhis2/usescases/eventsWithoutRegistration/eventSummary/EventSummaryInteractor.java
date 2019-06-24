@@ -123,7 +123,7 @@ public class EventSummaryInteractor implements EventSummaryContract.Interactor {
         Flowable<List<FieldViewModel>> fieldsFlowable = eventSummaryRepository.list(sectionUid, eventUid);
 
         Flowable<Result<RuleEffect>> ruleEffectFlowable = eventSummaryRepository.calculate().subscribeOn(schedulerProvider.computation())
-                .onErrorReturn(throwable -> Result.failure(new Exception(throwable)));
+                .onErrorReturn(throwable -> (Result<RuleEffect>) Result.Companion.failure(new Exception(throwable)));
 
         // Combining results of two repositories into a single stream.
         Flowable<List<FieldViewModel>> viewModelsFlowable = Flowable.zip(fieldsFlowable, ruleEffectFlowable, this::applyEffects);

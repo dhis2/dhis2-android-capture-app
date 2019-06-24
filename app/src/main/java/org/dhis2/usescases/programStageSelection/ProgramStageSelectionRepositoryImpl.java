@@ -201,8 +201,8 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
                 .flatMap(enrollment ->
                         cachedRuleEngineFlowable
                                 .switchMap(ruleEngine -> Flowable.fromCallable(ruleEngine.evaluate(enrollment))
-                                        .map(Result::success)
-                                        .onErrorReturn(error -> Result.failure(new Exception(error)))
+                                        .map(Result.Companion::success)
+                                        .onErrorReturn(error -> (Result<RuleEffect>) Result.Companion.failure(new Exception(error)))
                                 )
                 );
     }

@@ -77,9 +77,9 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction() != null && intent.getAction().equals("action_sync") && intent.getExtras() != null && progressBar != null)
-                if (SyncUtils.isSyncRunning() && progressBar.getVisibility() == View.GONE)
+                if (SyncUtils.INSTANCE.isSyncRunning() && progressBar.getVisibility() == View.GONE)
                     progressBar.setVisibility(View.VISIBLE);
-                else if (!SyncUtils.isSyncRunning())
+                else if (!SyncUtils.INSTANCE.isSyncRunning())
                     progressBar.setVisibility(View.GONE);
         }
     };
@@ -155,7 +155,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
 
     @Override
     public void showTutorial(boolean shaked) {
-        HelpManager.getInstance().showHelp();
+        HelpManager.INSTANCE.showHelp();
     }
 
     public void showMoreOptions(View view) {
@@ -394,7 +394,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
     public void setProgressBar(ContentLoadingProgressBar progressBar) {
         if (progressBar != null) {
             this.progressBar = progressBar;
-            if (SyncUtils.isSyncRunning())
+            if (SyncUtils.INSTANCE.isSyncRunning())
                 progressBar.setVisibility(View.VISIBLE);
             else progressBar.setVisibility(View.GONE);
         }

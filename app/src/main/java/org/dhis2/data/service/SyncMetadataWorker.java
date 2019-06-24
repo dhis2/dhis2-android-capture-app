@@ -73,7 +73,7 @@ public class SyncMetadataWorker extends Worker {
             } catch (Exception e) {
                 Timber.e(e);
                 isMetaOk = false;
-                if (!NetworkUtils.isOnline(getApplicationContext()))
+                if (!NetworkUtils.INSTANCE.isOnline(getApplicationContext()))
                     noNetwork = true;
             }
 

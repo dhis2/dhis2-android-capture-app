@@ -909,7 +909,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             binding.executePendingBindings();
         }
 
-        if (!HelpManager.getInstance().isTutorialReadyForScreen(getClass().getName()))
+        if (!HelpManager.INSTANCE.isTutorialReadyForScreen(getClass().getName()))
             setTutorial();
     }
 
@@ -970,10 +970,10 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                         .build();
                 steps.add(tuto1);
 
-                HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
+                HelpManager.INSTANCE.setScreenHelp(getClass().getName(), steps);
 
                 if (!prefs.getBoolean("TUTO_EVENT_INITIAL_NEW", false) && !BuildConfig.DEBUG) {
-                    HelpManager.getInstance().showHelp();
+                    HelpManager.INSTANCE.showHelp();
                     prefs.edit().putBoolean("TUTO_EVENT_INITIAL_NEW", true).apply();
                 }
             } else {
@@ -986,10 +986,10 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                         .build();
                 steps.add(tuto1);
 
-                HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
+                HelpManager.INSTANCE.setScreenHelp(getClass().getName(), steps);
 
                 if (!prefs.getBoolean("TUTO_EVENT_INITIAL", false) && !BuildConfig.DEBUG) {
-                    HelpManager.getInstance().showHelp();
+                    HelpManager.INSTANCE.showHelp();
                     prefs.edit().putBoolean("TUTO_EVENT_INITIAL", true).apply();
                 }
             }

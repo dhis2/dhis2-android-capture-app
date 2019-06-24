@@ -468,10 +468,10 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     public Observable<List<TrackedEntityAttributeValueModel>> getTEIAttributeValues(String programUid, String teiUid) {
         if (programUid != null)
             return briteDatabase.createQuery(ATTRIBUTE_VALUES_TABLE, ATTRIBUTE_VALUES_QUERY, programUid, teiUid == null ? "" : teiUid)
-                    .mapToList(cursor -> ValueUtils.transform(briteDatabase, cursor));
+                    .mapToList(cursor -> ValueUtils.INSTANCE.transform(briteDatabase, cursor));
         else
             return briteDatabase.createQuery(ATTRIBUTE_VALUES_TABLE, ATTRIBUTE_VALUES_NO_PROGRAM_QUERY, teiUid == null ? "" : teiUid)
-                    .mapToList(cursor -> ValueUtils.transform(briteDatabase, cursor));
+                    .mapToList(cursor -> ValueUtils.INSTANCE.transform(briteDatabase, cursor));
     }
 
     @Override

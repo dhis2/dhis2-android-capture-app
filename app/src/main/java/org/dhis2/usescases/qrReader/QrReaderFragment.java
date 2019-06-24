@@ -216,7 +216,7 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
 
     @Override
     public void downloadTei(@NonNull String teiUid) {
-        if (NetworkUtils.isOnline(context)) {
+        if (NetworkUtils.INSTANCE.isOnline(context)) {
             this.teiUid = teiUid;
             presenter.onlineDownload();
         } else {

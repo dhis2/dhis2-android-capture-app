@@ -233,7 +233,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         if (getIntent().getStringExtra(EVENT_UID) != null && enrollmentStatus)
             dashboardViewModel.updateEventUid(getIntent().getStringExtra(EVENT_UID));
 
-        if (!HelpManager.getInstance().isTutorialReadyForScreen(getClass().getName()) && !fromRelationship) {
+        if (!HelpManager.INSTANCE.isTutorialReadyForScreen(getClass().getName()) && !fromRelationship) {
             setTutorial();
         }
     }
@@ -404,10 +404,10 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                 steps.add(tuto7);
                 steps.add(tuto8);
 
-                HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
+                HelpManager.INSTANCE.setScreenHelp(getClass().getName(), steps);
 
                 if (!prefs.getBoolean("TUTO_DASHBOARD_SHOWN", false) && !BuildConfig.DEBUG || showTutorial) {
-                    HelpManager.getInstance().showHelp();
+                    HelpManager.INSTANCE.showHelp();
                     prefs.edit().putBoolean("TUTO_DASHBOARD_SHOWN", true).apply();
                     showTutorial = true;
                 }

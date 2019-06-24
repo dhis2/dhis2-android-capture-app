@@ -116,7 +116,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
         compositeDisposable.add(
                 parentOrgUnit
                         .flatMap(orgUnit -> eventRepository.orgUnits(orgUnit.val1()).toFlowable(BackpressureStrategy.LATEST)
-                                .map(orgUnits1 -> OrgUnitUtils.createNode(view.getContext(), orgUnits, true))
+                                .map(orgUnits1 -> OrgUnitUtils.INSTANCE.createNode(view.getContext(), orgUnits, true))
                                 .map(nodeList -> Pair.create(orgUnit.val0(), nodeList)))
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
@@ -167,7 +167,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                                     data -> {
                                         this.orgUnits = data;
                                         view.orgUnitProgress(false);
-                                        view.addTree(OrgUnitUtils.renderTree(view.getContext(), orgUnits, true));
+                                        view.addTree(OrgUnitUtils.INSTANCE.renderTree(view.getContext(), orgUnits, true));
                                     },
                                     throwable -> view.renderError(throwable.getMessage())));
         }

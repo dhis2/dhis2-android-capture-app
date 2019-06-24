@@ -9,6 +9,7 @@ import org.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitViewModel;
 import org.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel;
+import org.dhis2.utils.Preconditions;
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
@@ -18,7 +19,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import static android.text.TextUtils.isEmpty;
-import static org.dhis2.utils.Preconditions.isNull;
 
 public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
 
@@ -75,7 +75,8 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                                  @NonNull Boolean mandatory, @Nullable String optionSet, @Nullable String value,
                                  @Nullable String section, @Nullable Boolean allowFutureDates, @NonNull Boolean editable, @Nullable ProgramStageSectionRenderingType renderingType,
                                  @Nullable String description, @Nullable ValueTypeDeviceRenderingModel fieldRendering, @Nullable Integer optionCount, ObjectStyleModel objectStyle) {
-        isNull(type, "type must be supplied");
+        Preconditions.INSTANCE.isNull(type, "type must be supplied");
+
 
         if (!isEmpty(optionSet)) {
             if (renderingType == null || renderingType == ProgramStageSectionRenderingType.LISTING)

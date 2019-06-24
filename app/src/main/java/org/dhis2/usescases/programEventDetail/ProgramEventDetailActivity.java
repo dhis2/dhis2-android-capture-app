@@ -596,10 +596,10 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
             steps.add(tuto1);
             steps.add(tuto2);
 
-            HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
+            HelpManager.INSTANCE.setScreenHelp(getClass().getName(), steps);
 
             if (!prefs.getBoolean("TUTO_PROGRAM_EVENT", false) && !BuildConfig.DEBUG) {
-                HelpManager.getInstance().showHelp();/* getAbstractActivity().fancyShowCaseQueue.show();*/
+                HelpManager.INSTANCE.showHelp();/* getAbstractActivity().fancyShowCaseQueue.show();*/
                 prefs.edit().putBoolean("TUTO_PROGRAM_EVENT", true).apply();
             }
 

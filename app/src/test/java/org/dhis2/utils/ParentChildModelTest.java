@@ -33,17 +33,17 @@ public class ParentChildModelTest {
                 .build();
 
         ParentChildModel<OrganisationUnitModel> orgUnitParent1 =
-                ParentChildModel.create(orgToAdd1, new ArrayList<>(), true);
+                ParentChildModel.Companion.create(orgToAdd1, new ArrayList<>(), true);
 
         ParentChildModel<OrganisationUnitModel> orgUnitParent2 =
-                ParentChildModel.create(orgToAdd2, new ArrayList<>(), true);
+                ParentChildModel.Companion.create(orgToAdd2, new ArrayList<>(), true);
 
         List<ParentChildModel<OrganisationUnitModel>> parentChildModels = new ArrayList<>();
         parentChildModels.add(orgUnitParent1);
         parentChildModels.add(orgUnitParent2);
 
         ParentChildModel<OrganisationUnitModel> orgUnitParent3 =
-                ParentChildModel.create(orgToAdd2, parentChildModels, true);
+                ParentChildModel.Companion.create(orgToAdd2, parentChildModels, true);
 
 
         assertNotNull(orgUnitParent1);

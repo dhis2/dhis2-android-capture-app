@@ -608,8 +608,8 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                                                 .map(updatedRules -> updatedRules.isEmpty() ? trasformToRule(rules) : updatedRules)
                                                 .flatMap(rules -> Flowable.fromCallable(ruleEngine.evaluate(event, rules)));
                                 })
-                                .map(Result::success)
-                                .onErrorReturn(error -> Result.failure(new Exception(error)))
+                                .map(Result.Companion::success)
+                                .onErrorReturn(error -> (Result<RuleEffect>) Result.Companion.failure(new Exception(error)))
 
                 );
     }

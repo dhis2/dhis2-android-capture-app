@@ -160,9 +160,9 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
                     String displayName = !isEmpty(de.displayFormName()) ? de.displayFormName() : de.displayName();
                     String value = dataValue.value();
                     if (de.optionSet() != null)
-                        value = ValueUtils.optionSetCodeToDisplayName(briteDatabase, de.optionSet().uid(), value);
+                        value = ValueUtils.INSTANCE.optionSetCodeToDisplayName(briteDatabase, de.optionSet().uid(), value);
                     else if (de.valueType().equals(ValueType.ORGANISATION_UNIT))
-                        value = ValueUtils.orgUnitUidToDisplayName(briteDatabase, value);
+                        value = ValueUtils.INSTANCE.orgUnitUidToDisplayName(briteDatabase, value);
 
                     //TODO: Would be good to check other value types to render value (coordinates)
                     data.add(Pair.create(displayName, value));

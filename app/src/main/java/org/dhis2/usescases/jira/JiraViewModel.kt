@@ -64,7 +64,7 @@ class JiraViewModel : ViewModel(), JiraActions {
 
     fun getJiraIssues() {
         val basic = String.format("Basic %s", session.value)
-        val request = JiraIssueListRequest(SecurePreferences.getStringValue(JIRA_USER, userName.value), 20)
+        val request = JiraIssueListRequest(SecurePreferences.getStringValue(JIRA_USER, userName.value) ?: "", 20)
         val requestBody = RequestBody.create(MediaType.parse("application/json"), Gson().toJson(request))
         issueService.getJiraIssues(basic, requestBody).enqueue(getJiraIssueListCallback())
     }
@@ -129,7 +129,7 @@ class JiraViewModel : ViewModel(), JiraActions {
     }
 
     override fun sendIssue() {
-        val issueRequest = IssueRequest(summary.value, description.value)
+        val issueRequest = IssueRequest(summary.value!!, description.value!!)
         val basic = String.format("Basic %s", session.value)
         val requestBody = RequestBody.create(MediaType.parse("application/json"), Gson().toJson(issueRequest))
         issueService.createIssue(basic, requestBody).enqueue(getIssueCallback())

@@ -285,7 +285,7 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
     }
 
     private void setNetworkMessage() {
-        if (!NetworkUtils.isOnline(getContext())) {
+        if (!NetworkUtils.INSTANCE.isOnline(getContext())) {
             if (/*Check SMS Services*/false) { //TODO: Add sms check
                 binding.connectionMessage.setText(R.string.network_unavailable_sms);
                 binding.syncButton.setText(R.string.action_sync_sms);

@@ -33,7 +33,7 @@ class SplashPresenter internal constructor(private val userManager: UserManager?
             return
         }
 
-        if (SyncUtils.isSyncRunning()) {
+        if (SyncUtils.isSyncRunning) {
             view!!.startActivity(SyncActivity::class.java, null, true, true, null)
 
         } else {

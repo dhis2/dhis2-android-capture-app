@@ -74,7 +74,7 @@ public class JiraFragment extends FragmentGlobalAbstract implements OnJiraIssueC
         });
 
         binding.setJiraViewModel(jiraViewModel);
-        binding.sendReportButton.setEnabled(NetworkUtils.isOnline(context));
+        binding.sendReportButton.setEnabled(NetworkUtils.INSTANCE.isOnline(context));
         binding.issueRecycler.setAdapter(adapter);
         binding.issueRecycler.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
 
