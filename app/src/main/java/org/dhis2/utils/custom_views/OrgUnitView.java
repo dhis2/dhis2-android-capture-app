@@ -13,7 +13,7 @@ import androidx.fragment.app.FragmentManager;
 import com.google.android.material.textfield.TextInputLayout;
 
 import org.dhis2.BR;
-import org.dhis2.Bindings.Bindings;
+import org.dhis2.Bindings.BindingAdapterKt;
 import org.dhis2.R;
 import org.dhis2.databinding.CustomTextViewAccentBinding;
 import org.dhis2.databinding.CustomTextViewBinding;
@@ -105,7 +105,7 @@ public class OrgUnitView extends FieldLayout implements OrgUnitCascadeDialog.Cas
 
 
     public void setObjectStyle(ObjectStyleModel objectStyle) {
-        Bindings.setObjectStyle(iconView, this, objectStyle);
+        BindingAdapterKt.setObjectStyle(iconView, this, objectStyle);
     }
 
     public void updateEditable(boolean isEditable) {

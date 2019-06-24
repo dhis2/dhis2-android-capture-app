@@ -13,7 +13,7 @@ import androidx.databinding.ViewDataBinding;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
-import org.dhis2.Bindings.Bindings;
+import org.dhis2.Bindings.BindingAdapterKt;
 import org.dhis2.R;
 import org.dhis2.databinding.FormSpinnerAccentBinding;
 import org.dhis2.databinding.FormSpinnerBinding;
@@ -135,8 +135,7 @@ public class OptionSetView extends FieldLayout implements PopupMenu.OnMenuItemCl
     }
 
     public void setObjectStyle(ObjectStyleModel objectStyle) {
-        Bindings.setObjectStyle(iconView, this, objectStyle);
-
+        BindingAdapterKt.setObjectStyle(iconView, this, objectStyle);
     }
 
     public void updateEditable(boolean isEditable) {

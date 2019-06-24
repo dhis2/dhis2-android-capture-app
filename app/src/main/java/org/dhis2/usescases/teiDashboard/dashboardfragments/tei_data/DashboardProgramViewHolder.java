@@ -1,7 +1,7 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data;
 
 import org.dhis2.BR;
-import org.dhis2.Bindings.Bindings;
+import org.dhis2.Bindings.BindingAdapterKt;
 import org.dhis2.databinding.ItemDashboardProgramBinding;
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import org.dhis2.usescases.teiDashboard.TeiDashboardContracts;
@@ -29,7 +29,7 @@ class DashboardProgramViewHolder extends RecyclerView.ViewHolder {
         binding.setVariable(BR.presenter, presenter);
         binding.setVariable(BR.program, programModel);
 
-        Bindings.setObjectStyle(binding.programImage, binding.programImage, dashboardProgramModel.getObjectStyleForProgram(programModel.uid()));
+        BindingAdapterKt.setObjectStyle(binding.programImage, binding.programImage, dashboardProgramModel.getObjectStyleForProgram(programModel.uid()));
 
         if (enrollment != null)
             binding.setVariable(BR.enrollment, enrollment);

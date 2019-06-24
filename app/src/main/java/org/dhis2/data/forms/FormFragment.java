@@ -27,7 +27,6 @@ import com.jakewharton.rxbinding2.view.RxView;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 
 import org.dhis2.App;
-import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.DataEntryFragment;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
@@ -66,6 +65,7 @@ import io.reactivex.subjects.PublishSubject;
 import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
+import static org.dhis2.Bindings.BindingAdapterKt.setProgressColor;
 import static org.dhis2.utils.ConstantsKt.*;
 
 
@@ -178,7 +178,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
         incidentDate = view.findViewById(R.id.incident_date_text);
         coordinatorLayout = view.findViewById(R.id.coordinatorlayout_form);
         progressBar = view.findViewById(R.id.progress);
-        Bindings.setProgressColor(progressBar, R.color.colorPrimary);
+        setProgressColor(progressBar, R.color.colorPrimary);
         formSectionAdapter = new FormSectionAdapter(getChildFragmentManager());
         viewPager.setAdapter(formSectionAdapter);
         tabLayout.setupWithViewPager(viewPager);

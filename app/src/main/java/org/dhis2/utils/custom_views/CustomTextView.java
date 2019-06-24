@@ -21,13 +21,13 @@ import androidx.databinding.ViewDataBinding;
 import com.google.android.material.textfield.TextInputLayout;
 
 import org.dhis2.BR;
-import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
 import static android.text.TextUtils.isEmpty;
+import static org.dhis2.Bindings.BindingAdapterKt.setObjectStyle;
 
 /**
  * QUADRAM. Created by frodriguez on 1/17/2018.
@@ -311,6 +311,6 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
 
 
     public void setObjectSyle(ObjectStyleModel objectStyle) {
-        Bindings.setObjectStyle(icon, this, objectStyle);
+        setObjectStyle(icon, this, objectStyle);
     }
 }

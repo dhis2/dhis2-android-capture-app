@@ -4,7 +4,7 @@ import android.view.View;
 
 import androidx.databinding.ObservableField;
 
-import org.dhis2.Bindings.Bindings;
+import org.dhis2.Bindings.BindingAdapterKt;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.FormImageBinding;
@@ -68,8 +68,8 @@ public class ImageHolder extends FormViewHolder {
         binding.setCurrentSelection(currentSelector);
 
         String[] uids = viewModel.uid().split("\\.");
-        Bindings.setObjectStyle(binding.icon, itemView, viewModel.objectStyle());
-        Bindings.setObjectStyle(binding.label, itemView, viewModel.objectStyle());
+        BindingAdapterKt.setObjectStyle(binding.icon, itemView, viewModel.objectStyle());
+        BindingAdapterKt.setObjectStyle(binding.label, itemView, viewModel.objectStyle());
 
         if (viewModel.value() != null && !viewModel.value().equals(currentSelector.get()))
             currentSelector.set(viewModel.value());

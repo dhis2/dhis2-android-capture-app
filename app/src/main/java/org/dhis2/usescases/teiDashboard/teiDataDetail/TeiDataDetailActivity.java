@@ -10,7 +10,6 @@ import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 
 import org.dhis2.App;
-import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
 import org.dhis2.data.forms.FormFragment;
 import org.dhis2.data.forms.FormViewArguments;
@@ -27,6 +26,8 @@ import javax.inject.Inject;
 
 import io.reactivex.functions.Consumer;
 
+import static org.dhis2.Bindings.BindingAdapterKt.setEnrolmentIcon;
+import static org.dhis2.Bindings.BindingAdapterKt.setEnrolmentText;
 import static org.dhis2.utils.ConstantsKt.RQ_MAP_LOCATION;
 
 public class TeiDataDetailActivity extends ActivityGlobalAbstract implements TeiDataDetailContracts.View {
@@ -137,8 +138,8 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
     public Consumer<EnrollmentStatus> handleStatus() {
         return enrollmentStatus -> {
             this.enrollmentStatus = enrollmentStatus;
-            Bindings.setEnrolmentIcon(binding.programLock, enrollmentStatus);
-            Bindings.setEnrolmentText(binding.programLockText, enrollmentStatus);
+            setEnrolmentIcon(binding.programLock, enrollmentStatus);
+            setEnrolmentText(binding.programLockText, enrollmentStatus);
             binding.setEnrollmentStatus(enrollmentStatus);
             binding.executePendingBindings();
             initForm();

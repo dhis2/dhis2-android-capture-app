@@ -22,7 +22,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import org.dhis2.App;
-import org.dhis2.Bindings.Bindings;
+import org.dhis2.Bindings.BindingAdapterKt;
 import org.dhis2.R;
 import org.dhis2.databinding.SyncBottomDialogBinding;
 import org.dhis2.utils.NetworkUtils;
@@ -182,7 +182,7 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 state -> {
-                                    Bindings.setStateIcon(binding.syncIcon, state);
+                                    BindingAdapterKt.setStateIcon(binding.syncIcon, state);
                                     binding.syncStatusName.setText(getTextByState(state));
                                     binding.syncStatusBar.setBackgroundResource(getColorForState(state));
                                 },
@@ -226,7 +226,7 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 state -> {
-                                    Bindings.setStateIcon(binding.syncIcon, state);
+                                    BindingAdapterKt.setStateIcon(binding.syncIcon, state);
                                     binding.syncStatusName.setText(getTextByState(state));
                                     binding.syncStatusBar.setBackgroundResource(getColorForState(state));
                                     switch (state) {
@@ -266,7 +266,7 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 state -> {
-                                    Bindings.setStateIcon(binding.syncIcon, state);
+                                    BindingAdapterKt.setStateIcon(binding.syncIcon, state);
                                     binding.syncStatusName.setText(getTextByState(state));
                                     binding.syncStatusBar.setBackgroundResource(getColorForState(state));
                                     switch (state) {

@@ -5,13 +5,14 @@ import android.content.res.Resources;
 import android.graphics.Color;
 
 import org.dhis2.BR;
-import org.dhis2.Bindings.Bindings;
 import org.dhis2.databinding.ItemProgramStageBinding;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.program.ProgramStage;
 
 import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
+
+import static org.dhis2.Bindings.BindingAdapterKt.setFromResBgColor;
 
 /**
  * QUADRAM. Created by Cristian on 13/02/2018.
@@ -48,7 +49,7 @@ public class ProgramStageSelectionViewHolder extends RecyclerView.ViewHolder {
             int colorRes = Color.parseColor(color);
             ColorStateList colorStateList = ColorStateList.valueOf(colorRes);
             ViewCompat.setBackgroundTintList(binding.programStageIcon, colorStateList);
-            Bindings.setFromResBgColor(binding.programStageIcon, colorRes);
+            setFromResBgColor(binding.programStageIcon, colorRes);
         }
 
         itemView.setOnClickListener(view -> {

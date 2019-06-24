@@ -12,7 +12,7 @@ import android.util.TypedValue;
 import com.airbnb.lottie.LottieDrawable;
 
 import org.dhis2.App;
-import org.dhis2.Bindings.Bindings;
+import org.dhis2.Bindings.BindingAdapterKt;
 import org.dhis2.R;
 import org.dhis2.databinding.ActivitySynchronizationBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
@@ -75,13 +75,13 @@ public class SyncActivity extends ActivityGlobalAbstract implements SyncContract
         switch (metadataState) {
             case RUNNING:
                 metadataRunning = true;
-                Bindings.setDrawableEnd(binding.metadataText, AppCompatResources.getDrawable(this, R.drawable.animator_sync));
+                BindingAdapterKt.setDrawableEnd(binding.metadataText, AppCompatResources.getDrawable(this, R.drawable.animator_sync));
                 break;
             case ENQUEUED:
                 if (metadataRunning) {
                     metadataDone = true;
                     binding.metadataText.setText(getString(R.string.configuration_ready));
-                    Bindings.setDrawableEnd(binding.metadataText, AppCompatResources.getDrawable(this, R.drawable.animator_done));
+                    BindingAdapterKt.setDrawableEnd(binding.metadataText, AppCompatResources.getDrawable(this, R.drawable.animator_done));
                     presenter.getTheme();
                     presenter.syncData(getSharedPreferences().getInt(TIME_DATA, TIME_DAILY), DATA);
                 }
@@ -94,14 +94,14 @@ public class SyncActivity extends ActivityGlobalAbstract implements SyncContract
             case RUNNING:
                 dataRunning = true;
                 binding.eventsText.setText(getString(R.string.syncing_data));
-                Bindings.setDrawableEnd(binding.eventsText, AppCompatResources.getDrawable(this, R.drawable.animator_sync));
+                BindingAdapterKt.setDrawableEnd(binding.eventsText, AppCompatResources.getDrawable(this, R.drawable.animator_sync));
                 binding.eventsText.setAlpha(1.0f);
                 break;
             case ENQUEUED:
                 if (dataRunning && metadataDone) {
                     dataDone = true;
                     binding.eventsText.setText(getString(R.string.data_ready));
-                    Bindings.setDrawableEnd(binding.eventsText, AppCompatResources.getDrawable(this, R.drawable.animator_done));
+                    BindingAdapterKt.setDrawableEnd(binding.eventsText, AppCompatResources.getDrawable(this, R.drawable.animator_done));
                     presenter.syncReservedValues();
                     startMain();
                 }

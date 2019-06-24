@@ -69,10 +69,12 @@ fun setDate(textView: TextView, date: String) {
 }
 
 @BindingAdapter("date")
-fun parseDate(textView: TextView, date: Date) {
-    val formatOut = DateUtils.uiDateFormat()
-    val dateOut = formatOut.format(date)
-    textView.text = dateOut
+fun parseDate(textView: TextView, date: Date?) {
+    date?.let {
+        val formatOut = DateUtils.uiDateFormat()
+        val dateOut = formatOut.format(it)
+        textView.text = dateOut
+    }
 }
 
 @BindingAdapter("drawableEnd")
@@ -131,7 +133,7 @@ fun setEnrolmentIcon(imageView: ImageView, enrollmentStatus: EnrollmentStatus?) 
 }
 
 @BindingAdapter("enrolmentText")
-fun setEnrollmentText(textView: TextView, enrollmentStatus: EnrollmentStatus?) {
+fun setEnrolmentText(textView: TextView, enrollmentStatus: EnrollmentStatus?) {
     var status = enrollmentStatus
     if (status == null) status = EnrollmentStatus.ACTIVE
     val text = when (status) {

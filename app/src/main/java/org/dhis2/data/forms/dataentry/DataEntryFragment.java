@@ -18,7 +18,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.dhis2.App;
-import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
 import org.dhis2.data.forms.FormFragment;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
@@ -44,6 +43,7 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.processors.FlowableProcessor;
 
 import static android.text.TextUtils.isEmpty;
+import static org.dhis2.Bindings.BindingAdapterKt.setProgressColor;
 
 public final class DataEntryFragment extends FragmentGlobalAbstract implements DataEntryView {
     private static final String ARGUMENTS = "args";
@@ -97,7 +97,7 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
         View view = inflater.inflate(R.layout.fragment_data_entry, container, false);
         progressBar = view.findViewById(R.id.progress);
         dummyFocusView = view.findViewById(R.id.dummyFocusView);
-        Bindings.setProgressColor(progressBar, R.color.colorPrimary);
+        setProgressColor(progressBar, R.color.colorPrimary);
         return view;
     }
 
