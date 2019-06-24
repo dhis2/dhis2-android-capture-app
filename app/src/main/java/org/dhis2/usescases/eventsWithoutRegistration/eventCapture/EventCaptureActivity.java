@@ -323,7 +323,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                 getAbstracContext().getString(R.string.error_fields_title),
                 getAbstracContext().getString(R.string.error_fields_events),
                 getAbstracContext().getString(R.string.button_ok),
-                "Check",
+                getString(R.string.check_mandatory_field),
                 Constants.RQ_MANDATORY_EVENTS,
                 new DialogClickListener() {
                     @Override

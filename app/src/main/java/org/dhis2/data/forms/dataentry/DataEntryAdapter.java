@@ -81,6 +81,8 @@ public final class DataEntryAdapter extends Adapter {
 
     private final FlowableProcessor<Trio<String, String, Integer>> processorOptionSet;
 
+    private String currentFocus;
+
     private String lastFocusItem;
     private int nextFocusPosition = -1;
     private int lastFocusPosition = -1;
@@ -242,7 +244,6 @@ public final class DataEntryAdapter extends Adapter {
             }
         }
 
-
         diffResult.dispatchUpdatesTo(this);
 
         if (nextFocusPosition != -1)
@@ -302,25 +303,6 @@ public final class DataEntryAdapter extends Adapter {
             }
         }
         return errorFieldNames.toString();
-    }
-
-    public void notifyChanges(RowAction rowAction) {
-       /* List<FieldViewModel> helperModels = new ArrayList<>();
-        for (FieldViewModel field : viewModels) {
-            FieldViewModel toAdd = field;
-            if (field.uid().equals(rowAction.id()))
-                toAdd = field.withValue(rowAction.optionName() == null ? rowAction.value() : rowAction.optionName()).withEditMode(toAdd.editable());
-
-            helperModels.add(toAdd);
-        }
-
-        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(
-                new DataEntryDiffCallback(viewModels, helperModels));
-
-        viewModels.clear();
-        viewModels.addAll(helperModels);
-
-        diffResult.dispatchUpdatesTo(this);*/
     }
 
     public void setLastFocusItem(String lastFocusItem) {
