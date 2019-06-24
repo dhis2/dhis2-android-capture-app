@@ -72,7 +72,7 @@ final class DataValueStore implements DataEntryStore {
         else {
             ContentValues contentValues = new ContentValues();
             Date currentDate = Calendar.getInstance().getTime();
-            contentValues.put(EventModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(currentDate));
+            contentValues.put(EventModel.Columns.LAST_UPDATED, DateUtils.Companion.databaseDateFormat().format(currentDate));
             String eventStatus = null;
             switch (eventModel.status()) {
                 case COMPLETED:
@@ -85,7 +85,7 @@ final class DataValueStore implements DataEntryStore {
                     break;
                 default:
                     eventStatus = EventStatus.COMPLETED.name();
-                    contentValues.put(EventModel.Columns.COMPLETE_DATE, DateUtils.databaseDateFormat().format(currentDate));
+                    contentValues.put(EventModel.Columns.COMPLETE_DATE, DateUtils.Companion.databaseDateFormat().format(currentDate));
                     break;
 
             }
@@ -102,7 +102,7 @@ final class DataValueStore implements DataEntryStore {
     public void skipEvent(EventModel eventModel) {
         ContentValues contentValues = new ContentValues();
         Date currentDate = Calendar.getInstance().getTime();
-        contentValues.put(EventModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(currentDate));
+        contentValues.put(EventModel.Columns.LAST_UPDATED, DateUtils.Companion.databaseDateFormat().format(currentDate));
         contentValues.putNull(EventModel.Columns.COMPLETE_DATE);
         contentValues.put(EventModel.Columns.STATUS, EventStatus.SKIPPED.name());
         contentValues.put(EventModel.Columns.STATE, eventModel.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
@@ -116,8 +116,8 @@ final class DataValueStore implements DataEntryStore {
     public void rescheduleEvent(EventModel eventModel, Date newDate) {
         ContentValues contentValues = new ContentValues();
         Date currentDate = Calendar.getInstance().getTime();
-        contentValues.put(EventModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(currentDate));
-        contentValues.put(EventModel.Columns.DUE_DATE, DateUtils.databaseDateFormat().format(newDate));
+        contentValues.put(EventModel.Columns.LAST_UPDATED, DateUtils.Companion.databaseDateFormat().format(currentDate));
+        contentValues.put(EventModel.Columns.DUE_DATE, DateUtils.Companion.databaseDateFormat().format(newDate));
         contentValues.put(EventModel.Columns.STATUS, EventStatus.SCHEDULE.name());
         briteDatabase.update(EventModel.TABLE, contentValues, EventModel.Columns.UID + "= ?", eventModel.uid());
         updateTEi();
@@ -130,8 +130,8 @@ final class DataValueStore implements DataEntryStore {
         else {
             ContentValues contentValues = new ContentValues();
             Date currentDate = Calendar.getInstance().getTime();
-            contentValues.put(EventModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(currentDate));
-            contentValues.put(EventModel.Columns.EVENT_DATE, DateUtils.databaseDateFormat().format(eventDate));
+            contentValues.put(EventModel.Columns.LAST_UPDATED, DateUtils.Companion.databaseDateFormat().format(currentDate));
+            contentValues.put(EventModel.Columns.EVENT_DATE, DateUtils.Companion.databaseDateFormat().format(eventDate));
             if (eventDate.before(currentDate))
                 contentValues.put(EventModel.Columns.STATUS, EventStatus.ACTIVE.name());
             briteDatabase.update(EventModel.TABLE, contentValues, EventModel.Columns.UID + "= ?", eventModel.uid());
@@ -208,7 +208,7 @@ final class DataValueStore implements DataEntryStore {
     private void updateTEi() {
 
         ContentValues tei = new ContentValues();
-        tei.put(TrackedEntityInstanceModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
+        tei.put(TrackedEntityInstanceModel.Columns.LAST_UPDATED, DateUtils.Companion.databaseDateFormat().format(Calendar.getInstance().getTime()));
         tei.put(TrackedEntityInstanceModel.Columns.STATE, State.TO_UPDATE.name());// TODO: Check if state is TO_POST
         // TODO: and if so, keep the TO_POST state
         briteDatabase.update(TrackedEntityInstanceModel.TABLE, tei, "uid = ?", teiUid);

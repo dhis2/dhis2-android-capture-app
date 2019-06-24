@@ -274,7 +274,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
         return briteDatabase.createQuery(EVENTS_TABLE, EVENTS_QUERY, progId, teiId, progId)
                 .mapToList(cursor -> {
                     EventModel eventModel = EventModel.create(cursor);
-                    if (eventModel.status() == EventStatus.SCHEDULE && eventModel.dueDate().before(DateUtils.getInstance().getToday()))
+                    if (eventModel.status() == EventStatus.SCHEDULE && eventModel.dueDate().before(DateUtils.Companion.getInstance().getToday()))
                         eventModel = updateState(eventModel, EventStatus.OVERDUE);
 
                     return eventModel;
@@ -314,14 +314,14 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
                     values.put(EventModel.Columns.UID, codeGenerator.generate());
                     values.put(EventModel.Columns.ENROLLMENT, event.enrollment());
-                    values.put(EventModel.Columns.CREATED, DateUtils.databaseDateFormat().format(createdDate.getTime()));
-                    values.put(EventModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(createdDate.getTime()));
+                    values.put(EventModel.Columns.CREATED, DateUtils.Companion.databaseDateFormat().format(createdDate.getTime()));
+                    values.put(EventModel.Columns.LAST_UPDATED, DateUtils.Companion.databaseDateFormat().format(createdDate.getTime()));
                     values.put(EventModel.Columns.STATUS, EventStatus.SCHEDULE.toString());
                     values.put(EventModel.Columns.PROGRAM, event.program());
                     values.put(EventModel.Columns.PROGRAM_STAGE, event.programStage());
                     values.put(EventModel.Columns.ORGANISATION_UNIT, event.organisationUnit());
-                    values.put(EventModel.Columns.DUE_DATE, DateUtils.databaseDateFormat().format(dueDate.getTime()));
-                    values.put(EventModel.Columns.EVENT_DATE, DateUtils.databaseDateFormat().format(dueDate.getTime()));
+                    values.put(EventModel.Columns.DUE_DATE, DateUtils.Companion.databaseDateFormat().format(dueDate.getTime()));
+                    values.put(EventModel.Columns.EVENT_DATE, DateUtils.Companion.databaseDateFormat().format(dueDate.getTime()));
                     values.put(EventModel.Columns.STATE, State.TO_POST.toString());
 
                     if (briteDatabase.insert(EventModel.TABLE, values) <= 0) {
@@ -359,15 +359,15 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
                     values.put(EventModel.Columns.UID, codeGenerator.generate());
                     values.put(EventModel.Columns.ENROLLMENT, event.enrollment());
-                    values.put(EventModel.Columns.CREATED, DateUtils.databaseDateFormat().format(createdDate.getTime()));
-                    values.put(EventModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(createdDate.getTime()));
+                    values.put(EventModel.Columns.CREATED, DateUtils.Companion.databaseDateFormat().format(createdDate.getTime()));
+                    values.put(EventModel.Columns.LAST_UPDATED, DateUtils.Companion.databaseDateFormat().format(createdDate.getTime()));
                     values.put(EventModel.Columns.STATUS, EventStatus.SCHEDULE.toString());
                     values.put(EventModel.Columns.PROGRAM, event.program());
                     values.put(EventModel.Columns.PROGRAM_STAGE, event.programStage());
                     values.put(EventModel.Columns.ORGANISATION_UNIT, event.organisationUnit());
                     if (chosenDate != null) {
-                        values.put(EventModel.Columns.DUE_DATE, DateUtils.databaseDateFormat().format(chosenDate.getTime()));
-                        values.put(EventModel.Columns.EVENT_DATE, DateUtils.databaseDateFormat().format(chosenDate.getTime()));
+                        values.put(EventModel.Columns.DUE_DATE, DateUtils.Companion.databaseDateFormat().format(chosenDate.getTime()));
+                        values.put(EventModel.Columns.EVENT_DATE, DateUtils.Companion.databaseDateFormat().format(chosenDate.getTime()));
                     }
                     values.put(EventModel.Columns.STATE, State.TO_POST.toString());
 
@@ -384,14 +384,14 @@ public class DashboardRepositoryImpl implements DashboardRepository {
         TrackedEntityInstance tei = d2.trackedEntityModule().trackedEntityInstances.uid(teiUid).get();
         ContentValues cv = tei.toContentValues();
         cv.put(TrackedEntityInstance.Columns.STATE, tei.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
-        cv.put(TrackedEntityInstanceModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
+        cv.put(TrackedEntityInstanceModel.Columns.LAST_UPDATED, DateUtils.Companion.databaseDateFormat().format(Calendar.getInstance().getTime()));
         briteDatabase.update(TrackedEntityInstanceModel.TABLE, cv, "uid = ?", teiUid);
     }
 
     private void updateEnrollmentState(String enrollmentUid) {
         Enrollment enrollment = d2.enrollmentModule().enrollments.uid(enrollmentUid).get();
         ContentValues cv = enrollment.toContentValues();
-        cv.put("lastUpdated", DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
+        cv.put("lastUpdated", DateUtils.Companion.databaseDateFormat().format(Calendar.getInstance().getTime()));
         cv.put("state", enrollment.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
         long updated = briteDatabase.update("Enrollment", cv, "uid = ?", enrollment.uid());
     }
@@ -489,7 +489,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
         ContentValues contentValues = enrollment.toContentValues();
         contentValues.put(EnrollmentModel.Columns.FOLLOW_UP, followUp ? "0" : "1");
-        contentValues.put(EnrollmentModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
+        contentValues.put(EnrollmentModel.Columns.LAST_UPDATED, DateUtils.Companion.databaseDateFormat().format(Calendar.getInstance().getTime()));
         contentValues.put(EnrollmentModel.Columns.STATE, enrollment.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
 
         int update = briteDatabase.update(EnrollmentModel.TABLE, contentValues, EnrollmentModel.Columns.UID + " = ?", enrollmentUid == null ? "" : enrollmentUid);
@@ -546,7 +546,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                     sqLiteBind(insetNoteStatement, 2, enrollmentUid == null ? "" : enrollmentUid); //enrollment
                     sqLiteBind(insetNoteStatement, 3, stringBooleanPair.val0() == null ? "" : stringBooleanPair.val0()); //value
                     sqLiteBind(insetNoteStatement, 4, userName == null ? "" : userName); //storeBy
-                    sqLiteBind(insetNoteStatement, 5, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime())); //storeDate
+                    sqLiteBind(insetNoteStatement, 5, DateUtils.Companion.databaseDateFormat().format(Calendar.getInstance().getTime())); //storeDate
                     sqLiteBind(insetNoteStatement, 6, State.TO_POST.name()); //state
 
                     long inserted = briteDatabase.executeInsert(NoteModel.TABLE, insetNoteStatement);
@@ -569,7 +569,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                     //UPDATE ENROLLMENT
                     Enrollment enrollment = d2.enrollmentModule().enrollments.uid(uid).get();
                     ContentValues cv = enrollment.toContentValues();
-                    cv.put("lastUpdated", DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
+                    cv.put("lastUpdated", DateUtils.Companion.databaseDateFormat().format(Calendar.getInstance().getTime()));
                     cv.put("status", value.name());
                     cv.put("state", enrollment.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
                     long updated = briteDatabase.update("Enrollment", cv, "uid = ?", enrollment.uid());

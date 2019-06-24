@@ -185,13 +185,13 @@ public class EventRepository implements FormRepository {
                         rulesRepository.ruleVariables(program),
                         rulesRepository.otherEvents(eventUid),
                         rulesRepository.enrollment(eventUid),
-                        rulesRepository.query),
-                        (rules, variables, events, enrollment,  -> {
+                        rulesRepository.queryConstants(),
+                        (rules, variables, events, enrollment, constants) -> {
 
                             RuleEngine.Builder builder = RuleEngineContext.builder(evaluator)
                                     .rules(rules)
                                     .ruleVariables(variables)
-                                    .alue(
+                                    .constantsValue(constants)
                                     .calculatedValueMap(new HashMap<>())
                                     .supplementaryData(new HashMap<>())
                                     .build().toEngineBuilder();
@@ -213,13 +213,13 @@ public class EventRepository implements FormRepository {
                         rulesRepository.ruleVariables(program),
                         rulesRepository.otherEvents(eventUid),
                         rulesRepository.enrollment(eventUid),
-                        rulesRepository.query),
-                        (rules, variables, events, enrollment,  -> {
+                        rulesRepository.queryConstants(),
+                        (rules, variables, events, enrollment, constants) -> {
 
                             RuleEngine.Builder builder = RuleEngineContext.builder(evaluator)
                                     .rules(rules)
                                     .ruleVariables(variables)
-                                    .alue(
+                                    .constantsValue(constants)
                                     .calculatedValueMap(new HashMap<>())
                                     .supplementaryData(new HashMap<>())
                                     .build().toEngineBuilder();
@@ -298,7 +298,7 @@ public class EventRepository implements FormRepository {
     public Consumer<String> storeReportDate() {
         return reportDate -> {
             Calendar cal = Calendar.getInstance();
-            Date date = DateUtils.databaseDateFormat().parse(reportDate);
+            Date date = DateUtils.Companion.databaseDateFormat().parse(reportDate);
             cal.setTime(date);
             cal.set(Calendar.HOUR_OF_DAY, 0);
             cal.set(Calendar.MINUTE, 0);
@@ -306,7 +306,7 @@ public class EventRepository implements FormRepository {
             cal.set(Calendar.MILLISECOND, 0);
 
             ContentValues event = new ContentValues();
-            event.put(EventModel.Columns.EVENT_DATE, DateUtils.databaseDateFormat().format(cal.getTime()));
+            event.put(EventModel.Columns.EVENT_DATE, DateUtils.Companion.databaseDateFormat().format(cal.getTime()));
             event.put(EventModel.Columns.STATE, State.TO_UPDATE.name()); // TODO: Check if state is TO_POST
             // TODO: and if so, keep the TO_POST state
 

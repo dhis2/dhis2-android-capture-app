@@ -54,7 +54,7 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
                     OrganisationUnit orgUnit = d2.organisationUnitModule().organisationUnits.byUid().eq(enrollment.organisationUnit()).one().get();
                     return EnrollmentViewModel.create(
                             enrollment.uid(),
-                            DateUtils.getInstance().formatDate(enrollment.enrollmentDate()),
+                            DateUtils.Companion.getInstance().formatDate(enrollment.enrollmentDate()),
                             program.style() != null ? program.style().color() : null,
                             program.style() != null ? program.style().icon() : null,
                             program.displayName(),
@@ -77,7 +77,7 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
                     OrganisationUnit orgUnit = d2.organisationUnitModule().organisationUnits.byUid().eq(enrollment.organisationUnit()).one().get();
                     return EnrollmentViewModel.create(
                             enrollment.uid(),
-                            DateUtils.getInstance().formatDate(enrollment.enrollmentDate()),
+                            DateUtils.Companion.getInstance().formatDate(enrollment.enrollmentDate()),
                             program.style() != null ? program.style().color() : null,
                             program.style() != null ? program.style().icon() : null,
                             program.displayName(),

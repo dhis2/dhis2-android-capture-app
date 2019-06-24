@@ -16,6 +16,7 @@ import org.dhis2.databinding.AgeCustomViewAccentBinding;
 import org.dhis2.databinding.AgeCustomViewBinding;
 import org.dhis2.utils.DatePickerUtils;
 import org.dhis2.utils.DateUtils;
+import org.dhis2.utils.OnDatePickerClickListener;
 
 import java.text.DateFormat;
 import java.util.Calendar;
@@ -98,7 +99,7 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
 
     private void showCustomCalendar(View view) {
 
-        DatePickerUtils.getDatePickerDialog(getContext(), label, null, true, new DatePickerUtils.OnDatePickerClickListener() {
+        DatePickerUtils.Companion.getDatePickerDialog(getContext(), label, null, true, new OnDatePickerClickListener() {
             @Override
             public void onNegativeClick() {
                 listener.onAgeSet(null);
@@ -144,7 +145,7 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
 
-        String birthDate = DateUtils.uiDateFormat().format(calendar.getTime());
+        String birthDate = DateUtils.Companion.uiDateFormat().format(calendar.getTime());
         if (!date.getText().toString().equals(birthDate)) {
             date.setText(birthDate);
             if (finish)
@@ -163,7 +164,7 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
 
         String result = dateFormat.format(selectedCalendar.getTime());
 
-        int[] dateDifference = DateUtils.getDifference(selectedCalendar.getTime(), Calendar.getInstance().getTime());
+        int[] dateDifference = DateUtils.Companion.getDifference(selectedCalendar.getTime(), Calendar.getInstance().getTime());
         day.setText(String.valueOf(dateDifference[2]));
         month.setText(String.valueOf(dateDifference[1]));
         year.setText(String.valueOf(dateDifference[0]));
@@ -178,7 +179,7 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
     public void setInitialValue(String initialValue) {
         Date initialDate = null;
         try {
-            initialDate = DateUtils.databaseDateFormat().parse(initialValue);
+            initialDate = DateUtils.Companion.databaseDateFormat().parse(initialValue);
 
         } catch (Exception e) {
             Timber.e(e);
@@ -186,7 +187,7 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
 
         if (initialDate == null)
             try {
-                initialDate = DateUtils.uiDateFormat().parse(initialValue);
+                initialDate = DateUtils.Companion.uiDateFormat().parse(initialValue);
 
             } catch (Exception e) {
                 Timber.e(e);
@@ -194,7 +195,7 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
 
         String result = dateFormat.format(initialDate);
 
-        int[] dateDifference = DateUtils.getDifference(initialDate, Calendar.getInstance().getTime());
+        int[] dateDifference = DateUtils.Companion.getDifference(initialDate, Calendar.getInstance().getTime());
         day.setText(String.valueOf(dateDifference[2]));
         month.setText(String.valueOf(dateDifference[1]));
         year.setText(String.valueOf(dateDifference[0]));
@@ -216,7 +217,7 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
         month = findViewById(R.id.input_month);
         year = findViewById(R.id.input_year);
         selectedCalendar = Calendar.getInstance();
-        dateFormat = DateUtils.uiDateFormat();
+        dateFormat = DateUtils.Companion.uiDateFormat();
 
         date.setFocusable(false); //Makes editText not editable
         date.setClickable(true);//  but clickable

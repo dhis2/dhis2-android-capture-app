@@ -16,7 +16,7 @@ import org.dhis2.data.service.SyncDataWorker;
 import org.dhis2.data.service.SyncMetadataWorker;
 import org.dhis2.usescases.login.LoginActivity;
 import org.dhis2.usescases.reservedValue.ReservedValueActivity;
-
+import org.dhis2.utils.ConstantsKt.*;
 import org.dhis2.utils.FileResourcesUtil;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.State;
@@ -32,15 +32,7 @@ import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
-import static org.dhis2.utils.ConstantsKt.DATA_NOW;
-import static org.dhis2.utils.ConstantsKt.EVENT_MAX;
-import static org.dhis2.utils.ConstantsKt.EVENT_MAX_DEFAULT;
-import static org.dhis2.utils.ConstantsKt.LIMIT_BY_ORG_UNIT;
-import static org.dhis2.utils.ConstantsKt.LIMIT_BY_PROGRAM;
-import static org.dhis2.utils.ConstantsKt.META_NOW;
-import static org.dhis2.utils.ConstantsKt.SHARE_PREFS;
-import static org.dhis2.utils.ConstantsKt.TEI_MAX;
-import static org.dhis2.utils.ConstantsKt.TEI_MAX_DEFAULT;
+import static org.dhis2.utils.ConstantsKt.*;
 
 /**
  * QUADRAM. Created by lmartin on 21/03/2018.

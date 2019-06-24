@@ -23,6 +23,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialAc
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.usescases.main.MainActivity;
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
+import org.dhis2.utils.ConstantsKt;
 import org.dhis2.utils.NetworkUtils;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 import org.json.JSONArray;
@@ -44,8 +45,7 @@ import me.dm7.barcodescanner.zxing.ZXingScannerView;
 import timber.log.Timber;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
-import static org.dhis2.utils.t.*;
-
+import static org.dhis2.utils.ConstantsKt.*;
 
 
 /**

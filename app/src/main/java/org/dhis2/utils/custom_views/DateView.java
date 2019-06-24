@@ -17,6 +17,7 @@ import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.datetime.OnDateSelected;
 import org.dhis2.utils.DatePickerUtils;
 import org.dhis2.utils.DateUtils;
+import org.dhis2.utils.OnDatePickerClickListener;
 
 import java.text.ParseException;
 import java.util.Calendar;
@@ -110,14 +111,14 @@ public class DateView extends FieldLayout implements View.OnClickListener {
             data = data.replace("'", ""); //TODO: Check why it is happening
             if (data.length() == 10) //has format yyyy-MM-dd
                 try {
-                    date = DateUtils.uiDateFormat().parse(data);
+                    date = DateUtils.Companion.uiDateFormat().parse(data);
                 } catch (ParseException e) {
                     Timber.e(e);
                 }
             else
                 try {
-                    date = DateUtils.databaseDateFormat().parse(data);
-                    data = DateUtils.uiDateFormat().format(date);
+                    date = DateUtils.Companion.databaseDateFormat().parse(data);
+                    data = DateUtils.Companion.uiDateFormat().format(date);
                 } catch (ParseException e) {
                     Timber.e(e);
                 }
@@ -155,8 +156,8 @@ public class DateView extends FieldLayout implements View.OnClickListener {
 
     private void showCustomCalendar() {
 
-        DatePickerUtils.getDatePickerDialog(getContext(), label, date, allowFutureDates,
-                new DatePickerUtils.OnDatePickerClickListener() {
+        DatePickerUtils.Companion.getDatePickerDialog(getContext(), label, date, allowFutureDates,
+                new OnDatePickerClickListener() {
                     @Override
                     public void onNegativeClick() {
                         editText.setText(null);
@@ -171,7 +172,7 @@ public class DateView extends FieldLayout implements View.OnClickListener {
                         selectedCalendar.set(Calendar.HOUR_OF_DAY, 0);
                         selectedCalendar.set(Calendar.MINUTE, 0);
                         Date selectedDate = selectedCalendar.getTime();
-                        String result = DateUtils.uiDateFormat().format(selectedDate);
+                        String result = DateUtils.Companion.uiDateFormat().format(selectedDate);
                         editText.setText(result);
                         listener.onDateSelected(selectedDate);
                         nextFocus(DateView.this);

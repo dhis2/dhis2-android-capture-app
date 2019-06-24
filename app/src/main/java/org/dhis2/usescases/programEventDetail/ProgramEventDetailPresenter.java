@@ -11,6 +11,7 @@ import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.main.program.SyncStatusDialog;
+import org.dhis2.utils.ConstantsKt;
 import org.dhis2.utils.OrgUnitUtils;
 import org.dhis2.utils.Period;
 import org.hisp.dhis.android.core.category.CategoryOption;
@@ -32,7 +33,10 @@ import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
-import static org.dhis2.utils.t.*;
+import static org.dhis2.utils.ConstantsKt.EVENT_UID;
+import static org.dhis2.utils.ConstantsKt.ORG_UNIT;
+import static org.dhis2.utils.ConstantsKt.PROGRAM_UID;
+
 
 /**
  * QUADRAM. Created by Cristian on 13/02/2018.

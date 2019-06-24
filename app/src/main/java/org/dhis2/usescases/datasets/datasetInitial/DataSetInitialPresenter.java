@@ -78,7 +78,7 @@ public class DataSetInitialPresenter implements DataSetInitialContract.Presenter
                 view.getDataSetUid(),
                 view.getSelectedOrgUnit(),
                 view.getPeriodType(),
-                DateUtils.databaseDateFormat().format(view.getSelectedPeriod()),
+                DateUtils.Companion.databaseDateFormat().format(view.getSelectedPeriod()),
                 view.getSelectedCatOptions()
         );
         view.startActivity(DataSetTableActivity.class, bundle, true, false, null);

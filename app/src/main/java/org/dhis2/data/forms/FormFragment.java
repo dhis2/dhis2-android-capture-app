@@ -39,7 +39,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialAc
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.usescases.map.MapSelectorActivity;
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
-
+import org.dhis2.utils.ConstantsKt;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.custom_views.CategoryComboDialog;
 import org.dhis2.utils.custom_views.CoordinatesView;
@@ -66,9 +66,7 @@ import io.reactivex.subjects.PublishSubject;
 import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
-import static org.dhis2.utils.ConstantsKt.EVENT_UID;
-import static org.dhis2.utils.ConstantsKt.RQ_MAP_LOCATION_VIEW;
-import static org.dhis2.utils.ConstantsKt.TRACKED_ENTITY_INSTANCE;
+import static org.dhis2.utils.ConstantsKt.*;
 
 
 public class FormFragment extends FragmentGlobalAbstract implements FormView, CoordinatesView.OnMapPositionClick, CoordinatesView.OnCurrentLocationClick {
@@ -595,9 +593,9 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
                                 EnrollmentStatus.ACTIVE);
                         Intent eventInitialIntent = new Intent(getAbstracContext(), EventInitialActivity.class);
                         eventInitialIntent.putExtras(bundle);
-                      /*  eventInitialIntent.putExtra(PROGRAM_UID, programUid);
-                        eventInitialIntent.putExtra(EVENT_UID, enrollmentTrio.val2());
-                        eventInitialIntent.putExtra(PROGRAM_STAGE_UID, programStageUid);*/
+                      /*  eventInitialIntent.putExtra(Constants.PROGRAM_UID, programUid);
+                        eventInitialIntent.putExtra(Constants.EVENT_UID, enrollmentTrio.val2());
+                        eventInitialIntent.putExtra(Constants.PROGRAM_STAGE_UID, programStageUid);*/
                         startActivityForResult(eventInitialIntent, RQ_EVENT);
                     } else {
                         Intent eventCreationIntent = new Intent(getAbstracContext(), EventCaptureActivity.class);

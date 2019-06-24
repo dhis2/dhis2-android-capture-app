@@ -9,7 +9,7 @@ import org.dhis2.data.server.UserManager
 import org.dhis2.usescases.login.LoginActivity
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.sync.SyncActivity
-import org.dhis2.utils.SHARE_PREFS
+import org.dhis2.utils.*
 import org.dhis2.utils.SyncUtils
 import timber.log.Timber
 import java.util.concurrent.TimeUnit

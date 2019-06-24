@@ -23,6 +23,8 @@ import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
 import static android.text.TextUtils.isEmpty;
+import static org.dhis2.utils.ConstantsKt.OPTION_SET_DIALOG_THRESHOLD;
+import static org.dhis2.utils.ConstantsKt.SHARE_PREFS;
 
 public class OptionSetView extends FieldLayout implements PopupMenu.OnMenuItemClickListener, OptionSetOnClickListener {
     private ViewDataBinding binding;

@@ -26,6 +26,7 @@ import org.dhis2.usescases.programStageSelection.ProgramStageSelectionActivity;
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import org.dhis2.usescases.teiDashboard.DashboardViewModel;
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
+import org.dhis2.utils.ConstantsKt;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.EventCreationType;
@@ -46,7 +47,13 @@ import io.reactivex.Single;
 import io.reactivex.functions.Consumer;
 
 import static android.app.Activity.RESULT_OK;
-import static org.dhis2.utils.t.*;
+import static org.dhis2.utils.ConstantsKt.ENROLLMENT_UID;
+import static org.dhis2.utils.ConstantsKt.EVENT_CREATION_TYPE;
+import static org.dhis2.utils.ConstantsKt.EVENT_SCHEDULE_INTERVAL;
+import static org.dhis2.utils.ConstantsKt.ORG_UNIT;
+import static org.dhis2.utils.ConstantsKt.PROGRAM_UID;
+import static org.dhis2.utils.ConstantsKt.TRACKED_ENTITY_INSTANCE;
+import static org.dhis2.utils.ConstantsKt.*;
 
 /**
  * -Created by ppajuelo on 29/11/2017.
@@ -227,7 +234,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
                 adapter.swapItems(events);
                 for (EventModel event : events) {
                     if (event.eventDate() != null) {
-                        if (event.eventDate().after(DateUtils.getInstance().getToday()))
+                        if (event.eventDate().after(DateUtils.Companion.getInstance().getToday()))
                             binding.teiRecycler.scrollToPosition(events.indexOf(event));
                     }
                     if (hasCatComb && event.attributeOptionCombo() == null && !catComboShowed.contains(event)) {

@@ -368,9 +368,9 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                 if (teiJson.has("uid"))
                     teiModelBuilder.uid(teiJson.getString("uid"));
                 if (teiJson.has("created"))
-                    teiModelBuilder.created(DateUtils.databaseDateFormat().parse(teiJson.getString("created")));
+                    teiModelBuilder.created(DateUtils.Companion.databaseDateFormat().parse(teiJson.getString("created")));
                 if (teiJson.has("lastUpdated"))
-                    teiModelBuilder.lastUpdated(DateUtils.databaseDateFormat().parse(teiJson.getString("lastUpdated")));
+                    teiModelBuilder.lastUpdated(DateUtils.Companion.databaseDateFormat().parse(teiJson.getString("lastUpdated")));
                 if (teiJson.has("state"))
                     teiModelBuilder.state(State.valueOf(teiJson.getString("state")));
                 if (teiJson.has("organisationUnit"))
@@ -400,9 +400,9 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                         TrackedEntityAttributeValueModel.Builder attrValueModelBuilder;
                         attrValueModelBuilder = TrackedEntityAttributeValueModel.builder();
                         if (attrV.has("created"))
-                            attrValueModelBuilder.created(DateUtils.databaseDateFormat().parse(attrV.getString("created")));
+                            attrValueModelBuilder.created(DateUtils.Companion.databaseDateFormat().parse(attrV.getString("created")));
                         if (attrV.has("lastUpdated"))
-                            attrValueModelBuilder.lastUpdated(DateUtils.databaseDateFormat().parse(attrV.getString("lastUpdated")));
+                            attrValueModelBuilder.lastUpdated(DateUtils.Companion.databaseDateFormat().parse(attrV.getString("lastUpdated")));
                         if (attrV.has("value"))
                             attrValueModelBuilder.value(attrV.getString("value"));
                         if (attrV.has("trackedEntityInstance"))
@@ -462,9 +462,9 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                         if (enrollment.has("uid"))
                             enrollmentModelBuilder.uid(enrollment.getString("uid"));
                         if (enrollment.has("created"))
-                            enrollmentModelBuilder.created(DateUtils.databaseDateFormat().parse(enrollment.getString("created")));
+                            enrollmentModelBuilder.created(DateUtils.Companion.databaseDateFormat().parse(enrollment.getString("created")));
                         if (enrollment.has("lastUpdated"))
-                            enrollmentModelBuilder.lastUpdated(DateUtils.databaseDateFormat().parse(enrollment.getString("lastUpdated")));
+                            enrollmentModelBuilder.lastUpdated(DateUtils.Companion.databaseDateFormat().parse(enrollment.getString("lastUpdated")));
                         if (enrollment.has("state"))
                             enrollmentModelBuilder.state(State.valueOf(enrollment.getString("state")));
                         if (enrollment.has("program"))
@@ -474,9 +474,9 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                         if (enrollment.has("enrollmentStatus"))
                             enrollmentModelBuilder.enrollmentStatus(EnrollmentStatus.valueOf(enrollment.getString("enrollmentStatus")));
                         if (enrollment.has("enrollmentDate"))
-                            enrollmentModelBuilder.enrollmentDate(DateUtils.databaseDateFormat().parse(enrollment.getString("enrollmentDate")));
+                            enrollmentModelBuilder.enrollmentDate(DateUtils.Companion.databaseDateFormat().parse(enrollment.getString("enrollmentDate")));
                         if (enrollment.has("dateOfIncident"))
-                            enrollmentModelBuilder.incidentDate(DateUtils.databaseDateFormat().parse(enrollment.getString("incidentDate ")));
+                            enrollmentModelBuilder.incidentDate(DateUtils.Companion.databaseDateFormat().parse(enrollment.getString("incidentDate ")));
                         if (enrollment.has("organisationUnit"))
                             enrollmentModelBuilder.organisationUnit(enrollment.getString("organisationUnit"));
                         if (enrollment.has("trackedEntityInstance"))
@@ -505,9 +505,9 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                     if (event.has("uid"))
                         eventModelBuilder.uid(event.getString("uid"));
                     if (event.has("created"))
-                        eventModelBuilder.created(DateUtils.databaseDateFormat().parse(event.getString("created")));
+                        eventModelBuilder.created(DateUtils.Companion.databaseDateFormat().parse(event.getString("created")));
                     if (event.has("lastUpdated"))
-                        eventModelBuilder.lastUpdated(DateUtils.databaseDateFormat().parse(event.getString("lastUpdated")));
+                        eventModelBuilder.lastUpdated(DateUtils.Companion.databaseDateFormat().parse(event.getString("lastUpdated")));
                     if (event.has("state"))
                         eventModelBuilder.state(State.valueOf(event.getString("state")));
                     if (event.has("enrollment"))
@@ -519,7 +519,7 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                     if (event.has("organisationUnit"))
                         eventModelBuilder.organisationUnit(event.getString("organisationUnit"));
                     if (event.has("eventDate"))
-                        eventModelBuilder.eventDate(DateUtils.databaseDateFormat().parse(event.getString("eventDate")));
+                        eventModelBuilder.eventDate(DateUtils.Companion.databaseDateFormat().parse(event.getString("eventDate")));
                     if (event.has("status"))
                         eventModelBuilder.status(EventStatus.valueOf(event.getString("status")));
                     if (event.has("attributeOptionCombo"))
@@ -531,9 +531,9 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                     if (event.has("longitude"))
                         eventModelBuilder.longitude(event.getString("longitude"));
                     if (event.has("completedDate"))
-                        eventModelBuilder.completedDate(DateUtils.databaseDateFormat().parse(event.getString("completedDate")));
+                        eventModelBuilder.completedDate(DateUtils.Companion.databaseDateFormat().parse(event.getString("completedDate")));
                     if (event.has("dueDate"))
-                        eventModelBuilder.dueDate(DateUtils.databaseDateFormat().parse(event.getString("dueDate")));
+                        eventModelBuilder.dueDate(DateUtils.Companion.databaseDateFormat().parse(event.getString("dueDate")));
 
                     EventModel eventModel = eventModelBuilder.build();
 
@@ -556,7 +556,7 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                 if (attrV.has("event"))
                     attrValueModelBuilder.event(attrV.getString("event"));
                 if (attrV.has("lastUpdated"))
-                    attrValueModelBuilder.lastUpdated(DateUtils.databaseDateFormat().parse(attrV.getString("lastUpdated")));
+                    attrValueModelBuilder.lastUpdated(DateUtils.Companion.databaseDateFormat().parse(attrV.getString("lastUpdated")));
                 if (attrV.has("dataElement"))
                     attrValueModelBuilder.dataElement(attrV.getString("dataElement"));
                 if (attrV.has("storedBy"))
@@ -630,10 +630,10 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                     eventModelBuilder.enrollment(eventWORegistrationJson.getString("enrollment"));
                 }
                 if (eventWORegistrationJson.has("created")) {
-                    eventModelBuilder.created(DateUtils.databaseDateFormat().parse(eventWORegistrationJson.getString("created")));
+                    eventModelBuilder.created(DateUtils.Companion.databaseDateFormat().parse(eventWORegistrationJson.getString("created")));
                 }
                 if (eventWORegistrationJson.has("lastUpdated")) {
-                    eventModelBuilder.lastUpdated(DateUtils.databaseDateFormat().parse(eventWORegistrationJson.getString("lastUpdated")));
+                    eventModelBuilder.lastUpdated(DateUtils.Companion.databaseDateFormat().parse(eventWORegistrationJson.getString("lastUpdated")));
                 }
                 if (eventWORegistrationJson.has("createdAtClient")) {
                     eventModelBuilder.createdAtClient(eventWORegistrationJson.getString("createdAtClient"));
@@ -665,13 +665,13 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                     orgUnit = eventWORegistrationJson.getString("organisationUnit");
                 }
                 if (eventWORegistrationJson.has("eventDate")) {
-                    eventModelBuilder.eventDate(DateUtils.databaseDateFormat().parse(eventWORegistrationJson.getString("eventDate")));
+                    eventModelBuilder.eventDate(DateUtils.Companion.databaseDateFormat().parse(eventWORegistrationJson.getString("eventDate")));
                 }
                 if (eventWORegistrationJson.has("completedDate")) {
-                    eventModelBuilder.completedDate(DateUtils.databaseDateFormat().parse(eventWORegistrationJson.getString("completedDate")));
+                    eventModelBuilder.completedDate(DateUtils.Companion.databaseDateFormat().parse(eventWORegistrationJson.getString("completedDate")));
                 }
                 if (eventWORegistrationJson.has("dueDate")) {
-                    eventModelBuilder.dueDate(DateUtils.databaseDateFormat().parse(eventWORegistrationJson.getString("dueDate")));
+                    eventModelBuilder.dueDate(DateUtils.Companion.databaseDateFormat().parse(eventWORegistrationJson.getString("dueDate")));
                 }
                 if (eventWORegistrationJson.has("attributeOptionCombo")) {
                     eventModelBuilder.attributeOptionCombo(eventWORegistrationJson.getString("attributeOptionCombo"));
@@ -712,7 +712,7 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                 if (attrV.has("event"))
                     attrValueModelBuilder.event(attrV.getString("event"));
                 if (attrV.has("lastUpdated"))
-                    attrValueModelBuilder.lastUpdated(DateUtils.databaseDateFormat().parse(attrV.getString("lastUpdated")));
+                    attrValueModelBuilder.lastUpdated(DateUtils.Companion.databaseDateFormat().parse(attrV.getString("lastUpdated")));
                 if (attrV.has("dataElement"))
                     attrValueModelBuilder.dataElement(attrV.getString("dataElement"));
                 if (attrV.has("storedBy"))

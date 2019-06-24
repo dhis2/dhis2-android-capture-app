@@ -15,6 +15,7 @@ import org.dhis2.data.forms.dataentry.fields.datetime.OnDateSelected;
 import org.dhis2.databinding.DateTimeViewBinding;
 import org.dhis2.utils.DatePickerUtils;
 import org.dhis2.utils.DateUtils;
+import org.dhis2.utils.OnDatePickerClickListener;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -76,22 +77,22 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
         if (data != null) {
             date = null;
             try {
-                date = DateUtils.databaseDateFormat().parse(data);
+                date = DateUtils.Companion.databaseDateFormat().parse(data);
             } catch (ParseException e) {
                 Timber.w(e);
             }
 
             if (date == null)
                 try {
-                    if (DateUtils.dateHasNoSeconds(data))
-                        date = DateUtils.databaseDateFormatNoSeconds().parse(data);
+                    if (DateUtils.Companion.dateHasNoSeconds(data))
+                        date = DateUtils.Companion.databaseDateFormatNoSeconds().parse(data);
                     else
-                        date = DateUtils.databaseDateFormatNoMillis().parse(data);
+                        date = DateUtils.Companion.databaseDateFormatNoMillis().parse(data);
                 } catch (ParseException e) {
                     Timber.e(e);
                 }
 
-            data = DateUtils.dateTimeFormat().format(date);
+            data = DateUtils.Companion.dateTimeFormat().format(date);
         } else {
             editText.setText("");
         }
@@ -146,8 +147,8 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
 
     private void showCustomCalendar(View view) {
 
-        DatePickerUtils.getDatePickerDialog(getContext(), label, date, allowFutureDates,
-                new DatePickerUtils.OnDatePickerClickListener() {
+        DatePickerUtils.Companion.getDatePickerDialog(getContext(), label, date, allowFutureDates,
+                new OnDatePickerClickListener() {
                     @Override
                     public void onNegativeClick() {
                         editText.setText(null);

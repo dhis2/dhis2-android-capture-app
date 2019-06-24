@@ -30,10 +30,11 @@ import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.FragmentProgramBinding;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
-
+import org.dhis2.utils.ConstantsKt;
 import org.dhis2.utils.DatePickerUtils;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.HelpManager;
+import org.dhis2.utils.OnDatePickerClickListener;
 import org.dhis2.utils.Period;
 import org.dhis2.utils.custom_views.RxDateDialog;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
@@ -170,7 +171,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
 
                         }
                         binding.buttonPeriodText.setText(textToShow);
-                        presenter.updateDateFilter(DateUtils.getInstance().getDatePeriodListFor(selectedDates, currentPeriod));
+                        presenter.updateDateFilter(DateUtils.Companion.getInstance().getDatePeriodListFor(selectedDates, currentPeriod));
 
                     } else {
                         ArrayList<Date> date = new ArrayList<>();
@@ -194,7 +195,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                                 break;
                         }
                         binding.buttonPeriodText.setText(text);
-                        presenter.updateDateFilter(DateUtils.getInstance().getDatePeriodListFor(selectedDates, currentPeriod));
+                        presenter.updateDateFilter(DateUtils.Companion.getInstance().getDatePeriodListFor(selectedDates, currentPeriod));
                     }
                 }, Timber::d);
             } else if (currentPeriod == DAILY) {
@@ -205,7 +206,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
 
     private void showCustomCalendar(Calendar calendar) {
 
-        DatePickerUtils.getDatePickerDialog(context, new DatePickerUtils.OnDatePickerClickListener() {
+        DatePickerUtils.Companion.getDatePickerDialog(context, new OnDatePickerClickListener() {
             @Override
             public void onNegativeClick() {
 
@@ -214,11 +215,11 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
             @Override
             public void onPositiveClick(DatePicker datePicker) {
                 calendar.set(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
-                Date[] dates = DateUtils.getInstance().getDateFromDateAndPeriod(calendar.getTime(), currentPeriod);
+                Date[] dates = DateUtils.Companion.getInstance().getDateFromDateAndPeriod(calendar.getTime(), currentPeriod);
                 ArrayList<Date> selectedDates = new ArrayList<>();
                 selectedDates.add(dates[0]);
-                presenter.updateDateFilter(DateUtils.getInstance().getDatePeriodListFor(selectedDates, currentPeriod));
-                binding.buttonPeriodText.setText(DateUtils.getInstance().formatDate(dates[0]));
+                presenter.updateDateFilter(DateUtils.Companion.getInstance().getDatePeriodListFor(selectedDates, currentPeriod));
+                binding.buttonPeriodText.setText(DateUtils.Companion.getInstance().formatDate(dates[0]));
                 chosenDateDay = dates[0];
             }
         }).show();
@@ -275,9 +276,9 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                     ArrayList<Date> datesD = new ArrayList<>();
                     datesD.add(chosenDateDay);
                     if (!datesD.isEmpty())
-                        textToShow = DateUtils.getInstance().formatDate(datesD.get(0));
+                        textToShow = DateUtils.Companion.getInstance().formatDate(datesD.get(0));
                     if (!datesD.isEmpty() && datesD.size() > 1) textToShow += "... ";
-                    presenter.updateDateFilter(DateUtils.getInstance().getDatePeriodListFor(datesD, currentPeriod));
+                    presenter.updateDateFilter(DateUtils.Companion.getInstance().getDatePeriodListFor(datesD, currentPeriod));
                     break;
                 case WEEKLY:
                     if (!chosenDateWeek.isEmpty()) {
@@ -287,7 +288,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                     }
                     if (!chosenDateWeek.isEmpty() && chosenDateWeek.size() > 1)
                         textToShow += "... ";
-                    presenter.updateDateFilter(DateUtils.getInstance().getDatePeriodListFor(chosenDateWeek, currentPeriod));
+                    presenter.updateDateFilter(DateUtils.Companion.getInstance().getDatePeriodListFor(chosenDateWeek, currentPeriod));
                     break;
                 case MONTHLY:
                     if (!chosenDateMonth.isEmpty()) {
@@ -296,14 +297,14 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                     }
                     if (!chosenDateMonth.isEmpty() && chosenDateMonth.size() > 1)
                         textToShow += "... ";
-                    presenter.updateDateFilter(DateUtils.getInstance().getDatePeriodListFor(chosenDateMonth, currentPeriod));
+                    presenter.updateDateFilter(DateUtils.Companion.getInstance().getDatePeriodListFor(chosenDateMonth, currentPeriod));
                     break;
                 case YEARLY:
                     if (!chosenDateYear.isEmpty())
                         textToShow = yearFormat.format(chosenDateYear.get(0));
                     if (!chosenDateYear.isEmpty() && chosenDateYear.size() > 1)
                         textToShow += "... ";
-                    presenter.updateDateFilter(DateUtils.getInstance().getDatePeriodListFor(chosenDateYear, currentPeriod));
+                    presenter.updateDateFilter(DateUtils.Companion.getInstance().getDatePeriodListFor(chosenDateYear, currentPeriod));
                     break;
             }
 

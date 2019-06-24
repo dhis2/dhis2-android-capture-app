@@ -9,7 +9,7 @@ import androidx.work.WorkManager;
 
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.usescases.login.LoginActivity;
-
+import org.dhis2.utils.ConstantsKt;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.user.User;
 
@@ -20,6 +20,8 @@ import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
+import static org.dhis2.utils.ConstantsKt.DEFAULT_CAT_COMBO;
+import static org.dhis2.utils.ConstantsKt.SHARE_PREFS;
 
 final class MainPresenter implements MainContracts.Presenter {
 

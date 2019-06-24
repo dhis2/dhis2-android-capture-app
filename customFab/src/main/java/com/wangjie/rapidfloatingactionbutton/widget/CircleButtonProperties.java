@@ -1,7 +1,7 @@
 package com.wangjie.rapidfloatingactionbutton.widget;
 
 import android.content.Context;
-import com.wangjie.rapidfloatingactionbutton.RFABSize;
+import com.wangjie.rapidfloatingactionbutton.constants.RFABSize;
 import com.wangjie.rapidfloatingactionbutton.util.RFABTextUtil;
 
 import java.io.Serializable;

@@ -19,7 +19,7 @@ import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.databinding.ActivityEventDetailBinding;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
-
+import org.dhis2.utils.ConstantsKt;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.HelpManager;
@@ -140,7 +140,7 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
     public void isEventExpired(ProgramModel program) {
         EventModel event = eventDetailModel.getEventModel();
         if (event.status() == EventStatus.COMPLETED &&
-                DateUtils.getInstance().hasExpired(eventDetailModel.getEventModel(), program.expiryDays(), program.completeEventsExpiryDays(), program.expiryPeriodType())) {
+                DateUtils.Companion.getInstance().hasExpired(eventDetailModel.getEventModel(), program.expiryDays(), program.completeEventsExpiryDays(), program.expiryPeriodType())) {
             // TODO implement event expiration logic
         }
     }

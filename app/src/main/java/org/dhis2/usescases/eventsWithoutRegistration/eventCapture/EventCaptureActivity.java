@@ -22,7 +22,7 @@ import org.dhis2.databinding.ActivityEventCaptureBinding;
 import org.dhis2.databinding.WidgetDatepickerBinding;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
-import org.dhis2.utils.t;
+import org.dhis2.utils.ConstantsKt;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.custom_views.CustomDialog;
@@ -46,8 +46,8 @@ import androidx.databinding.DataBindingUtil;
 import io.reactivex.functions.Consumer;
 import timber.log.Timber;
 
-import static org.dhis2.utils.t.*;
-
+import static org.dhis2.utils.ConstantsKt.PROGRAM_UID;
+import static org.dhis2.utils.ConstantsKt.*;
 
 /**
  * QUADRAM. Created by ppajuelo on 19/11/2018.
@@ -227,7 +227,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     }
 
     private void showNativeCalendar() {
-        Calendar calendar = DateUtils.getInstance().getCalendar();
+        Calendar calendar = DateUtils.Companion.getInstance().getCalendar();
         DatePickerDialog datePickerDialog = new DatePickerDialog(this, (view, year, month, dayOfMonth) -> {
             Calendar chosenDate = Calendar.getInstance();
             chosenDate.set(year, month, dayOfMonth);
@@ -250,7 +250,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         WidgetDatepickerBinding widgetBinding = WidgetDatepickerBinding.inflate(layoutInflater);
         final DatePicker datePicker = widgetBinding.widgetDatepicker;
 
-        Calendar c = DateUtils.getInstance().getCalendar();
+        Calendar c = DateUtils.Companion.getInstance().getCalendar();
         int year = c.get(Calendar.YEAR);
         int month = c.get(Calendar.MONTH);
         int day = c.get(Calendar.DAY_OF_MONTH);

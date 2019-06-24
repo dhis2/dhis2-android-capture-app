@@ -135,7 +135,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                 dashboardRepository.getTEIEnrollmentEvents(programUid, teUid)
                         .map(eventModels -> {
                             for (EventModel eventModel : eventModels) {
-                                if (eventModel.status() == EventStatus.SCHEDULE && eventModel.dueDate() != null && eventModel.dueDate().before(DateUtils.getInstance().getToday())) { //If a schedule event dueDate is before today the event is skipped
+                                if (eventModel.status() == EventStatus.SCHEDULE && eventModel.dueDate() != null && eventModel.dueDate().before(DateUtils.Companion.getInstance().getToday())) { //If a schedule event dueDate is before today the event is skipped
                                     dashboardRepository.updateState(eventModel, EventStatus.SKIPPED);
                                 }
                             }

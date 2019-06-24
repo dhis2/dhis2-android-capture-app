@@ -20,7 +20,7 @@ import org.dhis2.databinding.FragmentRelationshipsBinding;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
 import org.dhis2.utils.ColorUtils;
-
+import org.dhis2.utils.ConstantsKt;
 import org.hisp.dhis.android.core.relationship.RelationshipTypeModel;
 import org.jetbrains.annotations.NotNull;
 
@@ -36,6 +36,7 @@ import androidx.databinding.DataBindingUtil;
 import io.reactivex.functions.Consumer;
 
 import static android.app.Activity.RESULT_OK;
+import static org.dhis2.utils.ConstantsKt.REQ_ADD_RELATIONSHIP;
 
 /**
  * QUADRAM. Created by ppajuelo on 29/11/2017.
@@ -148,7 +149,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
                     .setResId(resource)
                     .setLabelTextBold(true)
                     .setLabelBackgroundDrawable(AppCompatResources.getDrawable(getAbstracContext(), R.drawable.bg_chip))
-                    .setIconNormalColor(ColorUtils.getPrimaryColor(getAbstracContext(), ColorUtils.ColorType.PRIMARY_DARK))
+                    .setIconNormalColor(ColorUtils.Companion.getPrimaryColor(getAbstracContext(), ColorUtils.ColorType.PRIMARY_DARK))
                     .setWrapper(Pair.create(relationshipType, trio.val1()))
             );
         }

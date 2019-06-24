@@ -11,7 +11,7 @@ import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.usescases.map.MapSelectorActivity;
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import org.dhis2.usescases.teiDashboard.DashboardRepository;
-
+import org.dhis2.utils.ConstantsKt;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 
 import androidx.core.app.ActivityCompat;
@@ -22,6 +22,7 @@ import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter.ACCESS_COARSE_LOCATION_PERMISSION_REQUEST;
+import static org.dhis2.utils.ConstantsKt.RQ_MAP_LOCATION;
 
 /**
  * QUADRAM. Created by frodriguez on 12/13/2017.

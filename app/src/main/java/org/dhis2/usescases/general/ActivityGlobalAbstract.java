@@ -40,7 +40,7 @@ import org.dhis2.usescases.main.program.SyncStatusDialog;
 import org.dhis2.usescases.map.MapSelectorActivity;
 import org.dhis2.usescases.splash.SplashActivity;
 import org.dhis2.utils.ColorUtils;
-
+import org.dhis2.utils.ConstantsKt;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.OnDialogClickListener;
 import org.dhis2.utils.SyncUtils;
@@ -55,15 +55,9 @@ import java.util.List;
 import rx.Observable;
 import rx.subjects.BehaviorSubject;
 import timber.log.Timber;
+import org.dhis2.utils.*;
 
-import static org.dhis2.utils.ConstantsKt.DESCRIPTION_DIALOG;
-import static org.dhis2.utils.ConstantsKt.PROGRAM_THEME;
-import static org.dhis2.utils.ConstantsKt.RQ_MAP_LOCATION_VIEW;
-import static org.dhis2.utils.ConstantsKt.SCREEN_NAME;
-import static org.dhis2.utils.ConstantsKt.SERVER;
-import static org.dhis2.utils.ConstantsKt.SHARE_PREFS;
-import static org.dhis2.utils.ConstantsKt.THEME;
-import static org.dhis2.utils.ConstantsKt.USER;
+import static org.dhis2.utils.ConstantsKt.*;
 
 /**
  * QUADRAM. Created by Javi on 28/07/2017.
@@ -389,11 +383,11 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
     }
 
     protected int getPrimaryColor() {
-        return ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY);
+        return ColorUtils.Companion.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY);
     }
 
     protected int getAccentColor() {
-        return ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.ACCENT);
+        return ColorUtils.Companion.getPrimaryColor(this, ColorUtils.ColorType.ACCENT);
     }
 
 

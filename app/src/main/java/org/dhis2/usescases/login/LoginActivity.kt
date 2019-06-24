@@ -31,8 +31,6 @@ import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.sync.SyncActivity
 import org.dhis2.utils.*
-import org.dhis2.utils.ACCOUNT_RECOVERY
-import org.dhis2.utils.RQ_QR_SCANNER
 import org.dhis2.utils.WebViewActivity.Companion.WEB_VIEW_URL
 import timber.log.Timber
 import java.io.BufferedReader

@@ -99,11 +99,13 @@ class DatePickerUtils {
             return dialog
         }
 
-
-        interface OnDatePickerClickListener {
-            fun onNegativeClick()
-
-            fun onPositiveClick(datePicker: DatePicker)
-        }
     }
+
+
+}
+
+public interface OnDatePickerClickListener {
+    fun onNegativeClick()
+
+    fun onPositiveClick(datePicker: DatePicker)
 }

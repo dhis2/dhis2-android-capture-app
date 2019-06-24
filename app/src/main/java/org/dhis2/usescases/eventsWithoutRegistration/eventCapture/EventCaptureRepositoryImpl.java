@@ -364,7 +364,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         Event event = d2.eventModule().events.uid(eventUid).withAllChildren().get();
         Program program = d2.programModule().programs.uid(event.program()).withAllChildren().get();
         ProgramStage stage = d2.programModule().programStages.uid(event.programStage()).get();
-        boolean isExpired = DateUtils.getInstance().isEventExpired(event.eventDate(), event.completedDate(), event.status(), program.completeEventsExpiryDays(), stage.periodType() != null ? stage.periodType() : program.expiryPeriodType(), program.expiryDays());
+        boolean isExpired = DateUtils.Companion.getInstance().isEventExpired(event.eventDate(), event.completedDate(), event.status(), program.completeEventsExpiryDays(), stage.periodType() != null ? stage.periodType() : program.expiryPeriodType(), program.expiryDays());
         boolean blockAfterComplete = event.status() == EventStatus.COMPLETED && stage.blockEntryForm();
         boolean editable = isEnrollmentOpen() && !blockAfterComplete && !isExpired && getAccessDataWrite() && inOrgUnitRange(eventUid);
         return !editable;
@@ -379,7 +379,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     @Override
     public Flowable<String> eventDate() {
         return Flowable.just(d2.eventModule().events.uid(eventUid).get())
-                .map(event -> DateUtils.uiDateFormat().format(event.eventDate()));
+                .map(event -> DateUtils.Companion.uiDateFormat().format(event.eventDate()));
     }
 
     @Override
@@ -628,9 +628,9 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     public Observable<Boolean> completeEvent() {
         ContentValues contentValues = currentEvent.toContentValues();
         contentValues.put(EventModel.Columns.STATUS, EventStatus.COMPLETED.name());
-        String completeDate = DateUtils.databaseDateFormat().format(DateUtils.getInstance().getToday());
+        String completeDate = DateUtils.Companion.databaseDateFormat().format(DateUtils.Companion.getInstance().getToday());
         contentValues.put(EventModel.Columns.COMPLETE_DATE, completeDate);
-        contentValues.put("lastUpdated", DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
+        contentValues.put("lastUpdated", DateUtils.Companion.databaseDateFormat().format(Calendar.getInstance().getTime()));
         contentValues.put(EventModel.Columns.STATE, currentEvent.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
         boolean updated = briteDatabase.update(EventModel.TABLE, contentValues, "uid = ?", eventUid) > 0;
         if (updated && currentEvent.enrollment() != null)
@@ -642,7 +642,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     public boolean reopenEvent() {
         ContentValues contentValues = currentEvent.toContentValues();
         contentValues.put(EventModel.Columns.STATUS, EventStatus.ACTIVE.name());
-        contentValues.put("lastUpdated", DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
+        contentValues.put("lastUpdated", DateUtils.Companion.databaseDateFormat().format(Calendar.getInstance().getTime()));
         contentValues.put(EventModel.Columns.STATE, currentEvent.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
         boolean updated = briteDatabase.update(EventModel.TABLE, contentValues, "uid = ?", eventUid) > 0;
         if (updated && currentEvent.enrollment() != null)
@@ -676,7 +676,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     private void updateEnrollment(String enrollmentUid) {
         Enrollment enrollment = d2.enrollmentModule().enrollments.uid(enrollmentUid).get();
         ContentValues cv = enrollment.toContentValues();
-        cv.put("lastUpdated", DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
+        cv.put("lastUpdated", DateUtils.Companion.databaseDateFormat().format(Calendar.getInstance().getTime()));
         cv.put("state", enrollment.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
         briteDatabase.update(EnrollmentModel.TABLE, cv, "uid = ?", enrollmentUid);
         updateTei(enrollment.trackedEntityInstance());
@@ -685,7 +685,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     private void updateTei(String teiUid) {
         TrackedEntityInstance tei = d2.trackedEntityModule().trackedEntityInstances.uid(teiUid).get();
         ContentValues cv = tei.toContentValues();
-        cv.put("lastUpdated", DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
+        cv.put("lastUpdated", DateUtils.Companion.databaseDateFormat().format(Calendar.getInstance().getTime()));
         cv.put("state", tei.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
         briteDatabase.update(TrackedEntityInstanceModel.TABLE, cv, "uid = ?", teiUid);
     }
@@ -694,7 +694,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     public Observable<Boolean> updateEventStatus(EventStatus status) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(EventModel.Columns.STATUS, status.name());
-        String updateDate = DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime());
+        String updateDate = DateUtils.Companion.databaseDateFormat().format(Calendar.getInstance().getTime());
         contentValues.put(EventModel.Columns.LAST_UPDATED, updateDate);
         return Observable.just(briteDatabase.update(EventModel.TABLE, contentValues, "uid = ?", eventUid) > 0);
     }
@@ -702,8 +702,8 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     @Override
     public Observable<Boolean> rescheduleEvent(Date newDate) {
         ContentValues cv = currentEvent.toContentValues();
-        cv.put(EventModel.Columns.DUE_DATE, DateUtils.databaseDateFormat().format(newDate));
-        cv.put("lastUpdated", DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
+        cv.put(EventModel.Columns.DUE_DATE, DateUtils.Companion.databaseDateFormat().format(newDate));
+        cv.put("lastUpdated", DateUtils.Companion.databaseDateFormat().format(Calendar.getInstance().getTime()));
         cv.put("state", currentEvent.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
         cv.put("status", EventStatus.SCHEDULE.name());
         boolean updated = briteDatabase.update(EventModel.TABLE, cv, "uid = ?", eventUid) > 0;

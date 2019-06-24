@@ -18,7 +18,7 @@ import org.dhis2.databinding.ActivityTeidataDetailBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.map.MapSelectorActivity;
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
-
+import org.dhis2.utils.ConstantsKt;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 
 import java.util.Locale;
@@ -26,6 +26,8 @@ import java.util.Locale;
 import javax.inject.Inject;
 
 import io.reactivex.functions.Consumer;
+
+import static org.dhis2.utils.ConstantsKt.RQ_MAP_LOCATION;
 
 public class TeiDataDetailActivity extends ActivityGlobalAbstract implements TeiDataDetailContracts.View {
     ActivityTeidataDetailBinding binding;

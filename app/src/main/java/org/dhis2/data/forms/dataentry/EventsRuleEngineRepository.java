@@ -157,7 +157,7 @@ public final class EventsRuleEngineRepository implements RuleEngineRepository {
         return briteDatabase.createQuery(Arrays.asList(EventModel.TABLE,
                 TrackedEntityDataValueModel.TABLE), QUERY_VALUES, eventUid == null ? "" : eventUid)
                 .mapToList(cursor -> {
-                    Date eventDate = DateUtils.databaseDateFormat().parse(cursor.getString(0));
+                    Date eventDate = DateUtils.Companion.databaseDateFormat().parse(cursor.getString(0));
                     String programStage = cursor.getString(1);
                     String dataElement = cursor.getString(2);
                     String value = cursor.getString(3) != null ? cursor.getString(3) : "";

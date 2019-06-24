@@ -111,7 +111,7 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
                 Chip chip = new Chip(parentContext);
                 chip.setText(enrollmentInfo.val0());
 
-                int color = ColorUtils.getColorFrom(enrollmentInfo.val1(), ColorUtils.getPrimaryColor(parentContext, ColorUtils.ColorType.PRIMARY_LIGHT));
+                int color = ColorUtils.Companion.getColorFrom(enrollmentInfo.val1(), ColorUtils.Companion.getPrimaryColor(parentContext, ColorUtils.ColorType.PRIMARY_LIGHT));
                 int icon;
                 if (!isEmpty(enrollmentInfo.val2())) {
                     Resources resources = parentContext.getResources();
@@ -140,7 +140,7 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
 
                 finalDrawable.mutate();
 
-                finalDrawable.getDrawable(1).setColorFilter(new PorterDuffColorFilter(ColorUtils.getContrastColor(color), PorterDuff.Mode.SRC_IN));
+                finalDrawable.getDrawable(1).setColorFilter(new PorterDuffColorFilter(ColorUtils.Companion.getContrastColor(color), PorterDuff.Mode.SRC_IN));
                 finalDrawable.getDrawable(0).setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN));
 
                 chip.setChipIcon(finalDrawable);

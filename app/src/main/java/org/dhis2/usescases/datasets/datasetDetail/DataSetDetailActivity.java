@@ -41,6 +41,7 @@ import javax.inject.Inject;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.res.ResourcesCompat;
+import androidx.core.view.GravityCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import io.reactivex.Flowable;
@@ -145,10 +146,10 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
 
     @Override
     public void openDrawer() {
-        if (!binding.drawerLayout.isDrawerOpen(Gravity.END))
-            binding.drawerLayout.openDrawer(Gravity.END);
+        if (!binding.drawerLayout.isDrawerOpen(GravityCompat.END))
+            binding.drawerLayout.openDrawer(GravityCompat.END);
         else
-            binding.drawerLayout.closeDrawer(Gravity.END);
+            binding.drawerLayout.closeDrawer(GravityCompat.END);
     }
 
     @Override
@@ -191,7 +192,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
                 ArrayList<Date> datesD = new ArrayList<>();
                 datesD.add(chosenDateDay);
                 if (!datesD.isEmpty())
-                    textToShow = DateUtils.getInstance().formatDate(datesD.get(0));
+                    textToShow = DateUtils.Companion.getInstance().formatDate(datesD.get(0));
                 if (!datesD.isEmpty() && datesD.size() > 1) textToShow += "... ";
                 // TODO
                 presenter.getDataSetWithDates(datesD, currentPeriod, orgUnitFilter.toString());
@@ -302,12 +303,12 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
         DatePickerDialog pickerDialog;
         pickerDialog = new DatePickerDialog(getContext(), (datePicker, year, monthOfYear, dayOfMonth) -> {
             calendar.set(year, monthOfYear, dayOfMonth);
-            Date[] dates = DateUtils.getInstance().getDateFromDateAndPeriod(calendar.getTime(), currentPeriod);
+            Date[] dates = DateUtils.Companion.getInstance().getDateFromDateAndPeriod(calendar.getTime(), currentPeriod);
             ArrayList<Date> day = new ArrayList<>();
             day.add(dates[0]);
             // TODO
             presenter.getDataSetWithDates(day, currentPeriod, orgUnitFilter.toString());
-            binding.buttonPeriodText.setText(DateUtils.getInstance().formatDate(dates[0]));
+            binding.buttonPeriodText.setText(DateUtils.Companion.getInstance().formatDate(dates[0]));
             chosenDateDay = dates[0];
         }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
 
@@ -336,12 +337,12 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(getContext(), R.style.DatePickerTheme)
                 .setPositiveButton(R.string.action_accept, (dialog, which) -> {
                     calendar.set(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
-                    Date[] dates = DateUtils.getInstance().getDateFromDateAndPeriod(calendar.getTime(), currentPeriod);
+                    Date[] dates = DateUtils.Companion.getInstance().getDateFromDateAndPeriod(calendar.getTime(), currentPeriod);
                     ArrayList<Date> dayArray = new ArrayList<>();
                     dayArray.add(dates[0]);
                     // TODO
                     presenter.getDataSetWithDates(dayArray, currentPeriod, orgUnitFilter.toString());
-                    binding.buttonPeriodText.setText(DateUtils.getInstance().formatDate(dates[0]));
+                    binding.buttonPeriodText.setText(DateUtils.Companion.getInstance().formatDate(dates[0]));
                     chosenDateDay = dates[0];
                 })
                 .setNeutralButton(getContext().getResources().getString(R.string.change_calendar), (dialog, which) -> showNativeCalendar(calendar));

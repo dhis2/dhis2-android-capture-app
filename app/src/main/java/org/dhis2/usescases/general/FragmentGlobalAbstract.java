@@ -17,13 +17,14 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import org.dhis2.usescases.main.program.SyncStatusDialog;
-
+import org.dhis2.utils.ConstantsKt;
 import org.dhis2.utils.OnDialogClickListener;
 
 import java.lang.reflect.Type;
 import java.util.List;
 
 import static android.content.Context.MODE_PRIVATE;
+import static org.dhis2.utils.ConstantsKt.SHARE_PREFS;
 
 /**
  * QUADRAM. Created by ppajuelo on 18/10/2017.

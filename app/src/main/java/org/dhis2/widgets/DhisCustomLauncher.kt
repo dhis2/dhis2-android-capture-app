@@ -8,7 +8,7 @@ import android.content.Intent
 import android.widget.RemoteViews
 import org.dhis2.R
 import org.dhis2.usescases.splash.SplashActivity
-import org.dhis2.utils.SHARE_PREFS
+import org.dhis2.utils.*
 
 
 /**

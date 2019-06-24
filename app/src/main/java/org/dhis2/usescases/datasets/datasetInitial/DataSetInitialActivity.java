@@ -13,7 +13,7 @@ import org.dhis2.R;
 import org.dhis2.databinding.ActivityDatasetInitialBinding;
 import org.dhis2.databinding.ItemCategoryComboBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
-
+import org.dhis2.utils.ConstantsKt;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.custom_views.OrgUnitDialog;
 import org.dhis2.utils.custom_views.PeriodDialog;
@@ -32,6 +32,8 @@ import javax.inject.Inject;
 
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
+
+import static org.dhis2.utils.ConstantsKt.DATA_SET_UID;
 
 public class DataSetInitialActivity extends ActivityGlobalAbstract implements DataSetInitialContract.View {
 
@@ -122,10 +124,10 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
                 .setPeriod(periodType)
 //                .setMinDate() TODO: Depends on dataSet expiration settings and orgUnit Opening date
 //                .setMaxDate() TODO: Depends on dataSet open Future settings. Default: TODAY
-                .setMaxDate(DateUtils.getInstance().getCalendar().getTime())
+                .setMaxDate(DateUtils.Companion.getInstance().getCalendar().getTime())
                 .setPossitiveListener(selectedDate -> {
                     this.selectedPeriod = selectedDate;
-                    binding.dataSetPeriodEditText.setText(DateUtils.getInstance().getPeriodUIString(periodType, selectedDate, Locale.getDefault()));
+                    binding.dataSetPeriodEditText.setText(DateUtils.Companion.getInstance().getPeriodUIString(periodType, selectedDate, Locale.getDefault()));
                     checkActionVisivbility();
                 })
                 .show(getSupportFragmentManager(), PeriodDialog.class.getSimpleName());

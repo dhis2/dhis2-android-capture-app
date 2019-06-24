@@ -13,7 +13,7 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.utils.CodeGenerator;
-
+import org.dhis2.utils.ConstantsKt;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
@@ -232,14 +232,14 @@ public class EnrollmentFormRepository implements FormRepository {
                         rulesRepository.rulesNew(program),
                         rulesRepository.ruleVariables(program),
                         rulesRepository.enrollmentEvents(enrollmentUid),
-                        rulesRepository.query),
-                        (rules, variables, events,  -> {
+                        rulesRepository.queryConstants(),
+                        (rules, variables, events, constants) -> {
                             RuleEngine.Builder builder = RuleEngineContext.builder(expressionEvaluator)
                                     .rules(rules)
                                     .ruleVariables(variables)
                                     .calculatedValueMap(new HashMap<>())
                                     .supplementaryData(new HashMap<>())
-                                    .alue(
+                                    .constantsValue(constants)
                                     .build().toEngineBuilder();
                             builder.triggerEnvironment(TriggerEnvironment.ANDROIDCLIENT);
                             builder.events(events);
@@ -255,14 +255,14 @@ public class EnrollmentFormRepository implements FormRepository {
                         rulesRepository.rulesNew(program),
                         rulesRepository.ruleVariables(program),
                         rulesRepository.enrollmentEvents(enrollmentUid),
-                        rulesRepository.query),
-                        (rules, variables, events,  -> {
+                        rulesRepository.queryConstants(),
+                        (rules, variables, events, constants) -> {
                             RuleEngine.Builder builder = RuleEngineContext.builder(expressionEvaluator)
                                     .rules(rules)
                                     .ruleVariables(variables)
                                     .calculatedValueMap(new HashMap<>())
                                     .supplementaryData(new HashMap<>())
-                                    .alue(
+                                    .constantsValue(constants)
                                     .build().toEngineBuilder();
                             builder.triggerEnvironment(TriggerEnvironment.ANDROIDCLIENT);
                             builder.events(events);
@@ -294,7 +294,7 @@ public class EnrollmentFormRepository implements FormRepository {
                 .flatMap(programModel -> briteDatabase.createQuery(EnrollmentModel.TABLE, SELECT_ENROLLMENT_DATE, enrollmentUid == null ? "" : enrollmentUid)
                         .mapToOne(EnrollmentModel::create)
                         .map(enrollmentModel -> Pair.create(programModel, enrollmentModel.enrollmentDate() != null ?
-                                DateUtils.uiDateFormat().format(enrollmentModel.enrollmentDate()) : "")))
+                                DateUtils.Companion.uiDateFormat().format(enrollmentModel.enrollmentDate()) : "")))
                 .toFlowable(BackpressureStrategy.LATEST)
                 .distinctUntilChanged();
     }
@@ -307,7 +307,7 @@ public class EnrollmentFormRepository implements FormRepository {
                 .flatMap(programModel -> briteDatabase.createQuery(EnrollmentModel.TABLE, SELECT_INCIDENT_DATE, enrollmentUid == null ? "" : enrollmentUid)
                         .mapToOne(EnrollmentModel::create)
                         .map(enrollmentModel -> Pair.create(programModel, enrollmentModel.incidentDate() != null ?
-                                DateUtils.uiDateFormat().format(enrollmentModel.incidentDate()) : "")))
+                                DateUtils.Companion.uiDateFormat().format(enrollmentModel.incidentDate()) : "")))
                 .toFlowable(BackpressureStrategy.LATEST)
                 .distinctUntilChanged();
     }
@@ -343,7 +343,7 @@ public class EnrollmentFormRepository implements FormRepository {
     public Consumer<String> storeReportDate() {
         return reportDate -> {
             Calendar cal = Calendar.getInstance();
-            Date date = DateUtils.databaseDateFormat().parse(reportDate);
+            Date date = DateUtils.Companion.databaseDateFormat().parse(reportDate);
             cal.setTime(date);
             cal.set(Calendar.HOUR_OF_DAY, 0);
             cal.set(Calendar.MINUTE, 0);
@@ -351,7 +351,7 @@ public class EnrollmentFormRepository implements FormRepository {
             cal.set(Calendar.MILLISECOND, 0);
 
             ContentValues enrollment = new ContentValues();
-            enrollment.put(EnrollmentModel.Columns.ENROLLMENT_DATE, DateUtils.databaseDateFormat().format(cal.getTime()));
+            enrollment.put(EnrollmentModel.Columns.ENROLLMENT_DATE, DateUtils.Companion.databaseDateFormat().format(cal.getTime()));
             enrollment.put(EnrollmentModel.Columns.STATE, State.TO_UPDATE.name()); // TODO: Check if state is TO_POST
             // TODO: and if so, keep the TO_POST state
 
@@ -369,13 +369,13 @@ public class EnrollmentFormRepository implements FormRepository {
             if (!isEmpty(reportDate)) {
 
                 Calendar cal = Calendar.getInstance();
-                Date date = DateUtils.databaseDateFormat().parse(reportDate);
+                Date date = DateUtils.Companion.databaseDateFormat().parse(reportDate);
                 cal.setTime(date);
                 cal.set(Calendar.HOUR_OF_DAY, 0);
                 cal.set(Calendar.MINUTE, 0);
                 cal.set(Calendar.SECOND, 0);
                 cal.set(Calendar.MILLISECOND, 0);
-                reportDateToStore = DateUtils.databaseDateFormat().format(cal.getTime());
+                reportDateToStore = DateUtils.Companion.databaseDateFormat().format(cal.getTime());
             }
 
             ContentValues enrollment = new ContentValues();
@@ -400,13 +400,13 @@ public class EnrollmentFormRepository implements FormRepository {
             String incidentDateToStore = null;
             if (!isEmpty(incidentDate)) {
                 Calendar cal = Calendar.getInstance();
-                Date date = DateUtils.databaseDateFormat().parse(incidentDate);
+                Date date = DateUtils.Companion.databaseDateFormat().parse(incidentDate);
                 cal.setTime(date);
                 cal.set(Calendar.HOUR_OF_DAY, 0);
                 cal.set(Calendar.MINUTE, 0);
                 cal.set(Calendar.SECOND, 0);
                 cal.set(Calendar.MILLISECOND, 0);
-                incidentDateToStore = DateUtils.databaseDateFormat().format(cal.getTime());
+                incidentDateToStore = DateUtils.Companion.databaseDateFormat().format(cal.getTime());
             }
             ContentValues enrollment = new ContentValues();
             enrollment.put(EnrollmentModel.Columns.INCIDENT_DATE, incidentDateToStore);
@@ -441,7 +441,7 @@ public class EnrollmentFormRepository implements FormRepository {
     public Consumer<String> storeIncidentDate() {
         return incidentDate -> {
             Calendar cal = Calendar.getInstance();
-            Date date = DateUtils.databaseDateFormat().parse(incidentDate);
+            Date date = DateUtils.Companion.databaseDateFormat().parse(incidentDate);
             cal.setTime(date);
             cal.set(Calendar.HOUR_OF_DAY, 0);
             cal.set(Calendar.MINUTE, 0);
@@ -449,7 +449,7 @@ public class EnrollmentFormRepository implements FormRepository {
             cal.set(Calendar.MILLISECOND, 0);
 
             ContentValues enrollment = new ContentValues();
-            enrollment.put(EnrollmentModel.Columns.INCIDENT_DATE, DateUtils.databaseDateFormat().format(cal.getTime()));
+            enrollment.put(EnrollmentModel.Columns.INCIDENT_DATE, DateUtils.Companion.databaseDateFormat().format(cal.getTime()));
             enrollment.put(EnrollmentModel.Columns.STATE, State.TO_UPDATE.name()); // TODO: Check if state is TO_POST
             // TODO: and if so, keep the TO_POST state
 
@@ -506,20 +506,20 @@ public class EnrollmentFormRepository implements FormRepository {
 
                     if (incidentDateString != null)
                         try {
-                            incidentDate = DateUtils.databaseDateFormat().parse(incidentDateString);
+                            incidentDate = DateUtils.Companion.databaseDateFormat().parse(incidentDateString);
                         } catch (Exception e) {
                             Timber.e(e);
                         }
 
                     if (reportDateString != null)
                         try {
-                            enrollmentDate = DateUtils.databaseDateFormat().parse(reportDateString);
+                            enrollmentDate = DateUtils.Companion.databaseDateFormat().parse(reportDateString);
                         } catch (Exception e) {
                             Timber.e(e);
                         }
 
                     Date eventDate;
-                    Calendar cal = DateUtils.getInstance().getCalendar();
+                    Calendar cal = DateUtils.Companion.getInstance().getCalendar();
                     switch (reportDateToUse) {
                         case ENROLLMENT_DATE:
                             cal.setTime(enrollmentDate != null ? enrollmentDate : Calendar.getInstance().getTime());
@@ -546,7 +546,7 @@ public class EnrollmentFormRepository implements FormRepository {
                     eventDate = cal.getTime();
 
                     if (periodType != null)
-                        eventDate = DateUtils.getInstance().getNextPeriod(periodType, eventDate, 0); //Sets eventDate to current Period date
+                        eventDate = DateUtils.Companion.getInstance().getNextPeriod(periodType, eventDate, 0); //Sets eventDate to current Period date
 
                     try (Cursor eventCursor = briteDatabase.query(CHECK_STAGE_IS_NOT_CREATED, enrollmentUid, programStage)) {
 
@@ -763,7 +763,7 @@ public class EnrollmentFormRepository implements FormRepository {
                             } else {
                                 try (Cursor enrollmentOrgUnitCursor = briteDatabase.query("SELECT Enrollment.organisationUnit FROM Enrollment WHERE Enrollment.uid = ?", enrollmentUid)) {
                                     if (enrollmentOrgUnitCursor != null && enrollmentOrgUnitCursor.moveToFirst()) {
-                                        Date createdDate = DateUtils.getInstance().getCalendar().getTime();
+                                        Date createdDate = DateUtils.Companion.getInstance().getCalendar().getTime();
                                         EventModel eventToCreate = EventModel.builder()
                                                 .uid(codeGenerator.generate())
                                                 .created(createdDate)

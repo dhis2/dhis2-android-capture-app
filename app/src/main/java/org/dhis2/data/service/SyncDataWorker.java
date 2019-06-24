@@ -11,7 +11,7 @@ import com.google.firebase.perf.metrics.AddTrace;
 
 import org.dhis2.App;
 import org.dhis2.R;
-
+import org.dhis2.utils.ConstantsKt;
 import org.dhis2.utils.DateUtils;
 
 import java.util.Calendar;
@@ -27,8 +27,7 @@ import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 import timber.log.Timber;
 
-import static org.dhis2.utils.ConstantsKt.LAST_DATA_SYNC;
-import static org.dhis2.utils.ConstantsKt.LAST_DATA_SYNC_STATUS;
+import static org.dhis2.utils.ConstantsKt.*;
 
 /**
  * QUADRAM. Created by ppajuelo on 23/10/2018.
@@ -75,7 +74,7 @@ public class SyncDataWorker extends Worker {
             isTeiOk = false;
         }
 
-        String lastDataSyncDate = DateUtils.dateTimeFormat().format(Calendar.getInstance().getTime());
+        String lastDataSyncDate = DateUtils.Companion.dateTimeFormat().format(Calendar.getInstance().getTime());
 
         SharedPreferences prefs = getApplicationContext().getSharedPreferences(SHARE_PREFS, Context.MODE_PRIVATE);
         prefs.edit().putString(LAST_DATA_SYNC, lastDataSyncDate).apply();

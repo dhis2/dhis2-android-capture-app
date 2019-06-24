@@ -42,6 +42,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureAc
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.map.MapSelectorActivity;
 import org.dhis2.usescases.qrCodes.eventsworegistration.QrEventsWORegistrationActivity;
+import org.dhis2.utils.ConstantsKt;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.EventCreationType;
@@ -82,8 +83,7 @@ import me.toptas.fancyshowcase.FancyShowCaseView;
 import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
-import static org.dhis2.utils.t.*;
-
+import static org.dhis2.utils.ConstantsKt.*;
 
 /**
  * QUADRAM. Created by Cristian on 01/03/2018.
@@ -227,7 +227,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                     presenter.editEvent(getTrackedEntityInstance,
                             programStageModelUid,
                             eventUid,
-                            DateUtils.databaseDateFormat().format(selectedDate), selectedOrgUnit, null,
+                            DateUtils.Companion.databaseDateFormat().format(selectedDate), selectedOrgUnit, null,
                             catOptionComboUid,
                             isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? null : binding.lat.getText().toString(),
                             isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? null : binding.lon.getText().toString()
@@ -356,7 +356,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         binding.setName(activityTitle);
 
         if (eventModel == null) {
-            Calendar now = DateUtils.getInstance().getCalendar();
+            Calendar now = DateUtils.Companion.getInstance().getCalendar();
             if (periodType == null) {
 
                 if (eventCreationType != EventCreationType.SCHEDULE)
@@ -366,15 +366,15 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                         now.setTime(presenter.getStageLastDate(programStageUid, enrollmentUid));
                         now.add(Calendar.DAY_OF_YEAR, eventScheduleInterval);
                     }
-                    selectedDate = DateUtils.getInstance().getNextPeriod(null, now.getTime(), 1);
+                    selectedDate = DateUtils.Companion.getInstance().getNextPeriod(null, now.getTime(), 1);
                 }
 
-                selectedDateString = DateUtils.uiDateFormat().format(selectedDate);
+                selectedDateString = DateUtils.Companion.uiDateFormat().format(selectedDate);
 
             } else {
-                now.setTime(DateUtils.getInstance().getNextPeriod(periodType, now.getTime(), eventCreationType != EventCreationType.SCHEDULE ? 0 : 1));
+                now.setTime(DateUtils.Companion.getInstance().getNextPeriod(periodType, now.getTime(), eventCreationType != EventCreationType.SCHEDULE ? 0 : 1));
                 selectedDate = now.getTime();
-                selectedDateString = DateUtils.getInstance().getPeriodUIString(periodType, selectedDate, Locale.getDefault());
+                selectedDateString = DateUtils.Companion.getInstance().getPeriodUIString(periodType, selectedDate, Locale.getDefault());
             }
 
             binding.date.setText(selectedDateString);
@@ -389,32 +389,32 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             if (periodType == null)
                 presenter.onDateClick(EventInitialActivity.this);
             else {
-                Date minDate = DateUtils.getInstance().expDate(null, program.expiryDays(), periodType);
-                Date lastPeriodDate = DateUtils.getInstance().getNextPeriod(periodType, minDate, -1, true);
+                Date minDate = DateUtils.Companion.getInstance().expDate(null, program.expiryDays(), periodType);
+                Date lastPeriodDate = DateUtils.Companion.getInstance().getNextPeriod(periodType, minDate, -1, true);
 
-                if (lastPeriodDate.after(DateUtils.getInstance().getNextPeriod(program.expiryPeriodType(), minDate, 0)))
-                    minDate = DateUtils.getInstance().getNextPeriod(periodType, lastPeriodDate, 0);
+                if (lastPeriodDate.after(DateUtils.Companion.getInstance().getNextPeriod(program.expiryPeriodType(), minDate, 0)))
+                    minDate = DateUtils.Companion.getInstance().getNextPeriod(periodType, lastPeriodDate, 0);
 
                 new PeriodDialog()
                         .setPeriod(periodType)
                         .setMinDate(minDate)
-                        .setMaxDate(eventCreationType.equals(EventCreationType.ADDNEW) || eventCreationType.equals(EventCreationType.DEFAULT) ? DateUtils.getInstance().getToday() : null)
+                        .setMaxDate(eventCreationType.equals(EventCreationType.ADDNEW) || eventCreationType.equals(EventCreationType.DEFAULT) ? DateUtils.Companion.getInstance().getToday() : null)
                         .setPossitiveListener(selectedDate -> {
                             this.selectedDate = selectedDate;
-                            binding.date.setText(DateUtils.getInstance().getPeriodUIString(periodType, selectedDate, Locale.getDefault()));
+                            binding.date.setText(DateUtils.Companion.getInstance().getPeriodUIString(periodType, selectedDate, Locale.getDefault()));
                             binding.date.clearFocus();
                             if (!fixedOrgUnit)
                                 binding.orgUnit.setText("");
-                            presenter.filterOrgUnits(DateUtils.uiDateFormat().format(selectedDate));
+                            presenter.filterOrgUnits(DateUtils.Companion.uiDateFormat().format(selectedDate));
                         })
                         .show(getSupportFragmentManager(), PeriodDialog.class.getSimpleName());
             }
         });
 
-        presenter.filterOrgUnits(DateUtils.uiDateFormat().format(selectedDate));
+        presenter.filterOrgUnits(DateUtils.Companion.uiDateFormat().format(selectedDate));
 
         if (eventModel != null &&
-                (DateUtils.getInstance().isEventExpired(eventModel.eventDate(), eventModel.completedDate(), eventModel.status(), program.completeEventsExpiryDays(), program.expiryPeriodType(), program.expiryDays()) ||
+                (DateUtils.Companion.getInstance().isEventExpired(eventModel.eventDate(), eventModel.completedDate(), eventModel.status(), program.completeEventsExpiryDays(), program.expiryPeriodType(), program.expiryDays()) ||
                         eventModel.status() == EventStatus.COMPLETED ||
                         eventModel.status() == EventStatus.SKIPPED)) {
             binding.date.setEnabled(false);
@@ -505,7 +505,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
         if (event.eventDate() != null) {
             selectedDate = event.eventDate();
-            binding.date.setText(DateUtils.uiDateFormat().format(selectedDate));
+            binding.date.setText(DateUtils.Companion.uiDateFormat().format(selectedDate));
         }
 
         if (event.latitude() != null && event.longitude() != null) {
@@ -583,15 +583,15 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         if (eventCreationType == EventCreationType.SCHEDULE && programStage.hideDueDate()) {
             binding.dateLayout.setVisibility(View.GONE);
 
-            Calendar now = DateUtils.getInstance().getCalendar();
+            Calendar now = DateUtils.Companion.getInstance().getCalendar();
             if (periodType == null) {
                 now.add(Calendar.DAY_OF_YEAR, eventScheduleInterval);
-                selectedDate = DateUtils.getInstance().getNextPeriod(null, now.getTime(), 0);
-                selectedDateString = DateUtils.uiDateFormat().format(selectedDate);
+                selectedDate = DateUtils.Companion.getInstance().getNextPeriod(null, now.getTime(), 0);
+                selectedDateString = DateUtils.Companion.uiDateFormat().format(selectedDate);
             } else {
-                now.setTime(DateUtils.getInstance().getNextPeriod(periodType, now.getTime(), eventCreationType != EventCreationType.SCHEDULE ? 0 : 1));
+                now.setTime(DateUtils.Companion.getInstance().getNextPeriod(periodType, now.getTime(), eventCreationType != EventCreationType.SCHEDULE ? 0 : 1));
                 selectedDate = now.getTime();
-                selectedDateString = DateUtils.getInstance().getPeriodUIString(periodType, selectedDate, Locale.getDefault());
+                selectedDateString = DateUtils.Companion.getInstance().getPeriodUIString(periodType, selectedDate, Locale.getDefault());
             }
         }
         presenter.getStageObjectStyle(programStageModel.uid());
@@ -660,7 +660,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                 calendar.get(Calendar.DAY_OF_MONTH));
 
         if (program.expiryPeriodType() != null) {
-            Date minDate = DateUtils.getInstance().expDate(null, program.expiryDays() == null ? 0 : program.expiryDays(), program.expiryPeriodType());
+            Date minDate = DateUtils.Companion.getInstance().expDate(null, program.expiryDays() == null ? 0 : program.expiryDays(), program.expiryPeriodType());
             datePickerDialog.getDatePicker().setMinDate(minDate.getTime());
         }
 
@@ -700,7 +700,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         datePicker.updateDate(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
 
         if (program.expiryPeriodType() != null) {
-            Date minDate = DateUtils.getInstance().expDate(null, program.expiryDays() == null ? 0 : program.expiryDays(), program.expiryPeriodType());
+            Date minDate = DateUtils.Companion.getInstance().expDate(null, program.expiryDays() == null ? 0 : program.expiryDays(), program.expiryPeriodType());
             datePicker.setMinDate(minDate.getTime());
         }
 
@@ -740,16 +740,16 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     public void onDateSet(DatePicker datePicker, int year, int month, int day) {
         String date = String.format(Locale.getDefault(), "%s-%02d-%02d", year, month + 1, day);
         try {
-            selectedDate = DateUtils.uiDateFormat().parse(date);
+            selectedDate = DateUtils.Companion.uiDateFormat().parse(date);
         } catch (ParseException e) {
             Timber.e(e);
         }
-        selectedDateString = DateUtils.getInstance().getPeriodUIString(periodType, selectedDate, Locale.getDefault());
+        selectedDateString = DateUtils.Companion.getInstance().getPeriodUIString(periodType, selectedDate, Locale.getDefault());
         binding.date.setText(selectedDateString);
         binding.date.clearFocus();
         if (!fixedOrgUnit)
             binding.orgUnit.setText("");
-        presenter.filterOrgUnits(DateUtils.uiDateFormat().format(selectedDate));
+        presenter.filterOrgUnits(DateUtils.Companion.uiDateFormat().format(selectedDate));
     }
 
     @Override

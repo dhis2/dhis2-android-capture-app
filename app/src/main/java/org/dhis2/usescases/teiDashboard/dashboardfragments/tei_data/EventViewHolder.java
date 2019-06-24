@@ -32,7 +32,7 @@ class EventViewHolder extends RecyclerView.ViewHolder {
         binding.setVariable(BR.program, program);
         binding.executePendingBindings();
 
-        String date = DateUtils.getInstance().getPeriodUIString(programStage.periodType(), eventModel.eventDate() != null ? eventModel.eventDate() : eventModel.dueDate(), Locale.getDefault());
+        String date = DateUtils.Companion.getInstance().getPeriodUIString(programStage.periodType(), eventModel.eventDate() != null ? eventModel.eventDate() : eventModel.dueDate(), Locale.getDefault());
         binding.eventDate.setText(date);
 
         itemView.setOnClickListener(view -> {

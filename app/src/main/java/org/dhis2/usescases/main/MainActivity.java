@@ -27,7 +27,7 @@ import org.dhis2.usescases.qrReader.QrReaderFragment;
 import org.dhis2.usescases.syncManager.ErrorDialog;
 import org.dhis2.usescases.syncManager.SyncManagerFragment;
 import org.dhis2.usescases.teiDashboard.nfc_data.NfcDataWriteActivity;
-
+import org.dhis2.utils.ConstantsKt;
 import org.dhis2.utils.SharedPreferenceBooleanLiveData;
 import org.hisp.dhis.android.core.imports.TrackerImportConflict;
 

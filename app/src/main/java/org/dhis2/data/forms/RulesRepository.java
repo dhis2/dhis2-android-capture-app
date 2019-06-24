@@ -75,7 +75,7 @@ import static android.text.TextUtils.isEmpty;
 
 @SuppressWarnings("PMD")
 public final class RulesRepository {
-    private static final String QUERY_= "SELECT * " +
+    private static final String QUERY_CONSTANTS = "SELECT * " +
             "FROM Constant";
 
 
@@ -273,15 +273,15 @@ public final class RulesRepository {
     }
 
     @NonNull
-    public Flowable<Map<String, String>> query) {
-        return briteDatabase.createQuery(ConstantTableInfo.TABLE_INFO.name(), QUERY_
+    public Flowable<Map<String, String>> queryConstants() {
+        return briteDatabase.createQuery(ConstantTableInfo.TABLE_INFO.name(), QUERY_CONSTANTS)
                 .mapToList(Constant::create)
-                .map(-> {
-                    Map<String, String> ap = new HashMap<>();
-                    for (Constant constant :  {
-                        ap.put(constant.uid(), Objects.requireNonNull(constant.value()).toString());
+                .map(constants -> {
+                    Map<String, String> constantsMap = new HashMap<>();
+                    for (Constant constant : constants) {
+                        constantsMap.put(constant.uid(), Objects.requireNonNull(constant.value()).toString());
                     }
-                    return ap;
+                    return constantsMap;
                 })
                 .toFlowable(BackpressureStrategy.LATEST);
     }
@@ -447,14 +447,14 @@ public final class RulesRepository {
     }
 
     @NonNull
-    private static Map<String, String> mapToap(@NonNull Cursor cursor) {
+    private static Map<String, String> mapToConstantsMap(@NonNull Cursor cursor) {
         String uid = cursor.getString(0);
         String value = cursor.getString(1);
 
-        Map<String, String> = new HashMap<>();
+        Map<String, String> constants = new HashMap<>();
         if (cursor.moveToFirst())
-            put(uid, value);
-        return
+            constants.put(uid, value);
+        return constants;
     }
 
     @NonNull
@@ -573,15 +573,15 @@ public final class RulesRepository {
                                     briteDatabase.createQuery(EventModel.TABLE, eventModel.enrollment() == null ? QUERY_OTHER_EVENTS : QUERY_OTHER_EVENTS_ENROLLMENTS,
                                             eventModel.enrollment() == null ? programModel.uid() : eventModel.enrollment(),
                                             eventUidToEvaluate == null ? "" : eventUidToEvaluate,
-                                            DateUtils.databaseDateFormat().format(eventModel.eventDate() != null ? eventModel.eventDate() : eventModel.dueDate()),
-                                            DateUtils.databaseDateFormat().format(eventModel.eventDate() != null ? eventModel.eventDate() : eventModel.dueDate()),
-                                            DateUtils.databaseDateFormat().format(eventModel.lastUpdated()))
+                                            DateUtils.Companion.databaseDateFormat().format(eventModel.eventDate() != null ? eventModel.eventDate() : eventModel.dueDate()),
+                                            DateUtils.Companion.databaseDateFormat().format(eventModel.eventDate() != null ? eventModel.eventDate() : eventModel.dueDate()),
+                                            DateUtils.Companion.databaseDateFormat().format(eventModel.lastUpdated()))
                                             .mapToList(cursor -> {
                                                 List<RuleDataValue> dataValues = new ArrayList<>();
                                                 String eventUid = cursor.getString(0);
                                                 String programStageUid = cursor.getString(1);
-                                                Date eventDate = DateUtils.databaseDateFormat().parse(cursor.getString(3));
-                                                Date dueDate = cursor.isNull(4) ? eventDate : DateUtils.databaseDateFormat().parse(cursor.getString(4));
+                                                Date eventDate = DateUtils.Companion.databaseDateFormat().parse(cursor.getString(3));
+                                                Date dueDate = cursor.isNull(4) ? eventDate : DateUtils.Companion.databaseDateFormat().parse(cursor.getString(4));
                                                 String orgUnit = cursor.getString(5);
                                                 String orgUnitCode = getOrgUnitCode(orgUnit);
                                                 String programStageName = cursor.getString(6);
@@ -592,7 +592,7 @@ public final class RulesRepository {
                                                 try (Cursor dataValueCursor = briteDatabase.query(QUERY_VALUES, eventUid)) {
                                                     if (dataValueCursor != null && dataValueCursor.moveToFirst()) {
                                                         for (int i = 0; i < dataValueCursor.getCount(); i++) {
-                                                            Date eventDateV = DateUtils.databaseDateFormat().parse(dataValueCursor.getString(0));
+                                                            Date eventDateV = DateUtils.Companion.databaseDateFormat().parse(dataValueCursor.getString(0));
                                                             String programStage = dataValueCursor.getString(1);
                                                             String dataElement = dataValueCursor.getString(2);
                                                             String value = dataValueCursor.getString(3) != null ? dataValueCursor.getString(3) : "";
@@ -640,8 +640,8 @@ public final class RulesRepository {
                     List<RuleDataValue> dataValues = new ArrayList<>();
                     String eventUid = cursor.getString(0);
                     String programStageUid = cursor.getString(1);
-                    Date eventDate = cursor.isNull(3) ? null : DateUtils.databaseDateFormat().parse(cursor.getString(3));
-                    Date dueDate = cursor.isNull(4) ? eventDate : DateUtils.databaseDateFormat().parse(cursor.getString(4)); //TODO: Should due date always be not null?
+                    Date eventDate = cursor.isNull(3) ? null : DateUtils.Companion.databaseDateFormat().parse(cursor.getString(3));
+                    Date dueDate = cursor.isNull(4) ? eventDate : DateUtils.Companion.databaseDateFormat().parse(cursor.getString(4)); //TODO: Should due date always be not null?
                     String orgUnit = cursor.getString(5);
                     String orgUnitCode = getOrgUnitCode(orgUnit);
                     String programStageName = cursor.getString(6);
@@ -650,7 +650,7 @@ public final class RulesRepository {
                     try (Cursor dataValueCursor = briteDatabase.query(QUERY_VALUES, eventUid)) {
                         if (dataValueCursor != null && dataValueCursor.moveToFirst()) {
                             for (int i = 0; i < dataValueCursor.getCount(); i++) {
-                                Date eventDateV = DateUtils.databaseDateFormat().parse(dataValueCursor.getString(0));
+                                Date eventDateV = DateUtils.Companion.databaseDateFormat().parse(dataValueCursor.getString(0));
                                 String programStage = dataValueCursor.getString(1);
                                 String dataElement = dataValueCursor.getString(2);
                                 String value = dataValueCursor.getString(3) != null ? dataValueCursor.getString(3) : "";

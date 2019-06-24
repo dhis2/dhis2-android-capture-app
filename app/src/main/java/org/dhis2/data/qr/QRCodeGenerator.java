@@ -405,15 +405,15 @@ public class QRCodeGenerator implements QRInterface {
     private String setEventData(Event event) {
         List<String> data = new ArrayList<>();
         data.add(event.uid());
-        data.add(DateUtils.databaseDateFormat().format(event.created()));
+        data.add(DateUtils.Companion.databaseDateFormat().format(event.created()));
         data.add(event.status().name());
         data.add(event.coordinate() != null ? String.valueOf(event.coordinate().latitude()) : "");
         data.add(event.coordinate() != null ? String.valueOf(event.coordinate().longitude()) : "");
         data.add(event.program()); //TEI OR ENROLLMENT?
         data.add(event.programStage());
-        data.add(event.eventDate() != null ? DateUtils.databaseDateFormat().format(event.eventDate()) : "");
-        data.add(event.completedDate() != null ? DateUtils.databaseDateFormat().format(event.completedDate()) : "");
-        data.add(event.dueDate() != null ? DateUtils.databaseDateFormat().format(event.created()) : "");
+        data.add(event.eventDate() != null ? DateUtils.Companion.databaseDateFormat().format(event.eventDate()) : "");
+        data.add(event.completedDate() != null ? DateUtils.Companion.databaseDateFormat().format(event.completedDate()) : "");
+        data.add(event.dueDate() != null ? DateUtils.Companion.databaseDateFormat().format(event.created()) : "");
         data.add(event.state() != null ? event.state().name() : "");
         data.add(event.organisationUnit());
 
@@ -423,7 +423,7 @@ public class QRCodeGenerator implements QRInterface {
     private String setTeiData(TrackedEntityInstance tei) {
         List<String> data = new ArrayList<>();
         data.add(tei.uid());
-        data.add(DateUtils.databaseDateFormat().format(tei.created()));
+        data.add(DateUtils.Companion.databaseDateFormat().format(tei.created()));
         data.add(tei.organisationUnit());
         data.add(tei.trackedEntityType());
         data.add(tei.featureType() != null ? tei.featureType().name() : "");
@@ -435,11 +435,11 @@ public class QRCodeGenerator implements QRInterface {
     private String setEnrollmentData(Enrollment enrollment) {
         List<String> data = new ArrayList<>();
         data.add(enrollment.uid());
-        data.add(DateUtils.databaseDateFormat().format(enrollment.created()));
+        data.add(DateUtils.Companion.databaseDateFormat().format(enrollment.created()));
         data.add(enrollment.organisationUnit());
         data.add(enrollment.program());
-        data.add(enrollment.enrollmentDate() != null ? DateUtils.databaseDateFormat().format(enrollment.enrollmentDate()) : "");
-        data.add(enrollment.incidentDate() != null ? DateUtils.databaseDateFormat().format(enrollment.incidentDate()) : "");
+        data.add(enrollment.enrollmentDate() != null ? DateUtils.Companion.databaseDateFormat().format(enrollment.enrollmentDate()) : "");
+        data.add(enrollment.incidentDate() != null ? DateUtils.Companion.databaseDateFormat().format(enrollment.incidentDate()) : "");
         data.add(enrollment.followUp() ? "t" : "f");
         data.add(enrollment.status().name());
         data.add(enrollment.coordinate() != null ? String.valueOf(enrollment.coordinate().latitude()) : "");
@@ -483,7 +483,7 @@ public class QRCodeGenerator implements QRInterface {
         String[] data = teiData.split("\\|");
         Date created = null;
         try {
-            created = DateUtils.databaseDateFormat().parse(data[1]);
+            created = DateUtils.Companion.databaseDateFormat().parse(data[1]);
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -508,19 +508,19 @@ public class QRCodeGenerator implements QRInterface {
         Date enrollmentDate = null;
         Date incidentDate = null;
         try {
-            created = DateUtils.databaseDateFormat().parse(data[1]);
+            created = DateUtils.Companion.databaseDateFormat().parse(data[1]);
         } catch (ParseException e) {
             e.printStackTrace();
         }
         try {
-            enrollmentDate = DateUtils.databaseDateFormat().parse(data[1]);
+            enrollmentDate = DateUtils.Companion.databaseDateFormat().parse(data[1]);
         } catch (ParseException e) {
             e.printStackTrace();
         }
 
         if (!data[5].isEmpty())
             try {
-                incidentDate = DateUtils.databaseDateFormat().parse(data[5]);
+                incidentDate = DateUtils.Companion.databaseDateFormat().parse(data[5]);
             } catch (ParseException e) {
                 e.printStackTrace();
             }
@@ -563,25 +563,25 @@ public class QRCodeGenerator implements QRInterface {
         Date completeDate = null;
         Date dueDate = null;
         try {
-            created = DateUtils.databaseDateFormat().parse(data[1]);
+            created = DateUtils.Companion.databaseDateFormat().parse(data[1]);
         } catch (ParseException e) {
             e.printStackTrace();
         }
         if (!data[7].isEmpty())
             try {
-                eventDate = DateUtils.databaseDateFormat().parse(data[7]);
+                eventDate = DateUtils.Companion.databaseDateFormat().parse(data[7]);
             } catch (ParseException e) {
                 e.printStackTrace();
             }
         if (!data[8].isEmpty())
             try {
-                completeDate = DateUtils.databaseDateFormat().parse(data[8]);
+                completeDate = DateUtils.Companion.databaseDateFormat().parse(data[8]);
             } catch (ParseException e) {
                 e.printStackTrace();
             }
         if (!data[9].isEmpty())
             try {
-                dueDate = DateUtils.databaseDateFormat().parse(data[9]);
+                dueDate = DateUtils.Companion.databaseDateFormat().parse(data[9]);
             } catch (ParseException e) {
                 e.printStackTrace();
             }

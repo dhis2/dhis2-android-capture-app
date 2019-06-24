@@ -18,7 +18,7 @@ import org.dhis2.databinding.ActivitySynchronizationBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.main.MainActivity;
 import org.dhis2.utils.ColorUtils;
-
+import org.dhis2.utils.ConstantsKt;
 
 import javax.inject.Inject;
 
@@ -27,6 +27,8 @@ import androidx.databinding.DataBindingUtil;
 import androidx.work.State;
 import androidx.work.WorkManager;
 import timber.log.Timber;
+
+import static org.dhis2.utils.ConstantsKt.*;
 
 
 public class SyncActivity extends ActivityGlobalAbstract implements SyncContracts.View {
@@ -136,7 +138,7 @@ public class SyncActivity extends ActivityGlobalAbstract implements SyncContract
         prefs.edit().putInt(THEME, themeId).apply();
         setTheme(themeId);
 
-        int startColor = ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY);
+        int startColor = ColorUtils.Companion.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY);
         TypedValue typedValue = new TypedValue();
         TypedArray a = obtainStyledAttributes(typedValue.data, new int[]{R.attr.colorPrimary});
         int endColor = a.getColor(0, 0);

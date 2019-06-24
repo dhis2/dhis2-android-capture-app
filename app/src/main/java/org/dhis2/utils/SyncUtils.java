@@ -7,6 +7,9 @@ import androidx.work.WorkManager;
 import androidx.work.WorkStatus;
 import timber.log.Timber;
 
+import static org.dhis2.utils.ConstantsKt.DATA;
+import static org.dhis2.utils.ConstantsKt.META;
+
 public class SyncUtils {
 
 

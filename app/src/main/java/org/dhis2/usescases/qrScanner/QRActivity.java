@@ -11,7 +11,7 @@ import com.google.zxing.Result;
 import org.dhis2.R;
 import org.dhis2.databinding.ActivityQrBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
-
+import org.dhis2.utils.ConstantsKt;
 
 import java.util.ArrayList;
 

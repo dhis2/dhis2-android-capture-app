@@ -11,7 +11,72 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-public class DateUtils {
+class DateUtils {
+
+    companion object{
+
+        const val DATABASE_FORMAT_EXPRESSION = "yyyy-MM-dd'T'HH:mm:ss.SSS"
+        const val DATABASE_FORMAT_EXPRESSION_NO_MILLIS = "yyyy-MM-dd'T'HH:mm:ss"
+        const val DATABASE_FORMAT_EXPRESSION_NO_SECONDS = "yyyy-MM-dd'T'HH:mm"
+        const val DATE_TIME_FORMAT_EXPRESSION = "yyyy-MM-dd HH:mm"
+        const val DATE_FORMAT_EXPRESSION = "yyyy-MM-dd"
+
+        private var instance: DateUtils? = null
+        lateinit var currentDateCalendar: Calendar
+
+        public fun getInstance(): DateUtils {
+            if (instance == null)
+                instance = org.dhis2.utils.DateUtils()
+
+            return instance!!
+        }
+
+        fun getDifference(startDate: Date?, endDate: Date?): IntArray {
+            val interval = org.joda.time.Period(startDate?.time ?: Date().time, endDate?.time ?: Date().time, org.joda.time.PeriodType.yearMonthDayTime())
+            return intArrayOf(interval.years, interval.months, interval.days)
+        }
+
+        public fun uiDateFormat(): SimpleDateFormat {
+            return SimpleDateFormat(DATE_FORMAT_EXPRESSION, Locale.US)
+        }
+
+        public fun timeFormat(): SimpleDateFormat {
+            return SimpleDateFormat("HH:mm", Locale.US)
+        }
+
+        public fun dateTimeFormat(): SimpleDateFormat {
+            return SimpleDateFormat(DATE_TIME_FORMAT_EXPRESSION, Locale.US)
+        }
+
+
+        public fun databaseDateFormat(): SimpleDateFormat {
+            return SimpleDateFormat(DATABASE_FORMAT_EXPRESSION, Locale.US)
+        }
+
+
+        public fun databaseDateFormatNoMillis(): SimpleDateFormat {
+            return SimpleDateFormat(DATABASE_FORMAT_EXPRESSION_NO_MILLIS, Locale.US)
+        }
+
+        public fun databaseDateFormatNoSeconds(): SimpleDateFormat {
+            return SimpleDateFormat(DATABASE_FORMAT_EXPRESSION_NO_SECONDS, Locale.US)
+        }
+
+        public fun dateHasNoSeconds(dateTime: String): Boolean {
+            try {
+                databaseDateFormatNoSeconds().parse(dateTime)
+                return true
+            } catch (e: ParseException) {
+                return false
+            }
+
+        }
+
+
+        /**********************
+         * FORMAT REGION */
+
+    }
 
     fun getDateFromDateAndPeriod(date: Date, period: Period): Array<Date> {
         return when (period) {
@@ -265,10 +330,7 @@ public class DateUtils {
 
     }
 
-    fun getDifference(startDate: Date, endDate: Date): IntArray {
-        val interval = org.joda.time.Period(startDate.time, endDate.time, org.joda.time.PeriodType.yearMonthDayTime())
-        return intArrayOf(interval.years, interval.months, interval.days)
-    }
+
 
     fun getNewDate(events: List<EventModel>, periodType: PeriodType): Date {
         val now = Calendar.getInstance()
@@ -1099,66 +1161,6 @@ public class DateUtils {
             datePeriods.add(DatePeriod.builder().startDate(startEndDates[0]).endDate(startEndDates[1]).build())
         }
         return datePeriods
-    }
-
-    companion object {
-
-        val DATABASE_FORMAT_EXPRESSION = "yyyy-MM-dd'T'HH:mm:ss.SSS"
-        val DATABASE_FORMAT_EXPRESSION_NO_MILLIS = "yyyy-MM-dd'T'HH:mm:ss"
-        val DATABASE_FORMAT_EXPRESSION_NO_SECONDS = "yyyy-MM-dd'T'HH:mm"
-        val DATE_TIME_FORMAT_EXPRESSION = "yyyy-MM-dd HH:mm"
-        val DATE_FORMAT_EXPRESSION = "yyyy-MM-dd"
-
-        private var instance: DateUtils? = null
-        lateinit var currentDateCalendar: Calendar
-
-        public fun getInstance(): DateUtils {
-            if (instance == null)
-                instance = DateUtils()
-
-            return instance!!
-        }
-
-        public fun uiDateFormat(): SimpleDateFormat {
-            return SimpleDateFormat(DATE_FORMAT_EXPRESSION, Locale.US)
-        }
-
-        public fun timeFormat(): SimpleDateFormat {
-            return SimpleDateFormat("HH:mm", Locale.US)
-        }
-
-        public fun dateTimeFormat(): SimpleDateFormat {
-            return SimpleDateFormat(DATE_TIME_FORMAT_EXPRESSION, Locale.US)
-        }
-
-
-        public fun databaseDateFormat(): SimpleDateFormat {
-            return SimpleDateFormat(DATABASE_FORMAT_EXPRESSION, Locale.US)
-        }
-
-
-        public fun databaseDateFormatNoMillis(): SimpleDateFormat {
-            return SimpleDateFormat(DATABASE_FORMAT_EXPRESSION_NO_MILLIS, Locale.US)
-        }
-
-        public fun databaseDateFormatNoSeconds(): SimpleDateFormat {
-            return SimpleDateFormat(DATABASE_FORMAT_EXPRESSION_NO_SECONDS, Locale.US)
-        }
-
-        public fun dateHasNoSeconds(dateTime: String): Boolean {
-            try {
-                databaseDateFormatNoSeconds().parse(dateTime)
-                return true
-            } catch (e: ParseException) {
-                return false
-            }
-
-        }
-
-
-        /**********************
-         * FORMAT REGION */
-
     }
 
 }

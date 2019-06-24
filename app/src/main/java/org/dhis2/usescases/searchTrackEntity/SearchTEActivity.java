@@ -48,7 +48,7 @@ import org.dhis2.usescases.searchTrackEntity.adapters.RelationshipLiveAdapter;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiLiveAdapter;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.utils.ColorUtils;
-
+import org.dhis2.utils.ConstantsKt;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.custom_views.OptionSetDialog;
 import org.dhis2.utils.custom_views.OptionSetPopUp;
@@ -68,10 +68,7 @@ import me.toptas.fancyshowcase.FancyShowCaseView;
 import me.toptas.fancyshowcase.FocusShape;
 import timber.log.Timber;
 
-import static org.dhis2.utils.ConstantsKt.PROGRAM_THEME;
-import static org.dhis2.utils.ConstantsKt.SHARE_PREFS;
-import static org.dhis2.utils.ConstantsKt.THEME;
-import static org.dhis2.utils.ConstantsKt.TUTORIAL_SEARCH;
+import static org.dhis2.utils.ConstantsKt.*;
 
 /**
  * QUADRAM. Created by ppajuelo on 02/11/2017 .
@@ -357,8 +354,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     public void setProgramColor(String color) {
-        int programTheme = ColorUtils.getThemeFromColor(color);
-        int programColor = ColorUtils.getColorFrom(color, ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY));
+        int programTheme = ColorUtils.Companion.getThemeFromColor(color);
+        int programColor = ColorUtils.Companion.getColorFrom(color, ColorUtils.Companion.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY));
 
 
         SharedPreferences prefs = getAbstracContext().getSharedPreferences(

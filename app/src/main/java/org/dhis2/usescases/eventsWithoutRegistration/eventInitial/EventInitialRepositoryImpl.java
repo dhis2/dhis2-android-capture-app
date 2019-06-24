@@ -370,7 +370,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
         Date currentDate = Calendar.getInstance().getTime();
         Date mDate = null;
         try {
-            mDate = DateUtils.databaseDateFormat().parse(date);
+            mDate = DateUtils.Companion.databaseDateFormat().parse(date);
         } catch (ParseException e) {
             Timber.e(e);
         }
@@ -395,7 +395,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
             cal.set(Calendar.MILLISECOND, 0);
 
             ContentValues contentValues = new ContentValues();
-            contentValues.put(EventModel.Columns.EVENT_DATE, DateUtils.databaseDateFormat().format(cal.getTime()));
+            contentValues.put(EventModel.Columns.EVENT_DATE, DateUtils.Companion.databaseDateFormat().format(cal.getTime()));
             contentValues.put(EventModel.Columns.ORGANISATION_UNIT, orgUnitUid);
             contentValues.put(EventModel.Columns.LATITUDE, latitude);
             contentValues.put(EventModel.Columns.LONGITUDE, longitude);
@@ -478,7 +478,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     private void updateEnrollment(String enrollmentUid) {
         Enrollment enrollment = d2.enrollmentModule().enrollments.uid(enrollmentUid).get();
         ContentValues cv = enrollment.toContentValues();
-        cv.put(EnrollmentModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
+        cv.put(EnrollmentModel.Columns.LAST_UPDATED, DateUtils.Companion.databaseDateFormat().format(Calendar.getInstance().getTime()));
         cv.put(EnrollmentModel.Columns.STATE, enrollment.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
         int enrollmentUpdated = briteDatabase.update(EnrollmentModel.TABLE, cv, "uid = ?", enrollmentUid);
         Timber.d("ENROLLMENT %s UPDATED (%s)", enrollmentUid, enrollmentUpdated);
@@ -487,7 +487,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     private void updateTei(String teiUid) {
         TrackedEntityInstance tei = d2.trackedEntityModule().trackedEntityInstances.uid(teiUid).get();
         ContentValues cv = tei.toContentValues();
-        cv.put(TrackedEntityInstanceModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
+        cv.put(TrackedEntityInstanceModel.Columns.LAST_UPDATED, DateUtils.Companion.databaseDateFormat().format(Calendar.getInstance().getTime()));
         cv.put(TrackedEntityInstanceModel.Columns.STATE, tei.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
         int teiUpdated = briteDatabase.update(TrackedEntityInstanceModel.TABLE, cv, "uid = ?", teiUid);
         Timber.d("TEI %s UPDATED (%s)", teiUid, teiUpdated);

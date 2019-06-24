@@ -7,7 +7,7 @@ import org.dhis2.BR;
 import org.dhis2.R;
 import org.dhis2.databinding.ActivityReservedValueBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
-
+import org.dhis2.utils.ConstantsKt;
 import org.dhis2.utils.custom_views.CustomDialog;
 
 import java.util.List;
@@ -15,6 +15,8 @@ import java.util.List;
 import javax.inject.Inject;
 
 import androidx.databinding.DataBindingUtil;
+
+import static org.dhis2.utils.ConstantsKt.DESCRIPTION_DIALOG;
 
 public class ReservedValueActivity extends ActivityGlobalAbstract implements ReservedValueContracts.View {
 

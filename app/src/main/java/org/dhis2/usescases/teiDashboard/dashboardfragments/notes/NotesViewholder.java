@@ -23,7 +23,7 @@ public class NotesViewholder extends RecyclerView.ViewHolder {
 
     public void bind(NoteModel note) {
         if (note.storedDate() != null) {
-            binding.date.setText(DateUtils.uiDateFormat().format(note.storedDate()));
+            binding.date.setText(DateUtils.Companion.uiDateFormat().format(note.storedDate()));
         }
         binding.noteText.setText(note.value());
         binding.storeBy.setText(note.storedBy());

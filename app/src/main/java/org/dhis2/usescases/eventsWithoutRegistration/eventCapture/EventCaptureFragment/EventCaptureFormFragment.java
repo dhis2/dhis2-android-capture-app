@@ -118,7 +118,7 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
         isLastPosition.set(sectionPosition == sectionTotal - 1);
 
         binding.sectionSelector.sectionProgress.setProgress((sectionPosition + 1) * 100 / sectionTotal);
-        binding.sectionSelector.sectionProgress.getProgressDrawable().setColorFilter(ColorUtils.getPrimaryColor(activity, ColorUtils.ColorType.PRIMARY_LIGHT), PorterDuff.Mode.SRC_IN);
+        binding.sectionSelector.sectionProgress.getProgressDrawable().setColorFilter(ColorUtils.Companion.getPrimaryColor(activity, ColorUtils.ColorType.PRIMARY_LIGHT), PorterDuff.Mode.SRC_IN);
     }
 
     public void setSingleSection(DataEntryArguments arguments, FormSectionViewModel formSectionViewModel) {

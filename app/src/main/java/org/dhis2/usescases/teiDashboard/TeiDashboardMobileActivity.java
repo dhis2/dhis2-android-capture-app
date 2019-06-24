@@ -39,7 +39,7 @@ import org.dhis2.usescases.teiDashboard.adapters.DashboardPagerTabletAdapter;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.TEIDataFragment;
 import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListActivity;
 import org.dhis2.utils.ColorUtils;
-
+import org.dhis2.utils.ConstantsKt;
 import org.dhis2.utils.HelpManager;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.jetbrains.annotations.NotNull;
@@ -53,6 +53,8 @@ import javax.inject.Inject;
 import me.toptas.fancyshowcase.FancyShowCaseView;
 import me.toptas.fancyshowcase.FocusShape;
 import timber.log.Timber;
+
+import static org.dhis2.utils.ConstantsKt.*;
 
 /**
  * QUADRAM. Created by ppajuelo on 29/11/2017.
@@ -443,8 +445,8 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
 
     private void setProgramColor(String color) {
-        int programTheme = ColorUtils.getThemeFromColor(color);
-        int programColor = ColorUtils.getColorFrom(color, ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY));
+        int programTheme = ColorUtils.Companion.getThemeFromColor(color);
+        int programColor = ColorUtils.Companion.getColorFrom(color, ColorUtils.Companion.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY));
 
 
         SharedPreferences prefs = getAbstracContext().getSharedPreferences(

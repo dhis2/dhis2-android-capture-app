@@ -191,7 +191,7 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
     @Override
     public void accessDataWrite(Boolean canWrite) {
 
-        if (DateUtils.getInstance().isEventExpired(null, eventModel.completedDate(), programModel.completeEventsExpiryDays())){
+        if (DateUtils.Companion.getInstance().isEventExpired(null, eventModel.completedDate(), programModel.completeEventsExpiryDays())){
             binding.actionButton.setVisibility(View.GONE);
         }
         else {

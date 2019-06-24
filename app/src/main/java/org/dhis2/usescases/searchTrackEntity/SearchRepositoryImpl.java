@@ -16,7 +16,7 @@ import com.squareup.sqlbrite2.BriteDatabase;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.utils.CodeGenerator;
-
+import org.dhis2.utils.ConstantsKt;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.ValueUtils;
 import org.hisp.dhis.android.core.D2;
@@ -207,7 +207,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         TrackedEntityInstanceQuery.Builder queryBuilder = setQueryBuilder(selectedProgram, orgUnits);
         if (queryData != null && !isEmpty(queryData.get(ENROLLMENT_DATE_UID))) {
             try {
-                Date enrollmentDate = DateUtils.uiDateFormat().parse(queryData.get(ENROLLMENT_DATE_UID));
+                Date enrollmentDate = DateUtils.Companion.uiDateFormat().parse(queryData.get(ENROLLMENT_DATE_UID));
                 queryBuilder.programStartDate(enrollmentDate);
                 queryBuilder.programEndDate(enrollmentDate);
             } catch (ParseException ex) {
@@ -238,7 +238,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         TrackedEntityInstanceQuery.Builder queryBuilder = setQueryBuilder(selectedProgram, orgUnits);
         if (queryData != null && !isEmpty(queryData.get(ENROLLMENT_DATE_UID))) {
             try {
-                Date enrollmentDate = DateUtils.uiDateFormat().parse(queryData.get(ENROLLMENT_DATE_UID));
+                Date enrollmentDate = DateUtils.Companion.uiDateFormat().parse(queryData.get(ENROLLMENT_DATE_UID));
                 queryBuilder.programStartDate(enrollmentDate);
                 queryBuilder.programEndDate(enrollmentDate);
             } catch (ParseException ex) {

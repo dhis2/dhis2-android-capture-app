@@ -33,7 +33,7 @@ import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerRow;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedRow;
 import org.dhis2.data.tuples.Trio;
-
+import org.dhis2.utils.ConstantsKt;
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -47,6 +47,8 @@ import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 
 import static android.text.TextUtils.isEmpty;
+import static org.dhis2.utils.ConstantsKt.ENROLLMENT_DATE_UID;
+import static org.dhis2.utils.ConstantsKt.INCIDENT_DATE_UID;
 
 /**
  * QUADRAM. Created by ppajuelo on 06/11/2017.

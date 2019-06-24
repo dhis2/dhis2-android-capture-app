@@ -77,8 +77,8 @@ public class Bindings {
 
     @BindingAdapter("date")
     public static void setDate(TextView textView, String date) {
-        SimpleDateFormat formatIn = DateUtils.databaseDateFormat();
-        SimpleDateFormat formatOut = DateUtils.uiDateFormat();
+        SimpleDateFormat formatIn = DateUtils.Companion.databaseDateFormat();
+        SimpleDateFormat formatOut = DateUtils.Companion.uiDateFormat();
         try {
             Date dateIn = formatIn.parse(date);
             String dateOut = formatOut.format(dateIn);
@@ -92,7 +92,7 @@ public class Bindings {
     @BindingAdapter("date")
     public static void parseDate(TextView textView, Date date) {
         if (date != null) {
-            SimpleDateFormat formatOut = DateUtils.uiDateFormat();
+            SimpleDateFormat formatOut = DateUtils.Companion.uiDateFormat();
             String dateOut = formatOut.format(date);
             textView.setText(dateOut);
         }
@@ -205,8 +205,8 @@ public class Bindings {
                     case ACTIVE:
                         Date eventDate = event.eventDate();
                         if(eventProgramStage.periodType()!=null && eventProgramStage.periodType().name().contains(PeriodType.Weekly.name()))
-                            eventDate = DateUtils.getInstance().getNextPeriod(eventProgramStage.periodType(),eventDate,0,true);
-                        if (DateUtils.getInstance().isEventExpired(eventDate, null, event.status(), program.completeEventsExpiryDays(), eventProgramStage.periodType() != null ? eventProgramStage.periodType() : program.expiryPeriodType(), program.expiryDays())) {
+                            eventDate = DateUtils.Companion.getInstance().getNextPeriod(eventProgramStage.periodType(),eventDate,0,true);
+                        if (DateUtils.Companion.getInstance().isEventExpired(eventDate, null, event.status(), program.completeEventsExpiryDays(), eventProgramStage.periodType() != null ? eventProgramStage.periodType() : program.expiryPeriodType(), program.expiryDays())) {
                             view.setImageDrawable(AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_eye_red));
                         } else {
                             view.setImageDrawable(AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_edit));
@@ -251,22 +251,22 @@ public class Bindings {
                     case ACTIVE:
                         Date eventDate = event.eventDate();
                         if(eventProgramStage.periodType()!=null && eventProgramStage.periodType().name().contains(PeriodType.Weekly.name()))
-                            eventDate = DateUtils.getInstance().getNextPeriod(eventProgramStage.periodType(),eventDate,0,true);
-                        if (DateUtils.getInstance().isEventExpired(eventDate, null, event.status(), program.completeEventsExpiryDays(), eventProgramStage.periodType() != null ? eventProgramStage.periodType() : program.expiryPeriodType(), program.expiryDays())) {
+                            eventDate = DateUtils.Companion.getInstance().getNextPeriod(eventProgramStage.periodType(),eventDate,0,true);
+                        if (DateUtils.Companion.getInstance().isEventExpired(eventDate, null, event.status(), program.completeEventsExpiryDays(), eventProgramStage.periodType() != null ? eventProgramStage.periodType() : program.expiryPeriodType(), program.expiryDays())) {
                             view.setText(view.getContext().getString(R.string.event_expired));
                         } else {
                             view.setText(view.getContext().getString(R.string.event_open));
                         }
                         break;
                     case COMPLETED:
-                        if (DateUtils.getInstance().isEventExpired(null, event.completedDate(), program.completeEventsExpiryDays())) {
+                        if (DateUtils.Companion.getInstance().isEventExpired(null, event.completedDate(), program.completeEventsExpiryDays())) {
                             view.setText(view.getContext().getString(R.string.event_expired));
                         } else {
                             view.setText(view.getContext().getString(R.string.event_completed));
                         }
                         break;
                     case SCHEDULE:
-                        if (DateUtils.getInstance().hasExpired(event, program.expiryDays(), program.completeEventsExpiryDays(), eventProgramStage.periodType() != null ? eventProgramStage.periodType() : program.expiryPeriodType())) {
+                        if (DateUtils.Companion.getInstance().hasExpired(event, program.expiryDays(), program.completeEventsExpiryDays(), eventProgramStage.periodType() != null ? eventProgramStage.periodType() : program.expiryPeriodType())) {
                             view.setText(view.getContext().getString(R.string.event_expired));
                         } else {
                             view.setText(view.getContext().getString(R.string.event_schedule));
@@ -294,26 +294,26 @@ public class Bindings {
     public static void setEventColor(View view, EventModel event, ProgramStageModel programStage, ProgramModel program) {
         if (event != null) {
             int bgColor;
-            if (DateUtils.getInstance().isEventExpired(null, event.completedDate(), program.completeEventsExpiryDays())) {
+            if (DateUtils.Companion.getInstance().isEventExpired(null, event.completedDate(), program.completeEventsExpiryDays())) {
                 bgColor = R.drawable.item_event_dark_gray_ripple;
             } else if (event.status() != null) {
                 switch (event.status()) {
                     case ACTIVE:
                         Date eventDate = event.eventDate();
                         if(programStage.periodType()!=null && programStage.periodType().name().contains(PeriodType.Weekly.name()))
-                            eventDate = DateUtils.getInstance().getNextPeriod(programStage.periodType(),eventDate,0,true);
-                        if (DateUtils.getInstance().isEventExpired(eventDate, null, event.status(), program.completeEventsExpiryDays(), programStage.periodType() != null ? programStage.periodType() : program.expiryPeriodType(), program.expiryDays())) {                            bgColor = R.drawable.item_event_dark_gray_ripple;
+                            eventDate = DateUtils.Companion.getInstance().getNextPeriod(programStage.periodType(),eventDate,0,true);
+                        if (DateUtils.Companion.getInstance().isEventExpired(eventDate, null, event.status(), program.completeEventsExpiryDays(), programStage.periodType() != null ? programStage.periodType() : program.expiryPeriodType(), program.expiryDays())) {                            bgColor = R.drawable.item_event_dark_gray_ripple;
                         } else
                             bgColor = R.drawable.item_event_yellow_ripple;
                         break;
                     case COMPLETED:
-                        if (DateUtils.getInstance().isEventExpired(null, event.completedDate(), program.completeEventsExpiryDays())) {
+                        if (DateUtils.Companion.getInstance().isEventExpired(null, event.completedDate(), program.completeEventsExpiryDays())) {
                             bgColor = R.drawable.item_event_dark_gray_ripple;
                         } else
                             bgColor = R.drawable.item_event_gray_ripple;
                         break;
                     case SCHEDULE:
-                        if (DateUtils.getInstance().hasExpired(event, program.expiryDays(), program.completeEventsExpiryDays(), programStage.periodType() != null ? programStage.periodType() : program.expiryPeriodType())) {
+                        if (DateUtils.Companion.getInstance().hasExpired(event, program.expiryDays(), program.completeEventsExpiryDays(), programStage.periodType() != null ? programStage.periodType() : program.expiryPeriodType())) {
                             bgColor = R.drawable.item_event_dark_gray_ripple;
                         } else
                             bgColor = R.drawable.item_event_green_ripple;

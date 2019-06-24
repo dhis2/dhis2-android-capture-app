@@ -113,11 +113,11 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
         String dateFormatted = "";
         if (date != null) {
             if (dateTimeViewModel.valueType() == ValueType.DATE)
-                dateFormatted = DateUtils.uiDateFormat().format(date);
+                dateFormatted = DateUtils.Companion.uiDateFormat().format(date);
             else if (dateTimeViewModel.valueType() == ValueType.TIME)
-                dateFormatted = DateUtils.timeFormat().format(date);
+                dateFormatted = DateUtils.Companion.timeFormat().format(date);
             else {
-                dateFormatted = DateUtils.databaseDateFormatNoMillis().format(date);
+                dateFormatted = DateUtils.Companion.databaseDateFormatNoMillis().format(date);
             }
         }
         RowAction rowAction = RowAction.create(dateTimeViewModel.uid(), date != null ? dateFormatted : null, getAdapterPosition());

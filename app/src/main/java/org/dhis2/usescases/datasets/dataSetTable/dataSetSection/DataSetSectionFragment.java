@@ -15,12 +15,14 @@ import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableContract;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
-
+import org.dhis2.utils.ConstantsKt;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.dhis2.utils.ConstantsKt.DATA_SET_SECTION;
 
 /**
  * QUADRAM. Created by ppajuelo on 02/10/2018.

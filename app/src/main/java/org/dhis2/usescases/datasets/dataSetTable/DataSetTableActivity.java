@@ -9,7 +9,7 @@ import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.databinding.ActivityDatasetTableBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
-
+import org.dhis2.utils.ConstantsKt;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
 import org.hisp.dhis.android.core.dataset.DataSetModel;
@@ -19,11 +19,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import static org.dhis2.utils.ConstantsKt.CAT_COMB;
-import static org.dhis2.utils.ConstantsKt.DATA_SET_UID;
-import static org.dhis2.utils.ConstantsKt.ORG_UNIT;
-import static org.dhis2.utils.ConstantsKt.PERIOD_TYPE;
-import static org.dhis2.utils.ConstantsKt.PERIOD_TYPE_DATE;
+import static org.dhis2.utils.ConstantsKt.*;
 
 public class DataSetTableActivity extends ActivityGlobalAbstract implements DataSetTableContract.View {
 

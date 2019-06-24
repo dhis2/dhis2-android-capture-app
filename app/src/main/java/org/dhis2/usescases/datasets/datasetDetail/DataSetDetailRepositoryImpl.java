@@ -85,7 +85,7 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
                     try (Cursor periodCursor = briteDatabase.query("SELECT Period.* FROM Period WHERE Period.periodId = ?", period)) {
                         if (periodCursor != null && periodCursor.moveToFirst()) {
                             PeriodModel periodModel = PeriodModel.create(periodCursor);
-                            periodName = DateUtils.getInstance().getPeriodUIString(periodModel.periodType(), periodModel.startDate(), Locale.getDefault());
+                            periodName = DateUtils.Companion.getInstance().getPeriodUIString(periodModel.periodType(), periodModel.startDate(), Locale.getDefault());
                         }
                     }
 

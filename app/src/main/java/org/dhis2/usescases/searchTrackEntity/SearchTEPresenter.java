@@ -21,7 +21,7 @@ import org.dhis2.databinding.WidgetDatepickerBinding;
 import org.dhis2.usescases.main.program.SyncStatusDialog;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
-
+import org.dhis2.utils.ConstantsKt;
 import org.dhis2.utils.NetworkUtils;
 import org.dhis2.utils.custom_views.OrgUnitDialog;
 import org.hisp.dhis.android.core.D2;
@@ -52,6 +52,7 @@ import timber.log.Timber;
 
 import static android.app.Activity.RESULT_OK;
 import static android.text.TextUtils.isEmpty;
+import static org.dhis2.utils.ConstantsKt.ENROLLMENT_DATE_UID;
 
 /**
  * QUADRAM. Created by ppajuelo on 02/11/2017.

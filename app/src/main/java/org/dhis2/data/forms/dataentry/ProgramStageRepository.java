@@ -282,7 +282,7 @@ final class ProgramStageRepository implements DataEntryRepository {
             programModel = ProgramModel.create(programCursor);
         }
 
-        boolean hasExpired = DateUtils.getInstance().hasExpired(eventModel, programModel.expiryDays(), programModel.completeEventsExpiryDays(), programStageModel.periodType() != null ? programStageModel.periodType() : programModel.expiryPeriodType());
+        boolean hasExpired = DateUtils.Companion.getInstance().hasExpired(eventModel, programModel.expiryDays(), programModel.completeEventsExpiryDays(), programStageModel.periodType() != null ? programStageModel.periodType() : programModel.expiryPeriodType());
 
         ObjectStyleModel objectStyle = ObjectStyleModel.builder().build();
         try (Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", uid)) {

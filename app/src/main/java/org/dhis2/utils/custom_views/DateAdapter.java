@@ -37,7 +37,7 @@ public class DateAdapter extends RecyclerView.Adapter<DateViewHolder> {
 
     public DateAdapter(Period period) {
         currentPeriod = period;
-        Calendar calendar = DateUtils.getInstance().getCalendar();
+        Calendar calendar = DateUtils.Companion.getInstance().getCalendar();
         calendar.add(Calendar.YEAR, 1); //let's the user select dates in the next year
         int year = calendar.get(Calendar.YEAR);
 

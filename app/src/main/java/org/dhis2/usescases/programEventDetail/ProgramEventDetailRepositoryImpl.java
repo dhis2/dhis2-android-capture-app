@@ -121,7 +121,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
 
     private boolean isExpired(Event event) {
         Program program = d2.programModule().programs.uid(event.program()).get();
-        return DateUtils.getInstance().isEventExpired(event.eventDate(),
+        return DateUtils.Companion.getInstance().isEventExpired(event.eventDate(),
                 event.completedDate(),
                 event.status(),
                 program.completeEventsExpiryDays(),

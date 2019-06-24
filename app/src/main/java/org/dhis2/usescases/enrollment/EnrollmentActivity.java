@@ -8,7 +8,7 @@ import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.databinding.EnrollmentActivityBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
-
+import org.dhis2.utils.ConstantsKt;
 import org.hisp.dhis.android.core.period.FeatureType;
 
 import javax.inject.Inject;

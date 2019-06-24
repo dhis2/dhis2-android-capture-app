@@ -93,13 +93,13 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
         if (data != null) {
             date = null;
             try {
-                date = DateUtils.timeFormat().parse(data);
+                date = DateUtils.Companion.timeFormat().parse(data);
             } catch (ParseException e) {
                 Timber.e(e);
             }
 
 
-            data = DateUtils.timeFormat().format(date);
+            data = DateUtils.Companion.timeFormat().format(date);
         }
         editText.setText(data);
     }

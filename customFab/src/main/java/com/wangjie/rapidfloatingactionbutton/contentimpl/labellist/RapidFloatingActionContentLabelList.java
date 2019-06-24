@@ -16,8 +16,8 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import com.wangjie.rapidfloatingactionbutton.R;
 import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionContent;
-import com.wangjie.rapidfloatingactionbutton.RFAB
-import com.wangjie.rapidfloatingactionbutton.RFABSize;
+import com.wangjie.rapidfloatingactionbutton.constants.RFABConstants;
+import com.wangjie.rapidfloatingactionbutton.constants.RFABSize;
 import com.wangjie.rapidfloatingactionbutton.util.RFABImageUtil;
 import com.wangjie.rapidfloatingactionbutton.util.RFABShape;
 import com.wangjie.rapidfloatingactionbutton.util.RFABTextUtil;
@@ -73,7 +73,7 @@ public class RapidFloatingActionContentLabelList extends RapidFloatingActionCont
 
     @Override
     protected void initInConstructor() {
-        rfacItemDrawableSizePx = RFABTextUtil.dip2px(getContext(), RFABSIZE.RFAC_ITEM_DRAWABLE_SIZE_DP);
+        rfacItemDrawableSizePx = RFABTextUtil.dip2px(getContext(), RFABConstants.SIZE.RFAC_ITEM_DRAWABLE_SIZE_DP);
 
         contentView = new LinearLayout(getContext());
         contentView.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));

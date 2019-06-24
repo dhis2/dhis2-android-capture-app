@@ -11,7 +11,7 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.FormEditTextCustomBinding;
-
+import org.dhis2.utils.ConstantsKt;
 import org.dhis2.utils.Preconditions;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
@@ -26,6 +26,7 @@ import io.reactivex.processors.FlowableProcessor;
 import static android.content.Context.MODE_PRIVATE;
 import static android.text.TextUtils.isEmpty;
 import static java.lang.String.valueOf;
+import static org.dhis2.utils.ConstantsKt.SHARE_PREFS;
 
 
 /**

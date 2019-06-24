@@ -5,11 +5,13 @@ import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 
-
+import org.dhis2.utils.ConstantsKt;
 import org.hisp.dhis.android.core.D2;
 
 import io.reactivex.Completable;
 import timber.log.Timber;
+
+import static org.dhis2.utils.ConstantsKt.*;
 
 final class SyncPresenterImpl implements SyncPresenter {
 

@@ -40,9 +40,9 @@ public class EnrollmentPresenterImpl implements EnrollmentContracts.Presenter {
                                 programEnrollmentPair -> {
                                     Program program = programEnrollmentPair.val0();
                                     Enrollment enrollment = programEnrollmentPair.val1();
-                                    view.renderEnrollmentDate(program.enrollmentDateLabel(), DateUtils.uiDateFormat().format(enrollment.enrollmentDate()));
+                                    view.renderEnrollmentDate(program.enrollmentDateLabel(), DateUtils.Companion.uiDateFormat().format(enrollment.enrollmentDate()));
                                     if (program.displayIncidentDate())
-                                        view.renderIncidentDate(program.incidentDateLabel(), DateUtils.uiDateFormat().format(enrollment.incidentDate()));
+                                        view.renderIncidentDate(program.incidentDateLabel(), DateUtils.Companion.uiDateFormat().format(enrollment.incidentDate()));
                                     view.showCoordinates(program.featureType());
                                 },
                                 Timber::e

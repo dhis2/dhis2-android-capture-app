@@ -48,8 +48,8 @@ public class TeiProgramListEnrollmentViewHolder extends RecyclerView.ViewHolder 
                 iconBg = ((ItemTeiProgramsEnrollmentInactiveBinding) binding).iconBg;
             }
 
-            int color = ColorUtils.getColorFrom(enrollment.color(),
-                    ColorUtils.getPrimaryColor(itemView.getContext(), ColorUtils.ColorType.PRIMARY));
+            int color = ColorUtils.Companion.getColorFrom(enrollment.color(),
+                    ColorUtils.Companion.getPrimaryColor(itemView.getContext(), ColorUtils.ColorType.PRIMARY));
             int icon;
             if (enrollment.icon() != null) {
                 Resources resources = itemView.getContext().getResources();
@@ -69,12 +69,12 @@ public class TeiProgramListEnrollmentViewHolder extends RecyclerView.ViewHolder 
             }
 
             if (iconImage != null) {
-                programImage.setImageDrawable(ColorUtils.tintDrawableReosurce(iconImage, color));
+                programImage.setImageDrawable(ColorUtils.Companion.tintDrawableReosurce(iconImage, color));
             }
 
             Drawable bgImage = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.photo_temp_gray);
             if (bgImage != null) {
-                iconBg.setBackground(ColorUtils.tintDrawableWithColor(bgImage, color));
+                iconBg.setBackground(ColorUtils.Companion.tintDrawableWithColor(bgImage, color));
             }
         } else if (programModel != null) {
             ImageView programImage;
@@ -89,8 +89,8 @@ public class TeiProgramListEnrollmentViewHolder extends RecyclerView.ViewHolder 
 
             }
 
-            int color = ColorUtils.getColorFrom(programModel.color(),
-                    ColorUtils.getPrimaryColor(itemView.getContext(), ColorUtils.ColorType.PRIMARY));
+            int color = ColorUtils.Companion.getColorFrom(programModel.color(),
+                    ColorUtils.Companion.getPrimaryColor(itemView.getContext(), ColorUtils.ColorType.PRIMARY));
             int icon;
             if (programModel.icon() != null) {
                 Resources resources = itemView.getContext().getResources();
@@ -108,12 +108,12 @@ public class TeiProgramListEnrollmentViewHolder extends RecyclerView.ViewHolder 
             }
 
             if (iconImage != null) {
-                programImage.setImageDrawable(ColorUtils.tintDrawableReosurce(iconImage, color));
+                programImage.setImageDrawable(ColorUtils.Companion.tintDrawableReosurce(iconImage, color));
             }
 
             Drawable bgImage = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.photo_temp_gray);
             if (bgImage != null) {
-                iconBg.setBackground(ColorUtils.tintDrawableWithColor(bgImage, color));
+                iconBg.setBackground(ColorUtils.Companion.tintDrawableWithColor(bgImage, color));
             }
         }
 

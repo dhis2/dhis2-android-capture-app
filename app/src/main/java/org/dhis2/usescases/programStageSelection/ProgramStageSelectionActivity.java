@@ -10,6 +10,7 @@ import org.dhis2.R;
 import org.dhis2.databinding.ActivityProgramStageSelectionBinding;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
+import org.dhis2.utils.ConstantsKt;
 import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.ProgramStage;
 
@@ -21,7 +22,15 @@ import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.GridLayoutManager;
 
-import static org.dhis2.utils.t.*;
+import static org.dhis2.utils.ConstantsKt.ENROLLMENT_UID;
+import static org.dhis2.utils.ConstantsKt.EVENT_CREATION_TYPE;
+import static org.dhis2.utils.ConstantsKt.EVENT_PERIOD_TYPE;
+import static org.dhis2.utils.ConstantsKt.EVENT_REPEATABLE;
+import static org.dhis2.utils.ConstantsKt.EVENT_SCHEDULE_INTERVAL;
+import static org.dhis2.utils.ConstantsKt.ORG_UNIT;
+import static org.dhis2.utils.ConstantsKt.PROGRAM_STAGE_UID;
+import static org.dhis2.utils.ConstantsKt.PROGRAM_UID;
+import static org.dhis2.utils.ConstantsKt.TRACKED_ENTITY_INSTANCE;
 
 
 /**

@@ -11,7 +11,7 @@ import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity;
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity;
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity;
 import org.dhis2.utils.ColorUtils;
-
+import org.dhis2.utils.ConstantsKt;
 import org.dhis2.utils.OrgUnitUtils;
 import org.dhis2.utils.Period;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
@@ -151,7 +151,7 @@ public class ProgramPresenter implements ProgramContract.Presenter {
 
         bundle.putString(idTag, programModel.id());
 
-        int programTheme = ColorUtils.getThemeFromColor(programModel.color());
+        int programTheme = ColorUtils.Companion.getThemeFromColor(programModel.color());
         SharedPreferences prefs = view.getAbstracContext().getSharedPreferences(
                 SHARE_PREFS, Context.MODE_PRIVATE);
         if (programTheme != -1) {

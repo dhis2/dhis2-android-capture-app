@@ -12,7 +12,7 @@ import androidx.databinding.ViewDataBinding;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.dhis2.R;
-
+import org.dhis2.utils.ConstantsKt;
 import org.dhis2.utils.custom_views.CustomDialog;
 
 import static org.dhis2.utils.ConstantsKt.DESCRIPTION_DIALOG;

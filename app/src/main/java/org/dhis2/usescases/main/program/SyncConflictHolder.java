@@ -16,7 +16,7 @@ class SyncConflictHolder extends RecyclerView.ViewHolder {
     }
 
     public void bind(TrackerImportConflict trackerImportConflict) {
-        binding.date.setText(DateUtils.dateTimeFormat().format(trackerImportConflict.created()));
+        binding.date.setText(DateUtils.Companion.dateTimeFormat().format(trackerImportConflict.created()));
         binding.message.setText(trackerImportConflict.conflict());
     }
 }

@@ -43,7 +43,7 @@ import org.dhis2.databinding.CatCombFilterBinding;
 import org.dhis2.databinding.WidgetDatepickerBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.main.program.OrgUnitHolder;
-
+import org.dhis2.utils.ConstantsKt;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.Period;
@@ -69,6 +69,7 @@ import me.toptas.fancyshowcase.FancyShowCaseView;
 import timber.log.Timber;
 
 import static org.dhis2.R.layout.activity_program_event_detail;
+import static org.dhis2.utils.ConstantsKt.SHARE_PREFS;
 import static org.dhis2.utils.Period.DAILY;
 import static org.dhis2.utils.Period.MONTHLY;
 import static org.dhis2.utils.Period.NONE;
@@ -195,7 +196,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                             }
                             binding.buttonPeriodText.setText(textToShow);
 
-                            presenter.updateDateFilter(DateUtils.getInstance().getDatePeriodListFor(selectedDates, currentPeriod));
+                            presenter.updateDateFilter(DateUtils.Companion.getInstance().getDatePeriodListFor(selectedDates, currentPeriod));
 
                         } else {
                             ArrayList<Date> date = new ArrayList<>();
@@ -220,7 +221,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                                     break;
                             }
                             binding.buttonPeriodText.setText(text);
-                            presenter.updateDateFilter(DateUtils.getInstance().getDatePeriodListFor(selectedDates, currentPeriod));
+                            presenter.updateDateFilter(DateUtils.Companion.getInstance().getDatePeriodListFor(selectedDates, currentPeriod));
                         }
                     },
                     Timber::d);
@@ -235,12 +236,12 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         DatePickerDialog pickerDialog;
         pickerDialog = new DatePickerDialog(getContext(), (datePicker, year, monthOfYear, dayOfMonth) -> {
             calendar.set(year, monthOfYear, dayOfMonth);
-            Date[] dates = DateUtils.getInstance().getDateFromDateAndPeriod(calendar.getTime(), currentPeriod);
+            Date[] dates = DateUtils.Companion.getInstance().getDateFromDateAndPeriod(calendar.getTime(), currentPeriod);
             ArrayList<Date> selectedDates = new ArrayList<>();
             selectedDates.add(dates[0]);
 
-            presenter.updateDateFilter(DateUtils.getInstance().getDatePeriodListFor(selectedDates, currentPeriod));
-            binding.buttonPeriodText.setText(DateUtils.getInstance().formatDate(dates[0]));
+            presenter.updateDateFilter(DateUtils.Companion.getInstance().getDatePeriodListFor(selectedDates, currentPeriod));
+            binding.buttonPeriodText.setText(DateUtils.Companion.getInstance().formatDate(dates[0]));
             chosenDateDay = dates[0];
         }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
 
@@ -289,12 +290,12 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         widgetBinding.clearButton.setOnClickListener(clearButton -> dialog.dismiss());
         widgetBinding.acceptButton.setOnClickListener(acceptButton -> {
             calendar.set(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
-            Date[] dates = DateUtils.getInstance().getDateFromDateAndPeriod(calendar.getTime(), currentPeriod);
+            Date[] dates = DateUtils.Companion.getInstance().getDateFromDateAndPeriod(calendar.getTime(), currentPeriod);
             ArrayList<Date> selectedDates = new ArrayList<>();
             selectedDates.add(dates[0]);
 
-            presenter.updateDateFilter(DateUtils.getInstance().getDatePeriodListFor(selectedDates, currentPeriod));
-            binding.buttonPeriodText.setText(DateUtils.getInstance().formatDate(dates[0]));
+            presenter.updateDateFilter(DateUtils.Companion.getInstance().getDatePeriodListFor(selectedDates, currentPeriod));
+            binding.buttonPeriodText.setText(DateUtils.Companion.getInstance().formatDate(dates[0]));
             chosenDateDay = dates[0];
             dialog.dismiss();
         });
@@ -342,9 +343,9 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                 ArrayList<Date> datesD = new ArrayList<>();
                 datesD.add(chosenDateDay);
                 if (!datesD.isEmpty())
-                    textToShow = DateUtils.getInstance().formatDate(datesD.get(0));
+                    textToShow = DateUtils.Companion.getInstance().formatDate(datesD.get(0));
                 if (!datesD.isEmpty() && datesD.size() > 1) textToShow += "... ";
-                presenter.updateDateFilter(DateUtils.getInstance().getDatePeriodListFor(datesD, currentPeriod));
+                presenter.updateDateFilter(DateUtils.Companion.getInstance().getDatePeriodListFor(datesD, currentPeriod));
                 break;
             case WEEKLY:
                 if (!chosenDateWeek.isEmpty()) {
@@ -355,7 +356,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                 if (!chosenDateWeek.isEmpty() && chosenDateWeek.size() > 1)
                     textToShow += "... ";
 
-                presenter.updateDateFilter(DateUtils.getInstance().getDatePeriodListFor(chosenDateWeek, currentPeriod));
+                presenter.updateDateFilter(DateUtils.Companion.getInstance().getDatePeriodListFor(chosenDateWeek, currentPeriod));
                 break;
             case MONTHLY:
                 if (!chosenDateMonth.isEmpty()) {
@@ -364,14 +365,14 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                 }
                 if (!chosenDateMonth.isEmpty() && chosenDateMonth.size() > 1) textToShow += "... ";
 
-                presenter.updateDateFilter(DateUtils.getInstance().getDatePeriodListFor(chosenDateMonth, currentPeriod));
+                presenter.updateDateFilter(DateUtils.Companion.getInstance().getDatePeriodListFor(chosenDateMonth, currentPeriod));
                 break;
             case YEARLY:
                 if (!chosenDateYear.isEmpty())
                     textToShow = yearFormat.format(chosenDateYear.get(0));
                 if (!chosenDateYear.isEmpty() && chosenDateYear.size() > 1) textToShow += "... ";
 
-                presenter.updateDateFilter(DateUtils.getInstance().getDatePeriodListFor(chosenDateYear, currentPeriod));
+                presenter.updateDateFilter(DateUtils.Companion.getInstance().getDatePeriodListFor(chosenDateYear, currentPeriod));
                 break;
         }
 

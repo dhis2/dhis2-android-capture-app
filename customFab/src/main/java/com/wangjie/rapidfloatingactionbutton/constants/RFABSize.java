@@ -1,4 +1,4 @@
-package com.wangjie.rapidfloatingactionbutton.
+package com.wangjie.rapidfloatingactionbutton.constants;
 
 /**
  * Author: wangjie
@@ -6,8 +6,8 @@ package com.wangjie.rapidfloatingactionbutton.
  * Date: 4/30/15.
  */
 public enum RFABSize {
-    NORMAL(0, RFABSIZE.RFAB_NORMAL_SIZE_DP),
-    MINI(1, RFABSIZE.RFAB_MINI_SIZE_DP);
+    NORMAL(0, RFABConstants.SIZE.RFAB_NORMAL_SIZE_DP),
+    MINI(1, RFABConstants.SIZE.RFAB_MINI_SIZE_DP);
     int code;
     int dpSize;
 

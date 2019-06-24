@@ -34,6 +34,7 @@ import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.FragmentSettingsBinding;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
+import org.dhis2.utils.ConstantsKt;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.SyncUtils;
 import org.hisp.dhis.android.core.imports.TrackerImportConflict;
@@ -54,7 +55,8 @@ import me.toptas.fancyshowcase.FocusShape;
 import me.toptas.fancyshowcase.listener.DismissListener;
 import timber.log.Timber;
 
-import static org.dhis2.utils.t.*;
+
+import static org.dhis2.utils.ConstantsKt.*;
 
 /**
  * A simple {@link Fragment} subclass.

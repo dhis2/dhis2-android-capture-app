@@ -20,11 +20,13 @@ import org.dhis2.databinding.ActivityTeiProgramListBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.main.program.ProgramViewModel;
 import org.dhis2.utils.ColorUtils;
-
+import org.dhis2.utils.ConstantsKt;
 
 import java.util.List;
 
 import javax.inject.Inject;
+
+import static org.dhis2.utils.ConstantsKt.*;
 
 /**
  * QUADRAM. Created by Cristian on 13/02/2018.
@@ -102,9 +104,9 @@ public class TeiProgramListActivity extends ActivityGlobalAbstract implements Te
     }
 
     private void SetProgramTheme(String color) {
-        int programTheme = ColorUtils.getThemeFromColor(color);
-        int programColor = ColorUtils.getColorFrom(color,
-                ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY));
+        int programTheme = ColorUtils.Companion.getThemeFromColor(color);
+        int programColor = ColorUtils.Companion.getColorFrom(color,
+                ColorUtils.Companion.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY));
 
         SharedPreferences prefs = getAbstracContext().getSharedPreferences(
                 SHARE_PREFS, Context.MODE_PRIVATE);

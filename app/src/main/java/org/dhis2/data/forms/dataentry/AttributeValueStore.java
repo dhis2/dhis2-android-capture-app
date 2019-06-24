@@ -337,7 +337,7 @@ public final class AttributeValueStore implements DataEntryStore {
                         if (tei != null) {
                             ContentValues cv = tei.toContentValues();
                             cv.put(TrackedEntityInstanceModel.Columns.STATE, tei.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
-                            cv.put(TrackedEntityInstanceModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
+                            cv.put(TrackedEntityInstanceModel.Columns.LAST_UPDATED, DateUtils.Companion.databaseDateFormat().format(Calendar.getInstance().getTime()));
                             briteDatabase.update(TrackedEntityInstanceModel.TABLE, cv, "uid = ?", tei.uid());
                         }
                     }

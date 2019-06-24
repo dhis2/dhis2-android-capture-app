@@ -293,7 +293,7 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
                     selectedCalendar.set(Calendar.HOUR_OF_DAY, c.get(Calendar.HOUR_OF_DAY));
                     selectedCalendar.set(Calendar.MINUTE, c.get(Calendar.MINUTE));
                     Date selectedDate = selectedCalendar.getTime();
-                    String result = DateUtils.uiDateFormat().format(selectedDate);
+                    String result = DateUtils.Companion.uiDateFormat().format(selectedDate);
                     view.setDate(result);
 
                     if (eventDetailModel.getProgramStage().accessDataWrite()) {
@@ -311,7 +311,7 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
             dateDialog.getDatePicker().setMinDate(c.getTimeInMillis());
 
         if (eventDetailModel.getProgram().expiryPeriodType() != null) {// eventDetailModel.orgUnitOpeningDate() != null) {
-            Date minDate = DateUtils.getInstance().expDate(null,
+            Date minDate = DateUtils.Companion.getInstance().expDate(null,
                     eventDetailModel.getProgram().expiryDays() != null ? eventDetailModel.getProgram().expiryDays() : 0,
                     eventDetailModel.getProgram().expiryPeriodType());
             dateDialog.getDatePicker().setMinDate(minDate.getTime());
@@ -361,7 +361,7 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
             datePicker.setMinDate(c.getTimeInMillis());
 
         if (eventDetailModel.getProgram().expiryPeriodType() != null) {// eventDetailModel.orgUnitOpeningDate() != null) {
-            Date minDate = DateUtils.getInstance().expDate(null,
+            Date minDate = DateUtils.Companion.getInstance().expDate(null,
                     eventDetailModel.getProgram().expiryDays() != null ? eventDetailModel.getProgram().expiryDays() : 0,
                     eventDetailModel.getProgram().expiryPeriodType());
             datePicker.setMinDate(minDate.getTime());
@@ -387,7 +387,7 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
             selectedCalendar.set(Calendar.HOUR_OF_DAY, c.get(Calendar.HOUR_OF_DAY));
             selectedCalendar.set(Calendar.MINUTE, c.get(Calendar.MINUTE));
             Date selectedDate = selectedCalendar.getTime();
-            String result = DateUtils.uiDateFormat().format(selectedDate);
+            String result = DateUtils.Companion.uiDateFormat().format(selectedDate);
             view.setDate(result);
 
             if (eventDetailModel.getProgramStage().accessDataWrite()) {
@@ -403,7 +403,7 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
         PeriodDialog periodDialog = new PeriodDialog()
                 .setPeriod(eventDetailModel.getProgramStage().periodType())
                 .setPossitiveListener(selectedDate -> {
-                    String result = DateUtils.uiDateFormat().format(selectedDate);
+                    String result = DateUtils.Companion.uiDateFormat().format(selectedDate);
                     view.setDate(result);
 
                     if (eventDetailModel.getProgramStage().accessDataWrite()) {

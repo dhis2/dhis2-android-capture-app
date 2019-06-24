@@ -1,7 +1,7 @@
 package org.dhis2.usescases.datasets.datasetDetail;
 
 import org.joda.time.DateTime;
-import org.joda.time.DateTime
+import org.joda.time.DateTimeConstants;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 
@@ -36,31 +36,31 @@ public enum DataSetDetailPeriodEnum {
 
     WEEKLY("Weekly") {
         public List<DataSetDetailModel> getListDataSetWithPeriods(int year, DataSetDetailModel dataset){
-            return getListDataSetWithPeriodsWeeks(year, dataset, DateTimeMONDAY);
+            return getListDataSetWithPeriodsWeeks(year, dataset, DateTimeConstants.MONDAY);
         }
     },
 
     WEEKLYWEDNESDAY("WeeklyWednesday") {
         public List<DataSetDetailModel> getListDataSetWithPeriods(int year, DataSetDetailModel dataset){
-            return getListDataSetWithPeriodsWeeks(year, dataset, DateTimeWEDNESDAY);
+            return getListDataSetWithPeriodsWeeks(year, dataset, DateTimeConstants.WEDNESDAY);
         }
     },
 
     WEEKLYTHURSDAY("WeeklyThursday") {
         public List<DataSetDetailModel> getListDataSetWithPeriods(int year, DataSetDetailModel dataset){
-            return getListDataSetWithPeriodsWeeks(year, dataset, DateTimeTHURSDAY);
+            return getListDataSetWithPeriodsWeeks(year, dataset, DateTimeConstants.THURSDAY);
         }
     },
 
     WEEKLYSATURDAY("WeeklySaturday") {
         public List<DataSetDetailModel> getListDataSetWithPeriods(int year, DataSetDetailModel dataset){
-            return getListDataSetWithPeriodsWeeks(year, dataset, DateTimeSATURDAY);
+            return getListDataSetWithPeriodsWeeks(year, dataset, DateTimeConstants.SATURDAY);
         }
     },
 
     WEEKLYSUNDAY("WeeklySunday") {
         public List<DataSetDetailModel> getListDataSetWithPeriods(int year, DataSetDetailModel dataset){
-            return getListDataSetWithPeriodsWeeks(year, dataset, DateTimeSUNDAY);
+            return getListDataSetWithPeriodsWeeks(year, dataset, DateTimeConstants.SUNDAY);
         }
     },
 
@@ -89,28 +89,28 @@ public enum DataSetDetailPeriodEnum {
 
     MONTHLY("Monthly") {
         public List<DataSetDetailModel> getListDataSetWithPeriods(int year, DataSetDetailModel dataset){
-            return getListDataSetWithPeriodsMonth(year, dataset, DateTimeJANUARY, 0);
+            return getListDataSetWithPeriodsMonth(year, dataset, DateTimeConstants.JANUARY, 0);
         }
     },
 
     BIMONTHLY("BiMonthly") {
         public List<DataSetDetailModel> getListDataSetWithPeriods(int year, DataSetDetailModel dataset){
-            return getListDataSetWithPeriodsMonth(year, dataset, DateTimeJANUARY, 1);
+            return getListDataSetWithPeriodsMonth(year, dataset, DateTimeConstants.JANUARY, 1);
         }
     },
     QUATERLY("Quarterly") {
         public List<DataSetDetailModel> getListDataSetWithPeriods(int year, DataSetDetailModel dataset){
-            return getListDataSetWithPeriodsMonth(year, dataset, DateTimeJANUARY, 2);
+            return getListDataSetWithPeriodsMonth(year, dataset, DateTimeConstants.JANUARY, 2);
         }
     },
     SIXMONTHLY("SixMonthly") {
         public List<DataSetDetailModel> getListDataSetWithPeriods(int year, DataSetDetailModel dataset){
-            return getListDataSetWithPeriodsMonth(year, dataset, DateTimeJANUARY, 5);
+            return getListDataSetWithPeriodsMonth(year, dataset, DateTimeConstants.JANUARY, 5);
         }
     },
     SIXMONTHLYAPRIL("SixMonthlyApril") {
         public List<DataSetDetailModel> getListDataSetWithPeriods(int year, DataSetDetailModel dataset){
-            return getListDataSetWithPeriodsMonth(year, dataset, DateTimeAPRIL, 5);
+            return getListDataSetWithPeriodsMonth(year, dataset, DateTimeConstants.APRIL, 5);
         }
     },
     YEARLY("Yearly"){
