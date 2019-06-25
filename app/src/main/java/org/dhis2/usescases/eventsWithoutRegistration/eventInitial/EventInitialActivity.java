@@ -42,7 +42,6 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureAc
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.map.MapSelectorActivity;
 import org.dhis2.usescases.qrCodes.eventsworegistration.QrEventsWORegistrationActivity;
-import org.dhis2.utils.ConstantsKt;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.EventCreationType;

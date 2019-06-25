@@ -45,15 +45,19 @@ class JiraFragment : FragmentGlobalAbstract(), OnJiraIssueClick {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val binding = DataBindingUtil.inflate<FragmentJiraBinding>(inflater, R.layout.fragment_jira, container, false)
+        val binding = DataBindingUtil.inflate<FragmentJiraBinding>(inflater,
+                R.layout.fragment_jira, container, false)
         jiraViewModel = ViewModelProviders.of(this).get(JiraViewModel::class.java)
         jiraViewModel!!.init()
 
-        jiraViewModel!!.issueListResponse().observe(this, Observer<Response<ResponseBody>> { response ->
+        jiraViewModel!!.issueListResponse().observe(this, Observer<Response<ResponseBody>> {
+            response ->
             if (response.isSuccessful && response.body() != null) {
                 var issueList: List<JiraIssue>? = ArrayList()
                 try {
-                    val jiraIssueListRes = Gson().fromJson<JiraIssueListResponse>(response.body()!!.string(), JiraIssueListResponse::class.java)
+                    val jiraIssueListRes = Gson()
+                            .fromJson<JiraIssueListResponse>(response.body()!!.string(),
+                                    JiraIssueListResponse::class.java)
                     issueList = jiraIssueListRes.issues
                 } catch (e: IOException) {
                     e.printStackTrace()
@@ -72,13 +76,15 @@ class JiraFragment : FragmentGlobalAbstract(), OnJiraIssueClick {
         binding.jiraViewModel = jiraViewModel
         binding.sendReportButton.isEnabled = NetworkUtils.isOnline(context!!)
         binding.issueRecycler.adapter = adapter
-        binding.issueRecycler.addItemDecoration(DividerItemDecoration(context!!, DividerItemDecoration.VERTICAL))
+        binding.issueRecycler.addItemDecoration(DividerItemDecoration(context!!,
+                DividerItemDecoration.VERTICAL))
 
         return binding.root
     }
 
     override fun onJiraIssueClick(issueKey: String) {
-        val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://jira.dhis2.org/browse/$issueKey"))
+        val browserIntent = Intent(Intent.ACTION_VIEW,
+                Uri.parse("https://jira.dhis2.org/browse/$issueKey"))
         val bundle = Bundle()
         bundle.putString("Authorization", "Basic ${jiraViewModel!!.getAuth()}")
         browserIntent.putExtra(Browser.EXTRA_HEADERS, bundle)

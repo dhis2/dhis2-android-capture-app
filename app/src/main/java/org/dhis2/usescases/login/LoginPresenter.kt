@@ -42,7 +42,7 @@ class LoginPresenter internal constructor(private val configurationRepository: C
         this.disposable = CompositeDisposable()
 
         if ((view.context.applicationContext as App).serverComponent != null)
-            userManager = (view.context.applicationContext as App).serverComponent.userManager()
+            userManager = (view.context.applicationContext as App).serverComponent?.userManager()
 
         userManager?.let { userManager ->
             disposable.add(userManager.isUserLoggedIn

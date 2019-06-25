@@ -11,7 +11,6 @@ import com.google.firebase.perf.metrics.AddTrace;
 
 import org.dhis2.App;
 import org.dhis2.R;
-import org.dhis2.utils.ConstantsKt;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.NetworkUtils;
 

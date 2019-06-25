@@ -38,7 +38,6 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialAc
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.usescases.map.MapSelectorActivity;
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
-import org.dhis2.utils.ConstantsKt;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.custom_views.CategoryComboDialog;
 import org.dhis2.utils.custom_views.CoordinatesView;
