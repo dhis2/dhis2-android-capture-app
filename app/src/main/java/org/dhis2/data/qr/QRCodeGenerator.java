@@ -48,6 +48,7 @@ import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 
 import io.reactivex.Observable;
+import kotlin.text.Charsets;
 import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
@@ -228,14 +229,8 @@ public class QRCodeGenerator implements QRInterface {
     public static Bitmap transform(String type, String info) {
         byte[] data;
         String encoded;
-        try {
-            data = info.getBytes("UTF-8");
-            encoded = Base64.encodeToString(data, Base64.DEFAULT);
-        } catch (UnsupportedEncodingException e) {
-            Timber.e(e);
-            encoded = e.getLocalizedMessage();
-        }
-
+        data = info.getBytes(Charsets.UTF_8);
+        encoded = Base64.encodeToString(data, Base64.DEFAULT);
         MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
         Bitmap bitmap = null;
         Gson gson = new GsonBuilder().setDateFormat(DateUtils.DATABASE_FORMAT_EXPRESSION).create();
