@@ -150,7 +150,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
                     .setLabelTextBold(true)
                     .setLabelBackgroundDrawable(AppCompatResources.getDrawable(getAbstracContext(), R.drawable.bg_chip))
                     .setIconNormalColor(ColorUtils.Companion.getPrimaryColor(getAbstracContext(), ColorUtils.ColorType.PRIMARY_DARK))
-                    .setWrapper(Pair.create(relationshipType, trio.val1()))
+                    .setWrapper(Pair.Companion.create(relationshipType, trio.val1()))
             );
         }
 

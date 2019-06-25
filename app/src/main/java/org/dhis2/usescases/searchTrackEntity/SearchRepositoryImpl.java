@@ -420,7 +420,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                 String programName = cursor.getString(0);
                 String programColor = cursor.getString(1) != null ? cursor.getString(1) : "";
                 String programIcon = cursor.getString(2) != null ? cursor.getString(2) : "";
-                return Trio.create(programName, programColor, programIcon);
+                return Trio.Companion.create(programName, programColor, programIcon);
             }
         }
         return null;

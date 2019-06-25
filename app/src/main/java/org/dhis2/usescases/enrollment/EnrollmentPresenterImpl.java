@@ -33,7 +33,7 @@ public class EnrollmentPresenterImpl implements EnrollmentContracts.Presenter {
         compositeDisposable.add(
                 Observable.just(d2.enrollmentModule().enrollments.uid(enrollmentUid).get())
                         .flatMap(enrollment -> Observable.just(d2.programModule().programs.uid(enrollment.program()).get())
-                                .map(program -> Pair.create(program, enrollment)))
+                                .map(program -> Pair.Companion.create(program, enrollment)))
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(

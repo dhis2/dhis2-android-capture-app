@@ -165,7 +165,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
                         value = ValueUtils.INSTANCE.orgUnitUidToDisplayName(briteDatabase, value);
 
                     //TODO: Would be good to check other value types to render value (coordinates)
-                    data.add(Pair.create(displayName, value));
+                    data.add(Pair.Companion.create(displayName, value));
                 }
             }
 

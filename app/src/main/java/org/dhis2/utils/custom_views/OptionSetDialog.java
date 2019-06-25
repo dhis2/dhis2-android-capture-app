@@ -89,7 +89,7 @@ public class OptionSetDialog extends DialogFragment {
         endlessScrollListener = new EndlessRecyclerViewScrollListener(binding.recycler.getLayoutManager(), 2, 0) {
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                processor.onNext(Trio.create(binding.txtSearch.getText().toString(), optionSet.optionSet(), page));
+                processor.onNext(Trio.Companion.create(binding.txtSearch.getText().toString(), optionSet.optionSet(), page));
             }
         };
         binding.recycler.addOnScrollListener(endlessScrollListener);
@@ -97,7 +97,7 @@ public class OptionSetDialog extends DialogFragment {
         adapter.setOptions(new ArrayList<>(), endlessScrollListener.getCurrentPage());
         binding.recycler.setAdapter(adapter);
 
-        processor.onNext(Trio.create("", optionSet.optionSet(), 0));
+        processor.onNext(Trio.Companion.create("", optionSet.optionSet(), 0));
 
         binding.clearButton.setOnClickListener(clearListener);
         binding.cancelButton.setOnClickListener(cancelListener);
@@ -107,7 +107,7 @@ public class OptionSetDialog extends DialogFragment {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(data -> {
                             endlessScrollListener.resetState();
-                            processor.onNext(Trio.create(data.toString(), optionSet.optionSet(), 0));
+                            processor.onNext(Trio.Companion.create(data.toString(), optionSet.optionSet(), 0));
                         },
                         Timber::e
                 ));

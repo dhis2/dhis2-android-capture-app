@@ -193,9 +193,9 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
                 .flatMap(catCombo -> {
                     if (catCombo != null && !catCombo.isDefault())
                         return briteDatabase.createQuery(CategoryOptionComboModel.TABLE, SELECT_CATEGORY_COMBO, catCombo.uid()).mapToList(CategoryOptionComboModel::create)
-                                .map(list -> Pair.create(catCombo.name(), list));
+                                .map(list -> Pair.Companion.create(catCombo.name(), list));
                     else
-                        return Observable.just(Pair.create("", new ArrayList<>()));
+                        return Observable.just(Pair.Companion.create("", new ArrayList<>()));
                 });
     }
 

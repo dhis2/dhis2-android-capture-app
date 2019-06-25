@@ -341,7 +341,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                 color = cursor.getString(0);
             }
         }
-        return Observable.just(Trio.create(indicator, value, color));
+        return Observable.just(Trio.Companion.create(indicator, value, color));
     }
 
     @Override
@@ -431,10 +431,10 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                 .flatMap(version -> {
                     if (version.equals("2.29"))
                         return briteDatabase.createQuery(RelationshipTypeModel.TABLE, RELATIONSHIP_QUEY_29)
-                                .mapToList(cursor -> Pair.create(RelationshipTypeModel.create(cursor), teType));
+                                .mapToList(cursor -> Pair.Companion.create(RelationshipTypeModel.create(cursor), teType));
                     else
                         return briteDatabase.createQuery(RelationshipTypeModel.TABLE, RELATIONSHIP_QUERY, teType)
-                                .mapToList(cursor -> Pair.create(RelationshipTypeModel.create(cursor), cursor.getString(cursor.getColumnIndex("toTeiType"))));
+                                .mapToList(cursor -> Pair.Companion.create(RelationshipTypeModel.create(cursor), cursor.getString(cursor.getColumnIndex("toTeiType"))));
                 });
 
     }

@@ -147,7 +147,7 @@ public class RelationshipPresenterImpl implements RelationshipContracts.Presente
                             List<Trio<RelationshipTypeModel, String, Integer>> finalList = new ArrayList<>();
                             for (Pair<RelationshipTypeModel, String> rType : list) {
                                 int iconResId = dashboardRepository.getObjectStyle(view.getAbstracContext(), rType.val1());
-                                finalList.add(Trio.create(rType.val0(), rType.val1(), iconResId));
+                                finalList.add(Trio.Companion.create(rType.val0(), rType.val1(), iconResId));
                             }
                             return finalList;
                         })

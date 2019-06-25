@@ -70,7 +70,7 @@ public class IndicatorsPresenterImpl implements IndicatorsContracts.Presenter {
                                                     enrollmentUid,
                                                     null,
                                                     indicator.uid());
-                                            return Pair.create(indicator, indicatorValue == null ? "" : indicatorValue);
+                                            return Pair.Companion.create(indicator, indicatorValue == null ? "" : indicatorValue);
                                         })
                                         .filter(pair -> !pair.val1().isEmpty())
                                         .flatMap(pair -> dashboardRepository.getLegendColorForIndicator(pair.val0(), pair.val1()))
@@ -106,12 +106,12 @@ public class IndicatorsPresenterImpl implements IndicatorsContracts.Presenter {
             RuleAction ruleAction = ruleEffect.ruleAction();
             if (!ruleEffect.data().contains("#{")) //Avoid display unavailable variables
                 if (ruleAction instanceof RuleActionDisplayKeyValuePair) {
-                    Trio<ProgramIndicatorModel, String, String> indicator = Trio.create(
+                    Trio<ProgramIndicatorModel, String, String> indicator = Trio.Companion.create(
                             ProgramIndicatorModel.builder().displayName(((RuleActionDisplayKeyValuePair) ruleAction).content()).build(),
                             ruleEffect.data(), "");
                     indicators.add(indicator);
                 } else if (ruleAction instanceof RuleActionDisplayText) {
-                    Trio<ProgramIndicatorModel, String, String> indicator = Trio.create(null,
+                    Trio<ProgramIndicatorModel, String, String> indicator = Trio.Companion.create(null,
                             ((RuleActionDisplayText) ruleAction).content() + ruleEffect.data(), "");
                     indicators.add(indicator);
                 }

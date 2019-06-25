@@ -119,13 +119,13 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                                 " WHERE " + DataElementModel.Columns.UID + " = ?", attrValue.getString("dataElement"))) {
                             if (cursor != null && cursor.moveToFirst() && cursor.getCount() > 0) {
                                 this.dataJson.add(attrValue);
-                                attributes.add(Trio.create(trackedEntityDataValueModelBuilder.build(), cursor.getString(cursor.getColumnIndex("formName")), true));
+                                attributes.add(Trio.Companion.create(trackedEntityDataValueModelBuilder.build(), cursor.getString(cursor.getColumnIndex("formName")), true));
                             } else {
-                                attributes.add(Trio.create(trackedEntityDataValueModelBuilder.build(), null, false));
+                                attributes.add(Trio.Companion.create(trackedEntityDataValueModelBuilder.build(), null, false));
                             }
                         }
                     } else {
-                        attributes.add(Trio.create(trackedEntityDataValueModelBuilder.build(), null, false));
+                        attributes.add(Trio.Companion.create(trackedEntityDataValueModelBuilder.build(), null, false));
                     }
                 }
             } catch (JSONException | ParseException e) {
@@ -176,13 +176,13 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                             " WHERE " + DataElementModel.Columns.UID + " = ?", attrValue.getString("dataElement"))) {
                         if (cursor != null && cursor.moveToFirst() && cursor.getCount() > 0) {
                             this.teiDataJson.add(attrValue);
-                            attributes.add(Trio.create(trackedEntityDataValueModelBuilder.build(), cursor.getString(cursor.getColumnIndex("formName")), true));
+                            attributes.add(Trio.Companion.create(trackedEntityDataValueModelBuilder.build(), cursor.getString(cursor.getColumnIndex("formName")), true));
                         } else {
-                            attributes.add(Trio.create(trackedEntityDataValueModelBuilder.build(), null, false));
+                            attributes.add(Trio.Companion.create(trackedEntityDataValueModelBuilder.build(), null, false));
                         }
                     }
                 } else {
-                    attributes.add(Trio.create(trackedEntityDataValueModelBuilder.build(), null, false));
+                    attributes.add(Trio.Companion.create(trackedEntityDataValueModelBuilder.build(), null, false));
                 }
             }
         } catch (JSONException | ParseException e) {
@@ -239,11 +239,11 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                             attrValue.getString("trackedEntityAttribute"))) {
                         // TRACKED ENTITY ATTRIBUTE FOUND, TRACKED ENTITY ATTRIBUTE VALUE CAN BE SAVED.
                         if (cursor != null && cursor.moveToFirst() && cursor.getCount() > 0) {
-                            attributes.add(Trio.create(cursor.getString(1), attrValue.getString("value"), true));
+                            attributes.add(Trio.Companion.create(cursor.getString(1), attrValue.getString("value"), true));
                         }
                         // TRACKED ENTITY ATTRIBUTE NOT FOUND, TRACKED ENTITY ATTRIBUTE VALUE CANNOT BE SAVED.
                         else {
-                            attributes.add(Trio.create(attrValue.getString("trackedEntityAttribute"), "", false));
+                            attributes.add(Trio.Companion.create(attrValue.getString("trackedEntityAttribute"), "", false));
                         }
                     }
                 }
@@ -272,11 +272,11 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                             attrValue.getString("program"))) {
                         // PROGRAM FOUND, ENROLLMENT CAN BE SAVED
                         if (cursor != null && cursor.moveToFirst() && cursor.getCount() > 0) {
-                            enrollments.add(Pair.create(cursor.getString(1), true));
+                            enrollments.add(Pair.Companion.create(cursor.getString(1), true));
                         }
                         // PROGRAM NOT FOUND, ENROLLMENT CANNOT BE SAVED
                         else {
-                            enrollments.add(Pair.create(attrValue.getString("uid"), false));
+                            enrollments.add(Pair.Companion.create(attrValue.getString("uid"), false));
                         }
                     }
                 }
@@ -303,7 +303,7 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                         jsonObject.getString("enrollment"))) {
                     // ENROLLMENT FOUND, EVENT CAN BE SAVED
                     if (cursor != null && cursor.moveToFirst() && cursor.getCount() > 0) {
-                        events.add(Pair.create(jsonObject.getString("enrollment"), true));
+                        events.add(Pair.Companion.create(jsonObject.getString("enrollment"), true));
                     }
                     // ENROLLMENT NOT FOUND IN LOCAL DATABASE, CHECK IF IT WAS READ FROM A QR
                     else if (enrollmentJson != null) {
@@ -319,14 +319,14 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                             }
                         }
                         if (isEnrollmentReadFromQr) {
-                            events.add(Pair.create(jsonObject.getString("uid"), true));
+                            events.add(Pair.Companion.create(jsonObject.getString("uid"), true));
                         } else {
-                            events.add(Pair.create(jsonObject.getString("uid"), false));
+                            events.add(Pair.Companion.create(jsonObject.getString("uid"), false));
                         }
                     }
                     // ENROLLMENT NOT FOUND, EVENT CANNOT BE SAVED
                     else {
-                        events.add(Pair.create(jsonObject.getString("uid"), false));
+                        events.add(Pair.Companion.create(jsonObject.getString("uid"), false));
                     }
                 }
             }
@@ -345,7 +345,7 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
         for (int i = 0; i < jsonArray.length(); i++) {
             try {
                 JSONObject relationship = jsonArray.getJSONObject(i);
-                relationships.add(Pair.create(relationship.getString("trackedEntityInstanceA"), true));
+                relationships.add(Pair.Companion.create(relationship.getString("trackedEntityInstanceA"), true));
             } catch (Exception e) {
                 Timber.e(e);
             }

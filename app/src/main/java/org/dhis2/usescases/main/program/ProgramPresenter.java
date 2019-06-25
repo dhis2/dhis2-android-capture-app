@@ -69,7 +69,7 @@ public class ProgramPresenter implements ProgramContract.Presenter {
 
         compositeDisposable.add(
                 programQueries
-                        .startWith(Pair.create(currentDateFilter, currentOrgUnitFilter))
+                        .startWith(Pair.Companion.create(currentDateFilter, currentOrgUnitFilter))
                         .flatMap(datePeriodOrgs -> homeRepository.programModels(datePeriodOrgs.val0(), datePeriodOrgs.val1()))
                         .subscribeOn(Schedulers.from(executorService))
                         .observeOn(AndroidSchedulers.mainThread())
@@ -82,7 +82,7 @@ public class ProgramPresenter implements ProgramContract.Presenter {
                 parentOrgUnit
                         .flatMap(orgUnit -> homeRepository.orgUnits(orgUnit.val1()).toFlowable(BackpressureStrategy.LATEST)
                                 .map(this::transformToNode)
-                                .map(nodeList -> Pair.create(orgUnit.val0(), nodeList)))
+                                .map(nodeList -> Pair.Companion.create(orgUnit.val0(), nodeList)))
                         .subscribeOn(Schedulers.from(executorService))
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
@@ -93,7 +93,7 @@ public class ProgramPresenter implements ProgramContract.Presenter {
 
     @Override
     public void onExpandOrgUnitNode(TreeNode treeNode, String parentUid) {
-        parentOrgUnit.onNext(Pair.create(treeNode, parentUid));
+        parentOrgUnit.onNext(Pair.Companion.create(treeNode, parentUid));
     }
 
     @Override
@@ -116,13 +116,13 @@ public class ProgramPresenter implements ProgramContract.Presenter {
     @Override
     public void updateDateFilter(List<DatePeriod> datePeriodList) {
         this.currentDateFilter = datePeriodList;
-        programQueries.onNext(Pair.create(currentDateFilter, currentOrgUnitFilter));
+        programQueries.onNext(Pair.Companion.create(currentDateFilter, currentOrgUnitFilter));
     }
 
     @Override
     public void updateOrgUnitFilter(List<String> orgUnitList) {
         this.currentOrgUnitFilter = orgUnitList;
-        programQueries.onNext(Pair.create(currentDateFilter, currentOrgUnitFilter));
+        programQueries.onNext(Pair.Companion.create(currentDateFilter, currentOrgUnitFilter));
     }
 
     @Override

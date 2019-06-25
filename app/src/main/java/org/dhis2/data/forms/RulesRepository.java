@@ -329,12 +329,12 @@ public final class RulesRepository {
         String stage = cursor.isNull(1) ? "" : cursor.getString(1);
         Integer priority = cursor.isNull(2) ? 0 : cursor.getInt(2);
 
-        return Quartet.create(uid, stage, priority, condition);
+        return Quartet.Companion.create(uid, stage, priority, condition);
     }
 
     @NonNull
     private static Pair<String, RuleAction> mapToActionPairs(@NonNull Cursor cursor) {
-        return Pair.create(cursor.getString(0), create(cursor));
+        return Pair.Companion.create(cursor.getString(0), create(cursor));
     }
 
     @NonNull
@@ -684,7 +684,7 @@ public final class RulesRepository {
 
     public Flowable<RuleEnrollment> enrollment(String eventUid) {
         return briteDatabase.createQuery(EventModel.TABLE, "SELECT Event.*, Program.displayName FROM Event JOIN Program ON Program.uid = Event.program WHERE Event.uid = ? LIMIT 1", eventUid == null ? "" : eventUid)
-                .mapToOne(cursor -> Pair.create(EventModel.create(cursor), cursor.getString(cursor.getColumnIndex("displayName"))))
+                .mapToOne(cursor -> Pair.Companion.create(EventModel.create(cursor), cursor.getString(cursor.getColumnIndex("displayName"))))
                 .flatMap(pair -> {
                             EventModel eventModel = pair.val0();
                             String programName = pair.val1();

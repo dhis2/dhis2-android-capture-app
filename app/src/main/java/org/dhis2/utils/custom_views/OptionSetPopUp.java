@@ -73,7 +73,7 @@ public class OptionSetPopUp {
     public void show(Context context, View anchor) {
         this.context = context;
         this.anchor = anchor;
-        processor.onNext(Trio.create("", optionSet.optionSet(), 0));
+        processor.onNext(Trio.Companion.create("", optionSet.optionSet(), 0));
     }
 
 

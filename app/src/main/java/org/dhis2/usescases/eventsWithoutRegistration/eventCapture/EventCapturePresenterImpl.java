@@ -120,7 +120,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                         eventCaptureRepository.eventDate(),
                         eventCaptureRepository.orgUnit(),
                         eventCaptureRepository.catOption(),
-                        Quartet::create
+                        Quartet.Companion::create
                 )
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())

@@ -90,7 +90,7 @@ public final class EnrollmentStatusStore implements EnrollmentStatusEntryStore {
                 .mapToOne(EnrollmentModel::create)
                 .filter(enrollmentModel -> enrollmentModel.latitude() != null && enrollmentModel.longitude() != null)
                 .map(enrollmentModel ->
-                        Pair.create(Double.valueOf(enrollmentModel.latitude()),
+                        Pair.Companion.create(Double.valueOf(enrollmentModel.latitude()),
                                 Double.valueOf(enrollmentModel.longitude())))
                 .toFlowable(BackpressureStrategy.LATEST);
     }

@@ -360,13 +360,13 @@ public class MetadataRepositoryImpl implements MetadataRepository {
                             flag = settingModel.value();
 
                     if (style.contains("green"))
-                        return Pair.create(flag, R.style.GreenTheme);
+                        return Pair.Companion.create(flag, R.style.GreenTheme);
                     if (style.contains("india"))
-                        return Pair.create(flag, R.style.OrangeTheme);
+                        return Pair.Companion.create(flag, R.style.OrangeTheme);
                     if (style.contains("myanmar"))
-                        return Pair.create(flag, R.style.RedTheme);
+                        return Pair.Companion.create(flag, R.style.RedTheme);
                     else
-                        return Pair.create(flag, R.style.AppTheme);
+                        return Pair.Companion.create(flag, R.style.AppTheme);
                 });
 
     }
@@ -427,7 +427,7 @@ public class MetadataRepositoryImpl implements MetadataRepository {
                 currentEvent = eventCursor.getInt(0);
             }
         }
-        return Flowable.just(Pair.create(currentEvent, currentTei));
+        return Flowable.just(Pair.Companion.create(currentEvent, currentTei));
     }
 
 

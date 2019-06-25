@@ -262,7 +262,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         if (messageId.isEmpty())
             canRegister = true;
 
-        return Trio.create(list, messageId, canRegister);
+        return Trio.Companion.create(list, messageId, canRegister);
     }
 
     private void handleError(Throwable throwable) {

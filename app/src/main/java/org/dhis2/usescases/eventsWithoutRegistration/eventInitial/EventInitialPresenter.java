@@ -113,7 +113,7 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
                             eventInitialRepository.catCombo(programId).toFlowable(BackpressureStrategy.LATEST),
                             metadataRepository.programStageForEvent(eventId),
                             eventInitialRepository.getOptionsFromCatOptionCombo(eventId),
-                            Quintet::create
+                            Quintet.Companion::create
                     )
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
@@ -132,7 +132,7 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
                     Flowable.zip(
                             metadataRepository.getProgramWithId(programId).toFlowable(BackpressureStrategy.LATEST),
                             eventInitialRepository.catCombo(programId).toFlowable(BackpressureStrategy.LATEST),
-                            Pair::create
+                            Pair.Companion::create
                     )
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())

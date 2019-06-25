@@ -104,7 +104,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
 
         compositeDisposable.add(
                 programQueries
-                        .startWith(Trio.create(new ArrayList<>(), new ArrayList<>(), new ArrayList<>()))
+                        .startWith(Trio.Companion.create(new ArrayList<>(), new ArrayList<>(), new ArrayList<>()))
                         .map(dates_ou_coc -> eventRepository.filteredProgramEvents(dates_ou_coc.val0(), dates_ou_coc.val1(), dates_ou_coc.val2()))
                         .subscribeOn(Schedulers.computation())
                         .observeOn(AndroidSchedulers.mainThread())
@@ -117,7 +117,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                 parentOrgUnit
                         .flatMap(orgUnit -> eventRepository.orgUnits(orgUnit.val1()).toFlowable(BackpressureStrategy.LATEST)
                                 .map(orgUnits1 -> OrgUnitUtils.INSTANCE.createNode(view.getContext(), orgUnits, true))
-                                .map(nodeList -> Pair.create(orgUnit.val0(), nodeList)))
+                                .map(nodeList -> Pair.Companion.create(orgUnit.val0(), nodeList)))
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
@@ -129,19 +129,19 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     @Override
     public void updateDateFilter(List<DatePeriod> datePeriodList) {
         this.currentDateFilter = datePeriodList;
-        programQueries.onNext(Trio.create(currentDateFilter, currentOrgUnitFilter, currentCatOptionCombo));
+        programQueries.onNext(Trio.Companion.create(currentDateFilter, currentOrgUnitFilter, currentCatOptionCombo));
     }
 
     @Override
     public void updateOrgUnitFilter(List<String> orgUnitList) {
         this.currentOrgUnitFilter = orgUnitList;
-        programQueries.onNext(Trio.create(currentDateFilter, currentOrgUnitFilter, currentCatOptionCombo));
+        programQueries.onNext(Trio.Companion.create(currentDateFilter, currentOrgUnitFilter, currentCatOptionCombo));
     }
 
     @Override
     public void updateCatOptCombFilter(List<CategoryOption> categoryOptionComboMap) {
         this.currentCatOptionCombo = eventRepository.catOptionCombo(categoryOptionComboMap);
-        programQueries.onNext(Trio.create(currentDateFilter, currentOrgUnitFilter, currentCatOptionCombo));
+        programQueries.onNext(Trio.Companion.create(currentDateFilter, currentOrgUnitFilter, currentCatOptionCombo));
     }
 
     @Override
@@ -186,7 +186,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
 
     @Override
     public void onExpandOrgUnitNode(TreeNode treeNode, String parentUid) {
-        parentOrgUnit.onNext(Pair.create(treeNode, parentUid));
+        parentOrgUnit.onNext(Pair.Companion.create(treeNode, parentUid));
 
     }
 

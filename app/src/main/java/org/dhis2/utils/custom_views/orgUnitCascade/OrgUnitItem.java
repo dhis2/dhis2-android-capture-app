@@ -68,7 +68,7 @@ public class OrgUnitItem {
             if (uidPath.length >= level && !menuOrgUnits.containsKey(uidPath[level - 1]) && (isEmpty(parentUid) || (level > 1 && uidPath[level - 2].equals(parentUid)))) {
                 boolean canCapture = ouRepo.byOrganisationUnitScope(ouScope).uid(uidPath[level - 1]).exists();
                 menuOrgUnits.put(uidPath[level - 1],
-                        Trio.create(
+                        Trio.Companion.create(
                                 uidPath[level - 1],
                                 namePath[level - 1],
                                 canCapture));

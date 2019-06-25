@@ -252,7 +252,7 @@ public class EventRepository implements FormRepository {
     public Flowable<Pair<ProgramModel, String>> reportDate() {
         return briteDatabase.createQuery(ProgramModel.TABLE, SELECT_PROGRAM, eventUid == null ? "" : eventUid)
                 .mapToOne(ProgramModel::create)
-                .map(programModel -> Pair.create(programModel, ""))
+                .map(programModel -> Pair.Companion.create(programModel, ""))
                 .toFlowable(BackpressureStrategy.LATEST)
                 .distinctUntilChanged();
     }
@@ -262,7 +262,7 @@ public class EventRepository implements FormRepository {
     public Flowable<Pair<ProgramModel, String>> incidentDate() {
         return briteDatabase.createQuery(ProgramModel.TABLE, SELECT_PROGRAM, eventUid == null ? "" : eventUid)
                 .mapToOne(ProgramModel::create)
-                .map(programModel -> Pair.create(programModel, ""))
+                .map(programModel -> Pair.Companion.create(programModel, ""))
                 .toFlowable(BackpressureStrategy.LATEST)
                 .distinctUntilChanged();
     }
@@ -429,7 +429,7 @@ public class EventRepository implements FormRepository {
                                                 if (eventModel.attributeOptionCombo() != null && eventModel.attributeOptionCombo().equals(options.uid()))
                                                     eventHastOptionSelected = true;
                                             }
-                                            return Trio.create(eventHastOptionSelected, categoryComboModel, categoryOptionComboModels);
+                                            return Trio.Companion.create(eventHastOptionSelected, categoryComboModel, categoryOptionComboModels);
                                         })
                         )
                 );

@@ -60,7 +60,7 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
                 Flowable.zip(
                         tableRepository.getDataElements(),
                         tableRepository.getCatOptions(),
-                        Pair::create
+                        Pair.Companion::create
                 )
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())

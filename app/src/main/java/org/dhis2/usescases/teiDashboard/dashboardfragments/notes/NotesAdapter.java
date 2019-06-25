@@ -50,7 +50,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesViewholder> {
     }
 
     public void addNote(String noteText) {
-        processor.onNext(Pair.create(noteText, true));
+        processor.onNext(Pair.Companion.create(noteText, true));
     }
 
     public void setItems(List<NoteModel> notes) {

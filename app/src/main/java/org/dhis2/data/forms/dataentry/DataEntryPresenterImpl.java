@@ -121,7 +121,7 @@ final class DataEntryPresenterImpl implements DataEntryPresenter, RulesActionCal
                             }
                             ruleEngineRepository.updateRuleAttributeMap(action.id(), action.value());
                             return dataEntryStore.save(action.id(), action.value()).
-                                    map(result -> Trio.create(result, action.id(), action.value()));
+                                    map(result -> Trio.Companion.create(result, action.id(), action.value()));
                         }
                 )
                 .subscribeOn(schedulerProvider.io())

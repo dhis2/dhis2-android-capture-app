@@ -52,13 +52,7 @@ import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
 import static java.util.zip.Deflater.BEST_COMPRESSION;
-import static org.dhis2.data.qr.QRjson.ATTR_JSON;
-import static org.dhis2.data.qr.QRjson.DATA_JSON;
-import static org.dhis2.data.qr.QRjson.DATA_JSON_WO_REGISTRATION;
-import static org.dhis2.data.qr.QRjson.ENROLLMENT_JSON;
-import static org.dhis2.data.qr.QRjson.EVENTS_JSON;
-import static org.dhis2.data.qr.QRjson.EVENT_JSON;
-import static org.dhis2.data.qr.QRjson.TEI_JSON;
+import static org.dhis2.data.qr.QRjson.*;
 
 /**
  * QUADRAM. Created by ppajuelo on 22/05/2018.

@@ -45,6 +45,8 @@ import me.dm7.barcodescanner.zxing.ZXingScannerView;
 import timber.log.Timber;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
+import static org.dhis2.data.qr.QRjson.EVENTS_JSON;
+import static org.dhis2.data.qr.QRjson.*;
 import static org.dhis2.utils.ConstantsKt.*;
 
 
@@ -102,28 +104,28 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
         try {
             QRjson qRjson = new Gson().fromJson(result.getText(), QRjson.class);
             switch (qRjson.getType()) {
-                case QRjson.EVENT_JSON:
+                case EVENT_JSON:
                     presenter.handleEventWORegistrationInfo(new JSONObject(qRjson.getData()));
                     break;
-                case QRjson.DATA_JSON:
+                case DATA_JSON:
                     presenter.handleDataInfo(new JSONArray(qRjson.getData()));
                     break;
-                case QRjson.DATA_JSON_WO_REGISTRATION:
+                case DATA_JSON_WO_REGISTRATION:
                     presenter.handleDataWORegistrationInfo(new JSONArray(qRjson.getData()));
                     break;
-                case QRjson.TEI_JSON:
+                case TEI_JSON:
                     presenter.handleTeiInfo(new JSONObject(qRjson.getData()));
                     break;
-                case QRjson.ATTR_JSON:
+                case ATTR_JSON:
                     presenter.handleAttrInfo(new JSONArray(qRjson.getData()));
                     break;
-                case QRjson.ENROLLMENT_JSON:
+                case ENROLLMENT_JSON:
                     presenter.handleEnrollmentInfo(new JSONArray(qRjson.getData()));
                     break;
-                case QRjson.EVENTS_JSON:
+                case EVENTS_JSON:
                     presenter.handleEventInfo(new JSONObject(qRjson.getData()));
                     break;
-                case QRjson.RELATIONSHIP_JSON:
+                case RELATIONSHIP_JSON:
                     presenter.handleRelationship(new JSONArray(qRjson.getData()));
                     break;
                 default:

@@ -293,7 +293,7 @@ public class EnrollmentFormRepository implements FormRepository {
                 .mapToOne(ProgramModel::create)
                 .flatMap(programModel -> briteDatabase.createQuery(EnrollmentModel.TABLE, SELECT_ENROLLMENT_DATE, enrollmentUid == null ? "" : enrollmentUid)
                         .mapToOne(EnrollmentModel::create)
-                        .map(enrollmentModel -> Pair.create(programModel, enrollmentModel.enrollmentDate() != null ?
+                        .map(enrollmentModel -> Pair.Companion.create(programModel, enrollmentModel.enrollmentDate() != null ?
                                 DateUtils.Companion.uiDateFormat().format(enrollmentModel.enrollmentDate()) : "")))
                 .toFlowable(BackpressureStrategy.LATEST)
                 .distinctUntilChanged();
@@ -306,7 +306,7 @@ public class EnrollmentFormRepository implements FormRepository {
                 .mapToOne(ProgramModel::create)
                 .flatMap(programModel -> briteDatabase.createQuery(EnrollmentModel.TABLE, SELECT_INCIDENT_DATE, enrollmentUid == null ? "" : enrollmentUid)
                         .mapToOne(EnrollmentModel::create)
-                        .map(enrollmentModel -> Pair.create(programModel, enrollmentModel.incidentDate() != null ?
+                        .map(enrollmentModel -> Pair.Companion.create(programModel, enrollmentModel.incidentDate() != null ?
                                 DateUtils.Companion.uiDateFormat().format(enrollmentModel.incidentDate()) : "")))
                 .toFlowable(BackpressureStrategy.LATEST)
                 .distinctUntilChanged();
@@ -652,7 +652,7 @@ public class EnrollmentFormRepository implements FormRepository {
                                                 if (eventModel.attributeOptionCombo() != null && eventModel.attributeOptionCombo().equals(options.uid()))
                                                     eventHastOptionSelected = true;
                                             }
-                                            return Trio.create(eventHastOptionSelected, categoryComboModel, categoryOptionComboModels);
+                                            return Trio.Companion.create(eventHastOptionSelected, categoryComboModel, categoryOptionComboModels);
                                         })
                         )
                 );
@@ -743,7 +743,7 @@ public class EnrollmentFormRepository implements FormRepository {
                 .mapToOne(ProgramModel::create)
                 .flatMap(programModel ->
                         briteDatabase.createQuery(ProgramStageModel.TABLE, "SELECT * FROM ProgramStage WHERE program = ? ORDER BY ProgramStage.sortOrder", programModel.uid())
-                                .mapToList(ProgramStageModel::create).map(programstages -> Trio.create(programModel.useFirstStageDuringRegistration(), programstages, programModel.trackedEntityType())))
+                                .mapToList(ProgramStageModel::create).map(programstages -> Trio.Companion.create(programModel.useFirstStageDuringRegistration(), programstages, programModel.trackedEntityType())))
                 .map(data -> {
                     ProgramStageModel stageToOpen = null;
                     if (data.val0() && !data.val1().isEmpty()) {
@@ -759,7 +759,7 @@ public class EnrollmentFormRepository implements FormRepository {
                         try (Cursor eventCursor = briteDatabase.query("SELECT Event.uid FROM Event WHERE Event.programStage = ? AND Event.enrollment = ?", stageToOpen.uid(), enrollmentUid)) {
                             if (eventCursor != null && eventCursor.moveToFirst()) {
                                 String eventUid = eventCursor.getString(0);
-                                return Trio.create(getTeiUid(), programUid, eventUid);
+                                return Trio.Companion.create(getTeiUid(), programUid, eventUid);
                             } else {
                                 try (Cursor enrollmentOrgUnitCursor = briteDatabase.query("SELECT Enrollment.organisationUnit FROM Enrollment WHERE Enrollment.uid = ?", enrollmentUid)) {
                                     if (enrollmentOrgUnitCursor != null && enrollmentOrgUnitCursor.moveToFirst()) {
@@ -781,7 +781,7 @@ public class EnrollmentFormRepository implements FormRepository {
                                             throw new OnErrorNotImplementedException(new Throwable("Unable to store event:" + eventToCreate));
                                         }
 
-                                        return Trio.create(getTeiUid(), programUid, eventToCreate.uid());//teiUid, programUio, eventUid
+                                        return Trio.Companion.create(getTeiUid(), programUid, eventToCreate.uid());//teiUid, programUio, eventUid
                                     } else
                                         throw new IllegalArgumentException("Can't create event in enrollment with null organisation unit");
                                 }
@@ -795,7 +795,7 @@ public class EnrollmentFormRepository implements FormRepository {
                                 programUid = tetCursor.getString(0);
                                 teiUid = tetCursor.getString(1);
                             }
-                            return Trio.create(teiUid, programUid, "");
+                            return Trio.Companion.create(teiUid, programUid, "");
                         }
                     }
                 });
