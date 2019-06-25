@@ -74,7 +74,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private Map<String, String> queryDataEQ;
 
     private List<String> orgUnitsUid = new ArrayList<>();
-    private Date selectedEnrollmentDate;
+    private static Date selectedEnrollmentDate;
 
     private FlowableProcessor<HashMap<String, String>> queryProcessor;
 
@@ -439,7 +439,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                     selectedCalendar.set(Calendar.SECOND, 0);
                     selectedCalendar.set(Calendar.MILLISECOND, 0);
                     selectedEnrollmentDate = selectedCalendar.getTime();
-
                     enrollInOrgUnit(selectedOrgUnitModel.uid(), programUid, uid, selectedEnrollmentDate);
 
                 }),
@@ -532,19 +531,21 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
             dialog.dismiss();
         });
         binding.clearButton.setOnClickListener(clearButton-> dialog.dismiss());
-        binding.acceptButton.setOnClickListener(acceptButton->{
-            Calendar selectedCalendar = Calendar.getInstance();
-            selectedCalendar.set(Calendar.YEAR, datePicker.getYear());
-            selectedCalendar.set(Calendar.MONTH, datePicker.getMonth());
-            selectedCalendar.set(Calendar.DAY_OF_MONTH, datePicker.getDayOfMonth());
-            selectedCalendar.set(Calendar.HOUR_OF_DAY, 0);
-            selectedCalendar.set(Calendar.MINUTE, 0);
-            selectedCalendar.set(Calendar.SECOND, 0);
-            selectedCalendar.set(Calendar.MILLISECOND, 0);
-            selectedEnrollmentDate = selectedCalendar.getTime();
-
-            enrollInOrgUnit(selectedOrgUnitModel.uid(), programUid, uid, selectedEnrollmentDate);
-            dialog.dismiss();
+        binding.acceptButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Calendar selectedCalendar = Calendar.getInstance();
+                selectedCalendar.set(Calendar.YEAR, datePicker.getYear());
+                selectedCalendar.set(Calendar.MONTH, datePicker.getMonth());
+                selectedCalendar.set(Calendar.DAY_OF_MONTH, datePicker.getDayOfMonth());
+                selectedCalendar.set(Calendar.HOUR_OF_DAY, 0);
+                selectedCalendar.set(Calendar.MINUTE, 0);
+                selectedCalendar.set(Calendar.SECOND, 0);
+                selectedCalendar.set(Calendar.MILLISECOND, 0);
+                selectedEnrollmentDate = selectedCalendar.getTime();
+                enrollInOrgUnit(selectedOrgUnitModel.uid(), programUid, uid, selectedEnrollmentDate);
+                dialog.dismiss();
+            }
         });
         dialog.show();
     }

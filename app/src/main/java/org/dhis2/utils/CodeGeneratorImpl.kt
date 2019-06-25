@@ -13,7 +13,7 @@ class CodeGeneratorImpl: CodeGenerator {
         val randomChars = CharArray(CODESIZE)
         // First char should be a letter
         randomChars[0] = LETTERS[random.nextInt(LETTERS.length)]
-        for (x in 1..CODESIZE) {
+        for (x in 1 until CODESIZE) {
             randomChars[x] = ALLOWED_CHARS[random.nextInt(NUMBER_OF_CODEPOINTS)]
         }
         return randomChars.toString()
