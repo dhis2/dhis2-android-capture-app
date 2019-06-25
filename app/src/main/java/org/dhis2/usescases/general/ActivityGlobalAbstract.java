@@ -21,6 +21,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.ContentLoadingProgressBar;
@@ -116,7 +117,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
         mFirebaseAnalytics.setUserId(prefs.getString(Constants.SERVER, null));
 
         super.onCreate(savedInstanceState);
-
+//        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
     }
 
     @Override

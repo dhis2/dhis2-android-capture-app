@@ -2,9 +2,6 @@ package org.dhis2.data.forms.dataentry.fields.datetime;
 
 import android.graphics.Color;
 
-import androidx.core.content.ContextCompat;
-import androidx.databinding.ViewDataBinding;
-
 import org.dhis2.BR;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
@@ -17,6 +14,8 @@ import org.hisp.dhis.android.core.common.ValueType;
 
 import java.util.Date;
 
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.databinding.ViewDataBinding;
 import io.reactivex.processors.FlowableProcessor;
 
 import static android.text.TextUtils.isEmpty;
@@ -136,7 +135,7 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
 
     @Override
     public void performAction() {
-        itemView.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.item_selected_bg));
+        itemView.setBackground(AppCompatResources.getDrawable(itemView.getContext(), R.drawable.item_selected_bg));
 
         if (binding instanceof FormTimeTextBinding)
             ((FormTimeTextBinding) binding).timeView.performOnFocusAction();

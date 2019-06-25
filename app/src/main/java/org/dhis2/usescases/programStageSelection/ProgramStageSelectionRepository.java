@@ -18,4 +18,6 @@ public interface ProgramStageSelectionRepository {
     Flowable<List<ProgramStage>> enrollmentProgramStages(String programId, String enrollmentUid);
 
     Flowable<Result<RuleEffect>> calculate();
+
+    ProgramStage getStage(String programStageUid);
 }

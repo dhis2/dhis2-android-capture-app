@@ -432,10 +432,10 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
 
     @Override
     public void setListOptions(List<OptionModel> options) {
-        if (OptionSetCellDialog.isCreated())
+        /*if (OptionSetCellDialog.isCreated())
             OptionSetCellDialog.newInstance().setOptions(options);
         else if (OptionSetCellPopUp.isCreated())
-            OptionSetCellPopUp.getInstance().setOptions(options);
+            OptionSetCellPopUp.getInstance().setOptions(options);*/
     }
 
     @Override

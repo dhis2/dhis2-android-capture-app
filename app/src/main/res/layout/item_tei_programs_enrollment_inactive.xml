@@ -99,7 +99,7 @@
                         android:lines="1"
                         android:textColor="@color/black_de0"
                         android:textSize="14sp"
-                        app:date="@{enrollment.enrollmentDate()}"
+                        android:text="@{enrollment.enrollmentDate()}"
                         tools:text="DD/MM/YYYY" />
                 </LinearLayout>
             </LinearLayout>

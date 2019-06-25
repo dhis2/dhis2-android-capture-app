@@ -1,5 +1,7 @@
 package org.dhis2.usescases.programStageSelection;
 
+import androidx.annotation.NonNull;
+
 import org.dhis2.utils.Result;
 import org.dhis2.utils.RulesUtilsProvider;
 import org.hisp.dhis.android.core.program.ProgramStage;
@@ -10,7 +12,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import androidx.annotation.NonNull;
 import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -95,5 +96,12 @@ public class ProgramStageSelectionPresenter implements ProgramStageSelectionCont
     @Override
     public void onProgramStageClick(ProgramStage programStage) {
         view.setResult(programStage.uid(), programStage.repeatable(), programStage.periodType());
+    }
+
+    @Override
+    public int getStandardInterval(String programStageUid) {
+        return programStageSelectionRepository.getStage(programStageUid).standardInterval() != null ?
+                programStageSelectionRepository.getStage(programStageUid).standardInterval() :
+                0;
     }
 }

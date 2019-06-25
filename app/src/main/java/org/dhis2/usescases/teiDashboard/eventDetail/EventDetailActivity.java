@@ -26,8 +26,10 @@ import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.custom_views.CategoryComboDialog;
 import org.dhis2.utils.custom_views.CustomDialog;
 import org.dhis2.utils.custom_views.OrgUnitDialog;
+import org.dhis2.utils.custom_views.OrgUnitDialog_2;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 
@@ -88,15 +90,15 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
 
     @Override
     public void setData(EventDetailModel eventDetailModel, MetadataRepository metadataRepository) {
-        if (eventDetailModel.getEventModel().status() != EventStatus.SCHEDULE && eventDetailModel.getEventModel().eventDate() != null) {
+        if (eventDetailModel.getEvent().status() != EventStatus.SCHEDULE && eventDetailModel.getEvent().eventDate() != null) {
             Intent intent2 = new Intent(this, EventCaptureActivity.class);
-            intent2.putExtras(EventCaptureActivity.getActivityBundle(eventDetailModel.getEventModel().uid(), eventDetailModel.getEventModel().program()));
+            intent2.putExtras(EventCaptureActivity.getActivityBundle(eventDetailModel.getEvent().uid(), eventDetailModel.getEvent().program()));
             startActivity(intent2, null);
             finish();
         } else {
             this.eventDetailModel = eventDetailModel;
-            presenter.getExpiryDate(eventDetailModel.getEventModel().uid());
-            binding.setEvent(eventDetailModel.getEventModel());
+            presenter.getExpiryDate(eventDetailModel.getEvent().uid());
+            binding.setEvent(eventDetailModel.getEvent());
             binding.setStage(eventDetailModel.getProgramStage());
             binding.setEnrollmentActive(eventDetailModel.isEnrollmentActive());
             setDataEditable();
@@ -112,7 +114,7 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
 
             binding.categoryComboLayout.setVisibility(eventDetailModel.getOptionComboList().isEmpty()
                     ? View.GONE : View.VISIBLE);
-            updateActionButton(eventDetailModel.getEventModel().status());
+            updateActionButton(eventDetailModel.getEvent().status());
             binding.executePendingBindings();
 
             supportStartPostponedEnterTransition();
@@ -135,16 +137,14 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
 
     @Override
     public void isEventExpired(ProgramModel program) {
-        EventModel event = eventDetailModel.getEventModel();
-        if (event.status() == EventStatus.COMPLETED &&
-                DateUtils.getInstance().hasExpired(eventDetailModel.getEventModel(), program.expiryDays(), program.completeEventsExpiryDays(), program.expiryPeriodType())) {
+        if (eventDetailModel.hasExpired()) {
             // TODO implement event expiration logic
         }
     }
 
     @Override
     public void setDataEditable() {
-        if (binding.getStage().accessDataWrite()) {
+        if (binding.getStage().access().data().write()) {
             isEditable.set(!isEditable.get());
         } else
             displayMessage(null);
@@ -183,7 +183,7 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
     public void goBack(boolean changedEventStatus) {
         if (changedEventStatus) {
             Intent intent = new Intent();
-            if (eventDetailModel.getEventModel().status() == EventStatus.COMPLETED)
+            if (eventDetailModel.getEvent().status() == EventStatus.COMPLETED)
                 intent.putExtra(Constants.EVENT_UID, eventUid);
             setResult(Activity.RESULT_OK, intent);
         }
@@ -191,13 +191,13 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
     }
 
     @Override
-    public void showOrgUnitSelector(OrgUnitDialog orgUnitDialog) {
+    public void showOrgUnitSelector(OrgUnitDialog_2 orgUnitDialog) {
         if (!orgUnitDialog.isAdded())
             orgUnitDialog.show(getSupportFragmentManager(), "EVENT_ORG_UNITS");
     }
 
     @Override
-    public void setSelectedOrgUnit(OrganisationUnitModel selectedOrgUnit) {
+    public void setSelectedOrgUnit(OrganisationUnit selectedOrgUnit) {
         binding.orgUnit.setText(selectedOrgUnit.displayName());
         //TODO: Save org unit change
     }
@@ -256,11 +256,13 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
         new Handler().postDelayed(() -> {
             FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
                     .title(getString(R.string.tuto_tei_event_1))
+                    .enableAutoTextPosition()
                     .focusOn(getAbstractActivity().findViewById(R.id.moreOptions))
                     .closeOnTouch(true)
                     .build();
             FancyShowCaseView tuto2 = new FancyShowCaseView.Builder(getAbstractActivity())
                     .title(getString(R.string.tuto_tei_event_2))
+                    .enableAutoTextPosition()
                     .focusOn(getAbstractActivity().findViewById(R.id.deactivate_button))
                     .focusShape(FocusShape.ROUNDED_RECTANGLE)
                     .closeOnTouch(true)
@@ -314,7 +316,7 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
             }
             return false;
         });
-        popupMenu.getMenu().getItem(1).setVisible(binding.getStage().accessDataWrite() && eventDetailModel.isEnrollmentActive());
+        popupMenu.getMenu().getItem(1).setVisible(binding.getStage().access().data().write() && eventDetailModel.isEnrollmentActive());
         popupMenu.show();
     }
 }

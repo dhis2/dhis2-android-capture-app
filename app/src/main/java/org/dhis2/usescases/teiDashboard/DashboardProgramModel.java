@@ -1,5 +1,7 @@
 package org.dhis2.usescases.teiDashboard;
 
+import androidx.databinding.BaseObservable;
+
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
@@ -12,8 +14,6 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
 import java.util.List;
 import java.util.Map;
-
-import androidx.databinding.BaseObservable;
 
 /**
  * QUADRAM. Created by ppajuelo on 04/12/2017.
@@ -83,10 +83,11 @@ public class DashboardProgramModel extends BaseObservable {
 
     public OrganisationUnitModel getCurrentOrgUnit() {
         OrganisationUnitModel currentOrgUnit = null;
-        for (OrganisationUnitModel orgUnit : orgsUnits) {
-            if (currentEnrollment.organisationUnit().equals(orgUnit.uid()))
-                currentOrgUnit = orgUnit;
-        }
+        if (currentEnrollment != null)
+            for (OrganisationUnitModel orgUnit : orgsUnits) {
+                if (currentEnrollment.organisationUnit().equals(orgUnit.uid()))
+                    currentOrgUnit = orgUnit;
+            }
         return currentOrgUnit;
     }
 

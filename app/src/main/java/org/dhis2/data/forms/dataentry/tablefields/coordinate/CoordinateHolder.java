@@ -46,6 +46,8 @@ public class CoordinateHolder extends FormViewHolder {
 
         if (!isEmpty(coordinateViewModel.value()))
             textView.setText(coordinateViewModel.value());
+        else
+            textView.setText(null);
 
         if(!(accessDataWrite && coordinateViewModel.editable())) {
             textView.setEnabled(false);
@@ -85,8 +87,7 @@ public class CoordinateHolder extends FormViewHolder {
         coordinatesView.setLabel(model.label());
 
         coordinatesView.setCurrentLocationListener((latitude, longitude) -> {
-            coordinatesView.setLatLongText(String.format(Locale.US, "[%.5f,%.5f]", latitude, longitude));
-            processor.onNext(RowAction.create(model.uid(), coordinatesView.getLatLongText(), model.dataElement(), model.categoryOptionCombo(), model.catCombo(), model.row(), model.column()));
+            processor.onNext(RowAction.create(model.uid(), String.format(Locale.US, "[%.5f,%.5f]", latitude, longitude), model.dataElement(), model.categoryOptionCombo(), model.catCombo(), model.row(), model.column()));
             alertDialog.dismiss();
         });
 

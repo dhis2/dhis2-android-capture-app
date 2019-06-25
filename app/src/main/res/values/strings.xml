@@ -3,7 +3,7 @@
     <string name="logo_text">dhis</string>
     <string name="logo_number">2</string>
     <string name="google_api" translatable="false">AIzaSyATNJAcNH6YB8ZzkJbzh1vWOgMAKi7KEnQ</string>
-
+    <string name="tab" translatable="false">\u0009</string>
     <!-- Warnings and error messages -->
     <string name="error">Error</string>
     <string name="error_wrong_server_url">Wrong server url</string>
@@ -201,6 +201,21 @@
     <string name="last_metadata_sync_date">Last sync on: %s</string>
     <string name="refill_reserved_values">Refill</string>
     <!-- SEARCH TRACK ENTITY -->
+
+    <!--region SETTINCS-->
+    <string name="settingsSyncData">Sync data</string>
+    <string name="settingsSyncMetadata">Sync configuration</string>
+    <string name="settingsSyncParameters">Sync parameters</string>
+    <string name="settingsReservedValues">Reserved values</string>
+    <string name="settingsReservedValues_descr">Here you can see the number of values available offline and reserve new ones.</string>
+    <string name="settingsErrorLog">Open sync error log</string>
+    <string name="settingsErrorLog_descr">This log contains all errors caused by syncing your data and metadata.</string>
+    <string name="settingsDeleteLocalData">Delete local data</string>
+    <string name="settingsDeleteLocalData_descr">All Capture App data stored in your device will be deleted. Data which is not synced to the server will be lost.</string>
+    <string name="settingsReset">Reset app data &amp; configuration</string>
+    <string name="settingsReset_descr">Your configuration and App data stored in the device will be deleted. You will be asked to log in again and data which is not synced to the server will be lost.</string>
+    <!--endregion-->
+
     <string name="enrollmment_date">Enrollment date</string>
 
     <!-- SEARCH OPTION SET -->
@@ -290,8 +305,8 @@
     <string name="share">Share</string>
     <string name="share_qr">Share QR</string>
     <string name="teiType_search_online">Search by type is not possible for online search.\nPlease select a program from the list.</string>
-    <string name="max">MAX</string>
-    <string name="current">CURRENT</string>
+    <string name="max">Max</string>
+    <string name="current">Current</string>
     <string name="tei">TEI</string>
     <string name="limit_by_organisation_unit">Limit by organisation unit</string>
     <string name="limit_by_program">Limit by program</string>
@@ -470,5 +485,14 @@
     <string name="data_set_closed">Close</string>
     <string name="data_set_open">Open</string>
     <string name="unsupported_value_type">Unsupported value type</string>
+    <string name="unblock_session">Unblock session</string>
+    <string name="change_calendar_view">Change calendar view</string>
+    <string name="data_every_fifteen_minutes">15 minutes</string>
+    <string name="data_every_hour">Every hour</string>
+    <string name="data_every_day">Daily</string>
+    <string name="data_every_week">Weekly</string>
+    <string name="sync_setting">Synchronization setting: %s</string>
+    <string name="relationship_without_enrollment">The record you are trying to access has no enrollment. You can\'t access the dashboard.</string>
+    <string name="formatting_error">Formatting error</string>
 
 </resources>

@@ -346,8 +346,8 @@
     <color name="event_yellow_pressed">#b7ac89</color>
     <color name="event_gray">#f8f9f9</color>
     <color name="event_gray_pressed">#dcdede</color>
-    <color name="event_dark_gray">#a8707070</color>
-    <color name="event_dark_gray_pressed">#a84e4e4e</color>
+    <color name="event_dark_gray">#F2F2F2</color>
+    <color name="event_dark_gray_pressed">#95F2F2F2</color>
 
     <color name="blue_4fa">#4fa8d1</color>
     <color name="blue_fab">#1D69A3</color>
@@ -357,6 +357,7 @@
     <color name="sectionSelectorBgColor">#fdfdfe</color>
     <color name="color_item_selected_c3">#c3c3c3</color>
     <color name="item_unselected_fdf">#fdfdfe</color>
+    <color name="dialog_gray_background">#fafafa</color>
 
     <color name="warning_color">#F19525</color>
     <color name="error_color">#F11E1E</color>

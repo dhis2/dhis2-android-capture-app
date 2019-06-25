@@ -2,6 +2,7 @@ package org.dhis2.usescases.datasets.datasetInitial;
 
 import android.os.Bundle;
 
+import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.D2;
@@ -9,6 +10,8 @@ import org.hisp.dhis.android.core.period.PeriodType;
 
 import java.util.Locale;
 
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
@@ -94,18 +97,22 @@ public class DataSetInitialPresenter implements DataSetInitialContract.Presenter
     @Override
     public void onActionButtonClick() {
         compositeDisposable.add(
-                dataSetInitialRepository.getCategoryOptionCombo(view.getSelectedCatOptions(), catCombo)
+                Flowable.zip(
+                        dataSetInitialRepository.getCategoryOptionCombo(view.getSelectedCatOptions(), catCombo),
+                        dataSetInitialRepository.getPeriodId(PeriodType.valueOf(view.getPeriodType()), view.getSelectedPeriod()),
+                        Pair::create
+                )
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(catOptCombo -> {
+                        .subscribe(response -> {
                                     Bundle bundle = DataSetTableActivity.getBundle(
                                             view.getDataSetUid(),
                                             view.getSelectedOrgUnit().uid(),
                                             view.getSelectedOrgUnit().name(),
                                             view.getPeriodType(),
                                             DateUtils.getInstance().getPeriodUIString(PeriodType.valueOf(view.getPeriodType()), view.getSelectedPeriod(), Locale.getDefault()),
-                                            d2.periodModule().periodHelper.getPeriod(PeriodType.valueOf(view.getPeriodType()), view.getPeriodDate()).periodId(),
-                                            catOptCombo
+                                            response.val1(),
+                                            response.val0()
                                     );
 
                                     view.startActivity(DataSetTableActivity.class, bundle, true, false, null);

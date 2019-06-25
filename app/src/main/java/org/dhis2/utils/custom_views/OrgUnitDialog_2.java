@@ -143,7 +143,7 @@ public class OrgUnitDialog_2 extends DialogFragment {
     }
 
     public OrganisationUnit getSelectedOrgUnitModel() {
-        if(treeView.getSelected().size() == 0)
+        if (treeView.getSelected().size() == 0)
             return null;
         return ((OrganisationUnit) treeView.getSelected().get(0).getValue());
     }

@@ -29,7 +29,8 @@ import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DividerItemDecoration;
 
-import static org.hisp.dhis.android.core.utils.support.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+
 
 /**
  * QUADRAM. Created by ppajuelo on 24/05/2018.

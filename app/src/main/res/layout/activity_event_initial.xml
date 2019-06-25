@@ -14,10 +14,6 @@
             type="java.lang.String" />
 
         <variable
-            name="event"
-            type="org.hisp.dhis.android.core.event.EventModel" />
-
-        <variable
             name="programStage"
             type="org.hisp.dhis.android.core.program.ProgramStageModel" />
 
@@ -314,9 +310,8 @@
                                     android:id="@+id/lat"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:focusable="false"
-                                    android:inputType="numberDecimal"
-                                    android:onTextChanged="@{presenter::onFieldChanged}"
+                                    android:inputType="numberDecimal|numberSigned"
+                                    android:onTextChanged="@{presenter::onLatChanged}"
                                     android:textSize="15sp" />
 
                             </com.google.android.material.textfield.TextInputLayout>
@@ -333,9 +328,8 @@
                                     android:id="@+id/lon"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:focusable="false"
-                                    android:inputType="numberDecimal"
-                                    android:onTextChanged="@{presenter::onFieldChanged}"
+                                    android:inputType="numberDecimal|numberSigned"
+                                    android:onTextChanged="@{presenter::onLonChanged}"
                                     android:textSize="15sp" />
 
                             </com.google.android.material.textfield.TextInputLayout>

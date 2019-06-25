@@ -297,8 +297,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:enabled="@{dashboardModel.currentEnrollment.enrollmentStatus()==EnrollmentStatus.ACTIVE}"
-                            android:focusable="false"
-                            android:inputType="numberDecimal"
+                            android:inputType="numberDecimal|numberSigned"
                             android:text='@{dashboardModel.currentEnrollment!=null?dashboardModel.currentEnrollment.latitude():""}'
                             android:textSize="15sp" />
 
@@ -317,8 +316,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:enabled="@{dashboardModel.currentEnrollment.enrollmentStatus()==EnrollmentStatus.ACTIVE}"
-                            android:focusable="false"
-                            android:inputType="numberDecimal"
+                            android:inputType="numberDecimal|numberSigned"
                             android:text='@{dashboardModel.currentEnrollment!=null?dashboardModel.currentEnrollment.longitude():""}'
                             android:textSize="15sp" />
 

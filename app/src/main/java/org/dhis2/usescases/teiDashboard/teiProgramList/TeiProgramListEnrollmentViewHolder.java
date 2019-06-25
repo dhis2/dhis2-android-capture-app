@@ -13,7 +13,7 @@ import org.dhis2.databinding.ItemTeiProgramsProgramsBinding;
 import org.dhis2.usescases.main.program.ProgramViewModel;
 import org.dhis2.utils.ColorUtils;
 
-import androidx.core.content.ContextCompat;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.databinding.ViewDataBinding;
 import androidx.recyclerview.widget.RecyclerView;
 import timber.log.Timber;
@@ -63,16 +63,16 @@ public class TeiProgramListEnrollmentViewHolder extends RecyclerView.ViewHolder 
 
             Drawable iconImage = null;
             try {
-                iconImage = ContextCompat.getDrawable(itemView.getContext(), icon);
-            }catch (Exception e){
-                Timber.log(1,e);
+                iconImage = AppCompatResources.getDrawable(itemView.getContext(), icon);
+            } catch (Exception e) {
+                Timber.log(1, e);
             }
 
             if (iconImage != null) {
                 programImage.setImageDrawable(ColorUtils.tintDrawableReosurce(iconImage, color));
             }
 
-            Drawable bgImage = ContextCompat.getDrawable(itemView.getContext(), R.drawable.photo_temp_gray);
+            Drawable bgImage = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.photo_temp_gray);
             if (bgImage != null) {
                 iconBg.setBackground(ColorUtils.tintDrawableWithColor(bgImage, color));
             }
@@ -102,16 +102,16 @@ public class TeiProgramListEnrollmentViewHolder extends RecyclerView.ViewHolder 
 
             Drawable iconImage = null;
             try {
-                iconImage = ContextCompat.getDrawable(itemView.getContext(), icon);
-            }catch (Exception e){
-                Timber.log(1,e);
+                iconImage = AppCompatResources.getDrawable(itemView.getContext(), icon);
+            } catch (Exception e) {
+                Timber.log(1, e);
             }
 
             if (iconImage != null) {
                 programImage.setImageDrawable(ColorUtils.tintDrawableReosurce(iconImage, color));
             }
 
-            Drawable bgImage = ContextCompat.getDrawable(itemView.getContext(), R.drawable.photo_temp_gray);
+            Drawable bgImage = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.photo_temp_gray);
             if (bgImage != null) {
                 iconBg.setBackground(ColorUtils.tintDrawableWithColor(bgImage, color));
             }

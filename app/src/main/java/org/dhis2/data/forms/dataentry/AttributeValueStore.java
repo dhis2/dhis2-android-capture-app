@@ -30,7 +30,7 @@ import io.reactivex.Flowable;
 
 import static android.text.TextUtils.isEmpty;
 import static org.dhis2.data.forms.dataentry.DataEntryStore.valueType.ATTR;
-import static org.hisp.dhis.android.core.utils.StoreUtils.sqLiteBind;
+import static org.hisp.dhis.android.core.arch.db.stores.internal.StoreUtils.sqLiteBind;
 
 public final class AttributeValueStore implements DataEntryStore {
 
@@ -90,7 +90,7 @@ public final class AttributeValueStore implements DataEntryStore {
     @Override
     public Flowable<Long> save(@NonNull String uid, @Nullable String value) {
         return Flowable.just(getValueType(uid))
-                .filter(valueType -> !Objects.equals(currentValue(uid, valueType), value))
+                .filter(valueType -> currentValue(uid, valueType, value))
                 .switchMap(valueType -> {
                     if (isEmpty(value))
                         return Flowable.just(delete(uid, valueType));
@@ -103,31 +103,6 @@ public final class AttributeValueStore implements DataEntryStore {
                     }
                 })
                 .switchMap(this::updateEnrollment);
-      /*  return Flowable.defer(() -> {
-            valueType type = getValueType(uid);
-            return Flowable.just(Pair.create(currentValue(uid, type), type));
-        })
-                .filter(currentValueAndType -> currentValueAndType.val1() == valueType.ATTR && !Objects.equals(currentValueAndType.val0(), value == null ? "" : value))
-                .flatMap(currentValueAndType -> {
-                    if (checkUnique(uid, value)) {
-                        if (value == null)
-                            return Flowable.just(delete(uid, currentValueAndType.val1()));
-
-                        long updated = update(uid, value, currentValueAndType.val1());
-                        if (updated > 0) {
-                            return Flowable.just(updated);
-                        }
-
-                        return Flowable.just(insert(uid, value, currentValueAndType.val1()));
-                    } else
-                        return Flowable.just((long) -5);
-                })
-                .switchMap(status -> {
-                    if (status != -5)
-                        return updateEnrollment(status);
-                    else
-                        return Flowable.just(status);
-                });*/
     }
 
     @NonNull
@@ -140,8 +115,8 @@ public final class AttributeValueStore implements DataEntryStore {
                     " WHERE TrackedEntityAttribute.uid = ? AND" +
                     " TrackedEntityAttribute.uniqueProperty = ? AND" +
                     " TrackedEntityAttributeValue.value = ?", uid, "1", value)) {
-                if (uniqueCursor != null && uniqueCursor.getCount() > 0) {
-                    delete(uid, ATTR);
+                if (uniqueCursor != null && uniqueCursor.getCount() > 0 && !uniqueCursor.getString(0).equals(value)) {
+                    delete(uid, ATTR); //TODO: TEST IF DELETE IS THE RIGHT WAY
                     return Flowable.just(false);
                 } else
                     return Flowable.just(true);
@@ -195,15 +170,19 @@ public final class AttributeValueStore implements DataEntryStore {
         return attrUid != null ? ATTR : valueType.DATA_ELEMENT;
     }
 
-    private String currentValue(@NonNull String uid, valueType valueType) {
+    private boolean currentValue(@NonNull String uid, valueType valueType, String currentValue) {
+
+        String value = null;
+        if (currentValue != null && (currentValue.equals("0.0") || currentValue.isEmpty()))
+            currentValue = null;
+
         if (valueType == ATTR) {
             try (Cursor cursor = briteDatabase.query("SELECT TrackedEntityAttributeValue.value FROM TrackedEntityAttributeValue " +
                     "JOIN Enrollment ON Enrollment.trackedEntityInstance = TrackedEntityAttributeValue.trackedEntityInstance " +
                     "WHERE TrackedEntityAttributeValue.trackedEntityAttribute = ? AND Enrollment.uid = ?", uid, enrollment)) {
-                if (cursor != null && cursor.moveToFirst()) {
-                    return cursor.getString(0);
-                } else
-                    return "";
+                if (cursor != null && cursor.moveToFirst())
+                    value = cursor.getString(0);
+
             }
 
         } else {
@@ -215,12 +194,13 @@ public final class AttributeValueStore implements DataEntryStore {
                     "AND Event.status = ? " +
                     "ORDER BY Event.eventDate DESC LIMIT 1", uid, enrollment, EventStatus.ACTIVE.name())) {
                 if (cursor != null && cursor.moveToFirst()) {
-                    return cursor.getString(0);
-                } else
-                    return "";
+                    value = cursor.getString(0);
+                }
             }
 
         }
+
+        return !Objects.equals(value, currentValue);
     }
 
     private long insert(@NonNull String attribute, @NonNull String value, valueType valueType) {

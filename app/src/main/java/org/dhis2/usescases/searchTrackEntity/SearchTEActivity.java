@@ -23,6 +23,7 @@ import android.widget.Spinner;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
 import androidx.databinding.BindingMethod;
 import androidx.databinding.BindingMethods;
 import androidx.databinding.DataBindingUtil;
@@ -143,6 +144,17 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             }
             return true;
         });
+
+        binding.appbatlayout.addOnOffsetChangedListener((appBarLayout, verticalOffset) -> {
+            float elevationPx = TypedValue.applyDimension(
+                    TypedValue.COMPLEX_UNIT_DIP,
+                    7,
+                    getResources().getDisplayMetrics()
+            );
+            boolean isHidden = binding.formRecycler.getHeight() + verticalOffset == 0;
+            ViewCompat.setElevation(binding.mainToolbar, isHidden ? elevationPx : 0);
+            ViewCompat.setElevation(appBarLayout, isHidden ? 0 : elevationPx);
+        });
     }
 
     @Override
@@ -202,22 +214,26 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         new Handler().postDelayed(() -> {
             FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
                     .title(getString(R.string.tuto_search_1_v2))
+                    .enableAutoTextPosition()
                     .closeOnTouch(true)
                     .build();
             FancyShowCaseView tuto2 = new FancyShowCaseView.Builder(getAbstractActivity())
                     .title(getString(R.string.tuto_search_2))
+                    .enableAutoTextPosition()
                     .focusShape(FocusShape.ROUNDED_RECTANGLE)
                     .focusOn(getAbstractActivity().findViewById(R.id.program_spinner))
                     .closeOnTouch(true)
                     .build();
             FancyShowCaseView tuto3 = new FancyShowCaseView.Builder(getAbstractActivity())
                     .title(getString(R.string.tuto_search_3_v2))
+                    .enableAutoTextPosition()
                     .focusOn(getAbstractActivity().findViewById(R.id.enrollmentButton))
                     .closeOnTouch(true)
                     .build();
             FancyShowCaseView tuto4 = new FancyShowCaseView.Builder(getAbstractActivity())
                     .focusOn(getAbstractActivity().findViewById(R.id.clear_button))
                     .title(getString(R.string.tuto_search_4_v2))
+                    .enableAutoTextPosition()
                     .closeOnTouch(true)
                     .build();
 
@@ -393,10 +409,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     public void setListOptions(List<OptionModel> options) {
-        if (OptionSetDialog.isCreated())
-            OptionSetDialog.newInstance().setOptions(options);
-        else if (OptionSetPopUp.isCreated())
-            OptionSetPopUp.getInstance().setOptions(options);
     }
 
     @Override

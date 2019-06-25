@@ -32,9 +32,13 @@ public class SyncManagerContracts {
         void syncData();
 
         void syncMeta();
+
+        void openItem(int settingsItem);
     }
 
     public interface Presenter {
+
+        void onItemClick(int itemPosition);
 
         void init(SyncManagerContracts.View view);
 
