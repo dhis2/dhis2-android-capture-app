@@ -16,6 +16,7 @@ import org.dhis2.usescases.sms.SmsSubmitActivity;
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import org.dhis2.usescases.teiDashboard.DashboardRepository;
 import org.dhis2.usescases.teiDashboard.eventDetail.EventDetailActivity;
+import org.dhis2.usescases.teiDashboard.nfc_data.NfcDataWriteActivity;
 import org.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.EventCreationType;
@@ -178,6 +179,7 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
 
         menu.getMenu().add(Menu.NONE, Menu.NONE, 0, "QR");
         menu.getMenu().add(Menu.NONE, Menu.NONE, 1, "SMS");
+        //menu.getMenu().add(Menu.NONE, Menu.NONE, 2, "NFC");
 
         menu.setOnMenuItemClickListener(item -> {
             switch (item.getOrder()) {
@@ -193,6 +195,11 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
                     InputArguments.setEnrollmentData(args, dashboardModel.getCurrentEnrollment().uid());
                     i.putExtras(args);
                     activity.startActivity(i);
+                    return true;
+                case 2:
+                    Intent intentNfc = new Intent(view.getContext(), NfcDataWriteActivity.class);
+                    intentNfc.putExtra("TEI_UID", teiUid);
+                    view.showQR(intentNfc);
                     return true;
                 default:
                     return true;

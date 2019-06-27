@@ -53,6 +53,8 @@ import org.dhis2.usescases.teiDashboard.TeiDashboardComponent;
 import org.dhis2.usescases.teiDashboard.TeiDashboardModule;
 import org.dhis2.usescases.teiDashboard.eventDetail.EventDetailComponent;
 import org.dhis2.usescases.teiDashboard.eventDetail.EventDetailModule;
+import org.dhis2.usescases.teiDashboard.nfc_data.NfcDataWriteComponent;
+import org.dhis2.usescases.teiDashboard.nfc_data.NfcDataWriteModule;
 import org.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailComponent;
 import org.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailModule;
 import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListComponent;
@@ -151,4 +153,5 @@ public interface UserComponent {
 
     @NonNull
     SmsComponent plus(SmsModule smsModule);
+    NfcDataWriteComponent plus(NfcDataWriteModule nfcModule);
 }

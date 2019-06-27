@@ -85,4 +85,6 @@ interface FormView {
     void setMinMaxDates(Date openingDate, Date closingDate);
 
     Observable<EnrollmentStatus> onObservableBackPressed();
+
+    void setNeedInitial(boolean need, String programStage);
 }

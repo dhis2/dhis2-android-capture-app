@@ -4,77 +4,92 @@ import android.content.Context;
 import android.view.Menu;
 import android.view.View;
 
+import org.dhis2.App;
 import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel;
-import org.dhis2.data.tuples.Trio;
-import org.hisp.dhis.android.core.option.OptionModel;
+import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
+import org.hisp.dhis.android.core.option.Option;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import androidx.appcompat.widget.PopupMenu;
-import io.reactivex.processors.FlowableProcessor;
+
+import io.reactivex.Single;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
+import timber.log.Timber;
 
 /**
  * QUADRAM. Created by ppajuelo on 20/02/2019.
  */
-public class OptionSetCellPopUp {
+public class OptionSetCellPopUp extends PopupMenu {
 
-    private static OptionSetCellPopUp instance;
-    private HashMap<String, OptionModel> optionsMap;
-    private FlowableProcessor<Trio<String, String, Integer>> processor;
-    private SpinnerViewModel optionSet;
-    private Context context;
-    private View anchor;
-    private PopupMenu.OnMenuItemClickListener listener;
+    private final D2 d2;
+    private final CompositeDisposable disposable;
+    private final List<String> optionsToHide;
+    private final List<String> optionGroupsToHide;
+    private HashMap<String, Option> optionsMap;
 
-    public static OptionSetCellPopUp getInstance() {
-        if (instance == null)
-            instance = new OptionSetCellPopUp();
-        return instance;
+    public OptionSetCellPopUp(Context context, View anchor, SpinnerViewModel model,
+                          OptionSetView optionSetView) {
+        super(context, anchor);
+        d2 = ((App) context.getApplicationContext()).serverComponent().userManager().getD2();
+        this.optionsToHide = model.getOptionsToHide();
+        this.optionGroupsToHide = model.getOptionGroupsToHide();
+        setOnDismissListener(menu -> dismiss());
+        setOnMenuItemClickListener(item -> {
+            Option selectedOption = optionsMap.get(item.getTitle().toString());
+            optionSetView.onSelectOption(selectedOption);
+            return false;
+        });
+        disposable = new CompositeDisposable();
+
+        disposable.add(
+                Single.fromCallable(() -> d2.optionModule().options
+                        .byOptionSetUid().eq(model.optionSet()))
+                        .map(optionRepository -> {
+                            List<String> finalOptionsToHide = new ArrayList<>();
+                            if (optionsToHide!=null && !optionsToHide.isEmpty())
+                                finalOptionsToHide.addAll(optionsToHide);
+
+                            if (optionGroupsToHide!=null && !optionGroupsToHide.isEmpty()) {
+                                for (String groupUid : optionGroupsToHide) {
+                                    finalOptionsToHide.addAll(
+                                            UidsHelper.getUidsList(d2.optionModule().optionGroups.withOptions().uid(groupUid).get().options())
+                                    );
+                                }
+                            }
+                            if (!finalOptionsToHide.isEmpty())
+                                optionRepository = optionRepository
+                                        .byUid().notIn(finalOptionsToHide);
+
+                            return optionRepository.get();
+                        })
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                this::setOptions,
+                                Timber::e
+                        )
+        );
+
     }
 
-    public static Boolean isCreated(){
-        return instance != null;
-    }
-
-    public void setOptions(List<OptionModel> options) {
+    public void setOptions(List<Option> options) {
         optionsMap = new HashMap<>();
-        PopupMenu menu = new PopupMenu(context, anchor);
-        menu.setOnMenuItemClickListener(listener);
-        for (OptionModel optionModel : options) {
-            optionsMap.put(optionModel.displayName(), optionModel);
-            menu.getMenu().add(Menu.NONE, Menu.NONE, options.indexOf(optionModel) + 1, optionModel.displayName());
+        for (Option option : options) {
+            optionsMap.put(option.displayName(), option);
+            getMenu().add(Menu.NONE, Menu.NONE, options.indexOf(option) + 1, option.displayName());
         }
-        menu.show();
+        show();
     }
 
-    public HashMap<String, OptionModel> getOptions() {
-        return optionsMap;
-    }
-
-    public OptionSetCellPopUp setOptionSetUid(SpinnerViewModel view) {
-        this.optionSet = view;
-        return this;
-    }
-
-    public OptionSetCellPopUp setProcessor(FlowableProcessor<Trio<String, String, Integer>> processor) {
-        this.processor = processor;
-        return this;
-    }
-
-    public void show(Context context, View anchor) {
-        this.context = context;
-        this.anchor = anchor;
-        processor.onNext(Trio.create("", optionSet.optionSet(), 0));
-    }
-
-
-    public OptionSetCellPopUp setOnClick(PopupMenu.OnMenuItemClickListener listener) {
-        this.listener = listener;
-        return this;
-    }
-
+    @Override
     public void dismiss() {
-        instance = null;
+        disposable.clear();
+        super.dismiss();
     }
 }

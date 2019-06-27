@@ -2,6 +2,8 @@ package org.dhis2.data.forms;
 
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
+
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.forms.dataentry.EnrollmentRuleEngineRepository;
@@ -9,10 +11,15 @@ import org.dhis2.data.forms.dataentry.EventsRuleEngineRepository;
 import org.dhis2.data.forms.dataentry.RuleEngineRepository;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.schedulers.SchedulerProvider;
+import org.dhis2.data.tuples.Pair;
+import org.dhis2.data.tuples.Trio;
 import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
+import org.hisp.dhis.android.core.period.FeatureType;
+import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.rules.models.RuleAction;
 import org.hisp.dhis.rules.models.RuleActionErrorOnCompletion;
 import org.hisp.dhis.rules.models.RuleActionHideField;
@@ -28,7 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import androidx.annotation.NonNull;
+import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -36,6 +43,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.observables.ConnectableObservable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
+import io.reactivex.schedulers.Schedulers;
 import rx.exceptions.OnErrorNotImplementedException;
 import timber.log.Timber;
 
@@ -61,15 +69,17 @@ class FormPresenterImpl implements FormPresenter {
 
     @NonNull
     private final FlowableProcessor<String> processor;
+    private final D2 d2;
     private FormView view;
 
-    private boolean isEvent = false;
+    private boolean isEvent;
 
     FormPresenterImpl(@NonNull FormViewArguments formViewArguments,
                       @NonNull SchedulerProvider schedulerProvider,
                       @NonNull BriteDatabase briteDatabase,
                       @NonNull FormRepository formRepository,
                       @NonNull D2 d2) {
+        this.d2 = d2;
         this.formViewArguments = formViewArguments;
         this.formRepository = formRepository;
         this.schedulerProvider = schedulerProvider;
@@ -83,6 +93,14 @@ class FormPresenterImpl implements FormPresenter {
         }
 
         this.processor = PublishProcessor.create();
+    }
+
+    @Override
+    public String getEnrollmentOu(String enrollmentUid) {
+        if (d2.enrollmentModule().enrollments.uid(enrollmentUid).exists())
+            return d2.enrollmentModule().enrollments.uid(enrollmentUid).get().organisationUnit();
+        else
+            return null;
     }
 
     @Override
@@ -123,7 +141,7 @@ class FormPresenterImpl implements FormPresenter {
             );
         } else {
             view.hideDates();
-            compositeDisposable.add(formRepository.getProgramCategoryCombo()
+            compositeDisposable.add(formRepository.getProgramCategoryCombo(null)
                     .subscribeOn(schedulerProvider.io())
                     .observeOn(schedulerProvider.ui())
                     .subscribe(hasOptionCatComboAndOption -> {
@@ -157,15 +175,16 @@ class FormPresenterImpl implements FormPresenter {
         //endregion
 
         compositeDisposable.add(view.reportDateChanged()
+                .switchMap(formRepository::saveReportDate)
                 .subscribeOn(schedulerProvider.ui())
                 .observeOn(schedulerProvider.io())
-                .subscribe(formRepository.storeReportDate(), Timber::e));
+                .subscribe(saved -> Timber.d("reportDate saved"), Timber::e));
 
         compositeDisposable.add(view.incidentDateChanged()
-                .filter(date -> date != null)
+                .switchMap(formRepository::saveIncidentDate)
                 .subscribeOn(schedulerProvider.ui())
                 .observeOn(schedulerProvider.io())
-                .subscribe(formRepository.storeIncidentDate(), Timber::e));
+                .subscribe(saved -> Timber.d("incidentDate saved"), Timber::e));
 
         compositeDisposable.add(view.reportCoordinatesChanged()
                 .filter(latLng -> latLng != null)
@@ -190,14 +209,6 @@ class FormPresenterImpl implements FormPresenter {
                 .observeOn(schedulerProvider.io()).share();
 
         compositeDisposable.add(enrollmentDoneStream
-                /* .flatMap(data -> checkMandatory().map(mandatoryRequired -> Pair.create(data, mandatoryRequired)))
-                 .observeOn(AndroidSchedulers.mainThread())
-                 .flatMap(data -> {
-                     view.showMandatoryFieldsDialog();
-                     return Observable.just(data);
-                 })
-                 .filter(data -> !data.val1()) //
-                 .map(data -> data.val0())*/
                 .flatMap(formRepository::autoGenerateEvents) //Autogeneration of events
                 .flatMap(data -> formRepository.useFirstStageDuringRegistration()) //Checks if first Stage Should be used
                 .subscribeOn(schedulerProvider.ui())
@@ -211,7 +222,7 @@ class FormPresenterImpl implements FormPresenter {
         compositeDisposable.add(statusChangeObservable.connect());
     }
 
-    public void initializeSaveObservable(){
+    public void initializeSaveObservable() {
         ConnectableObservable<EnrollmentStatus> statusChangeObservable = view.onObservableBackPressed()
                 .publish();
 
@@ -438,5 +449,25 @@ class FormPresenterImpl implements FormPresenter {
     @Override
     public void saveCategoryOption(CategoryOptionComboModel selectedOption) {
         formRepository.saveCategoryOption(selectedOption);
+    }
+
+    public void getNeedInitial(String eventUid) {
+        compositeDisposable.add(
+                Flowable.zip(
+                        formRepository.getProgramStage(eventUid),
+                        formRepository.getProgramCategoryCombo(eventUid).toFlowable(BackpressureStrategy.LATEST),
+                        Pair::create
+                )
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                pair -> {
+                                    ProgramStage programStage = pair.val0();
+                                    Trio<Boolean, CategoryComboModel, List<CategoryOptionComboModel>> trio = pair.val1();
+                                    view.setNeedInitial(programStage.featureType().equals(FeatureType.POINT) || !trio.val1().isDefault(), programStage.uid());
+                                },
+                                Timber::e
+                        )
+        );
     }
 }

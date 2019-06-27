@@ -23,17 +23,7 @@ interface DataEntryView {
 
     void nextFocus();
 
-    void removeSection(String sectionUid);
-
-    void messageOnComplete(String message, boolean canComplete);
-
-    Flowable<Trio<String, String, Integer>> optionSetActions();
-
     FlowableProcessor<RowAction> getActionProcessor();
 
-    void setListOptions(List<OptionModel> options);
-
     void showMessage(int messageId);
-
-    void updateAdapter(RowAction rowAction);
 }

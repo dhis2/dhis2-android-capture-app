@@ -10,6 +10,7 @@ import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryModel;
 import org.hisp.dhis.android.core.category.CategoryOption;
@@ -244,21 +245,79 @@ public class DataValueRepositoryImpl implements DataValueRepository {
 
     public Flowable<Integer> updateValue(DataValueModel dataValue){
         String where = DataValueModel.Columns.DATA_ELEMENT + " = '" + dataValue.dataElement() + "' AND " + DataValueModel.Columns.PERIOD + " = '" + dataValue.period() +
+                "' AND " + DataValueModel.Columns.ORGANISATION_UNIT + " = '" + dataValue.organisationUnit() +
                 "' AND " + DataValueModel.Columns.ATTRIBUTE_OPTION_COMBO + " = '" + dataValue.attributeOptionCombo() +
                 "' AND " + DataValueModel.Columns.CATEGORY_OPTION_COMBO + " = '" + dataValue.categoryOptionCombo() + "'";
 
-        if(dataValue.value()!=null && !dataValue.value().isEmpty())
-            return Flowable.just(briteDatabase.update(DataValueModel.TABLE, dataValue.toContentValues(), where));
+        if(dataValue.value()!=null && !dataValue.value().isEmpty()) {
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(DataValueModel.Columns.VALUE, dataValue.value());
+            contentValues.put(DataValueModel.Columns.STATE, dataValue.state().name());
+            contentValues.put(DataValueModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(dataValue.lastUpdated()));
+
+            return Flowable.just(briteDatabase.update(DataValueModel.TABLE, contentValues, where));
+        }
         else
             return Flowable.just(briteDatabase.delete(DataValueModel.TABLE, where));
 
     }
-
+    /**
+     * SELECT CategoryOptionCombo.*,section.displayName as SectionName " +
+     *             " FROM DataSetDataElementLink " +
+     *             " JOIN DataElement ON DataElement.uid = DataSetDataElementLink.dataElement " +
+     *             " JOIN CategoryOptionCombo ON CategoryOptionCombo.categoryCombo = case when dataSetDataElementLink.categoryCombo IS NOT NULL then dataSetDataElementLink.categoryCombo else dataElement.categoryCombo end " +
+     *             " JOIN CategoryCategoryComboLink ON CategoryCategoryComboLink.categoryCombo = categoryOptionCombo.categoryCombo " +
+     *             " JOIN CategoryOptionComboCategoryOptionLink ON CategoryOptionComboCategoryOptionLink.categoryOptionCombo = CategoryOptionCombo.uid " +
+     *             " JOIN CategoryCategoryOptionLink ON CategoryCategoryOptionLink.categoryOption = CategoryOptionComboCategoryOptionLink.categoryOption " +
+     *             " LEFT JOIN (SELECT section.displayName, section.uid, SectionDataElementLINK.dataElement as dataelement FROM Section " +
+     *             " JOIN SectionDataElementLINK ON SectionDataElementLink.section = Section.uid) as section on section.dataelement = DataElement.uid " +
+     *             " WHERE DataSetDataElementLink.dataSet = ? " +
+     *             " GROUP BY section.uid, CategoryOptionCombo.uid  ORDER BY section.uid, CategoryCategoryComboLink.sortOrder, CategoryCategoryOptionLink.sortOrder
+     * */
     @Override
-    public Flowable<Map<String, List<CategoryOptionComboModel>>> getCatOptionCombo() {
-        Map<String, List<CategoryOptionComboModel>> map = new HashMap<>();
+    public Flowable<Map<String, List<CategoryOptionCombo>>> getCatOptionCombo() {
+        Map<String, List<CategoryOptionCombo>> map = new HashMap<>();
+        List<String> sections = new ArrayList<>();
+        return Flowable.fromIterable(d2.dataSetModule().sections.withDataElements().byDataSetUid().eq(dataSetUid).get())
+                .flatMap(section -> {
+                    if (!sections.contains(section.name())) {
+                        sections.add(section.name());
+                    }
 
-        return briteDatabase.createQuery(CategoryOptionModel.TABLE, CATEGORY_OPTION_COMBO, dataSetUid)
+                    List<DataElement> dataElements = section.dataElements();
+                    List<DataElement> dataElementOverrides = new ArrayList<>();
+
+                    List<DataSetElement> overrides = d2.dataSetModule().dataSets.withDataSetElements().byUid().eq(dataSetUid).one().get().dataSetElements();
+                    for (DataElement dataElement : dataElements) {
+                        dataElementOverrides.add(transformDataElement(dataElement, overrides));
+                    }
+
+                    if (map.get(section.name()) == null) {
+                        map.put(section.name(), new ArrayList<>());
+                    }
+
+                    List<CategoryOptionCombo> addCatOptionCombos = new ArrayList<>();
+                    for (DataElement dataElement : dataElementOverrides) {
+                        boolean exist = false;
+                        List<CategoryOptionCombo> listCatOption = d2.categoryModule().categoryOptionCombos.byCategoryComboUid().eq(dataElement.categoryCombo().uid()).get();
+                        for (CategoryOptionCombo catOptionCombo : listCatOption){
+                            for (CategoryOptionCombo catOptionComboMap : map.get(section.name())) {
+                                if (catOptionComboMap.uid().equals(catOptionCombo.uid()))
+                                    exist = true;
+                            }
+
+                            if(!exist)
+                                map.get(section.name()).add(catOptionCombo);
+                        }
+
+                    }
+
+                    //map.get(section.name()).addAll(addCatOptionCombos);
+
+                    return Flowable.just(map);
+                });
+
+        /*return briteDatabase.createQuery(CategoryOptionModel.TABLE, CATEGORY_OPTION_COMBO, dataSetUid)
                 .mapToList(cursor -> {
                     CategoryOptionComboModel catOptionCombo = CategoryOptionComboModel.create(cursor);
                     String sectionName = cursor.getString(cursor.getColumnIndex("SectionName"));
@@ -271,59 +330,54 @@ public class DataValueRepositoryImpl implements DataValueRepository {
                     map.get(sectionName).add(catOptionCombo);
 
                     return catOptionCombo;
-                }).flatMap(categoryOptionComboModels -> Observable.just(map)).toFlowable(BackpressureStrategy.LATEST);
+                }).flatMap(categoryOptionComboModels -> Observable.just(map)).toFlowable(BackpressureStrategy.LATEST);*/
     }
 
-
     @Override
-    public Flowable<Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>>> getCatOptions(String sectionName) {
-        Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>> map = new HashMap<>();
-
-        //TODO finish to build this method
-        /*Flowable.just(d2.dataSetModule().sections.withDataElements().byDataSetUid().eq(dataSetUid).byName().eq(sectionName).one().get())
+    public Flowable<Map<String, List<List<Pair<CategoryOption, Category>>>>> getCatOptions(String sectionName) {
+        Map<String, List<List<Pair<CategoryOption, Category>>>> map = new HashMap<>();
+        List<String> catCombos = new ArrayList<>();
+        //TODO set NO_SECTION is not implementing
+        return Flowable.just(d2.dataSetModule().sections.withDataElements().byDataSetUid().eq(dataSetUid).byName().eq(sectionName).one().get())
                 .flatMapIterable(section -> section.dataElements())
                 .flatMap(dataElement ->
                         Flowable.just(d2.dataSetModule().dataSets.withDataSetElements().byUid().eq(dataSetUid).one().get().dataSetElements())
                                 .map(dataElementOverrides -> transformDataElement(dataElement, dataElementOverrides)))
-                .map(dataElement-> {
-                    return d2.categoryModule().categoryCombos.withCategories().byUid().eq("").one().get().categories().get(0).categoryOptions();
-                })
-                .toList().toFlowable();*/
-        String query = CATEGORY_OPTION;
+                .flatMap(dataElement-> {
+                    String catCombo = dataElement.categoryComboUid();
+                    if(!catCombos.contains(dataElement.categoryComboUid())) {
+                        catCombos.add(dataElement.categoryComboUid());
 
-        if (!sectionName.equals("NO_SECTION")) {
-            query = query + "AND section.name = '" + sectionName + "' ";
-        }
-        query = query + "GROUP BY  CategoryOption.uid,Category.uid, SectionName,catCombo, CategoryCategoryOptionLink.sortOrder " +
-                "ORDER BY section.uid, CategoryCategoryComboLink.sortOrder, CategoryCategoryOptionLink.sortOrder";
+                        List<Category> categories = d2.categoryModule().categoryCombos.withCategories().withAllChildren().byUid().eq(catCombo).one().get().categories();
 
-        return briteDatabase.createQuery(CategoryOptionModel.TABLE, query, dataSetUid)
-                .mapToList(cursor -> {
-                    CategoryOptionModel catOption = CategoryOptionModel.create(cursor);
-                    CategoryModel category = CategoryModel.builder().uid(cursor.getString(cursor.getColumnIndex("category"))).build();
-                    String catCombo = cursor.getString(cursor.getColumnIndex("catCombo"));
-
-                    if (map.get(catCombo) == null) {
-                        map.put(catCombo, new ArrayList<>());
-                    }
-                    if (map.get(catCombo).size() == 0) {
-                        List<Pair<CategoryOptionModel, CategoryModel>> list = new ArrayList<>();
-                        list.add(Pair.create(catOption, category));
-                        map.get(catCombo).add(list);
-                    } else {
-
-                        if (map.get(catCombo).get(map.get(catCombo).size() - 1).get(0).val1().uid().equals(cursor.getString(cursor.getColumnIndex("category")))) {
-                            map.get(catCombo).get(map.get(catCombo).size() - 1).add(Pair.create(catOption, category));
-                        } else {
-                            List<Pair<CategoryOptionModel, CategoryModel>> list = new ArrayList<>();
-                            list.add(Pair.create(catOption, category));
-                            map.get(catCombo).add(list);
+                        if (map.get(catCombo) == null) {
+                            map.put(catCombo, new ArrayList<>());
                         }
 
+                        for (Category category : categories) {
+                            List<CategoryOption> catOptions = d2.categoryModule().categories.withCategoryOptions().byUid().eq(category.uid()).one().get().categoryOptions();
+                            for (CategoryOption catOption : catOptions) {
+                                if (map.get(catCombo).size() == 0) {
+                                    List<Pair<CategoryOption, Category>> list = new ArrayList<>();
+                                    list.add(Pair.create(catOption, category));
+                                    map.get(catCombo).add(list);
+                                } else {
+
+                                    if (map.get(catCombo).get(map.get(catCombo).size() - 1).get(0).val1().uid().equals(category.uid())) {
+                                        map.get(catCombo).get(map.get(catCombo).size() - 1).add(Pair.create(catOption, category));
+                                    } else {
+                                        List<Pair<CategoryOption, Category>> list = new ArrayList<>();
+                                        list.add(Pair.create(catOption, category));
+                                        map.get(catCombo).add(list);
+                                    }
+
+                                }
+                            }
+                        }
                     }
 
-                    return catOption;
-                }).flatMap(categoryOptionComboModels -> Observable.just(map)).toFlowable(BackpressureStrategy.LATEST);
+                    return Flowable.just(map);
+                });
     }
 
     private DataElement transformDataElement(DataElement dataElement, List<DataSetElement> override){

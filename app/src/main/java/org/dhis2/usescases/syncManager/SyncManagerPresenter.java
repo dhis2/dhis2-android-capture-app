@@ -17,6 +17,7 @@ import org.dhis2.data.service.SyncMetadataWorker;
 import org.dhis2.usescases.login.LoginActivity;
 import org.dhis2.usescases.reservedValue.ReservedValueActivity;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.FileResourcesUtil;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.maintenance.D2Error;
@@ -51,6 +52,11 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
         this.metadataRepository = metadataRepository;
         this.d2 = d2;
         checkData = PublishProcessor.create();
+    }
+
+    @Override
+    public void onItemClick(int settingsItem) {
+        view.openItem(settingsItem);
     }
 
     @Override
@@ -141,6 +147,8 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
                 .build());
         OneTimeWorkRequest request = syncDataBuilder.build();
         WorkManager.getInstance().beginUniqueWork(Constants.DATA_NOW, ExistingWorkPolicy.REPLACE, request).enqueue();
+
+//        FileResourcesUtil.initDownloadWork();
     }
 
     /**

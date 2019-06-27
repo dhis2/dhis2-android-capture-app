@@ -163,7 +163,7 @@
         <item name="android:textSize">15sp</item>
         <item name="android:paddingStart">10sp</item>
         <item name="android:paddingEnd">10sp</item>
-        <item name="android:background">?attr/selector_button_round_7</item>
+        <item name="android:background">?attr/selector_button_round_2</item>
         <item name="android:textStyle">bold</item>
     </style>
 
@@ -242,6 +242,10 @@
     <style name="DhisMaterialDialog" parent="Base.ThemeOverlay.MaterialComponents.Dialog.Alert">
         <item name="colorAccent">@color/text_black_333</item>
         <item name="colorPrimary">@color/text_black_333</item>
+    </style>
+
+    <style name="radioPrimary">
+        <item name="colorAccent">?colorPrimaryLight</item>
     </style>
 
 </resources>

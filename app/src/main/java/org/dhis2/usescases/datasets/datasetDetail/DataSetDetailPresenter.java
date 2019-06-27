@@ -2,13 +2,14 @@ package org.dhis2.usescases.datasets.datasetDetail;
 
 import android.os.Bundle;
 
+import androidx.annotation.IntDef;
+
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity;
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialActivity;
 import org.dhis2.usescases.main.program.SyncStatusDialog;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.OrgUnitUtils;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -18,7 +19,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import androidx.annotation.IntDef;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
@@ -30,7 +30,7 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
     private DataSetDetailContract.View view;
     private CompositeDisposable compositeDisposable;
     private List<OrganisationUnit> orgUnits;
-    private List<String> selectedOrgUnits;
+    private List<String> selectedOrgUnits = new ArrayList<>();
     private List<String> selectedPeriods = new ArrayList<>();
     private Map<String, String> mapPeriodAvailable;
 

@@ -10,27 +10,34 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.DatePicker;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.Fragment;
+
 import org.dhis2.R;
 import org.dhis2.data.forms.FormFragment;
 import org.dhis2.data.forms.dataentry.DataEntryFragment;
 import org.dhis2.data.metadata.MetadataRepository;
+import org.dhis2.databinding.WidgetDatepickerBinding;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.OnDialogClickListener;
 import org.dhis2.utils.custom_views.OrgUnitDialog;
+import org.dhis2.utils.custom_views.OrgUnitDialog_2;
 import org.dhis2.utils.custom_views.PeriodDialog;
+import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.State;
+import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.period.PeriodType;
+import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import androidx.appcompat.app.AlertDialog;
-import androidx.fragment.app.Fragment;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -134,9 +141,9 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
     }
 
     @Override
-    public void eventStatus(View buttonView, EventModel eventModel, ProgramStageModel stageModel) {
+    public void eventStatus(View buttonView, Event eventModel, ProgramStage stageModel) {
 
-        if (stageModel.accessDataWrite()) {
+        if (stageModel.access().data().write()) {
             if (eventModel.status() == EventStatus.OVERDUE)
                 updateEventStatus(eventModel);
             else {
@@ -186,7 +193,7 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
             view.displayMessage(null);
     }
 
-    private void updateEventStatus(EventModel eventModel) {
+    private void updateEventStatus(Event eventModel) {
         dataEntryStore.updateEventStatus(eventModel);
         changedEventStatus = true;
     }
@@ -203,11 +210,11 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
 
     @Override
     public void deleteEvent() {
-        if (eventDetailModel != null && eventDetailModel.getEventModel() != null) {
-            if (eventDetailModel.getEventModel().state() == State.TO_POST) {
-                eventDetailRepository.deleteNotPostedEvent(eventDetailModel.getEventModel().uid());
+        if (eventDetailModel != null && eventDetailModel.getEvent() != null) {
+            if (eventDetailModel.getEvent().state() == State.TO_POST) {
+                eventDetailRepository.deleteNotPostedEvent(eventDetailModel.getEvent().uid());
             } else {
-                eventDetailRepository.deletePostedEvent(eventDetailModel.getEventModel());
+                eventDetailRepository.deletePostedEvent(eventDetailModel.getEvent());
             }
             view.showEventWasDeleted();
         }
@@ -216,7 +223,7 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
     @Override
     public void onOrgUnitClick() {
 
-        OrgUnitDialog orgUnitDialog = OrgUnitDialog.getInstace().setMultiSelection(false);
+        OrgUnitDialog_2 orgUnitDialog = OrgUnitDialog_2.getInstace().setMultiSelection(false);
         orgUnitDialog.setTitle("Event Org Unit")
                 .setPossitiveListener(v -> {
                     if (orgUnitDialog.getSelectedOrgUnitModel() == null)
@@ -293,14 +300,14 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
                     String result = DateUtils.uiDateFormat().format(selectedDate);
                     view.setDate(result);
 
-                    if (eventDetailModel.getProgramStage().accessDataWrite()) {
-                        dataEntryStore.updateEvent(selectedDate, eventDetailModel.getEventModel());
+                    if (eventDetailModel.getProgramStage().access().data().write()) {
+                        dataEntryStore.updateEvent(selectedDate, eventDetailModel.getEvent());
                     }
                 }),
                 year,
                 month,
                 day);
-        if (eventDetailModel.getEventModel().status() != EventStatus.SCHEDULE && eventDetailModel.getEventModel().status() != EventStatus.OVERDUE) {
+        if (eventDetailModel.getEvent().status() != EventStatus.SCHEDULE && eventDetailModel.getEvent().status() != EventStatus.OVERDUE) {
             dateDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
         }
 
@@ -334,8 +341,9 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
 
     private void openDailySelector(boolean futureOnly) {
         LayoutInflater layoutInflater = LayoutInflater.from(view.getContext());
-        View datePickerView = layoutInflater.inflate(R.layout.widget_datepicker, null);
-        final DatePicker datePicker = datePickerView.findViewById(R.id.widget_datepicker);
+        //        View datePickerView = layoutInflater.inflate(R.layout.widget_datepicker, null);
+        WidgetDatepickerBinding widgetBinding = WidgetDatepickerBinding.inflate(layoutInflater);
+        final DatePicker datePicker = widgetBinding.widgetDatepicker;
 
         Calendar c = Calendar.getInstance();
         if (futureOnly)
@@ -347,25 +355,9 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
         datePicker.updateDate(year, month, day);
         datePicker.setMaxDate(c.getTimeInMillis());
 
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(view.getContext(), R.style.DatePickerTheme)
-                .setPositiveButton(R.string.action_accept, (dialog, which) -> {
-                    Calendar selectedCalendar = Calendar.getInstance();
-                    selectedCalendar.set(Calendar.YEAR, datePicker.getYear());
-                    selectedCalendar.set(Calendar.MONTH, datePicker.getMonth());
-                    selectedCalendar.set(Calendar.DAY_OF_MONTH, datePicker.getDayOfMonth());
-                    selectedCalendar.set(Calendar.HOUR_OF_DAY, c.get(Calendar.HOUR_OF_DAY));
-                    selectedCalendar.set(Calendar.MINUTE, c.get(Calendar.MINUTE));
-                    Date selectedDate = selectedCalendar.getTime();
-                    String result = DateUtils.uiDateFormat().format(selectedDate);
-                    view.setDate(result);
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(view.getContext(), R.style.DatePickerTheme);
 
-                    if (eventDetailModel.getProgramStage().accessDataWrite()) {
-                        dataEntryStore.updateEvent(selectedDate, eventDetailModel.getEventModel());
-                    }
-                })
-                .setNeutralButton(view.getContext().getResources().getString(R.string.change_calendar), (dialog, which) -> showNativeCalendar(futureOnly));
-
-        if (eventDetailModel.getEventModel().status() != EventStatus.SCHEDULE && eventDetailModel.getEventModel().status() != EventStatus.OVERDUE) {
+        if (eventDetailModel.getEvent().status() != EventStatus.SCHEDULE && eventDetailModel.getEvent().status() != EventStatus.OVERDUE) {
             datePicker.setMaxDate(System.currentTimeMillis());
         }
 
@@ -383,8 +375,31 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
             datePicker.setMaxDate(eventDetailModel.orgUnitClosingDate().getTime());
 
 
-        alertDialog.setView(datePickerView);
+        alertDialog.setView(widgetBinding.getRoot());
         Dialog dialog = alertDialog.create();
+
+        widgetBinding.changeCalendarButton.setOnClickListener(calendarButton->{
+            showNativeCalendar(futureOnly);
+            dialog.dismiss();
+        });
+        widgetBinding.clearButton.setOnClickListener(clearButton->dialog.dismiss());
+        widgetBinding.acceptButton.setOnClickListener(acceptButton->{
+            Calendar selectedCalendar = Calendar.getInstance();
+            selectedCalendar.set(Calendar.YEAR, datePicker.getYear());
+            selectedCalendar.set(Calendar.MONTH, datePicker.getMonth());
+            selectedCalendar.set(Calendar.DAY_OF_MONTH, datePicker.getDayOfMonth());
+            selectedCalendar.set(Calendar.HOUR_OF_DAY, c.get(Calendar.HOUR_OF_DAY));
+            selectedCalendar.set(Calendar.MINUTE, c.get(Calendar.MINUTE));
+            Date selectedDate = selectedCalendar.getTime();
+            String result = DateUtils.uiDateFormat().format(selectedDate);
+            view.setDate(result);
+
+            if (eventDetailModel.getProgramStage().access().data().write()) {
+                dataEntryStore.updateEvent(selectedDate, eventDetailModel.getEvent());
+            }
+            dialog.dismiss();
+        });
+
         dialog.show();
     }
 
@@ -395,12 +410,12 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
                     String result = DateUtils.uiDateFormat().format(selectedDate);
                     view.setDate(result);
 
-                    if (eventDetailModel.getProgramStage().accessDataWrite()) {
-                        dataEntryStore.updateEvent(selectedDate, eventDetailModel.getEventModel());
+                    if (eventDetailModel.getProgramStage().access().data().write()) {
+                        dataEntryStore.updateEvent(selectedDate, eventDetailModel.getEvent());
                     }
                 });
 
-        if (eventDetailModel.getEventModel().status() != EventStatus.SCHEDULE && eventDetailModel.getEventModel().status() != EventStatus.OVERDUE) {
+        if (eventDetailModel.getEvent().status() != EventStatus.SCHEDULE && eventDetailModel.getEvent().status() != EventStatus.OVERDUE) {
             periodDialog.setMaxDate(Calendar.getInstance().getTime());
         }
 

@@ -29,7 +29,7 @@ public class ProgramEventDetailViewHolder extends RecyclerView.ViewHolder {
             if (event.eventDisplayData().get(i) != null)
                 stringBuilder.append(event.eventDisplayData().get(i).val1());
             if (i != valuesSize - 1)
-                stringBuilder.append("\n");
+                stringBuilder.append("|");
         }
         binding.dataValue.setText(stringBuilder);
 

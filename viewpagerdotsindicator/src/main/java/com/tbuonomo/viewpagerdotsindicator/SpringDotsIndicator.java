@@ -17,6 +17,7 @@ import android.widget.RelativeLayout;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 import androidx.dynamicanimation.animation.SpringAnimation;
 import androidx.dynamicanimation.animation.SpringForce;
@@ -165,7 +166,7 @@ public class SpringDotsIndicator extends FrameLayout {
         ViewGroup dot = (ViewGroup) LayoutInflater.from(getContext()).inflate(R.layout.spring_dot_layout, this, false);
         ImageView dotView = dot.findViewById(R.id.spring_dot);
         dotView.setBackground(
-                ContextCompat.getDrawable(getContext(), stroke ? R.drawable.spring_dot_stroke_background : R.drawable.spring_dot_background));
+                AppCompatResources.getDrawable(getContext(), stroke ? R.drawable.spring_dot_stroke_background : R.drawable.spring_dot_background));
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) dotView.getLayoutParams();
         params.width = params.height = stroke ? dotsStrokeSize : dotIndicatorSize;
         params.addRule(RelativeLayout.CENTER_VERTICAL, RelativeLayout.TRUE);

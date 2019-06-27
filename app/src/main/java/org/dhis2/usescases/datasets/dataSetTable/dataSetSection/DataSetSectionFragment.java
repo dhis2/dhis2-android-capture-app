@@ -29,6 +29,7 @@ import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.custom_views.OptionSetCellDialog;
 import org.dhis2.utils.custom_views.OptionSetCellPopUp;
+import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.dataelement.DataElement;
@@ -132,7 +133,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
         for (String catCombo : dataTableModel.catCombos().keySet()) {
             DataSetTableAdapter adapter = new DataSetTableAdapter(getAbstracContext(), presenterFragment.getProcessor(), presenterFragment.getProcessorOptionSet());
             adapters.add(adapter);
-            List<List<CategoryOptionModel>> columnHeaderItems = dataTableModel.headers().get(catCombo);
+            List<List<CategoryOption>> columnHeaderItems = dataTableModel.headers().get(catCombo);
             ArrayList<List<String>> cells = new ArrayList<>();
             List<List<FieldViewModel>> listFields = new ArrayList<>();
             List<DataElement> rows = new ArrayList<>();
@@ -180,7 +181,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
                             }
                         }
 
-                        for(CategoryOptionModel catOption: dataTableModel.catOptions()){
+                        for(CategoryOption catOption: dataTableModel.catOptions()){
                             for(String option: catOpts){
                                 //todo Revert this when Jose tell us how to do disabled CategoryOptions
                                 /*if(catOption.uid().equals(option) && !catOption.accessDataWrite())
@@ -241,9 +242,9 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
                 if (adapter.getShowRowTotal())
                     for (int i = 0; i < columnHeaderItems.size(); i++) {
                         if (i == columnHeaderItems.size() - 1)
-                            columnHeaderItems.get(i).add(CategoryOptionModel.builder().displayName(getString(R.string.total)).build());
+                            columnHeaderItems.get(i).add(CategoryOption.builder().uid("").displayName(getString(R.string.total)).build());
                         else
-                            columnHeaderItems.get(i).add(CategoryOptionModel.builder().displayName("").build());
+                            columnHeaderItems.get(i).add(CategoryOption.builder().uid("").displayName("").build());
                     }
 
             }
@@ -431,10 +432,10 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
 
     @Override
     public void setListOptions(List<OptionModel> options) {
-        if (OptionSetCellDialog.isCreated())
+        /*if (OptionSetCellDialog.isCreated())
             OptionSetCellDialog.newInstance().setOptions(options);
         else if (OptionSetCellPopUp.isCreated())
-            OptionSetCellPopUp.getInstance().setOptions(options);
+            OptionSetCellPopUp.getInstance().setOptions(options);*/
     }
 
     @Override

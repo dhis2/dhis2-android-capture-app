@@ -15,11 +15,11 @@
 
         <variable
             name="event"
-            type="org.hisp.dhis.android.core.event.EventModel" />
+            type="org.hisp.dhis.android.core.event.Event" />
 
         <variable
             name="stage"
-            type="org.hisp.dhis.android.core.program.ProgramStageModel" />
+            type="org.hisp.dhis.android.core.program.ProgramStage" />
 
         <variable
             name="enrollmentActive"

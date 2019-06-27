@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:gravity="center_vertical">
 
     <ImageView
@@ -20,6 +20,7 @@
         android:layout_weight="1"
         android:layout_height="wrap_content"
         android:padding="5dp"
+        android:textSize="12sp"
         android:textColor="@color/gray_444"
         tools:text="Sierra Leona" />
 
