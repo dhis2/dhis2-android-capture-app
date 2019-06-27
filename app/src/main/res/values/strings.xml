@@ -495,7 +495,6 @@
     <string name="data_set_closed">Close</string>
     <string name="data_set_open">Open</string>
     <string name="unsupported_value_type">Unsupported value type</string>
-    <string name="unblock_session">Unblock session</string>
     <string name="change_calendar_view">Change calendar view</string>
     <string name="data_every_fifteen_minutes">15 minutes</string>
     <string name="data_every_hour">Every hour</string>
