@@ -30,17 +30,17 @@ public class DataSetRowHeader extends AbstractViewHolder {
         this.binding = binding;
     }
 
-    public void bind(DataElement dataElement, ObservableField<DataSetTableAdapter.TableScale> currentTableScale) {
+    public void bind(DataElement dataElement, ObservableField<DataSetTableAdapter.TableScale> currentTableScale, Boolean dataElementDecoration) {
         binding.setTableScale(currentTableScale);
         binding.title.setText(!isEmpty(dataElement.displayFormName()) ? dataElement.displayFormName() : dataElement.displayName());
 
-        if ((dataElement.description() != null && !dataElement.description().isEmpty()) || binding.title.getText().length() > 16) {
+        if (binding.title.getText().length() > 16 || dataElementDecoration) {
             binding.descriptionLabel.setVisibility(View.VISIBLE);
             binding.descriptionLabel.setOnClickListener(v ->
                     new CustomDialog(
                             itemView.getContext(),
                             dataElement.displayName(),
-                            Objects.requireNonNull(dataElement.description() != null ? dataElement.description() : "No info for this field"),
+                            dataElement.displayDescription() != null ? dataElement.displayDescription() : itemView.getContext().getString(R.string.empty_description),
                             itemView.getContext().getString(R.string.action_accept),
                             null,
                             Constants.DESCRIPTION_DIALOG,
