@@ -92,7 +92,6 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
     public void onAttach(Context context) {
         super.onAttach(context);
         activity = (DataSetTableActivity) context;
-        presenter = ((DataSetTableActivity) context).getPresenter();
         dataSetUid = getArguments().getString(Constants.DATA_SET_UID, dataSetUid);
         ((App) context.getApplicationContext()).userComponent().plus(new DataValueModule(dataSetUid)).inject(this);
     }
@@ -103,6 +102,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_dataset_section, container, false);
         currentTablePosition.observe(this, this::loadHeader);
         binding.setPresenter(presenterFragment);
+        presenter = activity.getPresenter();
         section = getArguments().getString(Constants.DATA_SET_SECTION);
         presenterFragment.init(this, presenter.getOrgUnitUid(), presenter.getPeriodTypeName(),
                 presenter.getPeriodFinalDate(), presenter.getCatCombo(), section, presenter.getPeriodId());
