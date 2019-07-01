@@ -184,9 +184,8 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
 
                         for(CategoryOption catOption: dataTableModel.catOptions()){
                             for(String option: catOpts){
-                                //todo Revert this when Jose tell us how to do disabled CategoryOptions
-                                /*if(catOption.uid().equals(option) && !catOption.accessDataWrite())
-                                    editable = false;*/
+                                if(catOption.uid().equals(option) && !catOption.access().data().write())
+                                    editable = false;
                             }
                         }
 
