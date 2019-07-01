@@ -53,8 +53,8 @@ final class SyncPresenterImpl implements SyncPresenter {
     }
 
     @Override
-    public void syncMetadata(Context context) throws Exception {
-        d2.syncMetaData().call();
+    public void syncMetadata(Context context) {
+        Completable.fromObservable(d2.syncMetaData()).blockingAwait();
     }
 
     @Override
