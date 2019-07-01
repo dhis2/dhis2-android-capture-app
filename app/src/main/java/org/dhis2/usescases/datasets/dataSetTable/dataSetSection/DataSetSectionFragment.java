@@ -149,6 +149,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
             adapter.setCatCombo(catCombo);
             adapter.setTableView(tableView);
             adapter.initializeRows(isEditable);
+            adapter.setDataElementDecoration(dataSet.dataElementDecoration());
 
             binding.tableLayout.addView(tableView);
 
