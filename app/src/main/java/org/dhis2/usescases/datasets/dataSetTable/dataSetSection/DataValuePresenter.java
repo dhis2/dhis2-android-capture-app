@@ -159,7 +159,7 @@ public class DataValuePresenter implements DataValueContract.Presenter{
                     if (field.value() != null && !field.value().isEmpty())
                         hasValue = true;
 
-                    if (hasValue && (field.value() == null || field.value().isEmpty())) {
+                    if (hasValue && field.editable() && (field.value() == null || field.value().isEmpty())) {
                         checkAllField = false;
                         view.highligthHeaderRow(i, tableCells.get(i).indexOf(rowFields), false);
                     }
@@ -174,7 +174,7 @@ public class DataValuePresenter implements DataValueContract.Presenter{
         for(int i=0; i< tableCells.size(); i++) {
             for (List<FieldViewModel> rowFields : tableCells.get(i)) {
                 for (FieldViewModel field : rowFields) {
-                    if (field.mandatory() && (field.value() == null || field.value().isEmpty())) {
+                    if (field.editable() && field.mandatory() && (field.value() == null || field.value().isEmpty())) {
                         mandatoryOk = false;
                         view.highligthHeaderRow(i, tableCells.get(i).indexOf(rowFields), true);
                     }
