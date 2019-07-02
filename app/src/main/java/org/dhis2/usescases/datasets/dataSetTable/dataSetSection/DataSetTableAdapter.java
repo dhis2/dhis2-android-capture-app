@@ -89,6 +89,7 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, Da
     private int currentHeight;
 
     private String catCombo;
+    private Boolean dataElementDecoration;
 
     public enum TableScale {
         SMALL, DEFAULT, LARGE
@@ -265,7 +266,7 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, Da
     @Override
     public void onBindRowHeaderViewHolder(AbstractViewHolder holder, Object rowHeaderItemModel, int
             position) {
-        ((DataSetRowHeader) holder).bind(mRowHeaderItems.get(position), currentTableScale);
+        ((DataSetRowHeader) holder).bind(mRowHeaderItems.get(position), currentTableScale, dataElementDecoration);
         holder.itemView.getLayoutParams().height = currentHeight;
     }
 
@@ -381,6 +382,10 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, Da
 
     public String getCatCombo() {
         return catCombo;
+    }
+
+    public void setDataElementDecoration(Boolean dataElementDecoration) {
+        this.dataElementDecoration = dataElementDecoration;
     }
 
 
