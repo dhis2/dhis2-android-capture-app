@@ -194,6 +194,8 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
         if (!isEmpty(error)) {
             inputLayout.setErrorTextAppearance(R.style.error_appearance);
             inputLayout.setError(error);
+            editText.setText(null);
+            editText.requestFocus();
         } else if (!isEmpty(warning)) {
             inputLayout.setErrorTextAppearance(R.style.warning_appearance);
             inputLayout.setError(warning);
