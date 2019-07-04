@@ -291,6 +291,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     binding.messageContainer.setVisibility(View.VISIBLE);
                     binding.message.setText(data.val1());
                 }
+                if (!presenter.getQueryData().isEmpty() && data.val2())
+                    animSearchFab(false);
             });
         }
     }
@@ -330,9 +332,10 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     ProgramModel selectedProgram = (ProgramModel) adapterView.getItemAtPosition(pos - 1);
                     setProgramColor(presenter.getProgramColor(selectedProgram.uid()));
                     presenter.setProgram((ProgramModel) adapterView.getItemAtPosition(pos - 1));
-                } else {
+                } else if (programModels.size() == 1){
+                    presenter.setProgram(programModels.get(0));
+                }else
                     presenter.setProgram(null);
-                }
             }
 
             @Override
