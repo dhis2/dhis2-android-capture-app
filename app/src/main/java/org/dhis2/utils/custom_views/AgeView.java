@@ -84,6 +84,8 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
     public void setError(String msg) {
         inputLayout.setErrorTextAppearance(R.style.error_appearance);
         inputLayout.setError(msg);
+        clearValues();
+        date.requestFocus();
     }
 
     private void onFocusChanged(View view, boolean b) {

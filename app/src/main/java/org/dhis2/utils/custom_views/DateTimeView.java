@@ -106,6 +106,8 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
     public void setError(String msg) {
         inputLayout.setErrorTextAppearance(R.style.error_appearance);
         inputLayout.setError(msg);
+        editText.setText(null);
+        editText.requestFocus();
     }
 
     public void setIsBgTransparent(boolean isBgTransparent) {

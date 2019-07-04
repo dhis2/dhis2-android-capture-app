@@ -172,6 +172,8 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
             errorView.setTextColor(ContextCompat.getColor(getContext(), R.color.error_color));
             errorView.setText(msg);
             errorView.setVisibility(VISIBLE);
+            clearValueData();
+            performOnFocusAction();
         } else
             errorView.setVisibility(GONE);
     }

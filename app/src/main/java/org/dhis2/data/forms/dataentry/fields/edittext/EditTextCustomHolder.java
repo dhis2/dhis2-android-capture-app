@@ -86,9 +86,11 @@ final class EditTextCustomHolder extends FormViewHolder {
         binding.customEdittext.setLabel(model.label(), model.mandatory());
         descriptionText = model.description();
         binding.customEdittext.setDescription(descriptionText);
-        binding.customEdittext.setWarning(model.warning(), model.error());
 
         binding.customEdittext.setText(editTextModel.value());
+
+        binding.customEdittext.setWarning(model.warning(), model.error());
+
         binding.customEdittext.setEditable(model.editable());
 
         binding.customEdittext.setValueType(editTextModel.valueType());
