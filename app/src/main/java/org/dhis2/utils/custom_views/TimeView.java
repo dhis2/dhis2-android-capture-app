@@ -112,6 +112,8 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
     public void setError(String msg) {
         inputLayout.setErrorTextAppearance(R.style.error_appearance);
         inputLayout.setError(msg);
+        editText.setText(null);
+        editText.requestFocus();
     }
 
     public void setDateListener(OnDateSelected listener) {
