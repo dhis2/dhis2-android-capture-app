@@ -427,7 +427,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
             Iterator<FieldViewModel> fieldIterator = fieldViewModels.values().iterator();
             while (fieldIterator.hasNext()) {
                 FieldViewModel field = fieldIterator.next();
-                if (field instanceof ImageViewModel && eventCaptureRepository.optionIsInOptionGroup(field.uid().split(".")[1], optionGroupToHide))
+                if (field instanceof ImageViewModel && eventCaptureRepository.optionIsInOptionGroup(field.uid().split("\\.")[1], optionGroupToHide))
                     fieldIterator.remove();
             }
         }
