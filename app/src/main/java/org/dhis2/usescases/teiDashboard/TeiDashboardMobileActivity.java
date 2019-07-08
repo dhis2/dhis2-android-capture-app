@@ -521,11 +521,10 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         popupMenu.getMenuInflater().inflate(R.menu.home_menu, popupMenu.getMenu());
         popupMenu.setOnMenuItemClickListener(item -> {
             this.showTutorial = true;
-            setTutorial();
+            showTutorial(true);
             return false;
         });
         popupMenu.show();
     }
 
-    ;
 }
