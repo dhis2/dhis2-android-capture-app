@@ -227,7 +227,11 @@ public final class RulesRepository {
 
     private List<RuleVariable> translateToRuleVariable(List<ProgramRuleVariable> programRuleVariables) {
         List<RuleVariable> ruleVariables = new ArrayList<>();
-//        for(ProgramRuleVariable programRuleVariable : )
+        for (ProgramRuleVariable programRuleVariable : programRuleVariables) {
+            ruleVariables.add(
+                    translateToRuleVariable(programRuleVariable)
+            );
+        }
         return ruleVariables;
     }
 
@@ -342,13 +346,70 @@ public final class RulesRepository {
                 case SENDMESSAGE:
                 case SCHEDULEMESSAGE:
                 default:
-                    ruleAction = RuleActionUnsupported.create(programRuleAction.content(),
-                            programRuleAction.programRuleActionType().name());
+                    String content = programRuleAction.content() != null ? programRuleAction.content() : "unsupported";
+                    String ruleType = programRuleAction.programRuleActionType().name();
+                    ruleAction = RuleActionUnsupported.create(content, ruleType);
                     break;
             }
             ruleActions.add(ruleAction);
         }
         return ruleActions;
+    }
+
+    private RuleVariable translateToRuleVariable(ProgramRuleVariable programRuleVariable) {
+        String name = programRuleVariable.name();
+        String stage = programRuleVariable.programStage() != null ? programRuleVariable.programStage().uid() : null;
+        String sourceType = programRuleVariable.programRuleVariableSourceType().name();
+        String dataElement = programRuleVariable.dataElement() != null ? programRuleVariable.dataElement().uid() : null;
+        String attribute = programRuleVariable.trackedEntityAttribute() != null ? programRuleVariable.trackedEntityAttribute().uid() : null;
+
+        // Mime types of the attribute and data element.
+        String attributeType = attribute != null ? d2.trackedEntityModule().trackedEntityAttributes.uid(attribute).get().valueType().name() : null;
+        String elementType = dataElement != null ? d2.dataElementModule().dataElements.uid(dataElement).get().valueType().name() : null;
+
+        // String representation of value type.
+        RuleValueType mimeType = null;
+
+        switch (ProgramRuleVariableSourceType.valueOf(sourceType)) {
+            case TEI_ATTRIBUTE:
+                if (!isEmpty(attributeType))
+                    mimeType = convertType(attributeType);
+                break;
+            case DATAELEMENT_CURRENT_EVENT:
+            case DATAELEMENT_PREVIOUS_EVENT:
+            case DATAELEMENT_NEWEST_EVENT_PROGRAM:
+            case DATAELEMENT_NEWEST_EVENT_PROGRAM_STAGE:
+                if (!isEmpty(elementType))
+                    mimeType = convertType(elementType);
+                break;
+            default:
+                break;
+        }
+
+        if (mimeType == null) {
+            mimeType = RuleValueType.TEXT;
+        }
+
+        switch (ProgramRuleVariableSourceType.valueOf(sourceType)) {
+            case TEI_ATTRIBUTE:
+                return RuleVariableAttribute.create(name, attribute == null ? "" : attribute, mimeType);
+            case DATAELEMENT_CURRENT_EVENT:
+                return RuleVariableCurrentEvent.create(name, dataElement, mimeType);
+            case DATAELEMENT_NEWEST_EVENT_PROGRAM:
+                return RuleVariableNewestEvent.create(name, dataElement, mimeType);
+            case DATAELEMENT_NEWEST_EVENT_PROGRAM_STAGE:
+                if (stage == null)
+                    stage = "";
+                return RuleVariableNewestStageEvent.create(name, dataElement, stage, mimeType);
+            case DATAELEMENT_PREVIOUS_EVENT:
+                return RuleVariablePreviousEvent.create(name, dataElement, mimeType);
+            case CALCULATED_VALUE:
+                String variable = dataElement != null ? dataElement : attribute;
+                return RuleVariableCalculatedValue.create(name, variable != null ? variable : "", mimeType);
+            default:
+                throw new IllegalArgumentException("Unsupported variable " +
+                        "source type: " + sourceType);
+        }
     }
 
     @NonNull

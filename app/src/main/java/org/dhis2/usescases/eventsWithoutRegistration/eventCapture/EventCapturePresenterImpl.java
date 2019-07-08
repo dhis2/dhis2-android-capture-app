@@ -391,7 +391,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         }
     }
 
-
     @NonNull
     private List<FieldViewModel> applyEffects(
             @NonNull List<FieldViewModel> viewModels,
@@ -704,7 +703,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
     @Override
     public void save(@NotNull @NonNull String uid, @Nullable String value) {
-        EventCaptureFormFragment.getInstance().dataEntryFlowable().onNext(RowAction.create(uid, value));
+        if (value == null || !sectionsToHide.contains(eventCaptureRepository.getSectionFor(uid)))
+            EventCaptureFormFragment.getInstance().dataEntryFlowable().onNext(RowAction.create(uid, value));
     }
 
     @Override
