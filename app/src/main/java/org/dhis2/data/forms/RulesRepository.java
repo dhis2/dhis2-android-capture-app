@@ -532,6 +532,9 @@ public final class RulesRepository {
                 return RuleActionWarningOnCompletion.create(content, data,
                         isEmpty(attribute) ? field : attribute);
             case SHOWERROR:
+                if(content == null && data == null)
+                    content = "This field has an error.";
+
                 return RuleActionShowError.create(content, data,
                         isEmpty(attribute) ? field : attribute);
             case ERRORONCOMPLETE:
