@@ -30,7 +30,7 @@ public class AgeHolder extends FormViewHolder {
         this.binding = binding;
         binding.customAgeview.setAgeChangedListener(ageDate -> {
                     if (ageViewModel.value() == null || !Objects.equals(ageViewModel.value(), ageDate == null ? null : DateUtils.databaseDateFormat().format(ageDate))) {
-                        processor.onNext(RowAction.create(ageViewModel.uid(), ageDate == null ? null : DateUtils.databaseDateFormat().format(ageDate), getAdapterPosition()));
+                        processor.onNext(RowAction.create(ageViewModel.uid(), ageDate == null ? null : DateUtils.uiDateFormat().format(ageDate), getAdapterPosition()));
                         if (!isSearchMode)
                             itemView.setBackgroundColor(Color.WHITE);
                     }

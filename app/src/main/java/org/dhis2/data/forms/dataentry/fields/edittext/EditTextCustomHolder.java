@@ -53,7 +53,7 @@ final class EditTextCustomHolder extends FormViewHolder {
 
         if (currentSelection != null)
             currentSelection.observeForever(fieldUid -> {
-                if (Objects.equals(fieldUid, editTextModel.uid()))
+                if (editTextModel != null && Objects.equals(fieldUid, editTextModel.uid()))
                     itemView.setBackground(AppCompatResources.getDrawable(itemView.getContext(), R.drawable.item_selected_bg));
                 else
                     itemView.setBackgroundColor(Color.WHITE);
