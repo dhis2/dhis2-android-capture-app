@@ -37,8 +37,8 @@ public class OptionSetPopUp extends PopupMenu {
                           OptionSetView optionSetView) {
         super(context, anchor);
         d2 = ((App) context.getApplicationContext()).serverComponent().userManager().getD2();
-        this.optionsToHide = model.getOptionsToHide();
-        this.optionGroupsToHide = model.getOptionGroupsToHide();
+        this.optionsToHide = model.getOptionsToHide() != null ? model.getOptionsToHide() : new ArrayList<>();
+        this.optionGroupsToHide = model.getOptionGroupsToHide() != null ? model.getOptionGroupsToHide() : new ArrayList<>();
         setOnDismissListener(menu -> dismiss());
         setOnMenuItemClickListener(item -> {
             Option selectedOption = optionsMap.get(item.getTitle().toString());
