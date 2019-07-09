@@ -596,6 +596,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     @Override
     public void reopenEvent() {
         if (eventCaptureRepository.reopenEvent()) {
+            currentPosition = 0;
             currentSectionPosition.onNext(0);
             view.showSnackBar(R.string.event_reopened);
             eventStatus = EventStatus.ACTIVE;
