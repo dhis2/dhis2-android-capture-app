@@ -246,14 +246,21 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         presenter.init(this, teiUid, programUid);
     }
 
-   /* @Override
-    public void showCatComboDialog(String eventId, CategoryCombo categoryCombo) {
-        CategoryComboDialog dialog = new CategoryComboDialog(getAbstracContext(), categoryCombo, 123,
-                selectedOption -> presenter.changeCatOption(eventId, selectedOption), categoryCombo.displayName());
-        dialog.setCancelable(false);
-        dialog.setCanceledOnTouchOutside(false);
-        dialog.show();
-    }*/
+    @Override
+    public void handleTEIdeletion() {
+        finish();
+    }
+
+    @Override
+    public void handleEnrollmentDeletion(Boolean hasMoreEnrollments) {
+        if (hasMoreEnrollments) {
+            Bundle bundle = new Bundle();
+            bundle.putString("TEI_UID", teiUid);
+            bundle.putString("PROGRAM_UID", null);
+            startActivity(TeiDashboardMobileActivity.class, bundle, true, false, null);
+        } else
+            finish();
+    }
 
     @Override
     public void setDataWithOutProgram(DashboardProgramModel program) {
@@ -278,18 +285,6 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                     .replace(R.id.tei_main_view, new TEIDataFragment())
                     .commitAllowingStateLoss();
     }
-
-    /*@Override
-    public FragmentStatePagerAdapter getAdapter() {
-        return currentAdapter;
-    }*/
-
-    /*@Override
-    public void showQR() {
-        Intent intent = new Intent(TeiDashboardMobileActivity.this, QrActivity.class);
-        intent.putExtra("TEI_UID", teiUid);
-        startActivity(intent);
-    }*/
 
     @Override
     public void goToEnrollmentList(Bundle extras) {
@@ -518,13 +513,23 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         } catch (Exception e) {
             Timber.e(e);
         }
-        popupMenu.getMenuInflater().inflate(R.menu.home_menu, popupMenu.getMenu());
+        popupMenu.getMenuInflater().inflate(R.menu.dashboard_menu, popupMenu.getMenu());
         popupMenu.setOnMenuItemClickListener(item -> {
-            this.showTutorial = true;
-            showTutorial(true);
-            return false;
+            switch (item.getItemId()) {
+                case R.id.showHelp:
+                    this.showTutorial = true;
+                    showTutorial(true);
+                    break;
+                case R.id.deleteTei:
+                    presenter.deteleteTei();
+                    break;
+                case R.id.deleteEnrollment:
+                    presenter.deleteEnrollment();
+                    break;
+            }
+            return true;
+
         });
         popupMenu.show();
     }
-
 }
