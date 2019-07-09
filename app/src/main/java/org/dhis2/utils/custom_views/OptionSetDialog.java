@@ -13,6 +13,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.jakewharton.rxbinding2.widget.RxTextView;
 
@@ -21,7 +23,7 @@ import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.databinding.DialogOptionSetBinding;
 import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.android.core.common.UidsHelper;
+import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.option.Option;
 import org.hisp.dhis.android.core.option.OptionCollectionRepository;
 import org.jetbrains.annotations.NotNull;
@@ -50,6 +52,8 @@ public class OptionSetDialog extends DialogFragment {
     private OptionSetOnClickListener listener;
     private View.OnClickListener clearListener;
     private D2 d2;
+
+    private boolean isDialogShown = false;
 
     public OptionSetDialog(SpinnerViewModel view, OptionSetOnClickListener optionSetListener,
                            View.OnClickListener clearListener) {
@@ -143,10 +147,19 @@ public class OptionSetDialog extends DialogFragment {
     }
 
     @Override
+    public void show(@NonNull FragmentManager manager, @Nullable String tag) {
+        isDialogShown = true;
+        super.show(manager, tag);
+    }
+
+    @Override
     public void dismiss() {
         disposable.clear();
+        isDialogShown = false;
         super.dismiss();
     }
+
+    public boolean isDialogShown() { return isDialogShown; }
 
     public interface OnOptionSetDialogButtonClickListener {
         void onCancelClick();
