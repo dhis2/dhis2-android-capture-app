@@ -57,11 +57,6 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
         init(context);
     }
 
-    @Override
-    public void performOnFocusAction() {
-        editText.performClick();
-    }
-
     private void setLayout() {
         binding = DataBindingUtil.inflate(inflater, R.layout.time_view, this, true);
         editText = findViewById(R.id.inputEditText);

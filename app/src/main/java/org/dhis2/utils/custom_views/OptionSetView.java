@@ -92,11 +92,6 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
         delete.setVisibility(View.GONE);
     }
 
-    @Override
-    public void performOnFocusAction() {
-        editText.performClick();
-    }
-
     public void setOnSelectedOptionListener(OnSelectedOption listener) {
         this.listener = listener;
     }

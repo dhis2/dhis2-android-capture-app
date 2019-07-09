@@ -41,14 +41,15 @@ final class SyncPresenterImpl implements SyncPresenter {
         boolean limitByProgram = prefs.getBoolean(Constants.LIMIT_BY_PROGRAM, false);
         Completable.fromObservable(d2.trackedEntityModule()
                 .downloadTrackedEntityInstances(teiLimit, limitByOU, limitByProgram)
-                .asObservable()
                 .doOnNext(data -> Timber.d(data.percentage() + "% " + data.doneCalls().size() + "/" + data.totalCalls())))
                 .blockingAwait();
     }
 
     @Override
-    public void syncMetadata(Context context) throws Exception {
-        d2.syncMetaData().call();
+    public void syncMetadata(Context context) {
+        Completable.fromObservable(d2.syncMetaData()
+                .doOnNext(data -> Timber.d(data.percentage() + "% " + data.doneCalls().size() + "/" + data.totalCalls())))
+                .blockingAwait();
     }
 
     @Override

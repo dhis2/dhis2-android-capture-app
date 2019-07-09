@@ -78,9 +78,5 @@ public class CoordinateHolder extends FormViewHolder {
     public void dispose() {
     }
 
-    @Override
-    public void performAction() {
-        itemView.setBackground(AppCompatResources.getDrawable(itemView.getContext(), R.drawable.item_selected_bg));
-        binding.formCoordinates.performOnFocusAction();
-    }
+
 }

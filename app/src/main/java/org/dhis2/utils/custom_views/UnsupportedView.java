@@ -36,9 +36,4 @@ public class UnsupportedView extends FieldLayout {
         binding.formButton.setText(label);
     }
 
-    @Override
-    public void performOnFocusAction() {
-        nextFocus(this);
-    }
-
 }

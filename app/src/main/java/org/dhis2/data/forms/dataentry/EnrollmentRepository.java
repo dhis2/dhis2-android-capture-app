@@ -33,7 +33,7 @@ import io.reactivex.Observable;
 import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
-import static org.hisp.dhis.android.core.utils.StoreUtils.sqLiteBind;
+import static org.hisp.dhis.android.core.arch.db.stores.internal.StoreUtils.sqLiteBind;
 
 final class EnrollmentRepository implements DataEntryRepository {
     private static final String QUERY = "SELECT \n" +

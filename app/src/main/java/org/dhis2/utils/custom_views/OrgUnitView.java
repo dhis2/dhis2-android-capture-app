@@ -98,12 +98,6 @@ public class OrgUnitView extends FieldLayout implements OrgUnitCascadeDialog.Cas
         editText.setOnClickListener(l);
     }
 
-    @Override
-    public void performOnFocusAction() {
-        editText.performClick();
-    }
-
-
     public void setObjectStyle(ObjectStyleModel objectStyle) {
         Bindings.setObjectStyle(iconView, this, objectStyle);
     }

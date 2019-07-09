@@ -1,20 +1,17 @@
 package org.dhis2.data.forms.dataentry;
 
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.databinding.ObservableField;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.MutableLiveData;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView.Adapter;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
-import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
-import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.Row;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.forms.dataentry.fields.age.AgeRow;
@@ -29,7 +26,6 @@ import org.dhis2.data.forms.dataentry.fields.edittext.EditTextModel;
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextRow;
 import org.dhis2.data.forms.dataentry.fields.file.FileRow;
 import org.dhis2.data.forms.dataentry.fields.file.FileViewModel;
-import org.dhis2.data.forms.dataentry.fields.image.ImageHolder;
 import org.dhis2.data.forms.dataentry.fields.image.ImageRow;
 import org.dhis2.data.forms.dataentry.fields.image.ImageViewModel;
 import org.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitRow;
@@ -81,7 +77,7 @@ public final class DataEntryAdapter extends Adapter {
 
     private final FlowableProcessor<Trio<String, String, Integer>> processorOptionSet;
 
-    private String currentFocus;
+    private MutableLiveData<String> currentFocusUid;
 
     private String lastFocusItem;
     private int nextFocusPosition = -1;
@@ -96,8 +92,9 @@ public final class DataEntryAdapter extends Adapter {
         processor = PublishProcessor.create();
         imageSelector = new ObservableField<>("");
         this.processorOptionSet = PublishProcessor.create();
+        this.currentFocusUid = new MutableLiveData<>();
 
-        rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, true, dataEntryArguments.renderType(), false));
+        rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, true, dataEntryArguments.renderType(), false, currentFocusUid));
         rows.add(BUTTON, new FileRow(layoutInflater, processor, true, dataEntryArguments.renderType()));
         rows.add(CHECKBOX, new RadioButtonRow(layoutInflater, processor, true, dataEntryArguments.renderType()));
         rows.add(SPINNER, new SpinnerRow(layoutInflater, processor, processorOptionSet, true, dataEntryArguments.renderType()));
@@ -110,7 +107,7 @@ public final class DataEntryAdapter extends Adapter {
         rows.add(ORG_UNIT, new OrgUnitRow(fragmentManager, layoutInflater, processor, true, dataEntryArguments.renderType()));
         rows.add(IMAGE, new ImageRow(layoutInflater, processor, dataEntryArguments.renderType()));
         rows.add(UNSUPPORTED, new UnsupportedRow(layoutInflater));
-        rows.add(LONG_TEXT, new EditTextRow(layoutInflater, processor, true, dataEntryArguments.renderType(), true));
+        rows.add(LONG_TEXT, new EditTextRow(layoutInflater, processor, true, dataEntryArguments.renderType(), true, currentFocusUid));
         rows.add(DISPLAY, new DisplayRow(layoutInflater));
 
     }
@@ -126,8 +123,9 @@ public final class DataEntryAdapter extends Adapter {
         this.processor = processor;
         imageSelector = new ObservableField<>("");
         this.processorOptionSet = processorOptSet;
+        this.currentFocusUid = new MutableLiveData<>();
 
-        rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, true, dataEntryArguments.renderType(), false));
+        rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, true, dataEntryArguments.renderType(), false, currentFocusUid));
         rows.add(BUTTON, new FileRow(layoutInflater, processor, true, dataEntryArguments.renderType()));
         rows.add(CHECKBOX, new RadioButtonRow(layoutInflater, processor, true, dataEntryArguments.renderType()));
         rows.add(SPINNER, new SpinnerRow(layoutInflater, processor, processorOptionSet, true, dataEntryArguments.renderType()));
@@ -140,7 +138,7 @@ public final class DataEntryAdapter extends Adapter {
         rows.add(ORG_UNIT, new OrgUnitRow(fragmentManager, layoutInflater, processor, true, dataEntryArguments.renderType()));
         rows.add(IMAGE, new ImageRow(layoutInflater, processor, dataEntryArguments.renderType()));
         rows.add(UNSUPPORTED, new UnsupportedRow(layoutInflater));
-        rows.add(LONG_TEXT, new EditTextRow(layoutInflater, processor, true, dataEntryArguments.renderType(), true));
+        rows.add(LONG_TEXT, new EditTextRow(layoutInflater, processor, true, dataEntryArguments.renderType(), true, currentFocusUid));
         rows.add(DISPLAY, new DisplayRow(layoutInflater));
 
     }
@@ -159,14 +157,14 @@ public final class DataEntryAdapter extends Adapter {
         rows.get(holder.getItemViewType()).onBind(holder,
                 viewModels.get(holder.getAdapterPosition()));
 
-        if (position != 0 && position == nextFocusPosition && lastFocusPosition != nextFocusPosition && holder instanceof FormViewHolder) {
+     /*   if (position != 0 && position == nextFocusPosition && lastFocusPosition != nextFocusPosition && holder instanceof FormViewHolder) {
             lastFocusPosition = position;
             ((FormViewHolder) holder).performAction();
             if (!(holder instanceof ImageHolder))
                 holder.itemView.setBackground(AppCompatResources.getDrawable(holder.itemView.getContext(), R.drawable.item_selected_bg));
         } else if (!(holder instanceof ImageHolder)) {
             holder.itemView.setBackgroundColor(Color.WHITE);
-        }
+        }*/
 
     }
 

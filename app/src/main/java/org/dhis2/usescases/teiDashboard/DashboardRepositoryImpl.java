@@ -55,7 +55,7 @@ import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
 
-import static org.hisp.dhis.android.core.utils.StoreUtils.sqLiteBind;
+import static org.hisp.dhis.android.core.arch.db.stores.internal.StoreUtils.sqLiteBind;
 
 /**
  * QUADRAM. Created by ppajuelo on 30/11/2017.

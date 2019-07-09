@@ -75,13 +75,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getContext());
     }
 
-    @Override
-    public void performOnFocusAction() {
-        latitude.requestFocus();
-    }
-
-
-    private void setLayout() {
+     private void setLayout() {
         if (isBgTransparent)
             binding = DataBindingUtil.inflate(inflater, R.layout.form_coordinates, this, true);
         else
@@ -173,7 +167,6 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
             errorView.setText(msg);
             errorView.setVisibility(VISIBLE);
             clearValueData();
-            performOnFocusAction();
         } else
             errorView.setVisibility(GONE);
     }

@@ -1,20 +1,17 @@
 package org.dhis2.usescases.teiDashboard.eventDetail;
 
+import androidx.databinding.BaseObservable;
+
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.utils.DateUtils;
-import org.hisp.dhis.android.core.category.CategoryOptionCombo;
-import org.hisp.dhis.android.core.category.CategoryOptionComboEntityDIModule;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
 
-
 import java.util.Date;
 import java.util.List;
-
-import androidx.databinding.BaseObservable;
 
 /**
  * QUADRAM. Created by Cristian on 08/02/2018.
