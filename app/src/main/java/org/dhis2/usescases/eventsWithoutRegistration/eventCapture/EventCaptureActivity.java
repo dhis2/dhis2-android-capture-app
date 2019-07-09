@@ -328,7 +328,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                 new DialogClickListener() {
                     @Override
                     public void onPositive() {
-                        showCompleteActions(false);
+                        finishDataEntry();
                     }
 
                     @Override
