@@ -77,6 +77,7 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
                     binding.optionSetView,
                     (view) -> binding.optionSetView.deleteSelectedOption()
             );
+            if (dialog.isDialogShown()) { dialog.dismiss(); }
             dialog.show(((FragmentActivity) binding.getRoot().getContext()).getSupportFragmentManager(), OptionSetDialog.TAG);
         } else
             new OptionSetPopUp(itemView.getContext(), v, viewModel,
