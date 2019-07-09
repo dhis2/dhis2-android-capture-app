@@ -485,5 +485,9 @@
     <string name="sync_setting">Synchronization setting: %s</string>
     <string name="relationship_without_enrollment">The record you are trying to access has no enrollment. You can\'t access the dashboard.</string>
     <string name="formatting_error">Formatting error</string>
+    <string name="dashboard_menu_delete_tei">Delete TEI</string>
+    <string name="dashboard_menu_delete_enrollment">Delete enrollment only</string>
+    <string name="delete_authority_error">You do not have the authority to delete this record</string>
+    <string name="record_marked_for_deletion">This record is marked for deletion. You can\'t access it.</string>
 
 </resources>

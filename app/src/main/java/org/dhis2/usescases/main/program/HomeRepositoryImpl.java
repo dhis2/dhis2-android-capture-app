@@ -7,6 +7,8 @@ import com.squareup.sqlbrite2.BriteDatabase;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
 import org.hisp.dhis.android.core.common.State;
+import org.hisp.dhis.android.core.enrollment.Enrollment;
+import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.period.DatePeriod;
 
@@ -102,23 +104,39 @@ class HomeRepositoryImpl implements HomeRepository {
                         List<String> programUids = new ArrayList<>();
                         programUids.add(program.uid());
                         if (!dateFilter.isEmpty()) {
+                            List<Enrollment> enrollments;
                             if (!orgUnitFilter.isEmpty()) {
-                                count = d2.trackedEntityModule().trackedEntityInstances
-                                        .byProgramUids(programUids)
-                                        .byLastUpdated().inDatePeriods(dateFilter)
-                                        .byOrganisationUnitUid().in(orgUnitFilter).count();
+                                enrollments = d2.enrollmentModule().enrollments
+                                        .byProgram().in(programUids)
+                                        .byEnrollmentDate().inDatePeriods(dateFilter)
+                                        .byOrganisationUnit().in(orgUnitFilter)
+                                        .byStatus().eq(EnrollmentStatus.ACTIVE)
+                                        .byState().notIn(State.TO_DELETE)
+                                        .get();
                             } else {
-                                count = d2.trackedEntityModule().trackedEntityInstances
-                                        .byProgramUids(programUids)
-                                        .byLastUpdated().inDatePeriods(dateFilter).count();
+                                enrollments = d2.enrollmentModule().enrollments
+                                        .byProgram().in(programUids)
+                                        .byEnrollmentDate().inDatePeriods(dateFilter)
+                                        .byStatus().eq(EnrollmentStatus.ACTIVE)
+                                        .byState().notIn(State.TO_DELETE)
+                                        .get();
                             }
+                            count = countEnrollment(enrollments);
                         } else if (!orgUnitFilter.isEmpty()) {
-                            count = d2.trackedEntityModule().trackedEntityInstances
-                                    .byProgramUids(programUids)
-                                    .byOrganisationUnitUid().in(orgUnitFilter).count();
+                            List<Enrollment> enrollments = d2.enrollmentModule().enrollments
+                                    .byProgram().in(programUids)
+                                    .byOrganisationUnit().in(orgUnitFilter)
+                                    .byStatus().eq(EnrollmentStatus.ACTIVE)
+                                    .byState().notIn(State.TO_DELETE)
+                                    .get();
+                            count = countEnrollment(enrollments);
                         } else {
-                            count = d2.trackedEntityModule().trackedEntityInstances
-                                    .byProgramUids(programUids).count();
+                            List<Enrollment> enrollments = d2.enrollmentModule().enrollments
+                                    .byProgram().in(programUids)
+                                    .byStatus().eq(EnrollmentStatus.ACTIVE)
+                                    .byState().notIn(State.TO_DELETE)
+                                    .get();
+                            count = countEnrollment(enrollments);
                         }
 
                         if (!d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().in(State.ERROR, State.WARNING).get().isEmpty())
@@ -145,6 +163,16 @@ class HomeRepositoryImpl implements HomeRepository {
                             state.name()
                     );
                 }).toList().toFlowable();
+    }
+
+    private int countEnrollment(List<Enrollment> enrollments) {
+        List<String> teiUids = new ArrayList<>();
+        for (Enrollment enrollment : enrollments) {
+            if (!teiUids.contains(enrollment.trackedEntityInstance()))
+                teiUids.add(enrollment.trackedEntityInstance());
+
+        }
+        return teiUids.size();
     }
 
     @NonNull
