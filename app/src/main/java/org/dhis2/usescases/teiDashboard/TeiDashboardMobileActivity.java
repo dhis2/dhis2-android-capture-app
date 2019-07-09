@@ -518,7 +518,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             switch (item.getItemId()) {
                 case R.id.showHelp:
                     this.showTutorial = true;
-                    setTutorial();
+                    showTutorial(true);
                     break;
                 case R.id.deleteTei:
                     presenter.deteleteTei();
