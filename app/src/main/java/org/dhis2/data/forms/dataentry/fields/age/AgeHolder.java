@@ -2,9 +2,8 @@ package org.dhis2.data.forms.dataentry.fields.age;
 
 import android.graphics.Color;
 
-import androidx.appcompat.content.res.AppCompatResources;
+import androidx.lifecycle.MutableLiveData;
 
-import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.FormAgeCustomBinding;
@@ -25,9 +24,11 @@ public class AgeHolder extends FormViewHolder {
     private FormAgeCustomBinding binding;
     private AgeViewModel ageViewModel;
 
-    AgeHolder(FormAgeCustomBinding binding, FlowableProcessor<RowAction> processor, boolean isSearchMode) {
+    AgeHolder(FormAgeCustomBinding binding, FlowableProcessor<RowAction> processor, boolean isSearchMode, MutableLiveData<String> currentSelection) {
         super(binding);
         this.binding = binding;
+        this.currentUid = currentSelection;
+
         binding.customAgeview.setAgeChangedListener(ageDate -> {
                     if (ageViewModel.value() == null || !Objects.equals(ageViewModel.value(), ageDate == null ? null : DateUtils.databaseDateFormat().format(ageDate))) {
                         processor.onNext(RowAction.create(ageViewModel.uid(), ageDate == null ? null : DateUtils.databaseDateFormat().format(ageDate), getAdapterPosition()));
@@ -37,11 +38,14 @@ public class AgeHolder extends FormViewHolder {
                 }
         );
 
+        binding.customAgeview.setActivationListener(() -> setSelectedBackground(isSearchMode));
+
     }
 
 
     public void update(AgeViewModel ageViewModel) {
         this.ageViewModel = ageViewModel;
+        fieldUid = ageViewModel.uid();
 
         descriptionText = ageViewModel.description();
         label = new StringBuilder(ageViewModel.label());
@@ -61,6 +65,8 @@ public class AgeHolder extends FormViewHolder {
         binding.customAgeview.setEditable(ageViewModel.editable());
 
         binding.executePendingBindings();
+
+        initFieldFocus();
 
     }
 

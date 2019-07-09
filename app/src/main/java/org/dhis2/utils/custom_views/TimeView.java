@@ -122,6 +122,7 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
 
     @Override
     public void onClick(View view) {
+        activate();
         final Calendar c = Calendar.getInstance();
         if (date != null)
             c.setTime(date);

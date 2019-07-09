@@ -80,8 +80,8 @@ public final class DataEntryAdapter extends Adapter {
     private MutableLiveData<String> currentFocusUid;
 
     private String lastFocusItem;
+    private String nextFocusUid;
     private int nextFocusPosition = -1;
-    private int lastFocusPosition = -1;
 
     public DataEntryAdapter(@NonNull LayoutInflater layoutInflater,
                             @NonNull FragmentManager fragmentManager,
@@ -95,16 +95,16 @@ public final class DataEntryAdapter extends Adapter {
         this.currentFocusUid = new MutableLiveData<>();
 
         rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, true, dataEntryArguments.renderType(), false, currentFocusUid));
-        rows.add(BUTTON, new FileRow(layoutInflater, processor, true, dataEntryArguments.renderType()));
-        rows.add(CHECKBOX, new RadioButtonRow(layoutInflater, processor, true, dataEntryArguments.renderType()));
-        rows.add(SPINNER, new SpinnerRow(layoutInflater, processor, processorOptionSet, true, dataEntryArguments.renderType()));
-        rows.add(COORDINATES, new CoordinateRow(layoutInflater, processor, true, dataEntryArguments.renderType()));
-        rows.add(TIME, new DateTimeRow(layoutInflater, processor, TIME, true, dataEntryArguments.renderType()));
-        rows.add(DATE, new DateTimeRow(layoutInflater, processor, DATE, true, dataEntryArguments.renderType()));
-        rows.add(DATETIME, new DateTimeRow(layoutInflater, processor, DATETIME, true, dataEntryArguments.renderType()));
-        rows.add(AGEVIEW, new AgeRow(layoutInflater, processor, true, dataEntryArguments.renderType()));
-        rows.add(YES_NO, new RadioButtonRow(layoutInflater, processor, true, dataEntryArguments.renderType()));
-        rows.add(ORG_UNIT, new OrgUnitRow(fragmentManager, layoutInflater, processor, true, dataEntryArguments.renderType()));
+        rows.add(BUTTON, new FileRow(layoutInflater, processor, true, dataEntryArguments.renderType(), currentFocusUid));
+        rows.add(CHECKBOX, new RadioButtonRow(layoutInflater, processor, true, dataEntryArguments.renderType(), currentFocusUid));
+        rows.add(SPINNER, new SpinnerRow(layoutInflater, processor, processorOptionSet, true, dataEntryArguments.renderType(), currentFocusUid));
+        rows.add(COORDINATES, new CoordinateRow(layoutInflater, processor, true, dataEntryArguments.renderType(), currentFocusUid));
+        rows.add(TIME, new DateTimeRow(layoutInflater, processor, TIME, true, dataEntryArguments.renderType(), currentFocusUid));
+        rows.add(DATE, new DateTimeRow(layoutInflater, processor, DATE, true, dataEntryArguments.renderType(), currentFocusUid));
+        rows.add(DATETIME, new DateTimeRow(layoutInflater, processor, DATETIME, true, dataEntryArguments.renderType(), currentFocusUid));
+        rows.add(AGEVIEW, new AgeRow(layoutInflater, processor, true, dataEntryArguments.renderType(), currentFocusUid));
+        rows.add(YES_NO, new RadioButtonRow(layoutInflater, processor, true, dataEntryArguments.renderType(), currentFocusUid));
+        rows.add(ORG_UNIT, new OrgUnitRow(fragmentManager, layoutInflater, processor, true, dataEntryArguments.renderType(), currentFocusUid));
         rows.add(IMAGE, new ImageRow(layoutInflater, processor, dataEntryArguments.renderType()));
         rows.add(UNSUPPORTED, new UnsupportedRow(layoutInflater));
         rows.add(LONG_TEXT, new EditTextRow(layoutInflater, processor, true, dataEntryArguments.renderType(), true, currentFocusUid));
@@ -126,16 +126,16 @@ public final class DataEntryAdapter extends Adapter {
         this.currentFocusUid = new MutableLiveData<>();
 
         rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, true, dataEntryArguments.renderType(), false, currentFocusUid));
-        rows.add(BUTTON, new FileRow(layoutInflater, processor, true, dataEntryArguments.renderType()));
-        rows.add(CHECKBOX, new RadioButtonRow(layoutInflater, processor, true, dataEntryArguments.renderType()));
-        rows.add(SPINNER, new SpinnerRow(layoutInflater, processor, processorOptionSet, true, dataEntryArguments.renderType()));
-        rows.add(COORDINATES, new CoordinateRow(layoutInflater, processor, true, dataEntryArguments.renderType()));
-        rows.add(TIME, new DateTimeRow(layoutInflater, processor, TIME, true, dataEntryArguments.renderType()));
-        rows.add(DATE, new DateTimeRow(layoutInflater, processor, DATE, true, dataEntryArguments.renderType()));
-        rows.add(DATETIME, new DateTimeRow(layoutInflater, processor, DATETIME, true, dataEntryArguments.renderType()));
-        rows.add(AGEVIEW, new AgeRow(layoutInflater, processor, true, dataEntryArguments.renderType()));
-        rows.add(YES_NO, new RadioButtonRow(layoutInflater, processor, true, dataEntryArguments.renderType()));
-        rows.add(ORG_UNIT, new OrgUnitRow(fragmentManager, layoutInflater, processor, true, dataEntryArguments.renderType()));
+        rows.add(BUTTON, new FileRow(layoutInflater, processor, true, dataEntryArguments.renderType(), currentFocusUid));
+        rows.add(CHECKBOX, new RadioButtonRow(layoutInflater, processor, true, dataEntryArguments.renderType(), currentFocusUid));
+        rows.add(SPINNER, new SpinnerRow(layoutInflater, processor, processorOptionSet, true, dataEntryArguments.renderType(), currentFocusUid));
+        rows.add(COORDINATES, new CoordinateRow(layoutInflater, processor, true, dataEntryArguments.renderType(), currentFocusUid));
+        rows.add(TIME, new DateTimeRow(layoutInflater, processor, TIME, true, dataEntryArguments.renderType(), currentFocusUid));
+        rows.add(DATE, new DateTimeRow(layoutInflater, processor, DATE, true, dataEntryArguments.renderType(), currentFocusUid));
+        rows.add(DATETIME, new DateTimeRow(layoutInflater, processor, DATETIME, true, dataEntryArguments.renderType(), currentFocusUid));
+        rows.add(AGEVIEW, new AgeRow(layoutInflater, processor, true, dataEntryArguments.renderType(), currentFocusUid));
+        rows.add(YES_NO, new RadioButtonRow(layoutInflater, processor, true, dataEntryArguments.renderType(), currentFocusUid));
+        rows.add(ORG_UNIT, new OrgUnitRow(fragmentManager, layoutInflater, processor, true, dataEntryArguments.renderType(), currentFocusUid));
         rows.add(IMAGE, new ImageRow(layoutInflater, processor, dataEntryArguments.renderType()));
         rows.add(UNSUPPORTED, new UnsupportedRow(layoutInflater));
         rows.add(LONG_TEXT, new EditTextRow(layoutInflater, processor, true, dataEntryArguments.renderType(), true, currentFocusUid));
@@ -231,21 +231,30 @@ public final class DataEntryAdapter extends Adapter {
         viewModels.clear();
         viewModels.addAll(updates);
 
+        int currentFocusPosition = -1;
+        int lastFocusPosition = -1;
+
         if (lastFocusItem != null) {
             nextFocusPosition = -1;
             for (int i = 0; i < updates.size(); i++) {
-                if (updates.get(i).uid().equals(lastFocusItem))
+                if (updates.get(i).uid().equals(lastFocusItem)) {
+                    lastFocusPosition = i;
                     nextFocusPosition = i + 1;
+                }
                 if (i == nextFocusPosition && !updates.get(i).editable()) {
                     nextFocusPosition++;
                 }
+                if (updates.get(i).uid().equals(currentFocusUid.getValue()))
+                    currentFocusPosition = i;
             }
         }
 
         diffResult.dispatchUpdatesTo(this);
 
-        if (nextFocusPosition != -1)
-            notifyItemChanged(nextFocusPosition);
+        if (nextFocusPosition != -1 && currentFocusPosition == lastFocusPosition && nextFocusPosition < viewModels.size())
+            currentFocusUid.setValue(viewModels.get(nextFocusPosition).uid());
+        else if (currentFocusPosition != -1 && currentFocusPosition < viewModels.size())
+            currentFocusUid.setValue(viewModels.get(currentFocusPosition).uid());
     }
 
     public void swapWithoutList() {
@@ -262,7 +271,7 @@ public final class DataEntryAdapter extends Adapter {
         }
 
         if (nextFocusPosition != -1)
-            notifyItemChanged(nextFocusPosition);
+            currentFocusUid.setValue(viewModels.get(nextFocusPosition).uid());
     }
 
     public boolean mandatoryOk() {
@@ -304,6 +313,7 @@ public final class DataEntryAdapter extends Adapter {
     }
 
     public void setLastFocusItem(String lastFocusItem) {
+        currentFocusUid.setValue(lastFocusItem);
         this.nextFocusPosition = -1;
         this.lastFocusItem = lastFocusItem;
     }
