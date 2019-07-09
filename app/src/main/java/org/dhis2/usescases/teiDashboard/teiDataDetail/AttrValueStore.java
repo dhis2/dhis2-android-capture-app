@@ -19,7 +19,7 @@ import androidx.annotation.Nullable;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 
-import static org.hisp.dhis.android.core.utils.StoreUtils.sqLiteBind;
+import static org.hisp.dhis.android.core.arch.db.stores.internal.StoreUtils.sqLiteBind;
 
 public final class AttrValueStore implements AttrEntryStore {
     private static final String UPDATE = "UPDATE TrackedEntityAttributeValue\n" +

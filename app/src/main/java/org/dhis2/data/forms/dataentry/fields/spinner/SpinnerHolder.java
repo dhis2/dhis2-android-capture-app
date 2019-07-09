@@ -23,15 +23,12 @@ import io.reactivex.processors.FlowableProcessor;
 public class SpinnerHolder extends FormViewHolder implements View.OnClickListener {
 
     private FormOptionSetBinding binding;
-    private final FlowableProcessor<Trio<String, String, Integer>> processorOptionSet;
 
     private SpinnerViewModel viewModel;
 
-    SpinnerHolder(FormOptionSetBinding binding, FlowableProcessor<RowAction> processor, FlowableProcessor<Trio<String, String, Integer>> processorOptionSet, boolean isSearchMode) {
+    SpinnerHolder(FormOptionSetBinding binding, FlowableProcessor<RowAction> processor, boolean isSearchMode) {
         super(binding);
         this.binding = binding;
-
-        this.processorOptionSet = processorOptionSet;
 
         binding.optionSetView.setOnSelectedOptionListener((optionName, optionCode) -> {
             processor.onNext(
@@ -61,12 +58,6 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
     }
 
     public void dispose() {
-    }
-
-    @Override
-    public void performAction() {
-        itemView.setBackground(AppCompatResources.getDrawable(itemView.getContext(), R.drawable.item_selected_bg));
-        binding.optionSetView.performOnFocusAction();
     }
 
     @Override

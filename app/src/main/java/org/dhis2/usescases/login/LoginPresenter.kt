@@ -107,7 +107,7 @@ class LoginPresenter internal constructor(private val configurationRepository: C
     }
 
     override fun logIn(serverUrl: String, userName: String, pass: String) {
-        val baseUrl = HttpUrl.parse(canonizeUrl(serverUrl+"/api")) ?: return
+        val baseUrl = HttpUrl.parse(canonizeUrl(serverUrl + "/api")) ?: return
         disposable.add(
                 configurationRepository.configure(baseUrl)
                         .map { config -> (view.abstractActivity.applicationContext as App).createServerComponent(config).userManager() }
@@ -160,11 +160,11 @@ class LoginPresenter internal constructor(private val configurationRepository: C
 
     override fun logOut() {
         userManager?.let {
-            disposable.add(Observable.fromCallable<org.hisp.dhis.android.core.common.Unit>(it.d2.userModule().logOut())
+            disposable.add(it.d2.userModule().logOut()
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
-                            { data ->
+                            {
                                 val prefs = view.abstracContext.sharedPreferences
                                 prefs.edit().putBoolean("SessionLocked", false).apply()
                                 view.handleLogout()
@@ -191,7 +191,7 @@ class LoginPresenter internal constructor(private val configurationRepository: C
             prefs.edit().putString("pin", null).apply()
             view.alreadyAuthenticated()
 //            handleResponse(Response.success<Any>(null))
-        }else
+        } else
             view.renderError(throwable)
         view.showLoginProgress(false)
     }

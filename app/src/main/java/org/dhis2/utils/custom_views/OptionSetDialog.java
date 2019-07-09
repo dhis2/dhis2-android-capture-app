@@ -21,7 +21,7 @@ import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.databinding.DialogOptionSetBinding;
 import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.android.core.common.UidsHelper;
+import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.option.Option;
 import org.hisp.dhis.android.core.option.OptionCollectionRepository;
 import org.jetbrains.annotations.NotNull;

@@ -51,12 +51,6 @@ public class YesNoView extends FieldLayout implements RadioGroup.OnCheckedChange
     public void init(Context context) {
         super.init(context);
     }
-
-    @Override
-    public void performOnFocusAction() {
-        //no action to perform
-    }
-
     public void setValueType(ValueType valueType) {
 
         if (valueType == ValueType.TRUE_ONLY)
