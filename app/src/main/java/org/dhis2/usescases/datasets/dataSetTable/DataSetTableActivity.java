@@ -226,6 +226,9 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
     @Override
     public void runSmsSubmission() {
+        if (!getResources().getBoolean(R.bool.sms_enabled)) {
+            return;
+        }
         Intent intent = new Intent(this, SmsSubmitActivity.class);
         Bundle args = new Bundle();
         InputArguments.setDataSet(args, dataSetUid, orgUnitUid, periodId, catOptCombo);

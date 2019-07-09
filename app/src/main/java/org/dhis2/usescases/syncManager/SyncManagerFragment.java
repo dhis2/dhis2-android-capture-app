@@ -14,7 +14,6 @@ import android.text.style.ImageSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 
@@ -200,6 +199,9 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                         value -> presenter.smsWaitForResponseTimeout(Integer.valueOf(value.toString())),
                         Timber::d
                 ));
+        if (!getResources().getBoolean(R.bool.sms_enabled)) {
+            binding.settingsSms.setVisibility(View.GONE);
+        }
 
         binding.limitByOrgUnit.setOnCheckedChangeListener((buttonView, isChecked) -> prefs.edit().putBoolean(Constants.LIMIT_BY_ORG_UNIT, isChecked).apply());
         binding.limitByProgram.setOnCheckedChangeListener((buttonView, isChecked) -> prefs.edit().putBoolean(Constants.LIMIT_BY_PROGRAM, isChecked).apply());
@@ -279,7 +281,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
             binding.syncDataLayout.message.setTextColor(ContextCompat.getColor(getContext(), R.color.red_060));
 
         } else if (presenter.dataHasWarnings()) {
-            String src =dataSyncSetting().concat("\n").concat(getString(R.string.data_sync_warning));
+            String src = dataSyncSetting().concat("\n").concat(getString(R.string.data_sync_warning));
             SpannableString str = new SpannableString(src);
             int wIndex = src.indexOf('@');
             str.setSpan(new ImageSpan(getContext(), R.drawable.ic_sync_warning), wIndex, wIndex + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);

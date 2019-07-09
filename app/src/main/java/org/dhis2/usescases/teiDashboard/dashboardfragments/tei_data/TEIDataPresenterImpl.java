@@ -178,7 +178,9 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
         PopupMenu menu = new PopupMenu(view.getContext(), mView);
 
         menu.getMenu().add(Menu.NONE, Menu.NONE, 0, "QR");
-        menu.getMenu().add(Menu.NONE, Menu.NONE, 1, "SMS");
+        if (mView.getResources().getBoolean(R.bool.sms_enabled)) {
+            menu.getMenu().add(Menu.NONE, Menu.NONE, 1, "SMS");
+        }
         //menu.getMenu().add(Menu.NONE, Menu.NONE, 2, "NFC");
 
         menu.setOnMenuItemClickListener(item -> {

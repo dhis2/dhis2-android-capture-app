@@ -10,6 +10,8 @@ public class InputArguments {
     private static String ARG_PERIOD = "period";
     private static String ARG_ATTRIBUTE = "attribute";
     private static String ARG_DATA_SET = "dataset";
+    private static String ARG_RELATIONSHIP = "relationship";
+    private static String ARG_DELETION = "deletion";
 
     private String simpleEventId;
     private String trackerEventId;
@@ -18,6 +20,8 @@ public class InputArguments {
     private String period;
     private String attributeOptionCombo;
     private String dataSet;
+    private String relationship;
+    private String deletion;
 
     public InputArguments(Bundle extras) {
         if (extras == null) {
@@ -30,6 +34,8 @@ public class InputArguments {
         period = extras.getString(ARG_PERIOD);
         attributeOptionCombo = extras.getString(ARG_ATTRIBUTE);
         dataSet = extras.getString(ARG_DATA_SET);
+        relationship = extras.getString(ARG_RELATIONSHIP);
+        deletion = extras.getString(ARG_DELETION);
     }
 
     public static void setTrackerEventData(Bundle args, String eventId) {
@@ -49,6 +55,14 @@ public class InputArguments {
         args.putString(ARG_PERIOD, period);
         args.putString(ARG_ATTRIBUTE, attributeOptionCombo);
         args.putString(ARG_DATA_SET, dataSet);
+    }
+
+    public static void setRelationship(Bundle args, String relationship) {
+        args.putString(ARG_RELATIONSHIP, relationship);
+    }
+
+    public static void setDeletion(Bundle args, String deletion) {
+        args.putString(ARG_DELETION, deletion);
     }
 
     public String getSimpleEventId() {
@@ -79,6 +93,14 @@ public class InputArguments {
         return dataSet;
     }
 
+    public String getRelationship() {
+        return relationship;
+    }
+
+    public String getDeletion() {
+        return deletion;
+    }
+
     public Type getSubmissionType() {
         if (enrollmentId != null && enrollmentId.length() > 0) {
             return Type.ENROLLMENT;
@@ -91,6 +113,10 @@ public class InputArguments {
                 attributeOptionCombo != null && attributeOptionCombo.length() > 0 &&
                 dataSet != null && dataSet.length() > 0) {
             return Type.DATA_SET;
+        } else if (relationship != null && relationship.length() > 0) {
+            return Type.RELATIONSHIP;
+        } else if (deletion != null && deletion.length() > 0) {
+            return Type.DELETION;
         }
         return Type.WRONG_PARAMS;
     }
@@ -106,6 +132,12 @@ public class InputArguments {
                 return trackerEventId.equals(second.trackerEventId);
             case SIMPLE_EVENT:
                 return simpleEventId.equals(second.simpleEventId);
+            case DATA_SET:
+                return dataSet.equals(second.dataSet) && period.equals(second.period);
+            case DELETION:
+                return deletion.equals(second.deletion);
+            case RELATIONSHIP:
+                return relationship.equals(second.relationship);
             case WRONG_PARAMS:
                 return true;
         }
@@ -113,6 +145,6 @@ public class InputArguments {
     }
 
     public enum Type {
-        ENROLLMENT, TRACKER_EVENT, SIMPLE_EVENT, DATA_SET, WRONG_PARAMS
+        ENROLLMENT, TRACKER_EVENT, SIMPLE_EVENT, DATA_SET, DELETION, RELATIONSHIP, WRONG_PARAMS
     }
 }

@@ -139,6 +139,10 @@ public class SmsSendingService extends Service {
                 return smsSender.convertTrackerEvent(inputArguments.getTrackerEventId());
             case SIMPLE_EVENT:
                 return smsSender.convertSimpleEvent(inputArguments.getSimpleEventId());
+            case DELETION:
+                return smsSender.convertDeletion(inputArguments.getDeletion());
+            case RELATIONSHIP:
+                return smsSender.convertRelationship(inputArguments.getRelationship());
             case DATA_SET:
                 return smsSender.convertDataSet(
                         inputArguments.getDataSet(),

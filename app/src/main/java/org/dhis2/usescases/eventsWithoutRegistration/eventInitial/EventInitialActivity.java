@@ -863,6 +863,9 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void runSmsSubmission() {
+        if(!getResources().getBoolean(R.bool.sms_enabled)) {
+            return;
+        }
         if (eventModel == null) {
             Timber.tag(EventInitialActivity.class.getSimpleName()).e("Pressed share button while event not loaded yet");
             return;
