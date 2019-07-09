@@ -488,7 +488,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
             } else if (!this.errors.isEmpty()) {
                 view.setShowError(errors);
             } else if (!emptyMandatoryFields.isEmpty()) {
-                view.finishDataEntry();
+                view.showCompleteActions(false);
             } else {
                 compositeDisposable.add(
                         Observable.just(completeMessage != null ? completeMessage : "")
