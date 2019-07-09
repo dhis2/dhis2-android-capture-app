@@ -3,14 +3,14 @@ package org.dhis2.usescases.searchTrackEntity.adapters;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import org.dhis2.R;
-import org.dhis2.databinding.ItemSearchTrackedEntityBinding;
-import org.dhis2.usescases.searchTrackEntity.SearchTEContractsModule;
-
 import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
 import androidx.paging.PagedListAdapter;
 import androidx.recyclerview.widget.DiffUtil;
+
+import org.dhis2.R;
+import org.dhis2.databinding.ItemSearchTrackedEntityBinding;
+import org.dhis2.usescases.searchTrackEntity.SearchTEContractsModule;
 
 /**
  * Created by frodriguez on 4/12/2019.

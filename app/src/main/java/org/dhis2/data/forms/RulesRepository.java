@@ -413,69 +413,6 @@ public final class RulesRepository {
     }
 
     @NonNull
-    private static RuleVariable mapToRuleVariable(@NonNull Cursor cursor) {
-        String name = cursor.getString(0);
-        String stage = cursor.getString(1);
-        String sourceType = cursor.getString(2);
-        String dataElement = cursor.getString(3);
-        String attribute = cursor.getString(4);
-
-        // Mime types of the attribute and data element.
-        String attributeType = cursor.getString(6);
-        String elementType = cursor.getString(5);
-
-        // String representation of value type.
-        RuleValueType mimeType = null;
-
-        switch (ProgramRuleVariableSourceType.valueOf(sourceType)) {
-            case TEI_ATTRIBUTE:
-                if (!isEmpty(attributeType))
-                    mimeType = convertType(attributeType);
-                break;
-            case DATAELEMENT_CURRENT_EVENT:
-            case DATAELEMENT_PREVIOUS_EVENT:
-            case DATAELEMENT_NEWEST_EVENT_PROGRAM:
-            case DATAELEMENT_NEWEST_EVENT_PROGRAM_STAGE:
-                if (!isEmpty(elementType))
-                    mimeType = convertType(elementType);
-                break;
-            default:
-                break;
-        }
-      /*
-        if (!isEmpty(attributeType)) {
-            mimeType = convertType(attributeType);
-        } else if (!isEmpty(elementType)) {
-            mimeType = convertType(elementType);
-        }*/
-
-        if (mimeType == null) {
-            mimeType = RuleValueType.TEXT;
-        }
-
-        switch (ProgramRuleVariableSourceType.valueOf(sourceType)) {
-            case TEI_ATTRIBUTE:
-                return RuleVariableAttribute.create(name, attribute == null ? "" : attribute, mimeType);
-            case DATAELEMENT_CURRENT_EVENT:
-                return RuleVariableCurrentEvent.create(name, dataElement, mimeType);
-            case DATAELEMENT_NEWEST_EVENT_PROGRAM:
-                return RuleVariableNewestEvent.create(name, dataElement, mimeType);
-            case DATAELEMENT_NEWEST_EVENT_PROGRAM_STAGE:
-                if (stage == null)
-                    stage = "";
-                return RuleVariableNewestStageEvent.create(name, dataElement, stage, mimeType);
-            case DATAELEMENT_PREVIOUS_EVENT:
-                return RuleVariablePreviousEvent.create(name, dataElement, mimeType);
-            case CALCULATED_VALUE:
-                String variable = dataElement != null ? dataElement : attribute;
-                return RuleVariableCalculatedValue.create(name, variable != null ? variable : "", mimeType);
-            default:
-                throw new IllegalArgumentException("Unsupported variable " +
-                        "source type: " + sourceType);
-        }
-    }
-
-    @NonNull
     private static RuleVariable mapToRuleVariableProgramStages(@NonNull Cursor cursor) {
         String name = cursor.getString(0);
         String stage = cursor.getString(1);
@@ -593,9 +530,8 @@ public final class RulesRepository {
                 return RuleActionWarningOnCompletion.create(content, data,
                         isEmpty(attribute) ? field : attribute);
             case SHOWERROR:
-                if(content == null && data == null)
+                if (content == null && data == null)
                     content = "This field has an error.";
-
                 return RuleActionShowError.create(content, data,
                         isEmpty(attribute) ? field : attribute);
             case ERRORONCOMPLETE:
