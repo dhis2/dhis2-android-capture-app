@@ -42,20 +42,10 @@ public abstract class FieldLayout extends RelativeLayout {
         inflater = LayoutInflater.from(context);
     }
 
-    public abstract void performOnFocusAction();
-
     @Override
     protected void onFocusChanged(boolean gainFocus, int direction, @Nullable Rect previouslyFocusedRect) {
         super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
-       /* if(gainFocus)
-            performOnFocusAction();*/
-       /* if (gainFocus) {
-            setBackgroundColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY_LIGHT));
-            performOnFocusAction();
-        } else if (isBgTransparent) {
-            setBackgroundColor(0x00000000);
-        } else
-            setBackgroundColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY));*/
+
     }
 
     public void nextFocus(View view) {

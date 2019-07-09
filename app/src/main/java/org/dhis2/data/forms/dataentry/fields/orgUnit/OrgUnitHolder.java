@@ -39,12 +39,6 @@ public class OrgUnitHolder extends FormViewHolder {
         compositeDisposable.clear();
     }
 
-    @Override
-    public void performAction() {
-        itemView.setBackground(AppCompatResources.getDrawable(itemView.getContext(), R.drawable.item_selected_bg));
-        binding.orgUnitView.performOnFocusAction();
-    }
-
     public void update(OrgUnitViewModel viewModel) {
         this.model = viewModel;
         String uid_value_name = viewModel.value();

@@ -68,10 +68,4 @@ public class AgeHolder extends FormViewHolder {
     public void dispose() {
 //        disposable.clear();
     }
-
-    @Override
-    public void performAction() {
-        itemView.setBackground(AppCompatResources.getDrawable(itemView.getContext(), R.drawable.item_selected_bg));
-        binding.customAgeview.performOnFocusAction();
-    }
 }

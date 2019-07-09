@@ -3,6 +3,9 @@ package org.dhis2.data.metadata;
 import android.content.ContentValues;
 import android.database.Cursor;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.R;
@@ -25,7 +28,6 @@ import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionModel;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
-import org.hisp.dhis.android.core.resource.ResourceModel;
 import org.hisp.dhis.android.core.settings.SystemSettingModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
@@ -42,8 +44,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -399,14 +399,6 @@ public class MetadataRepositoryImpl implements MetadataRepository {
                 ((eventModel, programModel) -> DateUtils.getInstance().isEventExpired(null, eventModel.completedDate(), programModel.completeEventsExpiryDays())));
     }
 
-    @NonNull
-    @Override
-    public Observable<List<ResourceModel>> syncState(ProgramModel program) {
-        String SYNC_STATE = "SELECT * FROM " + ResourceModel.TABLE;
-        return briteDatabase
-                .createQuery(ResourceModel.TABLE, SYNC_STATE)
-                .mapToList(ResourceModel::create);
-    }
 
     @Override
     public Flowable<Pair<Integer, Integer>> getDownloadedData() {

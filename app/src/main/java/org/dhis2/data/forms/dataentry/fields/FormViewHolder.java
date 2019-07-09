@@ -6,9 +6,8 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.content.ContextCompat;
 import androidx.databinding.ViewDataBinding;
+import androidx.lifecycle.MutableLiveData;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.dhis2.R;
@@ -25,6 +24,8 @@ public abstract class FormViewHolder extends RecyclerView.ViewHolder {
     protected ImageView description;
     protected StringBuilder label;
     protected String descriptionText;
+    protected MutableLiveData<String> currentUid;
+    protected String fieldUid;
 
     public FormViewHolder(ViewDataBinding binding) {
         super(binding.getRoot());
@@ -64,8 +65,6 @@ public abstract class FormViewHolder extends RecyclerView.ViewHolder {
 
     public void setSelectedBackground(boolean isSarchMode) {
         if (!isSarchMode)
-            itemView.setBackground(AppCompatResources.getDrawable(itemView.getContext(), R.drawable.item_selected_bg));
+            currentUid.setValue(fieldUid);
     }
-
-    public abstract void performAction();
 }

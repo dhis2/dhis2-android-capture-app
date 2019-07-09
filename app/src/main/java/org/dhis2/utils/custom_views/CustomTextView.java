@@ -68,12 +68,6 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
         inflater = LayoutInflater.from(context);
     }
 
-    @Override
-    public void performOnFocusAction() {
-        editText.requestFocus();
-        editText.performClick();
-    }
-
     private void setLayout() {
         if (isBgTransparent && !isLongText)
             binding = DataBindingUtil.inflate(inflater, R.layout.custom_text_view, this, true);

@@ -1,5 +1,6 @@
 package org.dhis2.usescases.jira
 
+import android.text.TextUtils.isEmpty
 import android.util.Base64
 import android.widget.CompoundButton
 import androidx.databinding.ObservableField
@@ -17,7 +18,6 @@ import org.dhis2.utils.BiometricStorage
 import org.dhis2.utils.Constants
 import org.dhis2.utils.jira.IssueRequest
 import org.dhis2.utils.jira.JiraIssueListRequest
-import org.hisp.dhis.android.core.utils.support.StringUtils.isEmpty
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

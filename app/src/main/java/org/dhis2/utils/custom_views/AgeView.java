@@ -60,11 +60,6 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
         init(context);
     }
 
-    @Override
-    public void performOnFocusAction() {
-        date.performClick();
-    }
-
     public void setLabel(String label, String description) {
         this.label = label;
         if (binding instanceof AgeCustomViewAccentBinding) {

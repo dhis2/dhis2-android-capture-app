@@ -20,7 +20,7 @@ import androidx.annotation.NonNull;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 
-import static org.hisp.dhis.android.core.utils.StoreUtils.sqLiteBind;
+import static org.hisp.dhis.android.core.arch.db.stores.internal.StoreUtils.sqLiteBind;
 
 public final class EnrollmentStatusStore implements EnrollmentStatusEntryStore {
 
