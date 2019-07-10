@@ -1,7 +1,12 @@
 package org.dhis2.data.forms.dataentry.fields.edittext;
 
 
+import android.graphics.Color;
 import android.widget.ArrayAdapter;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.lifecycle.MutableLiveData;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -18,9 +23,8 @@ import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
 
 import java.lang.reflect.Type;
 import java.util.List;
+import java.util.Objects;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.content.res.AppCompatResources;
 import io.reactivex.processors.FlowableProcessor;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -40,11 +44,12 @@ final class EditTextCustomHolder extends FormViewHolder {
     private FormEditTextCustomBinding binding;
     private EditTextViewModel editTextModel;
 
-    EditTextCustomHolder(FormEditTextCustomBinding binding, FlowableProcessor<RowAction> processor, boolean isSearchMode) {
+    EditTextCustomHolder(FormEditTextCustomBinding binding, FlowableProcessor<RowAction> processor, boolean isSearchMode, MutableLiveData<String> currentSelection) {
         super(binding);
         this.binding = binding;
         this.processor = processor;
         this.isSearchMode = isSearchMode;
+        this.currentUid = currentSelection;
 
         binding.customEdittext.setFocusChangedListener((v, hasFocus) -> {
             if (hasFocus) {
@@ -80,6 +85,7 @@ final class EditTextCustomHolder extends FormViewHolder {
 
     public void update(@NonNull FieldViewModel model) {
         this.editTextModel = (EditTextViewModel) model;
+        fieldUid = model.uid();
 
         binding.customEdittext.setObjectSyle(model.objectStyle());
         label = new StringBuilder(model.label());
@@ -97,6 +103,7 @@ final class EditTextCustomHolder extends FormViewHolder {
 
         setRenderingType(editTextModel.fieldRendering());
 
+        initFieldFocus();
     }
 
     private void checkAutocompleteRendering() {
@@ -140,11 +147,5 @@ final class EditTextCustomHolder extends FormViewHolder {
 
     public void dispose() {
 
-    }
-
-    @Override
-    public void performAction() {
-        itemView.setBackground(AppCompatResources.getDrawable(itemView.getContext(), R.drawable.item_selected_bg));
-        binding.customEdittext.performOnFocusAction();
     }
 }

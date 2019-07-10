@@ -63,11 +63,6 @@ public class DateView extends FieldLayout implements View.OnClickListener {
         super.init(context);
     }
 
-    @Override
-    public void performOnFocusAction() {
-        editText.performClick();
-    }
-
     private void setLayout() {
         if (isBgTransparent)
             binding = DataBindingUtil.inflate(inflater, R.layout.date_time_view, this, true);
@@ -152,6 +147,7 @@ public class DateView extends FieldLayout implements View.OnClickListener {
 
     @Override
     public void onClick(View view) {
+        activate();
         showCustomCalendar();
     }
 

@@ -9,7 +9,7 @@ import androidx.appcompat.widget.PopupMenu;
 import org.dhis2.App;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.android.core.common.UidsHelper;
+import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.option.Option;
 
 import java.util.ArrayList;
@@ -37,8 +37,8 @@ public class OptionSetPopUp extends PopupMenu {
                           OptionSetView optionSetView) {
         super(context, anchor);
         d2 = ((App) context.getApplicationContext()).serverComponent().userManager().getD2();
-        this.optionsToHide = model.getOptionsToHide();
-        this.optionGroupsToHide = model.getOptionGroupsToHide();
+        this.optionsToHide = model.getOptionsToHide() != null ? model.getOptionsToHide() : new ArrayList<>();
+        this.optionGroupsToHide = model.getOptionGroupsToHide() != null ? model.getOptionGroupsToHide() : new ArrayList<>();
         setOnDismissListener(menu -> dismiss());
         setOnMenuItemClickListener(item -> {
             Option selectedOption = optionsMap.get(item.getTitle().toString());

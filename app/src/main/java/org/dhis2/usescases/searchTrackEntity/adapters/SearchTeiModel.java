@@ -3,7 +3,6 @@ package org.dhis2.usescases.searchTrackEntity.adapters;
 import org.dhis2.data.tuples.Trio;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
@@ -27,9 +26,11 @@ public class SearchTeiModel {
     private String profilePictureUid;
     private String defaultTypeIcon;
 
+    private Enrollment selectedEnrollment;
 
     public SearchTeiModel() {
         this.tei = null;
+        this.selectedEnrollment = null;
         this.attributeValueModels = new ArrayList<>();
         this.enrollmentModels = new ArrayList<>();
         this.enrollmentsInfo = new ArrayList<>();
@@ -116,11 +117,19 @@ public class SearchTeiModel {
         return profilePictureUid;
     }
 
-    public void setDefaultTypeIcon(String defaultTypeIcon){
+    public void setDefaultTypeIcon(String defaultTypeIcon) {
         this.defaultTypeIcon = defaultTypeIcon;
     }
 
     public String getDefaultTypeIcon() {
         return defaultTypeIcon;
+    }
+
+    public void setCurrentEnrollment(Enrollment enrollment) {
+        this.selectedEnrollment = enrollment;
+    }
+
+    public Enrollment getSelectedEnrollment(){
+        return this.selectedEnrollment;
     }
 }

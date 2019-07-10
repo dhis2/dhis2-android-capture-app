@@ -150,6 +150,9 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     @Override
     public void setProgram(Program program) {
         binding.setName(program.displayName());
+
+        if (!HelpManager.getInstance().isTutorialReadyForScreen(getClass().getName()))
+            setTutorial();
     }
 
     @Override

@@ -391,7 +391,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         }
     }
 
-
     @NonNull
     private List<FieldViewModel> applyEffects(
             @NonNull List<FieldViewModel> viewModels,
@@ -427,7 +426,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
             Iterator<FieldViewModel> fieldIterator = fieldViewModels.values().iterator();
             while (fieldIterator.hasNext()) {
                 FieldViewModel field = fieldIterator.next();
-                if (field instanceof ImageViewModel && eventCaptureRepository.optionIsInOptionGroup(field.uid().split(".")[1], optionGroupToHide))
+                if (field instanceof ImageViewModel && eventCaptureRepository.optionIsInOptionGroup(field.uid().split("\\.")[1], optionGroupToHide))
                     fieldIterator.remove();
             }
         }
@@ -489,7 +488,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
             } else if (!this.errors.isEmpty()) {
                 view.setShowError(errors);
             } else if (!emptyMandatoryFields.isEmpty()) {
-                view.finishDataEntry();
+                view.showCompleteActions(false);
             } else {
                 compositeDisposable.add(
                         Observable.just(completeMessage != null ? completeMessage : "")
@@ -597,6 +596,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     @Override
     public void reopenEvent() {
         if (eventCaptureRepository.reopenEvent()) {
+            currentPosition = 0;
             currentSectionPosition.onNext(0);
             view.showSnackBar(R.string.event_reopened);
             eventStatus = EventStatus.ACTIVE;
@@ -704,7 +704,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
     @Override
     public void save(@NotNull @NonNull String uid, @Nullable String value) {
-        EventCaptureFormFragment.getInstance().dataEntryFlowable().onNext(RowAction.create(uid, value));
+        if (value == null || !sectionsToHide.contains(eventCaptureRepository.getSectionFor(uid)))
+            EventCaptureFormFragment.getInstance().dataEntryFlowable().onNext(RowAction.create(uid, value));
     }
 
     @Override

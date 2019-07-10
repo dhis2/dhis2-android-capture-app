@@ -27,6 +27,8 @@ import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
+import java.util.regex.Pattern;
+
 import static android.text.TextUtils.isEmpty;
 
 /**
@@ -34,6 +36,9 @@ import static android.text.TextUtils.isEmpty;
  */
 
 public class CustomTextView extends FieldLayout implements View.OnFocusChangeListener {
+
+    String urlStringPattern = "^(http:\\/\\/www\\.|https:\\/\\/www\\.|http:\\/\\/|https:\\/\\/)[a-z0-9]+([\\-\\.]{1}[a-z0-9]+)*\\.[a-z]{2,5}(:[0-9]{1,5})?(\\/.*)?$";
+    Pattern urlPattern = Pattern.compile(urlStringPattern);
 
     private boolean isBgTransparent;
     private TextInputAutoCompleteTextView editText;
@@ -66,12 +71,6 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
 
     public void init(Context context) {
         inflater = LayoutInflater.from(context);
-    }
-
-    @Override
-    public void performOnFocusAction() {
-        editText.requestFocus();
-        editText.performClick();
     }
 
     private void setLayout() {
@@ -289,6 +288,14 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
                         return true;
                     else {
                         inputLayout.setError(editText.getContext().getString(R.string.invalid_percentage));
+                        return false;
+                    }
+                case URL:
+                    if(urlPattern.matcher(editText.getText().toString()).matches()){
+                        inputLayout.setError(null);
+                        return true;
+                    }else{
+                        inputLayout.setError(getContext().getString(R.string.validation_url));
                         return false;
                     }
                 default:

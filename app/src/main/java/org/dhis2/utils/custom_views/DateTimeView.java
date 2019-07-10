@@ -55,13 +55,6 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
         init(context);
     }
 
-
-    @Override
-    public void performOnFocusAction() {
-        editText.performClick();
-    }
-
-
     public void setLabel(String label) {
         binding.setLabel(label);
         binding.executePendingBindings();
@@ -143,6 +136,7 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
 
     @Override
     public void onClick(View view) {
+        activate();
         showCustomCalendar(view);
     }
 
