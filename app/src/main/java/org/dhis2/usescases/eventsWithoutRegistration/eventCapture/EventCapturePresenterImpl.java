@@ -490,7 +490,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
             } else if (!this.errors.isEmpty()) {
                 view.setShowError(errors);
             } else if (!emptyMandatoryFields.isEmpty()) {
-                view.showCompleteActions(false);
+                view.attemptToFinish(canComplete);
             } else {
                 compositeDisposable.add(
                         Observable.just(completeMessage != null ? completeMessage : "")
@@ -500,7 +500,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                 .subscribe(
                                         data -> view.showMessageOnComplete(canComplete, completeMessage),
                                         Timber::e,
-                                        () -> view.attemptToFinish(canComplete && eventCaptureRepository.isEnrollmentOpen())
+                                        () -> view.showCompleteActions(canComplete && eventCaptureRepository.isEnrollmentOpen())
                                 )
                 );
             }
