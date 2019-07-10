@@ -38,6 +38,10 @@
         <variable
             name="reschedule"
             type="java.lang.Boolean" />
+
+        <variable
+            name="mandatoryFields"
+            type="java.lang.Boolean" />
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -59,7 +63,7 @@
                 android:textSize="16sp" />
 
             <TextView
-                android:visibility="@{!canComplete ? View.VISIBLE : View.GONE}"
+                android:visibility="@{mandatoryFields ? View.VISIBLE : View.GONE}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -96,8 +100,8 @@
                 style="@style/BottomDialogItem"
                 android:onClick="@{()->listener.onActionSelected(ActionType.COMPLETE)}"
                 android:text="@string/finish_and_complete"
-                android:enabled="@{canComplete}"
-                android:visibility="@{canWrite &amp;&amp; isEnrollmentOpen &amp;&amp;!hasExpired?View.VISIBLE:View.GONE}" />
+                android:enabled="@{!mandatoryFields}"
+                android:visibility="@{canWrite &amp;&amp; isEnrollmentOpen &amp;&amp;!hasExpired &amp;&amp; canComplete?View.VISIBLE:View.GONE}" />
 
             <TextView
                 android:id="@+id/finish"
