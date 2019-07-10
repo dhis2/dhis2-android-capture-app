@@ -18,6 +18,7 @@ import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.tuples.Quartet;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureFragment.EventCaptureFormFragment;
+import org.dhis2.utils.AuthorityException;
 import org.dhis2.utils.Result;
 import org.dhis2.utils.RulesActionCallbacks;
 import org.dhis2.utils.RulesUtilsProvider;
@@ -38,6 +39,7 @@ import java.util.Map;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.processors.FlowableProcessor;
@@ -595,12 +597,33 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
     @Override
     public void reopenEvent() {
-        if (eventCaptureRepository.reopenEvent()) {
-            currentPosition = 0;
-            currentSectionPosition.onNext(0);
-            view.showSnackBar(R.string.event_reopened);
-            eventStatus = EventStatus.ACTIVE;
-        }
+        compositeDisposable.add(
+                eventCaptureRepository.canReOpenEvent()
+                        .flatMap(canReOpen -> {
+                            if (canReOpen)
+                                return Single.just(true);
+                            else
+                                return Single.error(new AuthorityException(view.getContext().getString(R.string.uncomplete_authority_error)));
+                        })
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(canReOpenEvent -> {
+                                    if (canReOpenEvent) {
+                                        if (eventCaptureRepository.reopenEvent()) {
+                                            currentPosition = 0;
+                                            currentSectionPosition.onNext(0);
+                                            view.showSnackBar(R.string.event_reopened);
+                                            eventStatus = EventStatus.ACTIVE;
+                                        }
+                                    }
+                                },
+                                error -> {
+                                    if (error instanceof AuthorityException)
+                                        view.displayMessage(error.getMessage());
+                                    else
+                                        Timber.e(error);
+                                }
+                        ));
     }
 
     @Override
