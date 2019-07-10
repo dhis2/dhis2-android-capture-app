@@ -70,6 +70,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.reactivex.Single;
 import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
@@ -828,5 +829,15 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
             }
         }
         return sectionToReturn;
+    }
+
+    @Override
+    public Single<Boolean> canReOpenEvent() {
+        return Single.defer(() -> Single.fromCallable(() -> {
+                    boolean hasAuthority = d2.userModule().authorities
+                            .byName().eq("F_UNCOMPLETE_EVENT").one().exists();
+                    return  hasAuthority;
+                }
+        ));
     }
 }
