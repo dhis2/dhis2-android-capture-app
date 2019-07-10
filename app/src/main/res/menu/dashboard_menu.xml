@@ -10,6 +10,6 @@
         android:title="@string/dashboard_menu_delete_tei" />
     <item
         android:id="@+id/deleteEnrollment"
-        android:icon="@drawable/ic_clear"
+        android:icon="@drawable/ic_delete"
         android:title="@string/dashboard_menu_delete_enrollment" />
 </menu>
