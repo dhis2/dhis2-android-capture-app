@@ -67,8 +67,10 @@ public class OrgUnitView extends FieldLayout implements OrgUnitCascadeDialog.Cas
         editText.setFocusable(false);
 
         editText.setOnFocusChangeListener((v, hasFocus) -> {
-            if (hasFocus)
+            if (hasFocus) {
+                activate();
                 editText.performClick();
+            }
         });
 
         editText.setOnClickListener(v -> new OrgUnitCascadeDialog(label, value, new OrgUnitCascadeDialog.CascadeOrgUnitCallbacks() {

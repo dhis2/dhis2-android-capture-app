@@ -51,14 +51,6 @@ final class EditTextCustomHolder extends FormViewHolder {
         this.isSearchMode = isSearchMode;
         this.currentUid = currentSelection;
 
-        if (currentSelection != null)
-            currentSelection.observeForever(fieldUid -> {
-                if (editTextModel != null && Objects.equals(fieldUid, editTextModel.uid()))
-                    itemView.setBackground(AppCompatResources.getDrawable(itemView.getContext(), R.drawable.item_selected_bg));
-                else
-                    itemView.setBackgroundColor(Color.WHITE);
-            });
-
         binding.customEdittext.setFocusChangedListener((v, hasFocus) -> {
             if (hasFocus) {
                 openKeyboard(binding.customEdittext.getEditText());
@@ -93,6 +85,7 @@ final class EditTextCustomHolder extends FormViewHolder {
 
     public void update(@NonNull FieldViewModel model) {
         this.editTextModel = (EditTextViewModel) model;
+        fieldUid = model.uid();
 
         binding.customEdittext.setObjectSyle(model.objectStyle());
         label = new StringBuilder(model.label());
@@ -110,6 +103,7 @@ final class EditTextCustomHolder extends FormViewHolder {
 
         setRenderingType(editTextModel.fieldRendering());
 
+        initFieldFocus();
     }
 
     private void checkAutocompleteRendering() {

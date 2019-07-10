@@ -1,12 +1,9 @@
 package org.dhis2.data.forms.dataentry.fields.datetime;
 
-import android.graphics.Color;
-
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.databinding.ViewDataBinding;
+import androidx.lifecycle.MutableLiveData;
 
 import org.dhis2.BR;
-import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.FormDateTextBinding;
@@ -33,28 +30,35 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
 
     private DateTimeViewModel dateTimeViewModel;
 
-    DateTimeHolder(ViewDataBinding binding, FlowableProcessor<RowAction> processor, boolean isSearchMode) {
+    DateTimeHolder(ViewDataBinding binding, FlowableProcessor<RowAction> processor, boolean isSearchMode, MutableLiveData<String> currentSelection) {
         super(binding);
         this.processor = processor;
         this.isSearchMode = isSearchMode;
+        this.currentUid = currentSelection;
 
         if (binding instanceof FormTimeTextBinding) {
             ((FormTimeTextBinding) binding).timeView.setDateListener(this);
+            ((FormTimeTextBinding) binding).timeView.setActivationListener(() ->
+                    setSelectedBackground(isSearchMode));
         }
 
         if (binding instanceof FormDateTextBinding) {
             ((FormDateTextBinding) binding).dateView.setDateListener(this);
+            ((FormDateTextBinding) binding).dateView.setActivationListener(() ->
+                    setSelectedBackground(isSearchMode));
         }
 
         if (binding instanceof FormDateTimeTextBinding) {
             ((FormDateTimeTextBinding) binding).dateTimeView.setDateListener(this);
+            ((FormDateTimeTextBinding) binding).dateTimeView.setActivationListener(() ->
+                    setSelectedBackground(isSearchMode));
         }
-
     }
 
 
     public void update(DateTimeViewModel viewModel) {
         this.dateTimeViewModel = viewModel;
+        fieldUid = viewModel.uid();
         descriptionText = viewModel.description();
         label = new StringBuilder(dateTimeViewModel.label());
         if (dateTimeViewModel.mandatory())
@@ -107,6 +111,8 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
             ((FormDateTimeTextBinding) binding).dateTimeView.setEditable(dateTimeViewModel.editable());
 
         binding.executePendingBindings();
+
+        initFieldFocus();
     }
 
     @Override
@@ -124,8 +130,7 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
         RowAction rowAction = RowAction.create(dateTimeViewModel.uid(), date != null ? dateFormatted : null, getAdapterPosition());
         if (processor != null) {
             processor.onNext(rowAction);
-            if (!isSearchMode)
-                itemView.setBackgroundColor(Color.WHITE);
+            clearBackground(isSearchMode);
         }
     }
 
