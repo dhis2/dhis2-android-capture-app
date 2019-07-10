@@ -413,7 +413,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void showTutorial(boolean shaked) {
-        if (binding.tabLayout.getSelectedTabPosition() == 0)
+        if (binding.tabLayout.getSelectedTabPosition() == 0 && !changingProgram)
             super.showTutorial(shaked);
         else
             showToast(getString(R.string.no_intructions));
