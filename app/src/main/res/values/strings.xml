@@ -490,5 +490,7 @@
     <string name="dashboard_menu_delete_enrollment">Delete enrollment only</string>
     <string name="delete_authority_error">You do not have the authority to delete this record</string>
     <string name="record_marked_for_deletion">This record is marked for deletion. You can\'t access it.</string>
+    <string name="validation_url">This is not a valid url</string>
+    <string name="uncomplete_authority_error">You do not have the authority to re-open this event</string>
 
 </resources>

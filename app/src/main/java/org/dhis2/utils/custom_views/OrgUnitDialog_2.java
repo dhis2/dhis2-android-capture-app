@@ -20,6 +20,7 @@ import com.unnamed.b.atv.view.AndroidTreeView;
 import org.dhis2.R;
 import org.dhis2.databinding.DialogOrgunitBinding;
 import org.dhis2.usescases.main.program.OrgUnitHolder;
+import org.dhis2.usescases.main.program.OrgUnitHolder_2;
 import org.dhis2.utils.OrgUnitUtils;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 
@@ -128,8 +129,8 @@ public class OrgUnitDialog_2 extends DialogFragment {
 
         treeView.setDefaultNodeClickListener((node, value) -> {
             for (TreeNode treeNode : node.getViewHolder().getTreeView().getSelected())
-                ((OrgUnitHolder) treeNode.getViewHolder()).update();
-            ((OrgUnitHolder) node.getViewHolder()).update();
+                ((OrgUnitHolder_2) treeNode.getViewHolder()).update();
+            ((OrgUnitHolder_2) node.getViewHolder()).update();
         });
     }
 
