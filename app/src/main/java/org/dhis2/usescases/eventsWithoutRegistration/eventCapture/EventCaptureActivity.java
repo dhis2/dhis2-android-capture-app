@@ -328,7 +328,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                 new DialogClickListener() {
                     @Override
                     public void onPositive() {
-                        finishDataEntry();
+                        showCompleteActions(false);
                     }
 
                     @Override
@@ -349,7 +349,13 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void attemptToFinish(boolean canComplete) {
-        showCompleteActions(canComplete);
+        FormBottomDialog.getInstance()
+                .setAccessDataWrite(presenter.canWrite())
+                .setIsExpired(presenter.hasExpired())
+                .setMandatoryFields(canComplete)
+                .setCanComplete(canComplete)
+                .setListener(this::setAction)
+                .show(getSupportFragmentManager(), "SHOW_OPTIONS");
     }
 
 
