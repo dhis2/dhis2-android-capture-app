@@ -189,8 +189,6 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 context.getString(R.string.filter_options),
                 context.getString(R.string.choose_date));
 
-//        loadDataElementRules(currentEvent);
-
         isEventEditable = isEventExpired(eventUid);
     }
 
@@ -368,7 +366,13 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         ProgramStage stage = d2.programModule().programStages.uid(event.programStage()).get();
         boolean isExpired = DateUtils.getInstance().isEventExpired(event.eventDate(), event.completedDate(), event.status(), program.completeEventsExpiryDays(), stage.periodType() != null ? stage.periodType() : program.expiryPeriodType(), program.expiryDays());
         boolean blockAfterComplete = event.status() == EventStatus.COMPLETED && stage.blockEntryForm();
-        boolean editable = isEnrollmentOpen() && !blockAfterComplete && !isExpired && getAccessDataWrite() && inOrgUnitRange(eventUid);
+        boolean isInCaptureOrgUnit = d2.organisationUnitModule().organisationUnits
+                .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
+                .byUid().eq(event.organisationUnit()).one().exists();
+
+        boolean editable = isEnrollmentOpen() && !blockAfterComplete && !isExpired &&
+                getAccessDataWrite() && inOrgUnitRange(eventUid) && isInCaptureOrgUnit;
+
         return !editable;
     }
 
@@ -817,8 +821,8 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     public String getSectionFor(String field) {
         String sectionToReturn = "NO_SECTION";
         List<ProgramStageSection> programStages = d2.programModule().programStageSections.byProgramStageUid().eq(currentEvent.programStage()).withDataElements().get();
-        for(ProgramStageSection section : programStages){
-            if(UidsHelper.getUidsList(section.dataElements()).contains(field)) {
+        for (ProgramStageSection section : programStages) {
+            if (UidsHelper.getUidsList(section.dataElements()).contains(field)) {
                 sectionToReturn = section.uid();
                 break;
             }
