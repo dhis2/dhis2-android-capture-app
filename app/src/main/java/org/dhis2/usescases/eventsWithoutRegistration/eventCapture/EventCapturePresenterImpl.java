@@ -488,7 +488,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
             } else if (!this.errors.isEmpty()) {
                 view.setShowError(errors);
             } else if (!emptyMandatoryFields.isEmpty()) {
-                view.finishDataEntry();
+                view.showCompleteActions(false);
             } else {
                 compositeDisposable.add(
                         Observable.just(completeMessage != null ? completeMessage : "")
@@ -596,6 +596,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     @Override
     public void reopenEvent() {
         if (eventCaptureRepository.reopenEvent()) {
+            currentPosition = 0;
             currentSectionPosition.onNext(0);
             view.showSnackBar(R.string.event_reopened);
             eventStatus = EventStatus.ACTIVE;
