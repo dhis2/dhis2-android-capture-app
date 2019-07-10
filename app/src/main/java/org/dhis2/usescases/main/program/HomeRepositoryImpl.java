@@ -75,21 +75,25 @@ class HomeRepositoryImpl implements HomeRepository {
                                         .byProgramUid().eq(program.uid())
                                         .byEventDate().inDatePeriods(dateFilter)
                                         .byOrganisationUnitUid().in(orgUnitFilter)
+                                        .byState().notIn(State.TO_DELETE)
                                         .count();
                             } else {
                                 count = d2.eventModule().events
                                         .byProgramUid().eq(program.uid())
                                         .byEventDate().inDatePeriods(dateFilter)
+                                        .byState().notIn(State.TO_DELETE)
                                         .count();
                             }
                         } else if (!orgUnitFilter.isEmpty()) {
                             count = d2.eventModule().events
                                     .byProgramUid().eq(program.uid())
                                     .byOrganisationUnitUid().in(orgUnitFilter)
+                                    .byState().notIn(State.TO_DELETE)
                                     .count();
                         } else {
                             count = d2.eventModule().events
                                     .byProgramUid().eq(program.uid())
+                                    .byState().notIn(State.TO_DELETE)
                                     .count();
                         }
 
