@@ -175,20 +175,6 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
                     RecyclerView.VERTICAL, false);
         recyclerView.setAdapter(dataEntryAdapter);
         recyclerView.setLayoutManager(layoutManager);
-
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-                if (newState != RecyclerView.SCROLL_STATE_IDLE) {
-                    dataEntryAdapter.setLastFocusItem(null);
-                    InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(recyclerView.getWindowToken(), 0);
-                    dummyFocusView.requestFocus();
-                    dataEntryPresenter.clearLastFocusItem();
-                }
-            }
-        });
-
     }
 
     public boolean checkErrors() {
