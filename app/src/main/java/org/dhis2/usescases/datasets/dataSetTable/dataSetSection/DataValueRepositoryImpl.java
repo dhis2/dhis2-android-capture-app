@@ -30,7 +30,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 
 public class DataValueRepositoryImpl implements DataValueRepository {
@@ -38,9 +37,6 @@ public class DataValueRepositoryImpl implements DataValueRepository {
     private final D2 d2;
     private BriteDatabase briteDatabase;
     private String dataSetUid;
-
-    private static final String SELECT_COMPLETE_DATASET = "SELECT * FROM DataSetCompleteRegistration WHERE period = ? AND dataSet = ? AND attributeOptionCombo = ? and organisationUnit = ? " +
-            "AND state in ('TO_UPDATE', 'SYNCED', 'TO_POST')";
 
     public DataValueRepositoryImpl(D2 d2, BriteDatabase briteDatabase, String dataSetUid) {
         this.d2 = d2;
