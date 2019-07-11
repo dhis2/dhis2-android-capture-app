@@ -20,6 +20,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.databinding.BindingAdapter;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -556,5 +557,16 @@ public class Bindings {
     public static void setSettingIcon(ImageView view, int drawableReference) {
         Drawable drawable = AppCompatResources.getDrawable(view.getContext(), drawableReference);
         view.setImageDrawable(drawable);
+    }
+
+    @BindingAdapter("iconTint")
+    public static void setIconTint(ImageView view, boolean followUp) {
+        Drawable wrappedDrawable = DrawableCompat.wrap(view.getDrawable());
+        Drawable mutableDrawable = wrappedDrawable.mutate();
+        if(followUp)
+            DrawableCompat.setTint(mutableDrawable, ContextCompat.getColor(view.getContext(), R.color.white));
+        else
+            DrawableCompat.setTint(mutableDrawable, ContextCompat.getColor(view.getContext(), R.color.text_black_333));
+
     }
 }
