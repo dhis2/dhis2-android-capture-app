@@ -287,6 +287,8 @@ public final class RulesRepository {
             String attribute = programRuleAction.trackedEntityAttribute() != null ?
                     programRuleAction.trackedEntityAttribute().uid() : null;
             String field = dataElement != null ? dataElement : attribute;
+            if (field == null)
+                field = "";
 
             switch (programRuleAction.programRuleActionType()) {
                 case HIDEFIELD:
