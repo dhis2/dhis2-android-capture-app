@@ -11,6 +11,7 @@ import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.utils.AuthorityException;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.State;
+import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.program.ProgramModel;
 
@@ -183,8 +184,9 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                         {
                             if (canDelete)
                                 return Single.fromCallable(() -> {
-                                    d2.enrollmentModule().enrollments.uid(dashboardProgramModel.getCurrentEnrollment().uid())
-                                            .delete();
+                                    EnrollmentObjectRepository enrollmentObjectRepository = d2.enrollmentModule().enrollments.uid(dashboardProgramModel.getCurrentEnrollment().uid());
+                                    enrollmentObjectRepository.setStatus(enrollmentObjectRepository.get().status());
+                                    enrollmentObjectRepository.delete();
                                     return !d2.enrollmentModule().enrollments.byTrackedEntityInstance().eq(teUid)
                                             .byState().notIn(State.TO_DELETE)
                                             .byStatus().eq(EnrollmentStatus.ACTIVE).get().isEmpty();
