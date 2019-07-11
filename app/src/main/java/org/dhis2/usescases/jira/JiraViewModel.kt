@@ -1,5 +1,6 @@
 package org.dhis2.usescases.jira
 
+import android.text.TextUtils.isEmpty
 import android.util.Base64
 import android.widget.CompoundButton
 import androidx.databinding.ObservableField

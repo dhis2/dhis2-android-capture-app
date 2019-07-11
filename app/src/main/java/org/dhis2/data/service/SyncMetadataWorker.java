@@ -46,8 +46,7 @@ public class SyncMetadataWorker extends Worker {
     }
 
     @Override
-    public void onStopped(boolean cancelled) {
-        super.onStopped(cancelled);
+    public void onStopped() {
         Timber.d("Metadata process finished");
     }
 
@@ -88,11 +87,11 @@ public class SyncMetadataWorker extends Worker {
             cancelNotification();
 
             if (!isMetaOk)
-                return Result.RETRY;
+                return Result.retry();
 
-            return Result.SUCCESS;
+            return Result.success();
         } else {
-            return Result.FAILURE;
+            return Result.failure();
         }
     }
 

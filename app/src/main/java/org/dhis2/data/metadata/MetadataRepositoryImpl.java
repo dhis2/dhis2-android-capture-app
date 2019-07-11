@@ -3,6 +3,9 @@ package org.dhis2.data.metadata;
 import android.content.ContentValues;
 import android.database.Cursor;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.R;
@@ -42,8 +45,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -411,14 +412,6 @@ public class MetadataRepositoryImpl implements MetadataRepository {
                 ((eventModel, programModel) -> DateUtils.getInstance().isEventExpired(null, eventModel.completedDate(), programModel.completeEventsExpiryDays())));
     }
 
-    @NonNull
-    @Override
-    public Observable<List<ResourceModel>> syncState(ProgramModel program) {
-        String SYNC_STATE = "SELECT * FROM " + ResourceModel.TABLE;
-        return briteDatabase
-                .createQuery(ResourceModel.TABLE, SYNC_STATE)
-                .mapToList(ResourceModel::create);
-    }
 
     @Override
     public Flowable<Pair<Integer, Integer>> getDownloadedData() {

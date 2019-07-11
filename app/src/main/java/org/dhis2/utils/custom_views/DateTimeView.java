@@ -55,13 +55,6 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
         init(context);
     }
 
-
-    @Override
-    public void performOnFocusAction() {
-        editText.performClick();
-    }
-
-
     public void setLabel(String label) {
         binding.setLabel(label);
     }
@@ -104,6 +97,8 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
     public void setError(String msg) {
         inputLayout.setErrorTextAppearance(R.style.error_appearance);
         inputLayout.setError(msg);
+        editText.setText(null);
+        editText.requestFocus();
     }
 
     public void setIsBgTransparent(boolean isBgTransparent) {
@@ -139,6 +134,7 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
 
     @Override
     public void onClick(View view) {
+        activate();
         showCustomCalendar(view);
     }
 
@@ -150,6 +146,7 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
                     public void onNegativeClick() {
                         editText.setText(null);
                         listener.onDateSelected(null);
+                        date = null;
                     }
 
                     @Override
@@ -177,6 +174,7 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
             editText.setText(result);
             listener.onDateSelected(selectedDate);
             nextFocus(view);
+            date = null;
         },
                 hour,
                 minute,

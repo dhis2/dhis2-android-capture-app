@@ -89,7 +89,7 @@ public class SyncDataWorker extends Worker {
 
         cancelNotification();
 
-        return Result.SUCCESS;
+        return Result.success();
     }
 
     private void triggerNotification(String title, String content) {

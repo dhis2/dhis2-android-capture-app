@@ -42,6 +42,8 @@ final class SyncPresenterImpl implements SyncPresenter {
         Completable.fromObservable(d2.trackedEntityModule()
                 .downloadTrackedEntityInstances(teiLimit, limitByOU, limitByProgram)
                 .doOnNext(data -> Timber.d(data.percentage() + "% " + data.doneCalls().size() + "/" + data.totalCalls())))
+                .doOnError(error -> Timber.d("error while downloading TEIs"))
+                .onErrorComplete()
                 .blockingAwait();
     }
 
@@ -54,7 +56,9 @@ final class SyncPresenterImpl implements SyncPresenter {
 
     @Override
     public void syncMetadata(Context context) {
-        Completable.fromObservable(d2.syncMetaData()).blockingAwait();
+        Completable.fromObservable(d2.syncMetaData()
+                .doOnNext(data -> Timber.d(data.percentage() + "% " + data.doneCalls().size() + "/" + data.totalCalls())))
+                .blockingAwait();
     }
 
     @Override

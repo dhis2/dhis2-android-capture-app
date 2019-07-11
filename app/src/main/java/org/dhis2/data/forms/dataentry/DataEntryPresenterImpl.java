@@ -235,7 +235,7 @@ final class DataEntryPresenterImpl implements DataEntryPresenter, RulesActionCal
     }
 
     @Override
-    public void sethideSection(String sectionUid) {
+    public void setHideSection(String sectionUid) {
 
     }
 
