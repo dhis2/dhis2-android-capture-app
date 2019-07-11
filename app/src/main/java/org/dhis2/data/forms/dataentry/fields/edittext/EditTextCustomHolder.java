@@ -1,17 +1,19 @@
 package org.dhis2.data.forms.dataentry.fields.edittext;
 
 
-import android.graphics.Color;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
+import android.view.MotionEvent;
+import android.view.View;
 import android.widget.ArrayAdapter;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.lifecycle.MutableLiveData;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
@@ -23,7 +25,6 @@ import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
 
 import java.lang.reflect.Type;
 import java.util.List;
-import java.util.Objects;
 
 import io.reactivex.processors.FlowableProcessor;
 
