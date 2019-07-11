@@ -67,8 +67,10 @@ public class OrgUnitView extends FieldLayout implements OrgUnitCascadeDialog.Cas
         editText.setFocusable(false);
 
         editText.setOnFocusChangeListener((v, hasFocus) -> {
-            if (hasFocus)
+            if (hasFocus) {
+                activate();
                 editText.performClick();
+            }
         });
 
         editText.setOnClickListener(v -> new OrgUnitCascadeDialog(label, value, new OrgUnitCascadeDialog.CascadeOrgUnitCallbacks() {
@@ -97,12 +99,6 @@ public class OrgUnitView extends FieldLayout implements OrgUnitCascadeDialog.Cas
     public void setOnClickListener(@Nullable OnClickListener l) {
         editText.setOnClickListener(l);
     }
-
-    @Override
-    public void performOnFocusAction() {
-        editText.performClick();
-    }
-
 
     public void setObjectStyle(ObjectStyleModel objectStyle) {
         Bindings.setObjectStyle(iconView, this, objectStyle);

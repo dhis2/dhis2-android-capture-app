@@ -8,8 +8,11 @@ import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.FormYesNoBinding;
+import org.dhis2.utils.custom_views.FieldLayout;
 
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.lifecycle.MutableLiveData;
+
 import io.reactivex.processors.FlowableProcessor;
 
 
@@ -28,20 +31,23 @@ public class RadioButtonHolder extends FormViewHolder {
 
     RadioButtonViewModel viewModel;
 
-    RadioButtonHolder(FormYesNoBinding binding, FlowableProcessor<RowAction> processor, boolean isSearchMode) {
+    RadioButtonHolder(FormYesNoBinding binding, FlowableProcessor<RowAction> processor, boolean isSearchMode, MutableLiveData<String> currentSelection) {
         super(binding);
+        currentUid = currentSelection;
         radioGroup = binding.customYesNo.getRadioGroup();
         clearButton = binding.customYesNo.getClearButton();
         this.binding = binding;
         this.processor = processor;
         this.isSearchMode = isSearchMode;
+
+        binding.customYesNo.setActivationListener(() -> setSelectedBackground(isSearchMode));
     }
 
 
     public void update(RadioButtonViewModel checkBoxViewModel) {
 
-
         this.viewModel = checkBoxViewModel;
+        fieldUid = checkBoxViewModel.uid();
 
         radioGroup.setOnCheckedChangeListener(null);
         descriptionText = viewModel.description();
@@ -76,6 +82,7 @@ public class RadioButtonHolder extends FormViewHolder {
 
         radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
             RowAction rowAction;
+            setSelectedBackground(isSearchMode);
             switch (checkedId) {
                 case R.id.yes:
                     viewModel = (RadioButtonViewModel) checkBoxViewModel.withValue(String.valueOf(true));
@@ -98,20 +105,16 @@ public class RadioButtonHolder extends FormViewHolder {
 
         clearButton.setOnClickListener(view -> {
             if (checkBoxViewModel.editable().booleanValue()) {
+                setSelectedBackground(isSearchMode);
                 radioGroup.clearCheck();
                 processor.onNext(RowAction.create(checkBoxViewModel.uid(), null, getAdapterPosition()));
             }
         });
 
-
+        initFieldFocus();
     }
 
     public void dispose() {
     }
 
-    @Override
-    public void performAction() {
-        itemView.setBackground(AppCompatResources.getDrawable(itemView.getContext(), R.drawable.item_selected_bg));
-        binding.customYesNo.performOnFocusAction();
-    }
 }

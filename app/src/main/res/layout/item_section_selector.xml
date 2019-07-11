@@ -6,6 +6,7 @@
     <data>
 
         <import type="android.view.View" />
+        <import type="java.lang.String" />
 
         <variable
             name="sectionUid"
@@ -29,7 +30,7 @@
         android:id="@+id/root"
         android:layout_width="match_parent"
         android:layout_height="@dimen/itemSectionSelectorHeight"
-        android:background="@{currentSection == sectionUid &amp;&amp; order!=-1  ?@color/color_item_selected_c3:@color/item_unselected_fdf}"
+        android:background="@{currentSection.get().equals(sectionUid) &amp;&amp; order!=-1  ?@color/color_item_selected_c3:@color/item_unselected_fdf}"
         android:onClick="@{()->presenter.onSectionSelectorClick(currentSection == sectionUid,order,sectionUid)}"
         android:paddingStart="16dp"
         android:paddingEnd="16dp">
@@ -47,7 +48,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:tint="@color/colorGreyDefault"
-                android:visibility="@{currentSection == sectionUid? View.VISIBLE : View.GONE}"
+                android:visibility="@{currentSection.get().equals(sectionUid) ? View.VISIBLE : View.GONE}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -58,7 +59,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:tint="@color/colorGreyDefault"
-                android:visibility="@{currentSection == sectionUid? View.GONE : View.VISIBLE}"
+                android:visibility="@{currentSection.get().equals(sectionUid) ? View.GONE : View.VISIBLE}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"

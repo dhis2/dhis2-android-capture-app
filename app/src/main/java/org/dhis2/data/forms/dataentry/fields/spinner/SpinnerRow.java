@@ -5,6 +5,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.MutableLiveData;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.Row;
@@ -23,10 +24,10 @@ public class SpinnerRow implements Row<SpinnerHolder, SpinnerViewModel> {
 
     @NonNull
     private final FlowableProcessor<RowAction> processor;
-    private final FlowableProcessor<Trio<String, String, Integer>> processorOptionSet;
     private final boolean isBackgroundTransparent;
     private final String renderType;
     private final LayoutInflater inflater;
+    private final MutableLiveData<String> currentSelection;
     private boolean isSearchMode = false;
 
     public SpinnerRow(LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor, FlowableProcessor<Trio<String, String, Integer>> processorOptionSet, boolean isBackgroundTransparent) {
@@ -34,17 +35,18 @@ public class SpinnerRow implements Row<SpinnerHolder, SpinnerViewModel> {
         this.isBackgroundTransparent = isBackgroundTransparent;
         this.renderType = null;
         this.inflater = layoutInflater;
-        this.processorOptionSet = processorOptionSet;
         this.isSearchMode = true;
+        this.currentSelection = null;
     }
 
     public SpinnerRow(LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor,
-                      FlowableProcessor<Trio<String, String, Integer>> processorOptionSet, boolean isBackgroundTransparent, String renderType) {
+                      FlowableProcessor<Trio<String, String, Integer>> processorOptionSet, boolean isBackgroundTransparent, String renderType,
+                      MutableLiveData<String> currentSelection) {
         this.processor = processor;
         this.isBackgroundTransparent = isBackgroundTransparent;
         this.renderType = renderType;
         this.inflater = layoutInflater;
-        this.processorOptionSet = processorOptionSet;
+        this.currentSelection = currentSelection;
     }
 
     @NonNull
@@ -52,7 +54,7 @@ public class SpinnerRow implements Row<SpinnerHolder, SpinnerViewModel> {
     public SpinnerHolder onCreate(@NonNull ViewGroup parent) {
         FormOptionSetBinding binding = DataBindingUtil.inflate(inflater, R.layout.form_option_set, parent, false);
         binding.optionSetView.setLayoutData(isBackgroundTransparent, renderType);
-        return new SpinnerHolder(binding, processor, processorOptionSet, isSearchMode);
+        return new SpinnerHolder(binding, processor, isSearchMode,currentSelection);
     }
 
     @Override

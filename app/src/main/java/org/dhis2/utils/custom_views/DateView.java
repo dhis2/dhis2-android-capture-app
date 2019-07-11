@@ -67,11 +67,6 @@ public class DateView extends FieldLayout implements View.OnClickListener {
         super.init(context);
     }
 
-    @Override
-    public void performOnFocusAction() {
-        editText.performClick();
-    }
-
     private void setLayout() {
         if (isBgTransparent)
             binding = DataBindingUtil.inflate(inflater, R.layout.date_time_view, this, true);
@@ -157,6 +152,8 @@ public class DateView extends FieldLayout implements View.OnClickListener {
     public void setError(String msg) {
         inputLayout.setErrorTextAppearance(R.style.error_appearance);
         inputLayout.setError(msg);
+        editText.setText(null);
+        editText.requestFocus();
     }
 
     public void setDateListener(OnDateSelected listener) {
@@ -170,6 +167,7 @@ public class DateView extends FieldLayout implements View.OnClickListener {
 
     @Override
     public void onClick(View view) {
+        activate();
         showCustomCalendar();
     }
 
@@ -181,6 +179,7 @@ public class DateView extends FieldLayout implements View.OnClickListener {
                     public void onNegativeClick() {
                         editText.setText(null);
                         listener.onDateSelected(null);
+                        date = null;
                     }
 
                     @Override
@@ -195,6 +194,7 @@ public class DateView extends FieldLayout implements View.OnClickListener {
                         editText.setText(result);
                         listener.onDateSelected(selectedDate);
                         nextFocus(DateView.this);
+                        date = null;
                     }
                 }).show();
     }

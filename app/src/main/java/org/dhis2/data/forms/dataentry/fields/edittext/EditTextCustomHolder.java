@@ -1,12 +1,19 @@
 package org.dhis2.data.forms.dataentry.fields.edittext;
 
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
+import android.view.MotionEvent;
+import android.view.View;
 import android.widget.ArrayAdapter;
+
+import androidx.annotation.NonNull;
+import androidx.lifecycle.MutableLiveData;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
@@ -19,8 +26,6 @@ import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
 import java.lang.reflect.Type;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.content.res.AppCompatResources;
 import io.reactivex.processors.FlowableProcessor;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -40,11 +45,12 @@ final class EditTextCustomHolder extends FormViewHolder {
     private FormEditTextCustomBinding binding;
     private EditTextViewModel editTextModel;
 
-    EditTextCustomHolder(FormEditTextCustomBinding binding, FlowableProcessor<RowAction> processor, boolean isSearchMode) {
+    EditTextCustomHolder(FormEditTextCustomBinding binding, FlowableProcessor<RowAction> processor, boolean isSearchMode, MutableLiveData<String> currentSelection) {
         super(binding);
         this.binding = binding;
         this.processor = processor;
         this.isSearchMode = isSearchMode;
+        this.currentUid = currentSelection;
 
         binding.customEdittext.setFocusChangedListener((v, hasFocus) -> {
             if (hasFocus) {
@@ -80,21 +86,25 @@ final class EditTextCustomHolder extends FormViewHolder {
 
     public void update(@NonNull FieldViewModel model) {
         this.editTextModel = (EditTextViewModel) model;
+        fieldUid = model.uid();
 
         binding.customEdittext.setObjectSyle(model.objectStyle());
         label = new StringBuilder(model.label());
         binding.customEdittext.setLabel(model.label(), model.mandatory());
         descriptionText = model.description();
         binding.customEdittext.setDescription(descriptionText);
-        binding.customEdittext.setWarning(model.warning(), model.error());
 
         binding.customEdittext.setText(editTextModel.value());
+
+        binding.customEdittext.setWarning(model.warning(), model.error());
+
         binding.customEdittext.setEditable(model.editable());
 
         binding.customEdittext.setValueType(editTextModel.valueType());
 
         setRenderingType(editTextModel.fieldRendering());
 
+        initFieldFocus();
     }
 
     private void checkAutocompleteRendering() {
@@ -138,11 +148,5 @@ final class EditTextCustomHolder extends FormViewHolder {
 
     public void dispose() {
 
-    }
-
-    @Override
-    public void performAction() {
-        itemView.setBackground(AppCompatResources.getDrawable(itemView.getContext(), R.drawable.item_selected_bg));
-        binding.customEdittext.performOnFocusAction();
     }
 }

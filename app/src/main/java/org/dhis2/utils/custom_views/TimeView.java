@@ -62,11 +62,6 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
         init(context);
     }
 
-    @Override
-    public void performOnFocusAction() {
-        editText.performClick();
-    }
-
     private void setLayout() {
         binding = DataBindingUtil.inflate(inflater, R.layout.time_view, this, true);
         editText = findViewById(R.id.inputEditText);
@@ -127,6 +122,8 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
     public void setError(String msg) {
         inputLayout.setErrorTextAppearance(R.style.error_appearance);
         inputLayout.setError(msg);
+        editText.setText(null);
+        editText.requestFocus();
     }
 
     public void setMandatory(){
@@ -145,6 +142,7 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
 
     @Override
     public void onClick(View view) {
+        activate();
         final Calendar c = Calendar.getInstance();
         if (date != null)
             c.setTime(date);
@@ -170,12 +168,14 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
             }
             listener.onDateSelected(selectedDate);
             nextFocus(view);
+            date = null;
         }, hour, minute, is24HourFormat);
         dialog.setTitle(label);
 
         dialog.setButton(DialogInterface.BUTTON_NEGATIVE, getContext().getString(R.string.date_dialog_clear), (timeDialog, which) -> {
             editText.setText(null);
             listener.onDateSelected(null);
+            date=null;
         });
 
         dialog.show();

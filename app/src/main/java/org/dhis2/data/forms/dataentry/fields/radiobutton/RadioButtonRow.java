@@ -5,6 +5,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.MutableLiveData;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.Row;
@@ -25,6 +26,7 @@ public class RadioButtonRow implements Row<RadioButtonHolder, RadioButtonViewMod
     @NonNull
     private final FlowableProcessor<RowAction> processor;
     private final String renderType;
+    private final MutableLiveData<String> currentSelection;
     private boolean isSearchMode = false;
 
     public RadioButtonRow(LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor, boolean isBgTransparent) {
@@ -33,13 +35,16 @@ public class RadioButtonRow implements Row<RadioButtonHolder, RadioButtonViewMod
         this.isBgTransparent = isBgTransparent;
         this.renderType = null;
         this.isSearchMode = true;
+        this.currentSelection = null;
     }
 
-    public RadioButtonRow(LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor, boolean isBgTransparent, String renderType) {
+    public RadioButtonRow(LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor, boolean isBgTransparent, String renderType,
+                          MutableLiveData<String> currentSelection) {
         this.inflater = layoutInflater;
         this.processor = processor;
         this.isBgTransparent = isBgTransparent;
         this.renderType = renderType;
+        this.currentSelection = currentSelection;
     }
 
     @NonNull
@@ -48,7 +53,7 @@ public class RadioButtonRow implements Row<RadioButtonHolder, RadioButtonViewMod
         FormYesNoBinding binding = DataBindingUtil.inflate(inflater,
                 R.layout.form_yes_no, parent, false);
         binding.customYesNo.setIsBgTransparent(isBgTransparent);
-        return new RadioButtonHolder(binding, processor, isSearchMode);
+        return new RadioButtonHolder(binding, processor, isSearchMode,currentSelection);
     }
 
     @Override

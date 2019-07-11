@@ -14,6 +14,7 @@ import org.hisp.dhis.rules.models.RuleActionHideSection;
 import org.hisp.dhis.rules.models.RuleActionShowError;
 import org.hisp.dhis.rules.models.RuleActionShowWarning;
 import org.hisp.dhis.rules.models.RuleEffect;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -64,7 +65,7 @@ public class RulesUtilsProviderImplTest {
         }
 
         @Override
-        public void save(@NonNull String uid, @Nullable String value) {
+        public void save(@NotNull @NonNull String uid, @Nullable String value) {
 
         }
 
@@ -74,7 +75,7 @@ public class RulesUtilsProviderImplTest {
         }
 
         @Override
-        public void sethideSection(String sectionUid) {
+        public void setHideSection(String sectionUid) {
 
         }
 

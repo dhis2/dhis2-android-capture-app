@@ -18,6 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.databinding.ObservableField;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.reactivex.Single;
 import io.reactivex.functions.Consumer;
 import io.reactivex.processors.FlowableProcessor;
 
@@ -155,6 +156,10 @@ public class EventCaptureContract {
         Observable<List<OrganisationUnitLevel>> getOrgUnitLevels();
 
         boolean optionIsInOptionGroup(String optionUid, String optionGroupToHide);
+
+        String getSectionFor(String field);
+
+        Single<Boolean> canReOpenEvent();
     }
 
 }

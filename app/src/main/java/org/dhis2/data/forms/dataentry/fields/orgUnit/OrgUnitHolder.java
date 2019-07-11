@@ -1,13 +1,11 @@
 package org.dhis2.data.forms.dataentry.fields.orgUnit;
 
-import android.graphics.Color;
+import androidx.lifecycle.MutableLiveData;
 
-import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.FormOrgUnitBinding;
 
-import androidx.appcompat.content.res.AppCompatResources;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.processors.FlowableProcessor;
 
@@ -22,16 +20,17 @@ public class OrgUnitHolder extends FormViewHolder {
     private CompositeDisposable compositeDisposable;
     private OrgUnitViewModel model;
 
-    OrgUnitHolder(FormOrgUnitBinding binding, FlowableProcessor<RowAction> processor, boolean isSearchMode) {
+    OrgUnitHolder(FormOrgUnitBinding binding, FlowableProcessor<RowAction> processor, boolean isSearchMode, MutableLiveData<String> currentSelection) {
         super(binding);
         this.binding = binding;
+        this.currentUid = currentSelection;
         compositeDisposable = new CompositeDisposable();
 
         binding.orgUnitView.setListener(orgUnitUid -> {
             processor.onNext(RowAction.create(model.uid(), orgUnitUid, getAdapterPosition()));
-            if (!isSearchMode)
-                itemView.setBackgroundColor(Color.WHITE);
         });
+
+        binding.orgUnitView.setActivationListener(() -> setSelectedBackground(isSearchMode));
     }
 
     @Override
@@ -39,14 +38,10 @@ public class OrgUnitHolder extends FormViewHolder {
         compositeDisposable.clear();
     }
 
-    @Override
-    public void performAction() {
-        itemView.setBackground(AppCompatResources.getDrawable(itemView.getContext(), R.drawable.item_selected_bg));
-        binding.orgUnitView.performOnFocusAction();
-    }
-
     public void update(OrgUnitViewModel viewModel) {
         this.model = viewModel;
+        fieldUid = viewModel.uid();
+
         String uid_value_name = viewModel.value();
         String ouUid = null;
         String ouName = null;
@@ -65,5 +60,6 @@ public class OrgUnitHolder extends FormViewHolder {
         binding.orgUnitView.updateEditable(viewModel.editable());
         label = new StringBuilder().append(viewModel.label());
 
+        initFieldFocus();
     }
 }

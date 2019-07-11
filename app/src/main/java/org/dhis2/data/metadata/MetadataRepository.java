@@ -1,5 +1,8 @@
 package org.dhis2.data.metadata;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.dhis2.data.tuples.Pair;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
@@ -20,8 +23,6 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeModel;
 import java.util.List;
 import java.util.Map;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 
@@ -106,10 +107,6 @@ public interface MetadataRepository {
     Observable<ObjectStyleModel> getObjectStyle(String uid);
 
     Observable<List<OrganisationUnitModel>> getOrganisationUnits();
-
-
-    @NonNull
-    Observable<List<ResourceModel>> syncState(ProgramModel program);
 
     Flowable<Pair<Integer, Integer>> getDownloadedData();
 

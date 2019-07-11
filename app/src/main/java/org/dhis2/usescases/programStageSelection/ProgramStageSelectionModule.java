@@ -53,7 +53,7 @@ public class ProgramStageSelectionModule {
 
     @Provides
     @PerActivity
-    RulesRepository rulesRepository(BriteDatabase briteDatabase) {
-        return new RulesRepository(briteDatabase);
+    RulesRepository rulesRepository(BriteDatabase briteDatabase,@NonNull D2 d2) {
+        return new RulesRepository(briteDatabase,d2);
     }
 }
