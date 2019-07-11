@@ -107,7 +107,7 @@ class LoginPresenter internal constructor(private val configurationRepository: C
     }
 
     override fun logIn(serverUrl: String, userName: String, pass: String) {
-        val baseUrl = HttpUrl.parse(canonizeUrl(serverUrl+"/api")) ?: return
+        val baseUrl = HttpUrl.parse(canonizeUrl(serverUrl + "/api")) ?: return
         disposable.add(
                 configurationRepository.configure(baseUrl)
                         .map { config -> (view.abstractActivity.applicationContext as App).createServerComponent(config).userManager() }
@@ -191,7 +191,7 @@ class LoginPresenter internal constructor(private val configurationRepository: C
             prefs.edit().putString("pin", null).apply()
             view.alreadyAuthenticated()
 //            handleResponse(Response.success<Any>(null))
-        }else
+        } else
             view.renderError(throwable)
         view.showLoginProgress(false)
     }

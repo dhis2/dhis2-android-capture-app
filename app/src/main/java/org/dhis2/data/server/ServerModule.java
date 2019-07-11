@@ -7,8 +7,8 @@ import androidx.annotation.NonNull;
 
 import com.facebook.stetho.okhttp3.StethoInterceptor;
 
+import org.dhis2.BuildConfig;
 import org.dhis2.data.dagger.PerServer;
-import org.hisp.dhis.android.BuildConfig;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.api.authentication.internal.Authenticator;
 import org.hisp.dhis.android.core.arch.api.authentication.internal.BasicAuthenticatorFactory;
@@ -28,6 +28,7 @@ import javax.net.ssl.X509TrustManager;
 
 import dagger.Module;
 import dagger.Provides;
+import okhttp3.CipherSuite;
 import okhttp3.ConnectionSpec;
 import okhttp3.Dispatcher;
 import okhttp3.OkHttpClient;
@@ -106,10 +107,10 @@ public class ServerModule {
 
                 ConnectionSpec cs = new ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
                         .tlsVersions(TlsVersion.TLS_1_0, TlsVersion.TLS_1_1, TlsVersion.TLS_1_2)
-                        /*.cipherSuites(
+                        .cipherSuites(
                                 CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
                                 CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
-                                CipherSuite.TLS_DHE_RSA_WITH_AES_128_GCM_SHA256)*/
+                                CipherSuite.TLS_DHE_RSA_WITH_AES_128_GCM_SHA256)
                         .build();
 
                 List<ConnectionSpec> specs = new ArrayList<>();

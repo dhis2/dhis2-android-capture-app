@@ -81,17 +81,14 @@ final class MainPresenter implements MainContracts.Presenter {
 
     @Override
     public void logOut() {
-        compositeDisposable.add(
-                d2.userModule().logOut()
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                () -> {
-                                    WorkManager.getInstance().cancelAllWork();
-                                    view.startActivity(LoginActivity.class, null, true, true, null);
-                                },
-                                t -> view.displayMessage(t.getMessage())
-                        ));
+        compositeDisposable.add(d2.userModule().logOut()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(() -> {
+                    WorkManager.getInstance().cancelAllWork();
+                    view.startActivity(LoginActivity.class, null, true, true, null);
+                }, Timber::e)
+        );
     }
 
     @Override

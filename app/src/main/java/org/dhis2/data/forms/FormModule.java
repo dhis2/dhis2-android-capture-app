@@ -2,10 +2,10 @@ package org.dhis2.data.forms;
 
 import androidx.annotation.NonNull;
 
-import org.dhis2.data.schedulers.SchedulerProvider;
-import org.dhis2.utils.CodeGenerator;
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import org.dhis2.data.schedulers.SchedulerProvider;
+import org.dhis2.utils.CodeGenerator;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.rules.RuleExpressionEvaluator;
 
@@ -35,8 +35,8 @@ public class FormModule {
 
     @Provides
     @PerForm
-    RulesRepository rulesRepository(@NonNull BriteDatabase briteDatabase) {
-        return new RulesRepository(briteDatabase);
+    RulesRepository rulesRepository(@NonNull BriteDatabase briteDatabase, @NonNull D2 d2) {
+        return new RulesRepository(briteDatabase, d2);
     }
 
     @Provides
@@ -49,10 +49,10 @@ public class FormModule {
             /*@NonNull CurrentDateProvider currentDateProvider*/) {
         if (formViewArguments.type().equals(FormViewArguments.Type.ENROLLMENT)) {
             return new EnrollmentFormRepository(briteDatabase, evaluator, rulesRepository,
-                    codeGenerator, formViewArguments.uid(),d2);
+                    codeGenerator, formViewArguments.uid(), d2);
         } else if (formViewArguments.type().equals(FormViewArguments.Type.EVENT)) {
             return new EventRepository(briteDatabase, evaluator,
-                    rulesRepository, formViewArguments.uid(),d2);
+                    rulesRepository, formViewArguments.uid(), d2);
         } else {
             throw new IllegalArgumentException("FormViewArguments of " +
                     "unexpected type: " + formViewArguments.type());
