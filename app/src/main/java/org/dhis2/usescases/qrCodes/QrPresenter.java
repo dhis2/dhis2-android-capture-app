@@ -5,6 +5,8 @@ import android.annotation.SuppressLint;
 import org.dhis2.data.qr.QRInterface;
 
 import androidx.annotation.NonNull;
+
+import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
@@ -32,6 +34,15 @@ public class QrPresenter implements QrContracts.Presenter {
                         Timber::d
                 )
         );
+
+        /*disposable.add(qrInterface.getUncodedData(teUid)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        view::showQRBitmap,
+                        Timber::e
+                )
+        );*/
     }
 
     @Override

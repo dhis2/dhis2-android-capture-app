@@ -16,6 +16,7 @@ import org.dhis2.Components;
 import org.dhis2.R;
 import org.dhis2.databinding.FragmentAboutBinding;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
+import org.hisp.dhis.android.core.user.UserCredentials;
 import org.hisp.dhis.android.core.user.UserCredentialsModel;
 
 import javax.inject.Inject;
@@ -90,7 +91,7 @@ public class AboutFragment extends FragmentGlobalAbstract implements AboutContra
     }
 
     @Override
-    public void renderUserCredentials(UserCredentialsModel userCredentialsModel) {
+    public void renderUserCredentials(UserCredentials userCredentialsModel) {
         String text = String.format(getString(R.string.about_user), userCredentialsModel.username());
         aboutBinding.aboutUser.setText(text);
     }

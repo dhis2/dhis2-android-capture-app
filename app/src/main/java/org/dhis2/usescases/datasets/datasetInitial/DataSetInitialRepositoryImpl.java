@@ -9,6 +9,7 @@ import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.dataset.DataSet;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
+import org.hisp.dhis.android.core.period.PeriodType;
 
 import java.util.Date;
 import java.util.Iterator;
@@ -102,5 +103,11 @@ public class DataSetInitialRepositoryImpl implements DataSetInitialRepository {
     public Flowable<String> getCategoryOptionCombo(List<String> catOptions, String catCombo) {
         return Flowable.just(d2.categoryModule().categoryOptionCombos.withCategoryOptions().byCategoryOptions(catOptions).byCategoryComboUid().eq(catCombo).one().get())
                 .map(BaseIdentifiableObject::uid);
+    }
+
+    @NonNull
+    @Override
+    public Flowable<String> getPeriodId(PeriodType periodType, Date date) {
+        return Flowable.fromCallable(() -> d2.periodModule().periodHelper.getPeriod(periodType, date).periodId());
     }
 }

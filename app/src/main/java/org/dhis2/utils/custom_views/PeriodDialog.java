@@ -8,19 +8,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.DialogFragment;
+
 import org.dhis2.R;
 import org.dhis2.databinding.DialogPeriodBinding;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.period.PeriodType;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.databinding.DataBindingUtil;
-import androidx.fragment.app.DialogFragment;
 
 /**
  * QUADRAM. Created by ppajuelo on 21/05/2018.
@@ -43,7 +42,7 @@ public class PeriodDialog extends DialogFragment {
         possitiveListener = null;
         negativeListener = null;
         title = null;
-        currentDate = DateUtils.getInstance().getNextPeriod(period, Calendar.getInstance().getTime(), -1);
+        currentDate = DateUtils.getInstance().getToday();
     }
 
     public PeriodDialog setPeriod(PeriodType period) {
@@ -104,8 +103,8 @@ public class PeriodDialog extends DialogFragment {
         else
             currentDate = DateUtils.getInstance().getNextPeriod(period, currentDate, 0);
 
-        binding.selectedPeriod.setText(DateUtils.getInstance().getPeriodUIString(period,
-                currentDate, Locale.getDefault()));
+        binding.selectedPeriod.setText(DateUtils.getInstance().getPeriodUIString(period, currentDate, Locale.getDefault()));
+        checkConstraintDates();
 
         binding.periodBefore.setOnClickListener(view -> {
             previousPeriod();
@@ -115,9 +114,8 @@ public class PeriodDialog extends DialogFragment {
         binding.periodNext.setOnClickListener(view -> {
             nextPeriod();
             checkConstraintDates();
-
         });
-        checkConstraintDates();
+
         return binding.getRoot();
     }
 
@@ -133,19 +131,21 @@ public class PeriodDialog extends DialogFragment {
 
     protected void checkConstraintDates() {
 
-        if (minDate != null && minDate.equals(currentDate))
+        if (minDate != null && minDate.equals(currentDate)) {
             binding.periodBefore.setEnabled(false);
-        else
+            binding.periodBefore.setVisibility(View.INVISIBLE);
+        }else {
             binding.periodBefore.setEnabled(true);
+            binding.periodBefore.setVisibility(View.VISIBLE);
+        }
 
-        if (maxDate != null && maxDate.equals(currentDate))
+        if (maxDate != null && maxDate.equals(currentDate)) {
             binding.periodNext.setEnabled(false);
-        else
+            binding.periodNext.setVisibility(View.INVISIBLE);
+        }else {
             binding.periodNext.setEnabled(true);
-
-        binding.periodNext.setVisibility(maxDate == null || currentDate.before(maxDate) ? View.VISIBLE : View.GONE);
-        binding.periodBefore.setVisibility(minDate == null || currentDate.after(minDate) ? View.VISIBLE : View.GONE);
-
+            binding.periodNext.setVisibility(View.VISIBLE);
+        }
     }
 
     public PeriodDialog setMinDate(Date minDate) {
@@ -154,7 +154,7 @@ public class PeriodDialog extends DialogFragment {
     }
 
     public PeriodDialog setMaxDate(Date maxDate) {
-        this.maxDate = maxDate;
+        this.maxDate = maxDate != null ? DateUtils.getInstance().getNextPeriod(period, maxDate, 0) : null;
         return this;
     }
 

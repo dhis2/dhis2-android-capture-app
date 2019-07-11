@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 
 import static android.text.TextUtils.isEmpty;
@@ -127,7 +128,6 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
                 program.completeEventsExpiryDays(),
                 program.expiryPeriodType(),
                 program.expiryDays());
-
     }
 
     private boolean checkOrgUnitRange(String orgUnitUid, Date eventDate) {
@@ -143,12 +143,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     }
 
     private String getOrgUnitName(String orgUnitUid) {
-        String orgUrgUnitName = "";
-        try (Cursor orgUnitCursor = briteDatabase.query("SELECT displayName FROM OrganisationUnit WHERE uid = ?", orgUnitUid)) {
-            if (orgUnitCursor != null && orgUnitCursor.moveToFirst())
-                orgUrgUnitName = orgUnitCursor.getString(0);
-        }
-        return orgUrgUnitName;
+        return d2.organisationUnitModule().organisationUnits.uid(orgUnitUid).get().displayName();
     }
 
     private List<Pair<String, String>> getData(List<TrackedEntityDataValue> dataValueList, List<String> showInReportsDataElements) {

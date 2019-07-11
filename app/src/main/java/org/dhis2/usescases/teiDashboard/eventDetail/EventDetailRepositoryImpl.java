@@ -6,19 +6,20 @@ import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.utils.DateUtils;
+import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
+import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.State;
-import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
+import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
-import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.program.ProgramStageDataElementModel;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
-import org.hisp.dhis.android.core.program.ProgramStageSectionModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
+import org.hisp.dhis.android.core.program.Program;
+import org.hisp.dhis.android.core.program.ProgramStage;
+import org.hisp.dhis.android.core.program.ProgramStageSection;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
 import java.util.ArrayList;
@@ -27,7 +28,7 @@ import java.util.Date;
 import java.util.List;
 
 import androidx.annotation.NonNull;
-import io.reactivex.BackpressureStrategy;
+
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 
@@ -37,54 +38,34 @@ import io.reactivex.Observable;
 
 public class EventDetailRepositoryImpl implements EventDetailRepository {
 
-    private static final String ORG_UNIT_NAME = "SELECT OrganisationUnit.displayName FROM OrganisationUnit " +
-            "JOIN Event ON Event.organisationUnit = OrganisationUnit.uid " +
-            "WHERE Event.uid = ? " +
-            "LIMIT 1";
-    private static final String ORG_UNIT = "SELECT OrganisationUnit.* FROM OrganisationUnit " +
-            "JOIN Event ON Event.organisationUnit = OrganisationUnit.uid " +
-            "WHERE Event.uid = ? " +
-            "LIMIT 1";
-
     private final BriteDatabase briteDatabase;
     private final String eventUid;
     private final String teiUid;
+    private final D2 d2;
 
 
-    EventDetailRepositoryImpl(BriteDatabase briteDatabase, String eventUid, String teiUid) {
+    EventDetailRepositoryImpl(BriteDatabase briteDatabase, String eventUid, String teiUid, D2 d2) {
         this.briteDatabase = briteDatabase;
         this.eventUid = eventUid;
         this.teiUid = teiUid;
+        this.d2 = d2;
     }
 
     @NonNull
     @Override
-    public Observable<EventModel> eventModelDetail(String uid) {
-        String SELECT_EVENT_WITH_UID = "SELECT * FROM " + EventModel.TABLE + " WHERE " + EventModel.Columns.UID + "='" + uid + "' " +
-                "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "' LIMIT 1";
-        return briteDatabase.createQuery(EventModel.TABLE, SELECT_EVENT_WITH_UID)
-                .mapToOne(EventModel::create);
+    public Observable<Event> eventModelDetail(String uid) {
+        return Observable.fromCallable(() -> d2.eventModule().events.uid(uid).get()).filter(event -> event.state() != State.TO_DELETE);
     }
 
     @NonNull
     @Override
-    public Observable<List<ProgramStageSectionModel>> programStageSection(String eventUid) {
-        String SELECT_PROGRAM_STAGE_SECTIONS = String.format(
-                "SELECT %s.* FROM %s " +
-                        "JOIN %s ON %s.%s = %s.%s " +
-                        "WHERE %s.%s = ? " +
-                        "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "' " +
-                        "ORDER BY %s.%s",
-                ProgramStageSectionModel.TABLE, ProgramStageSectionModel.TABLE,
-                EventModel.TABLE, EventModel.TABLE, EventModel.Columns.PROGRAM_STAGE, ProgramStageSectionModel.TABLE, ProgramStageSectionModel.Columns.PROGRAM_STAGE,
-                EventModel.TABLE, EventModel.Columns.UID,
-                ProgramStageSectionModel.TABLE, ProgramStageSectionModel.Columns.SORT_ORDER
-        );
-        return briteDatabase.createQuery(EventModel.TABLE, SELECT_PROGRAM_STAGE_SECTIONS, eventUid == null ? "" : eventUid)
-                .mapToList(ProgramStageSectionModel::create);
+    public Observable<List<ProgramStageSection>> programStageSection(String eventUid) {
+        return eventModelDetail(eventUid)
+                .map(event -> d2.programModule().programStageSections.byProgramStageUid().eq(event.programStage()).get());
+
     }
 
-    @NonNull
+    /*@NonNull
     @Override
     public Observable<List<ProgramStageDataElementModel>> programStageDataElement(String eventUid) {
         String SELECT_PROGRAM_STAGE_DE = String.format(
@@ -98,25 +79,22 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
         );
         return briteDatabase.createQuery(EventModel.TABLE, SELECT_PROGRAM_STAGE_DE, eventUid == null ? "" : eventUid)
                 .mapToList(ProgramStageDataElementModel::create);
-    }
+    }*/
 
-    @NonNull
+    /*@NonNull
     @Override
     public Observable<List<TrackedEntityDataValueModel>> dataValueModelList(String eventUid) {
         String SELECT_TRACKED_ENTITY_DATA_VALUE_WITH_EVENT_UID = "SELECT * FROM " + TrackedEntityDataValueModel.TABLE + " WHERE " + TrackedEntityDataValueModel.Columns.EVENT + "=";
         String uid = eventUid == null ? "" : eventUid;
         return briteDatabase.createQuery(TrackedEntityDataValueModel.TABLE, SELECT_TRACKED_ENTITY_DATA_VALUE_WITH_EVENT_UID + "'" + uid + "'")
                 .mapToList(TrackedEntityDataValueModel::create);
-    }
+    }*/
 
     @NonNull
     @Override
-    public Observable<ProgramStageModel> programStage(String eventUid) {
-        String query = "SELECT ProgramStage.* FROM ProgramStage " +
-                "JOIN Event ON Event.programStage = ProgramStage.uid " +
-                "WHERE Event.uid = ? LIMIT 1";
-        return briteDatabase.createQuery(ProgramStageModel.TABLE, query, eventUid == null ? "" : eventUid)
-                .mapToOne(ProgramStageModel::create);
+    public Observable<ProgramStage> programStage(String eventUid) {
+        return eventModelDetail(eventUid)
+                .map(event -> d2.programModule().programStages.uid(event.programStage()).get());
     }
 
     @Override
@@ -130,7 +108,7 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
     }
 
     @Override
-    public void deletePostedEvent(EventModel eventModel) {
+    public void deletePostedEvent(Event eventModel) {
         Date currentDate = Calendar.getInstance().getTime();
         EventModel event = EventModel.builder()
                 .id(eventModel.id())
@@ -159,24 +137,31 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
     @NonNull
     @Override
     public Observable<String> orgUnitName(String eventUid) {
-        return briteDatabase.createQuery(OrganisationUnitModel.TABLE, ORG_UNIT_NAME, eventUid == null ? "" : eventUid)
-                .mapToOne(cursor -> cursor.getString(0));
+        return eventModelDetail(eventUid)
+                .map(event -> d2.organisationUnitModule().organisationUnits.uid(event.organisationUnit()).get().displayName());
     }
 
     @NonNull
     @Override
-    public Observable<OrganisationUnitModel> orgUnit(String eventUid) {
-        return briteDatabase.createQuery(OrganisationUnitModel.TABLE, ORG_UNIT, eventUid == null ? "" : eventUid)
-                .mapToOne(OrganisationUnitModel::create);
+    public Observable<OrganisationUnit> orgUnit(String eventUid) {
+        return eventModelDetail(eventUid)
+                .map(event -> d2.organisationUnitModule().organisationUnits.uid(event.organisationUnit()).get());
     }
 
     @Override
-    public Observable<List<OrganisationUnitModel>> getOrgUnits() {
-        String EVENT_ORG_UNITS = "SELECT OrganisationUnit.* FROM OrganisationUnit " +
-                "JOIN OrganisationUnitProgramLink ON OrganisationUnitProgramLink.organisationUnit = OrganisationUnit.uid " +
-                "JOIN Event ON Event.program = OrganisationUnitProgramLink.program " +
-                "WHERE Event.uid = ?";
-        return briteDatabase.createQuery(OrganisationUnitModel.TABLE, EVENT_ORG_UNITS, eventUid).mapToList(OrganisationUnitModel::create);
+    public Observable<List<OrganisationUnit>> getOrgUnits() {
+        return Observable.fromCallable(() -> d2.organisationUnitModule().organisationUnits.withPrograms().get())
+                .map(organisationUnits -> {
+                    List<OrganisationUnit> programOrganisationUnits = new ArrayList<>();
+                    String programId = d2.eventModule().events.uid(eventUid).get().program();
+                    for(OrganisationUnit organisationUnit : organisationUnits){
+                        for (Program program : organisationUnit.programs()) {
+                            if (program.uid().equals(programId))
+                                programOrganisationUnits.add(organisationUnit);
+                        }
+                    }
+                    return programOrganisationUnits;
+                });
     }
 
     @Override
@@ -197,19 +182,26 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
                     else
                         return Observable.just(Pair.create("", new ArrayList<>()));
                 });
+        /*return getProgram(eventUid)
+                .map(program -> {
+                    CategoryCombo catCombo = program.categoryCombo();
+                    if (catCombo != null && !catCombo.isDefault())
+                        return Pair.create(catCombo.name(), d2.categoryModule().categoryOptionCombos.byCategoryComboUid().eq(catCombo.uid()).get());
+                    else
+                        return Pair.create("", new ArrayList<>());
+                });*/
     }
 
     @NonNull
     @Override
     public Flowable<EventStatus> eventStatus(String eventUid) {
-        return briteDatabase.createQuery(EventModel.TABLE, "SELECT Event.status FROM Event WHERE Event.uid = ? LIMIT 1", eventUid == null ? "" : eventUid)
-                .mapToOne(cursor -> EventStatus.valueOf(cursor.getString(0))).toFlowable(BackpressureStrategy.LATEST);
+        return Flowable.fromCallable(() -> d2.eventModule().events.uid(eventUid).get().status());
     }
 
     @Override
-    public Observable<ProgramModel> getProgram(String eventUid) {
-        return briteDatabase.createQuery(ProgramModel.TABLE, "SELECT Program.* FROM Program JOIN Event ON Event.program = Program.uid WHERE Event.uid = ? LIMIT 1", eventUid == null ? "" : eventUid)
-                .mapToOne(ProgramModel::create);
+    public Observable<Program> getProgram(String eventUid) {
+        return eventModelDetail(eventUid)
+                .map(event -> d2.programModule().programs.uid(event.program()).get());
     }
 
     @Override
@@ -225,12 +217,8 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
 
     @Override
     public Observable<Boolean> isEnrollmentActive(String eventUid) {
-        return briteDatabase.createQuery(EnrollmentModel.TABLE,
-                "SELECT Enrollment.* FROM Enrollment " +
-                        "JOIN Event ON Event.enrollment = Enrollment.uid " +
-                        "WHERE Event.uid = ?", eventUid)
-                .mapToOne(EnrollmentModel::create)
-                .map(enrollment -> enrollment.enrollmentStatus() == EnrollmentStatus.ACTIVE);
+        Event event = d2.eventModule().events.uid(eventUid).withAllChildren().get();
+        return Observable.fromCallable(() -> event == null || event.enrollment() == null || d2.enrollmentModule().enrollments.uid(event.enrollment()).get().status() == EnrollmentStatus.ACTIVE);
     }
 
     private void updateProgramTable(Date lastUpdated, String programUid) {

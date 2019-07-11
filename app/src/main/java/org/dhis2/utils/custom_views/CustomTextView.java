@@ -121,12 +121,13 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
                     editText.setEllipsize(TextUtils.TruncateAt.END);
                     break;
                 case LONG_TEXT:
-                    inputLayout.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 93, getResources().getDisplayMetrics());
+                    editText.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
                     editText.setMaxLines(Integer.MAX_VALUE);
                     editText.setEllipsize(null);
                     editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
                     editText.setVerticalScrollBarEnabled(true);
                     editText.setScrollBarStyle(View.SCROLLBARS_INSIDE_INSET);
+                    editText.setOverScrollMode(View.OVER_SCROLL_ALWAYS);
                     editText.setSingleLine(false);
                     editText.setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
                     break;
@@ -301,7 +302,11 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
     }
 
     public void setOnEditorActionListener(TextView.OnEditorActionListener actionListener) {
-        editText.setOnEditorActionListener(actionListener);
+        editText.setOnEditorActionListener((v, actionId, event) -> {
+            if (validate())
+                return actionListener.onEditorAction(v, actionId, event);
+            return true;
+        });
     }
 
 

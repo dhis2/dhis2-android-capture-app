@@ -7,9 +7,10 @@ import android.content.pm.PackageManager;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
 
@@ -31,6 +32,7 @@ import java.util.Locale;
 
 import io.reactivex.processors.FlowableProcessor;
 
+import static android.text.TextUtils.isEmpty;
 import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter.ACCESS_COARSE_LOCATION_PERMISSION_REQUEST;
 
 /**
@@ -40,8 +42,10 @@ import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventIn
 public class CoordinatesView extends FieldLayout implements View.OnClickListener, View.OnFocusChangeListener {
 
     private ViewDataBinding binding;
-    private TextInputEditText latLong;
-    private TextInputLayout inputLayout;
+    private TextInputEditText latitude;
+    private TextInputEditText longitude;
+    private TextInputLayout latitudeInputLayout;
+    private TextInputLayout longitudeInputLayout;
     private FusedLocationProviderClient mFusedLocationClient;
     private LocationRequest locationRequest;
     private LocationCallback locationCallback;
@@ -49,6 +53,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
     private OnCurrentLocationClick listener2;
     private FlowableProcessor<RowAction> processor;
     private String uid;
+    private TextView errorView;
 
     public CoordinatesView(Context context) {
         super(context);
@@ -72,7 +77,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
 
     @Override
     public void performOnFocusAction() {
-        latLong.requestFocus();
+        latitude.requestFocus();
     }
 
 
@@ -82,18 +87,46 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
         else
             binding = DataBindingUtil.inflate(inflater, R.layout.form_coordinates_accent, this, true);
 
-        inputLayout = findViewById(R.id.inputLayout);
-        latLong = findViewById(R.id.latlong);
+        latitudeInputLayout = findViewById(R.id.latitudeInputLayout);
+        longitudeInputLayout = findViewById(R.id.longInputLayout);
+        latitude = findViewById(R.id.latitude);
+        longitude = findViewById(R.id.longitude);
 
-        latLong.setOnFocusChangeListener(this::onFocusChange);
-        latLong.setFocusable(true); //Makes editText editable
-        latLong.setClickable(true);//  and clickable
+        errorView = findViewById(R.id.errorMessage);
+
+        latitude.setOnEditorActionListener((v, actionId, event) -> {
+            longitude.requestFocus();
+            longitude.performClick();
+            return true;
+        });
+
+        longitude.setOnEditorActionListener((v, actionId, event) -> {
+            if (validateCoordinates()) {
+                listener2.onCurrentLocationClick(Double.valueOf(latitude.getText().toString()), Double.valueOf(longitude.getText().toString()));
+            } else {
+                latitude.requestFocus();
+                latitude.performClick();
+            }
+            return true;
+
+        });
+
+        latitude.setFocusable(true); //Makes editText editable
+        latitude.setClickable(true);//  and clickable
+
+        longitude.setFocusable(true); //Makes editText editable
+        longitude.setClickable(true);//  and clickable
 
         ImageButton position = findViewById(R.id.location1);
         ImageButton map = findViewById(R.id.location2);
 
         position.setOnClickListener(this);
         map.setOnClickListener(this);
+    }
+
+    private boolean validateCoordinates() {
+
+        return !isEmpty(latitude.getText()) && !isEmpty(longitude.getText());
     }
 
     public void setMapListener(OnMapPositionClick listener) {
@@ -121,17 +154,26 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
 
     public void setInitialValue(String initialValue) {
         String[] latLongValue = initialValue.replace("[", "").replace("]", "").replace(" ", "").split(",");
-        this.latLong.setText(String.format(Locale.getDefault(), "%.5f, %.5f", Double.valueOf(latLongValue[0]), Double.valueOf(latLongValue[1])));
+        this.latitude.setText(String.format(Locale.getDefault(), "%.5f", Double.valueOf(latLongValue[0])));
+        this.longitude.setText(String.format(Locale.getDefault(), "%.5f", Double.valueOf(latLongValue[1])));
     }
 
     public void setWarning(String msg) {
-        inputLayout.setErrorTextAppearance(R.style.warning_appearance);
-        inputLayout.setError(msg);
+        if (!isEmpty(msg)) {
+            errorView.setTextColor(ContextCompat.getColor(getContext(), R.color.warning_color));
+            errorView.setText(msg);
+            errorView.setVisibility(VISIBLE);
+        } else
+            errorView.setVisibility(GONE);
     }
 
     public void setError(String msg) {
-        inputLayout.setErrorTextAppearance(R.style.error_appearance);
-        inputLayout.setError(msg);
+        if (!isEmpty(msg)) {
+            errorView.setTextColor(ContextCompat.getColor(getContext(), R.color.error_color));
+            errorView.setText(msg);
+            errorView.setVisibility(VISIBLE);
+        } else
+            errorView.setVisibility(GONE);
     }
 
     @Override
@@ -173,7 +215,8 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
     }
 
     public void setEditable(Boolean editable) {
-        latLong.setEnabled(editable);
+        latitude.setEnabled(editable);
+        longitude.setEnabled(editable);
         findViewById(R.id.location1).setEnabled(editable);
         findViewById(R.id.location2).setEnabled(editable);
     }
@@ -186,7 +229,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
     @Override
     public void onFocusChange(View v, boolean hasFocus) {
         if (hasFocus)
-            latLong.performClick();
+            latitude.performClick();
     }
 
 
@@ -210,7 +253,8 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
         }
         String lat = String.format(Locale.getDefault(), "%.5f", latitude);
         String lon = String.format(Locale.getDefault(), "%.5f", longitude);
-        this.latLong.setText(String.format("%s, %s", lat, lon));
+        this.latitude.setText(lat);
+        this.longitude.setText(lon);
         listener2.onCurrentLocationClick(latitude, longitude);
         invalidate();
     }
@@ -240,6 +284,14 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
                     ACCESS_COARSE_LOCATION_PERMISSION_REQUEST);
         } else
             mFusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
+
+    }
+
+    public void clearValueData(){
+
+        this.latitude.setText(null);
+        this.longitude.setText(null);
+
     }
 }
 

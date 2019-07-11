@@ -1,11 +1,11 @@
 package org.dhis2.data.forms.dataentry.fields.unsupported;
 
-import androidx.core.content.ContextCompat;
-
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.databinding.FormUnsupportedCustomBinding;
 import org.dhis2.utils.custom_views.UnsupportedView;
+
+import androidx.appcompat.content.res.AppCompatResources;
 
 
 public class UnsupportedHolder extends FormViewHolder {
@@ -24,7 +24,7 @@ public class UnsupportedHolder extends FormViewHolder {
 
     @Override
     public void performAction() {
-        itemView.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.item_selected_bg));
+        itemView.setBackground(AppCompatResources.getDrawable(itemView.getContext(), R.drawable.item_selected_bg));
         unsupportedView.performOnFocusAction();
     }
 

@@ -23,6 +23,7 @@ import org.dhis2.R;
 import org.dhis2.data.forms.FormFragment;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
+import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
@@ -33,6 +34,7 @@ import org.dhis2.utils.custom_views.OptionSetPopUp;
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
+import java.util.Iterator;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -55,6 +57,7 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
     private String section;
     private ProgressBar progressBar;
     private View dummyFocusView;
+    private boolean isEnrollment;
 
     @NonNull
     public static DataEntryFragment create(@NonNull DataEntryArguments arguments) {
@@ -75,7 +78,7 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
                 .getParcelable(ARGUMENTS), "dataEntryArguments == null");
 
         this.section = args.section();
-
+        this.isEnrollment = args.enrollment()!=null;
         if (((App) context.getApplicationContext()).formComponent() != null)
             ((App) context.getApplicationContext())
                     .formComponent()
@@ -127,12 +130,6 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
         return dataEntryAdapter.asFlowable();
     }
 
-    @NonNull
-    @Override
-    public Flowable<Trio<String, String, Integer>> optionSetActions() {
-        return dataEntryAdapter.asFlowableOption();
-    }
-
     @Override
     public FlowableProcessor<RowAction> getActionProcessor() {
         return dataEntryAdapter.asFlowable();
@@ -145,6 +142,15 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
             progressBar.setVisibility(View.INVISIBLE);
             if (!isEmpty(dataEntryPresenter.getLastFocusItem()))
                 dataEntryAdapter.setLastFocusItem(dataEntryPresenter.getLastFocusItem());
+
+            if(isEnrollment){
+               Iterator<FieldViewModel> iterator = updates.iterator();
+               while (iterator.hasNext()){
+                   if(iterator.next() instanceof DisplayViewModel)
+                       iterator.remove();
+               }
+            }
+
             dataEntryAdapter.swap(updates);
 
         };
@@ -155,18 +161,6 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
         if (!isEmpty(dataEntryPresenter.getLastFocusItem()))
             dataEntryAdapter.setLastFocusItem(dataEntryPresenter.getLastFocusItem());
         dataEntryAdapter.swapWithoutList();
-    }
-
-    @Override
-    public void removeSection(String sectionUid) {
-        if (formFragment instanceof FormFragment) {
-            ((FormFragment) formFragment).hideSections(sectionUid);
-        }
-    }
-
-    @Override
-    public void messageOnComplete(String message, boolean canComplete) {
-        //TODO: When event/enrollment ends if there is a message it should be shown. Only if canComplete, user can finish
     }
 
     public boolean checkMandatory() {
@@ -211,14 +205,6 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
     }
 
     @Override
-    public void setListOptions(List<OptionModel> options) {
-        if (OptionSetDialog.isCreated())
-            OptionSetDialog.newInstance().setOptions(options);
-        else if (OptionSetPopUp.isCreated())
-            OptionSetPopUp.getInstance().setOptions(options);
-    }
-
-    @Override
     public void showMessage(int messageId) {
         AlertDialog dialog = showInfoDialog(getString(R.string.error), getString(R.string.unique_warning), new OnDialogClickListener() {
 
@@ -234,18 +220,5 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
         });
         dialog.show();
         dialog.setCanceledOnTouchOutside(false);
-    }
-
-    @Override
-    public void updateAdapter(RowAction rowAction) {
-        getActivity().runOnUiThread(() -> {
-            dataEntryAdapter.notifyChanges(rowAction);
-            if (rowAction.lastFocusPosition() != -1)
-                if (rowAction.lastFocusPosition() >= dataEntryAdapter.getItemCount())
-                    recyclerView.smoothScrollToPosition(rowAction.lastFocusPosition());
-                else
-                    recyclerView.smoothScrollToPosition(rowAction.lastFocusPosition() + 1);
-        });
-
     }
 }

@@ -176,21 +176,22 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
         Iterator<ProgramRule> ruleIterator = rules.iterator();
         while (ruleIterator.hasNext()) {
             ProgramRule rule = ruleIterator.next();
-            if (rule.condition() == null)
+            if (rule.condition() == null || rule.programStage() != null)
                 ruleIterator.remove();
-            for (ProgramRuleAction action : rule.programRuleActions())
-                if (action.programRuleActionType() == ProgramRuleActionType.HIDEFIELD ||
-                        action.programRuleActionType() == ProgramRuleActionType.HIDESECTION ||
-                        action.programRuleActionType() == ProgramRuleActionType.ASSIGN ||
-                        action.programRuleActionType() == ProgramRuleActionType.SHOWWARNING ||
-                        action.programRuleActionType() == ProgramRuleActionType.SHOWERROR ||
-                        action.programRuleActionType() == ProgramRuleActionType.DISPLAYKEYVALUEPAIR ||
-                        action.programRuleActionType() == ProgramRuleActionType.DISPLAYTEXT ||
-                        action.programRuleActionType() == ProgramRuleActionType.HIDEOPTIONGROUP ||
-                        action.programRuleActionType() == ProgramRuleActionType.HIDEOPTION ||
-                        action.programRuleActionType() == ProgramRuleActionType.SETMANDATORYFIELD)
-                    if (!mandatoryRules.contains(rule))
-                        mandatoryRules.add(rule);
+            else
+                for (ProgramRuleAction action : rule.programRuleActions())
+                    if (action.programRuleActionType() == ProgramRuleActionType.HIDEFIELD ||
+                            action.programRuleActionType() == ProgramRuleActionType.HIDESECTION ||
+                            action.programRuleActionType() == ProgramRuleActionType.ASSIGN ||
+                            action.programRuleActionType() == ProgramRuleActionType.SHOWWARNING ||
+                            action.programRuleActionType() == ProgramRuleActionType.SHOWERROR ||
+                            action.programRuleActionType() == ProgramRuleActionType.DISPLAYKEYVALUEPAIR ||
+                            action.programRuleActionType() == ProgramRuleActionType.DISPLAYTEXT ||
+                            action.programRuleActionType() == ProgramRuleActionType.HIDEOPTIONGROUP ||
+                            action.programRuleActionType() == ProgramRuleActionType.HIDEOPTION ||
+                            action.programRuleActionType() == ProgramRuleActionType.SETMANDATORYFIELD)
+                        if (!mandatoryRules.contains(rule))
+                            mandatoryRules.add(rule);
         }
 
         List<ProgramRuleVariable> variables = d2.programModule().programRuleVariables
@@ -202,9 +203,10 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
             if (variable.trackedEntityAttribute() == null)
                 variableIterator.remove();
         }
+        List<Rule> finalMandatoryRules = trasformToRule(mandatoryRules);
         for (ProgramRuleVariable variable : variables) {
             if (variable.trackedEntityAttribute() != null && !attributeRules.containsKey(variable.trackedEntityAttribute().uid()))
-                attributeRules.put(variable.trackedEntityAttribute().uid(), trasformToRule(mandatoryRules));
+                attributeRules.put(variable.trackedEntityAttribute().uid(), finalMandatoryRules);
             for (ProgramRule rule : rules) {
                 if (rule.condition().contains(variable.displayName()) || actionsContainsAttr(rule.programRuleActions(), variable.displayName())) {
                     if (attributeRules.get(variable.trackedEntityAttribute().uid()) == null)

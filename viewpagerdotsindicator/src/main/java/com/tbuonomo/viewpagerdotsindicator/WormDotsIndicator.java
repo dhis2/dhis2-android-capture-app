@@ -17,6 +17,7 @@ import android.widget.RelativeLayout;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 import androidx.dynamicanimation.animation.FloatPropertyCompat;
 import androidx.dynamicanimation.animation.SpringAnimation;
@@ -173,7 +174,7 @@ public class WormDotsIndicator extends FrameLayout {
         ViewGroup dot = (ViewGroup) LayoutInflater.from(getContext()).inflate(R.layout.worm_dot_layout, this, false);
         View dotImageView = dot.findViewById(R.id.worm_dot);
         dotImageView.setBackground(
-                ContextCompat.getDrawable(getContext(), stroke ? R.drawable.worm_dot_stroke_background : R.drawable.worm_dot_background));
+                AppCompatResources.getDrawable(getContext(), stroke ? R.drawable.worm_dot_stroke_background : R.drawable.worm_dot_background));
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) dotImageView.getLayoutParams();
         params.width = params.height = dotsSize;
         params.addRule(RelativeLayout.CENTER_VERTICAL, RelativeLayout.TRUE);

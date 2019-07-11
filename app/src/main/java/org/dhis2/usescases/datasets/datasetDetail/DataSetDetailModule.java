@@ -1,7 +1,5 @@
 package org.dhis2.usescases.datasets.datasetDetail;
 
-import com.squareup.sqlbrite2.BriteDatabase;
-
 import org.dhis2.data.dagger.PerActivity;
 import org.hisp.dhis.android.core.D2;
 
@@ -27,7 +25,7 @@ public class DataSetDetailModule {
 
     @Provides
     @PerActivity
-    DataSetDetailRepository eventDetailRepository(D2 d2, BriteDatabase briteDatabase) {
-        return new DataSetDetailRepositoryImpl(d2, briteDatabase);
+    DataSetDetailRepository eventDetailRepository(D2 d2) {
+        return new DataSetDetailRepositoryImpl(d2);
     }
 }

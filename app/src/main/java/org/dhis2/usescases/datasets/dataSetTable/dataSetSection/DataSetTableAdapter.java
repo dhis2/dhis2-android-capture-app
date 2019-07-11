@@ -40,9 +40,9 @@ import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.unsupported.UnsupportedRow;
 import org.dhis2.data.forms.dataentry.tablefields.unsupported.UnsupportedViewModel;
 import org.dhis2.data.tuples.Trio;
-import org.hisp.dhis.android.core.category.CategoryOptionModel;
+import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.common.ValueType;
-import org.hisp.dhis.android.core.dataelement.DataElementModel;
+import org.hisp.dhis.android.core.dataelement.DataElement;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 import org.jetbrains.annotations.NotNull;
 
@@ -55,7 +55,7 @@ import io.reactivex.processors.FlowableProcessor;
  * QUADRAM. Created by ppajuelo on 02/10/2018.
  */
 
-public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, DataElementModel, String> {
+public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, DataElement, String> {
     private static final int EDITTEXT = 0;
     private static final int BUTTON = 1;
     private static final int CHECKBOX = 2;
@@ -89,6 +89,7 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionMode
     private int currentHeight;
 
     private String catCombo;
+    private Boolean dataElementDecoration;
 
     public enum TableScale {
         SMALL, DEFAULT, LARGE
@@ -221,8 +222,8 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionMode
      */
     @Override
     public void onBindColumnHeaderViewHolder(AbstractViewHolder holder, Object columnHeaderItemModel, int position) {
-        ((DataSetRHeaderHeader) holder).bind(((CategoryOptionModel) columnHeaderItemModel).displayName(), currentTableScale);
-        if (((CategoryOptionModel) columnHeaderItemModel).displayName().isEmpty()) {
+        ((DataSetRHeaderHeader) holder).bind(((CategoryOption) columnHeaderItemModel).displayName(), currentTableScale);
+        if (((CategoryOption) columnHeaderItemModel).displayName().isEmpty()) {
             ((DataSetRHeaderHeader) holder).binding.container.getLayoutParams().width = currentWidth;
         } else {
             int i = getHeaderRecyclerPositionFor(columnHeaderItemModel);
@@ -265,7 +266,7 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionMode
     @Override
     public void onBindRowHeaderViewHolder(AbstractViewHolder holder, Object rowHeaderItemModel, int
             position) {
-        ((DataSetRowHeader) holder).bind(mRowHeaderItems.get(position), currentTableScale);
+        ((DataSetRowHeader) holder).bind(mRowHeaderItems.get(position), currentTableScale, dataElementDecoration);
         holder.itemView.getLayoutParams().height = currentHeight;
     }
 
@@ -381,6 +382,10 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionMode
 
     public String getCatCombo() {
         return catCombo;
+    }
+
+    public void setDataElementDecoration(Boolean dataElementDecoration) {
+        this.dataElementDecoration = dataElementDecoration;
     }
 
 

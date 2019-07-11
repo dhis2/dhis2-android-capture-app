@@ -7,15 +7,21 @@ import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.tuples.Pair;
+import org.dhis2.data.tuples.Quartet;
 import org.dhis2.data.tuples.Sextet;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel;
+import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryModel;
+import org.hisp.dhis.android.core.category.CategoryOption;
+import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.common.State;
+import org.hisp.dhis.android.core.dataelement.DataElement;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
+import org.hisp.dhis.android.core.dataset.DataInputPeriod;
 import org.hisp.dhis.android.core.dataset.DataInputPeriodModel;
 import org.hisp.dhis.android.core.datavalue.DataValueModel;
 
@@ -23,11 +29,13 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nullable;
 
+import androidx.annotation.NonNull;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -37,14 +45,14 @@ import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
-public class DataValuePresenter implements DataValueContract.Presenter {
+public class DataValuePresenter implements DataValueContract.Presenter{
 
     private String orgUnitUid;
     private String periodTypeName;
     private String periodFinalDate;
     private String attributeOptionCombo;
 
-    private Trio<List<DataElementModel>, Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>>, List<CategoryCombo>> tableData;
+    private Trio<List<DataElement>, Map<String, List<List<Pair<CategoryOption, Category>>>>, List<CategoryCombo>> tableData;
 
     private DataValueRepository repository;
     private DataValueContract.View view;
@@ -57,13 +65,12 @@ public class DataValuePresenter implements DataValueContract.Presenter {
 
     private List<List<List<FieldViewModel>>> tableCells;
     private List<List<FieldViewModel>> cells;
-    private List<DataInputPeriodModel> dataInputPeriodModel;
+    private List<DataInputPeriod> dataInputPeriodModel;
     private MetadataRepository metadataRepository;
     @NonNull
     private FlowableProcessor<RowAction> processor;
     private FlowableProcessor<Trio<String, String, Integer>> processorOptionSet;
-
-    public DataValuePresenter(DataValueRepository repository, MetadataRepository metadataRepository) {
+    public DataValuePresenter(DataValueRepository repository, MetadataRepository metadataRepository){
         this.repository = repository;
         this.metadataRepository = metadataRepository;
     }
@@ -82,7 +89,7 @@ public class DataValuePresenter implements DataValueContract.Presenter {
         this.periodFinalDate = periodFinalDate;
         this.attributeOptionCombo = attributeOptionCombo;
         this.periodId = periodId;
-        compositeDisposable.add(
+        /*compositeDisposable.add(
                 Flowable.zip(
                         repository.getDataElements(section),
                         repository.getCatOptions(section),
@@ -95,7 +102,7 @@ public class DataValuePresenter implements DataValueContract.Presenter {
                                 data -> this.tableData = data,
                                 Timber::e
                         )
-        );
+        );*/
 
         compositeDisposable.add(
                 Flowable.zip(
@@ -117,8 +124,8 @@ public class DataValuePresenter implements DataValueContract.Presenter {
     }
 
     @Override
-    public void complete() {
-        if (view.isOpenOrReopen()) {
+    public void complete(){
+        if(view.isOpenOrReopen()) {
             if (((!dataTableModel.dataSet().fieldCombinationRequired()) || checkAllFieldRequired() && dataTableModel.dataSet().fieldCombinationRequired())
                     && checkMandatoryField())
                 compositeDisposable.add(
@@ -131,7 +138,7 @@ public class DataValuePresenter implements DataValueContract.Presenter {
                 view.showAlertDialog(view.getContext().getString(R.string.missing_mandatory_fields_title), view.getContext().getResources().getString(R.string.field_mandatory));
             else
                 view.showAlertDialog(view.getContext().getString(R.string.missing_mandatory_fields_title), view.getContext().getResources().getString(R.string.field_required));
-        } else {
+        }else {
             view.isOpenOrReopen();
             compositeDisposable.add(
                     repository.reopenDataSet(orgUnitUid, periodId, attributeOptionCombo)
@@ -143,16 +150,16 @@ public class DataValuePresenter implements DataValueContract.Presenter {
         }
     }
 
-    private boolean checkAllFieldRequired() {
+    private boolean checkAllFieldRequired(){
         boolean checkAllField = true;
-        for (int i = 0; i < tableCells.size(); i++) {
+        for(int i=0; i< tableCells.size(); i++) {
             for (List<FieldViewModel> rowFields : tableCells.get(i)) {
                 boolean hasValue = false;
                 for (FieldViewModel field : rowFields) {
                     if (field.value() != null && !field.value().isEmpty())
                         hasValue = true;
 
-                    if (hasValue && (field.value() == null || field.value().isEmpty())) {
+                    if (hasValue && field.editable() && (field.value() == null || field.value().isEmpty())) {
                         checkAllField = false;
                         view.highligthHeaderRow(i, tableCells.get(i).indexOf(rowFields), false);
                     }
@@ -164,10 +171,10 @@ public class DataValuePresenter implements DataValueContract.Presenter {
 
     private boolean checkMandatoryField() {
         boolean mandatoryOk = true;
-        for (int i = 0; i < tableCells.size(); i++) {
+        for(int i=0; i< tableCells.size(); i++) {
             for (List<FieldViewModel> rowFields : tableCells.get(i)) {
                 for (FieldViewModel field : rowFields) {
-                    if (field.mandatory() && (field.value() == null || field.value().isEmpty())) {
+                    if (field.editable() && field.mandatory() && (field.value() == null || field.value().isEmpty())) {
                         mandatoryOk = false;
                         view.highligthHeaderRow(i, tableCells.get(i).indexOf(rowFields), true);
                     }
@@ -177,7 +184,7 @@ public class DataValuePresenter implements DataValueContract.Presenter {
         return mandatoryOk;
     }
 
-    private DataValueModel tranformDataSetTableModelToDataValueModel(DataSetTableModel dataSetTableModel) {
+    private DataValueModel tranformDataSetTableModelToDataValueModel(DataSetTableModel dataSetTableModel){
         Date currentDate = Calendar.getInstance().getTime();
         return DataValueModel.builder()
                 .dataElement(dataSetTableModel.dataElement())
@@ -196,7 +203,6 @@ public class DataValuePresenter implements DataValueContract.Presenter {
 
     @Override
     public void onDettach() {
-        compositeDisposable.clear();
     }
 
     @Override
@@ -205,7 +211,7 @@ public class DataValuePresenter implements DataValueContract.Presenter {
     }
 
     @Override
-    public void initializeProcessor(@NonNull DataSetSectionFragment dataSetSectionFragment) {
+    public void initializeProcessor(@NonNull DataSetSectionFragment dataSetSectionFragment){
 
         compositeDisposable.add(dataSetSectionFragment.optionSetActions()
                 .flatMap(
@@ -226,7 +232,7 @@ public class DataValuePresenter implements DataValueContract.Presenter {
                     for (DataSetTableModel dataValue : dataTableModel.dataValues()) {
 
                         if (dataValue.dataElement().equals(rowAction.dataElement()) && dataValue.categoryOptionCombo().equals(rowAction.catOptCombo())) {
-                            dataValue.setValue(rowAction.value());
+                            dataValue = dataValue.setValue(rowAction.value());
                             setValueIntoFieldViewModel(rowAction.value(), rowAction.dataElement(), dataValue.categoryOptionCombo());
                             dataSetSectionFragment.updateData(rowAction, rowAction.catCombo());
                             return repository.updateValue(tranformDataSetTableModelToDataValueModel(dataValue));
@@ -275,17 +281,24 @@ public class DataValuePresenter implements DataValueContract.Presenter {
                         )
         );
         compositeDisposable.add(
-                repository.getCatOptionCombo()
-                        .flatMap(data ->
-                                Flowable.zip(
-                                        repository.getDataValues(orgUnitUid, periodId, attributeOptionCombo, section),
-                                        repository.getDataSet(),
-                                        repository.getGreyedFields(getUidCatOptionsCombo(data), section),
-                                        repository.getMandatoryDataElement(getUidCatOptionsCombo(data)),
-                                        repository.getSectionByDataSet(section),
-                                        repository.getCategoryOptionComboCatOption(),
-                                        Sextet::create
-                                ))
+                Flowable.zip(
+                        repository.getCatOptionCombo(),
+                        repository.getDataElements(section),
+                        repository.getCatOptions(section),
+                        repository.getCatCombo(section),
+                        Quartet::create
+                )
+                        .flatMap(data ->{
+                            tableData = Trio.create(data.val1(), data.val2(), new LinkedList<>(data.val3()));
+                            return Flowable.zip(
+                                    repository.getDataValues(orgUnitUid, periodTypeName, periodId, attributeOptionCombo, section),
+                                    repository.getDataSet(),
+                                    repository.getGreyedFields(getUidCatOptionsCombo(data.val0()), section),
+                                    repository.getMandatoryDataElement(getUidCatOptionsCombo(data.val0())),
+                                    repository.getSectionByDataSet(section),
+                                    repository.getCategoryOptionComboCatOption(),
+                                    Sextet::create
+                            );})
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
@@ -295,7 +308,7 @@ public class DataValuePresenter implements DataValueContract.Presenter {
                                                 .create(sextet.val4().id() == null ? null : sextet.val4(), transformCategories(tableData.val1()),
                                                         tableData.val0(), sextet.val0(), getCatOptionsByCatOptionComboDataElement(sextet.val2()),
                                                         sextet.val3(), sextet.val5(), tableData.val1(), sextet.val1(),
-                                                        getCatCombos(tableData.val0(), tableData.val2()), getCatOptions());
+                                                        getCatCombos(tableData.val0(),tableData.val2()), getCatOptions());
 
                                         dataSetSectionFragment.createTable(dataTableModel);
                                     }
@@ -305,12 +318,12 @@ public class DataValuePresenter implements DataValueContract.Presenter {
         );
     }
 
-    public Map<String, String> getCatCombos(List<DataElementModel> dataElements, List<CategoryCombo> catCombos) {
+    public Map<String, String> getCatCombos(List<DataElement> dataElements, List<CategoryCombo> catCombos){
         Map<String, String> list = new HashMap<>();
-        for (DataElementModel dataElement : dataElements) {
+        for(DataElement dataElement: dataElements) {
             if (!list.keySet().contains(dataElement.categoryCombo())) {
-                for (CategoryCombo categoryCombo : catCombos)
-                    if (categoryCombo.uid().equals(dataElement.categoryCombo()))
+                for(CategoryCombo categoryCombo: catCombos)
+                    if(categoryCombo.uid().equals(dataElement.categoryCombo().uid()))
                         list.put(categoryCombo.uid(), categoryCombo.name());
             }
         }
@@ -332,12 +345,12 @@ public class DataValuePresenter implements DataValueContract.Presenter {
         return list;
     }
 
-    public List<CategoryOptionModel> getCatOptions() {
-        Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>> map = tableData.val1();
-        List<CategoryOptionModel> listCatOption = new ArrayList<>();
-        for (Map.Entry<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>> entry : map.entrySet()) {
-            for (List<Pair<CategoryOptionModel, CategoryModel>> list : entry.getValue()) {
-                for (Pair<CategoryOptionModel, CategoryModel> listPair : list)
+    public List<CategoryOption> getCatOptions() {
+        Map<String, List<List<Pair<CategoryOption, Category>>>> map = tableData.val1();
+        List<CategoryOption> listCatOption = new ArrayList<>();
+        for (Map.Entry<String, List<List<Pair<CategoryOption, Category>>>> entry : map.entrySet()) {
+            for (List<Pair<CategoryOption, Category>> list : entry.getValue()) {
+                for (Pair<CategoryOption, Category> listPair : list)
                     listCatOption.add(listPair.val0());
             }
         }
@@ -345,16 +358,16 @@ public class DataValuePresenter implements DataValueContract.Presenter {
     }
 
     @Override
-    public Map<String, List<List<CategoryOptionModel>>> transformCategories(@NonNull Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>> map) {
-        Map<String, List<List<CategoryOptionModel>>> mapTransform = new HashMap<>();
-        for (Map.Entry<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>> entry : map.entrySet()) {
+    public Map<String, List<List<CategoryOption>>> transformCategories(@NonNull Map<String, List<List<Pair<CategoryOption, Category>>>> map) {
+        Map<String, List<List<CategoryOption>>> mapTransform = new HashMap<>();
+        for (Map.Entry<String, List<List<Pair<CategoryOption, Category>>>> entry : map.entrySet()) {
             mapTransform.put(entry.getKey(), new ArrayList<>());
             int repeat = 1;
             int nextCategory = 0;
-            for (List<Pair<CategoryOptionModel, CategoryModel>> list : map.get(entry.getKey())) {
-                List<CategoryOptionModel> catOptions = new ArrayList<>();
+            for (List<Pair<CategoryOption, Category>> list : map.get(entry.getKey())) {
+                List<CategoryOption> catOptions = new ArrayList<>();
                 for (int x = 0; x < repeat; x++) {
-                    for (Pair<CategoryOptionModel, CategoryModel> pair : list) {
+                    for (Pair<CategoryOption, Category> pair : list) {
                         catOptions.add(pair.val0());
                         nextCategory++;
                     }
@@ -370,7 +383,7 @@ public class DataValuePresenter implements DataValueContract.Presenter {
     }
 
     @Override
-    public List<List<String>> getCatOptionCombos(List<List<Pair<CategoryOptionModel, CategoryModel>>> listCategories, int num, List<List<String>> result, List<String> current) {
+    public List<List<String>> getCatOptionCombos(List<List<Pair<CategoryOption, Category>>> listCategories, int num, List<List<String>> result, List<String> current) {
         if (num == listCategories.size()) {
             List<String> resultHelp = new ArrayList<>();
             for (String option : current)
@@ -390,11 +403,11 @@ public class DataValuePresenter implements DataValueContract.Presenter {
         return result;
     }
 
-    private List<String> getUidCatOptionsCombo(Map<String, List<CategoryOptionComboModel>> map) {
+    private List<String> getUidCatOptionsCombo(Map<String, List<CategoryOptionCombo>> map) {
         List<String> catOptionsCombo = new ArrayList<>();
 
-        for (Map.Entry<String, List<CategoryOptionComboModel>> entry : map.entrySet()) {
-            for (CategoryOptionComboModel category : entry.getValue()) {
+        for (Map.Entry<String, List<CategoryOptionCombo>> entry : map.entrySet()) {
+            for (CategoryOptionCombo category : entry.getValue()) {
                 catOptionsCombo.add("'" + category.uid() + "'");
             }
         }
@@ -402,10 +415,10 @@ public class DataValuePresenter implements DataValueContract.Presenter {
         return catOptionsCombo;
     }
 
-    public DataInputPeriodModel checkHasInputPeriod() {
-        DataInputPeriodModel inputPeriodModel = null;
-        for (DataInputPeriodModel inputPeriod : dataInputPeriodModel) {
-            if (inputPeriod.period().equals(periodId))
+    public DataInputPeriod checkHasInputPeriod(){
+        DataInputPeriod inputPeriodModel = null;
+        for(DataInputPeriod inputPeriod :dataInputPeriodModel){
+            if(inputPeriod.period().equals(periodId))
                 inputPeriodModel = inputPeriod;
         }
         return inputPeriodModel;
@@ -438,7 +451,7 @@ public class DataValuePresenter implements DataValueContract.Presenter {
         return processorOptionSet;
     }
 
-    public List<DataInputPeriodModel> getDataInputPeriodModel() {
+    public List<DataInputPeriod> getDataInputPeriodModel() {
         return dataInputPeriodModel;
     }
 
