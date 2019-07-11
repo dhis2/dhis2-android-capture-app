@@ -14,7 +14,6 @@ import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
-import org.hisp.dhis.android.core.category.CategoryOptionComboCategoryOptionLinkModel;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.dataelement.DataElement;
 import org.hisp.dhis.android.core.dataelement.DataElementOperand;
@@ -23,8 +22,6 @@ import org.hisp.dhis.android.core.dataset.DataSet;
 import org.hisp.dhis.android.core.dataset.DataSetCompleteRegistration;
 import org.hisp.dhis.android.core.dataset.DataSetElement;
 import org.hisp.dhis.android.core.dataset.Section;
-import org.hisp.dhis.android.core.dataset.SectionGreyedFieldsLinkModel;
-import org.hisp.dhis.android.core.dataset.SectionModel;
 import org.hisp.dhis.android.core.datavalue.DataValueModel;
 import org.hisp.dhis.android.core.period.Period;
 
@@ -35,27 +32,12 @@ import java.util.Map;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
-import io.reactivex.Observable;
 
 public class DataValueRepositoryImpl implements DataValueRepository {
 
     private final D2 d2;
     private BriteDatabase briteDatabase;
     private String dataSetUid;
-
-    private static final String GET_COMPULSORY_DATA_ELEMENT = "select DataElementOperand.dataElement as dataElement, CategoryOptionComboCategoryOptionLink.categoryOption as categoryOption " +
-            "from DataSetCompulsoryDataElementOperandsLink " +
-            "JOIN DataElementOperand ON DataElementOperand.uid = DataSetCompulsoryDataElementOperandsLink.dataElementOperand " +
-            "JOIN CategoryOptionCombo on CategoryOptionCombo.uid = DataElementOperand.categoryOptionCombo " +
-            "JOIN CategoryOptionComboCategoryOptionLink on CategoryOptionComboCategoryOptionLink.categoryOptionCombo = CategoryOptionCombo.uid " +
-            "where CategoryOptionComboCategoryOptionLink.categoryOptionCombo in (?) " +
-            "GROUP BY dataElement, categoryOption";
-
-    private static final String SECTION_TOTAL_ROW_COLUMN = "SELECT Section.* " +
-            "FROM Section " +
-            "JOIN DataSet ON DataSet.uid = Section.dataSet " +
-            "WHERE DataSet.uid = ? " +
-            "AND Section.name = ?";
 
     private static final String SELECT_COMPLETE_DATASET = "SELECT * FROM DataSetCompleteRegistration WHERE period = ? AND dataSet = ? AND attributeOptionCombo = ? and organisationUnit = ? " +
             "AND state in ('TO_UPDATE', 'SYNCED', 'TO_POST')";
@@ -81,24 +63,20 @@ public class DataValueRepositoryImpl implements DataValueRepository {
 
         Map<String, List<String>> map = new HashMap<>();
         return Flowable.fromCallable(() ->{
-                List<String> dataElementUids = UidsHelper.getUidsList(d2.dataSetModule().sections.withDataElements().byDataSetUid().eq(dataSetUid).one().get().dataElements());
-                List<DataElement> dataElements = d2.dataElementModule().dataElements.withAllChildren().byUid().in(dataElementUids).orderByName(RepositoryScope.OrderByDirection.ASC).get();
-                List<DataSetElement> dataSetElements = d2.dataSetModule().dataSets.withDataSetElements().byUid().eq(dataSetUid).one().get().dataSetElements();
-                List<CategoryCombo> categoryCombos = new ArrayList<>();
+                List<DataSetElement> override = d2.dataSetModule().dataSets.byUid().eq(dataSetUid).withDataSetElements().one().get().dataSetElements();
 
-                for (DataElement dataElement : dataElements) {
-                    for (DataSetElement dataSetElement : dataSetElements) {
-                        if (dataSetElement.dataElement().uid().equals(dataElement.uid()) && dataSetElement.categoryCombo() != null)
-                            categoryCombos.add(d2.categoryModule().categoryCombos.byUid().eq(dataSetElement.categoryCombo().uid()).one().get());
-                        else
-                            categoryCombos.add(d2.categoryModule().categoryCombos.byUid().eq(dataElement.categoryCombo().uid()).one().withAllChildren().get());
+                for(DataSetElement dataSetElement: override){
+                    DataElement dataElement = d2.dataElementModule().dataElements.byUid().eq(dataSetElement.dataElement().uid()).one().get();
+                    DataElement dElement = transformDataElement(dataElement, override);
+                    List<String> catOptions = UidsHelper.getUidsList(d2.categoryModule().categoryOptionCombos.withCategoryOptions().byCategoryComboUid().eq(dElement.categoryComboUid()).one().get().categoryOptions());
+
+                    if (map.containsKey(dElement.uid())) {
+                        map.get(dElement.uid()).addAll(catOptions);
+                    } else {
+                        map.put(dElement.uid(), catOptions);
                     }
                 }
 
-                List<CategoryOptionCombo> catOptionCombos = d2.categoryModule().categoryOptionCombos.withCategoryOptions().byCategoryComboUid().in(UidsHelper.getUidsList(categoryCombos)).get();
-                for(CategoryOptionCombo catOptCombo: catOptionCombos){
-                    map.put(catOptCombo.uid(), UidsHelper.getUidsList(catOptCombo.categoryOptions()));
-                }
                 return map;
         } );
 
@@ -261,9 +239,9 @@ public class DataValueRepositoryImpl implements DataValueRepository {
     private Map<String, List<List<Pair<CategoryOption, Category>>>> getMap(List<String> catCombos, List<DataElement> dataElements) {
         Map<String, List<List<Pair<CategoryOption, Category>>>> map = new HashMap<>();
         for (DataElement dataElement : dataElements) {
-            String catCombo = dataElement.categoryComboUid();
-            if (!catCombos.contains(dataElement.categoryComboUid())) {
-                catCombos.add(dataElement.categoryComboUid());
+            String catCombo = dataElement.categoryCombo().uid();
+            if (!catCombos.contains(dataElement.categoryCombo().uid())) {
+                catCombos.add(dataElement.categoryCombo().uid());
 
                 List<Category> categories = d2.categoryModule().categoryCombos.withCategories().withAllChildren().byUid().eq(catCombo).one().get().categories();
 
@@ -386,7 +364,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
                         DataElement dataElement = d2.dataElementModule().dataElements.byUid().eq(operand.dataElement().uid()).one().get();
                         DataElement dataElementOverride = transformDataElement(dataElement, override);
 
-                        List<CategoryOptionCombo> catOptionCombos = d2.categoryModule().categoryOptionCombos.byCategoryComboUid().eq(dataElementOverride.categoryComboUid()).withCategoryOptions().get();
+                        List<CategoryOptionCombo> catOptionCombos = d2.categoryModule().categoryOptionCombos.byCategoryComboUid().eq(dataElementOverride.categoryCombo().uid()).withCategoryOptions().get();
                         HashMap<String, List<String>> mapCatOptions = new HashMap<>();
 
                         for (CategoryOptionCombo catOptionCombo : catOptionCombos) {
@@ -417,26 +395,29 @@ public class DataValueRepositoryImpl implements DataValueRepository {
     @Override
     public Flowable<Map<String, List<String>>> getMandatoryDataElement(List<String> categoryOptionCombo) {
         Map<String, List<String>> mapData = new HashMap<>();
+        return Flowable.fromCallable(() -> {
+            DataSet dataSet = d2.dataSetModule().dataSets.withCompulsoryDataElementOperands().withDataSetElements().byUid().eq(dataSetUid).one().get();
+            for(DataElementOperand operand : dataSet.compulsoryDataElementOperands()){
+                List<String> catOptions = UidsHelper.getUidsList(d2.categoryModule().categoryOptionCombos.withCategoryOptions().byUid().eq(operand.categoryOptionCombo().uid()).one().get().categoryOptions());
+                if (mapData.containsKey(operand.dataElement().uid())) {
+                    mapData.get(operand.dataElement().uid()).addAll(catOptions);
+                } else {
+                    mapData.put(operand.dataElement().uid(), catOptions);
+                }
+            }
 
-        String query = GET_COMPULSORY_DATA_ELEMENT.replace("?", categoryOptionCombo.toString().substring(1, categoryOptionCombo.toString().length() - 1));
-        return briteDatabase.createQuery(SectionGreyedFieldsLinkModel.TABLE, query)
-                .mapToList(cursor -> {
-                    if (mapData.containsKey(cursor.getString(0))) {
-                        mapData.get(cursor.getString(0)).add(cursor.getString(1));
-                    } else {
-                        List<String> listCatOp = new ArrayList<>();
-                        listCatOp.add(cursor.getString(1));
-                        mapData.put(cursor.getString(0), listCatOp);
-                    }
+            return  mapData;
+        });
 
-                    return mapData;
-                }).map(data -> mapData).toFlowable(BackpressureStrategy.LATEST);
     }
 
     @Override
-    public Flowable<SectionModel> getSectionByDataSet(String section) {
-        return briteDatabase.createQuery(SectionModel.TABLE, SECTION_TOTAL_ROW_COLUMN, dataSetUid, section)
-                .mapToOneOrDefault(SectionModel::create, SectionModel.builder().build()).toFlowable(BackpressureStrategy.LATEST);
+    public Flowable<Section> getSectionByDataSet(String section) {
+        if(!section.isEmpty() && !section.equals("NO_SECTION"))
+            return Flowable.just(d2.dataSetModule().sections.byDataSetUid().eq(dataSetUid).byName().eq(section).one().get());
+        else
+            return Flowable.just(Section.builder().uid("").build());
+
     }
 
     @Override
@@ -481,9 +462,25 @@ public class DataValueRepositoryImpl implements DataValueRepository {
         return Flowable.just(briteDatabase.update(DataSetCompleteRegistration.class.getSimpleName(), contentValues, where, values) > 0);
     }
 
+    /**
+     * "SELECT * FROM DataSetCompleteRegistration WHERE period = ? AND dataSet = ? AND attributeOptionCombo = ? and organisationUnit = ? " +
+     *             "AND state in ('TO_UPDATE', 'SYNCED', 'TO_POST')";
+     * */
+
     @Override
     public Flowable<Boolean> isCompleted(String orgUnitUid, String periodInitialDate, String catCombo) {
-        return briteDatabase.createQuery(DataSetCompleteRegistration.class.getSimpleName(), SELECT_COMPLETE_DATASET, periodInitialDate, dataSetUid, catCombo, orgUnitUid)
-                .mapToOneOrDefault(data -> true, false).toFlowable(BackpressureStrategy.LATEST);
+
+        return Flowable.fromCallable(() ->{
+            DataSetCompleteRegistration completeRegistration = d2.dataSetModule().dataSetCompleteRegistrations
+                    .byDataSetUid().eq(dataSetUid)
+                    .byAttributeOptionComboUid().eq(catCombo)
+                    .byPeriod().eq(periodInitialDate)
+                    .byOrganisationUnitUid().eq(orgUnitUid)
+                    .one().get();
+            if(completeRegistration != null)
+                return true;
+            else
+                return  false;
+        });
     }
 }
