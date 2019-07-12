@@ -60,11 +60,6 @@ public class TimeTableView extends FieldLayout implements View.OnClickListener {
         init(context);
     }
 
-    @Override
-    public void performOnFocusAction() {
-        editText.performClick();
-    }
-
     public void setCellLayout(ObservableField<DataSetTableAdapter.TableScale> tableScale){
         binding = DataBindingUtil.inflate(inflater, R.layout.custom_cell_view, this, true);
         ((CustomCellViewBinding)binding).setTableScale(tableScale);
