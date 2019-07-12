@@ -76,7 +76,13 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
 
         binding.executePendingBindings();
 
-        itemView.setOnClickListener(view -> presenter.onTEIClick(searchTeiModel.getTei().uid(), searchTeiModel.isOnline()));
+        itemView.setOnClickListener(view -> {
+            if (searchTeiModel.getTei().state() == State.TO_DELETE ||
+                    searchTeiModel.getSelectedEnrollment() != null && searchTeiModel.getSelectedEnrollment().state() == State.TO_DELETE)
+                Toast.makeText(itemView.getContext(), itemView.getContext().getString(R.string.record_marked_for_deletion), Toast.LENGTH_SHORT).show();
+            else
+                presenter.onTEIClick(searchTeiModel.getTei().uid(), searchTeiModel.isOnline());
+        });
 
         String fileName = searchTeiModel.getTei().uid() + "_" + searchTeiModel.getProfilePictureUid() + ".png";
         File file = new File(itemView.getContext().getFilesDir(), fileName);

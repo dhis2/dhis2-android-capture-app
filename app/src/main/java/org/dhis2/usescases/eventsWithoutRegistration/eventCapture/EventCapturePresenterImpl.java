@@ -385,6 +385,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                     this.lastFocusItem = action.id();
                                 }
                                 eventCaptureRepository.setLastUpdated(action.id());
+                                if(emptyMandatoryFields.containsKey(action.id()) && !isEmpty(action.value()))
+                                    emptyMandatoryFields.remove(action.id());
                                 return dataEntryStore.save(action.id(), action.value());
                             }
                     ).subscribe(result -> Timber.d("SAVED VALUE AT %s", System.currentTimeMillis()),
