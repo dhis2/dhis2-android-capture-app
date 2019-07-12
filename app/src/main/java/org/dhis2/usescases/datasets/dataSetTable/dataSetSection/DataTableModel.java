@@ -31,15 +31,16 @@ public abstract class DataTableModel {
         public static final String DATA_SET = "dataSet";
         public static final String CAT_COMBOS = "catCombos";
         public static final String CAT_OPTIONS = "catOptions";
+        public static final String APPROVAL = "approval";
     }
 
     public static DataTableModel create(Section section, Map<String, List<List<CategoryOption>>> headers, List<DataElement> rows,
                                         List<DataSetTableModel> dataValues, List<Pair<String, List<String>>> dataElementDisabled,
                                         Map<String, List<String>> compulsoryCells, Map<String, List<String>> catOptionComboCatOption,
                                         Map<String, List<List<Pair<CategoryOption, Category>>>> listCatOptionsCatComboOptions,
-                                        DataSet dataSet, Map<String, String> catCombos, List<CategoryOption> catOptions) {
+                                        DataSet dataSet, Map<String, String> catCombos, List<CategoryOption> catOptions, Boolean approval) {
         return new AutoValue_DataTableModel(section, headers, rows, dataValues, dataElementDisabled, compulsoryCells, catOptionComboCatOption, listCatOptionsCatComboOptions, dataSet,
-                catCombos, catOptions);
+                catCombos, catOptions, approval);
     }
 
     @Nullable
@@ -85,5 +86,9 @@ public abstract class DataTableModel {
     @Nullable
     @ColumnName(Columns.CAT_OPTIONS)
     public abstract List<CategoryOption> catOptions();
+
+    @Nullable
+    @ColumnName(Columns.APPROVAL)
+    public abstract Boolean approval();
 
 }

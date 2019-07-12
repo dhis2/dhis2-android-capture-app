@@ -122,7 +122,8 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
         if (dataSet.access().data().write() &&
                 !isExpired(dataTableModel.dataSet()) &&
                 (presenterFragment.getDataInputPeriodModel().size() == 0 || (presenterFragment.checkHasInputPeriod() != null &&
-                        DateUtils.getInstance().isInsideInputPeriod(presenterFragment.checkHasInputPeriod())))) {
+                        DateUtils.getInstance().isInsideInputPeriod(presenterFragment.checkHasInputPeriod())))
+                && !dataTableModel.approval()) {
             isEditable = true;
         }
 

@@ -7,7 +7,7 @@ import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.tuples.Pair;
-import org.dhis2.data.tuples.Quartet;
+import org.dhis2.data.tuples.Quintet;
 import org.dhis2.data.tuples.Sextet;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel;
@@ -65,6 +65,8 @@ public class DataValuePresenter implements DataValueContract.Presenter{
     @NonNull
     private FlowableProcessor<RowAction> processor;
     private FlowableProcessor<Trio<String, String, Integer>> processorOptionSet;
+    private Boolean isApproval;
+
     public DataValuePresenter(DataValueRepository repository, MetadataRepository metadataRepository){
         this.repository = repository;
         this.metadataRepository = metadataRepository;
@@ -262,16 +264,19 @@ public class DataValuePresenter implements DataValueContract.Presenter{
                                 Timber::e
                         )
         );
+
         compositeDisposable.add(
                 Flowable.zip(
                         repository.getCatOptionCombo(),
                         repository.getDataElements(section),
                         repository.getCatOptions(section),
                         repository.getCatCombo(section),
-                        Quartet::create
+                        repository.isApproval(orgUnitUid, periodId, attributeOptionCombo),
+                        Quintet::create
                 )
                         .flatMap(data ->{
                             tableData = Trio.create(data.val1(), data.val2(), new LinkedList<>(data.val3()));
+                            isApproval = data.val4();
                             return Flowable.zip(
                                     repository.getDataValues(orgUnitUid, periodTypeName, periodId, attributeOptionCombo, section),
                                     repository.getDataSet(),
@@ -290,7 +295,7 @@ public class DataValuePresenter implements DataValueContract.Presenter{
                                                 .create(sextet.val4().id() == null ? null : sextet.val4(), transformCategories(tableData.val1()),
                                                         tableData.val0(), sextet.val0(), getCatOptionsByCatOptionComboDataElement(sextet.val2()),
                                                         sextet.val3(), sextet.val5(), tableData.val1(), sextet.val1(),
-                                                        getCatCombos(tableData.val0(),tableData.val2()), getCatOptions());
+                                                        getCatCombos(tableData.val0(),tableData.val2()), getCatOptions(), isApproval);
 
                                         dataSetSectionFragment.createTable(dataTableModel);
                                     }

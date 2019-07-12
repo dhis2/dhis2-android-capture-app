@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 
 public class DataValueRepositoryImpl implements DataValueRepository {
@@ -37,6 +38,8 @@ public class DataValueRepositoryImpl implements DataValueRepository {
     private final D2 d2;
     private BriteDatabase briteDatabase;
     private String dataSetUid;
+
+    private String SELECT_APPROVAL = "SELECT * FROM DataApproval WHERE organisationUnit = ? and period = ? and attributeOptionCombo = ?";
 
     public DataValueRepositoryImpl(D2 d2, BriteDatabase briteDatabase, String dataSetUid) {
         this.d2 = d2;
@@ -458,11 +461,6 @@ public class DataValueRepositoryImpl implements DataValueRepository {
         return Flowable.just(briteDatabase.update(DataSetCompleteRegistration.class.getSimpleName(), contentValues, where, values) > 0);
     }
 
-    /**
-     * "SELECT * FROM DataSetCompleteRegistration WHERE period = ? AND dataSet = ? AND attributeOptionCombo = ? and organisationUnit = ? " +
-     *             "AND state in ('TO_UPDATE', 'SYNCED', 'TO_POST')";
-     * */
-
     @Override
     public Flowable<Boolean> isCompleted(String orgUnitUid, String periodInitialDate, String catCombo) {
 
@@ -478,5 +476,12 @@ public class DataValueRepositoryImpl implements DataValueRepository {
             else
                 return  false;
         });
+    }
+
+    @Override
+    public Flowable<Boolean> isApproval(String orgUnit, String period, String attributeOptionCombo){
+        return briteDatabase.createQuery("DataApproval", SELECT_APPROVAL, orgUnit, period, attributeOptionCombo)
+                .mapToOneOrDefault(data -> true, false)
+                .toFlowable(BackpressureStrategy.LATEST);
     }
 }
