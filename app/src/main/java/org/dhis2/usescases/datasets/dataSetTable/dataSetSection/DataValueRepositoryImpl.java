@@ -39,7 +39,8 @@ public class DataValueRepositoryImpl implements DataValueRepository {
     private BriteDatabase briteDatabase;
     private String dataSetUid;
 
-    private String SELECT_APPROVAL = "SELECT * FROM DataApproval WHERE organisationUnit = ? and period = ? and attributeOptionCombo = ?";
+    private String SELECT_APPROVAL = "SELECT * FROM DataApproval WHERE organisationUnit = ? and period = ? " +
+            "and attributeOptionCombo = ? and state = 'APPROVED_HERE'";
 
     public DataValueRepositoryImpl(D2 d2, BriteDatabase briteDatabase, String dataSetUid) {
         this.d2 = d2;

@@ -109,28 +109,30 @@ public class DataValuePresenter implements DataValueContract.Presenter{
 
     @Override
     public void complete(){
-        if(view.isOpenOrReopen()) {
-            if (((!dataTableModel.dataSet().fieldCombinationRequired()) || checkAllFieldRequired() && dataTableModel.dataSet().fieldCombinationRequired())
-                    && checkMandatoryField())
+        if(!isApproval) {
+            if (view.isOpenOrReopen()) {
+                if (((!dataTableModel.dataSet().fieldCombinationRequired()) || checkAllFieldRequired() && dataTableModel.dataSet().fieldCombinationRequired())
+                        && checkMandatoryField())
+                    compositeDisposable.add(
+                            repository.completeDataSet(orgUnitUid, periodId, attributeOptionCombo)
+                                    .subscribeOn(Schedulers.io())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribe(completed -> view.update(completed), Timber::e)
+                    );
+                else if (!checkMandatoryField())
+                    view.showAlertDialog(view.getContext().getString(R.string.missing_mandatory_fields_title), view.getContext().getResources().getString(R.string.field_mandatory));
+                else
+                    view.showAlertDialog(view.getContext().getString(R.string.missing_mandatory_fields_title), view.getContext().getResources().getString(R.string.field_required));
+            } else {
+                view.isOpenOrReopen();
                 compositeDisposable.add(
-                        repository.completeDataSet(orgUnitUid, periodId, attributeOptionCombo)
+                        repository.reopenDataSet(orgUnitUid, periodId, attributeOptionCombo)
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(completed -> view.update(completed), Timber::e)
-                );
-            else if (!checkMandatoryField())
-                view.showAlertDialog(view.getContext().getString(R.string.missing_mandatory_fields_title), view.getContext().getResources().getString(R.string.field_mandatory));
-            else
-                view.showAlertDialog(view.getContext().getString(R.string.missing_mandatory_fields_title), view.getContext().getResources().getString(R.string.field_required));
-        }else {
-            view.isOpenOrReopen();
-            compositeDisposable.add(
-                    repository.reopenDataSet(orgUnitUid, periodId, attributeOptionCombo)
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(reopen ->
-                                            view.update(reopen),
-                                    Timber::e));
+                                .subscribe(reopen ->
+                                                view.update(reopen),
+                                        Timber::e));
+            }
         }
     }
 
