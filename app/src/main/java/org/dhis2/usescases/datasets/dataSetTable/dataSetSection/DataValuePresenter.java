@@ -114,7 +114,10 @@ public class DataValuePresenter implements DataValueContract.Presenter{
                         repository.completeDataSet(orgUnitUid, periodId, attributeOptionCombo)
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(completed -> view.update(completed), Timber::e)
+                                .subscribe(completed -> {
+                                    view.setCompleteReopenText(true);
+                                    view.update(completed);
+                                    }, Timber::e)
                 );
             else if (!checkMandatoryField())
                 view.showAlertDialog(view.getContext().getString(R.string.missing_mandatory_fields_title), view.getContext().getResources().getString(R.string.field_mandatory));
@@ -126,8 +129,10 @@ public class DataValuePresenter implements DataValueContract.Presenter{
                     repository.reopenDataSet(orgUnitUid, periodId, attributeOptionCombo)
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(reopen ->
-                                            view.update(reopen),
+                            .subscribe(reopen -> {
+                                        view.setCompleteReopenText(false);
+                                        view.update(reopen);
+                                    },
                                     Timber::e));
         }
     }
