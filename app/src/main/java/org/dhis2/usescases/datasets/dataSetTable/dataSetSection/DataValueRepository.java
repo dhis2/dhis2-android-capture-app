@@ -52,4 +52,6 @@ public interface DataValueRepository {
     Flowable<Boolean> reopenDataSet(String orgUnitUid, String periodInitialDate, String catCombo);
 
     Flowable<Boolean> isCompleted(String orgUnitUid, String periodInitialDate, String catCombo);
+
+    Flowable<Boolean> isApproval(String orgUnit, String period, String attributeOptionCombo);
 }
