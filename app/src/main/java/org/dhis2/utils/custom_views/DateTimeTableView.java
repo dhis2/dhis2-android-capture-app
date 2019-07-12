@@ -59,13 +59,6 @@ public class DateTimeTableView extends FieldLayout implements View.OnClickListen
         init(context);
     }
 
-
-    @Override
-    public void performOnFocusAction() {
-        textView.performClick();
-    }
-
-
     public void setLabel(String label) {
         this.label = label;
         binding.executePendingBindings();

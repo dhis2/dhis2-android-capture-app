@@ -13,7 +13,6 @@ import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
-import org.apache.commons.lang3.StringUtils.isEmpty
 import org.dhis2.Bindings.default
 import org.dhis2.utils.BiometricStorage
 import org.dhis2.utils.Constants
