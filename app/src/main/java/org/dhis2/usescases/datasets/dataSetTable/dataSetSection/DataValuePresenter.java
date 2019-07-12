@@ -13,16 +13,11 @@ import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel;
 import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryCombo;
-import org.hisp.dhis.android.core.category.CategoryModel;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
-import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
-import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.dataelement.DataElement;
-import org.hisp.dhis.android.core.dataelement.DataElementModel;
 import org.hisp.dhis.android.core.dataset.DataInputPeriod;
-import org.hisp.dhis.android.core.dataset.DataInputPeriodModel;
 import org.hisp.dhis.android.core.datavalue.DataValueModel;
 
 import java.util.ArrayList;
@@ -89,20 +84,7 @@ public class DataValuePresenter implements DataValueContract.Presenter{
         this.periodFinalDate = periodFinalDate;
         this.attributeOptionCombo = attributeOptionCombo;
         this.periodId = periodId;
-        /*compositeDisposable.add(
-                Flowable.zip(
-                        repository.getDataElements(section),
-                        repository.getCatOptions(section),
-                        repository.getCatCombo(section),
-                        Trio::create
-                )
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                data -> this.tableData = data,
-                                Timber::e
-                        )
-        );*/
+
 
         compositeDisposable.add(
                 Flowable.zip(
@@ -408,7 +390,7 @@ public class DataValuePresenter implements DataValueContract.Presenter{
 
         for (Map.Entry<String, List<CategoryOptionCombo>> entry : map.entrySet()) {
             for (CategoryOptionCombo category : entry.getValue()) {
-                catOptionsCombo.add("'" + category.uid() + "'");
+                catOptionsCombo.add(category.uid());
             }
         }
 
