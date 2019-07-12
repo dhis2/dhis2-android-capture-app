@@ -21,19 +21,19 @@ final class SyncPresenterImpl implements SyncPresenter {
     }
 
     @Override
-    public void syncAndDownloadEvents(Context context) throws Exception {
-        d2.eventModule().events.upload().call();
+    public void syncAndDownloadEvents(Context context) {
+        d2.eventModule().events.upload();
         SharedPreferences prefs = context.getSharedPreferences(
                 Constants.SHARE_PREFS, Context.MODE_PRIVATE);
         int eventLimit = prefs.getInt(Constants.EVENT_MAX, Constants.EVENT_MAX_DEFAULT);
         boolean limitByOU = prefs.getBoolean(Constants.LIMIT_BY_ORG_UNIT, false);
         boolean limitByProgram = prefs.getBoolean(Constants.LIMIT_BY_PROGRAM, false);
-        d2.eventModule().downloadSingleEvents(eventLimit, limitByOU, limitByProgram).call();
+        d2.eventModule().downloadSingleEvents(eventLimit, limitByOU, limitByProgram);
     }
 
     @Override
-    public void syncAndDownloadTeis(Context context) throws Exception {
-        d2.trackedEntityModule().trackedEntityInstances.upload().call();
+    public void syncAndDownloadTeis(Context context) {
+        d2.trackedEntityModule().trackedEntityInstances.upload();
         SharedPreferences prefs = context.getSharedPreferences(
                 Constants.SHARE_PREFS, Context.MODE_PRIVATE);
         int teiLimit = prefs.getInt(Constants.TEI_MAX, Constants.TEI_MAX_DEFAULT);
@@ -48,9 +48,9 @@ final class SyncPresenterImpl implements SyncPresenter {
     }
 
     @Override
-    public void syncAndDownloadDataValues() throws Exception {
-        d2.dataValueModule().dataValues.upload().call();
-        d2.dataSetModule().dataSetCompleteRegistrations.upload().call();
+    public void syncAndDownloadDataValues()  {
+        d2.dataValueModule().dataValues.upload();
+        d2.dataSetModule().dataSetCompleteRegistrations.upload();
         Completable.fromObservable(d2.aggregatedModule().data().download()).blockingAwait();
     }
 
