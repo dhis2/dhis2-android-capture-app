@@ -472,10 +472,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
                     .byPeriod().eq(periodInitialDate)
                     .byOrganisationUnitUid().eq(orgUnitUid)
                     .one().get();
-            if(completeRegistration != null)
-                return true;
-            else
-                return  false;
+            return completeRegistration != null && completeRegistration.state() != State.TO_DELETE;
         });
     }
 
