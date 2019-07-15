@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
 import org.hisp.dhis.android.core.common.State;
+import org.hisp.dhis.android.core.dataset.DataSetCompleteRegistration;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.dataset.DataSetElement;
@@ -54,6 +55,19 @@ class HomeRepositoryImpl implements HomeRepository {
                                         state = State.TO_UPDATE;
                                 }
                             }
+
+                            List<DataSetCompleteRegistration> dscr = d2.dataSetModule().dataSetCompleteRegistrations
+                                    .byDataSetUid().eq(dataSet.uid()).get();
+
+                            for(DataSetCompleteRegistration completeRegistration: dscr){
+                                if(completeRegistration.state() != State.SYNCED) {
+                                    if (completeRegistration.state() == State.TO_DELETE)
+                                        state = State.TO_UPDATE;
+                                    else
+                                        state = completeRegistration.state();
+                                }
+                            }
+
 
                             return ProgramViewModel.create(
                                     dataSet.uid(),
