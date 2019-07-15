@@ -255,7 +255,7 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
                         return false;
                     }
                 case INTEGER_NEGATIVE:
-                    if (Integer.valueOf(editText.getText().toString()) < 0)
+                    if (Float.valueOf(editText.getText().toString()) < 0)
                         return true;
                     else {
                         inputLayout.setError(editText.getContext().getString(R.string.invalid_negative_number));
@@ -263,14 +263,14 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
                     }
                 case INTEGER_ZERO_OR_POSITIVE:
                     if (editText.getText() != null &&
-                            Integer.valueOf(editText.getText().toString()) >= 0)
+                            Float.valueOf(editText.getText().toString()) >= 0)
                         return true;
                     else {
                         inputLayout.setError(editText.getContext().getString(R.string.invalid_possitive_zero));
                         return false;
                     }
                 case INTEGER_POSITIVE:
-                    if (Integer.valueOf(editText.getText().toString()) > 0)
+                    if (Float.valueOf(editText.getText().toString()) > 0)
                         return true;
                     else {
                         inputLayout.setError(editText.getContext().getString(R.string.invalid_possitive));
