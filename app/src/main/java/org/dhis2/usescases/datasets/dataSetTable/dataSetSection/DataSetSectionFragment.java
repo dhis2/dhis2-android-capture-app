@@ -209,7 +209,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
 
                                 fields.add(fieldFactory.create(dataValue.id().toString(), "", de.valueType(),
                                         compulsory, de.optionSetUid(), dataValue.value(), section, true,
-                                        editable, null, null, de.uid(), catOpts, "", row, column, dataValue.categoryOptionCombo(), dataValue.catCombo()));
+                                        editable, null, null, de.uid(), catOpts, "android", row, column, dataValue.categoryOptionCombo(), dataValue.catCombo()));
                                 values.add(dataValue.value());
                                 exitsValue = true;
                             }
@@ -219,7 +219,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
                             //If value type is null, it is due to is dataElement for Total row/column
                             fields.add(fieldFactory.create("", "", de.valueType(),
                                     compulsory, de.optionSetUid(), "", section, true,
-                                    editable, null, null, de.uid() == null ? "" : de.uid(), catOpts, "", row, column, presenter.getCatOptComboFromOptionList(catOpts), catCombo));
+                                    editable, null, null, de.uid() == null ? "" : de.uid(), catOpts, "android", row, column, presenter.getCatOptComboFromOptionList(catOpts), catCombo));
 
                             values.add("");
                         }
