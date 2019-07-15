@@ -377,7 +377,9 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                             )
             );
 
-            compositeDisposable.add(EventCaptureFormFragment.getInstance().dataEntryFlowable().onBackpressureBuffer()
+            compositeDisposable.add(EventCaptureFormFragment.getInstance().dataEntryFlowable()
+                    .onBackpressureBuffer()
+                    .distinctUntilChanged()
                     .subscribeOn(Schedulers.io())
                     .observeOn(Schedulers.io())
                     .switchMap(action -> {
@@ -385,6 +387,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                     this.lastFocusItem = action.id();
                                 }
                                 eventCaptureRepository.setLastUpdated(action.id());
+                                if (emptyMandatoryFields.containsKey(action.id()) && !isEmpty(action.value()))
+                                    emptyMandatoryFields.remove(action.id());
                                 return dataEntryStore.save(action.id(), action.value());
                             }
                     ).subscribe(result -> Timber.d("SAVED VALUE AT %s", System.currentTimeMillis()),

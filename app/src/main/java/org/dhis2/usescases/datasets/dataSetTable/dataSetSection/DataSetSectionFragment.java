@@ -2,11 +2,17 @@ package org.dhis2.usescases.datasets.dataSetTable.dataSetSection;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.core.widget.NestedScrollView;
+import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.MutableLiveData;
 
 import com.evrencoskun.tableview.TableView;
 import com.evrencoskun.tableview.adapter.recyclerview.CellRecyclerView;
@@ -28,18 +34,12 @@ import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
-import org.dhis2.utils.custom_views.OptionSetCellDialog;
-import org.dhis2.utils.custom_views.OptionSetCellPopUp;
 import org.hisp.dhis.android.core.category.CategoryOption;
-import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.dataelement.DataElement;
-import org.hisp.dhis.android.core.dataelement.DataElementModel;
 import org.hisp.dhis.android.core.dataset.DataSet;
-import org.hisp.dhis.android.core.dataset.DataSetModel;
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.period.Period;
-import org.hisp.dhis.android.core.period.PeriodModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,12 +47,6 @@ import java.util.Objects;
 
 import javax.inject.Inject;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.core.widget.NestedScrollView;
-import androidx.databinding.DataBindingUtil;
-import androidx.lifecycle.MutableLiveData;
 import io.reactivex.Flowable;
 import io.reactivex.processors.FlowableProcessor;
 
@@ -180,15 +174,15 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
                         FieldViewModelFactoryImpl fieldFactory = createField();
 
                         boolean editable = true;
-                        for(Pair<String, List<String>> listDisabled: dataTableModel.dataElementDisabled()){
-                            if(listDisabled.val0().equals(de.uid()) && listDisabled.val1().containsAll(catOpts)){
+                        for (Pair<String, List<String>> listDisabled : dataTableModel.dataElementDisabled()) {
+                            if (listDisabled.val0().equals(de.uid()) && listDisabled.val1().containsAll(catOpts)) {
                                 editable = false;
                             }
                         }
 
-                        for(CategoryOption catOption: dataTableModel.catOptions()){
-                            for(String option: catOpts){
-                                if(catOption.uid().equals(option) && !catOption.access().data().write())
+                        for (CategoryOption catOption : dataTableModel.catOptions()) {
+                            for (String option : catOpts) {
+                                if (catOption.uid().equals(option) && !catOption.access().data().write())
                                     editable = false;
                             }
                         }
@@ -212,7 +206,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
 
                                 fields.add(fieldFactory.create(dataValue.id().toString(), "", de.valueType(),
                                         compulsory, de.optionSetUid(), dataValue.value(), section, true,
-                                        editable, null, null, de.uid(), catOpts, "", row, column, dataValue.categoryOptionCombo(), dataValue.catCombo()));
+                                        editable, null, null, de.uid(), catOpts, "android", row, column, dataValue.categoryOptionCombo(), dataValue.catCombo()));
                                 values.add(dataValue.value());
                                 exitsValue = true;
                             }
@@ -222,7 +216,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
                             //If value type is null, it is due to is dataElement for Total row/column
                             fields.add(fieldFactory.create("", "", de.valueType(),
                                     compulsory, de.optionSetUid(), "", section, true,
-                                    editable, null, null, de.uid() == null ? "" : de.uid(), catOpts, "", row, column, presenter.getCatOptComboFromOptionList(catOpts), catCombo));
+                                    editable, null, null, de.uid() == null ? "" : de.uid(), catOpts, "android", row, column, presenter.getCatOptComboFromOptionList(catOpts), catCombo));
 
                             values.add("");
                         }
@@ -288,12 +282,28 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
     }
 
     private void loadHeader(int position) {
-        TableView tableView = (TableView) ((LinearLayout) binding.scroll.getChildAt(0)).getChildAt(position*2);
+        TableView tableView = (TableView) ((LinearLayout) binding.scroll.getChildAt(0)).getChildAt(position * 2);
         if (tableView != null) {
             List<CellRecyclerView> rvs = tableView.getBackupHeaders();
             binding.headerContainer.removeAllViews();
             for (CellRecyclerView crv : rvs)
                 binding.headerContainer.addView(crv);
+
+            View cornerView = LayoutInflater.from(getContext()).inflate(R.layout.table_view_corner_layout, null);
+            cornerView.setLayoutParams(new ViewGroup.LayoutParams(
+                    tableView.getAdapter().getRowHeaderWidth(),
+                    binding.headerContainer.getChildAt(0).getLayoutParams().height
+            ));
+            cornerView.findViewById(R.id.buttonScale).setOnClickListener(view -> {
+                for (int i = 0; i < binding.tableLayout.getChildCount(); i++) {
+                    if (binding.tableLayout.getChildAt(i) instanceof TableView) {
+                        TableView table = (TableView) binding.tableLayout.getChildAt(i);
+                        DataSetTableAdapter adapter = (DataSetTableAdapter) table.getAdapter();
+                        adapter.scale();
+                    }
+                }
+            });
+            binding.headerContainer.addView(cornerView);
         }
     }
 
@@ -305,10 +315,10 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
                 View view = ((LinearLayout) binding.scroll.getChildAt(0)).getChildAt(i);
                 if (view instanceof TableView) {
                     if (i == ((LinearLayout) binding.scroll.getChildAt(0)).getChildCount() - 1)
-                        heights.add(i!=0?heights.get(heights.size() - 1) + view.getHeight():view.getHeight());
+                        heights.add(i != 0 ? heights.get(heights.size() - 1) + view.getHeight() : view.getHeight());
                     else {
                         View separator = ((LinearLayout) binding.scroll.getChildAt(0)).getChildAt(i + 1);
-                        heights.add(i/2 != 0 ? heights.get(i/2 - 1) + view.getHeight() + separator.getHeight() : view.getHeight() + separator.getHeight());
+                        heights.add(i / 2 != 0 ? heights.get(i / 2 - 1) + view.getHeight() + separator.getHeight() : view.getHeight() + separator.getHeight());
                     }
                 }
             }
@@ -383,8 +393,8 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
     }
 
     public void updateData(RowAction rowAction, String catCombo) {
-        for(DataSetTableAdapter adapter : adapters)
-            if(adapter.getCatCombo().equals(catCombo))
+        for (DataSetTableAdapter adapter : adapters)
+            if (adapter.getCatCombo().equals(catCombo))
                 adapter.updateValue(rowAction);
     }
 
@@ -422,7 +432,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
 
     @Override
     public void goToTable(int numTable) {
-        binding.scroll.scrollTo(0, binding.tableLayout.getChildAt(numTable*2).getTop());
+        binding.scroll.scrollTo(0, binding.tableLayout.getChildAt(numTable * 2).getTop());
     }
 
     public List<String> currentNumTables() {
@@ -460,7 +470,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
         AbstractViewHolder columnHeader = (AbstractViewHolder) adapters.get(table).getTableView().getRowHeaderRecyclerView()
                 .findViewHolderForAdapterPosition(row);
 
-        if(columnHeader != null) {
+        if (columnHeader != null) {
             columnHeader.setSelected(UNSELECTED);
             columnHeader.setBackgroundColor(mandatory ?
                     ContextCompat.getColor(getContext(), R.color.table_view_default_mandatory_background_color) :
@@ -470,7 +480,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
 
     @Override
     public void update(boolean modified) {
-        if(modified) {
+        if (modified) {
             activity.update();
         }
     }

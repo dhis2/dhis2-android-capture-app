@@ -34,6 +34,7 @@ import org.hisp.dhis.android.core.legendset.ProgramIndicatorLegendSetLinkModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramIndicatorModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.relationship.RelationshipTypeModel;
@@ -301,6 +302,9 @@ public class DashboardRepositoryImpl implements DashboardRepository {
         return briteDatabase.createQuery(EventModel.TABLE, GET_EVENT_FROM_UID, lastModifiedEventUid == null ? "" : lastModifiedEventUid)
                 .mapToOne(EventModel::create)
                 .flatMap(event -> {
+                    ProgramStage programStage = d2.programModule().programStages.uid(event.programStage()).get();
+                    boolean hideDueDate = programStage.hideDueDate() != null ? programStage.hideDueDate() : false;
+
                     ContentValues values = new ContentValues();
                     Calendar createdDate = Calendar.getInstance();
                     Calendar dueDate = Calendar.getInstance();
@@ -316,7 +320,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                     values.put(EventModel.Columns.ENROLLMENT, event.enrollment());
                     values.put(EventModel.Columns.CREATED, DateUtils.databaseDateFormat().format(createdDate.getTime()));
                     values.put(EventModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(createdDate.getTime()));
-                    values.put(EventModel.Columns.STATUS, EventStatus.SCHEDULE.toString());
+                    values.put(EventModel.Columns.STATUS, hideDueDate ? EventStatus.ACTIVE.name() : EventStatus.SCHEDULE.name());
                     values.put(EventModel.Columns.PROGRAM, event.program());
                     values.put(EventModel.Columns.PROGRAM_STAGE, event.programStage());
                     values.put(EventModel.Columns.ORGANISATION_UNIT, event.organisationUnit());
@@ -349,6 +353,10 @@ public class DashboardRepositoryImpl implements DashboardRepository {
         return briteDatabase.createQuery(EventModel.TABLE, GET_EVENT_FROM_UID, lastModifiedEventUid == null ? "" : lastModifiedEventUid)
                 .mapToOne(EventModel::create)
                 .flatMap(event -> {
+
+                    ProgramStage programStage = d2.programModule().programStages.uid(event.programStage()).get();
+                    boolean hideDueDate = programStage.hideDueDate() != null ? programStage.hideDueDate() : false;
+
                     ContentValues values = new ContentValues();
                     Calendar createdDate = Calendar.getInstance();
 
@@ -361,7 +369,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                     values.put(EventModel.Columns.ENROLLMENT, event.enrollment());
                     values.put(EventModel.Columns.CREATED, DateUtils.databaseDateFormat().format(createdDate.getTime()));
                     values.put(EventModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(createdDate.getTime()));
-                    values.put(EventModel.Columns.STATUS, EventStatus.SCHEDULE.toString());
+                    values.put(EventModel.Columns.STATUS, hideDueDate ? EventStatus.ACTIVE.name() : EventStatus.SCHEDULE.name());
                     values.put(EventModel.Columns.PROGRAM, event.program());
                     values.put(EventModel.Columns.PROGRAM_STAGE, event.programStage());
                     values.put(EventModel.Columns.ORGANISATION_UNIT, event.organisationUnit());
@@ -369,7 +377,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                         values.put(EventModel.Columns.DUE_DATE, DateUtils.databaseDateFormat().format(chosenDate.getTime()));
                         values.put(EventModel.Columns.EVENT_DATE, DateUtils.databaseDateFormat().format(chosenDate.getTime()));
                     }
-                    values.put(EventModel.Columns.STATE, State.TO_POST.toString());
+                    values.put(EventModel.Columns.STATE, State.TO_POST.name());
 
                     if (briteDatabase.insert(EventModel.TABLE, values) <= 0) {
                         return Observable.error(new IllegalStateException("Event has not been successfully added"));
