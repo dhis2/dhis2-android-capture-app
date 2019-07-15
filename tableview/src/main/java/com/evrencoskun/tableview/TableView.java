@@ -23,6 +23,7 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Parcelable;
 import android.util.AttributeSet;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
@@ -116,6 +117,7 @@ public class TableView extends FrameLayout implements ITableView {
     private boolean mIsSortable;
     private int mHeaderCount = 1;
     private List<CellRecyclerView> mBackupHeaders = new ArrayList<>();
+    private AbstractTableAdapter.OnScale scaleListener;
 
     public TableView(@NonNull Context context) {
         super(context);
@@ -391,6 +393,7 @@ public class TableView extends FrameLayout implements ITableView {
                 mFilterHandler = new FilterHandler(this);
             }
 
+
             tableAdapter.setOnScaleListener(new AbstractTableAdapter.OnScale() {
                 @Override
                 public void scaleTo(int width, int height) {
@@ -413,8 +416,10 @@ public class TableView extends FrameLayout implements ITableView {
                     mCellHeaderParams.topMargin = height * mHeaderCount;
 
                     //Corner
-                    FrameLayout.LayoutParams mCornerHeaderParams = ((FrameLayout.LayoutParams) getAdapter().getCornerView().getLayoutParams());
-                    mCornerHeaderParams.height = height * mHeaderCount;
+                    if(getAdapter().getCornerView()!=null) {
+                        FrameLayout.LayoutParams mCornerHeaderParams = ((FrameLayout.LayoutParams) getAdapter().getCornerView().getLayoutParams());
+                        mCornerHeaderParams.height = height * mHeaderCount;
+                    }
 
                 }
             });
@@ -890,5 +895,9 @@ public class TableView extends FrameLayout implements ITableView {
 
         // Reload the preferences
         mPreferencesHandler.loadPreferences(savedState.preferences);
+    }
+
+    public View getCornerView() {
+        return getAdapter().getCornerView();
     }
 }

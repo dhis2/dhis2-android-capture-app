@@ -291,5 +291,22 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
         this.longitude.setText(null);
 
     }
+
+    public boolean validateInputtedData() {
+        if (!validateCoordinates())
+            return false;
+
+        double latitude = Double.valueOf(this.latitude.getText().toString());
+        double longitude = Double.valueOf(this.longitude.getText().toString());
+        return ((latitude > -90 && latitude < 90) && (longitude > -180 && longitude < 180));
+    }
+
+    public Double getLatitude() {
+        return Double.valueOf(latitude.getText().toString());
+    }
+
+    public Double getLongitude() {
+        return Double.valueOf(longitude.getText().toString());
+    }
 }
 

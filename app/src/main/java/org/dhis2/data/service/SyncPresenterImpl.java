@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 
 import org.dhis2.utils.Constants;
 import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.common.State;
 
 import androidx.annotation.NonNull;
 import io.reactivex.Completable;
@@ -66,5 +67,12 @@ final class SyncPresenterImpl implements SyncPresenter {
     @Override
     public void syncReservedValues() {
         d2.trackedEntityModule().reservedValueManager.syncReservedValues(null, null, 100);
+    }
+
+    @Override
+    public boolean checkSyncStatus() {
+        boolean eventsOk = d2.eventModule().events.byState().notIn(State.SYNCED).get().isEmpty();
+        boolean teiOk = d2.trackedEntityModule().trackedEntityInstances.byState().notIn(State.SYNCED).get().isEmpty();
+        return eventsOk && teiOk;
     }
 }
