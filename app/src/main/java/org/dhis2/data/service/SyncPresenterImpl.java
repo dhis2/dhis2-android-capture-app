@@ -5,10 +5,15 @@ import android.content.SharedPreferences;
 
 import org.dhis2.utils.Constants;
 import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.arch.call.D2Progress;
 import org.hisp.dhis.android.core.common.State;
+import org.hisp.dhis.android.core.program.ProgramType;
+
+import java.util.Collections;
 
 import androidx.annotation.NonNull;
 import io.reactivex.Completable;
+import io.reactivex.Observable;
 import timber.log.Timber;
 
 final class SyncPresenterImpl implements SyncPresenter {
@@ -74,5 +79,20 @@ final class SyncPresenterImpl implements SyncPresenter {
         boolean eventsOk = d2.eventModule().events.byState().notIn(State.SYNCED).get().isEmpty();
         boolean teiOk = d2.trackedEntityModule().trackedEntityInstances.byState().notIn(State.SYNCED).get().isEmpty();
         return eventsOk && teiOk;
+    }
+
+    @Override
+    public Observable<D2Progress> syncGranularEventObservable(String eventUid) {
+        return d2.eventModule().events.byUid().eq(eventUid).upload();
+    }
+
+    public Observable<D2Progress> syncGranularProgram(String uid){
+        return d2.programModule().programs.uid(uid).getAsync().toObservable()
+                .flatMap(program -> {
+                    if(program.programType() == ProgramType.WITH_REGISTRATION)
+                        return d2.trackedEntityModule().trackedEntityInstances.byProgramUids(Collections.singletonList(uid)).upload();
+                    else
+                        return d2.eventModule().events.byProgramUid().eq(uid).upload();
+                });
     }
 }

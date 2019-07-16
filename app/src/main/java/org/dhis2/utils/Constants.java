@@ -114,6 +114,7 @@ public class Constants {
     public static final String META_NOW = "METADATA_NOW";
     public static final String DATA = "DATA";
     public static final String DATA_NOW = "DATA_NOW";
+    public static final String EVENT_NOW = "EVENT_NOW";
     public static final String TIME_META = "timeMeta";
     public static final String TIME_DATA = "timeData";
     public static final String JIRA_AUTH = "JIRA_AUTH";
