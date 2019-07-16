@@ -243,7 +243,7 @@ final class EnrollmentRepository implements DataEntryRepository {
         } else {
             return fieldFactory.create(uid,
                     label, valueType, mandatory, optionSet, dataValue, null, allowFutureDates,
-                    !generated && enrollmentStatus == EnrollmentStatus.ACTIVE, null, description, fieldRendering, optionCount, objectStyle);
+                    !generated, null, description, fieldRendering, optionCount, objectStyle);
         }
     }
 
