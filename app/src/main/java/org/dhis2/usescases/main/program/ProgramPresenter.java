@@ -19,6 +19,7 @@ import org.hisp.dhis.android.core.period.DatePeriod;
 import org.hisp.dhis.android.core.program.ProgramType;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -71,9 +72,8 @@ public class ProgramPresenter implements ProgramContract.Presenter {
                         .startWith(Pair.create(currentDateFilter, currentOrgUnitFilter))
                         .flatMap(datePeriodOrgs -> Flowable.zip(homeRepository.programModels(datePeriodOrgs.val0(), datePeriodOrgs.val1()),
                                 homeRepository.aggregatesModels(datePeriodOrgs.val0(), datePeriodOrgs.val1()), (programs, dataSets) -> {
-                                    //programs.addAll(dataSets);
-                                    programs.clear();
                                     programs.addAll(dataSets);
+                                    Collections.sort(programs, (program1, program2) -> program1.title().compareTo(program2.title()));
                                     return programs;
                                 }))
                         .subscribeOn(Schedulers.from(executorService))
