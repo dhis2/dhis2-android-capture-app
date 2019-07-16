@@ -33,6 +33,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeModel;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -114,6 +115,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                         if (programModel.uid().equals(initialProgram))
                                             this.selectedProgram = programModel;
                                     }
+                                    Collections.sort(programModels, (program1, program2) -> program1.displayName().compareToIgnoreCase(program2.displayName()));
                                     if(selectedProgram==null && programsWithTEType.size()==1) {
                                         setProgram(programsWithTEType.get(0));
                                         view.setPrograms(programsWithTEType);
