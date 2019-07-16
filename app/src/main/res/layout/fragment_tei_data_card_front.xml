@@ -136,7 +136,7 @@
             android:layout_gravity="center_vertical"
             android:background='@{followup ? @drawable/ic_circle_red : null}'
             android:onClick='@{() -> presenter.onFollowUp(dashboardModel)}'
-            android:tint="@{followup ? @color/white : @color/text_black_333}"
+            app:iconTint="@{followup}"
             android:visibility="@{program!=null?View.VISIBLE:View.GONE}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"

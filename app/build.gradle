@@ -105,6 +105,11 @@ android {
             ext.enableCrashlytics = true
             signingConfig signingConfigs.release
         }
+        beta {
+            applicationIdSuffix = ".beta"
+            matchingFallbacks = ['debug']
+            signingConfig signingConfigs.debug
+        }
     }
 
     flavorDimensions "default"
@@ -191,19 +196,15 @@ dependencies {
     //endregion
 
     //region UI LIBRARIES
-
     //TreeView
     implementation "com.github.bmelnychuk:atv:${libraries.atv}"
-
     //FAB
     implementation "com.github.dekoservidoni:omfm:${libraries.omfm}"
-
     //FLEXBOX
     implementation "com.google.android:flexbox:${libraries.flexbox}"
 
     //PIN LOCK
     implementation 'com.andrognito.pinlockview:pinlockview:2.1.0'
-
     //endregion
 
     //region RXJAVA
@@ -215,21 +216,16 @@ dependencies {
     //rxbinding
     implementation "com.jakewharton.rxbinding2:rxbinding:${libraries.rxbindings}"
     implementation "com.jakewharton.rxbinding2:rxbinding-appcompat-v7:${libraries.rxbindings}"
-
     //endregion
 
     //region DAGGER
     implementation "com.google.dagger:dagger:${libraries.dagger}"
-
-    //    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-alpha3'
+//    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-alpha3'
     kapt "com.google.dagger:dagger-compiler:${libraries.dagger}"
-
     //endregion
 
     //region GOOGLE AUTO VALUE
-
     // Google's auto-value. Annotations are used only during compilation time, as well as
-
     // annotation processor which hoops up into compilation process
     api "com.google.auto.value:auto-value:${libraries.autovalue}"
     kapt "com.google.auto.value:auto-value:${libraries.autovalue}"
@@ -237,11 +233,9 @@ dependencies {
     // Extension which generates mappers for work with cursors
     kapt "com.gabrielittner.auto.value:auto-value-cursor:${libraries.autovaluecursor}"
     kapt "com.ryanharter.auto.value:auto-value-parcel:${libraries.autovalueparcel}"
-
     //endregion
 
     //region BRITEDATABASE
-
     //square
     implementation "com.squareup.sqlbrite3:sqlbrite:${libraries.sqlbrite}"
     implementation 'com.github.lykmapipo:sqlbrite-migrations:v1.0.1'
@@ -253,14 +247,12 @@ dependencies {
     //LOCATION
     implementation 'com.google.android.gms:play-services-basement:16.2.0'
     implementation 'com.google.android.gms:play-services-location:16.0.0'
-
     //endregion
 
     // Kujaku dependencies
     implementation 'io.ona.kujaku:library:0.7.1'
 
     // Jake Wharton libraries
-
     //timber
     implementation "com.jakewharton.timber:timber:${libraries.timber}"
 
@@ -268,10 +260,12 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.2'
 
     //JOB SCHEDULER
-    implementation('android.arch.work:work-runtime:1.0.0-alpha10') {
+    implementation "androidx.work:work-runtime:2.0.1"
+    implementation "androidx.work:work-rxjava2:2.0.1"
+/*
+    implementation("android.arch.work:work-runtime:1.0.0-alpha10") {
         exclude group: 'com.google.guava', module: 'listenablefuture'
-
-    }
+    }*/
 
     //CRASHLYTICS
     implementation('com.crashlytics.sdk.android:crashlytics:2.9.5@aar') {
@@ -284,12 +278,11 @@ dependencies {
     //Test
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
-
     /*  androidTestImplementation('androidx.test.espresso:espresso-core:3.1.1', {
-              exclude group: 'com.android.support', module: 'support-annotations'
-              exclude group: 'com.google.code.findbugs'
+          exclude group: 'com.android.support', module: 'support-annotations'
+          exclude group: 'com.google.code.findbugs'
 
-          })*/
+      })*/
     androidTestImplementation 'androidx.test.ext:junit:1.1.0'
     testImplementation 'junit:junit:4.12'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
@@ -327,12 +320,17 @@ dependencies {
 
     //Paperwork
     implementation "hu.supercluster:paperwork:${libraries.paperwork}"
+
     implementation 'com.google.guava:guava:27.0.1-android'
+
     implementation 'cat.ereza:customactivityoncrash:2.2.0'
+
     implementation "com.google.android.gms:play-services-analytics:${libraries.analytics}"
     implementation 'com.github.pwittchen:rxbiometric:0.1.0'
     implementation "de.adorsys.android:securestoragelibrary:${libraries.latestSecureStorageVersion}"
+
     implementation 'com.google.firebase:firebase-perf:16.2.3'
+
 }
 
 apply plugin: 'kotlin-kapt'

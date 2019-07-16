@@ -21,7 +21,7 @@ import io.reactivex.processors.PublishProcessor;
  */
 public class SectionSelectorAdapter extends RecyclerView.Adapter<EventSectionHolder> {
     private final EventCaptureContract.Presenter presenter;
-    List<EventSectionModel> items;
+    private List<EventSectionModel> items;
     private float percentage;
     private FlowableProcessor<Float> percentageFlowable;
 

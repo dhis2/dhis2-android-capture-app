@@ -4,21 +4,14 @@ import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel;
 import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryCombo;
-import org.hisp.dhis.android.core.category.CategoryModel;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
-import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
-import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.dataelement.DataElement;
-import org.hisp.dhis.android.core.dataelement.DataElementModel;
 import org.hisp.dhis.android.core.dataset.DataInputPeriod;
-import org.hisp.dhis.android.core.dataset.DataInputPeriodModel;
 import org.hisp.dhis.android.core.dataset.DataSet;
-import org.hisp.dhis.android.core.dataset.DataSetModel;
-import org.hisp.dhis.android.core.dataset.SectionModel;
+import org.hisp.dhis.android.core.dataset.Section;
 import org.hisp.dhis.android.core.datavalue.DataValueModel;
 import org.hisp.dhis.android.core.period.Period;
-import org.hisp.dhis.android.core.period.PeriodModel;
 
 import java.util.List;
 import java.util.Map;
@@ -46,7 +39,7 @@ public interface DataValueRepository {
 
     Flowable<Map<String, List<String>>> getMandatoryDataElement(List<String> categoryOptionCombo);
 
-    Flowable<SectionModel> getSectionByDataSet(String section);
+    Flowable<Section> getSectionByDataSet(String section);
 
     Flowable<Map<String, List<String>>> getCategoryOptionComboCatOption();
 
@@ -59,4 +52,6 @@ public interface DataValueRepository {
     Flowable<Boolean> reopenDataSet(String orgUnitUid, String periodInitialDate, String catCombo);
 
     Flowable<Boolean> isCompleted(String orgUnitUid, String periodInitialDate, String catCombo);
+
+    Flowable<Boolean> isApproval(String orgUnit, String period, String attributeOptionCombo);
 }

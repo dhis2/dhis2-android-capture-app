@@ -247,6 +247,7 @@
     <string name="missing_mandatory_fields_events_2.0">Some mandatory fields are missing:\n%s\nYou can go back now, but this event won\'t be able to be completed.</string>
     <string name="missing_mandatory_fields_go_back">Delete and go back</string>
     <string name="error_fields">Some fields have errors:\n%s\nPlease, check them.</string>
+    <string name="missing_mandatory_fields_finish">Some mandatory fields are missing. You can finish data entry and exit, but the event cannot be completed.</string>
 
     <!--EVENT SUMMARY-->
     <string name="section_list">Section list</string>
@@ -503,6 +504,12 @@
     <string name="sync_setting">Synchronization setting: %s</string>
     <string name="relationship_without_enrollment">The record you are trying to access has no enrollment. You can\'t access the dashboard.</string>
     <string name="formatting_error">Formatting error</string>
+    <string name="dashboard_menu_delete_tei">Delete TEI</string>
+    <string name="dashboard_menu_delete_enrollment">Delete enrollment only</string>
+    <string name="delete_authority_error">You do not have the authority to delete this record</string>
+    <string name="record_marked_for_deletion">This record is marked for deletion. You can\'t access it.</string>
+    <string name="validation_url">This is not a valid url</string>
+    <string name="uncomplete_authority_error">You do not have the authority to re-open this event</string>
 
     <string name="sms_receiver_number">Receiver number</string>
     <string name="sms_amount_question">Do you accept to send %d messages?</string>

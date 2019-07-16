@@ -190,6 +190,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         initProgressBar();
 
         if (eventUid == null) {
+            binding.shareContainer.setVisibility(View.GONE);
             if (binding.actionButton != null)
                 binding.actionButton.setText(R.string.next);
         } else {

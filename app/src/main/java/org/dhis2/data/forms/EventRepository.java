@@ -3,6 +3,9 @@ package org.dhis2.data.forms;
 import android.content.ContentValues;
 import android.database.Cursor;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.squareup.sqlbrite2.BriteDatabase;
 
@@ -18,7 +21,7 @@ import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
-import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
+import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
@@ -39,8 +42,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -406,13 +407,10 @@ public class EventRepository implements FormRepository {
     @NonNull
     @Override
     public Observable<String> getTrackedEntityInstanceUid() {
-        return Observable.just(d2.eventModule().events.uid(eventUid).get())
-                .map(event -> {
-                    if(event.enrollment()!=null)
-                        return d2.enrollmentModule().enrollments.uid(event.enrollment()).get().trackedEntityInstance();
-                    else
-                        return "";
-                });
+        return Observable.defer(() -> d2.enrollmentModule().enrollments.uid(
+                d2.eventModule().events.uid(eventUid).get().enrollment()
+        ).getAsync().toObservable())
+                .map(Enrollment::trackedEntityInstance);
     }
 
     @Override

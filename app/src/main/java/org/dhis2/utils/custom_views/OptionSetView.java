@@ -113,11 +113,6 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
             delete.setVisibility(View.GONE);
     }
 
-    @Override
-    public void performOnFocusAction() {
-        editText.performClick();
-    }
-
     public void setOnSelectedOptionListener(OnSelectedOption listener) {
         this.listener = listener;
     }
@@ -172,6 +167,7 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
         } else if (!isEmpty(error)) {
             inputLayout.setErrorTextAppearance(R.style.error_appearance);
             inputLayout.setError(error);
+            editText.setText("");
         } else
             inputLayout.setError(null);
     }

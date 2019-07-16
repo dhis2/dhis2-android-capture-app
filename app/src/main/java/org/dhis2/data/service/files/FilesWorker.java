@@ -82,7 +82,7 @@ public class FilesWorker extends Worker {
             uploadBulkResources();
 
         cancelNotification();
-        return Result.SUCCESS;
+        return Result.success();
     }
 
     private void uploadBulkResources() {

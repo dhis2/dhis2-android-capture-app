@@ -7,22 +7,17 @@ import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.tuples.Pair;
-import org.dhis2.data.tuples.Quartet;
+import org.dhis2.data.tuples.Quintet;
 import org.dhis2.data.tuples.Sextet;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel;
 import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryCombo;
-import org.hisp.dhis.android.core.category.CategoryModel;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
-import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
-import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.dataelement.DataElement;
-import org.hisp.dhis.android.core.dataelement.DataElementModel;
 import org.hisp.dhis.android.core.dataset.DataInputPeriod;
-import org.hisp.dhis.android.core.dataset.DataInputPeriodModel;
 import org.hisp.dhis.android.core.datavalue.DataValueModel;
 
 import java.util.ArrayList;
@@ -70,6 +65,8 @@ public class DataValuePresenter implements DataValueContract.Presenter{
     @NonNull
     private FlowableProcessor<RowAction> processor;
     private FlowableProcessor<Trio<String, String, Integer>> processorOptionSet;
+    private Boolean isApproval;
+
     public DataValuePresenter(DataValueRepository repository, MetadataRepository metadataRepository){
         this.repository = repository;
         this.metadataRepository = metadataRepository;
@@ -89,20 +86,7 @@ public class DataValuePresenter implements DataValueContract.Presenter{
         this.periodFinalDate = periodFinalDate;
         this.attributeOptionCombo = attributeOptionCombo;
         this.periodId = periodId;
-        /*compositeDisposable.add(
-                Flowable.zip(
-                        repository.getDataElements(section),
-                        repository.getCatOptions(section),
-                        repository.getCatCombo(section),
-                        Trio::create
-                )
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                data -> this.tableData = data,
-                                Timber::e
-                        )
-        );*/
+
 
         compositeDisposable.add(
                 Flowable.zip(
@@ -125,28 +109,35 @@ public class DataValuePresenter implements DataValueContract.Presenter{
 
     @Override
     public void complete(){
-        if(view.isOpenOrReopen()) {
-            if (((!dataTableModel.dataSet().fieldCombinationRequired()) || checkAllFieldRequired() && dataTableModel.dataSet().fieldCombinationRequired())
-                    && checkMandatoryField())
+        if(!isApproval) {
+            if (view.isOpenOrReopen()) {
+                if (((!dataTableModel.dataSet().fieldCombinationRequired()) || checkAllFieldRequired() && dataTableModel.dataSet().fieldCombinationRequired())
+                        && checkMandatoryField())
+                    compositeDisposable.add(
+                            repository.completeDataSet(orgUnitUid, periodId, attributeOptionCombo)
+                                    .subscribeOn(Schedulers.io())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribe(completed -> {
+                                        view.setCompleteReopenText(true);
+                                        view.update(completed);
+                                    }, Timber::e)
+                    );
+                else if (!checkMandatoryField())
+                    view.showAlertDialog(view.getContext().getString(R.string.missing_mandatory_fields_title), view.getContext().getResources().getString(R.string.field_mandatory));
+                else
+                    view.showAlertDialog(view.getContext().getString(R.string.missing_mandatory_fields_title), view.getContext().getResources().getString(R.string.field_required));
+            } else {
+                view.isOpenOrReopen();
                 compositeDisposable.add(
-                        repository.completeDataSet(orgUnitUid, periodId, attributeOptionCombo)
+                        repository.reopenDataSet(orgUnitUid, periodId, attributeOptionCombo)
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(completed -> view.update(completed), Timber::e)
-                );
-            else if (!checkMandatoryField())
-                view.showAlertDialog(view.getContext().getString(R.string.missing_mandatory_fields_title), view.getContext().getResources().getString(R.string.field_mandatory));
-            else
-                view.showAlertDialog(view.getContext().getString(R.string.missing_mandatory_fields_title), view.getContext().getResources().getString(R.string.field_required));
-        }else {
-            view.isOpenOrReopen();
-            compositeDisposable.add(
-                    repository.reopenDataSet(orgUnitUid, periodId, attributeOptionCombo)
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(reopen ->
-                                            view.update(reopen),
-                                    Timber::e));
+                                .subscribe(reopen -> {
+                                            view.setCompleteReopenText(false);
+                                            view.update(reopen);
+                                        },
+                                        Timber::e));
+            }
         }
     }
 
@@ -280,16 +271,19 @@ public class DataValuePresenter implements DataValueContract.Presenter{
                                 Timber::e
                         )
         );
+
         compositeDisposable.add(
                 Flowable.zip(
                         repository.getCatOptionCombo(),
                         repository.getDataElements(section),
                         repository.getCatOptions(section),
                         repository.getCatCombo(section),
-                        Quartet::create
+                        repository.isApproval(orgUnitUid, periodId, attributeOptionCombo),
+                        Quintet::create
                 )
                         .flatMap(data ->{
                             tableData = Trio.create(data.val1(), data.val2(), new LinkedList<>(data.val3()));
+                            isApproval = data.val4();
                             return Flowable.zip(
                                     repository.getDataValues(orgUnitUid, periodTypeName, periodId, attributeOptionCombo, section),
                                     repository.getDataSet(),
@@ -308,7 +302,7 @@ public class DataValuePresenter implements DataValueContract.Presenter{
                                                 .create(sextet.val4().id() == null ? null : sextet.val4(), transformCategories(tableData.val1()),
                                                         tableData.val0(), sextet.val0(), getCatOptionsByCatOptionComboDataElement(sextet.val2()),
                                                         sextet.val3(), sextet.val5(), tableData.val1(), sextet.val1(),
-                                                        getCatCombos(tableData.val0(),tableData.val2()), getCatOptions());
+                                                        getCatCombos(tableData.val0(),tableData.val2()), getCatOptions(), isApproval);
 
                                         dataSetSectionFragment.createTable(dataTableModel);
                                     }
@@ -408,7 +402,7 @@ public class DataValuePresenter implements DataValueContract.Presenter{
 
         for (Map.Entry<String, List<CategoryOptionCombo>> entry : map.entrySet()) {
             for (CategoryOptionCombo category : entry.getValue()) {
-                catOptionsCombo.add("'" + category.uid() + "'");
+                catOptionsCombo.add(category.uid());
             }
         }
 

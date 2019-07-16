@@ -24,8 +24,9 @@ import androidx.core.content.ContextCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
-import androidx.work.State;
+import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
+import androidx.work.impl.model.WorkSpec;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.jakewharton.rxbinding2.widget.RxCompoundButton;
@@ -111,8 +112,8 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     @Override
     public void onResume() {
         super.onResume();
-        WorkManager.getInstance().getStatusesByTagLiveData(META_NOW).observe(this, workStatuses -> {
-            if (!workStatuses.isEmpty() && workStatuses.get(0).getState() == State.RUNNING) {
+        WorkManager.getInstance().getWorkInfosByTagLiveData(META_NOW).observe(this, workStatuses -> {
+            if (!workStatuses.isEmpty() && workStatuses.get(0).getState() == WorkInfo.State.RUNNING) {
                 binding.syncMetaLayout.message.setTextColor(ContextCompat.getColor(context, R.color.text_black_333));
                 String metaText = metaSyncSettings().concat("\n").concat(context.getString(R.string.syncing_configuration));
                 binding.syncMetaLayout.message.setText(metaText);
@@ -123,8 +124,8 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 presenter.checkData();
             }
         });
-        WorkManager.getInstance().getStatusesByTagLiveData(DATA_NOW).observe(this, workStatuses -> {
-            if (!workStatuses.isEmpty() && workStatuses.get(0).getState() == State.RUNNING) {
+        WorkManager.getInstance().getWorkInfosByTagLiveData(DATA_NOW).observe(this, workStatuses -> {
+            if (!workStatuses.isEmpty() && workStatuses.get(0).getState() == WorkInfo.State.RUNNING) {
                 String dataText = dataSyncSetting().concat("\n").concat(context.getString(R.string.syncing_data));
                 binding.syncDataLayout.message.setTextColor(ContextCompat.getColor(context, R.color.text_black_333));
                 binding.syncDataLayout.message.setText(dataText);

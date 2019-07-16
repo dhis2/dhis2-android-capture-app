@@ -104,7 +104,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
      */
     @Override
     public void syncData(int seconds, String scheduleTag) {
-        WorkManager.getInstance().cancelAllWorkByTag(scheduleTag);
+        WorkManager.getInstance().cancelUniqueWork(scheduleTag);
         PeriodicWorkRequest.Builder syncDataBuilder = new PeriodicWorkRequest.Builder(SyncDataWorker.class, seconds, TimeUnit.SECONDS);
         syncDataBuilder.addTag(scheduleTag);
         syncDataBuilder.setConstraints(new Constraints.Builder()
@@ -124,7 +124,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
      */
     @Override
     public void syncMeta(int seconds, String scheduleTag) {
-        WorkManager.getInstance().cancelAllWorkByTag(scheduleTag);
+        WorkManager.getInstance().cancelUniqueWork(scheduleTag);
         PeriodicWorkRequest.Builder syncDataBuilder = new PeriodicWorkRequest.Builder(SyncMetadataWorker.class, seconds, TimeUnit.SECONDS);
         syncDataBuilder.addTag(scheduleTag);
         syncDataBuilder.setConstraints(new Constraints.Builder()
@@ -147,8 +147,6 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
                 .build());
         OneTimeWorkRequest request = syncDataBuilder.build();
         WorkManager.getInstance().beginUniqueWork(Constants.DATA_NOW, ExistingWorkPolicy.REPLACE, request).enqueue();
-
-//        FileResourcesUtil.initDownloadWork();
     }
 
     /**
@@ -169,7 +167,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
 
     @Override
     public void cancelPendingWork(String tag) {
-        WorkManager.getInstance().cancelAllWorkByTag(tag);
+        WorkManager.getInstance().cancelUniqueWork(tag);
     }
 
     @Override

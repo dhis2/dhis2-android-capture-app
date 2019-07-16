@@ -116,6 +116,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                     }
                                     if(selectedProgram==null && programsWithTEType.size()==1) {
                                         setProgram(programsWithTEType.get(0));
+                                        view.setPrograms(programsWithTEType);
                                     } else if (selectedProgram != null) {
                                         setProgram(selectedProgram);
                                         view.setPrograms(programModels);
@@ -616,7 +617,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         List<String> teiUids = new ArrayList<>();
         teiUids.add(teiUid);
         compositeDisposable.add(
-                Flowable.fromCallable(d2.trackedEntityModule().downloadTrackedEntityInstancesByUid(teiUids))
+                d2.trackedEntityModule().downloadTrackedEntityInstancesByUid(teiUids)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
@@ -631,7 +632,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         List<String> teiUids = new ArrayList<>();
         teiUids.add(TEIuid);
         compositeDisposable.add(
-                Flowable.fromCallable(d2.trackedEntityModule().downloadTrackedEntityInstancesByUid(teiUids))
+                d2.trackedEntityModule().downloadTrackedEntityInstancesByUid(teiUids)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(

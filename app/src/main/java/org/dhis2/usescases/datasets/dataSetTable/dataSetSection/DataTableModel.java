@@ -1,21 +1,15 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection;
 
-import android.database.Cursor;
-
 import com.gabrielittner.auto.value.cursor.ColumnName;
 import com.google.auto.value.AutoValue;
 
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel;
 import org.hisp.dhis.android.core.category.Category;
-import org.hisp.dhis.android.core.category.CategoryModel;
 import org.hisp.dhis.android.core.category.CategoryOption;
-import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.dataelement.DataElement;
-import org.hisp.dhis.android.core.dataelement.DataElementModel;
 import org.hisp.dhis.android.core.dataset.DataSet;
-import org.hisp.dhis.android.core.dataset.DataSetModel;
-import org.hisp.dhis.android.core.dataset.SectionModel;
+import org.hisp.dhis.android.core.dataset.Section;
 
 import java.util.List;
 import java.util.Map;
@@ -37,20 +31,21 @@ public abstract class DataTableModel {
         public static final String DATA_SET = "dataSet";
         public static final String CAT_COMBOS = "catCombos";
         public static final String CAT_OPTIONS = "catOptions";
+        public static final String APPROVAL = "approval";
     }
 
-    public static DataTableModel create(SectionModel section, Map<String, List<List<CategoryOption>>> headers, List<DataElement> rows,
+    public static DataTableModel create(Section section, Map<String, List<List<CategoryOption>>> headers, List<DataElement> rows,
                                         List<DataSetTableModel> dataValues, List<Pair<String, List<String>>> dataElementDisabled,
                                         Map<String, List<String>> compulsoryCells, Map<String, List<String>> catOptionComboCatOption,
                                         Map<String, List<List<Pair<CategoryOption, Category>>>> listCatOptionsCatComboOptions,
-                                        DataSet dataSet, Map<String, String> catCombos, List<CategoryOption> catOptions) {
+                                        DataSet dataSet, Map<String, String> catCombos, List<CategoryOption> catOptions, Boolean approval) {
         return new AutoValue_DataTableModel(section, headers, rows, dataValues, dataElementDisabled, compulsoryCells, catOptionComboCatOption, listCatOptionsCatComboOptions, dataSet,
-                catCombos, catOptions);
+                catCombos, catOptions, approval);
     }
 
     @Nullable
     @ColumnName(DataTableModel.Columns.SECTION)
-    public abstract SectionModel section();
+    public abstract Section section();
 
     @Nullable
     @ColumnName(DataTableModel.Columns.HEADERS)
@@ -91,5 +86,9 @@ public abstract class DataTableModel {
     @Nullable
     @ColumnName(Columns.CAT_OPTIONS)
     public abstract List<CategoryOption> catOptions();
+
+    @Nullable
+    @ColumnName(Columns.APPROVAL)
+    public abstract Boolean approval();
 
 }

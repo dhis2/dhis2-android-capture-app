@@ -39,6 +39,7 @@ import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerCellRow;
 import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.unsupported.UnsupportedRow;
 import org.dhis2.data.forms.dataentry.tablefields.unsupported.UnsupportedViewModel;
+import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.common.ValueType;
@@ -97,7 +98,7 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, Da
 
     private ObservableField<TableScale> currentTableScale = new ObservableField<>();
 
-    private void scale() {
+    public void scale() {
         if (currentWidth == 200) {
             currentWidth = 300;
             currentHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 36, context.getResources().getDisplayMetrics());
@@ -274,9 +275,10 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, Da
     @Override
     public View onCreateCornerView() {
         // Get Corner xml layout
-        View corner = LayoutInflater.from(mContext).inflate(R.layout.table_view_corner_layout, null);
+        return null;
+        /*View corner = LayoutInflater.from(mContext).inflate(R.layout.table_view_corner_layout, null);
         corner.findViewById(R.id.buttonScale).setOnClickListener(view -> scale());
-        return corner;
+        return corner;*/
     }
 
     @Override
@@ -387,6 +389,4 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, Da
     public void setDataElementDecoration(Boolean dataElementDecoration) {
         this.dataElementDecoration = dataElementDecoration;
     }
-
-
 }

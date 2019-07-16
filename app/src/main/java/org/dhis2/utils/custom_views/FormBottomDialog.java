@@ -30,6 +30,7 @@ public class FormBottomDialog extends BottomSheetDialogFragment {
     private boolean isEnrollmentOpen = true;
     private boolean accessDataWrite = true;
     private boolean hasExpired = false;
+    private boolean mandatoryFields = false;
 
     public FormBottomDialog setAccessDataWrite(boolean canWrite) {
         this.accessDataWrite = canWrite;
@@ -63,6 +64,11 @@ public class FormBottomDialog extends BottomSheetDialogFragment {
 
     public FormBottomDialog setIsExpired(boolean hasExpired) {
         this.hasExpired = hasExpired;
+        return this;
+    }
+
+    public FormBottomDialog setMandatoryFields(boolean mandatoryFields) {
+        this.mandatoryFields = mandatoryFields;
         return this;
     }
 
@@ -100,6 +106,7 @@ public class FormBottomDialog extends BottomSheetDialogFragment {
         binding.setReopen(reopen);
         binding.setSkip(skip);
         binding.setReschedule(reschedule);
+        binding.setMandatoryFields(mandatoryFields);
         return binding.getRoot();
     }
 

@@ -137,8 +137,9 @@ public abstract class AbstractTableAdapter<CH, RH, C> implements ITableAdapter {
 
             // Create corner view
             mCornerView = onCreateCornerView();
-            mTableView.addView(mCornerView, new FrameLayout.LayoutParams(mRowHeaderWidth,
-                    headerHeight * columnHeaderItems.size()));
+            if (mCornerView != null)
+                mTableView.addView(mCornerView, new FrameLayout.LayoutParams(mRowHeaderWidth,
+                        headerHeight * columnHeaderItems.size()));
         } else if (mCornerView != null) {
 
             // Change corner view visibility
@@ -176,6 +177,10 @@ public abstract class AbstractTableAdapter<CH, RH, C> implements ITableAdapter {
             ViewGroup.LayoutParams layoutParams = mCornerView.getLayoutParams();
             layoutParams.width = rowHeaderWidth;
         }
+    }
+
+    public int getRowHeaderWidth() {
+        return mRowHeaderWidth;
     }
 
     public void setColumnHeaderHeight(int columnHeaderHeight) {

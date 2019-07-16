@@ -81,7 +81,9 @@ public class IndicatorsPresenterImpl implements IndicatorsContracts.Presenter {
                                 .flatMap(ruleEngine -> ruleEngineRepository.reCalculate())
                                 .map(this::applyRuleEffects) //Restart rule engine to take into account value changes
                                 .map(ruleIndicators -> {
-                                    indicators.addAll(ruleIndicators);
+                                    for (Trio<ProgramIndicatorModel, String, String> indicator : ruleIndicators)
+                                        if (!indicators.contains(indicator))
+                                            indicators.add(indicator);
                                     return indicators;
                                 }))
                         .subscribeOn(Schedulers.io())

@@ -27,6 +27,8 @@ import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
+import java.util.regex.Pattern;
+
 import static android.text.TextUtils.isEmpty;
 
 /**
@@ -34,6 +36,9 @@ import static android.text.TextUtils.isEmpty;
  */
 
 public class CustomTextView extends FieldLayout implements View.OnFocusChangeListener {
+
+    String urlStringPattern = "^(http:\\/\\/www\\.|https:\\/\\/www\\.|http:\\/\\/|https:\\/\\/)[a-z0-9]+([\\-\\.]{1}[a-z0-9]+)*\\.[a-z]{2,5}(:[0-9]{1,5})?(\\/.*)?$";
+    Pattern urlPattern = Pattern.compile(urlStringPattern);
 
     private boolean isBgTransparent;
     private TextInputAutoCompleteTextView editText;
@@ -66,12 +71,6 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
 
     public void init(Context context) {
         inflater = LayoutInflater.from(context);
-    }
-
-    @Override
-    public void performOnFocusAction() {
-        editText.requestFocus();
-        editText.performClick();
     }
 
     private void setLayout() {
@@ -194,6 +193,8 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
         if (!isEmpty(error)) {
             inputLayout.setErrorTextAppearance(R.style.error_appearance);
             inputLayout.setError(error);
+            editText.setText(null);
+            editText.requestFocus();
         } else if (!isEmpty(warning)) {
             inputLayout.setErrorTextAppearance(R.style.warning_appearance);
             inputLayout.setError(warning);
@@ -254,7 +255,7 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
                         return false;
                     }
                 case INTEGER_NEGATIVE:
-                    if (Integer.valueOf(editText.getText().toString()) < 0)
+                    if (Float.valueOf(editText.getText().toString()) < 0)
                         return true;
                     else {
                         inputLayout.setError(editText.getContext().getString(R.string.invalid_negative_number));
@@ -262,14 +263,14 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
                     }
                 case INTEGER_ZERO_OR_POSITIVE:
                     if (editText.getText() != null &&
-                            Integer.valueOf(editText.getText().toString()) >= 0)
+                            Float.valueOf(editText.getText().toString()) >= 0)
                         return true;
                     else {
                         inputLayout.setError(editText.getContext().getString(R.string.invalid_possitive_zero));
                         return false;
                     }
                 case INTEGER_POSITIVE:
-                    if (Integer.valueOf(editText.getText().toString()) > 0)
+                    if (Float.valueOf(editText.getText().toString()) > 0)
                         return true;
                     else {
                         inputLayout.setError(editText.getContext().getString(R.string.invalid_possitive));
@@ -287,6 +288,14 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
                         return true;
                     else {
                         inputLayout.setError(editText.getContext().getString(R.string.invalid_percentage));
+                        return false;
+                    }
+                case URL:
+                    if(urlPattern.matcher(editText.getText().toString()).matches()){
+                        inputLayout.setError(null);
+                        return true;
+                    }else{
+                        inputLayout.setError(getContext().getString(R.string.validation_url));
                         return false;
                     }
                 default:

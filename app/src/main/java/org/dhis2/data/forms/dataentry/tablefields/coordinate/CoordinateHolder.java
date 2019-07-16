@@ -71,16 +71,20 @@ public class CoordinateHolder extends FormViewHolder {
     }
 
     private void showEditDialog() {
+        View view = LayoutInflater.from(context).inflate(R.layout.custom_form_coordinate, null);
+        CoordinatesView coordinatesView = view.findViewById(R.id.formCoordinates);
+        coordinatesView.setIsBgTransparent(true);
 
         AlertDialog alertDialog = new AlertDialog.Builder(context, R.style.CustomDialog)
-                .setPositiveButton(R.string.action_accept, (dialog, which) -> dialog.dismiss())
+                .setPositiveButton(R.string.action_accept, (dialog, which) -> {
+                    if (coordinatesView.validateInputtedData()){
+                        processor.onNext(RowAction.create(model.uid(), String.format(Locale.US, "[%.5f,%.5f]", coordinatesView.getLatitude(), coordinatesView.getLongitude()), model.dataElement(), model.categoryOptionCombo(), model.catCombo(), model.row(), model.column()));
+                    }
+                })
                 .setNegativeButton(R.string.clear, (dialog, which) -> processor.onNext(
                         RowAction.create(model.uid(), null, model.dataElement(), model.categoryOptionCombo(), model.catCombo(), model.row(), model.column())))
                 .create();
 
-        View view = LayoutInflater.from(context).inflate(R.layout.custom_form_coordinate, null);
-        CoordinatesView coordinatesView = view.findViewById(R.id.formCoordinates);
-        coordinatesView.setIsBgTransparent(true);
         if(model.value() != null && !model.value().isEmpty())
             coordinatesView.setInitialValue(model.value());
 
