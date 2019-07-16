@@ -4,6 +4,8 @@ import androidx.annotation.NonNull;
 
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.common.State;
+import org.hisp.dhis.android.core.dataset.DataSetCompleteRegistration;
 import org.hisp.dhis.android.core.datavalue.DataSetReportCollectionRepository;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.period.Period;
@@ -42,6 +44,21 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
                 .map(dataSetReport -> {
                     Period period = d2.periodModule().periods.byPeriodId().eq(dataSetReport.period()).one().get();
                     String periodName = DateUtils.getInstance().getPeriodUIString(period.periodType(), period.startDate(), Locale.getDefault());
+                    DataSetCompleteRegistration dscr = d2.dataSetModule().dataSetCompleteRegistrations
+                            .byDataSetUid().eq(dataSetUid)
+                            .byAttributeOptionComboUid().eq(dataSetReport.attributeOptionComboUid())
+                            .byOrganisationUnitUid().eq(dataSetReport.organisationUnitUid())
+                            .byPeriod().eq(dataSetReport.period()).one().get();
+                    State state;
+                    if(dscr != null && dscr.state() != State.SYNCED) {
+                        if (dscr.state() == State.TO_DELETE)
+                            state = State.TO_UPDATE;
+                        else
+                            state = dscr.state();
+                    }
+                    else
+                        state = dataSetReport.state();
+
                     return DataSetDetailModel.create(
                             dataSetReport.organisationUnitUid(),
                             dataSetReport.attributeOptionComboUid(),
@@ -49,7 +66,7 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
                             dataSetReport.organisationUnitDisplayName(),
                             dataSetReport.attributeOptionComboDisplayName(),
                             periodName,
-                            dataSetReport.state(),
+                            state,
                             dataSetReport.periodType().name());
                 })
                 .toList()
