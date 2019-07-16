@@ -42,8 +42,5 @@ public class DisplayHolder extends FormViewHolder {
 
     }
 
-    @Override
-    public void performAction() {
 
-    }
 }

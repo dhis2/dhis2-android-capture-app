@@ -70,8 +70,8 @@ public class EventInitialModule {
     }
 
     @Provides
-    RulesRepository rulesRepository(@NonNull BriteDatabase briteDatabase) {
-        return new RulesRepository(briteDatabase);
+    RulesRepository rulesRepository(@NonNull BriteDatabase briteDatabase, @NonNull D2 d2) {
+        return new RulesRepository(briteDatabase, d2);
     }
 
     @Provides

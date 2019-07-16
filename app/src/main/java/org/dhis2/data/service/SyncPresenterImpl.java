@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 
 import org.dhis2.utils.Constants;
 import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.common.State;
 
 import io.reactivex.Completable;
 import timber.log.Timber;
@@ -41,18 +42,28 @@ final class SyncPresenterImpl implements SyncPresenter {
         boolean limitByProgram = prefs.getBoolean(Constants.LIMIT_BY_PROGRAM, false);
         Completable.fromObservable(d2.trackedEntityModule()
                 .downloadTrackedEntityInstances(teiLimit, limitByOU, limitByProgram)
-                .asObservable()
+                .doOnNext(data -> Timber.d(data.percentage() + "% " + data.doneCalls().size() + "/" + data.totalCalls())))
+                .doOnError(error -> Timber.d("error while downloading TEIs"))
+                .onErrorComplete()
+                .blockingAwait();
+    }
+
+    @Override
+    public void syncMetadata(Context context) {
+        Completable.fromObservable(d2.syncMetaData()
                 .doOnNext(data -> Timber.d(data.percentage() + "% " + data.doneCalls().size() + "/" + data.totalCalls())))
                 .blockingAwait();
     }
 
     @Override
-    public void syncMetadata(Context context) throws Exception {
-        d2.syncMetaData().call();
+    public void syncReservedValues() {
+        d2.trackedEntityModule().reservedValueManager.syncReservedValues(null, null, 100);
     }
 
     @Override
-    public void syncReservedValues() {
-        d2.trackedEntityModule().reservedValueManager.syncReservedValues(null, null, 100);
+    public boolean checkSyncStatus() {
+        boolean eventsOk = d2.eventModule().events.byState().notIn(State.SYNCED).get().isEmpty();
+        boolean teiOk = d2.trackedEntityModule().trackedEntityInstances.byState().notIn(State.SYNCED).get().isEmpty();
+        return eventsOk && teiOk;
     }
 }

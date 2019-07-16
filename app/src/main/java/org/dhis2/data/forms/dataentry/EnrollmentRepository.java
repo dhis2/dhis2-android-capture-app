@@ -33,7 +33,7 @@ import io.reactivex.Observable;
 import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
-import static org.hisp.dhis.android.core.utils.StoreUtils.sqLiteBind;
+import static org.hisp.dhis.android.core.arch.db.stores.internal.StoreUtils.sqLiteBind;
 
 final class EnrollmentRepository implements DataEntryRepository {
     private static final String QUERY = "SELECT \n" +
@@ -193,24 +193,28 @@ final class EnrollmentRepository implements DataEntryRepository {
                             dataValue = d2.trackedEntityModule().reservedValueManager.getValue(uid, pattern == null || pattern.contains("OU") ? null : orgUnitUid);
                         }
 
-                    String INSERT = "INSERT INTO TrackedEntityAttributeValue\n" +
-                            "(lastUpdated, value, trackedEntityAttribute, trackedEntityInstance)\n" +
-                            "VALUES (?,?,?,?)";
-                    SQLiteStatement updateStatement = briteDatabase.getWritableDatabase()
-                            .compileStatement(INSERT);
-                    sqLiteBind(updateStatement, 1, BaseIdentifiableObject.DATE_FORMAT
-                            .format(Calendar.getInstance().getTime()));
-                    sqLiteBind(updateStatement, 2, dataValue == null ? "" : dataValue);
-                    sqLiteBind(updateStatement, 3, uid == null ? "" : uid);
-                    sqLiteBind(updateStatement, 4, teiUid == null ? "" : teiUid);
+                    if(!dataValue.isEmpty()) {
+                        String INSERT = "INSERT INTO TrackedEntityAttributeValue\n" +
+                                "(lastUpdated, value, trackedEntityAttribute, trackedEntityInstance)\n" +
+                                "VALUES (?,?,?,?)";
+                        SQLiteStatement updateStatement = briteDatabase.getWritableDatabase()
+                                .compileStatement(INSERT);
+                        sqLiteBind(updateStatement, 1, BaseIdentifiableObject.DATE_FORMAT
+                                .format(Calendar.getInstance().getTime()));
+                        sqLiteBind(updateStatement, 2, dataValue == null ? "" : dataValue);
+                        sqLiteBind(updateStatement, 3, uid == null ? "" : uid);
+                        sqLiteBind(updateStatement, 4, teiUid == null ? "" : teiUid);
 
-                    long insert = briteDatabase.executeInsert(
-                            TrackedEntityAttributeValueModel.TABLE, updateStatement);
-                    updateStatement.clearBindings();
+                        long insert = briteDatabase.executeInsert(
+                                TrackedEntityAttributeValueModel.TABLE, updateStatement);
+                        updateStatement.clearBindings();
+                    }else
+                        mandatory = true;
                 }
             } catch (D2Error e) {
-                //Timber.e(e);
+                Timber.e(e);
                 warning = context.getString(R.string.no_reserved_values);
+                mandatory = true;
             }
         }
 

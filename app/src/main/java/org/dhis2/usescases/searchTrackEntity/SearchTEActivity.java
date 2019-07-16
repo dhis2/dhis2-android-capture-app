@@ -50,8 +50,6 @@ import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.HelpManager;
-import org.dhis2.utils.custom_views.OptionSetDialog;
-import org.dhis2.utils.custom_views.OptionSetPopUp;
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
@@ -291,6 +289,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     binding.messageContainer.setVisibility(View.VISIBLE);
                     binding.message.setText(data.val1());
                 }
+                if (!presenter.getQueryData().isEmpty() && data.val2())
+                    animSearchFab(false);
             });
         }
     }
@@ -330,9 +330,10 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     ProgramModel selectedProgram = (ProgramModel) adapterView.getItemAtPosition(pos - 1);
                     setProgramColor(presenter.getProgramColor(selectedProgram.uid()));
                     presenter.setProgram((ProgramModel) adapterView.getItemAtPosition(pos - 1));
-                } else {
+                } else if (programModels.size() == 1){
+                    presenter.setProgram(programModels.get(0));
+                }else
                     presenter.setProgram(null);
-                }
             }
 
             @Override
@@ -409,10 +410,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     public void setListOptions(List<OptionModel> options) {
-        if (OptionSetDialog.isCreated())
-            OptionSetDialog.newInstance().setOptions(options);
-        else if (OptionSetPopUp.isCreated())
-            OptionSetPopUp.getInstance().setOptions(options);
     }
 
     @Override

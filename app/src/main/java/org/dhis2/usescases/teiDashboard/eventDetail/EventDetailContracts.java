@@ -6,11 +6,16 @@ import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.utils.custom_views.OrgUnitDialog;
 
+import org.dhis2.utils.custom_views.OrgUnitDialog_2;
+import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
+import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
 import io.reactivex.functions.Consumer;
@@ -35,9 +40,9 @@ public class EventDetailContracts {
 
         void goBack(boolean changedEventStatus);
 
-        void showOrgUnitSelector(OrgUnitDialog orgUnitDialog);
+        void showOrgUnitSelector(OrgUnitDialog_2 orgUnitDialog);
 
-        void setSelectedOrgUnit(OrganisationUnitModel selectedOrgUnit);
+        void setSelectedOrgUnit(OrganisationUnit selectedOrgUnit);
 
         void updateActionButton(EventStatus eventStatus);
 
@@ -58,7 +63,7 @@ public class EventDetailContracts {
 
         void back();
 
-        void eventStatus(android.view.View view, EventModel eventModel, ProgramStageModel stageModel);
+        void eventStatus(android.view.View view, Event eventModel, ProgramStage stageModel);
 
         void editData();
 

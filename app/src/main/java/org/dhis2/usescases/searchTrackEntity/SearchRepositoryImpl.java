@@ -25,12 +25,12 @@ import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
-import org.hisp.dhis.android.core.data.api.OuMode;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitMode;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
@@ -511,7 +511,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         if (selectedProgram != null)
             builder.program(selectedProgram.uid());
         builder.orgUnits(orgUnits);
-        builder.orgUnitMode(OuMode.ACCESSIBLE);
+        builder.orgUnitMode(OrganisationUnitMode.ACCESSIBLE);
         builder.pageSize(50);
         builder.page(1);
         builder.paging(true);
@@ -543,16 +543,20 @@ public class SearchRepositoryImpl implements SearchRepository {
             TrackedEntityInstance localTei = d2.trackedEntityModule().trackedEntityInstances.byUid().eq(tei.uid()).one().get();
             searchTei.setTei(localTei);
             if (selectedProgram != null)
-                if (d2.enrollmentModule().enrollments.byTrackedEntityInstance().eq(localTei.uid()).byProgram().eq(selectedProgram.uid()).one().exists())
+                if (d2.enrollmentModule().enrollments.byTrackedEntityInstance().eq(localTei.uid()).byProgram().eq(selectedProgram.uid()).one().exists()) {
+                    searchTei.setCurrentEnrollment(d2.enrollmentModule().enrollments.byTrackedEntityInstance().eq(localTei.uid()).byProgram().eq(selectedProgram.uid()).one().get());
                     searchTei.setOnline(false);
-                else if (d2.enrollmentModule().enrollments.byTrackedEntityInstance().eq(localTei.uid()).one().exists())
+                } else if (d2.enrollmentModule().enrollments.byTrackedEntityInstance().eq(localTei.uid()).one().exists())
                     searchTei.setOnline(false);
             setEnrollmentInfo(searchTei);
             setAttributesInfo(searchTei, selectedProgram);
             setOverdueEvents(searchTei, selectedProgram);
 
             searchTei.setProfilePicture(profilePictureUid(tei));
-            ObjectStyle os = d2.trackedEntityModule().trackedEntityTypes.withStyle().uid(tei.trackedEntityType()).get().style();
+            ObjectStyle os = null;
+            if (d2.trackedEntityModule().trackedEntityTypes.withStyle().uid(tei.trackedEntityType()).exists())
+                os = d2.trackedEntityModule().trackedEntityTypes.withStyle().uid(tei.trackedEntityType()).get().style();
+
             searchTei.setDefaultTypeIcon(os != null ? os.icon() : null);
             return searchTei;
         } else {
@@ -572,7 +576,9 @@ public class SearchRepositoryImpl implements SearchRepository {
                 }
             }
             searchTei.setAttributeValueModels(attributeModels);
-            ObjectStyle os = d2.trackedEntityModule().trackedEntityTypes.withStyle().uid(tei.trackedEntityType()).get().style();
+            ObjectStyle os = null;
+            if (d2.trackedEntityModule().trackedEntityTypes.withStyle().uid(tei.trackedEntityType()).exists())
+                os = d2.trackedEntityModule().trackedEntityTypes.withStyle().uid(tei.trackedEntityType()).get().style();
             searchTei.setDefaultTypeIcon(os != null ? os.icon() : null);
             return searchTei;
         }

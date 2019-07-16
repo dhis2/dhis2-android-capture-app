@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
+import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.tuples.Trio;
@@ -158,18 +159,6 @@ final class DataEntryPresenterImpl implements DataEntryPresenter, RulesActionCal
                                 Timber::e
                         )
         );
-
-        disposable.add(
-                dataEntryView.optionSetActions()
-                        .switchMap(
-                                data -> metadataRepository.searchOptions(data.val0(), data.val1(), data.val2(), optionsToHide, optionsGroupsToHide).toFlowable(BackpressureStrategy.LATEST)
-                        )
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                dataEntryView::setListOptions,
-                                Timber::e
-                        ));
     }
 
     @Override
@@ -202,7 +191,10 @@ final class DataEntryPresenterImpl implements DataEntryPresenter, RulesActionCal
 
         Map<String, FieldViewModel> fieldViewModels = toMap(viewModels);
         ruleUtils.applyRuleEffects(fieldViewModels, calcResult, this);
-//        applyRuleEffects(fieldViewModels, calcResult);
+
+        for (FieldViewModel fieldViewModel : fieldViewModels.values())
+            if (fieldViewModel instanceof SpinnerViewModel)
+                ((SpinnerViewModel) fieldViewModel).setOptionsToHide(optionsToHide, optionsGroupsToHide);
 
         return new ArrayList<>(fieldViewModels.values());
 
@@ -215,79 +207,6 @@ final class DataEntryPresenterImpl implements DataEntryPresenter, RulesActionCal
             map.put(fieldViewModel.uid(), fieldViewModel);
         }
         return map;
-    }
-
-    private void applyRuleEffects(Map<String, FieldViewModel> fieldViewModels, Result<RuleEffect> calcResult) {
-
-        for (RuleEffect ruleEffect : calcResult.items()) {
-            RuleAction ruleAction = ruleEffect.ruleAction();
-            if (ruleAction instanceof RuleActionShowWarning) {
-                RuleActionShowWarning showWarning = (RuleActionShowWarning) ruleAction;
-                FieldViewModel model = fieldViewModels.get(showWarning.field());
-
-                if (model != null)
-                    fieldViewModels.put(showWarning.field(),
-                            model.withWarning(showWarning.content() + ruleEffect.data()));
-                else
-                    Timber.d("Field with uid %s is missing", showWarning.field());
-
-            } else if (ruleAction instanceof RuleActionShowError) {
-                RuleActionShowError showError = (RuleActionShowError) ruleAction;
-                FieldViewModel model = fieldViewModels.get(showError.field());
-
-                if (model != null)
-                    fieldViewModels.put(showError.field(),
-                            model.withError(showError.content() + ruleEffect.data()));
-
-            } else if (ruleAction instanceof RuleActionHideField) {
-                RuleActionHideField hideField = (RuleActionHideField) ruleAction;
-                fieldViewModels.remove(hideField.field());
-                save(hideField.field(), null);
-            } else if (ruleAction instanceof RuleActionHideSection) {
-                RuleActionHideSection hideSection = (RuleActionHideSection) ruleAction;
-                dataEntryView.removeSection(hideSection.programStageSection());
-            } else if (ruleAction instanceof RuleActionAssign) {
-                RuleActionAssign assign = (RuleActionAssign) ruleAction;
-
-                if (fieldViewModels.get(assign.field()) == null)
-                    save(assign.field(), ruleEffect.data());
-                else {
-                    String value = fieldViewModels.get(assign.field()).value();
-
-                    if (value == null || !value.equals(ruleEffect.data())) {
-                        save(assign.field(), ruleEffect.data());
-                    }
-
-                    fieldViewModels.put(assign.field(), fieldViewModels.get(assign.field()).withValue(ruleEffect.data()));
-
-                }
-
-            } else if (ruleAction instanceof RuleActionCreateEvent) {
-                RuleActionCreateEvent createEvent = (RuleActionCreateEvent) ruleAction;
-                //TODO: CREATE event with data from createEvent
-            } else if (ruleAction instanceof RuleActionSetMandatoryField) {
-                RuleActionSetMandatoryField mandatoryField = (RuleActionSetMandatoryField) ruleAction;
-                FieldViewModel model = fieldViewModels.get(mandatoryField.field());
-                if (model != null)
-                    fieldViewModels.put(mandatoryField.field(), model.setMandatory());
-            } else if (ruleAction instanceof RuleActionWarningOnCompletion) {
-                RuleActionWarningOnCompletion warningOnCompletion = (RuleActionWarningOnCompletion) ruleAction;
-                dataEntryView.messageOnComplete(warningOnCompletion.content(), true);
-            } else if (ruleAction instanceof RuleActionErrorOnCompletion) {
-                RuleActionErrorOnCompletion errorOnCompletion = (RuleActionErrorOnCompletion) ruleAction;
-                dataEntryView.messageOnComplete(errorOnCompletion.content(), false);
-            } else if (ruleAction instanceof RuleActionHideOption) {
-                RuleActionHideOption hideOption = (RuleActionHideOption) ruleAction;
-                dataEntryStore.save(hideOption.field(), null);
-                optionsToHide.add(hideOption.field());
-            } else if (ruleAction instanceof RuleActionHideOptionGroup) {
-                RuleActionHideOptionGroup hideOptionGroup = (RuleActionHideOptionGroup) ruleAction;
-                optionsGroupsToHide.add(hideOptionGroup.optionGroup());
-            }
-
-            dataEntryView.removeSection(null);
-
-        }
     }
 
     @Override
@@ -316,7 +235,7 @@ final class DataEntryPresenterImpl implements DataEntryPresenter, RulesActionCal
     }
 
     @Override
-    public void sethideSection(String sectionUid) {
+    public void setHideSection(String sectionUid) {
 
     }
 

@@ -73,16 +73,17 @@ public class SyncDataWorker extends Worker {
         }
 
         String lastDataSyncDate = DateUtils.dateTimeFormat().format(Calendar.getInstance().getTime());
+        boolean syncOk = presenter.checkSyncStatus();
 
         SharedPreferences prefs = getApplicationContext().getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE);
         prefs.edit().putString(Constants.LAST_DATA_SYNC, lastDataSyncDate).apply();
-        prefs.edit().putBoolean(Constants.LAST_DATA_SYNC_STATUS, isEventOk && isTeiOk).apply();
+        prefs.edit().putBoolean(Constants.LAST_DATA_SYNC_STATUS, isEventOk && isTeiOk && syncOk).apply();
 
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(new Intent("action_sync").putExtra("dataSyncInProgress", false));
 
         cancelNotification();
 
-        return Result.SUCCESS;
+        return Result.success();
     }
 
     private void triggerNotification(String title, String content) {

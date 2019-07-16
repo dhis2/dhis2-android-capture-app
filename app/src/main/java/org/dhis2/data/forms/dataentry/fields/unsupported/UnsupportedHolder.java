@@ -22,13 +22,6 @@ public class UnsupportedHolder extends FormViewHolder {
 
     }
 
-    @Override
-    public void performAction() {
-        itemView.setBackground(AppCompatResources.getDrawable(itemView.getContext(), R.drawable.item_selected_bg));
-        unsupportedView.performOnFocusAction();
-    }
-
-
     public void update(UnsupportedViewModel viewModel) {
         unsupportedView.setLabel(viewModel.label());
         descriptionText = viewModel.description();

@@ -14,10 +14,6 @@
             type="java.lang.String" />
 
         <variable
-            name="event"
-            type="org.hisp.dhis.android.core.event.EventModel" />
-
-        <variable
             name="programStage"
             type="org.hisp.dhis.android.core.program.ProgramStageModel" />
 

@@ -43,6 +43,14 @@ public class OrgUnitUtils {
             myOrgUnitUids.add(myorg.uid());
             String[] pathName = myorg.displayNamePath().split("/");
             String[] pathUid = myorg.path().split("/");
+            int count = 0;
+            for(int i = 0; i< myorg.displayName().length(); i++){
+                if(myorg.displayName().charAt(i) == '/')
+                    count++;
+            }
+
+            if(myorg.displayName().contains("/"))
+                pathName[(pathName.length -1)-count] = myorg.displayName();
             for (int i = myorg.level(); i > 0; i--) {
                 OrganisationUnitModel orgToAdd = OrganisationUnitModel.builder()
                         .uid(pathUid[i])
@@ -118,6 +126,15 @@ public class OrgUnitUtils {
             myOrgUnitUids.add(myorg.uid());
             String[] pathName = myorg.displayNamePath().split("/");
             String[] pathUid = myorg.path().split("/");
+            int count = 0;
+            for(int i = 0; i< myorg.displayName().length(); i++){
+                if(myorg.displayName().charAt(i) == '/')
+                    count++;
+            }
+
+            if(myorg.displayName().contains("/"))
+                pathName[(pathName.length -1)-count] = myorg.displayName();
+
             for (int i = myorg.level(); i > 0; i--) {
                 OrganisationUnit orgToAdd = OrganisationUnit.builder()
                         .uid(pathUid[i])
