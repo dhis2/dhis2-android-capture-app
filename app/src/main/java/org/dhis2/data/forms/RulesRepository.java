@@ -9,6 +9,7 @@ import com.squareup.sqlbrite2.BriteDatabase;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
@@ -784,6 +785,10 @@ public final class RulesRepository {
                     }
                 }
             }
+
+            //USER ROLES
+            List<String> userRoleUids = UidsHelper.getUidsList(d2.userModule().userRoles.get());
+            supData.put("USER", userRoleUids);
 
             return supData;
         });
