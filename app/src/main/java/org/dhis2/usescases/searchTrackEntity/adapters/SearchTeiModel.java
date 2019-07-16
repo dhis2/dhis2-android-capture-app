@@ -8,6 +8,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class SearchTeiModel {
@@ -89,6 +90,7 @@ public class SearchTeiModel {
     }
 
     public List<Trio<String, String, String>> getEnrollmentInfo() {
+        Collections.sort(enrollmentsInfo, (enrollment1, enrollment2) -> enrollment1.val0().compareToIgnoreCase(enrollment2.val0()));
         return enrollmentsInfo;
     }
 

@@ -12,6 +12,7 @@ import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -105,6 +106,7 @@ public class DashboardProgramModel extends BaseObservable {
     }
 
     public List<ProgramModel> getEnrollmentProgramModels() {
+        Collections.sort(enrollmentProgramModels, (program1, program2) -> program1.displayName().compareToIgnoreCase(program2.displayName()));
         return enrollmentProgramModels;
     }
 
