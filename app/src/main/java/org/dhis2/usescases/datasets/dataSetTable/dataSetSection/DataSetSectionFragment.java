@@ -31,6 +31,7 @@ import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableContract;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
+import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.category.CategoryOption;
@@ -157,6 +158,8 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
             }
             tableView.setAdapter(adapter);
             tableView.setHeaderCount(columnHeaderItems.size());
+            tableView.setHeadersColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY_LIGHT));
+            tableView.setShadowColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY_DARK));
             for (DataElement de : dataTableModel.rows()) {
                 if (de.categoryCombo().uid().equals(catCombo))
                     rows.add(de);
