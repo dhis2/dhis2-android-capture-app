@@ -498,9 +498,33 @@
                     app:layout_constraintTop_toBottomOf="@id/resetButton" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <include
-                android:id="@+id/settings_sms"
-                layout="@layout/settings_sms" />
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/smsSettings"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="@{()->presenter.onItemClick(6)}">
+
+                <include
+                    android:id="@+id/smsLayout"
+                    layout="@layout/fragment_settings_item"
+                    app:icon="@{R.drawable.ic_reset}"
+                    app:message="@{@string/settingsSms_descr}"
+                    app:title="@{@string/settingsSms}" />
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="72dp"
+                    app:layout_constraintTop_toBottomOf="@id/smsLayout">
+
+                    <include
+                        android:id="@+id/settings_sms"
+                        layout="@layout/settings_sms" />
+                </FrameLayout>
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

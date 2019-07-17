@@ -223,6 +223,8 @@
     <string name="settingsDeleteLocalData_descr">All Capture App data stored in your device will be deleted. Data which is not synced to the server will be lost.</string>
     <string name="settingsReset">Reset app data &amp; configuration</string>
     <string name="settingsReset_descr">Your configuration and App data stored in the device will be deleted. You will be asked to log in again and data which is not synced to the server will be lost.</string>
+    <string name="settingsSms">SMS Settings</string>
+    <string name="settingsSms_descr">Check and edit parameters related to the sms gateway</string>
     <!--endregion-->
 
     <string name="enrollmment_date">Enrollment date</string>
