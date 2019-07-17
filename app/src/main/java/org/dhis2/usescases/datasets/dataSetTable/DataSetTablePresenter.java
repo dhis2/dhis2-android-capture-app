@@ -34,6 +34,11 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
     }
 
     @Override
+    public void onSyncClick() {
+        view.runSmsSubmission();
+    }
+
+    @Override
     public void init(DataSetTableContract.View view, String orgUnitUid, String periodTypeName, String catCombo,
                      String periodFinalDate, String periodId) {
         this.view = view;

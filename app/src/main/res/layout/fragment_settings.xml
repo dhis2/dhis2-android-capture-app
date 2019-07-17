@@ -498,6 +498,10 @@
                     app:layout_constraintTop_toBottomOf="@id/resetButton" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
+            <include
+                android:id="@+id/settings_sms"
+                layout="@layout/settings_sms" />
+
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </layout>
