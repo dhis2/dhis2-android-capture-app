@@ -1,6 +1,8 @@
 package org.dhis2.utils.custom_views;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -15,6 +17,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.core.content.res.ResourcesCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
 
@@ -193,10 +196,12 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
         if (!isEmpty(error)) {
             inputLayout.setErrorTextAppearance(R.style.error_appearance);
             inputLayout.setError(error);
+            inputLayout.setErrorTextColor(ColorStateList.valueOf(ResourcesCompat.getColor(getResources(),R.color.error_color,null)));
             editText.setText(null);
             editText.requestFocus();
         } else if (!isEmpty(warning)) {
             inputLayout.setErrorTextAppearance(R.style.warning_appearance);
+            inputLayout.setErrorTextColor(ColorStateList.valueOf(ResourcesCompat.getColor(getResources(),R.color.warning_color,null)));
             inputLayout.setError(warning);
         } else
             inputLayout.setError(null);

@@ -774,12 +774,13 @@ public final class RulesRepository {
 
             //ORG UNIT GROUPS
             for (OrganisationUnitGroup ouGroup : d2.organisationUnitModule().organisationUnitGroups.get())
-                supData.put(ouGroup.code(), new ArrayList<>());
+                if (ouGroup.code() != null)
+                    supData.put(ouGroup.code(), new ArrayList<>());
 
             for (OrganisationUnit ou : d2.organisationUnitModule().organisationUnits.withOrganisationUnitGroups().get()) {
                 if (ou.organisationUnitGroups() != null) {
                     for (OrganisationUnitGroup ouGroup : ou.organisationUnitGroups()) {
-                        List<String> groupOUs = supData.get(ouGroup.uid());
+                        List<String> groupOUs = supData.get(ouGroup.code());
                         if (groupOUs != null && !groupOUs.contains(ou.uid()))
                             groupOUs.add(ou.uid());
                     }
