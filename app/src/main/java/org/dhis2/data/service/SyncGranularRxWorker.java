@@ -2,10 +2,7 @@ package org.dhis2.data.service;
 
 import android.content.Context;
 
-import com.google.firebase.perf.metrics.AddTrace;
-
 import org.dhis2.App;
-import org.dhis2.usescases.main.program.SyncStatusDialog;
 
 import java.util.Objects;
 
@@ -15,9 +12,9 @@ import androidx.annotation.NonNull;
 import androidx.work.RxWorker;
 import androidx.work.WorkerParameters;
 import io.reactivex.Single;
-import timber.log.Timber;
 
 import static org.dhis2.usescases.main.program.SyncStatusDialog.*;
+import static org.dhis2.utils.Constants.*;
 
 public class SyncGranularRxWorker extends RxWorker {
 
@@ -34,16 +31,29 @@ public class SyncGranularRxWorker extends RxWorker {
     public Single<Result> createWork() {
         Objects.requireNonNull(((App) getApplicationContext()).userComponent()).plus(new SyncGranularRxModule()).inject(this);
         String uid = getInputData().getString(UID);
-        String conflictType = getInputData().getString(CONFLICTTYPE);
-        /*switch (conflictType){
-            case ConflictType.PROGRAM.name():
-                break;
-            case ConflictType.EVENT.name():
-                break;
+        ConflictType conflictType = ConflictType.valueOf(getInputData().getString(CONFLICT_TYPE));
+        switch (conflictType){
+            case PROGRAM:
+                return Single.fromObservable(presenter.syncGranularProgram(uid)).map(d2Progress -> Result.success())
+                        .onErrorReturn(error -> Result.failure());
+            case TEI:
+                return Single.fromObservable(presenter.syncGranularTEI(uid)).map(d2Progress -> Result.success())
+                        .onErrorReturn(error -> Result.failure());
+            case EVENT:
+                return Single.fromObservable(presenter.syncGranularEvent(uid)).map(d2Progress -> Result.success())
+                        .onErrorReturn(error -> Result.failure());
+            case DATA_SET:
+                return Single.fromObservable(presenter.syncGranularDataSet(uid)).map(d2Progress -> Result.success())
+                        .onErrorReturn(error -> Result.failure());
+            case DATA_VALUES:
+                return Single.fromObservable(presenter.syncGranularDataValues(getInputData().getString(ORG_UNIT),
+                        getInputData().getString(ATTRIBUTE_OPTION_COMBO), getInputData().getString(PERIOD_ID)))
+                        .map(d2Progress -> Result.success())
+                        .onErrorReturn(error -> Result.failure());
             default:
                 break;
-        }*/
-        return Single.fromObservable(presenter.syncGranularEventObservable(uid)).map(d2Progress -> Result.success())
+        }
+        return Single.fromObservable(presenter.syncGranularEvent(uid)).map(d2Progress -> Result.success())
                 .onErrorReturn(error -> Result.failure());
 
     }

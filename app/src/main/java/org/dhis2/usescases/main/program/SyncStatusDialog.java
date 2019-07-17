@@ -26,7 +26,6 @@ import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
 import org.dhis2.data.service.SyncGranularRxWorker;
 import org.dhis2.databinding.SyncBottomDialogBinding;
-import org.dhis2.utils.Constants;
 import org.dhis2.utils.NetworkUtils;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.State;
@@ -50,6 +49,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 
+import static org.dhis2.utils.Constants.*;
+
 @SuppressLint("ValidFragment")
 public class SyncStatusDialog extends BottomSheetDialogFragment {
 
@@ -62,8 +63,6 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
     private String orgUnitDataValue;
     private String attributeComboDataValue;
     private String periodIdDataValue;
-    public final static String UID = "uid";
-    public final static String CONFLICTTYPE = "ConflictType";
 
     public enum ConflictType {
         PROGRAM, TEI, EVENT, DATA_SET, DATA_VALUES
@@ -416,43 +415,7 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
             if(binding.syncStatusName.getText().equals(getString(R.string.state_synced)))
                 binding.syncButton.setVisibility(View.GONE);
 
-            binding.syncButton.setOnClickListener(view -> {
-                //TODO: sync program
-                OneTimeWorkRequest.Builder syncGranularEventBuilder = new OneTimeWorkRequest.Builder(SyncGranularRxWorker.class);
-                syncGranularEventBuilder.setConstraints(new Constraints.Builder()
-                        .setRequiredNetworkType(NetworkType.CONNECTED)
-                        .build());
-
-                ConflictType conflictTypeData = null;
-                switch (conflictType) {
-                    case PROGRAM:
-                        conflictTypeData = ConflictType.PROGRAM;
-                        break;
-                    case TEI:
-                        conflictTypeData = ConflictType.TEI;
-                        break;
-                    case EVENT:
-                        conflictTypeData = ConflictType.EVENT;
-                        break;
-                    case DATA_SET:
-                        conflictTypeData = ConflictType.DATA_SET;
-                        break;
-                    case DATA_VALUES:
-                        conflictTypeData = ConflictType.DATA_VALUES;
-                }
-
-                syncGranularEventBuilder.setInputData(new Data.Builder().putString(UID, recordUid).putString(CONFLICTTYPE, conflictTypeData.name()).build());
-                OneTimeWorkRequest request = syncGranularEventBuilder.build();
-                WorkManager.getInstance().beginUniqueWork(recordUid, ExistingWorkPolicy.KEEP, request).enqueue();
-                WorkManager.getInstance().getWorkInfosForUniqueWorkLiveData(recordUid).observe(this, workInfo ->
-                    {
-                        if(workInfo != null && workInfo.get(0).getState() == WorkInfo.State.SUCCEEDED){
-                            setNoConflictMessage(getString(R.string.no_conflicts_synced_message));
-                            Bindings.setStateIcon(binding.syncIcon, State.SYNCED);
-                        }
-
-                    });
-            });
+            binding.syncButton.setOnClickListener(view -> syncGranular());
         }
     }
 
@@ -549,5 +512,51 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
     public void onDismiss(@NonNull DialogInterface dialog) {
         compositeDisposable.clear();
         super.onDismiss(dialog);
+    }
+
+    private void syncGranular(){
+        OneTimeWorkRequest.Builder syncGranularEventBuilder = new OneTimeWorkRequest.Builder(SyncGranularRxWorker.class);
+        syncGranularEventBuilder.setConstraints(new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build());
+
+        ConflictType conflictTypeData = null;
+        Data dataToDataValues = null;
+        switch (conflictType) {
+            case PROGRAM:
+                conflictTypeData = ConflictType.PROGRAM;
+                break;
+            case TEI:
+                conflictTypeData = ConflictType.TEI;
+                break;
+            case EVENT:
+                conflictTypeData = ConflictType.EVENT;
+                break;
+            case DATA_SET:
+                conflictTypeData = ConflictType.DATA_SET;
+                break;
+            case DATA_VALUES:
+                dataToDataValues = new Data.Builder().putString(UID, recordUid)
+                        .putString(CONFLICT_TYPE, ConflictType.DATA_VALUES.name())
+                        .putString(ORG_UNIT, orgUnitDataValue)
+                        .putString(PERIOD_ID, periodIdDataValue)
+                        .putString(ATTRIBUTE_OPTION_COMBO, attributeComboDataValue)
+                        .build();
+        }
+        if(dataToDataValues == null)
+            syncGranularEventBuilder.setInputData(new Data.Builder().putString(UID, recordUid).putString(CONFLICT_TYPE, conflictTypeData.name()).build());
+        else
+            syncGranularEventBuilder.setInputData(dataToDataValues);
+        OneTimeWorkRequest request = syncGranularEventBuilder.build();
+        WorkManager.getInstance().beginUniqueWork(recordUid, ExistingWorkPolicy.KEEP, request).enqueue();
+        WorkManager.getInstance().getWorkInfosForUniqueWorkLiveData(recordUid).observe(this, workInfo ->
+        {
+            String a = "";
+            if(workInfo != null && workInfo.size() > 0 && workInfo.get(0).getState() == WorkInfo.State.SUCCEEDED){
+                setNoConflictMessage(getString(R.string.no_conflicts_synced_message));
+                Bindings.setStateIcon(binding.syncIcon, State.SYNCED);
+            }
+
+        });
     }
 }

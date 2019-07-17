@@ -82,10 +82,11 @@ final class SyncPresenterImpl implements SyncPresenter {
     }
 
     @Override
-    public Observable<D2Progress> syncGranularEventObservable(String eventUid) {
+    public Observable<D2Progress> syncGranularEvent(String eventUid) {
         return d2.eventModule().events.byUid().eq(eventUid).upload();
     }
 
+    @Override
     public Observable<D2Progress> syncGranularProgram(String uid){
         return d2.programModule().programs.uid(uid).getAsync().toObservable()
                 .flatMap(program -> {
@@ -94,5 +95,32 @@ final class SyncPresenterImpl implements SyncPresenter {
                     else
                         return d2.eventModule().events.byProgramUid().eq(uid).upload();
                 });
+    }
+
+    @Override
+    public Observable<D2Progress> syncGranularTEI(String uid){
+        return d2.trackedEntityModule().trackedEntityInstances.byUid().eq(uid).upload();
+    }
+
+    @Override
+    public Observable<D2Progress> syncGranularDataSet(String uid){
+        return d2.dataValueModule().dataSetReports.byDataSetUid().eq(uid).getAsync().toObservable()
+                .flatMapIterable(dataSets -> dataSets)
+                .flatMap(dataSetReport ->
+                     d2.dataValueModule().dataValues
+                            .byOrganisationUnitUid().eq(dataSetReport.attributeOptionComboUid())
+                            .byPeriod().eq(dataSetReport.period())
+                            .byAttributeOptionComboUid().eq(dataSetReport.attributeOptionComboUid())
+                            .upload()
+                );
+    }
+
+    @Override
+    public Observable<D2Progress> syncGranularDataValues(String orgUnit, String attributeOptionCombo, String period){
+        return d2.dataValueModule().dataValues
+                .byAttributeOptionComboUid().eq(attributeOptionCombo)
+                .byOrganisationUnitUid().eq(orgUnit)
+                .byPeriod().eq(period)
+                .upload();
     }
 }

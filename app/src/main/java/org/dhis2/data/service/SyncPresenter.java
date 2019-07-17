@@ -14,13 +14,20 @@ interface SyncPresenter {
     void syncAndDownloadTeis(Context context) throws Exception;
 
     void syncMetadata(Context context) throws Exception;
+
     void syncAndDownloadDataValues() throws Exception;
 
     void syncReservedValues();
 
     boolean checkSyncStatus();
 
-    Observable<D2Progress> syncGranularEventObservable(String eventUid);
+    Observable<D2Progress> syncGranularEvent(String eventUid);
 
     Observable<D2Progress> syncGranularProgram(String uid);
+
+    Observable<D2Progress> syncGranularTEI(String uid);
+
+    Observable<D2Progress> syncGranularDataSet(String uid);
+
+    Observable<D2Progress> syncGranularDataValues(String orgUnit, String attributeOptionCombo, String period);
 }

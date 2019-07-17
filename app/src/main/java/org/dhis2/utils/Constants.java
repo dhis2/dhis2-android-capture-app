@@ -121,6 +121,12 @@ public class Constants {
     public static final String JIRA_USER = "JIRA_USER";
 
     public static final String ACCESS_DATA = "access_data";
+
+    //Granular sync
+    public final static String UID = "UID";
+    public final static String CONFLICT_TYPE = "CONFLICT_TYPE";
+    public final static String ATTRIBUTE_OPTION_COMBO = "ATTRIBUTE_OPTION_COMBO";
+
     private Constants() {
         // hide public constructor
     }
