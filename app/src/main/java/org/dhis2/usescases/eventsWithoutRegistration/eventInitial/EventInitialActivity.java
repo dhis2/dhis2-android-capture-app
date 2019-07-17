@@ -42,6 +42,8 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureAc
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.map.MapSelectorActivity;
 import org.dhis2.usescases.qrCodes.eventsworegistration.QrEventsWORegistrationActivity;
+import org.dhis2.usescases.sms.InputArguments;
+import org.dhis2.usescases.sms.SmsSubmitActivity;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
@@ -858,6 +860,27 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             ViewCompat.setBackgroundTintList(binding.programStageIcon, colorStateList);
             Bindings.setFromResBgColor(binding.programStageIcon, colorRes);
         }
+    }
+
+    @Override
+    public void runSmsSubmission() {
+        if(!getResources().getBoolean(R.bool.sms_enabled)) {
+            return;
+        }
+        if (eventModel == null) {
+            Timber.tag(EventInitialActivity.class.getSimpleName()).e("Pressed share button while event not loaded yet");
+            return;
+        }
+        String enrollmentUid = eventModel.enrollment();
+        Intent intent = new Intent(this, SmsSubmitActivity.class);
+        Bundle args = new Bundle();
+        if (enrollmentUid != null && !enrollmentUid.isEmpty()) {
+            InputArguments.setTrackerEventData(args, eventModel.uid());
+        } else {
+            InputArguments.setSimpleEventData(args, eventModel.uid());
+        }
+        intent.putExtras(args);
+        startActivity(intent);
     }
 
     @Override

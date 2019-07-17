@@ -14,6 +14,8 @@ import android.text.style.ImageSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -27,6 +29,7 @@ import androidx.work.WorkManager;
 import androidx.work.impl.model.WorkSpec;
 
 import com.google.android.material.snackbar.Snackbar;
+import com.jakewharton.rxbinding2.widget.RxCompoundButton;
 import com.jakewharton.rxbinding2.widget.RxTextView;
 
 import org.dhis2.BuildConfig;
@@ -158,6 +161,49 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                         Timber::d
                 ));
 
+        listenerDisposable.add(RxTextView.textChanges(binding.settingsSms.findViewById(R.id.settings_sms_receiver))
+                .debounce(1000, TimeUnit.MILLISECONDS, Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        data -> presenter.smsNumberSet(data.toString()),
+                        Timber::d
+                ));
+
+        listenerDisposable.add(RxCompoundButton.checkedChanges(binding.settingsSms.findViewById(R.id.settings_sms_switch))
+                .debounce(1000, TimeUnit.MILLISECONDS, Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        isChecked -> presenter.smsSwitch(isChecked),
+                        Timber::d
+                ));
+
+        listenerDisposable.add(RxCompoundButton.checkedChanges(binding.settingsSms.findViewById(R.id.settings_sms_response_wait_switch))
+                .debounce(1000, TimeUnit.MILLISECONDS, Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        isChecked -> presenter.smsWaitForResponse(isChecked),
+                        Timber::d
+                ));
+
+        listenerDisposable.add(RxTextView.textChanges(binding.settingsSms.findViewById(R.id.settings_sms_result_sender))
+                .debounce(1000, TimeUnit.MILLISECONDS, Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        number -> presenter.smsResponseSenderSet(number.toString()),
+                        Timber::d
+                ));
+
+        listenerDisposable.add(RxTextView.textChanges(binding.settingsSms.findViewById(R.id.settings_sms_result_timeout))
+                .debounce(1000, TimeUnit.MILLISECONDS, Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        value -> presenter.smsWaitForResponseTimeout(Integer.valueOf(value.toString())),
+                        Timber::d
+                ));
+        if (!getResources().getBoolean(R.bool.sms_enabled)) {
+            binding.settingsSms.setVisibility(View.GONE);
+        }
+
         binding.limitByOrgUnit.setOnCheckedChangeListener((buttonView, isChecked) -> prefs.edit().putBoolean(Constants.LIMIT_BY_ORG_UNIT, isChecked).apply());
         binding.limitByProgram.setOnCheckedChangeListener((buttonView, isChecked) -> prefs.edit().putBoolean(Constants.LIMIT_BY_PROGRAM, isChecked).apply());
 
@@ -198,6 +244,20 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         };
     }
 
+    @Override
+    public void showSmsSettings(boolean enabled, String number, boolean waitForResponse, String responseSender, int timeout) {
+        ((CompoundButton) binding.settingsSms.findViewById(R.id.settings_sms_switch))
+                .setChecked(enabled);
+        ((TextView) binding.settingsSms.findViewById(R.id.settings_sms_receiver))
+                .setText(number);
+        ((CompoundButton) binding.settingsSms.findViewById(R.id.settings_sms_response_wait_switch))
+                .setChecked(waitForResponse);
+        ((TextView) binding.settingsSms.findViewById(R.id.settings_sms_result_sender))
+                .setText(responseSender);
+        ((TextView) binding.settingsSms.findViewById(R.id.settings_sms_result_timeout))
+                .setText(Integer.toString(timeout));
+    }
+
     private void setLastSyncDate() {
         boolean dataStatus = prefs.getBoolean(Constants.LAST_DATA_SYNC_STATUS, true);
         boolean metaStatus = prefs.getBoolean(Constants.LAST_META_SYNC_STATUS, true);
@@ -222,7 +282,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
             binding.syncDataLayout.message.setTextColor(ContextCompat.getColor(getContext(), R.color.red_060));
 
         } else if (presenter.dataHasWarnings()) {
-            String src =dataSyncSetting().concat("\n").concat(getString(R.string.data_sync_warning));
+            String src = dataSyncSetting().concat("\n").concat(getString(R.string.data_sync_warning));
             SpannableString str = new SpannableString(src);
             int wIndex = src.indexOf('@');
             str.setSpan(new ImageSpan(getContext(), R.drawable.ic_sync_warning), wIndex, wIndex + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
