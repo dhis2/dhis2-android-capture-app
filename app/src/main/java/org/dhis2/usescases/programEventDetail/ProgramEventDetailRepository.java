@@ -13,6 +13,8 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.paging.PagedList;
 import io.reactivex.Observable;
+import io.reactivex.Single;
+import io.reactivex.disposables.Disposable;
 
 /**
  * Created by Cristian E. on 02/11/2017.
@@ -39,4 +41,6 @@ public interface ProgramEventDetailRepository {
     boolean getAccessDataWrite();
 
     List<CategoryOptionCombo> catOptionCombo(List<CategoryOption> selectedOptions);
+
+    Single<Boolean> hasAccessToAllCatOptions();
 }

@@ -54,6 +54,8 @@ public class ProgramEventDetailContract {
         Consumer<Pair<TreeNode, List<TreeNode>>> addNodeToTree();
 
         void setLiveData(LiveData<PagedList<ProgramEventViewModel>> pagedListLiveData);
+
+        void setOptionComboAccess(Boolean canCreateEvent);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
