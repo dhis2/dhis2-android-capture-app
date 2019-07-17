@@ -35,6 +35,7 @@ class RulesUtilsProviderImpl(private val codeGenerator: CodeGenerator) : RulesUt
                 is RuleActionHideProgramStage -> hideProgramStage(it.ruleAction() as RuleActionHideProgramStage, rulesActionCallbacks)
                 is RuleActionHideOption -> hideOption(it.ruleAction() as RuleActionHideOption, rulesActionCallbacks)
                 is RuleActionHideOptionGroup -> hideOptionGroup(it.ruleAction() as RuleActionHideOptionGroup, rulesActionCallbacks)
+                is RuleActionShowOptionGroup -> showOptionGroup(it.ruleAction() as RuleActionShowOptionGroup, rulesActionCallbacks)
                 else -> rulesActionCallbacks.unsupportedRuleAction()
             }
         }
@@ -166,6 +167,11 @@ class RulesUtilsProviderImpl(private val codeGenerator: CodeGenerator) : RulesUt
 
     private fun hideOptionGroup(hideOptionGroup: RuleActionHideOptionGroup,
                                 rulesActionCallbacks: RulesActionCallbacks) {
-        rulesActionCallbacks.setOptionGroupToHide(hideOptionGroup.optionGroup())
+        rulesActionCallbacks.setOptionGroupToHide(hideOptionGroup.optionGroup(),true)
+    }
+
+    private fun showOptionGroup(showOptionGroup: RuleActionShowOptionGroup,
+                                rulesActionCallbacks: RulesActionCallbacks) {
+        rulesActionCallbacks.setOptionGroupToHide(showOptionGroup.optionGroup(),false)
     }
 }

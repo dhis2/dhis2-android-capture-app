@@ -95,7 +95,7 @@ public class RulesUtilsProviderImplTest {
         }
 
         @Override
-        public void setOptionGroupToHide(String optionGroupUid) {
+        public void setOptionGroupToHide(String optionGroupUid,boolean toHide) {
 
         }
     };

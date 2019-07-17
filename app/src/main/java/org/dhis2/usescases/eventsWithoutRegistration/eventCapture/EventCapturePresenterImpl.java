@@ -763,8 +763,11 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     }
 
     @Override
-    public void setOptionGroupToHide(String optionGroupUid) {
-        optionsGroupsToHide.add(optionGroupUid);
+    public void setOptionGroupToHide(String optionGroupUid,boolean toHide) {
+        if (toHide)
+            optionsGroupsToHide.add(optionGroupUid);
+        else if(optionsGroupsToHide.contains(optionGroupUid))
+            optionsGroupsToHide.remove(optionGroupUid);
     }
 
     //endregion

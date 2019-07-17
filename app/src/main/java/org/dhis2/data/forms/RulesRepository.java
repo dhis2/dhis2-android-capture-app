@@ -40,6 +40,7 @@ import org.hisp.dhis.rules.models.RuleActionHideProgramStage;
 import org.hisp.dhis.rules.models.RuleActionHideSection;
 import org.hisp.dhis.rules.models.RuleActionSetMandatoryField;
 import org.hisp.dhis.rules.models.RuleActionShowError;
+import org.hisp.dhis.rules.models.RuleActionShowOptionGroup;
 import org.hisp.dhis.rules.models.RuleActionShowWarning;
 import org.hisp.dhis.rules.models.RuleActionWarningOnCompletion;
 import org.hisp.dhis.rules.models.RuleAttributeValue;
@@ -346,6 +347,8 @@ public final class RulesRepository {
                             programRuleAction.data());
                     break;
                 case SHOWOPTIONGROUP:
+                    ruleAction = RuleActionShowOptionGroup.create(programRuleAction.content(), programRuleAction.optionGroup().uid());
+                    break;
                 case SENDMESSAGE:
                 case SCHEDULEMESSAGE:
                 default:

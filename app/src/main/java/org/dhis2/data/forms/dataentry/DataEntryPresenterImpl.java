@@ -14,18 +14,7 @@ import org.dhis2.utils.RulesActionCallbacks;
 import org.dhis2.utils.RulesUtilsProvider;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
-import org.hisp.dhis.rules.models.RuleAction;
-import org.hisp.dhis.rules.models.RuleActionAssign;
-import org.hisp.dhis.rules.models.RuleActionCreateEvent;
-import org.hisp.dhis.rules.models.RuleActionErrorOnCompletion;
-import org.hisp.dhis.rules.models.RuleActionHideField;
-import org.hisp.dhis.rules.models.RuleActionHideOption;
-import org.hisp.dhis.rules.models.RuleActionHideOptionGroup;
-import org.hisp.dhis.rules.models.RuleActionHideSection;
-import org.hisp.dhis.rules.models.RuleActionSetMandatoryField;
 import org.hisp.dhis.rules.models.RuleActionShowError;
-import org.hisp.dhis.rules.models.RuleActionShowWarning;
-import org.hisp.dhis.rules.models.RuleActionWarningOnCompletion;
 import org.hisp.dhis.rules.models.RuleEffect;
 
 import java.util.ArrayList;
@@ -33,10 +22,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
@@ -115,7 +102,7 @@ final class DataEntryPresenterImpl implements DataEntryPresenter, RulesActionCal
         disposable.add(dataEntryView.rowActions().onBackpressureBuffer()
                 .switchMap(rowAction -> dataEntryStore.checkUnique(rowAction.id(), rowAction.value())
                         .filter(checkPass -> checkPass) //If not unique
-                        .map(checkPass->rowAction)) //save value
+                        .map(checkPass -> rowAction)) //save value
                 .switchMap(action -> {
                             if (action.lastFocusPosition() != null && action.lastFocusPosition() >= 0) { //Triggered by form field
                                 this.lastFocusItem = action.id();
@@ -255,8 +242,11 @@ final class DataEntryPresenterImpl implements DataEntryPresenter, RulesActionCal
     }
 
     @Override
-    public void setOptionGroupToHide(String optionGroupUid) {
-        optionsGroupsToHide.add(optionGroupUid);
+    public void setOptionGroupToHide(String optionGroupUid, boolean toHide) {
+        if (toHide)
+            optionsGroupsToHide.add(optionGroupUid);
+        else if(optionsGroupsToHide.contains(optionGroupUid))
+            optionsGroupsToHide.remove(optionGroupUid);
 
     }
 
