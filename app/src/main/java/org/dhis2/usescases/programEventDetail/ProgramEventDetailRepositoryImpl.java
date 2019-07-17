@@ -1,7 +1,5 @@
 package org.dhis2.usescases.programEventDetail;
 
-import android.database.Cursor;
-
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.paging.DataSource;
@@ -35,8 +33,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.reactivex.Single;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -235,5 +233,29 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
 
         return finalCatOptComb;
 
+    }
+
+    @Override
+    public Single<Boolean> hasAccessToAllCatOptions() {
+        return d2.programModule().programs.uid(programUid).getAsync()
+                .filter(program -> program.categoryComboUid() != null)
+                .map(program -> d2.categoryModule().categoryCombos.uid(program.categoryComboUid()).withAllChildren().get())
+                .filter(catCombo -> !catCombo.isDefault())
+                .map(catCombo -> {
+                    boolean hasAccess = true;
+                    for(Category category : catCombo.categories()){
+                        List<CategoryOption> options = d2.categoryModule().categories.withCategoryOptions().uid(category.uid()).get().categoryOptions();
+                        int accesibleOptions = options.size();
+                        for(CategoryOption categoryOption : options) {
+                            if(!d2.categoryModule().categoryOptions.uid(categoryOption.uid()).get().access().data().write())
+                                accesibleOptions--;
+                        }
+                        if(accesibleOptions == 0) {
+                            hasAccess = false;
+                            break;
+                        }
+                    }
+                    return hasAccess;
+                }).toSingle();
     }
 }
