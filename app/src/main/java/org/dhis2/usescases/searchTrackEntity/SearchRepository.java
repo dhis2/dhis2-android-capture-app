@@ -8,7 +8,7 @@ import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -16,7 +16,7 @@ import java.util.List;
 
 import androidx.lifecycle.LiveData;
 import androidx.paging.PagedList;
-import io.reactivex.Flowable;
+
 import io.reactivex.Observable;
 
 /**
@@ -26,9 +26,7 @@ import io.reactivex.Observable;
 public interface SearchRepository {
 
     @NonNull
-    Observable<List<TrackedEntityAttributeModel>> programAttributes(String programId);
-
-    Observable<List<TrackedEntityAttributeModel>> programAttributes();
+    Observable<List<TrackedEntityAttribute>> programAttributes(String programId);
 
     Observable<List<OptionModel>> optionSet(String optionSetId);
 
@@ -49,9 +47,7 @@ public interface SearchRepository {
 
     Observable<List<OrganisationUnitModel>> getOrgUnits(@Nullable String selectedProgramUid);
 
-    Flowable<List<SearchTeiModel>> transformIntoModel(List<SearchTeiModel> teiList, @Nullable ProgramModel selectedProgram);
-
     String getProgramColor(@NonNull String programUid);
 
-    Observable<List<TrackedEntityAttributeModel>> trackedEntityTypeAttributes();
+    Observable<List<TrackedEntityAttribute>> trackedEntityTypeAttributes();
 }

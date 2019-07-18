@@ -52,6 +52,7 @@ import org.dhis2.utils.Constants;
 import org.dhis2.utils.HelpManager;
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 
 import java.lang.reflect.Field;
@@ -176,7 +177,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     //region SearchForm
 
     @Override
-    public void setForm(List<TrackedEntityAttributeModel> trackedEntityAttributeModels, @Nullable ProgramModel program, HashMap<String, String> queryData) {
+    public void setForm(List<TrackedEntityAttribute> trackedEntityAttributes, @Nullable ProgramModel program, HashMap<String, String> queryData) {
 
         if (!HelpManager.getInstance().isTutorialReadyForScreen(getClass().getName()))
             setTutorial();
@@ -185,7 +186,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
         //Form has been set.
         FormAdapter formAdapter = (FormAdapter) binding.formRecycler.getAdapter();
-        formAdapter.setList(trackedEntityAttributeModels, program, queryData);
+        formAdapter.setList(trackedEntityAttributes, program, queryData);
     }
 
     @NonNull
