@@ -51,10 +51,8 @@ public class SyncGranularRxWorker extends RxWorker {
                         .map(d2Progress -> Result.success())
                         .onErrorReturn(error -> Result.failure());
             default:
-                break;
+                return Single.just(Result.failure());
         }
-        return Single.fromObservable(presenter.syncGranularEvent(uid)).map(d2Progress -> Result.success())
-                .onErrorReturn(error -> Result.failure());
 
     }
 }

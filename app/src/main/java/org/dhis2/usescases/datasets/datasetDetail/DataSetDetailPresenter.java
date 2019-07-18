@@ -1,5 +1,6 @@
 package org.dhis2.usescases.datasets.datasetDetail;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 
 import androidx.annotation.IntDef;
@@ -21,6 +22,8 @@ import java.util.Map;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.processors.FlowableProcessor;
+import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
@@ -33,6 +36,7 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
     private List<String> selectedOrgUnits = new ArrayList<>();
     private List<String> selectedPeriods = new ArrayList<>();
     private Map<String, String> mapPeriodAvailable;
+    private FlowableProcessor<Boolean> processor;
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({LastSearchType.DATES, LastSearchType.DATE_RANGES})
@@ -50,8 +54,17 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
     @Override
     public void init(DataSetDetailContract.View view) {
         this.view = view;
+        this.processor = PublishProcessor.create();
         getOrgUnits(null);
         setDataSet(true);
+        manageProcessorDismissDialog();
+    }
+
+    private void manageProcessorDismissDialog(){
+        compositeDisposable.add(processor
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(bool -> setDataSet(true), Timber::d));
     }
 
     private void setDataSet(boolean isInit){
@@ -177,6 +190,6 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
 
     @Override
     public void onSyncIconClick(String orgUnit, String attributeCombo, String periodId) {
-        view.showSyncDialog(orgUnit, attributeCombo, periodId, SyncStatusDialog.ConflictType.DATA_VALUES);
+        view.showSyncDialog(orgUnit, attributeCombo, periodId, SyncStatusDialog.ConflictType.DATA_VALUES, processor);
     }
 }
