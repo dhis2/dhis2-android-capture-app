@@ -89,14 +89,22 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
         errorView = findViewById(R.id.errorMessage);
 
         latitude.setOnEditorActionListener((v, actionId, event) -> {
-            longitude.requestFocus();
-            longitude.performClick();
+            if (validateCoordinates()) {
+                Double latitudeValue = isEmpty(latitude.getText().toString()) ? null : Double.valueOf(latitude.getText().toString());
+                Double longitudeValue = isEmpty(longitude.getText().toString()) ? null : Double.valueOf(longitude.getText().toString());
+                listener2.onCurrentLocationClick(latitudeValue, longitudeValue);
+            } else {
+                longitude.requestFocus();
+                longitude.performClick();
+            }
             return true;
         });
 
         longitude.setOnEditorActionListener((v, actionId, event) -> {
             if (validateCoordinates()) {
-                listener2.onCurrentLocationClick(Double.valueOf(latitude.getText().toString()), Double.valueOf(longitude.getText().toString()));
+                Double latitudeValue = isEmpty(latitude.getText().toString()) ? null : Double.valueOf(latitude.getText().toString());
+                Double longitudeValue = isEmpty(longitude.getText().toString()) ? null : Double.valueOf(longitude.getText().toString());
+                listener2.onCurrentLocationClick(latitudeValue, longitudeValue);
             } else {
                 latitude.requestFocus();
                 latitude.performClick();
@@ -120,7 +128,8 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
 
     private boolean validateCoordinates() {
 
-        return !isEmpty(latitude.getText()) && !isEmpty(longitude.getText());
+        return (!isEmpty(latitude.getText()) && !isEmpty(longitude.getText())) ||
+                (isEmpty(latitude.getText()) && isEmpty(longitude.getText()));
     }
 
     public void setMapListener(OnMapPositionClick listener) {
@@ -236,7 +245,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
     }
 
     public interface OnCurrentLocationClick {
-        void onCurrentLocationClick(double latitude, double longitude);
+        void onCurrentLocationClick(Double latitude, Double longitude);
     }
 
     @SuppressLint("MissingPermission")

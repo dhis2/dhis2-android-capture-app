@@ -32,10 +32,14 @@ public class CoordinateHolder extends FormViewHolder {
 
         binding.formCoordinates.setCurrentLocationListener((latitude, longitude) -> {
                     closeKeyboard(binding.formCoordinates);
-                    processor.onNext(
-                            RowAction.create(model.uid(),
-                                    String.format(Locale.US, "[%.5f,%.5f]", latitude, longitude),
-                                    getAdapterPosition()));
+                    if (latitude == null || longitude == null) {
+                        processor.onNext(
+                                RowAction.create(model.uid(), null, getAdapterPosition()));
+                    } else
+                        processor.onNext(
+                                RowAction.create(model.uid(),
+                                        String.format(Locale.US, "[%.5f,%.5f]", latitude, longitude),
+                                        getAdapterPosition()));
                     if (!isSearchMode)
                         itemView.setBackgroundColor(Color.WHITE);
                 }
