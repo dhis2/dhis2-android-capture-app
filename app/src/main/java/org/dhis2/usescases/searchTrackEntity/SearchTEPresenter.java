@@ -26,9 +26,8 @@ import org.dhis2.utils.NetworkUtils;
 import org.dhis2.utils.custom_views.OrgUnitDialog;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.maintenance.D2Error;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
-import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeModel;
 
 import java.util.ArrayList;
@@ -65,7 +64,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private final D2 d2;
     private SearchTEContractsModule.View view;
 
-    private ProgramModel selectedProgram;
+    private Program selectedProgram;
 
     private CompositeDisposable compositeDisposable;
     private TrackedEntityTypeModel trackedEntity;
@@ -105,25 +104,25 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         })
                         .subscribeOn(AndroidSchedulers.mainThread())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(programModels -> {
+                        .subscribe(programs -> {
 
-                                    List<ProgramModel> programsWithTEType = new ArrayList<>();
-                                    for (ProgramModel programModel : programModels) {
-                                        if (programModel.trackedEntityType().equals(trackedEntityType))
-                                            programsWithTEType.add(programModel);
-                                        if (programModel.uid().equals(initialProgram))
-                                            this.selectedProgram = programModel;
+                                    List<Program> programsWithTEType = new ArrayList<>();
+                                    for (Program program : programs) {
+                                        if (program.trackedEntityType().equals(trackedEntityType))
+                                            programsWithTEType.add(program);
+                                        if (program.uid().equals(initialProgram))
+                                            this.selectedProgram = program;
                                     }
-                                    Collections.sort(programModels, (program1, program2) -> program1.displayName().compareToIgnoreCase(program2.displayName()));
+                                    Collections.sort(programs, (program1, program2) -> program1.displayName().compareToIgnoreCase(program2.displayName()));
                                     if(selectedProgram==null && programsWithTEType.size()==1) {
                                         setProgram(programsWithTEType.get(0));
                                         view.setPrograms(programsWithTEType);
                                     } else if (selectedProgram != null) {
                                         setProgram(selectedProgram);
-                                        view.setPrograms(programModels);
+                                        view.setPrograms(programs);
                                     } else {
                                         setProgram(null);
-                                        view.setPrograms(programModels);
+                                        view.setPrograms(programs);
                                     }
 
                                 }, Timber::d
@@ -317,14 +316,14 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     }
 
     @Override
-    public ProgramModel getProgramModel() {
+    public Program getProgram() {
         return selectedProgram;
     }
 
     //endregion
 
     @Override
-    public void setProgram(ProgramModel programSelected) {
+    public void setProgram(Program programSelected) {
         boolean otherProgramSelected = selectedProgram == programSelected;
         selectedProgram = programSelected;
         view.clearList(programSelected == null ? null : programSelected.uid());
@@ -380,7 +379,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public void onEnrollClick(View view) {
-        if (selectedProgram != null && selectedProgram.accessDataWrite() != null && selectedProgram.accessDataWrite())
+        if (selectedProgram != null && selectedProgram.access().data().write() != null && selectedProgram.access().data().write())
             if (view.isEnabled()) {
                 enroll(selectedProgram.uid(), null);
             } else
@@ -579,7 +578,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         if (!online) {
             String relationshipType;
             if (relationshipTypeUid == null)
-                relationshipType = selectedProgram.relationshipType();
+                relationshipType = selectedProgram.relationshipType().uid();
             else
                 relationshipType = relationshipTypeUid;
 
@@ -656,11 +655,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     @Override
     public String getProgramColor(String uid) {
         return searchRepository.getProgramColor(uid);
-    }
-
-    @Override
-    public Observable<List<OrganisationUnitLevel>> getOrgUnitLevels() {
-        return Observable.just(d2.organisationUnitModule().organisationUnitLevels.get());
     }
 
     @Override

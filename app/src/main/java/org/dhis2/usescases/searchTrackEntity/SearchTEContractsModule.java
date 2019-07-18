@@ -7,6 +7,7 @@ import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
+import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
@@ -28,9 +29,9 @@ import io.reactivex.Observable;
 public class SearchTEContractsModule {
 
     public interface View extends AbstractActivityContracts.View {
-        void setForm(List<TrackedEntityAttribute> trackedEntityAttributeModels, @Nullable ProgramModel program, HashMap<String, String> queryData);
+        void setForm(List<TrackedEntityAttribute> trackedEntityAttributeModels, @Nullable Program program, HashMap<String, String> queryData);
 
-        void setPrograms(List<ProgramModel> programModels);
+        void setPrograms(List<Program> programModels);
 
         void clearList(String uid);
 
@@ -59,7 +60,7 @@ public class SearchTEContractsModule {
 
         void onDestroy();
 
-        void setProgram(ProgramModel programSelected);
+        void setProgram(Program programSelected);
 
         void onBackClick();
 
@@ -75,7 +76,7 @@ public class SearchTEContractsModule {
 
         TrackedEntityTypeModel getTrackedEntityName();
 
-        ProgramModel getProgramModel();
+        Program getProgram();
 
         void addRelationship(String TEIuid, String relationshipTypeUid, boolean online);
 
@@ -88,8 +89,6 @@ public class SearchTEContractsModule {
         Observable<List<OrganisationUnitModel>> getOrgUnits();
 
         String getProgramColor(String uid);
-
-        Observable<List<OrganisationUnitLevel>> getOrgUnitLevels();
 
         Trio<PagedList<SearchTeiModel>, String, Boolean> getMessage(PagedList<SearchTeiModel> list);
 
