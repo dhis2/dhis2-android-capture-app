@@ -84,12 +84,13 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
                         rulesRepository.rulesNew(programUid),
                         rulesRepository.ruleVariablesProgramStages(programUid),
                         ruleEvents(enrollmentUid),
-                        (rules, variables, ruleEvents) -> {
+                        rulesRepository.getSuplementaryData(d2),
+                        (rules, variables, ruleEvents,supplData) -> {
                             RuleEngine.Builder builder = RuleEngineContext.builder(evaluator)
                                     .rules(rules)
                                     .ruleVariables(variables)
                                     .calculatedValueMap(new HashMap<>())
-                                    .supplementaryData(new HashMap<>())
+                                    .supplementaryData(supplData)
                                     .build().toEngineBuilder();
                             return builder.events(ruleEvents)
                                     .triggerEnvironment(TriggerEnvironment.ANDROIDCLIENT)

@@ -459,6 +459,18 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     }
 
     @Override
+    public void setOptionComboAccess(Boolean canCreateEvent) {
+        switch (binding.addEventButton.getVisibility()) {
+            case View.VISIBLE:
+                binding.addEventButton.setVisibility(canCreateEvent ? View.VISIBLE : View.GONE);
+                break;
+            case View.GONE:
+                binding.addEventButton.setVisibility(View.GONE);
+                break;
+        }
+    }
+
+    @Override
     public void renderError(String message) {
         if (getActivity() != null)
             new AlertDialog.Builder(getActivity())
@@ -564,7 +576,14 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void setWritePermission(Boolean canWrite) {
-        binding.addEventButton.setVisibility(canWrite ? View.VISIBLE : View.GONE);
+        switch (binding.addEventButton.getVisibility()) {
+            case View.VISIBLE:
+                binding.addEventButton.setVisibility(canWrite ? View.VISIBLE : View.GONE);
+                break;
+            case View.GONE:
+                binding.addEventButton.setVisibility(View.GONE);
+                break;
+        }
         if (binding.addEventButton.getVisibility() == View.VISIBLE) {
             binding.emptyTeis.setText(R.string.empty_tei_add);
         } else {

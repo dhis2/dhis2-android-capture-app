@@ -270,7 +270,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                     .map(fields -> {
                         emptyMandatoryFields = new HashMap<>();
                         for (FieldViewModel fieldViewModel : fields) {
-                            if (fieldViewModel.mandatory() && isEmpty(fieldViewModel.value()))
+                            if (fieldViewModel.mandatory() && isEmpty(fieldViewModel.value()) && !sectionsToHide.contains(fieldViewModel.programStageSection()))
                                 emptyMandatoryFields.put(fieldViewModel.uid(), fieldViewModel);
                         }
                         return fields;
@@ -291,8 +291,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                             emptyMandatoryFields.remove(key);
 
                         for (FieldViewModel fieldViewModel : fields) {
-                            if (fieldViewModel.mandatory() && isEmpty(fieldViewModel.value()))
-                                emptyMandatoryFields.put(fieldViewModel.uid(), fieldViewModel);
+                            if (fieldViewModel.mandatory() && isEmpty(fieldViewModel.value()) && !sectionsToHide.contains(fieldViewModel.programStageSection()))
+                            emptyMandatoryFields.put(fieldViewModel.uid(), fieldViewModel);
                         }
                         return fields;
                     });
@@ -763,8 +763,11 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     }
 
     @Override
-    public void setOptionGroupToHide(String optionGroupUid) {
-        optionsGroupsToHide.add(optionGroupUid);
+    public void setOptionGroupToHide(String optionGroupUid,boolean toHide) {
+        if (toHide)
+            optionsGroupsToHide.add(optionGroupUid);
+        else if(optionsGroupsToHide.contains(optionGroupUid))
+            optionsGroupsToHide.remove(optionGroupUid);
     }
 
     //endregion
