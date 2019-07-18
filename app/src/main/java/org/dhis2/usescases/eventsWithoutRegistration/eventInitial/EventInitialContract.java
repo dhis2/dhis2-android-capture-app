@@ -81,6 +81,8 @@ public class EventInitialContract {
 
         void renderObjectStyle(ObjectStyleModel objectStyleModel);
 
+        void runSmsSubmission();
+
         EventCreationType eventcreateionType();
 
         void latitudeWarning(boolean showWarning);
