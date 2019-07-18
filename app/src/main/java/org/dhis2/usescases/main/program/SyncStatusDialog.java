@@ -583,30 +583,30 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
                         ((AnimatedVectorDrawable) binding.syncIcon.getDrawable()).start();
                 }
                 adapter.addItem(StatusLogItem.create(Calendar.getInstance().getTime(),
-                        "Empieza la sincronizacion"));
+                        getString(R.string.start_sync_granular)));
                 break;
             case RUNNING:
                 adapter.addItem(StatusLogItem.create(Calendar.getInstance().getTime(),
-                        "Sincronizando..."));
+                        getString(R.string.syncing)));
                 break;
             case SUCCEEDED:
                 processor.onNext(true);
                 binding.syncButton.setVisibility(View.GONE);
                 adapter.addItem(StatusLogItem.create(Calendar.getInstance().getTime(),
-                        "Sincronizado"));
+                        getString(R.string.end_sync_granular)));
                 binding.noConflictMessage.setText(getString(R.string.no_conflicts_synced_message));
                 Bindings.setStateIcon(binding.syncIcon, State.SYNCED);
                 break;
             case FAILED:
                 Bindings.setStateIcon(binding.syncIcon, State.ERROR);
                 adapter.addItem(StatusLogItem.create(Calendar.getInstance().getTime(),
-                        "Ha ocurrido un error en la sincronizacion"));
+                        getString(R.string.error_sync)));
                 break;
             case BLOCKED:
                 break;
             case CANCELLED:
                 adapter.addItem(StatusLogItem.create(Calendar.getInstance().getTime(),
-                        "Sincronizacion cancelada"));
+                        getString(R.string.cancel_sync)));
                 break;
             default:
                 break;
