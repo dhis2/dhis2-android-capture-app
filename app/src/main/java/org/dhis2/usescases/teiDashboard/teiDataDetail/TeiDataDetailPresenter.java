@@ -12,9 +12,13 @@ import org.dhis2.usescases.map.MapSelectorActivity;
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import org.dhis2.usescases.teiDashboard.DashboardRepository;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 
 import androidx.core.app.ActivityCompat;
+
+import java.util.Date;
+
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -212,6 +216,42 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
                         .subscribe(
                                 data -> {
                                 },
+                                Timber::e
+                        )
+        );
+    }
+
+    @Override
+    public void onIncidentDateClick(Date date) {
+        view.showCustomIncidentCalendar(date);
+    }
+
+    @Override
+    public void onEnrollmentDateClick(Date date) {
+        view.showCustomEnrollmentCalendar(date);
+    }
+
+    @Override
+    public void updateIncidentDate(Date date) {
+        disposable.add(
+                enrollmentStore.saveIncidentDate(DateUtils.databaseDateFormat().format(date))
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                data -> {},
+                                Timber::e
+                        )
+        );
+    }
+
+    @Override
+    public void updateEnrollmentDate(Date date) {
+        disposable.add(
+                enrollmentStore.saveEnrollmentDate(DateUtils.databaseDateFormat().format(date))
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                data -> {},
                                 Timber::e
                         )
         );

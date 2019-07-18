@@ -3,7 +3,6 @@ package org.dhis2.usescases.syncManager;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.hisp.dhis.android.core.imports.TrackerImportConflict;
-import org.hisp.dhis.android.core.maintenance.D2Error;
 
 import java.util.List;
 
@@ -28,6 +27,9 @@ public class SyncManagerContracts {
         void showSyncErrors(List<TrackerImportConflict> data);
 
         void showLocalDataDeleted(boolean error);
+
+        void showSmsSettings(boolean enabled, String number, boolean waitForResponse,
+                             String responseSender, int waitingForResponseTimeout);
 
         void syncData();
 
@@ -73,5 +75,15 @@ public class SyncManagerContracts {
         boolean dataHasErrors();
 
         boolean dataHasWarnings();
+
+        void smsNumberSet(String number);
+
+        void smsSwitch(boolean isChecked);
+
+        void smsResponseSenderSet(String number);
+
+        void smsWaitForResponse(boolean waitForResponse);
+
+        void smsWaitForResponseTimeout(int timeout);
     }
 }

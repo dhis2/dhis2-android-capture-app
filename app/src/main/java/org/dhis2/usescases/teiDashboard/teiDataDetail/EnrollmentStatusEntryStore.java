@@ -19,4 +19,7 @@ public interface EnrollmentStatusEntryStore {
 
     Flowable<Long> saveCoordinates(double latitude, double longitude);
 
+    Flowable<Long> saveIncidentDate(String date);
+
+    Flowable<Long> saveEnrollmentDate(String date);
 }

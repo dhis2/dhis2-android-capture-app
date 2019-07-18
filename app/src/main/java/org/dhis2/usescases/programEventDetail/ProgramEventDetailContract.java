@@ -56,6 +56,8 @@ public class ProgramEventDetailContract {
         void setLiveData(LiveData<PagedList<ProgramEventViewModel>> pagedListLiveData);
 
         Period getCurrentPeriod();
+
+        void setOptionComboAccess(Boolean canCreateEvent);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {

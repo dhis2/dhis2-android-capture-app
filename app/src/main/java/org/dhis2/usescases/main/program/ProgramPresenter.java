@@ -75,7 +75,7 @@ public class ProgramPresenter implements ProgramContract.Presenter {
                         .flatMap(datePeriodOrgs -> Flowable.zip(homeRepository.programModels(datePeriodOrgs.val0(), datePeriodOrgs.val1()),
                                 homeRepository.aggregatesModels(datePeriodOrgs.val0(), datePeriodOrgs.val1()), (programs, dataSets) -> {
                                     programs.addAll(dataSets);
-                                    Collections.sort(programs, (program1, program2) -> program1.title().compareTo(program2.title()));
+                                    Collections.sort(programs, (program1, program2) -> program1.title().compareToIgnoreCase(program2.title()));
                                     return programs;
                                 }))
                         .subscribeOn(Schedulers.from(executorService))

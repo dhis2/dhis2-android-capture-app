@@ -20,6 +20,7 @@ import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.FormEditTextCustomBinding;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.Preconditions;
+import org.dhis2.utils.ValidationUtils;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
 
@@ -75,7 +76,8 @@ final class EditTextCustomHolder extends FormViewHolder {
         if (!isEmpty(binding.customEdittext.getEditText().getText())) {
             checkAutocompleteRendering();
             editTextModel.withValue(binding.customEdittext.getEditText().getText().toString());
-            processor.onNext(RowAction.create(editTextModel.uid(), binding.customEdittext.getEditText().getText().toString(), getAdapterPosition()));
+            String value = ValidationUtils.validate(editTextModel.valueType(),binding.customEdittext.getEditText().getText().toString());
+            processor.onNext(RowAction.create(editTextModel.uid(), value, getAdapterPosition()));
 
         } else {
             processor.onNext(RowAction.create(editTextModel.uid(), null, getAdapterPosition()));

@@ -117,6 +117,9 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
+            <include
+                android:id="@+id/settings_sms"
+                layout="@layout/settings_sms" />
 
             <TextView
                 android:layout_width="match_parent"
