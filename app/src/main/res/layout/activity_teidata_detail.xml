@@ -24,6 +24,14 @@
         <variable
             name="enrollmentStatus"
             type="EnrollmentStatus" />
+
+        <variable
+            name="enrollmentDate"
+            type="java.util.Date" />
+
+        <variable
+            name="incidentDate"
+            type="java.util.Date" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -214,6 +222,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="10dp"
+                            android:layout_marginTop="10dp"
                             android:text='@{program.enrollmentDateLabel(),default="Enrolment date"}'
                             android:textColor="@color/icon_color"
                             android:textSize="14sp"
@@ -226,35 +235,39 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="10dp"
+                            android:layout_marginTop="10dp"
                             android:text="@string/enrolling_ou"
                             android:textColor="@color/icon_color"
                             android:textSize="14sp"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@id/enrollment_date_label" />
 
-                        <TextView
+                        <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/incident_date"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp"
+                            android:focusable="false"
                             android:gravity="end"
+                            android:onClick="@{() -> presenter.onIncidentDateClick(incidentDate)}"
+                            android:paddingTop="0dp"
                             android:textColor="@color/gray_444"
                             android:textSize="14sp"
-                            app:date="@{dashboardModel.currentEnrollment.incidentDate ()}"
+                            app:date="@{incidentDate}"
                             app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toEndOf="@id/incident_date_label"
                             app:layout_constraintTop_toTopOf="@id/incident_date_label"
                             tools:text="DD/MM/YYYY" />
 
-                        <TextView
+                        <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/enrollment_date"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp"
                             android:gravity="end"
+                            android:focusable="false"
                             android:textColor="@color/gray_444"
                             android:textSize="14sp"
-                            app:date="@{dashboardModel.currentEnrollment.enrollmentDate()}"
+                            android:paddingTop="0dp"
+                            android:onClick="@{() -> presenter.onEnrollmentDateClick(enrollmentDate)}"
+                            app:date="@{enrollmentDate}"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="@id/enrollment_date_label"
                             tools:text="DD/MM/YYYY" />
