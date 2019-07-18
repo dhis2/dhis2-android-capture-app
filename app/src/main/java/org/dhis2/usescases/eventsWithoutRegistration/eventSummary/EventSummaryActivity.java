@@ -1,6 +1,7 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventSummary;
 
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -14,11 +15,14 @@ import org.dhis2.BuildConfig;
 import org.dhis2.R;
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
+import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel;
 import org.dhis2.databinding.ActivityEventSummaryBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
+import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.HelpManager;
+import org.dhis2.utils.custom_views.CircularCompletionView;
 import org.dhis2.utils.custom_views.CustomDialog;
 import org.dhis2.utils.custom_views.ProgressBarAnimation;
 import org.hisp.dhis.android.core.event.EventModel;
@@ -29,6 +33,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import javax.inject.Inject;
 
@@ -60,6 +65,7 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
     private int completionPercent;
     private int totalFields;
     private int totalCompletedFields;
+    private int unsupportedFields;
     private int fieldsToCompleteBeforeClosing;
     String eventId;
     String programId;
@@ -110,8 +116,8 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void onUpdate(boolean lost, float value) {
-        String text = String.valueOf((int) value) + "%";
-        binding.progress.setText(text);
+        /*String text = String.valueOf((int) value) + "%";
+        binding.progress.setText(text);*/
     }
 
     @Override
@@ -240,6 +246,7 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
             int totalSectionFields = updates.size();
             totalFields = totalFields + totalSectionFields;
             totalCompletedFields = totalCompletedFields + completedSectionFields;
+            unsupportedFields = unsupportedFields + calculateUnsupportedFields(updates);
             fieldsToCompleteBeforeClosing = fieldsToCompleteBeforeClosing + calculateMandatoryUnansweredFields(updates);
             String completionText = completedSectionFields + "/" + totalSectionFields;
             ((TextView) sectionView.findViewById(R.id.section_percent)).setText(completionText);
@@ -281,9 +288,14 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
         binding.summaryHeader.setText(String.format(getString(R.string.event_summary_header), String.valueOf(totalCompletedFields), String.valueOf(totalFields)));
         float completionPerone = (float) totalCompletedFields / (float) totalFields;
         completionPercent = (int) (completionPerone * 100);
-        ProgressBarAnimation gainAnim = new ProgressBarAnimation(binding.progressGains, 0, completionPercent, false, this);
+        float unsupportedPerOne = (float) unsupportedFields / (float) totalFields;
+        binding.progressLayout.setCompletionPercentage(completionPercent);
+        binding.progressLayout.setSecondaryPercentage((int) (unsupportedPerOne * 100));
+        binding.progressLayout.setTextSize(56);
+        binding.progressLayout.setStrokeSize(20);
+        /*ProgressBarAnimation gainAnim = new ProgressBarAnimation(binding.progressGains, 0, completionPercent, false, this);
         gainAnim.setDuration(PROGRESS_TIME);
-        binding.progressGains.startAnimation(gainAnim);
+        binding.progressGains.startAnimation(gainAnim);*/
         checkButton();
     }
 
@@ -295,6 +307,15 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
         int total = 0;
         for (FieldViewModel fieldViewModel : updates) {
             if (fieldViewModel.value() != null && !fieldViewModel.value().isEmpty())
+                total++;
+        }
+        return total;
+    }
+
+    private int calculateUnsupportedFields(@NonNull List<FieldViewModel> updates) {
+        int total = 0;
+        for (FieldViewModel fieldViewModel : updates) {
+            if (fieldViewModel instanceof UnsupportedViewModel)
                 total++;
         }
         return total;
