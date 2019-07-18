@@ -155,6 +155,8 @@ public class SearchRepositoryImpl implements SearchRepository {
                     for (ProgramTrackedEntityAttribute pteAttribute : attributes) {
                         if (pteAttribute.searchable())
                             uids.add(pteAttribute.trackedEntityAttribute().uid());
+                        else if (d2.trackedEntityModule().trackedEntityAttributes.byUid().eq(pteAttribute.trackedEntityAttribute().uid()).one().get().unique())
+                            uids.add(pteAttribute.trackedEntityAttribute().uid());
                     }
                     return Observable.just(d2.trackedEntityModule().trackedEntityAttributes.byUid().in(uids).get());
                 });
@@ -463,7 +465,9 @@ public class SearchRepositoryImpl implements SearchRepository {
                 .flatMap(attributes -> {
                     List<String> uids = new ArrayList<>();
                     for (TrackedEntityTypeAttribute tetAttribute : attributes) {
-                        if(tetAttribute.searchable())
+                        if (tetAttribute.searchable())
+                            uids.add(tetAttribute.trackedEntityAttribute().uid());
+                        else if (d2.trackedEntityModule().trackedEntityAttributes.byUid().eq(tetAttribute.trackedEntityAttribute().uid()).one().get().unique())
                             uids.add(tetAttribute.trackedEntityAttribute().uid());
                     }
                     return Observable.just(d2.trackedEntityModule().trackedEntityAttributes.byUid().in(uids).get());
