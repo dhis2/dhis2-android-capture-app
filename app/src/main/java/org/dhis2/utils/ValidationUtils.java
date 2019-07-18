@@ -10,7 +10,7 @@ public class ValidationUtils {
         if (value == null)
             return null;
 
-        String validatedValue = null;
+        String validatedValue = value;
 
         switch (valueType) {
             case INTEGER:
