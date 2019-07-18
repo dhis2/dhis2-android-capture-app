@@ -36,9 +36,8 @@ import org.dhis2.data.tuples.Trio;
 import org.dhis2.utils.Constants;
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.ValueType;
-import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -74,7 +73,7 @@ public class FormAdapter extends RecyclerView.Adapter {
     private static final int LONG_TEXT = 13;
     private int programData = 0;
     private List<TrackedEntityAttribute> attributeList;
-    private ProgramModel programModel;
+    private Program program;
     @NonNull
     private final FlowableProcessor<RowAction> processor;
     private final FlowableProcessor<Trio<String, String, Integer>> processorOptionSet;
@@ -118,17 +117,17 @@ public class FormAdapter extends RecyclerView.Adapter {
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         FieldViewModel viewModel;
-        if (position < programData) {
+        if (position == 0 && programData != -1) {
             viewModel = DateTimeViewModel.create(
                     position == 0 ? Constants.ENROLLMENT_DATE_UID : Constants.INCIDENT_DATE_UID,
                     holder.getAdapterPosition() == 0 ?
-                            !isEmpty(programModel.enrollmentDateLabel()) ? programModel.enrollmentDateLabel() : context.getString(R.string.enrollmment_date) :
-                            !isEmpty(programModel.incidentDateLabel()) ? programModel.incidentDateLabel() : context.getString(R.string.incident_date),
+                            !isEmpty(program.enrollmentDateLabel()) ? program.enrollmentDateLabel() : context.getString(R.string.enrollmment_date) :
+                            !isEmpty(program.incidentDateLabel()) ? program.incidentDateLabel() : context.getString(R.string.incident_date),
                     false,
                     ValueType.DATE,
                     null,
                     null,
-                    holder.getAdapterPosition() == 0 ? programModel.selectEnrollmentDatesInFuture() : programModel.selectIncidentDatesInFuture(), true, null,
+                    holder.getAdapterPosition() == 0 ? program.selectEnrollmentDatesInFuture() : program.selectIncidentDatesInFuture(), true, null,
                     ObjectStyleModel.builder().build());
 
         } else {
@@ -193,7 +192,7 @@ public class FormAdapter extends RecyclerView.Adapter {
     @Override
     public int getItemViewType(int position) {
 
-        if (position < programData)
+        if (position == 0 && programData != -1)
             return DATE;
 
         if (attributeList.get(position - programData).optionSet() != null)
@@ -241,13 +240,13 @@ public class FormAdapter extends RecyclerView.Adapter {
 
     }
 
-    public void setList(List<TrackedEntityAttribute> trackedEntityAttributes, ProgramModel programModel, HashMap<String, String> queryData) {
+    public void setList(List<TrackedEntityAttribute> trackedEntityAttributes, Program program, HashMap<String, String> queryData) {
         this.queryData = queryData;
-        if (programModel != null) {
-            this.programModel = programModel;
-            programData = programModel.displayIncidentDate() ? 1 : 0;
+        this.program = program;
+        if (this.program != null) {
+            programData = this.program.displayIncidentDate() ? 1 : 0;
         } else {
-            programData = 0;
+            programData = -1;
         }
 
         this.attributeList = trackedEntityAttributes;
