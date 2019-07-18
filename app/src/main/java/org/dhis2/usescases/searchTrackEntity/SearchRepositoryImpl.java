@@ -332,11 +332,14 @@ public class SearchRepositoryImpl implements SearchRepository {
                 }
             }
 
+            boolean displayIncidentDate = d2.programModule().programs.uid(programUid).get().displayIncidentDate();
+
             EnrollmentModel enrollmentModel = EnrollmentModel.builder()
                     .uid(codeGenerator.generate())
                     .created(currentDate)
                     .lastUpdated(currentDate)
                     .enrollmentDate(enrollmentDate)
+                    .incidentDate(displayIncidentDate ? new Date() : null)
                     .program(programUid)
                     .organisationUnit(orgUnit)
                     .trackedEntityInstance(teiUid != null ? teiUid : trackedEntityInstanceModel.uid())
