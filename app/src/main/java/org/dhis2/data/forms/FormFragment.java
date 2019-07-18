@@ -509,7 +509,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     }
 
     @Override
-    public void onCurrentLocationClick(double latitude, double longitude) {
+    public void onCurrentLocationClick(Double latitude, Double longitude) {
         publishCoordinatesChanged(latitude, longitude);
     }
 

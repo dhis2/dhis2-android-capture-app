@@ -30,8 +30,8 @@ class RulesUtilsProviderImpl(private val codeGenerator: CodeGenerator) : RulesUt
                 is RuleActionAssign -> assign(it.ruleAction() as RuleActionAssign, it, fieldViewModels, rulesActionCallbacks)
                 is RuleActionCreateEvent -> createEvent(it.ruleAction() as RuleActionCreateEvent, fieldViewModels, rulesActionCallbacks)
                 is RuleActionSetMandatoryField -> setMandatory(it.ruleAction() as RuleActionSetMandatoryField, fieldViewModels)
-                is RuleActionWarningOnCompletion -> warningOnCompletion(it.ruleAction() as RuleActionWarningOnCompletion, rulesActionCallbacks)
-                is RuleActionErrorOnCompletion -> errorOnCompletion(it.ruleAction() as RuleActionErrorOnCompletion, rulesActionCallbacks)
+                is RuleActionWarningOnCompletion -> warningOnCompletion(it.ruleAction() as RuleActionWarningOnCompletion, rulesActionCallbacks, fieldViewModels, it.data())
+                is RuleActionErrorOnCompletion -> errorOnCompletion(it.ruleAction() as RuleActionErrorOnCompletion, rulesActionCallbacks, fieldViewModels, it.data())
                 is RuleActionHideProgramStage -> hideProgramStage(it.ruleAction() as RuleActionHideProgramStage, rulesActionCallbacks)
                 is RuleActionHideOption -> hideOption(it.ruleAction() as RuleActionHideOption, rulesActionCallbacks)
                 is RuleActionHideOptionGroup -> hideOptionGroup(it.ruleAction() as RuleActionHideOptionGroup, rulesActionCallbacks)
@@ -56,9 +56,6 @@ class RulesUtilsProviderImpl(private val codeGenerator: CodeGenerator) : RulesUt
                             fieldViewModels: MutableMap<String, FieldViewModel>, data: String) {
 
         val model = fieldViewModels[showWarning.field()]
-
-        fieldViewModels[showWarning.field()]
-
         if (model != null)
             fieldViewModels[showWarning.field()] = model.withWarning(showWarning.content() + data)
 
@@ -142,11 +139,19 @@ class RulesUtilsProviderImpl(private val codeGenerator: CodeGenerator) : RulesUt
             fieldViewModels[mandatoryField.field()] = model.setMandatory()
     }
 
-    private fun warningOnCompletion(warningOnCompletion: RuleActionWarningOnCompletion, rulesActionCallbacks: RulesActionCallbacks) {
+    private fun warningOnCompletion(warningOnCompletion: RuleActionWarningOnCompletion, rulesActionCallbacks: RulesActionCallbacks, fieldViewModels: MutableMap<String, FieldViewModel>, data: String) {
+        val model = fieldViewModels[warningOnCompletion.field()]
+        if (model != null)
+            fieldViewModels[warningOnCompletion.field()] = model.withWarning(warningOnCompletion.content() + data)
+
         rulesActionCallbacks.setMessageOnComplete(warningOnCompletion.content(), true)
     }
 
-    private fun errorOnCompletion(errorOnCompletion: RuleActionErrorOnCompletion, rulesActionCallbacks: RulesActionCallbacks) {
+    private fun errorOnCompletion(errorOnCompletion: RuleActionErrorOnCompletion, rulesActionCallbacks: RulesActionCallbacks, fieldViewModels: MutableMap<String, FieldViewModel>, data: String) {
+        val model = fieldViewModels[errorOnCompletion.field()]
+        if (model != null)
+            fieldViewModels[errorOnCompletion.field()] = model.withWarning(errorOnCompletion.content() + data)
+
         rulesActionCallbacks.setMessageOnComplete(errorOnCompletion.content(), false)
     }
 
