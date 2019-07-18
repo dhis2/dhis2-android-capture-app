@@ -40,6 +40,7 @@ import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.usescases.map.MapSelectorActivity;
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.custom_views.CategoryComboDialog;
 import org.dhis2.utils.custom_views.CoordinatesView;
@@ -476,7 +477,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
 
             @Override
             public void onClearDate() {
-                onReportDateChanged.onNext("");
+                onReportDateChanged.onNext(BaseIdentifiableObject.DATE_FORMAT.format(new Date()));
             }
         };
     }
@@ -494,7 +495,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
 
             @Override
             public void onClearDate() {
-                onIncidentDateChanged.onNext("");
+                onIncidentDateChanged.onNext(BaseIdentifiableObject.DATE_FORMAT.format(new Date()));
             }
         };
 
