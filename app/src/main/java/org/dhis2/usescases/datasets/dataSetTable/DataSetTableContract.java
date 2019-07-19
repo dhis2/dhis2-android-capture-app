@@ -28,11 +28,14 @@ public class DataSetTableContract {
         void isDataSetOpen(boolean dataSetIsOpen);
 
         void isDataSetSynced(boolean dataSetIsSynced);
+
+        void runSmsSubmission();
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
 
         void onBackClick();
+        void onSyncClick();
 
         void init(View view, String orgUnitUid, String periodTypeName, String catCombo, String periodFinalDate, String periodId);
 

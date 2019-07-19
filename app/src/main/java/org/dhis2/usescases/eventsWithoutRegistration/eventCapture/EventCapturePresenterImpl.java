@@ -270,7 +270,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                     .map(fields -> {
                         emptyMandatoryFields = new HashMap<>();
                         for (FieldViewModel fieldViewModel : fields) {
-                            if (fieldViewModel.mandatory() && isEmpty(fieldViewModel.value()))
+                            if (fieldViewModel.mandatory() && isEmpty(fieldViewModel.value()) && !sectionsToHide.contains(fieldViewModel.programStageSection()))
                                 emptyMandatoryFields.put(fieldViewModel.uid(), fieldViewModel);
                         }
                         return fields;
@@ -291,8 +291,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                             emptyMandatoryFields.remove(key);
 
                         for (FieldViewModel fieldViewModel : fields) {
-                            if (fieldViewModel.mandatory() && isEmpty(fieldViewModel.value()))
-                                emptyMandatoryFields.put(fieldViewModel.uid(), fieldViewModel);
+                            if (fieldViewModel.mandatory() && isEmpty(fieldViewModel.value()) && !sectionsToHide.contains(fieldViewModel.programStageSection()))
+                            emptyMandatoryFields.put(fieldViewModel.uid(), fieldViewModel);
                         }
                         return fields;
                     });
@@ -377,7 +377,9 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                             )
             );
 
-            compositeDisposable.add(EventCaptureFormFragment.getInstance().dataEntryFlowable().onBackpressureBuffer()
+            compositeDisposable.add(EventCaptureFormFragment.getInstance().dataEntryFlowable()
+                    .onBackpressureBuffer()
+                    .distinctUntilChanged()
                     .subscribeOn(Schedulers.io())
                     .observeOn(Schedulers.io())
                     .switchMap(action -> {
@@ -385,6 +387,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                     this.lastFocusItem = action.id();
                                 }
                                 eventCaptureRepository.setLastUpdated(action.id());
+                                if (emptyMandatoryFields.containsKey(action.id()) && !isEmpty(action.value()))
+                                    emptyMandatoryFields.remove(action.id());
                                 return dataEntryStore.save(action.id(), action.value());
                             }
                     ).subscribe(result -> Timber.d("SAVED VALUE AT %s", System.currentTimeMillis()),
@@ -759,8 +763,11 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     }
 
     @Override
-    public void setOptionGroupToHide(String optionGroupUid) {
-        optionsGroupsToHide.add(optionGroupUid);
+    public void setOptionGroupToHide(String optionGroupUid,boolean toHide) {
+        if (toHide)
+            optionsGroupsToHide.add(optionGroupUid);
+        else if(optionsGroupsToHide.contains(optionGroupUid))
+            optionsGroupsToHide.remove(optionGroupUid);
     }
 
     //endregion

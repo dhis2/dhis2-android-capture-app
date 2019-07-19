@@ -200,6 +200,15 @@
     <string name="last_data_sync_date">Last sync on: %s</string>
     <string name="last_metadata_sync_date">Last sync on: %s</string>
     <string name="refill_reserved_values">Refill</string>
+    <string name="settings_sms_module_title">SMS module:</string>
+    <string name="settings_sms_receiver_number">SMS gateway</string>
+    <string name="settings_sms_result_sender_number">SMS result sender</string>
+    <string name="settings_sms_result_timeout">SMS result timeout</string>
+    <string name="settings_sms_result_timeout_hint">seconds</string>
+    <string name="settings_sms_result_sender_hint">number</string>
+    <string name="settings_sms_receiver_number_hint">number</string>
+    <string name="settings_sms_module_switch">Enable SMS submission</string>
+    <string name="settings_sms_response_wait_switch">Wait for SMS result response</string>
     <!-- SEARCH TRACK ENTITY -->
 
     <!--region SETTINCS-->
@@ -214,6 +223,8 @@
     <string name="settingsDeleteLocalData_descr">All Capture App data stored in your device will be deleted. Data which is not synced to the server will be lost.</string>
     <string name="settingsReset">Reset app data &amp; configuration</string>
     <string name="settingsReset_descr">Your configuration and App data stored in the device will be deleted. You will be asked to log in again and data which is not synced to the server will be lost.</string>
+    <string name="settingsSms">SMS Settings</string>
+    <string name="settingsSms_descr">Check and edit parameters related to the sms gateway</string>
     <!--endregion-->
 
     <string name="enrollmment_date">Enrollment date</string>
@@ -483,10 +494,10 @@
     <string name="no_conflicts_update_message">This data is stored in your device only, it is not synced with the server.</string>
     <string name="no_conflicts_synced_message">You are up to date! All your data is sent to the server.</string>
     <string name="relationship_error_recursive">You can\'t relate a record with itself</string>
+    <string name="unblock_session">Unblock session</string>
     <string name="data_set_closed">Close</string>
     <string name="data_set_open">Open</string>
     <string name="unsupported_value_type">Unsupported value type</string>
-    <string name="unblock_session">Unblock session</string>
     <string name="change_calendar_view">Change calendar view</string>
     <string name="data_every_fifteen_minutes">15 minutes</string>
     <string name="data_every_hour">Every hour</string>
@@ -502,4 +513,35 @@
     <string name="validation_url">This is not a valid url</string>
     <string name="uncomplete_authority_error">You do not have the authority to re-open this event</string>
 
+    <string name="sms_receiver_number">Receiver number</string>
+    <string name="sms_amount_question">Do you accept to send %d messages?</string>
+    <string name="sms_sending">Sending %1$d/%2$d</string>
+    <string name="sms_waiting_amount_confirm">Waiting amount confirmation - %d</string>
+    <string name="sms_all_sent">All sent</string>
+    <string name="sms_submission_completed">Submission completed</string>
+    <string name="sms_waiting_confirmation">Waiting for confirmation SMS</string>
+    <string name="sms_waiting_timeout">Not received confirmation message</string>
+    <string name="sms_confirmed">Confirmation received</string>
+    <string name="sms_error">Error sending</string>
+    <string name="sms_error_item_not_ready">Data item not ready to be sent</string>
+    <string name="sms_error_no_network">No network</string>
+    <string name="sms_error_no_check_network_permission">No check network permission</string>
+    <string name="sms_error_no_receive_sms_permission">No receive sms permission</string>
+    <string name="sms_error_no_send_sms_permission">No send permission</string>
+    <string name="sms_error_no_gateway_set">No gateway set</string>
+    <string name="sms_error_no_user_login">User not logged in</string>
+    <string name="sms_error_module_disabled">SMS module is disabled</string>
+    <string name="sms_error_ongoing_sunmission">Another SMS submission ongoing</string>
+    <string name="sms_metadata_empty">SMS module not initiated, not found required metadata</string>
+    <string name="sms_completed">Completed</string>
+    <string name="sms_count_error">SMS count not accepted</string>
+    <string name="sms_state_started">Started sms submission</string>
+    <string name="sms_state_converted">Data read and converted. Submission id: %d</string>
+    <string name="sms_general_error">Error sending sms submission</string>
+    <string name="sms_title_enrollment">SMS TEI registration and enrollment</string>
+    <string name="sms_title_event">SMS event submission</string>
+    <string name="sms_title_data_set">SMS data set submission</string>
+    <string name="sms_bar_state_sending">In progress</string>
+    <string name="sms_bar_state_sent">Sent</string>
+    <string name="sms_bar_state_failed">Failed</string>
 </resources>

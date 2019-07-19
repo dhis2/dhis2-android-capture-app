@@ -7,7 +7,6 @@ import org.dhis2.usescases.teiDashboard.DashboardRepository;
 import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.enrollment.EnrollmentCollectionRepository;
-import org.hisp.dhis.android.core.program.ProgramIndicator;
 import org.hisp.dhis.android.core.program.ProgramIndicatorModel;
 import org.hisp.dhis.rules.models.RuleAction;
 import org.hisp.dhis.rules.models.RuleActionDisplayKeyValuePair;
@@ -82,7 +81,9 @@ public class IndicatorsPresenterImpl implements IndicatorsContracts.Presenter {
                                 .flatMap(ruleEngine -> ruleEngineRepository.reCalculate())
                                 .map(this::applyRuleEffects) //Restart rule engine to take into account value changes
                                 .map(ruleIndicators -> {
-                                    indicators.addAll(ruleIndicators);
+                                    for (Trio<ProgramIndicatorModel, String, String> indicator : ruleIndicators)
+                                        if (!indicators.contains(indicator))
+                                            indicators.add(indicator);
                                     return indicators;
                                 }))
                         .subscribeOn(Schedulers.io())

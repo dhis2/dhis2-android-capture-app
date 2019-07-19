@@ -231,12 +231,13 @@ public class EnrollmentFormRepository implements FormRepository {
                         rulesRepository.ruleVariables(program),
                         rulesRepository.enrollmentEvents(enrollmentUid),
                         rulesRepository.queryConstants(),
-                        (rules, variables, events, constants) -> {
+                        rulesRepository.getSuplementaryData(d2),
+                        (rules, variables, events, constants,supplData) -> {
                             RuleEngine.Builder builder = RuleEngineContext.builder(expressionEvaluator)
                                     .rules(rules)
                                     .ruleVariables(variables)
                                     .calculatedValueMap(new HashMap<>())
-                                    .supplementaryData(new HashMap<>())
+                                    .supplementaryData(supplData)
                                     .constantsValue(constants)
                                     .build().toEngineBuilder();
                             builder.triggerEnvironment(TriggerEnvironment.ANDROIDCLIENT);
@@ -491,6 +492,9 @@ public class EnrollmentFormRepository implements FormRepository {
 
 
                     String programStage = cursor.getString(0);
+                    ProgramStage stage = d2.programModule().programStages.uid(programStage).get();
+                    boolean hideDueDate = stage.hideDueDate()!=null ? stage.hideDueDate() : false;
+
                     String program = cursor.getString(1);
                     String orgUnit = cursor.getString(2);
                     int minDaysFromStart = cursor.getInt(3);
@@ -554,15 +558,13 @@ public class EnrollmentFormRepository implements FormRepository {
                                     .uid(codeGenerator.generate())
                                     .created(Calendar.getInstance().getTime())
                                     .lastUpdated(Calendar.getInstance().getTime())
-//                            .eventDate(eventDate)
-//                            .dueDate(eventDate)
                                     .enrollment(enrollmentUid)
                                     .program(program)
                                     .programStage(programStage)
                                     .organisationUnit(orgUnit)
-                                    .status(eventDate.after(now) ? EventStatus.SCHEDULE : EventStatus.ACTIVE)
+                                    .status(eventDate.after(now) && !hideDueDate ? EventStatus.SCHEDULE : EventStatus.ACTIVE)
                                     .state(State.TO_POST);
-                            if (eventDate.after(now)) //scheduling
+                            if (eventDate.after(now) && !hideDueDate) //scheduling
                                 eventBuilder.dueDate(eventDate);
                             else
                                 eventBuilder.eventDate(eventDate);

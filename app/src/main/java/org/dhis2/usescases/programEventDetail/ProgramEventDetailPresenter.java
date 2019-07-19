@@ -81,6 +81,17 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                         Timber::e)
         );
 
+
+        compositeDisposable.add(
+                eventRepository.hasAccessToAllCatOptions()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                canCreateEvent -> view.setOptionComboAccess(canCreateEvent),
+                                Timber::e
+                        )
+        );
+
         compositeDisposable.add(
                 eventRepository.program()
                         .observeOn(AndroidSchedulers.mainThread())
@@ -123,6 +134,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                                 view.addNodeToTree(),
                                 Timber::e
                         ));
+
     }
 
     @Override

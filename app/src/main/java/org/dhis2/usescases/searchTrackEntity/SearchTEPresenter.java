@@ -33,6 +33,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeModel;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -41,7 +42,6 @@ import java.util.Map;
 import javax.annotation.Nullable;
 
 import io.reactivex.BackpressureStrategy;
-import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -114,6 +114,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                         if (programModel.uid().equals(initialProgram))
                                             this.selectedProgram = programModel;
                                     }
+                                    Collections.sort(programModels, (program1, program2) -> program1.displayName().compareToIgnoreCase(program2.displayName()));
                                     if(selectedProgram==null && programsWithTEType.size()==1) {
                                         setProgram(programsWithTEType.get(0));
                                         view.setPrograms(programsWithTEType);
@@ -290,14 +291,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 //        Crashlytics.logException(throwable);
     }
 
-    private void getTrackedEntityAttributes() {
-        compositeDisposable.add(searchRepository.programAttributes()
-                .flatMap(list -> {
-                    if (selectedProgram == null)
-                        return searchRepository.trackedEntityTypeAttributes();
-                    else
-                        return Observable.just(list);
-                })
+    private void getTrackedEntityTypeAttributes() {
+        compositeDisposable.add(searchRepository.trackedEntityTypeAttributes()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -337,7 +332,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         view.setFabIcon(true);
 
         if (selectedProgram == null)
-            getTrackedEntityAttributes();
+            getTrackedEntityTypeAttributes();
         else
             getProgramTrackedEntityAttributes();
 

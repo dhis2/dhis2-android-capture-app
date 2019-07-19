@@ -152,5 +152,27 @@ public final class EnrollmentStatusStore implements EnrollmentStatusEntryStore {
                 });
     }
 
+    @Override
+    public Flowable<Long> saveIncidentDate(String date) {
+        return Flowable.defer(() -> {
+            ContentValues cv = new ContentValues();
+            cv.put(EnrollmentModel.Columns.INCIDENT_DATE, date);
+            long updated = briteDatabase.update(EnrollmentModel.TABLE, cv, "uid = ?", enrollment);
+            return Flowable.just(updated);
+        }).switchMap(this::updateEnrollment);
+
+    }
+
+    @Override
+    public Flowable<Long> saveEnrollmentDate(String date) {
+        return Flowable.defer(() -> {
+            ContentValues cv = new ContentValues();
+            cv.put(EnrollmentModel.Columns.ENROLLMENT_DATE, date);
+            long updated = briteDatabase.update(EnrollmentModel.TABLE, cv, "uid = ?", enrollment);
+            return Flowable.just(updated);
+        }).switchMap(this::updateEnrollment);
+
+    }
+
 
 }

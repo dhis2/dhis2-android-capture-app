@@ -18,7 +18,6 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 import org.hisp.dhis.android.core.user.UserCredentials;
-import org.hisp.dhis.android.core.user.UserCredentialsModel;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -60,22 +59,21 @@ public final class DataValueStore implements DataEntryStore {
     @NonNull
     @Override
     public Flowable<Long> save(@NonNull String uid, @Nullable String value) {
-        return Flowable.just(getValueType(uid))
+        return Flowable.fromCallable(() -> getValueType(uid))
                 .filter(valueType -> currentValue(uid, valueType, value))
                 .switchMap(valueType -> {
                     if (isEmpty(value))
                         return Flowable.just(delete(uid, valueType));
                     else {
                         long updated = update(uid, value, valueType);
-                        if (updated > 0) {
+                        if (updated > 0)
                             return Flowable.just(updated);
-
-                        } else
+                        else
                             return userCredentials
                                     .map(userCredentialsModel -> insert(uid, value, userCredentialsModel.username(), valueType));
                     }
                 })
-                .switchMap(this::updateEvent);
+                .flatMap(this::updateEvent);
     }
 
     @NonNull

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuInflater;
 import android.view.View;
+import android.widget.DatePicker;
 
 import androidx.appcompat.widget.PopupMenu;
 import androidx.databinding.DataBindingUtil;
@@ -19,8 +20,13 @@ import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.map.MapSelectorActivity;
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.DatePickerUtils;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
+import org.hisp.dhis.android.core.enrollment.internal.EnrollmentFields;
+import org.hisp.dhis.android.core.program.ProgramStageModel;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
 import javax.inject.Inject;
@@ -105,6 +111,8 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
         binding.setDashboardModel(program);
         binding.setProgram(program.getCurrentProgram());
         binding.setEnrollmentStatus(program.getCurrentEnrollment().enrollmentStatus());
+        binding.setEnrollmentDate(dashboardProgramModel.getCurrentEnrollment().enrollmentDate());
+        binding.setIncidentDate(dashboardProgramModel.getCurrentEnrollment().incidentDate());
         binding.executePendingBindings();
 
         if (program.getCurrentProgram().captureCoordinates()) {
@@ -112,6 +120,16 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
             binding.location1.setOnClickListener(v -> presenter.onLocationClick());
             binding.location2.setOnClickListener(v -> presenter.onLocation2Click());
         }
+
+        for(ProgramStageModel programStage: program.getProgramStages())
+            if(programStage.autoGenerateEvent())
+                if(programStage.equals(EnrollmentFields.ENROLLMENT_DATE) || programStage.generatedByEnrollmentDate()) {
+                    binding.enrollmentDate.setEnabled(false);
+                    binding.enrollmentDate.setBackground(null);
+                }else {
+                    binding.incidentDate.setEnabled(false);
+                    binding.incidentDate.setBackground(null);
+                }
 
         supportStartPostponedEnterTransition();
 
@@ -166,6 +184,55 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
             setLocation(Double.valueOf(savedLat), Double.valueOf(savedLon));
             presenter.saveLocation(Double.valueOf(savedLat), Double.valueOf(savedLon));
         }
+    }
+    @Override
+    public void showCustomIncidentCalendar(Date date) {
+        DatePickerUtils.getDatePickerDialog(
+                this,
+                dashboardProgramModel.getCurrentProgram().incidentDateLabel(),
+                date,
+                false,
+                new DatePickerUtils.OnDatePickerClickListener() {
+                    @Override
+                    public void onNegativeClick() {
+                        Date date = new Date();
+                        presenter.updateIncidentDate(date);
+                        binding.setIncidentDate(date);
+                    }
+
+                    @Override
+                    public void onPositiveClick(DatePicker datePicker) {
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.set(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
+                        presenter.updateIncidentDate(calendar.getTime());
+                        binding.setIncidentDate(calendar.getTime());
+                    }
+                }).show();
+    }
+
+    @Override
+    public void showCustomEnrollmentCalendar(Date date) {
+        DatePickerUtils.getDatePickerDialog(
+                this,
+                dashboardProgramModel.getCurrentProgram().enrollmentDateLabel(),
+                date,
+                false,
+                new DatePickerUtils.OnDatePickerClickListener() {
+                    @Override
+                    public void onNegativeClick() {
+                        Date date = new Date();
+                        presenter.updateEnrollmentDate(date);
+                        binding.setEnrollmentDate(date);
+                    }
+
+                    @Override
+                    public void onPositiveClick(DatePicker datePicker) {
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.set(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
+                        presenter.updateEnrollmentDate(calendar.getTime());
+                        binding.setEnrollmentDate(calendar.getTime());
+                    }
+                }).show();
     }
 
 }

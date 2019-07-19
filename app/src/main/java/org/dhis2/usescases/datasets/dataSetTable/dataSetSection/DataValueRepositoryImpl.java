@@ -40,7 +40,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
     private String dataSetUid;
 
     private String SELECT_APPROVAL = "SELECT * FROM DataApproval WHERE organisationUnit = ? and period = ? " +
-            "and attributeOptionCombo = ? and state = 'APPROVED_HERE'";
+            "and attributeOptionCombo = ? and state = 'APPROVED_HERE' limit 1";
 
     public DataValueRepositoryImpl(D2 d2, BriteDatabase briteDatabase, String dataSetUid) {
         this.d2 = d2;
@@ -472,10 +472,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
                     .byPeriod().eq(periodInitialDate)
                     .byOrganisationUnitUid().eq(orgUnitUid)
                     .one().get();
-            if(completeRegistration != null)
-                return true;
-            else
-                return  false;
+            return completeRegistration != null && completeRegistration.state() != State.TO_DELETE;
         });
     }
 

@@ -17,6 +17,7 @@ import org.hisp.dhis.android.core.program.Program;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -240,8 +241,10 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
         compositeDisposable.add(teiProgramListRepository.activeEnrollments(trackedEntityId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        view::setActiveEnrollments,
+                .subscribe(enrollments -> {
+                            Collections.sort(enrollments, (enrollment1, enrollment2) -> enrollment1.programName().compareToIgnoreCase(enrollment2.programName()));
+                            view.setActiveEnrollments(enrollments);
+                        },
                         Timber::d)
         );
     }
@@ -250,8 +253,10 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
         compositeDisposable.add(teiProgramListRepository.otherEnrollments(trackedEntityId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        view::setOtherEnrollments,
+                .subscribe(enrollments -> {
+                            Collections.sort(enrollments, (enrollment1, enrollment2) -> enrollment1.programName().compareToIgnoreCase(enrollment2.programName()));
+                            view.setOtherEnrollments(enrollments);
+                        },
                         Timber::d)
         );
     }
@@ -291,6 +296,7 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
                 programListToPrint.add(programViewModel);
             }
         }
+        Collections.sort(programListToPrint, (program1, program2) -> program1.title().compareToIgnoreCase(program2.title()));
         view.setPrograms(programListToPrint);
     }
 
