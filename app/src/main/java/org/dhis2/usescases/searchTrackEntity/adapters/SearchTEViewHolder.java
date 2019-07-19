@@ -121,7 +121,7 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
         Context parentContext = binding.chipContainer.getContext();
         for (Trio<String, String, String> enrollmentInfo : enrollmentsInfo) {
             if (/*binding.chipContainer.getChildCount() < 2 &&*/
-                    (binding.getPresenter().getProgramModel() == null || !binding.getPresenter().getProgramModel().displayName().equals(enrollmentInfo.val0()))) {
+                    (binding.getPresenter().getProgram() == null || !binding.getPresenter().getProgram().displayName().equals(enrollmentInfo.val0()))) {
 
                 Chip chip = new Chip(parentContext);
                 chip.setText(enrollmentInfo.val0());

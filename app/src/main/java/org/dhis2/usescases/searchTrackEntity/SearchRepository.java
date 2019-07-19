@@ -7,6 +7,7 @@ import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
+import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 
@@ -30,15 +31,15 @@ public interface SearchRepository {
 
     Observable<List<OptionModel>> optionSet(String optionSetId);
 
-    Observable<List<ProgramModel>> programsWithRegistration(String programTypeId);
+    Observable<List<Program>> programsWithRegistration(String programTypeId);
 
     @NonNull
-    LiveData<PagedList<SearchTeiModel>> searchTrackedEntitiesOffline(@NonNull ProgramModel selectedProgram,
+    LiveData<PagedList<SearchTeiModel>> searchTrackedEntitiesOffline(@NonNull Program selectedProgram,
                                                                      @NonNull List<String> orgUnits,
                                                                      @Nullable HashMap<String, String> queryData);
 
     @NonNull
-    LiveData<PagedList<SearchTeiModel>> searchTrackedEntitiesAll(@NonNull ProgramModel selectedProgram,
+    LiveData<PagedList<SearchTeiModel>> searchTrackedEntitiesAll(@NonNull Program selectedProgram,
                                                                  @NonNull List<String> orgUnits,
                                                                  @Nullable HashMap<String, String> queryData);
 
