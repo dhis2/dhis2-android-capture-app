@@ -286,16 +286,8 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
         }
 
         binding.summaryHeader.setText(String.format(getString(R.string.event_summary_header), String.valueOf(totalCompletedFields), String.valueOf(totalFields)));
-        float completionPerone = (float) totalCompletedFields / (float) totalFields;
-        completionPercent = (int) (completionPerone * 100);
-        float unsupportedPerOne = (float) unsupportedFields / (float) totalFields;
-        binding.progressLayout.setCompletionPercentage(completionPercent);
-        binding.progressLayout.setSecondaryPercentage((int) (unsupportedPerOne * 100));
-        binding.progressLayout.setTextSize(56);
-        binding.progressLayout.setStrokeSize(20);
-        /*ProgressBarAnimation gainAnim = new ProgressBarAnimation(binding.progressGains, 0, completionPercent, false, this);
-        gainAnim.setDuration(PROGRESS_TIME);
-        binding.progressGains.startAnimation(gainAnim);*/
+        binding.completion.setCompletionPercentage((float) totalCompletedFields / (float) totalFields);
+        binding.completion.setSecondaryPercentage((float) unsupportedFields / (float) totalFields);
         checkButton();
     }
 
