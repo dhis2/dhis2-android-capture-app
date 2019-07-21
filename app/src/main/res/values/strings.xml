@@ -1,6 +1,6 @@
 <resources>
     <!--TESTING-->
-    <string name ="transifex_test">This is a test for transifex. Do not translate</string>
+    <string name="transifex_test">This is a test for transifex. Do not translate</string>
     <!--GENERAL-->
     <string name="app_name">Dhis2</string>
     <string name="logo_text">dhis</string>
