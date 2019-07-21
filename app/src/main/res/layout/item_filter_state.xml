@@ -12,6 +12,10 @@
             type="androidx.databinding.ObservableField&lt;org.dhis2.utils.filters.Filters&gt;" />
 
         <variable
+            name="filterCount"
+            type="androidx.databinding.ObservableField&lt;java.lang.Integer&gt;" />
+
+        <variable
             name="filterType"
             type="org.dhis2.utils.filters.Filters" />
     </data>
@@ -56,8 +60,10 @@
                     android:background="@drawable/ic_oval_shape_white"
                     android:gravity="center"
                     android:includeFontPadding="false"
+                    android:text='@{""+filterCount}'
                     android:textColor="?colorPrimary"
                     android:textSize="10sp"
+                    android:visibility="@{filterCount>0?View.VISIBLE:View.GONE}"
                     tools:text="1" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -107,6 +113,15 @@
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <include
+            android:id="@+id/filterState"
+            layout="@layout/filter_state"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:currentFilter="@{currentFilter}"
+            app:filterType="@{filterType}"
+            app:layout_constraintTop_toBottomOf="@id/filterLayout" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

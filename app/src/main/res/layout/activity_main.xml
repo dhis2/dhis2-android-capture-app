@@ -6,6 +6,7 @@
     <data>
 
         <import type="org.dhis2.R" />
+        <import type="android.view.View" />
 
         <variable
             name="theme"
@@ -22,6 +23,10 @@
         <variable
             name="currentFragment"
             type="androidx.databinding.ObservableInt" />
+
+        <variable
+            name="totalFilters"
+            type="Integer" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -86,6 +91,29 @@
                         app:srcCompat="@drawable/ic_filter"
                         tools:ignore="ContentDescription" />
 
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/filterCounter"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginStart="24dp"
+                        android:layout_marginTop="24dp"
+                        android:padding="2dp"
+                        app:layout_constraintTop_toTopOf="@id/filter"
+                        app:layout_constraintStart_toStartOf="@id/filter">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/ic_oval_shape_white"
+                            android:gravity="center"
+                            android:includeFontPadding="false"
+                            android:textColor="?colorPrimary"
+                            android:text='@{""+totalFilters}'
+                            android:visibility="@{totalFilters>0?View.VISIBLE:View.GONE}"
+                            android:textSize="10sp"
+                            tools:text="1" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
                     <ImageView
                         android:id="@+id/moreOptions"
                         style="@style/ActionIcon"
@@ -123,6 +151,7 @@
                     android:layout_height="0dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     app:layout_constraintStart_toStartOf="parent"
                     tools:listitem="@layout/item_filter"
                     app:layout_constraintTop_toBottomOf="@id/toolbar" />

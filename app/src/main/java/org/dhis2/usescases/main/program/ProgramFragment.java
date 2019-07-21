@@ -2,11 +2,11 @@ package org.dhis2.usescases.main.program;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,12 +30,15 @@ import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.FragmentProgramBinding;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
+import org.dhis2.usescases.main.MainActivity;
+import org.dhis2.usescases.org_unit_selector.OUTreeActivity;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DatePickerUtils;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.Period;
 import org.dhis2.utils.custom_views.RxDateDialog;
+import org.dhis2.utils.filters.FilterManager;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.jetbrains.annotations.NotNull;
 
@@ -428,6 +431,12 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
         };
     }
 
+    @Override
+    public void openOrgUnitTreeSelector() {
+        Intent ouTreeIntent = new Intent(context, OUTreeActivity.class);
+        ((MainActivity)context).startActivityForResult(ouTreeIntent, FilterManager.OU_TREE);
+    }
+
 
     @Override
     public void apply() {
@@ -461,7 +470,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
 
             if (getContext() != null && isAdded()) {
                 new Handler().postDelayed(() -> {
-                    if(getAbstractActivity() !=null) {
+                    if (getAbstractActivity() != null) {
                         FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
                                 .title(getString(R.string.tuto_main_1))
                                 .enableAutoTextPosition()

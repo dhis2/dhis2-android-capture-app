@@ -116,6 +116,7 @@
 
         <service android:name=".usescases.sms.SmsSendingService" />
         <activity android:name=".usescases.teiDashboard.nfc_data.NfcDataWriteActivity" />
+        <activity android:name=".usescases.org_unit_selector.OUTreeActivity" />
     </application>
 
 </manifest>

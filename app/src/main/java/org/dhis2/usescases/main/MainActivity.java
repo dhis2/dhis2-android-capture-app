@@ -1,11 +1,11 @@
 package org.dhis2.usescases.main;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
-import android.transition.AutoTransition;
 import android.transition.ChangeBounds;
 import android.transition.Transition;
 import android.transition.TransitionManager;
@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ObservableInt;
@@ -33,7 +34,7 @@ import org.dhis2.usescases.syncManager.ErrorDialog;
 import org.dhis2.usescases.syncManager.SyncManagerFragment;
 import org.dhis2.usescases.teiDashboard.nfc_data.NfcDataWriteActivity;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.SharedPreferenceBooleanLiveData;
+import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.FiltersAdapter;
 import org.hisp.dhis.android.core.imports.TrackerImportConflict;
 
@@ -59,6 +60,7 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
     private int fragId;
     private SharedPreferences prefs;
     private boolean backDropActive = false;
+    private FiltersAdapter adapter;
 
     //-------------------------------------
     //region LIFECYCLE
@@ -106,7 +108,8 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
                 Constants.SHARE_PREFS, Context.MODE_PRIVATE);
 
 
-        binding.filterLayout.setAdapter(new FiltersAdapter());
+        adapter = new FiltersAdapter();
+        binding.filterLayout.setAdapter(adapter);
 
     }
 
@@ -155,7 +158,7 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
     @Override
     public void showHideFilter() {
         Transition transition = new ChangeBounds();
-        transition.setDuration(500);
+        transition.setDuration(200);
         TransitionManager.beginDelayedTransition(binding.backdropLayout, transition);
         backDropActive = !backDropActive;
         ConstraintSet initSet = new ConstraintSet();
@@ -259,6 +262,11 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
         new ErrorDialog().setData(data).show(getSupportFragmentManager().beginTransaction(), ErrorDialog.TAG);
     }
 
+    @Override
+    public void updateFilters(int totalFilters) {
+        binding.setTotalFilters(totalFilters);
+    }
+
     public void setTitle(String title) {
         binding.title.setText(title);
     }
@@ -275,5 +283,15 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
         else
             showToast(getString(R.string.no_intructions));
 
+    }
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == FilterManager.OU_TREE && resultCode == Activity.RESULT_OK) {
+            adapter.notifyDataSetChanged();
+            updateFilters(FilterManager.getInstance().getTotalFilters());
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }
