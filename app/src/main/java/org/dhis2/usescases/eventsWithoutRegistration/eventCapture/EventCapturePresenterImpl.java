@@ -30,6 +30,7 @@ import org.hisp.dhis.rules.models.RuleEffect;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -70,6 +71,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private List<String> sectionsToHide;
     private List<String> optionsToHide = new ArrayList<>();
     private List<String> optionsGroupsToHide = new ArrayList<>();
+    private Map<String, List<String>> optionsGroupToShow = new HashMap<>();
     private boolean canComplete;
     private String completeMessage;
     private Map<String, String> errors;
@@ -410,6 +412,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         //Reset effects
         optionsToHide.clear();
         optionsGroupsToHide.clear();
+        optionsGroupToShow.clear();
         sectionsToHide.clear();
         errors.clear();
         completeMessage = null;
@@ -448,6 +451,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         for (FieldViewModel fieldViewModel : fieldViewModels.values())
             if (fieldViewModel instanceof SpinnerViewModel) {
                 ((SpinnerViewModel) fieldViewModel).setOptionsToHide(optionsToHide, optionsGroupsToHide);
+                if(optionsGroupToShow.keySet().contains(fieldViewModel.uid()))
+                    ((SpinnerViewModel) fieldViewModel).setOptionGroupsToShow(optionsGroupToShow.get(fieldViewModel.uid()));
             }
 
         return new ArrayList<>(fieldViewModels.values());
@@ -763,11 +768,14 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     }
 
     @Override
-    public void setOptionGroupToHide(String optionGroupUid,boolean toHide) {
+    public void setOptionGroupToHide(String optionGroupUid,boolean toHide, String field) {
         if (toHide)
             optionsGroupsToHide.add(optionGroupUid);
-        else if(optionsGroupsToHide.contains(optionGroupUid))
-            optionsGroupsToHide.remove(optionGroupUid);
+        else if(!optionsGroupsToHide.contains(optionGroupUid))//When combined with show option group the hide option group takes precedence.
+            if(optionsGroupToShow.get(field) != null)
+                optionsGroupToShow.get(field).add(optionGroupUid);
+            else
+                optionsGroupToShow.put(field, Collections.singletonList(optionGroupUid));
     }
 
     //endregion

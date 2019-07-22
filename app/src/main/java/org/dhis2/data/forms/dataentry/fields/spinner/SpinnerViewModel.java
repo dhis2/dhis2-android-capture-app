@@ -21,6 +21,7 @@ public abstract class SpinnerViewModel extends FieldViewModel {
 
     private List<String> optionsToHide;
     private List<String> optionGroupsToHide;
+    private List<String> optionGroupsToShow = new ArrayList<>();
 
     @NonNull
     public abstract String hint();
@@ -72,6 +73,10 @@ public abstract class SpinnerViewModel extends FieldViewModel {
         this.optionGroupsToHide.addAll(optionsGroupsToHide);
     }
 
+    public void setOptionGroupsToShow(List<String> optionGroupsToShow){
+        this.optionGroupsToShow.addAll(optionGroupsToShow);
+    }
+
     public List<String> getOptionsToHide() {
         return optionsToHide;
     }
@@ -79,4 +84,6 @@ public abstract class SpinnerViewModel extends FieldViewModel {
     public List<String> getOptionGroupsToHide() {
         return optionGroupsToHide;
     }
+
+    public List<String> getOptionGroupsToShow() { return optionGroupsToShow; }
 }
