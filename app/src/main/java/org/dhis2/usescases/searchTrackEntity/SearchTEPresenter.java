@@ -24,8 +24,10 @@ import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.NetworkUtils;
 import org.dhis2.utils.custom_views.OrgUnitDialog;
+import org.dhis2.utils.custom_views.OrgUnitDialog_2;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.maintenance.D2Error;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeModel;
@@ -393,7 +395,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     public void enroll(String programUid, String uid) {
         selectedEnrollmentDate = Calendar.getInstance().getTime();
 
-        OrgUnitDialog orgUnitDialog = OrgUnitDialog.getInstace().setMultiSelection(false);
+        OrgUnitDialog_2 orgUnitDialog = OrgUnitDialog_2.getInstace().setMultiSelection(false);
         orgUnitDialog.setTitle("Enrollment Org Unit")
                 .setPossitiveListener(v -> {
                     if (orgUnitDialog.getSelectedOrgUnit() != null && !orgUnitDialog.getSelectedOrgUnit().isEmpty())
@@ -419,7 +421,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         );
     }
 
-    private void showNativeCalendar(OrganisationUnitModel selectedOrgUnitModel, String programUid, String uid) {
+    private void showNativeCalendar(OrganisationUnit selectedOrgUnit, String programUid, String uid) {
         Calendar c = Calendar.getInstance();
         int year = c.get(Calendar.YEAR);
         int month = c.get(Calendar.MONTH);
@@ -437,26 +439,26 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                     selectedCalendar.set(Calendar.MILLISECOND, 0);
                     selectedEnrollmentDate = selectedCalendar.getTime();
 
-                    enrollInOrgUnit(selectedOrgUnitModel.uid(), programUid, uid, selectedEnrollmentDate);
+                    enrollInOrgUnit(selectedOrgUnit.uid(), programUid, uid, selectedEnrollmentDate);
 
                 }),
                 year,
                 month,
                 day);
 
-        if (selectedOrgUnitModel.openingDate() != null)
-            dateDialog.getDatePicker().setMinDate(selectedOrgUnitModel.openingDate().getTime());
+        if (selectedOrgUnit.openingDate() != null)
+            dateDialog.getDatePicker().setMinDate(selectedOrgUnit.openingDate().getTime());
 
-        if (selectedOrgUnitModel.closedDate() == null && !selectedProgram.selectEnrollmentDatesInFuture()) {
+        if (selectedOrgUnit.closedDate() == null && !selectedProgram.selectEnrollmentDatesInFuture()) {
             dateDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
-        } else if (selectedOrgUnitModel.closedDate() != null && !selectedProgram.selectEnrollmentDatesInFuture()) {
-            if (selectedOrgUnitModel.closedDate().before(new Date(System.currentTimeMillis()))) {
-                dateDialog.getDatePicker().setMaxDate(selectedOrgUnitModel.closedDate().getTime());
+        } else if (selectedOrgUnit.closedDate() != null && !selectedProgram.selectEnrollmentDatesInFuture()) {
+            if (selectedOrgUnit.closedDate().before(new Date(System.currentTimeMillis()))) {
+                dateDialog.getDatePicker().setMaxDate(selectedOrgUnit.closedDate().getTime());
             } else {
                 dateDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
             }
-        } else if (selectedOrgUnitModel.closedDate() != null && selectedProgram.selectEnrollmentDatesInFuture()) {
-            dateDialog.getDatePicker().setMaxDate(selectedOrgUnitModel.closedDate().getTime());
+        } else if (selectedOrgUnit.closedDate() != null && selectedProgram.selectEnrollmentDatesInFuture()) {
+            dateDialog.getDatePicker().setMaxDate(selectedOrgUnit.closedDate().getTime());
         }
 
         dateDialog.setTitle(selectedProgram.enrollmentDateLabel());
@@ -467,14 +469,14 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
             dateDialog.setButton(DialogInterface.BUTTON_NEUTRAL, view.getContext().getResources().getString(R.string.change_calendar), (dialog, which) -> {
                 dateDialog.dismiss();
-                showCustomCalendar(selectedOrgUnitModel, programUid, uid);
+                showCustomCalendar(selectedOrgUnit, programUid, uid);
             });
         }
 
         dateDialog.show();
     }
 
-    private void showCustomCalendar(OrganisationUnitModel selectedOrgUnitModel, String programUid, String uid) {
+    private void showCustomCalendar(OrganisationUnit selectedOrgUnit, String programUid, String uid) {
 
         LayoutInflater layoutInflater = LayoutInflater.from(view.getContext());
 //        View datePickerView = layoutInflater.inflate(R.layout.widget_datepicker, null);
@@ -506,26 +508,26 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         (dialog, which) -> showNativeCalendar(selectedOrgUnitModel, programUid, uid))
                 .setNegativeButton(view.getContext().getString(R.string.date_dialog_clear), (dialog, which) -> dialog.dismiss());*/
 
-        if (selectedOrgUnitModel.openingDate() != null)
-            datePicker.setMinDate(selectedOrgUnitModel.openingDate().getTime());
+        if (selectedOrgUnit.openingDate() != null)
+            datePicker.setMinDate(selectedOrgUnit.openingDate().getTime());
 
-        if (selectedOrgUnitModel.closedDate() == null && !selectedProgram.selectEnrollmentDatesInFuture()) {
+        if (selectedOrgUnit.closedDate() == null && !selectedProgram.selectEnrollmentDatesInFuture()) {
             datePicker.setMaxDate(System.currentTimeMillis());
-        } else if (selectedOrgUnitModel.closedDate() != null && !selectedProgram.selectEnrollmentDatesInFuture()) {
-            if (selectedOrgUnitModel.closedDate().before(new Date(System.currentTimeMillis()))) {
-                datePicker.setMaxDate(selectedOrgUnitModel.closedDate().getTime());
+        } else if (selectedOrgUnit.closedDate() != null && !selectedProgram.selectEnrollmentDatesInFuture()) {
+            if (selectedOrgUnit.closedDate().before(new Date(System.currentTimeMillis()))) {
+                datePicker.setMaxDate(selectedOrgUnit.closedDate().getTime());
             } else {
                 datePicker.setMaxDate(System.currentTimeMillis());
             }
-        } else if (selectedOrgUnitModel.closedDate() != null && selectedProgram.selectEnrollmentDatesInFuture()) {
-            datePicker.setMaxDate(selectedOrgUnitModel.closedDate().getTime());
+        } else if (selectedOrgUnit.closedDate() != null && selectedProgram.selectEnrollmentDatesInFuture()) {
+            datePicker.setMaxDate(selectedOrgUnit.closedDate().getTime());
         }
 
         alertDialog.setView(binding.getRoot());
         Dialog dialog = alertDialog.create();
 
         binding.changeCalendarButton.setOnClickListener(changeButton -> {
-            showNativeCalendar(selectedOrgUnitModel, programUid, uid);
+            showNativeCalendar(selectedOrgUnit, programUid, uid);
             dialog.dismiss();
         });
         binding.clearButton.setOnClickListener(clearButton-> dialog.dismiss());
@@ -540,15 +542,15 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
             selectedCalendar.set(Calendar.MILLISECOND, 0);
             selectedEnrollmentDate = selectedCalendar.getTime();
 
-            enrollInOrgUnit(selectedOrgUnitModel.uid(), programUid, uid, selectedEnrollmentDate);
+            enrollInOrgUnit(selectedOrgUnit.uid(), programUid, uid, selectedEnrollmentDate);
             dialog.dismiss();
         });
         dialog.show();
     }
 
 
-    private void showEnrollmentDatePicker(OrganisationUnitModel selectedOrgUnitModel, String programUid, String uid) {
-        showCustomCalendar(selectedOrgUnitModel, programUid, uid);
+    private void showEnrollmentDatePicker(OrganisationUnit selectedOrgUnit, String programUid, String uid) {
+        showCustomCalendar(selectedOrgUnit, programUid, uid);
     }
 
     private void enrollInOrgUnit(String orgUnitUid, String programUid, String uid, Date enrollmentDate) {
@@ -641,7 +643,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     }
 
     @Override
-    public Observable<List<OrganisationUnitModel>> getOrgUnits() {
+    public Observable<List<OrganisationUnit>> getOrgUnits() {
         return searchRepository.getOrgUnits(selectedProgram != null ? selectedProgram.uid() : null);
     }
 

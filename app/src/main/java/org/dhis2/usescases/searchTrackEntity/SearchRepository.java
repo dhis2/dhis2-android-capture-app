@@ -6,6 +6,7 @@ import androidx.annotation.Nullable;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 
 import org.hisp.dhis.android.core.option.OptionModel;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -29,8 +30,6 @@ public interface SearchRepository {
     @NonNull
     Observable<List<TrackedEntityAttribute>> programAttributes(String programId);
 
-    Observable<List<OptionModel>> optionSet(String optionSetId);
-
     Observable<List<Program>> programsWithRegistration(String programTypeId);
 
     @NonNull
@@ -46,7 +45,7 @@ public interface SearchRepository {
     @NonNull
     Observable<String> saveToEnroll(@NonNull String teiType, @NonNull String orgUnitUID, @NonNull String programUid, @Nullable String teiUid, HashMap<String, String> queryDatam,Date enrollmentDate);
 
-    Observable<List<OrganisationUnitModel>> getOrgUnits(@Nullable String selectedProgramUid);
+    Observable<List<OrganisationUnit>> getOrgUnits(@Nullable String selectedProgramUid);
 
     String getProgramColor(@NonNull String programUid);
 
