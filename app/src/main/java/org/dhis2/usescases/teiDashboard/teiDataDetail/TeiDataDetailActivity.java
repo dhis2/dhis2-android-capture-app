@@ -123,7 +123,7 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
 
         for(ProgramStageModel programStage: program.getProgramStages())
             if(programStage.autoGenerateEvent())
-                if(programStage.equals(EnrollmentFields.ENROLLMENT_DATE) || programStage.generatedByEnrollmentDate()) {
+                if(programStage.reportDateToUse() != null && programStage.reportDateToUse().equals(EnrollmentFields.ENROLLMENT_DATE) || programStage.generatedByEnrollmentDate()) {
                     binding.enrollmentDate.setEnabled(false);
                     binding.enrollmentDate.setBackground(null);
                 }else {

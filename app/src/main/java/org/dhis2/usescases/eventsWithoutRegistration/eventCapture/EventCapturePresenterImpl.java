@@ -15,7 +15,9 @@ import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel;
 import org.dhis2.data.forms.dataentry.fields.image.ImageViewModel;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
+import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel;
 import org.dhis2.data.metadata.MetadataRepository;
+import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Quartet;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureFragment.EventCaptureFormFragment;
 import org.dhis2.utils.AuthorityException;
@@ -81,6 +83,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private final FlowableProcessor<String> sectionProcessor;
     private boolean isSubscribed;
     private String lastFocusItem;
+    private int unsupportedFields;
+    private int totalFields;
 
     @Override
     public String getLastFocusItem() {
@@ -172,12 +176,17 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                 eventCaptureRepository.eventSections()
                         .flatMap(sectionList -> getFieldFlowable(null)
                                 .map(fields -> {
+                                    totalFields = fields.size();
+                                    unsupportedFields = 0;
                                     HashMap<String, List<FieldViewModel>> fieldMap = new HashMap<>();
 
                                     for (FieldViewModel fieldViewModel : fields) {
                                         if (!fieldMap.containsKey(fieldViewModel.programStageSection()))
                                             fieldMap.put(fieldViewModel.programStageSection(), new ArrayList<>());
                                         fieldMap.get(fieldViewModel.programStageSection()).add(fieldViewModel);
+
+                                        if(fieldViewModel instanceof UnsupportedViewModel)
+                                            unsupportedFields++;
                                     }
 
                                     List<EventSectionModel> eventSectionModels = new ArrayList<>();
@@ -218,7 +227,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(data -> {
                                     subscribeToSection();
-                                    EventCaptureFormFragment.getInstance().setSectionSelector(data);
+                                    EventCaptureFormFragment.getInstance().setSectionSelector(data, (float) unsupportedFields / (float) totalFields);
                                     checkProgress();
                                 }
                                 ,
@@ -688,7 +697,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     }
 
     @Override
-    public void initCompletionPercentage(FlowableProcessor<Float> completionPercentage) {
+    public void initCompletionPercentage(FlowableProcessor<Pair<Float, Float>> completionPercentage) {
         compositeDisposable.add(
                 completionPercentage
                         .subscribeOn(Schedulers.io())

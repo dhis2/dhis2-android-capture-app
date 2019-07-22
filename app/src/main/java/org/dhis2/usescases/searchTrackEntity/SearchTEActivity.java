@@ -51,6 +51,7 @@ import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.HelpManager;
 import org.hisp.dhis.android.core.option.OptionModel;
+import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
@@ -177,7 +178,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     //region SearchForm
 
     @Override
-    public void setForm(List<TrackedEntityAttribute> trackedEntityAttributes, @Nullable ProgramModel program, HashMap<String, String> queryData) {
+    public void setForm(List<TrackedEntityAttribute> trackedEntityAttributes, @Nullable Program program, HashMap<String, String> queryData) {
 
         if (!HelpManager.getInstance().isTutorialReadyForScreen(getClass().getName()))
             setTutorial();
@@ -305,10 +306,10 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     //endregion
 
     @Override
-    public void setPrograms(List<ProgramModel> programModels) {
-        binding.programSpinner.setAdapter(new ProgramAdapter(this, R.layout.spinner_program_layout, R.id.spinner_text, programModels, presenter.getTrackedEntityName().displayName()));
+    public void setPrograms(List<Program> programs) {
+        binding.programSpinner.setAdapter(new ProgramAdapter(this, R.layout.spinner_program_layout, R.id.spinner_text, programs, presenter.getTrackedEntityName().displayName()));
         if (initialProgram != null && !initialProgram.isEmpty())
-            setInitialProgram(programModels);
+            setInitialProgram(programs);
         else
             binding.programSpinner.setSelection(0);
         try {
@@ -328,11 +329,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long id) {
                 if (pos > 0) {
-                    ProgramModel selectedProgram = (ProgramModel) adapterView.getItemAtPosition(pos - 1);
+                    Program selectedProgram = (Program) adapterView.getItemAtPosition(pos - 1);
                     setProgramColor(presenter.getProgramColor(selectedProgram.uid()));
-                    presenter.setProgram((ProgramModel) adapterView.getItemAtPosition(pos - 1));
-                } else if (programModels.size() == 1){
-                    presenter.setProgram(programModels.get(0));
+                    presenter.setProgram((Program) adapterView.getItemAtPosition(pos - 1));
+                } else if (programs.size() == 1 && pos != 0){
+                    presenter.setProgram(programs.get(0));
                 }else
                     presenter.setProgram(null);
             }
@@ -344,9 +345,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         });
     }
 
-    private void setInitialProgram(List<ProgramModel> programModels) {
-        for (int i = 0; i < programModels.size(); i++) {
-            if (programModels.get(i).uid().equals(initialProgram)) {
+    private void setInitialProgram(List<Program> programs) {
+        for (int i = 0; i < programs.size(); i++) {
+            if (programs.get(i).uid().equals(initialProgram)) {
                 binding.programSpinner.setSelection(i + 1);
             }
         }

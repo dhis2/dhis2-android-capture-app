@@ -1,8 +1,8 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
 import org.dhis2.data.forms.FormSectionViewModel;
-import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
-import org.dhis2.data.forms.dataentry.fields.RowAction;
+import org.dhis2.data.forms.dataentry.fields.FieldViewModel;;
+import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.event.EventStatus;
@@ -35,7 +35,7 @@ public class EventCaptureContract {
 
         void setUp();
 
-        Consumer<Float> updatePercentage();
+        Consumer<Pair<Float, Float>> updatePercentage();
 
         void attemptToFinish(boolean canComplete);
 
@@ -87,7 +87,7 @@ public class EventCaptureContract {
 
         void onSectionSelectorClick(boolean isCurrentSection, int position, String sectionUid);
 
-        void initCompletionPercentage(FlowableProcessor<Float> integerFlowableProcessor);
+        void initCompletionPercentage(FlowableProcessor<Pair<Float, Float>> integerFlowableProcessor);
 
         void goToSection(String sectionUid);
 
