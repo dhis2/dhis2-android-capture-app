@@ -22,6 +22,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import org.dhis2.App;
 import org.dhis2.R;
+import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ActivityEventCaptureBinding;
 import org.dhis2.databinding.WidgetDatepickerBinding;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
@@ -31,7 +32,6 @@ import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.custom_views.CustomDialog;
 import org.dhis2.utils.custom_views.FormBottomDialog;
-import org.dhis2.utils.custom_views.ProgressBarAnimation;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -58,7 +58,6 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     private ActivityEventCaptureBinding binding;
     @Inject
     EventCaptureContract.Presenter presenter;
-    private int completionPercentage = 0;
     private String programStageUid;
     private Boolean isEventCompleted = false;
 
@@ -115,20 +114,10 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     }
 
     @Override
-    public Consumer<Float> updatePercentage() {
-        return percentage -> {
-            int newPercentage = (int) (percentage * 100);
-
-            ProgressBarAnimation gainAnim = new ProgressBarAnimation(binding.progressGains, completionPercentage, 0, newPercentage, false,
-                    (lost, value) -> {
-                        String text = (int) value + "%";
-                        binding.progress.setText(text);
-                    });
-            gainAnim.setDuration(1000);
-            binding.progressGains.startAnimation(gainAnim);
-
-            this.completionPercentage = (int) (percentage * 100);
-
+    public Consumer<Pair<Float, Float>> updatePercentage() {
+        return pair -> {
+            binding.completion.setCompletionPercentage(pair.val0());
+            binding.completion.setSecondaryPercentage(pair.val1());
         };
     }
 

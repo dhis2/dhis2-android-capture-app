@@ -10,7 +10,6 @@ import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Gravity;
@@ -35,6 +34,7 @@ import org.dhis2.BuildConfig;
 import org.dhis2.R;
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
+import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel;
 import org.dhis2.databinding.ActivityEventInitialBinding;
 import org.dhis2.databinding.CategorySelectorBinding;
 import org.dhis2.databinding.WidgetDatepickerBinding;
@@ -51,7 +51,6 @@ import org.dhis2.utils.EventCreationType;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.custom_views.CategoryOptionPopUp;
 import org.dhis2.utils.custom_views.CustomDialog;
-import org.dhis2.utils.custom_views.OrgUnitDialog;
 import org.dhis2.utils.custom_views.OrgUnitDialog_2;
 import org.dhis2.utils.custom_views.PeriodDialog;
 import org.dhis2.utils.custom_views.ProgressBarAnimation;
@@ -61,10 +60,8 @@ import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
-import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
@@ -132,6 +129,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     private int totalFields;
     private int totalCompletedFields;
+    private int unsupportedFields;
     private String tempCreate;
     private boolean fixedOrgUnit;
     private String catOptionComboUid;
@@ -297,8 +295,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     }
 
     private void initProgressBar() {
-        binding.progressGains.setVisibility(eventUid == null ? View.GONE : View.VISIBLE);
-        binding.progress.setVisibility(eventUid == null ? View.GONE : View.VISIBLE);
+        binding.completion.setVisibility(eventUid == null ? View.GONE : View.VISIBLE);
     }
 
     @Override
@@ -814,24 +811,11 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         } else
             realUpdates.addAll(updates);
 
-        int completedSectionFields = calculateCompletedFields(realUpdates);
-        int totalSectionFields = realUpdates.size();
-        totalFields = totalFields + totalSectionFields;
-        totalCompletedFields = totalCompletedFields + completedSectionFields;
-        float completionPerone = (float) totalCompletedFields / (float) totalFields;
-        int completionPercent = (int) (completionPerone * 100);
-
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP)
-            runOnUiThread(() -> {
-                ProgressBarAnimation gainAnim = new ProgressBarAnimation(binding.progressGains, 0, completionPercent, false, EventInitialActivity.this);
-                gainAnim.setDuration(PROGRESS_TIME);
-                binding.progressGains.startAnimation(gainAnim);
-            });
-        else {
-            binding.progressGains.setProgress(completionPercent);
-            String text = String.valueOf(completionPercent) + "%";
-            binding.progress.setText(text);
-        }
+        totalCompletedFields = totalCompletedFields + calculateCompletedFields(realUpdates);
+        unsupportedFields = unsupportedFields + calculateUnsupportedFields(updates);
+        totalFields = totalFields + realUpdates.size();
+        binding.completion.setCompletionPercentage((float) totalCompletedFields / (float) totalFields);
+        binding.completion.setSecondaryPercentage((float) unsupportedFields / (float) totalFields);
 
     }
 
@@ -903,6 +887,15 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         int total = 0;
         for (FieldViewModel fieldViewModel : updates) {
             if (fieldViewModel.value() != null && !fieldViewModel.value().isEmpty())
+                total++;
+        }
+        return total;
+    }
+
+    private int calculateUnsupportedFields(@NonNull List<FieldViewModel> updates) {
+        int total = 0;
+        for (FieldViewModel fieldViewModel : updates) {
+            if (fieldViewModel instanceof UnsupportedViewModel)
                 total++;
         }
         return total;
@@ -1015,7 +1008,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                 FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
                         .title(getString(R.string.tuto_event_initial_1))
                         .enableAutoTextPosition()
-                        .focusOn(binding.percentage)
+                        .focusOn(binding.completion)
                         .closeOnTouch(true)
                         .build();
                 steps.add(tuto1);
