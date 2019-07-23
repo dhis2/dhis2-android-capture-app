@@ -270,7 +270,7 @@ public final class RulesRepository {
                     Rule.create(
                             programRule.programStage() != null ? programRule.programStage().uid() : null,
                             programRule.priority(),
-                            programRule.condition(),
+                            programRule.condition() != null ? programRule.condition() : "",
                             translateToActions(programRule.programRuleActions()),
                             programRule.name())
             );
