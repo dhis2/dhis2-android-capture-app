@@ -15,6 +15,7 @@
         android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@drawable/ic_front_backdrop_bg"
         android:clipToPadding="false"
         tools:openDrawer="end">
 
@@ -45,8 +46,8 @@
                         android:background="?attr/period_button"
                         android:onClick="@{()->presenter.onTimeButtonClick()}"
                         android:padding="7dp"
-                        app:srcCompat="@drawable/ic_view_none"
                         android:tint="@color/colorGreyDefault"
+                        app:srcCompat="@drawable/ic_view_none"
                         tools:ignore="ContentDescription" />
 
                     <TextView
@@ -129,7 +130,8 @@
             android:layout_gravity="end"
             android:layout_marginStart="-50dp"
             android:background="@color/white_faf"
-            app:itemTextColor="?colorPrimary">
+            app:itemTextColor="?colorPrimary"
+            tools:visibility="gone">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"

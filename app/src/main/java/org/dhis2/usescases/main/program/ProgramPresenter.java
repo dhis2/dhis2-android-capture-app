@@ -14,6 +14,7 @@ import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.OrgUnitUtils;
 import org.dhis2.utils.Period;
+import org.dhis2.utils.filters.FilterManager;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.period.DatePeriod;
 import org.hisp.dhis.android.core.program.ProgramType;
@@ -96,6 +97,48 @@ public class ProgramPresenter implements ProgramContract.Presenter {
                                 view.addNodeToTree(),
                                 Timber::e
                         ));
+
+        compositeDisposable.add(
+                FilterManager.getInstance().asFlowable()
+                        .subscribeOn(Schedulers.io())
+                        .flatMap(filterManager ->
+                                homeRepository.programModels(filterManager.getPeriodFilters(), filterManager.getOrgUnitUidsFilters()).flatMapIterable(data -> data)
+                                        .mergeWith(homeRepository.aggregatesModels(filterManager.getPeriodFilters(), filterManager.getOrgUnitUidsFilters()).flatMapIterable(data -> data))
+                                        .sorted((p1, p2) -> p1.title().compareToIgnoreCase(p2.title())).toList().toFlowable()
+                                        .subscribeOn(Schedulers.io()))
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                view.swapProgramModelData(),
+                                throwable -> view.renderError(throwable.getMessage())
+                        )
+        );
+
+        compositeDisposable.add(
+                FilterManager.getInstance().asFlowable()
+                        .subscribeOn(Schedulers.io())
+                        .flatMap(filterManager ->
+                                homeRepository.programModels(filterManager.getPeriodFilters(), filterManager.getOrgUnitUidsFilters()).flatMapIterable(data -> data)
+                                        .mergeWith(homeRepository.aggregatesModels(filterManager.getPeriodFilters(), filterManager.getOrgUnitUidsFilters()).flatMapIterable(data -> data))
+                                        .sorted((p1, p2) -> p1.title().compareToIgnoreCase(p2.title())).toList().toFlowable()
+                                        .subscribeOn(Schedulers.io()))
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                view.swapProgramModelData(),
+                                throwable -> view.renderError(throwable.getMessage())
+                        )
+        );
+
+        compositeDisposable.add(
+                FilterManager.getInstance().ouTreeFlowable()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                open -> view.openOrgUnitTreeSelector(),
+                                Timber::e
+                        )
+        );
 
         manageProcessorDismissDialog();
     }

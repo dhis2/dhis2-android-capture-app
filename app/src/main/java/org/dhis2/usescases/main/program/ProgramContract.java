@@ -47,6 +47,8 @@ public class ProgramContract {
         void orgUnitProgress(boolean showProgress);
 
         Consumer<Pair<TreeNode, List<TreeNode>>> addNodeToTree();
+
+        void openOrgUnitTreeSelector();
     }
 
     public interface Presenter {
