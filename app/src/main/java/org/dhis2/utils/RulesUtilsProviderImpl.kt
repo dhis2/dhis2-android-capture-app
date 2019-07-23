@@ -162,7 +162,7 @@ class RulesUtilsProviderImpl(private val codeGenerator: CodeGenerator) : RulesUt
 
     private fun hideOption(hideOption: RuleActionHideOption,
                            rulesActionCallbacks: RulesActionCallbacks) {
-        rulesActionCallbacks.setOptionToHide(hideOption.field())
+        rulesActionCallbacks.setOptionToHide(hideOption.option())
     }
 
     private fun hideOptionGroup(hideOptionGroup: RuleActionHideOptionGroup,
@@ -172,6 +172,6 @@ class RulesUtilsProviderImpl(private val codeGenerator: CodeGenerator) : RulesUt
 
     private fun showOptionGroup(showOptionGroup: RuleActionShowOptionGroup,
                                 rulesActionCallbacks: RulesActionCallbacks) {
-        rulesActionCallbacks.setOptionGroupToHide(showOptionGroup.optionGroup(),false)
+        rulesActionCallbacks.setOptionGroupToHide(showOptionGroup.optionGroup(),false, showOptionGroup.field())
     }
 }
