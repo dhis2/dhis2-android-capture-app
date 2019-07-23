@@ -2,6 +2,7 @@ package org.dhis2.usescases.general;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -51,6 +52,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.List;
 
+import io.reactivex.processors.FlowableProcessor;
 import rx.Observable;
 import rx.subjects.BehaviorSubject;
 import timber.log.Timber;
@@ -397,14 +399,15 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
     }
 
     @Override
-    public void showSyncDialog(String programUid, SyncStatusDialog.ConflictType conflictType) {
-        new SyncStatusDialog(programUid, conflictType)
+    public void showSyncDialog(String programUid, SyncStatusDialog.ConflictType conflictType, FlowableProcessor processor) {
+        new SyncStatusDialog(programUid, conflictType, processor)
                 .show(getSupportFragmentManager(), programUid);
     }
 
     @Override
-    public void showSyncDialog(String orgUnit, String attributeCombo, String periodId, SyncStatusDialog.ConflictType conflictType) {
-        new SyncStatusDialog(orgUnit,attributeCombo, periodId, conflictType)
+    public void showSyncDialog(String orgUnit, String attributeCombo, String periodId,
+                               SyncStatusDialog.ConflictType conflictType, FlowableProcessor processor) {
+        new SyncStatusDialog(orgUnit,attributeCombo, periodId, conflictType, processor)
                 .show(getSupportFragmentManager(), attributeCombo);
     }
 }

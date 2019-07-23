@@ -53,6 +53,7 @@ public class ProgramPresenter implements ProgramContract.Presenter {
     private FlowableProcessor<Pair<TreeNode, String>> parentOrgUnit;
     private List<DatePeriod> currentDateFilter;
     private List<String> currentOrgUnitFilter;
+    private FlowableProcessor<Boolean> processorDismissDialog;
 
     ProgramPresenter(HomeRepository homeRepository) {
         this.homeRepository = homeRepository;
@@ -67,6 +68,7 @@ public class ProgramPresenter implements ProgramContract.Presenter {
         ExecutorService executorService = Executors.newFixedThreadPool(2);
         programQueries = PublishProcessor.create();
         parentOrgUnit = PublishProcessor.create();
+        this.processorDismissDialog = PublishProcessor.create();
 
         compositeDisposable.add(
                 programQueries
@@ -137,6 +139,15 @@ public class ProgramPresenter implements ProgramContract.Presenter {
                                 Timber::e
                         )
         );
+
+        manageProcessorDismissDialog();
+    }
+
+    private void manageProcessorDismissDialog(){
+        compositeDisposable.add(processorDismissDialog
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(bool -> init(view), Timber::d));
     }
 
     @Override
@@ -175,10 +186,10 @@ public class ProgramPresenter implements ProgramContract.Presenter {
 
     @Override
     public void onSyncStatusClick(ProgramViewModel program) {
-        if (!program.typeName().equals("DataSets"))
-            view.showSyncDialog(program.id(), SyncStatusDialog.ConflictType.PROGRAM);
+        if(!program.typeName().equals("DataSets"))
+            view.showSyncDialog(program.id(), SyncStatusDialog.ConflictType.PROGRAM, processorDismissDialog);
         else
-            view.showSyncDialog(program.id(), SyncStatusDialog.ConflictType.DATA_SET);
+            view.showSyncDialog(program.id(), SyncStatusDialog.ConflictType.DATA_SET, processorDismissDialog);
     }
 
     @Override

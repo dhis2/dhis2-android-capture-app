@@ -347,7 +347,7 @@ public final class RulesRepository {
                             programRuleAction.data());
                     break;
                 case SHOWOPTIONGROUP:
-                    ruleAction = RuleActionShowOptionGroup.create(programRuleAction.content(), programRuleAction.optionGroup().uid());
+                    ruleAction = RuleActionShowOptionGroup.create(programRuleAction.content(), programRuleAction.optionGroup().uid(), field);
                     break;
                 case SENDMESSAGE:
                 case SCHEDULEMESSAGE:
@@ -555,9 +555,11 @@ public final class RulesRepository {
             case SETMANDATORYFIELD:
                 return RuleActionSetMandatoryField.create(isEmpty(attribute) ? field : attribute);
             case HIDEOPTION:
-                return RuleActionHideOption.create(content, isEmpty(attribute) ? field : attribute, option);
+                return RuleActionHideOption.create(content, option, isEmpty(attribute) ? field : attribute);
             case HIDEOPTIONGROUP:
                 return RuleActionHideOptionGroup.create(content, optionGroup);
+            case SHOWOPTIONGROUP:
+                return RuleActionShowOptionGroup.create(content, optionGroup, attribute);
             default:
                 return RuleActionUnsupported.create("UNSUPPORTED RULE ACTION TYPE", actionType.name());
         }

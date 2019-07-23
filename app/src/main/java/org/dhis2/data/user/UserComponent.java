@@ -7,6 +7,8 @@ import org.dhis2.data.service.ReservedValuesWorkerComponent;
 import org.dhis2.data.service.ReservedValuesWorkerModule;
 import org.dhis2.data.service.SyncDataWorkerComponent;
 import org.dhis2.data.service.SyncDataWorkerModule;
+import org.dhis2.data.service.SyncGranularRxComponent;
+import org.dhis2.data.service.SyncGranularRxModule;
 import org.dhis2.data.service.SyncMetadataWorkerComponent;
 import org.dhis2.data.service.SyncMetadataWorkerModule;
 import org.dhis2.usescases.about.AboutComponent;
@@ -154,4 +156,7 @@ public interface UserComponent {
     @NonNull
     SmsComponent plus(SmsModule smsModule);
     NfcDataWriteComponent plus(NfcDataWriteModule nfcModule);
+
+    @NonNull
+    SyncGranularRxComponent plus(SyncGranularRxModule syncGranularEventModule);
 }

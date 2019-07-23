@@ -3,6 +3,8 @@ package org.dhis2.usescases.main.program;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.drawable.AnimatedVectorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -24,6 +26,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import org.dhis2.App;
 import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
+import org.dhis2.data.service.SyncGranularRxWorker;
 import org.dhis2.databinding.SyncBottomDialogBinding;
 import org.dhis2.utils.NetworkUtils;
 import org.hisp.dhis.android.core.D2;
@@ -34,13 +37,25 @@ import org.hisp.dhis.android.core.imports.TrackerImportConflict;
 import org.hisp.dhis.android.core.program.ProgramType;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
+import androidx.work.Constraints;
+import androidx.work.Data;
+import androidx.work.ExistingWorkPolicy;
+import androidx.work.NetworkType;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkInfo;
+import androidx.work.WorkManager;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.schedulers.Schedulers;
 
+import static org.dhis2.utils.Constants.*;
+
+@SuppressLint("ValidFragment")
 public class SyncStatusDialog extends BottomSheetDialogFragment {
 
     private String recordUid;
@@ -52,25 +67,29 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
     private String orgUnitDataValue;
     private String attributeComboDataValue;
     private String periodIdDataValue;
+    private FlowableProcessor processor;
 
     public enum ConflictType {
         PROGRAM, TEI, EVENT, DATA_SET, DATA_VALUES
     }
 
     @SuppressLint("ValidFragment")
-    public SyncStatusDialog(String recordUid, ConflictType conflictType) {
+    public SyncStatusDialog(String recordUid, ConflictType conflictType, FlowableProcessor processor) {
         this.recordUid = recordUid;
         this.conflictType = conflictType;
         this.compositeDisposable = new CompositeDisposable();
+        this.processor = processor;
     }
 
     @SuppressLint("ValidFragment")
-    public SyncStatusDialog(String orgUnitDataValue,String attributeComboDataValue, String periodIdDataValue, ConflictType conflictType) {
+    public SyncStatusDialog(String orgUnitDataValue, String attributeComboDataValue, String periodIdDataValue,
+                            ConflictType conflictType, FlowableProcessor processor) {
         this.orgUnitDataValue = orgUnitDataValue;
         this.attributeComboDataValue = attributeComboDataValue;
         this.periodIdDataValue = periodIdDataValue;
         this.conflictType = conflictType;
         this.compositeDisposable = new CompositeDisposable();
+        this.processor = processor;
     }
 
     @Override
@@ -401,17 +420,23 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
         } else {
             binding.connectionMessage.setText(null);
             binding.syncButton.setText(R.string.action_sync);
-            binding.syncButton.setVisibility(View.GONE);//TODO: SWITCH TO VISIBLE FOR GRANULAR SYNC
-            binding.syncButton.setOnClickListener(view -> {
-                //TODO: sync program
-            });
+            if(binding.syncStatusName.getText().equals(getString(R.string.state_synced)))
+                binding.syncButton.setVisibility(View.GONE);
+
+            binding.syncButton.setOnClickListener(view -> syncGranular());
         }
     }
 
     private void prepareConflictAdapter(List<TrackerImportConflict> conflicts) {
         binding.synsStatusRecycler.setVisibility(View.VISIBLE);
         binding.noConflictMessage.setVisibility(View.GONE);
-        adapter.addItems(conflicts);
+
+        List<StatusLogItem> listStatusLog = new ArrayList<>();
+
+        for(TrackerImportConflict tracker: conflicts)
+            listStatusLog.add(StatusLogItem.create(tracker.created(), tracker.conflict()));
+
+        adapter.addItems(listStatusLog);
         setNetworkMessage();
     }
 
@@ -500,6 +525,92 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
     @Override
     public void onDismiss(@NonNull DialogInterface dialog) {
         compositeDisposable.clear();
+        processor.onNext(true);
         super.onDismiss(dialog);
+    }
+
+    private void syncGranular(){
+        OneTimeWorkRequest.Builder syncGranularEventBuilder = new OneTimeWorkRequest.Builder(SyncGranularRxWorker.class);
+        syncGranularEventBuilder.setConstraints(new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build());
+
+        ConflictType conflictTypeData = null;
+        Data dataToDataValues = null;
+        switch (conflictType) {
+            case PROGRAM:
+                conflictTypeData = ConflictType.PROGRAM;
+                break;
+            case TEI:
+                conflictTypeData = ConflictType.TEI;
+                break;
+            case EVENT:
+                conflictTypeData = ConflictType.EVENT;
+                break;
+            case DATA_SET:
+                conflictTypeData = ConflictType.DATA_SET;
+                break;
+            case DATA_VALUES:
+                dataToDataValues = new Data.Builder().putString(UID, recordUid)
+                        .putString(CONFLICT_TYPE, ConflictType.DATA_VALUES.name())
+                        .putString(ORG_UNIT, orgUnitDataValue)
+                        .putString(PERIOD_ID, periodIdDataValue)
+                        .putString(ATTRIBUTE_OPTION_COMBO, attributeComboDataValue)
+                        .build();
+        }
+        String uid = recordUid;
+        if(dataToDataValues == null) {
+            syncGranularEventBuilder.setInputData(new Data.Builder().putString(UID, recordUid).putString(CONFLICT_TYPE, conflictTypeData.name()).build());
+        }else {
+            syncGranularEventBuilder.setInputData(dataToDataValues);
+            uid = orgUnitDataValue+"_"+periodIdDataValue+"_"+attributeComboDataValue;
+        }
+        OneTimeWorkRequest request = syncGranularEventBuilder.build();
+        WorkManager.getInstance().beginUniqueWork(uid, ExistingWorkPolicy.KEEP, request).enqueue();
+        WorkManager.getInstance().getWorkInfosForUniqueWorkLiveData(uid)
+                .observe(this, workInfo -> {
+                    if(workInfo != null && workInfo.size() > 0)manageWorkInfo(workInfo.get(0));
+                });
+    }
+
+    private void manageWorkInfo(WorkInfo workInfo){
+        binding.synsStatusRecycler.setVisibility(View.VISIBLE);
+        switch (workInfo.getState()){
+            case ENQUEUED:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    binding.syncIcon.setImageResource(R.drawable.animator_sync_grey);
+                    if (binding.syncIcon.getDrawable() instanceof AnimatedVectorDrawable)
+                        ((AnimatedVectorDrawable) binding.syncIcon.getDrawable()).start();
+                }
+                adapter.addItem(StatusLogItem.create(Calendar.getInstance().getTime(),
+                        getString(R.string.start_sync_granular)));
+                break;
+            case RUNNING:
+                adapter.addItem(StatusLogItem.create(Calendar.getInstance().getTime(),
+                        getString(R.string.syncing)));
+                break;
+            case SUCCEEDED:
+                processor.onNext(true);
+                binding.syncButton.setVisibility(View.GONE);
+                adapter.addItem(StatusLogItem.create(Calendar.getInstance().getTime(),
+                        getString(R.string.end_sync_granular)));
+                binding.noConflictMessage.setText(getString(R.string.no_conflicts_synced_message));
+                Bindings.setStateIcon(binding.syncIcon, State.SYNCED);
+                break;
+            case FAILED:
+                Bindings.setStateIcon(binding.syncIcon, State.ERROR);
+                adapter.addItem(StatusLogItem.create(Calendar.getInstance().getTime(),
+                        getString(R.string.error_sync)));
+                break;
+            case BLOCKED:
+                break;
+            case CANCELLED:
+                adapter.addItem(StatusLogItem.create(Calendar.getInstance().getTime(),
+                        getString(R.string.cancel_sync)));
+                break;
+            default:
+                break;
+        }
+
     }
 }

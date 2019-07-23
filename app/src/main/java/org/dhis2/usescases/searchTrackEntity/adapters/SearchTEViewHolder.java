@@ -23,6 +23,7 @@ import org.dhis2.usescases.searchTrackEntity.SearchTEContractsModule;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.ObjectStyleUtils;
 import org.hisp.dhis.android.core.common.State;
+import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 
@@ -58,7 +59,7 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
         else
             binding.setSyncState(searchTeiModel.getTei().state());
 
-        setEnrollment(searchTeiModel.getEnrollmentModels());
+        setEnrollment(searchTeiModel.getEnrollments());
         setEnrollmentInfo(searchTeiModel.getEnrollmentInfo());
 
         setTEIData(searchTeiModel.getAttributeValueModels());
@@ -103,10 +104,10 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
         binding.executePendingBindings();
     }
 
-    private void setEnrollment(List<EnrollmentModel> enrollments) {
+    private void setEnrollment(List<Enrollment> enrollments) {
 //        binding.linearLayout.removeAllViews();
         boolean isFollowUp = false;
-        for (EnrollmentModel enrollment : enrollments) {
+        for (Enrollment enrollment : enrollments) {
             if (enrollment.followUp() != null && enrollment.followUp())
                 isFollowUp = true;
         }
@@ -121,7 +122,7 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
         Context parentContext = binding.chipContainer.getContext();
         for (Trio<String, String, String> enrollmentInfo : enrollmentsInfo) {
             if (/*binding.chipContainer.getChildCount() < 2 &&*/
-                    (binding.getPresenter().getProgramModel() == null || !binding.getPresenter().getProgramModel().displayName().equals(enrollmentInfo.val0()))) {
+                    (binding.getPresenter().getProgram() == null || !binding.getPresenter().getProgram().displayName().equals(enrollmentInfo.val0()))) {
 
                 Chip chip = new Chip(parentContext);
                 chip.setText(enrollmentInfo.val0());

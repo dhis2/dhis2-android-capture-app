@@ -18,6 +18,8 @@ import org.hisp.dhis.rules.models.RuleActionShowError;
 import org.hisp.dhis.rules.models.RuleEffect;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,7 +58,7 @@ final class DataEntryPresenterImpl implements DataEntryPresenter, RulesActionCal
     private List<String> optionsToHide = new ArrayList<>();
     private List<String> optionsGroupsToHide = new ArrayList<>();
     private FlowableProcessor<RowAction> assignProcessor;
-
+    private Map<String, List<String>> optionsGroupToShow = new HashMap<>();
     @Override
     public String getLastFocusItem() {
         return lastFocusItem;
@@ -175,13 +177,16 @@ final class DataEntryPresenterImpl implements DataEntryPresenter, RulesActionCal
 
         optionsToHide.clear();
         optionsGroupsToHide.clear();
-
+        optionsGroupToShow.clear();
         Map<String, FieldViewModel> fieldViewModels = toMap(viewModels);
         ruleUtils.applyRuleEffects(fieldViewModels, calcResult, this);
 
         for (FieldViewModel fieldViewModel : fieldViewModels.values())
-            if (fieldViewModel instanceof SpinnerViewModel)
+            if (fieldViewModel instanceof SpinnerViewModel) {
                 ((SpinnerViewModel) fieldViewModel).setOptionsToHide(optionsToHide, optionsGroupsToHide);
+                if(optionsGroupToShow.keySet().contains(fieldViewModel.uid()))
+                    ((SpinnerViewModel) fieldViewModel).setOptionGroupsToShow(optionsGroupToShow.get(fieldViewModel.uid()));
+            }
 
         return new ArrayList<>(fieldViewModels.values());
 
@@ -242,11 +247,14 @@ final class DataEntryPresenterImpl implements DataEntryPresenter, RulesActionCal
     }
 
     @Override
-    public void setOptionGroupToHide(String optionGroupUid, boolean toHide) {
+    public void setOptionGroupToHide(String optionGroupUid, boolean toHide, String field) {
         if (toHide)
             optionsGroupsToHide.add(optionGroupUid);
-        else if(optionsGroupsToHide.contains(optionGroupUid))
-            optionsGroupsToHide.remove(optionGroupUid);
+        else if(!optionsGroupsToHide.contains(optionGroupUid))//When combined with show option group the hide option group takes precedence.
+            if(optionsGroupToShow.get(field) != null)
+                optionsGroupToShow.get(field).add(optionGroupUid);
+            else
+                optionsGroupToShow.put(field, Collections.singletonList(optionGroupUid));
 
     }
 

@@ -114,12 +114,19 @@ public class Constants {
     public static final String META_NOW = "METADATA_NOW";
     public static final String DATA = "DATA";
     public static final String DATA_NOW = "DATA_NOW";
+    public static final String EVENT_NOW = "EVENT_NOW";
     public static final String TIME_META = "timeMeta";
     public static final String TIME_DATA = "timeData";
     public static final String JIRA_AUTH = "JIRA_AUTH";
     public static final String JIRA_USER = "JIRA_USER";
 
     public static final String ACCESS_DATA = "access_data";
+
+    //Granular sync
+    public final static String UID = "UID";
+    public final static String CONFLICT_TYPE = "CONFLICT_TYPE";
+    public final static String ATTRIBUTE_OPTION_COMBO = "ATTRIBUTE_OPTION_COMBO";
+
     private Constants() {
         // hide public constructor
     }

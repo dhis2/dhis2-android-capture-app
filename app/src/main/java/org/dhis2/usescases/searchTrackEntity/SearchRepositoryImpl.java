@@ -20,19 +20,20 @@ import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.ValueUtils;
 import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.ObjectStyle;
-import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
+import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
+import org.hisp.dhis.android.core.event.EventCollectionRepository;
 import org.hisp.dhis.android.core.event.EventStatus;
-import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitMode;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
-import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.program.Program;
+import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
@@ -40,7 +41,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeAttributeTableInfo;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeAttribute;
 import org.hisp.dhis.android.core.trackedentity.search.QueryFilter;
 import org.hisp.dhis.android.core.trackedentity.search.QueryItem;
 import org.hisp.dhis.android.core.trackedentity.search.QueryOperator;
@@ -48,17 +49,13 @@ import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQuer
 
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
-import java.util.Set;
 
-import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import timber.log.Timber;
 
@@ -71,27 +68,6 @@ import static android.text.TextUtils.isEmpty;
 public class SearchRepositoryImpl implements SearchRepository {
 
     private final BriteDatabase briteDatabase;
-
-    private final String SELECT_PROGRAM_WITH_REGISTRATION = "SELECT DISTINCT Program.* FROM " + ProgramModel.TABLE +
-            " JOIN OrganisationUnitProgramLink ON OrganisationUnitProgramLink.program = Program.uid " +
-            " JOIN UserOrganisationUnit ON UserOrganisationUnit.organisationUnit = OrganisationUnitProgramLink.organisationUnit " +
-            " WHERE Program.programType='WITH_REGISTRATION' AND Program.trackedEntityType = ? " +
-            " AND UserOrganisationUnit.organisationUnitScope = ? ORDER BY Program.displayName";
-    private final String SELECT_PROGRAM_ATTRIBUTES = "SELECT TrackedEntityAttribute.* FROM " + TrackedEntityAttributeModel.TABLE +
-            " INNER JOIN " + ProgramTrackedEntityAttributeModel.TABLE +
-            " ON " + TrackedEntityAttributeModel.TABLE + "." + TrackedEntityAttributeModel.Columns.UID + " = " + ProgramTrackedEntityAttributeModel.TABLE + "." + ProgramTrackedEntityAttributeModel.Columns.TRACKED_ENTITY_ATTRIBUTE +
-            " WHERE (" + ProgramTrackedEntityAttributeModel.TABLE + "." + ProgramTrackedEntityAttributeModel.Columns.SEARCHABLE + " = 1 OR TrackedEntityAttribute.uniqueProperty = '1')" +
-            " AND " + ProgramTrackedEntityAttributeModel.TABLE + "." + ProgramTrackedEntityAttributeModel.Columns.PROGRAM + " = ? ORDER BY ProgramTrackedEntityAttribute.sortOrder ASC";
-    private final String SELECT_OPTION_SET = "SELECT * FROM " + OptionModel.TABLE + " WHERE Option.optionSet = ";
-
-    private final String SEARCH =
-            "SELECT TrackedEntityInstance.*" +
-                    " FROM ((" + TrackedEntityInstanceModel.TABLE + " JOIN " + EnrollmentModel.TABLE + " ON " +
-                    EnrollmentModel.TABLE + "." + EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE + " = " +
-                    TrackedEntityInstanceModel.TABLE + "." + TrackedEntityInstanceModel.Columns.UID + ") " +
-                    "%s)" +
-                    " WHERE ";
-    private final String SEARCH_ATTR = " JOIN (ATTR_QUERY) tabla ON tabla.trackedEntityInstance = TrackedEntityInstance.uid";
 
     private final String PROGRAM_TRACKED_ENTITY_ATTRIBUTES_VALUES_PROGRAM_QUERY = String.format(
             "SELECT %s.*, %s.%s, %s.%s FROM %s " +
@@ -119,38 +95,6 @@ public class SearchRepositoryImpl implements SearchRepository {
             TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.Columns.SORT_ORDER_IN_LIST_NO_PROGRAM
     );
 
-    private final String PROGRAM_COLOR_QUERY = String.format(
-            "SELECT %s FROM %S " +
-                    "WHERE %s = 'Program' AND %s = ?",
-            ObjectStyleModel.Columns.COLOR, ObjectStyleModel.TABLE,
-            ObjectStyleModel.Columns.OBJECT_TABLE,
-            ObjectStyleModel.Columns.UID
-    );
-
-    private final String PROGRAM_INFO = String.format(
-            "SELECT %s.%s, %s.%s, %s.%s FROM %s " +
-                    "LEFT JOIN %s ON %s.%s = %s.%s " +
-                    "WHERE %s.%s = ?",
-            ProgramModel.TABLE, ProgramModel.Columns.DISPLAY_NAME,
-            ObjectStyleModel.TABLE, ObjectStyleModel.Columns.COLOR,
-            ObjectStyleModel.TABLE, ObjectStyleModel.Columns.ICON, ProgramModel.TABLE,
-            ObjectStyleModel.TABLE, ObjectStyleModel.TABLE, ObjectStyleModel.Columns.UID, ProgramModel.TABLE, ProgramModel.Columns.UID,
-            ProgramModel.TABLE, ProgramModel.Columns.UID
-    );
-
-    private final String SELECT_TRACKED_ENTITY_TYPE_ATTRIBUTES = String.format(
-            "SELECT %s.* FROM %s " +
-                    "JOIN %s ON %s.trackedEntityAttribute = %s.%s " +
-                    "WHERE %s.trackedEntityType = ? AND %s.searchable = 1",
-            TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.TABLE,
-            TrackedEntityTypeAttributeTableInfo.TABLE_INFO.name(), TrackedEntityTypeAttributeTableInfo.TABLE_INFO.name(), TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.Columns.UID,
-            TrackedEntityTypeAttributeTableInfo.TABLE_INFO.name(), TrackedEntityTypeAttributeTableInfo.TABLE_INFO.name());
-
-    private static final String[] TABLE_NAMES = new String[]{TrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.TABLE};
-    private static final Set<String> TABLE_SET = new HashSet<>(Arrays.asList(TABLE_NAMES));
-    private static final String[] TEI_TABLE_NAMES = new String[]{TrackedEntityInstanceModel.TABLE,
-            EnrollmentModel.TABLE, TrackedEntityAttributeValueModel.TABLE};
-    private static final Set<String> TEI_TABLE_SET = new HashSet<>(Arrays.asList(TEI_TABLE_NAMES));
     private final CodeGenerator codeGenerator;
     private final String teiType;
     private final D2 d2;
@@ -166,40 +110,31 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     @NonNull
     @Override
-    public Observable<List<TrackedEntityAttributeModel>> programAttributes(String programId) {
+    public Observable<List<TrackedEntityAttribute>> programAttributes(String programId) {
         String id = programId == null ? "" : programId;
-        return briteDatabase.createQuery(TABLE_SET, SELECT_PROGRAM_ATTRIBUTES, id)
-                .mapToList(TrackedEntityAttributeModel::create);
+        return Observable.fromCallable(() -> d2.programModule().programs.withProgramTrackedEntityAttributes().byUid().eq(id).one().get().programTrackedEntityAttributes())
+                .flatMap(attributes -> {
+                    List<String> uids = new ArrayList<>();
+                    for (ProgramTrackedEntityAttribute pteAttribute : attributes) {
+                        if (pteAttribute.searchable())
+                            uids.add(pteAttribute.trackedEntityAttribute().uid());
+                        else if (d2.trackedEntityModule().trackedEntityAttributes.byUid().eq(pteAttribute.trackedEntityAttribute().uid()).one().get().unique())
+                            uids.add(pteAttribute.trackedEntityAttribute().uid());
+                    }
+                    return Observable.just(d2.trackedEntityModule().trackedEntityAttributes.byUid().in(uids).get());
+                });
     }
 
     @Override
-    public Observable<List<TrackedEntityAttributeModel>> programAttributes() {
-        String SELECT_ATTRIBUTES = "SELECT DISTINCT TrackedEntityAttribute.* FROM TrackedEntityAttribute " +
-                "JOIN ProgramTrackedEntityAttribute " +
-                "ON ProgramTrackedEntityAttribute.trackedEntityAttribute = TrackedEntityAttribute " +
-                "JOIN Program ON Program.uid = ProgramTrackedEntityAttribute.program " +
-                "WHERE Program.trackedEntityType = ? AND ProgramTrackedEntityAttribute.searchable = 1";
-        return briteDatabase.createQuery(TrackedEntityAttributeModel.TABLE, SELECT_ATTRIBUTES, teiType)
-                .mapToList(TrackedEntityAttributeModel::create);
-    }
-
-    @Override
-    public Observable<List<OptionModel>> optionSet(String optionSetId) {
-        String id = optionSetId == null ? "" : optionSetId;
-        return briteDatabase.createQuery(OptionModel.TABLE, SELECT_OPTION_SET + "'" + id + "'")
-                .mapToList(OptionModel::create);
-    }
-
-    @Override
-    public Observable<List<ProgramModel>> programsWithRegistration(String programTypeId) {
-        String id = programTypeId == null ? "" : programTypeId;
-        return briteDatabase.createQuery(ProgramModel.TABLE, SELECT_PROGRAM_WITH_REGISTRATION, id, OrganisationUnit.Scope.SCOPE_DATA_CAPTURE.name())
-                .mapToList(ProgramModel::create);
+    public Observable<List<Program>> programsWithRegistration(String programTypeId) {
+        return Observable.fromCallable(() -> d2.organisationUnitModule().organisationUnits.byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).get())
+                .map(UidsHelper::getUidsList)
+                .flatMap(orgUnitsUids -> Observable.just(d2.programModule().programs.byOrganisationUnitList(orgUnitsUids).byRegistration().isTrue().byTrackedEntityTypeUid().eq(teiType).get()));
     }
 
     @NonNull
     @Override
-    public LiveData<PagedList<SearchTeiModel>> searchTrackedEntitiesOffline(@Nullable ProgramModel selectedProgram,
+    public LiveData<PagedList<SearchTeiModel>> searchTrackedEntitiesOffline(@Nullable Program selectedProgram,
                                                                             @NonNull List<String> orgUnits,
                                                                             @Nullable HashMap<String, String> queryData) {
 
@@ -230,7 +165,7 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     @NonNull
     @Override
-    public LiveData<PagedList<SearchTeiModel>> searchTrackedEntitiesAll(@Nullable ProgramModel selectedProgram,
+    public LiveData<PagedList<SearchTeiModel>> searchTrackedEntitiesAll(@Nullable Program selectedProgram,
                                                                         @NonNull List<String> orgUnits,
                                                                         @Nullable HashMap<String, String> queryData) {
 
@@ -332,11 +267,14 @@ public class SearchRepositoryImpl implements SearchRepository {
                 }
             }
 
+            boolean displayIncidentDate = d2.programModule().programs.uid(programUid).get().displayIncidentDate();
+
             EnrollmentModel enrollmentModel = EnrollmentModel.builder()
                     .uid(codeGenerator.generate())
                     .created(currentDate)
                     .lastUpdated(currentDate)
                     .enrollmentDate(enrollmentDate)
+                    .incidentDate(displayIncidentDate ? new Date() : null)
                     .program(programUid)
                     .organisationUnit(orgUnit)
                     .trackedEntityInstance(teiUid != null ? teiUid : trackedEntityInstanceModel.uid())
@@ -357,75 +295,37 @@ public class SearchRepositoryImpl implements SearchRepository {
     }
 
     @Override
-    public Observable<List<OrganisationUnitModel>> getOrgUnits(@Nullable String selectedProgramUid) {
+    public Observable<List<OrganisationUnit>> getOrgUnits(@Nullable String selectedProgramUid) {
 
 
         if (selectedProgramUid != null) {
-            String orgUnitQuery = "SELECT * FROM OrganisationUnit " +
-                    "JOIN OrganisationUnitProgramLink ON OrganisationUnitProgramLink.organisationUnit = OrganisationUnit.uid " +
-                    "JOIN UserOrganisationUnit ON UserOrganisationUnit.organisationUnit = OrganisationUnit.uid " +
-                    "WHERE OrganisationUnitProgramLink.program = ? AND UserOrganisationUnit.organisationUnitScope = 'SCOPE_DATA_CAPTURE'";
-            return briteDatabase.createQuery(OrganisationUnitModel.TABLE, orgUnitQuery, selectedProgramUid)
-                    .mapToList(OrganisationUnitModel::create);
+            return d2.organisationUnitModule().organisationUnits.byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).withPrograms().getAsync()
+                    .toFlowable().flatMapIterable(orgs->orgs)
+                    .filter(organisationUnit -> UidsHelper.getUidsList(organisationUnit.programs()).contains(selectedProgramUid))
+                    .toList().toObservable();
         } else
-            return briteDatabase.createQuery(OrganisationUnitModel.TABLE, " SELECT * FROM OrganisationUnit")
-                    .mapToList(OrganisationUnitModel::create);
+            return Observable.fromCallable(() -> d2.organisationUnitModule().organisationUnits.get());
     }
 
-    @Override
-    public Flowable<List<SearchTeiModel>> transformIntoModel(List<SearchTeiModel> teiList, @Nullable ProgramModel selectedProgram) {
-
-        return Flowable.fromIterable(teiList)
-                .map(tei -> {
-
-                    try (Cursor teiCursor = briteDatabase.query("SELECT TrackedEntityInstance.* FROM TrackedEntityInstance WHERE uid = ?", tei.getTeiModel().uid())) {
-                        if (teiCursor != null && teiCursor.moveToFirst()) {
-                            TrackedEntityInstanceModel localTei = TrackedEntityInstanceModel.create(teiCursor);
-                            tei.toLocalTei(localTei);
-                            tei.setOnline(false);
-                            setEnrollmentInfo(tei);
-                            setAttributesInfo(tei, selectedProgram);
-                            setOverdueEvents(tei, selectedProgram);
-                        }
-                    }
-                    return tei;
-                })
-                .toList().toFlowable();
-    }
 
     private void setEnrollmentInfo(SearchTeiModel searchTei) {
-        try (Cursor enrollmentCursor = briteDatabase.query("SELECT * FROM Enrollment " +
-                "WHERE Enrollment.trackedEntityInstance = ? AND Enrollment.STATUS = 'ACTIVE' " +
-                "GROUP BY Enrollment.program", searchTei.getTei().uid())) {
-
-            if (enrollmentCursor != null) {
-                enrollmentCursor.moveToFirst();
-                for (int i = 0; i < enrollmentCursor.getCount(); i++) {
-                    EnrollmentModel enrollment = EnrollmentModel.create(enrollmentCursor);
-                    if (i == 0)
-                        searchTei.resetEnrollments();
-                    searchTei.addEnrollment(EnrollmentModel.create(enrollmentCursor));
-                    searchTei.addEnrollmentInfo(getProgramInfo(enrollment.program()));
-                    enrollmentCursor.moveToNext();
-                }
-            }
+        List<Enrollment> enrollments = d2.enrollmentModule().enrollments.byTrackedEntityInstance().eq(searchTei.getTei().uid()).byStatus().eq(EnrollmentStatus.ACTIVE).get();
+        for (Enrollment enrollment : enrollments) {
+            if (enrollments.indexOf(enrollment) == 0)
+                searchTei.resetEnrollments();
+            searchTei.addEnrollment(enrollment);
+            searchTei.addEnrollmentInfo(getProgramInfo(enrollment.program()));
         }
     }
 
     private Trio<String, String, String> getProgramInfo(String programUid) {
-        try (Cursor cursor = briteDatabase.query(PROGRAM_INFO, programUid)) {
-            if (cursor != null) {
-                cursor.moveToFirst();
-                String programName = cursor.getString(0);
-                String programColor = cursor.getString(1) != null ? cursor.getString(1) : "";
-                String programIcon = cursor.getString(2) != null ? cursor.getString(2) : "";
-                return Trio.create(programName, programColor, programIcon);
-            }
-        }
-        return null;
+        Program program = d2.programModule().programs.withStyle().byUid().eq(programUid).one().get();
+        String programColor = program.style() != null && program.style().color() != null ? program.style().color() : "";
+        String programIcon =  program.style() != null && program.style().icon() != null ? program.style().icon() : "";
+        return Trio.create(program.displayName(), programColor, programIcon);
     }
 
-    private void setAttributesInfo(SearchTeiModel searchTei, ProgramModel selectedProgram) {
+    private void setAttributesInfo(SearchTeiModel searchTei, Program selectedProgram) {
         if (selectedProgram == null) {
             String id = searchTei != null && searchTei.getTei() != null && searchTei.getTei().uid() != null ? searchTei.getTei().uid() : "";
             try (Cursor attributes = briteDatabase.query(PROGRAM_TRACKED_ENTITY_ATTRIBUTES_VALUES_QUERY,
@@ -459,54 +359,44 @@ public class SearchRepositoryImpl implements SearchRepository {
     }
 
 
-    private void setOverdueEvents(@NonNull SearchTeiModel tei, ProgramModel selectedProgram) {
+    private void setOverdueEvents(@NonNull SearchTeiModel tei, Program selectedProgram) {
+        String teiId = tei.getTei() != null && tei.getTei().uid() != null ? tei.getTei().uid() : "";
+        List<Enrollment> enrollments = d2.enrollmentModule().enrollments.byTrackedEntityInstance().eq(teiId).get();
+        EventCollectionRepository repo = d2.eventModule().events.byEnrollmentUid().in(UidsHelper.getUidsList(enrollments)).byStatus().eq(EventStatus.SKIPPED);
+        int count;
 
-        String overdueQuery = "SELECT * FROM EVENT JOIN Enrollment ON Enrollment.uid = Event.enrollment " +
-                "JOIN TrackedEntityInstance ON TrackedEntityInstance.uid = Enrollment.trackedEntityInstance " +
-                "WHERE TrackedEntityInstance.uid = ? AND Event.status = ?";
+        if (selectedProgram == null)
+            count = repo.count();
+        else
+            count = repo.byProgramUid().eq(selectedProgram.uid()).count();
 
-        String overdueProgram = " AND Enrollment.program = ?";
-        if (selectedProgram == null) {
-            String teiId = tei.getTei() != null && tei.getTei().uid() != null ? tei.getTei().uid() : "";
-            try (Cursor hasOverdueCursor = briteDatabase.query(overdueQuery,
-                    teiId, EventStatus.SKIPPED.name())) {
-                if (hasOverdueCursor != null && hasOverdueCursor.moveToNext()) {
-                    tei.setHasOverdue(true);
-                }
-            }
-        } else {
-            String teiId = tei.getTei() != null && tei.getTei().uid() != null ? tei.getTei().uid() : "";
-            String progId = selectedProgram.uid() != null ? selectedProgram.uid() : "";
-            try (Cursor hasOverdueCursor = briteDatabase.query(overdueQuery + overdueProgram, teiId,
-                    EventStatus.SKIPPED.name(), progId)) {
-                if (hasOverdueCursor != null && hasOverdueCursor.moveToNext()) {
-                    tei.setHasOverdue(true);
-                }
-
-            }
-        }
+        if (count > 0)
+            tei.setHasOverdue(true);
     }
 
 
     @Override
     public String getProgramColor(@NonNull String programUid) {
-        try (Cursor cursor = briteDatabase.query(PROGRAM_COLOR_QUERY, programUid)) {
-            if (cursor.moveToFirst()) {
-                return cursor.getString(0);
-            }
-        }
-
-        return null;
+        return d2.programModule().programs.withStyle().byUid().eq(programUid).one().get().style().color();
     }
 
     @Override
-    public Observable<List<TrackedEntityAttributeModel>> trackedEntityTypeAttributes() {
-        return briteDatabase.createQuery(TrackedEntityAttributeModel.TABLE, SELECT_TRACKED_ENTITY_TYPE_ATTRIBUTES, teiType)
-                .mapToList(TrackedEntityAttributeModel::create);
+    public Observable<List<TrackedEntityAttribute>> trackedEntityTypeAttributes() {
+        return Observable.fromCallable(() -> d2.trackedEntityModule().trackedEntityTypes.withTrackedEntityTypeAttributes().byUid().eq(teiType).one().get().trackedEntityTypeAttributes())
+                .flatMap(attributes -> {
+                    List<String> uids = new ArrayList<>();
+                    for (TrackedEntityTypeAttribute tetAttribute : attributes) {
+                        if (tetAttribute.searchable())
+                            uids.add(tetAttribute.trackedEntityAttribute().uid());
+                        else if (d2.trackedEntityModule().trackedEntityAttributes.byUid().eq(tetAttribute.trackedEntityAttribute().uid()).one().get().unique())
+                            uids.add(tetAttribute.trackedEntityAttribute().uid());
+                    }
+                    return Observable.just(d2.trackedEntityModule().trackedEntityAttributes.byUid().in(uids).get());
+                });
     }
 
     // Private Region Start //
-    private TrackedEntityInstanceQuery.Builder setQueryBuilder(@Nullable ProgramModel selectedProgram, @NonNull List<String> orgUnits) {
+    private TrackedEntityInstanceQuery.Builder setQueryBuilder(@Nullable Program selectedProgram, @NonNull List<String> orgUnits) {
         TrackedEntityInstanceQuery.Builder builder = TrackedEntityInstanceQuery.builder();
         if (selectedProgram != null)
             builder.program(selectedProgram.uid());
@@ -536,7 +426,7 @@ public class SearchRepositoryImpl implements SearchRepository {
     }
 
 
-    private SearchTeiModel transform(TrackedEntityInstance tei, @Nullable ProgramModel selectedProgram) {
+    private SearchTeiModel transform(TrackedEntityInstance tei, @Nullable Program selectedProgram) {
 
         SearchTeiModel searchTei = new SearchTeiModel();
         if (d2.trackedEntityModule().trackedEntityInstances.byUid().eq(tei.uid()).one().exists()) {

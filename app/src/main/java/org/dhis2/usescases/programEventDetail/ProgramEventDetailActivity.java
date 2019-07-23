@@ -632,4 +632,9 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     public void orgUnitProgress(boolean showProgress) {
         binding.orgUnitProgress.setVisibility(showProgress ? View.VISIBLE : View.GONE);
     }
+
+    @Override
+    public Period getCurrentPeriod() {
+        return currentPeriod;
+    }
 }
