@@ -544,4 +544,10 @@
     <string name="sms_bar_state_sending">In progress</string>
     <string name="sms_bar_state_sent">Sent</string>
     <string name="sms_bar_state_failed">Failed</string>
+
+    <string name="start_sync_granular">Starting synchronization.</string>
+    <string name="syncing">Synchronizing...</string>
+    <string name="end_sync_granular">Synchronization completed.</string>
+    <string name="error_sync">Error has happened during synchronization.</string>
+    <string name="cancel_sync">Cancelled synchronization.</string>
 </resources>

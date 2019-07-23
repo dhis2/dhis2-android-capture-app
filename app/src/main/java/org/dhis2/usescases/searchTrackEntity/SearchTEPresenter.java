@@ -77,6 +77,9 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private Date selectedEnrollmentDate;
 
     private FlowableProcessor<HashMap<String, String>> queryProcessor;
+    private FlowableProcessor<Boolean> processorDismissDialog;
+    private String trackedEntityType;
+    private String initialProgram;
 
     public SearchTEPresenter(SearchRepository searchRepository, MetadataRepository metadataRepository, D2 d2) {
         this.metadataRepository = metadataRepository;
@@ -85,6 +88,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         queryData = new HashMap<>();
         queryDataEQ = new HashMap<>();
         queryProcessor = PublishProcessor.create();
+        processorDismissDialog = PublishProcessor.create();
     }
 
     //-----------------------------------
@@ -94,6 +98,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     public void init(SearchTEContractsModule.View view, String trackedEntityType, String initialProgram) {
         this.view = view;
         compositeDisposable = new CompositeDisposable();
+        this.trackedEntityType = trackedEntityType;
+        this.initialProgram = initialProgram;
 
         compositeDisposable.add(
                 metadataRepository.getTrackedEntity(trackedEntityType)
@@ -144,6 +150,15 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         )
         );
 
+        manageProcessorDismissDialog();
+    }
+
+    private void manageProcessorDismissDialog(){
+        compositeDisposable.add(processorDismissDialog
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(bool -> init(view, trackedEntityType, initialProgram),
+                        Timber::d));
     }
 
     @Override
@@ -666,6 +681,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public void onSyncIconClick(String teiUid) {
-        view.showSyncDialog(teiUid, SyncStatusDialog.ConflictType.TEI);
+        view.showSyncDialog(teiUid, SyncStatusDialog.ConflictType.TEI, processorDismissDialog);
     }
 }

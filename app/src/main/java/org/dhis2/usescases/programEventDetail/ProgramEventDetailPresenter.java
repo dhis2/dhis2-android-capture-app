@@ -56,6 +56,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     private List<DatePeriod> currentDateFilter;
     private List<String> currentOrgUnitFilter;
     private List<CategoryOptionCombo> currentCatOptionCombo;
+    private FlowableProcessor<Boolean> processorDismissDialog;
 
     ProgramEventDetailPresenter(
             @NonNull String programUid, @NonNull ProgramEventDetailRepository programEventDetailRepository) {
@@ -72,6 +73,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
         this.currentDateFilter = new ArrayList<>();
         programQueries = PublishProcessor.create();
         parentOrgUnit = PublishProcessor.create();
+        this.processorDismissDialog = PublishProcessor.create();
 
         compositeDisposable.add(Observable.just(eventRepository.getAccessDataWrite())
                 .subscribeOn(Schedulers.computation())
@@ -135,6 +137,14 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                                 Timber::e
                         ));
 
+        manageProcessorDismissDialog();
+    }
+
+    private void manageProcessorDismissDialog(){
+        compositeDisposable.add(processorDismissDialog
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(bool -> init(view, view.getCurrentPeriod()), Timber::d));
     }
 
     @Override
@@ -203,7 +213,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
 
     @Override
     public void onSyncIconClick(String uid) {
-        view.showSyncDialog(uid, SyncStatusDialog.ConflictType.EVENT);
+        view.showSyncDialog(uid, SyncStatusDialog.ConflictType.EVENT, processorDismissDialog);
     }
 
     @Override
