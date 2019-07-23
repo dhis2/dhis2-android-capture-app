@@ -684,14 +684,15 @@ public class EnrollmentFormRepository implements FormRepository {
         boolean mandatory = cursor.getInt(3) == 1;
         String optionSetUid = cursor.getString(4);
         String dataValue = cursor.getString(5);
-        String optionCodeName = cursor.getString(6);
-        String section = cursor.getString(7);
-        Boolean allowFutureDates = cursor.getInt(8) == 1;
+        String displayName = cursor.getString(6);
+        Boolean allowFutureDates = cursor.getInt(7) == 1;
+        Boolean generated = cursor.getInt(8) == 1;
+        String orgUnit = cursor.getString(9);
         EnrollmentStatus status = EnrollmentStatus.valueOf(cursor.getString(10));
         String description = cursor.getString(11);
-        if (!isEmpty(optionCodeName)) {
-            dataValue = optionCodeName;
-        }
+
+        if(generated && isEmpty(dataValue))
+            mandatory = true;
 
         int optionCount = 0;
         if (optionSetUid != null)
@@ -701,14 +702,6 @@ public class EnrollmentFormRepository implements FormRepository {
             } catch (Exception e) {
                 Timber.e(e);
             }
-
-        ValueTypeDeviceRenderingModel fieldRendering = null;
-        try (Cursor rendering = briteDatabase.query("SELECT ValueTypeDeviceRendering.* FROM ValueTypeDeviceRendering " +
-                "JOIN ProgramTrackedEntityAttribute ON ProgramTrackedEntityAttribute.uid = ValueTypeDeviceRendering.uid WHERE ProgramTrackedEntityAttribute.trackedEntityAttribute = ?", uid)) {
-            if (rendering != null && rendering.moveToFirst()) {
-                fieldRendering = ValueTypeDeviceRenderingModel.create(rendering);
-            }
-        }
 
         FieldViewModelFactoryImpl fieldFactory = new FieldViewModelFactoryImpl(
                 "",
@@ -731,8 +724,8 @@ public class EnrollmentFormRepository implements FormRepository {
             dataValue = dataValue + "_ou_" + d2.organisationUnitModule().organisationUnits.uid(dataValue).get().displayName();
         }
 
-        return fieldFactory.create(uid, label, valueType, mandatory, optionSetUid, dataValue, section,
-                allowFutureDates, status == EnrollmentStatus.ACTIVE, null, description, fieldRendering, optionCount, objectStyle);
+        return fieldFactory.create(uid, label, valueType, mandatory, optionSetUid, dataValue, null,
+                allowFutureDates, status == EnrollmentStatus.ACTIVE, null, description, null, optionCount, objectStyle);
     }
 
     @NonNull

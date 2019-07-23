@@ -2,7 +2,6 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
-import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.event.EventStatus;
@@ -39,7 +38,7 @@ public class EventCaptureContract {
 
         void attemptToFinish(boolean canComplete);
 
-        void showCompleteActions(boolean canComplete);
+        void showCompleteActions(boolean canComplete, String completeMessage, Map<String, String> errors, Map<String, FieldViewModel> emptyMandatoryFields);
 
         void restartDataEntry();
 
@@ -90,6 +89,8 @@ public class EventCaptureContract {
         void initCompletionPercentage(FlowableProcessor<Float> integerFlowableProcessor);
 
         void goToSection(String sectionUid);
+
+        void goToSection();
 
         void completeEvent(boolean addNew);
 

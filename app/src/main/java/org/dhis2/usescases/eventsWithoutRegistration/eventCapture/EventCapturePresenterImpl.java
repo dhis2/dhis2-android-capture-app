@@ -270,7 +270,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                     .map(fields -> {
                         emptyMandatoryFields = new HashMap<>();
                         for (FieldViewModel fieldViewModel : fields) {
-                            if (fieldViewModel.mandatory() && isEmpty(fieldViewModel.value()) && !sectionsToHide.contains(fieldViewModel.programStageSection()))
+                            if (fieldViewModel.mandatory() && isEmpty(fieldViewModel.value()))
                                 emptyMandatoryFields.put(fieldViewModel.uid(), fieldViewModel);
                         }
                         return fields;
@@ -292,7 +292,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
                         for (FieldViewModel fieldViewModel : fields) {
                             if (fieldViewModel.mandatory() && isEmpty(fieldViewModel.value()) && !sectionsToHide.contains(fieldViewModel.programStageSection()))
-                            emptyMandatoryFields.put(fieldViewModel.uid(), fieldViewModel);
+                                emptyMandatoryFields.put(fieldViewModel.uid(), fieldViewModel);
                         }
                         return fields;
                     });
@@ -484,6 +484,10 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     }
 
     private void changeSection() {
+
+        if (!errors.isEmpty() && errors.get(currentSection.get()) != null)
+            return;
+
         List<FormSectionViewModel> finalSections = getFinalSections();
 
         if (currentPosition < finalSections.size() - 1) {
@@ -491,22 +495,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         } else {
             if (eventStatus != EventStatus.ACTIVE) {
                 setUpActionByStatus(eventStatus);
-            } else if (!this.errors.isEmpty()) {
-                view.setShowError(errors);
-            } else if (!emptyMandatoryFields.isEmpty()) {
-                view.attemptToFinish(canComplete);
             } else {
-                compositeDisposable.add(
-                        Observable.just(completeMessage != null ? completeMessage : "")
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .filter(completeMessage -> !isEmpty(completeMessage))
-                                .subscribe(
-                                        data -> view.showMessageOnComplete(canComplete, completeMessage),
-                                        Timber::e,
-                                        () -> view.showCompleteActions(canComplete && eventCaptureRepository.isEnrollmentOpen())
-                                )
-                );
+                view.showCompleteActions(canComplete && eventCaptureRepository.isEnrollmentOpen(), completeMessage, errors, emptyMandatoryFields);
             }
         }
     }
@@ -576,6 +566,15 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
     @Override
     public void goToSection(String sectionUid) {
+        for (FormSectionViewModel sectionModel : getFinalSections())
+            if (sectionModel.sectionUid() != null && sectionModel.sectionUid().equals(sectionUid))
+                currentPosition = getFinalSections().indexOf(sectionModel);
+        currentSectionPosition.onNext(currentPosition);
+    }
+
+    @Override
+    public void goToSection() {
+        String sectionUid = errors.entrySet().iterator().next().getKey();
         for (FormSectionViewModel sectionModel : getFinalSections())
             if (sectionModel.sectionUid() != null && sectionModel.sectionUid().equals(sectionUid))
                 currentPosition = getFinalSections().indexOf(sectionModel);
