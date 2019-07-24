@@ -90,6 +90,8 @@ final class EditTextCustomHolder extends FormViewHolder {
         this.editTextModel = (EditTextViewModel) model;
         fieldUid = model.uid();
 
+        binding.customEdittext.setValueType(editTextModel.valueType());
+
         binding.customEdittext.setObjectSyle(model.objectStyle());
         label = new StringBuilder(model.label());
         binding.customEdittext.setLabel(model.label(), model.mandatory());
@@ -101,8 +103,6 @@ final class EditTextCustomHolder extends FormViewHolder {
         binding.customEdittext.setWarning(model.warning(), model.error());
 
         binding.customEdittext.setEditable(model.editable());
-
-        binding.customEdittext.setValueType(editTextModel.valueType());
 
         setRenderingType(editTextModel.fieldRendering());
 
