@@ -64,6 +64,7 @@
                     android:textAlignment="textStart"
                     android:textColor="@color/text_black_333"
                     android:textSize="15sp"
+                    android:textIsSelectable="true"
                     tools:text="hello" />
 
             </com.google.android.material.textfield.TextInputLayout>

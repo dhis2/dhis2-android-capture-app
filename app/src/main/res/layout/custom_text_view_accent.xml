@@ -65,6 +65,7 @@
                     android:imeOptions="actionNext"
                     android:maxLines="1"
                     android:textColor="?colorAccent"
+                    android:textIsSelectable="true"
                     android:textSize="15sp"
                     tools:text="@string/lorem" />
 
