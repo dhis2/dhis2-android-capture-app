@@ -34,8 +34,11 @@ class OrgUnitSelectorAdapter extends RecyclerView.Adapter<OrgUnitSelectorHolder>
     @Override
     public void onBindViewHolder(@NonNull OrgUnitSelectorHolder holder, int position) {
         holder.bind(treeNodes.get(holder.getAdapterPosition()));
-        holder.itemView.setOnClickListener(view ->
-                listener.onOrgUnitClick(treeNodes.get(holder.getAdapterPosition()), holder.getAdapterPosition())
+        holder.itemView.setOnClickListener(view -> {
+                    if (treeNodes.size() > holder.getAdapterPosition() &&
+                    holder.getAdapterPosition() >= 0)
+                        listener.onOrgUnitClick(treeNodes.get(holder.getAdapterPosition()), holder.getAdapterPosition());
+                }
         );
     }
 

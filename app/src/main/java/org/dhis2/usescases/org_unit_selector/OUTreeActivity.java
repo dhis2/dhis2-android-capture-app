@@ -192,7 +192,9 @@ public class OUTreeActivity extends ActivityGlobalAbstract implements OrgUnitSel
         binding.clearAll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((OrgUnitSelectorAdapter) binding.orgUnitRecycler.getAdapter()).clearAll();
+                if ((binding.orgUnitRecycler.getAdapter()) != null) {
+                    ((OrgUnitSelectorAdapter) binding.orgUnitRecycler.getAdapter()).clearAll();
+                }
             }
         });
     }

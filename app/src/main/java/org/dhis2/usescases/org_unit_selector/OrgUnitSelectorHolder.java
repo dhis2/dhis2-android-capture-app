@@ -20,6 +20,7 @@ class OrgUnitSelectorHolder extends RecyclerView.ViewHolder {
 
     public void bind(TreeNode node) {
         binding.ouName.setText(node.getContent().displayName());
+        node.setChecked(FilterManager.getInstance().exist(node.getContent()));
         ViewGroup.MarginLayoutParams marginParams = (ViewGroup.MarginLayoutParams) binding.getRoot().getLayoutParams();
         marginParams.leftMargin = (node.getLevel() - 1) * 40;
         binding.checkBox.setChecked(node.isChecked());
@@ -33,8 +34,8 @@ class OrgUnitSelectorHolder extends RecyclerView.ViewHolder {
             }
         }
         binding.checkBox.setOnCheckedChangeListener((compoundButton, b) -> {
-                node.setChecked(b);
-                FilterManager.getInstance().addOrgUnit(node.getContent());
+            FilterManager.getInstance().addIfCan(node.getContent(), b);
+            node.setChecked(FilterManager.getInstance().exist(node.getContent()));
         });
     }
 }
