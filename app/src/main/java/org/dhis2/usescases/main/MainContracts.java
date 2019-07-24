@@ -29,6 +29,8 @@ public final class MainContracts {
         void changeFragment(int id);
 
         void showSyncErrors(List<TrackerImportConflict> data);
+
+        void updateFilters(int totalFilters);
     }
 
     public interface Presenter {
