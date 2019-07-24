@@ -189,6 +189,7 @@ final class EnrollmentRepository implements DataEntryRepository {
                         dataValue = d2.trackedEntityModule().reservedValueManager.getValue(uid, pattern == null || pattern.contains("OU") ? null : orgUnitUid);
                     }catch (Exception e){
                         dataValue = null;
+                        warning = context.getString(R.string.no_reserved_values);
                     }
 
                     //Checks if ValueType is Numeric and that it start with a 0, then removes the 0
@@ -197,7 +198,7 @@ final class EnrollmentRepository implements DataEntryRepository {
                             dataValue = d2.trackedEntityModule().reservedValueManager.getValue(uid, pattern == null || pattern.contains("OU") ? null : orgUnitUid);
                         }
 
-                    if(!dataValue.isEmpty()) {
+                    if(!isEmpty(dataValue)) {
                         String INSERT = "INSERT INTO TrackedEntityAttributeValue\n" +
                                 "(lastUpdated, value, trackedEntityAttribute, trackedEntityInstance)\n" +
                                 "VALUES (?,?,?,?)";

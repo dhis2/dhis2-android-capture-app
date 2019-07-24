@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +23,6 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
-import org.dhis2.BuildConfig;
 import org.dhis2.Components;
 import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
@@ -316,8 +314,6 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
             binding.programProgress.setVisibility(View.GONE);
             binding.emptyView.setVisibility(programs.isEmpty() ? View.VISIBLE : View.GONE);
             ((ProgramModelAdapter) binding.programRecycler.getAdapter()).setData(programs);
-
-            setTutorial();
         };
     }
 
@@ -461,7 +457,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
 
             if (getContext() != null && isAdded()) {
                 new Handler().postDelayed(() -> {
-                    if(getAbstractActivity() !=null) {
+                    if (getAbstractActivity() != null) {
                         FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
                                 .title(getString(R.string.tuto_main_1))
                                 .enableAutoTextPosition()
@@ -547,11 +543,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                         }
 
                         HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
-
-                        if (!prefs.getBoolean(Constants.TUTORIAL_HOME, false) && !BuildConfig.DEBUG) {
-                            HelpManager.getInstance().showHelp();
-                            prefs.edit().putBoolean(Constants.TUTORIAL_HOME, true).apply();
-                        }
+                        HelpManager.getInstance().showHelp();
                     }
 
                 }, 500);

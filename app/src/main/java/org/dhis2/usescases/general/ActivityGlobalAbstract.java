@@ -65,10 +65,6 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
     private CoordinatesView coordinatesView;
     private ContentLoadingProgressBar progressBar;
 
-    public ContentLoadingProgressBar getProgressBar() {
-        return progressBar;
-    }
-
     private BroadcastReceiver syncReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
