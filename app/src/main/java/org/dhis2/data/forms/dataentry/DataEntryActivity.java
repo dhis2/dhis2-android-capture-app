@@ -2,11 +2,16 @@ package org.dhis2.data.forms.dataentry;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.dhis2.R;
+import org.dhis2.utils.custom_views.PictureView;
 
 
 public class DataEntryActivity extends AppCompatActivity {
@@ -29,4 +34,5 @@ public class DataEntryActivity extends AppCompatActivity {
                         .create(getIntent().getParcelableExtra(ARGS)))
                 .commitNow();
     }
+
 }

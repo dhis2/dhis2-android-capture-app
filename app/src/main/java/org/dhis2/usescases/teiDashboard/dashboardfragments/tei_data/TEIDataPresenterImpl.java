@@ -6,6 +6,9 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
 
+import androidx.appcompat.widget.PopupMenu;
+import androidx.core.app.ActivityOptionsCompat;
+
 import org.dhis2.R;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
@@ -21,15 +24,19 @@ import org.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.EventCreationType;
 import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 
-import androidx.appcompat.widget.PopupMenu;
-import androidx.core.app.ActivityOptionsCompat;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -64,6 +71,28 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
     public void init(TEIDataContracts.View view) {
         this.view = view;
         this.compositeDisposable = new CompositeDisposable();
+
+        compositeDisposable.add(
+                Observable.fromCallable(() -> {
+
+                    Iterator<TrackedEntityAttribute> iterator = d2.trackedEntityModule().trackedEntityAttributes.byValueType().eq(ValueType.IMAGE).get().iterator();
+                    List<String> attrUids = new ArrayList<>();
+                    while (iterator.hasNext())
+                        attrUids.add(iterator.next().uid());
+
+                    return d2.trackedEntityModule().trackedEntityAttributeValues
+                            .byTrackedEntityInstance().eq(teiUid)
+                            .byTrackedEntityAttribute().in(attrUids)
+                            .one().get();
+                }).map(attrValue -> teiUid + "_" + attrValue.trackedEntityAttribute() + ".png")
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                view::showTeiImage,
+                                Timber::e
+                        )
+        );
+
     }
 
     @Override
@@ -179,9 +208,9 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
 
         menu.getMenu().add(Menu.NONE, Menu.NONE, 0, "QR");
         if (mView.getResources().getBoolean(R.bool.sms_enabled)) {
-            menu.getMenu().add(Menu.NONE, Menu.NONE, 1, "SMS");
+            menu.getMenu().add(Menu.NONE, Menu.NONE, 2, "SMS");
         }
-        //menu.getMenu().add(Menu.NONE, Menu.NONE, 2, "NFC");
+        menu.getMenu().add(Menu.NONE, Menu.NONE, 2, "NFC");
 
         menu.setOnMenuItemClickListener(item -> {
             switch (item.getOrder()) {
@@ -244,12 +273,11 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
 
     @Override
     public void onEventSelected(String uid, EventStatus eventStatus, View sharedView) {
-        if (eventStatus == EventStatus.ACTIVE || eventStatus == EventStatus.COMPLETED){
+        if (eventStatus == EventStatus.ACTIVE || eventStatus == EventStatus.COMPLETED) {
             Intent intent = new Intent(view.getContext(), EventCaptureActivity.class);
             intent.putExtras(EventCaptureActivity.getActivityBundle(uid, programUid));
             view.openEventCapture(intent);
-        }
-        else {
+        } else {
             Event event = d2.eventModule().events.uid(uid).get();
             Intent intent = new Intent(view.getContext(), EventInitialActivity.class);
             intent.putExtras(EventInitialActivity.getBundle(

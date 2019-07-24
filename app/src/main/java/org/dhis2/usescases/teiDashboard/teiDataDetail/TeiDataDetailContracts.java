@@ -23,6 +23,8 @@ public class TeiDataDetailContracts {
         void showCustomIncidentCalendar(Date date);
 
         void showCustomEnrollmentCalendar(Date date);
+
+        void showTeiImage(String fileName);
     }
 
     public interface Presenter {

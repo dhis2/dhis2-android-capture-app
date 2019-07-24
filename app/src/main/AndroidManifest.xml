@@ -12,6 +12,7 @@
     <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
     <uses-permission android:name="android.permission.READ_SMS" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <!--<uses-permission android:name="android.permission.USE_BIOMETRIC" />-->
     <uses-permission android:name="android.permission.NFC"/>
@@ -60,8 +61,9 @@
             android:windowSoftInputMode="adjustPan" />
         <activity android:name=".usescases.main.MainActivity" />
         <activity android:name=".usescases.programEventDetail.ProgramEventDetailActivity" />
-        <activity android:name=".usescases.searchTrackEntity.SearchTEActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"/>
+        <activity
+            android:name=".usescases.searchTrackEntity.SearchTEActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize" />
         <activity android:name=".usescases.teiDashboard.TeiDashboardMobileActivity" />
         <activity android:name=".usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity" />
         <activity android:name=".usescases.teiDashboard.eventDetail.EventDetailActivity" />
@@ -116,6 +118,17 @@
 
         <service android:name=".usescases.sms.SmsSendingService" />
         <activity android:name=".usescases.teiDashboard.nfc_data.NfcDataWriteActivity" />
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="@string/content_provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
         <activity android:name=".usescases.org_unit_selector.OUTreeActivity" />
     </application>
 

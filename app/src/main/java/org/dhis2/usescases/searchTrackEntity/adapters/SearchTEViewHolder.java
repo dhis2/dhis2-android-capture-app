@@ -21,6 +21,7 @@ import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.ItemSearchTrackedEntityBinding;
 import org.dhis2.usescases.searchTrackEntity.SearchTEContractsModule;
 import org.dhis2.utils.ColorUtils;
+import org.dhis2.utils.FileResourcesUtil;
 import org.dhis2.utils.ObjectStyleUtils;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
@@ -85,8 +86,7 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
                 presenter.onTEIClick(searchTeiModel.getTei().uid(), searchTeiModel.isOnline());
         });
 
-        String fileName = searchTeiModel.getTei().uid() + "_" + searchTeiModel.getProfilePictureUid() + ".png";
-        File file = new File(itemView.getContext().getFilesDir(), fileName);
+        File file = FileResourcesUtil.getFileForAttribute(itemView.getContext(), searchTeiModel.getTei().uid() + "_" + searchTeiModel.getProfilePictureUid() + ".png");
         Drawable placeHolderId = ObjectStyleUtils.getIconResource(itemView.getContext(), searchTeiModel.getDefaultTypeIcon(), R.drawable.photo_temp_gray);
         Glide.with(itemView.getContext())
                 .load(file)

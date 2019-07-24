@@ -12,6 +12,7 @@ import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
+import java.io.File;
 import java.util.List;
 
 import io.reactivex.Single;
@@ -49,6 +50,8 @@ public class TEIDataContracts {
         void openEventInitial(Intent intent);
 
         void openEventCapture(Intent intent);
+
+        void showTeiImage(String fileName);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
@@ -64,8 +67,6 @@ public class TEIDataContracts {
         void changeCatOption(String eventUid, String catOptionComboUid);
 
         void areEventsCompleted();
-
-//        void displayGenerateEvent(String eventUid);
 
         void displayGenerateEvent(String eventUid);
 
