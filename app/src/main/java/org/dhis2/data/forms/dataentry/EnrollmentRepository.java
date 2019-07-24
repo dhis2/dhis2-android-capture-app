@@ -185,7 +185,11 @@ final class EnrollmentRepository implements DataEntryRepository {
 
                 //checks if tei has been deleted
                 if (teiUid != null) {
-                    dataValue = d2.trackedEntityModule().reservedValueManager.getValue(uid, pattern == null || pattern.contains("OU") ? null : orgUnitUid);
+                    try{
+                        dataValue = d2.trackedEntityModule().reservedValueManager.getValue(uid, pattern == null || pattern.contains("OU") ? null : orgUnitUid);
+                    }catch (Exception e){
+                        dataValue = null;
+                    }
 
                     //Checks if ValueType is Numeric and that it start with a 0, then removes the 0
                     if (valueType == ValueType.NUMBER)

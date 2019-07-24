@@ -32,6 +32,16 @@ public class ColorUtils {
         return new ColorStateList(new int[][]{new int[]{}}, new int[]{pressedColor});
     }
 
+    public static int parseColor(@NonNull String hexColor) {
+            if (hexColor.length() == 4) {//Color is formatted as #fff
+                char r = hexColor.charAt(1);
+                char g = hexColor.charAt(2);
+                char b = hexColor.charAt(3);
+                hexColor = "#" + r + r + g + g + b + b; //formatted to #ffff
+            }
+            return Color.parseColor(hexColor);
+    }
+
     public enum ColorType {
         PRIMARY, PRIMARY_LIGHT, PRIMARY_DARK, ACCENT
     }
@@ -41,13 +51,7 @@ public class ColorUtils {
         int colorToReturn = Color.BLACK;
 
         if (!isEmpty(hexColor)) {
-            if (hexColor.length() == 4) {//Color is formatted as #fff
-                char r = hexColor.charAt(1);
-                char g = hexColor.charAt(2);
-                char b = hexColor.charAt(3);
-                hexColor = "#" + r + r + g + g + b + b; //formatted to #ffff
-            }
-            colorToReturn = Color.parseColor(hexColor);
+            colorToReturn = parseColor(hexColor);
         }
         if (isEmpty(hexColor) || colorToReturn == Color.BLACK || colorToReturn == Color.WHITE) {
             colorToReturn = defaultPrimaryColor;

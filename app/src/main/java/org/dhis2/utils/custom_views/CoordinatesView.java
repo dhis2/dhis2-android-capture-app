@@ -54,6 +54,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
     private FlowableProcessor<RowAction> processor;
     private String uid;
     private TextView errorView;
+    private View clearButton;
 
     public CoordinatesView(Context context) {
         super(context);
@@ -87,6 +88,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
         longitude = findViewById(R.id.longitude);
 
         errorView = findViewById(R.id.errorMessage);
+        clearButton = findViewById(R.id.clearButton);
 
         latitude.setOnEditorActionListener((v, actionId, event) -> {
             if (validateCoordinates()) {
@@ -124,6 +126,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
 
         position.setOnClickListener(this);
         map.setOnClickListener(this);
+        clearButton.setOnClickListener(this);
     }
 
     private boolean validateCoordinates() {
@@ -159,6 +162,8 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
         String[] latLongValue = initialValue.replace("[", "").replace("]", "").replace(" ", "").split(",");
         this.latitude.setText(String.format(Locale.getDefault(), "%.5f", Double.valueOf(latLongValue[0])));
         this.longitude.setText(String.format(Locale.getDefault(), "%.5f", Double.valueOf(latLongValue[1])));
+        this.clearButton.setVisibility(VISIBLE);
+
     }
 
     public void setWarning(String msg) {
@@ -192,6 +197,10 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
                     listener.onMapPositionClick(this);
                 else
                     ((OnMapPositionClick) getContext()).onMapPositionClick(this);
+                break;
+            case R.id.clearButton:
+                clearValueData();
+                updateLocation(null, null);
                 break;
         }
     }
@@ -249,19 +258,22 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
     }
 
     @SuppressLint("MissingPermission")
-    public void updateLocation(double latitude, double longitude) {
-        if (uid != null) {
-            processor.onNext(
-                    RowAction.create(uid,
-                            String.format(Locale.US,
-                                    "[%.5f,%.5f]", latitude, longitude))
-            );
-            nextFocus(this);
+    public void updateLocation(Double latitude, Double longitude) {
+        if (latitude != null && longitude != null) {
+            if (uid != null) {
+                processor.onNext(
+                        RowAction.create(uid,
+                                String.format(Locale.US,
+                                        "[%.5f,%.5f]", latitude, longitude))
+                );
+                nextFocus(this);
+            }
+            String lat = String.format(Locale.getDefault(), "%.5f", latitude);
+            String lon = String.format(Locale.getDefault(), "%.5f", longitude);
+            this.latitude.setText(lat);
+            this.longitude.setText(lon);
+            this.clearButton.setVisibility(VISIBLE);
         }
-        String lat = String.format(Locale.getDefault(), "%.5f", latitude);
-        String lon = String.format(Locale.getDefault(), "%.5f", longitude);
-        this.latitude.setText(lat);
-        this.longitude.setText(lon);
         listener2.onCurrentLocationClick(latitude, longitude);
         invalidate();
     }
@@ -298,6 +310,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
 
         this.latitude.setText(null);
         this.longitude.setText(null);
+        this.clearButton.setVisibility(GONE);
 
     }
 }
