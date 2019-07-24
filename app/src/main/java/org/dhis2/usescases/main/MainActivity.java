@@ -252,10 +252,16 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
 
     @Override
     public void showTutorial(boolean shaked) {
-        if (fragId == R.id.menu_home || fragId == R.id.sync_manager)
-            super.showTutorial(shaked);
-        else
-            showToast(getString(R.string.no_intructions));
-
+        switch (fragId) {
+            case R.id.menu_home:
+                programFragment.setTutorial();
+                break;
+            case R.id.sync_manager:
+                super.showTutorial(shaked);
+                break;
+            default:
+                showToast(getString(R.string.no_intructions));
+                break;
+        }
     }
 }

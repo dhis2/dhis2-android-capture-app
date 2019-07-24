@@ -38,8 +38,7 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
             );
             if (isSearchMode)
                 viewModel.withValue(optionName);
-            if (!isSearchMode)
-                itemView.setBackgroundColor(Color.WHITE);
+            clearBackground(isSearchMode);
         });
 
         binding.optionSetView.setActivationListener(() -> setSelectedBackground(isSearchMode));
