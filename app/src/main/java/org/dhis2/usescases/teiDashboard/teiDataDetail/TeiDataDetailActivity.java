@@ -10,6 +10,11 @@ import androidx.appcompat.widget.PopupMenu;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.bitmap.CircleCrop;
+import com.bumptech.glide.request.RequestOptions;
+
 import org.dhis2.App;
 import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
@@ -21,17 +26,21 @@ import org.dhis2.usescases.map.MapSelectorActivity;
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DatePickerUtils;
+import org.dhis2.utils.FileResourcesUtil;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.enrollment.internal.EnrollmentFields;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.io.File;
 import java.util.Locale;
 
 import javax.inject.Inject;
 
 import io.reactivex.functions.Consumer;
+
+import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
 
 public class TeiDataDetailActivity extends ActivityGlobalAbstract implements TeiDataDetailContracts.View {
     ActivityTeidataDetailBinding binding;
@@ -168,6 +177,20 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
     }
 
     @Override
+    public void showTeiImage(String fileName) {
+        File file = FileResourcesUtil.getFileForAttribute(this, fileName);
+        Glide.with(this)
+                .load(file)
+                .apply(RequestOptions.skipMemoryCacheOf(true))
+                .apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.NONE))
+                .placeholder(R.drawable.photo_temp_gray)
+                .error(R.drawable.photo_temp_gray)
+                .transition(withCrossFade())
+                .transform(new CircleCrop())
+                .into(binding.teiImage);
+    }
+
+    @Override
     public void onBackPressed() {
         setResult(RESULT_OK);
         if (getSupportFragmentManager().getFragments().get(0) instanceof FormFragment)
@@ -184,6 +207,7 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
             setLocation(Double.valueOf(savedLat), Double.valueOf(savedLon));
             presenter.saveLocation(Double.valueOf(savedLat), Double.valueOf(savedLon));
         }
+        super.onActivityResult(requestCode, resultCode, data);
     }
     @Override
     public void showCustomIncidentCalendar(Date date) {

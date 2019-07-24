@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -41,12 +43,15 @@ import org.dhis2.usescases.map.MapSelectorActivity;
 import org.dhis2.usescases.splash.SplashActivity;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.FileResourcesUtil;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.OnDialogClickListener;
 import org.dhis2.utils.SyncUtils;
 import org.dhis2.utils.custom_views.CoordinatesView;
 import org.dhis2.utils.custom_views.CustomDialog;
+import org.dhis2.utils.custom_views.PictureView;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
@@ -61,10 +66,12 @@ import timber.log.Timber;
  * QUADRAM. Created by Javi on 28/07/2017.
  */
 
-public abstract class ActivityGlobalAbstract extends AppCompatActivity implements AbstractActivityContracts.View, CoordinatesView.OnMapPositionClick {
+public abstract class ActivityGlobalAbstract extends AppCompatActivity implements AbstractActivityContracts.View, CoordinatesView.OnMapPositionClick, PictureView.OnIntentSelected {
 
     private BehaviorSubject<Status> lifeCycleObservable = BehaviorSubject.create();
     private CoordinatesView coordinatesView;
+    private PictureView.OnPictureSelected onPictureSelected;
+    private String uuid;
     private ContentLoadingProgressBar progressBar;
 
     public ContentLoadingProgressBar getProgressBar() {
@@ -358,11 +365,33 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == Constants.RQ_MAP_LOCATION_VIEW) {
-            if (coordinatesView != null && resultCode == RESULT_OK && data.getExtras() != null) {
-                coordinatesView.updateLocation(Double.valueOf(data.getStringExtra(MapSelectorActivity.LATITUDE)), Double.valueOf(data.getStringExtra(MapSelectorActivity.LONGITUDE)));
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case Constants.RQ_MAP_LOCATION_VIEW:
+                    if (coordinatesView != null && data.getExtras() != null) {
+                        coordinatesView.updateLocation(Double.valueOf(data.getStringExtra(MapSelectorActivity.LATITUDE)), Double.valueOf(data.getStringExtra(MapSelectorActivity.LONGITUDE)));
+                    }
+                    this.coordinatesView = null;
+                    break;
+                case Constants.GALLERY_REQUEST:
+                    try {
+                        final Uri imageUri = data.getData();
+                        onPictureSelected.onSelected(FileResourcesUtil.getFileFromGallery(this, imageUri), imageUri.toString(), uuid);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Toast.makeText(this, "Something went wrong", Toast.LENGTH_LONG).show();
+                    }
+                    break;
+                case Constants.CAMERA_REQUEST:
+                    if (data != null && data.hasExtra("data")) {
+                        Bitmap bitmap = (Bitmap) data.getExtras().get("data");
+                        if (bitmap != null)
+                            onPictureSelected.onSelected(null, new File(FileResourcesUtil.getUploadDirectory(this), "test").getAbsolutePath(), uuid);
+                    } else
+                        onPictureSelected.onSelected(null, null, uuid);
+                    break;
             }
-            this.coordinatesView = null;
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
@@ -409,5 +438,12 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
                                SyncStatusDialog.ConflictType conflictType, FlowableProcessor processor) {
         new SyncStatusDialog(orgUnit,attributeCombo, periodId, conflictType, processor)
                 .show(getSupportFragmentManager(), attributeCombo);
+    }
+
+    @Override
+    public void intentSelected(String uuid, Intent intent, int request, PictureView.OnPictureSelected onPictureSelected) {
+        this.uuid = uuid;
+        this.onPictureSelected = onPictureSelected;
+        startActivityForResult(intent, request);
     }
 }
