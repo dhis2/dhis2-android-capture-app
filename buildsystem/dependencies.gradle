@@ -3,8 +3,8 @@ ext {
             sdk   : 28,
             tools : "28.0.3",
             minSdk: 19,
-            vCode: 45,
-            vName : "1.3.0_development"
+            vCode: 49,
+            vName : "1.3.0_beta"
     ]
 
     libraries = [

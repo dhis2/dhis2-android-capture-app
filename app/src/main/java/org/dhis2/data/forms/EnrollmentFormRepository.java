@@ -533,7 +533,7 @@ public class EnrollmentFormRepository implements FormRepository {
                     if (!generatedByEnrollmentDate && incidentDate != null)
                         cal.setTime(incidentDate);
 
-                    if(generatedByEnrollmentDate)
+                    if (generatedByEnrollmentDate)
                         cal.setTime(enrollmentDate);
 
                     cal.set(Calendar.HOUR_OF_DAY, 0);
@@ -822,7 +822,7 @@ public class EnrollmentFormRepository implements FormRepository {
                 .toFlowable(BackpressureStrategy.LATEST);
     }
 
-    public Flowable<ProgramStage> getProgramStage(String eventUid){
+    public Flowable<ProgramStage> getProgramStage(String eventUid) {
         return Flowable.fromCallable(() -> d2.eventModule().events.byUid().eq(eventUid).one().get())
                 .map(event -> d2.programModule().programStages.byUid().eq(event.programStage()).one().get());
     }
