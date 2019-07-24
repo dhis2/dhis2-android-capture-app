@@ -550,4 +550,6 @@
     <string name="end_sync_granular">Synchronization completed.</string>
     <string name="error_sync">Error has happened during synchronization.</string>
     <string name="cancel_sync">Cancelled synchronization.</string>
+
+    <string name="copied_text">Copied</string>
 </resources>
