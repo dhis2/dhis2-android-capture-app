@@ -134,4 +134,10 @@ public class FilterManager {
     public List<State> getStateFilters() {
         return stateFilters;
     }
+
+    public void removeAll() {
+        ouFilters = new ArrayList<>();
+        ouFiltersApplied.set(ouFilters.size());
+        filterProcessor.onNext(this);
+    }
 }
