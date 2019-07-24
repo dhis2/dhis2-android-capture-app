@@ -128,6 +128,7 @@ public class OrgUnitCascadeDialog extends DialogFragment {
                             List<OrgUnitItem> orgUnitItems = new ArrayList<>();
                             for (int i = 1; i <= maxLevel; i++) {
                                 OrgUnitItem orgUnitItem = new OrgUnitItem(d2.organisationUnitModule().organisationUnits, ouSelectionType);
+                                orgUnitItem.setMaxLevel(maxLevel);
                                 orgUnitItem.setLevel(i);
                                 orgUnitItem.setOrganisationUnitLevel(d2.organisationUnitModule().organisationUnitLevels.byLevel().eq(i).one().get());//TODO: CHECK IF OU ALREADY SELECTED
                                 orgUnitItems.add(orgUnitItem);

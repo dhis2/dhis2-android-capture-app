@@ -53,6 +53,35 @@
     },
     {
       "client_info": {
+        "mobilesdk_app_id": "1:82834045260:android:ed9871871ea74413",
+        "android_client_info": {
+          "package_name": "com.dhis2.beta"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "82834045260-lf3eea7b3vvudbseh1tk9jok2cjkhjda.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCgcIq1LdwcUCq9nOgtSg3OPCs9qLsa2YY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "82834045260-lf3eea7b3vvudbseh1tk9jok2cjkhjda.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:82834045260:android:9f732326b0b9e7c6",
         "android_client_info": {
           "package_name": "com.dhis2.debug"

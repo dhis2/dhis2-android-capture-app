@@ -130,6 +130,11 @@ android {
             resValue "string", "content_provider", "com.dhis2.experimental.provider"
 
         }
+        beta {
+            applicationIdSuffix = ".beta"
+            matchingFallbacks = ['debug']
+            signingConfig signingConfigs.debug
+        }
     }
 
     flavorDimensions "default"
