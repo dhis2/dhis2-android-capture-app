@@ -377,7 +377,8 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     @Override
     public String getProgramColor(@NonNull String programUid) {
-        return d2.programModule().programs.withStyle().byUid().eq(programUid).one().get().style().color();
+        Program program = d2.programModule().programs.withStyle().byUid().eq(programUid).one().get();
+        return program.style() != null && program.style().color() != null ? program.style().color() : "";
     }
 
     @Override

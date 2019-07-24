@@ -211,6 +211,13 @@
         <item name="android:clickable">true</item>
     </style>
 
+    <style name="ActionIcon_no_padding" parent="Widget.AppCompat.ImageButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+        <item name="android:clickable">true</item>
+    </style>
+
     <style name="ActionIconNoPadding" parent="Widget.AppCompat.ImageButton">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
@@ -246,6 +253,21 @@
 
     <style name="radioPrimary">
         <item name="colorAccent">?colorPrimaryLight</item>
+    </style>
+
+    <style name="filterPeriodRadioButton" parent="Widget.AppCompat.CompoundButton.RadioButton">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">11sp</item>
+        <item name="buttonTint">@color/white</item>
+        <item name="android:fontFamily">@font/rubik_regular</item>
+    </style>
+
+    <style name="filterCheckBox" parent="Widget.AppCompat.CompoundButton.CheckBox">
+        <item name="buttonTint">@color/white</item>
+    </style>
+
+    <style name="primaryCheckBox" parent="Widget.AppCompat.CompoundButton.CheckBox">
+        <item name="buttonTint">?colorPrimary</item>
     </style>
 
 </resources>
