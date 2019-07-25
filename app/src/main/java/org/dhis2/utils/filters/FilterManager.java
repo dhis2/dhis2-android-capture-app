@@ -19,6 +19,10 @@ public class FilterManager {
 
     public static final int OU_TREE = 1986;
 
+    public enum PeriodRequest {
+        FROM_TO, OTHER
+    }
+
     private List<OrganisationUnit> ouFilters;
     private List<State> stateFilters;
     private DatePeriod periodFilters;
@@ -29,6 +33,7 @@ public class FilterManager {
 
     private FlowableProcessor<FilterManager> filterProcessor;
     private FlowableProcessor<Boolean> ouTreeProcessor;
+    private FlowableProcessor<PeriodRequest> periodRequestProcessor;
 
     private static FilterManager instance;
 
@@ -54,6 +59,7 @@ public class FilterManager {
         periodFiltersApplyed = new ObservableField<>(0);
         filterProcessor = PublishProcessor.create();
         ouTreeProcessor = PublishProcessor.create();
+        periodRequestProcessor = PublishProcessor.create();
     }
 
     public void addState(State... states) {
@@ -100,12 +106,16 @@ public class FilterManager {
         }
     }
 
-    public FlowableProcessor<Boolean> getOuTreeProcessor(){
+    public FlowableProcessor<Boolean> getOuTreeProcessor() {
         return ouTreeProcessor;
     }
 
     public Flowable<FilterManager> asFlowable() {
         return filterProcessor;
+    }
+
+    public FlowableProcessor<PeriodRequest> getPeriodRequest() {
+        return periodRequestProcessor;
     }
 
     public Flowable<Boolean> ouTreeFlowable() {
@@ -134,4 +144,9 @@ public class FilterManager {
     public List<State> getStateFilters() {
         return stateFilters;
     }
+
+    public void addPeriodRequest(PeriodRequest periodRequest) {
+        periodRequestProcessor.onNext(periodRequest);
+    }
+
 }
