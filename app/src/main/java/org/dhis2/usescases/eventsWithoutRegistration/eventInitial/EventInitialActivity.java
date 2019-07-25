@@ -11,6 +11,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.SparseBooleanArray;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -76,7 +77,6 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import io.reactivex.functions.Consumer;
-import me.toptas.fancyshowcase.FancyShowCaseView;
 import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
@@ -959,35 +959,9 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     public void setTutorial() {
 
         new Handler().postDelayed(() -> {
-            ArrayList<FancyShowCaseView> steps = new ArrayList<>();
-
-            if (eventUid == null) {
-
-                FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
-                        .title(getString(R.string.tuto_event_initial_new_1))
-                        .enableAutoTextPosition()
-                        .closeOnTouch(true)
-                        .build();
-                steps.add(tuto1);
-
-                HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
-                HelpManager.getInstance().showHelp();
-
-            } else {
-
-                FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
-                        .title(getString(R.string.tuto_event_initial_1))
-                        .enableAutoTextPosition()
-                        .focusOn(binding.percentage)
-                        .closeOnTouch(true)
-                        .build();
-                steps.add(tuto1);
-
-                HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
-                HelpManager.getInstance().showHelp();
-            }
-
-
+            SparseBooleanArray stepConditions = new SparseBooleanArray();
+            stepConditions.put(0, eventUid == null);
+            HelpManager.getInstance().show(getActivity(), HelpManager.TutorialName.EVENT_INITIAL, stepConditions);
         }, 500);
     }
 

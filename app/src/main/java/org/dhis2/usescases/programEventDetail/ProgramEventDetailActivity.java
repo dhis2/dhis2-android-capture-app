@@ -8,6 +8,7 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.SparseBooleanArray;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -61,7 +62,6 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import io.reactivex.functions.Consumer;
-import me.toptas.fancyshowcase.FancyShowCaseView;
 import timber.log.Timber;
 
 import static org.dhis2.R.layout.activity_program_event_detail;
@@ -568,31 +568,12 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     @Override
     public void setTutorial() {
         new Handler().postDelayed(() -> {
-            ArrayList<FancyShowCaseView> steps = new ArrayList<>();
-
-            FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
-                    .title(getString(R.string.tuto_program_event_1))
-                    .enableAutoTextPosition()
-                    .closeOnTouch(true)
-                    .build();
-            steps.add(tuto1);
-
-            if(getAbstractActivity().findViewById(R.id.addEventButton).getVisibility()==View.VISIBLE) {
-                FancyShowCaseView tuto2 = new FancyShowCaseView.Builder(getAbstractActivity())
-                        .title(getString(R.string.tuto_program_event_2))
-                        .enableAutoTextPosition()
-                        .focusOn(getAbstractActivity().findViewById(R.id.addEventButton))
-                        .closeOnTouch(true)
-                        .build();
-                steps.add(tuto2);
-            }
-
-
-            HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
-            HelpManager.getInstance().showHelp();
+            SparseBooleanArray stepConditions = new SparseBooleanArray();
+            stepConditions.put(2, findViewById(R.id.addEventButton).getVisibility() == View.VISIBLE);
+            HelpManager.getInstance().show(getActivity(), HelpManager.TutorialName.PROGRAM_EVENT_LIST,
+                    stepConditions);
 
         }, 500);
-
     }
 
     @Override

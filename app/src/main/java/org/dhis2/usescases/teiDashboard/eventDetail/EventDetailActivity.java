@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.SparseBooleanArray;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.PopupMenu;
@@ -33,13 +34,10 @@ import org.hisp.dhis.android.core.program.ProgramModel;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 
 import javax.inject.Inject;
 
 import io.reactivex.functions.Consumer;
-import me.toptas.fancyshowcase.FancyShowCaseView;
-import me.toptas.fancyshowcase.FocusShape;
 import timber.log.Timber;
 
 /**
@@ -240,30 +238,9 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
     @Override
     public void setTutorial() {
         new Handler().postDelayed(() -> {
-            ArrayList<FancyShowCaseView> steps = new ArrayList<>();
-
-            FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
-                    .title(getString(R.string.tuto_tei_event_1))
-                    .enableAutoTextPosition()
-                    .focusOn(getAbstractActivity().findViewById(R.id.moreOptions))
-                    .closeOnTouch(true)
-                    .build();
-            steps.add(tuto1);
-
-            if (getAbstractActivity().findViewById(R.id.deactivate_button).getVisibility() == View.VISIBLE) {
-                FancyShowCaseView tuto2 = new FancyShowCaseView.Builder(getAbstractActivity())
-                        .title(getString(R.string.tuto_tei_event_2))
-                        .enableAutoTextPosition()
-                        .focusOn(getAbstractActivity().findViewById(R.id.deactivate_button))
-                        .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                        .closeOnTouch(true)
-                        .build();
-                steps.add(tuto2);
-            }
-
-            HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
-            HelpManager.getInstance().showHelp();
-
+            SparseBooleanArray stepConditions = new SparseBooleanArray();
+            stepConditions.put(2, getAbstractActivity().findViewById(R.id.deactivate_button).getVisibility() == View.VISIBLE);
+            HelpManager.getInstance().show(getActivity(), HelpManager.TutorialName.EVENT_DETAIL, stepConditions);
         }, 500);
 
     }

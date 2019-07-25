@@ -34,8 +34,6 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import io.reactivex.functions.Consumer;
-import me.toptas.fancyshowcase.FancyShowCaseView;
-import me.toptas.fancyshowcase.FocusShape;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -307,18 +305,7 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
     public void setTutorial() {
         new Handler().postDelayed(() -> {
             if (binding.actionButton.getVisibility() == View.VISIBLE) {
-                ArrayList<FancyShowCaseView> steps = new ArrayList<>();
-                FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
-                        .title(getString(R.string.tuto_event_summary))
-                        .enableAutoTextPosition()
-                        .focusOn(binding.actionButton)
-                        .closeOnTouch(true)
-                        .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                        .build();
-                steps.add(tuto1);
-
-                HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
-                HelpManager.getInstance().showHelp();
+                HelpManager.getInstance().show(getActivity(), HelpManager.TutorialName.EVENT_SUMMARY, null);
             }
         }, 500);
     }
