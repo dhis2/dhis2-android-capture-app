@@ -77,8 +77,6 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     private DashboardViewModel dashboardViewModel;
     private boolean fromRelationship;
-    private boolean showTutorial;
-
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -230,10 +228,6 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         Boolean enrollmentStatus = program.getCurrentEnrollment() != null && program.getCurrentEnrollment().enrollmentStatus() == EnrollmentStatus.ACTIVE;
         if (getIntent().getStringExtra(Constants.EVENT_UID) != null && enrollmentStatus)
             dashboardViewModel.updateEventUid(getIntent().getStringExtra(Constants.EVENT_UID));
-
-        if (!HelpManager.getInstance().isTutorialReadyForScreen(getClass().getName()) && !fromRelationship) {
-            setTutorial();
-        }
     }
 
     @Override
@@ -327,9 +321,6 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     public void setTutorial() {
         super.setTutorial();
 
-        SharedPreferences prefs = getAbstracContext().getSharedPreferences(
-                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
-
         new Handler().postDelayed(() -> {
             if (getAbstractActivity() != null) {
                 FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
@@ -398,12 +389,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                 steps.add(tuto8);
 
                 HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
-
-                if (!prefs.getBoolean("TUTO_DASHBOARD_SHOWN", false) && !BuildConfig.DEBUG || showTutorial) {
-                    HelpManager.getInstance().showHelp();
-                    prefs.edit().putBoolean("TUTO_DASHBOARD_SHOWN", true).apply();
-                    showTutorial = true;
-                }
+                HelpManager.getInstance().showHelp();
             }
 
         }, 500);
@@ -414,7 +400,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     @Override
     public void showTutorial(boolean shaked) {
         if (binding.tabLayout.getSelectedTabPosition() == 0 && !changingProgram)
-            super.showTutorial(shaked);
+            setTutorial();
         else
             showToast(getString(R.string.no_intructions));
 
@@ -517,7 +503,6 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         popupMenu.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {
                 case R.id.showHelp:
-                    this.showTutorial = true;
                     showTutorial(true);
                     break;
                 case R.id.deleteTei:
