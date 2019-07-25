@@ -209,10 +209,10 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 queryProcessor
                         .map(map -> {
                             HashMap<String, String> data = new HashMap<>(map);
-                            if (!NetworkUtils.isOnline(view.getContext()) || selectedProgram == null || data.isEmpty())
-                                return searchRepository.searchTrackedEntitiesOffline(selectedProgram, orgUnitsUid, data);
+                            if (!NetworkUtils.isOnline(view.getContext()))
+                                return searchRepository.searchTrackedEntitiesOffline(selectedProgram, trackedEntityType, orgUnitsUid, data);
                             else
-                                return searchRepository.searchTrackedEntitiesAll(selectedProgram, orgUnitsUid, data);
+                                return searchRepository.searchTrackedEntitiesAll(selectedProgram, trackedEntityType, orgUnitsUid, data);
                         })
                         .doOnError(this::handleError)
                         .subscribeOn(Schedulers.io())
@@ -261,7 +261,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 messageId = view.getContext().getString(R.string.search_init);
             }
         } else if (selectedProgram == null) {
-            if (queryData.isEmpty() && view.fromRelationshipTEI() == null)
+            if (size == 0 && queryData.isEmpty() && view.fromRelationshipTEI() == null)
                 messageId = view.getContext().getString(R.string.search_init);
             else if (size == 0) {
                 messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
