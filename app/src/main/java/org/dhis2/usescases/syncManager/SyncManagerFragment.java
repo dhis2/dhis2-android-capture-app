@@ -24,12 +24,10 @@ import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
-import androidx.work.impl.model.WorkSpec;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.jakewharton.rxbinding2.widget.RxTextView;
 
-import org.dhis2.BuildConfig;
 import org.dhis2.Components;
 import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
@@ -140,8 +138,6 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
             binding.buttonSyncMeta.setEnabled(false);
         }
 
-        showTutorial();
-
         listenerDisposable = new CompositeDisposable();
 
         listenerDisposable.add(RxTextView.textChanges(binding.eventMaxData).debounce(1000, TimeUnit.MILLISECONDS, Schedulers.io())
@@ -222,7 +218,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
             binding.syncDataLayout.message.setTextColor(ContextCompat.getColor(getContext(), R.color.red_060));
 
         } else if (presenter.dataHasWarnings()) {
-            String src =dataSyncSetting().concat("\n").concat(getString(R.string.data_sync_warning));
+            String src = dataSyncSetting().concat("\n").concat(getString(R.string.data_sync_warning));
             SpannableString str = new SpannableString(src);
             int wIndex = src.indexOf('@');
             str.setSpan(new ImageSpan(getContext(), R.drawable.ic_sync_warning), wIndex, wIndex + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -461,11 +457,8 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
                     HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
                     HelpManager.getInstance().setScroll(scrollView);
+                    HelpManager.getInstance().showHelp();
 
-                    if (prefs != null && !prefs.getBoolean("TUTO_SETTINGS_SHOWN", false) && !BuildConfig.DEBUG) {
-                        HelpManager.getInstance().showHelp();
-                        prefs.edit().putBoolean("TUTO_SETTINGS_SHOWN", true).apply();
-                    }
                 }
 
             }, 500);
