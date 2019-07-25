@@ -1,7 +1,10 @@
 package org.dhis2.usescases.main.program;
 
+import android.content.Context;
+
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import org.dhis2.R;
 import org.dhis2.data.dagger.PerFragment;
 import org.hisp.dhis.android.core.D2;
 
@@ -23,8 +26,9 @@ public class ProgramModule {
 
     @Provides
     @PerFragment
-    HomeRepository homeRepository(BriteDatabase briteDatabase, D2 d2) {
-        return new HomeRepositoryImpl(briteDatabase, d2);
+    HomeRepository homeRepository(BriteDatabase briteDatabase, D2 d2, Context context) {
+        String eventsLabel = context.getString(R.string.events);
+        return new HomeRepositoryImpl(d2, eventsLabel);
     }
 
 

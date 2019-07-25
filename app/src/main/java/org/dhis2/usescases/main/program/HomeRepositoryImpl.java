@@ -25,12 +25,12 @@ import static org.hisp.dhis.android.core.program.ProgramType.WITH_REGISTRATION;
 class HomeRepositoryImpl implements HomeRepository {
 
 
-    private final BriteDatabase briteDatabase;
     private final D2 d2;
+    private final String eventLabel;
 
-    HomeRepositoryImpl(BriteDatabase briteDatabase, D2 d2) {
-        this.briteDatabase = briteDatabase;
+    HomeRepositoryImpl(D2 d2,String eventLabel) {
         this.d2 = d2;
+        this.eventLabel = eventLabel;
     }
 
     @NonNull
@@ -62,7 +62,7 @@ class HomeRepositoryImpl implements HomeRepository {
                         if (typeName == null)
                             typeName = d2.trackedEntityModule().trackedEntityTypes.uid(program.trackedEntityType().uid()).get().displayName();
                     } else if (program.programType() == WITHOUT_REGISTRATION)
-                        typeName = "Events";
+                        typeName = eventLabel;
                     else
                         typeName = "DataSets";
 
