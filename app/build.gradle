@@ -83,6 +83,11 @@ android {
         }
     }
 
+    String GOOGLE_VERIFICATION_API_KEY = "";
+    if (project.hasProperty("API_KEY_GOOGLE_VERIFICATION")) {
+        GOOGLE_VERIFICATION_API_KEY = API_KEY_GOOGLE_VERIFICATION
+    }
+
     buildTypes {
         debug {
             // custom application suffix which allows to
@@ -98,7 +103,7 @@ android {
 
             // Using dataentry.jks to sign debug build type.
             signingConfig = signingConfigs.debug
-
+            buildConfigField("String", "GOOGLE_VERIFICATION_API_KEY", "\"" + GOOGLE_VERIFICATION_API_KEY + "\"")
             resValue "string", "content_provider", "com.dhis2.debug.provider"
         }
         release {
@@ -106,7 +111,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             ext.enableCrashlytics = true
             signingConfig signingConfigs.release
-
+            buildConfigField("String", "GOOGLE_VERIFICATION_API_KEY", "\"" + GOOGLE_VERIFICATION_API_KEY + "\"")
             resValue "string", "content_provider", "com.dhis2.provider"
 
         }
@@ -126,7 +131,7 @@ android {
             jniDebuggable = true
             renderscriptDebuggable = true
             matchingFallbacks = ['debug']
-
+            buildConfigField("String", "GOOGLE_VERIFICATION_API_KEY", "\"" + GOOGLE_VERIFICATION_API_KEY + "\"")
             resValue "string", "content_provider", "com.dhis2.experimental.provider"
 
         }
@@ -134,6 +139,7 @@ android {
             applicationIdSuffix = ".beta"
             matchingFallbacks = ['debug']
             signingConfig signingConfigs.debug
+            buildConfigField("String", "GOOGLE_VERIFICATION_API_KEY", "\"" + GOOGLE_VERIFICATION_API_KEY + "\"")
         }
     }
 
@@ -184,6 +190,7 @@ android {
             forcedModules = ['com.squareup.okhttp3:okhttp:3.12.0']
         }
     }
+
 }
 
 sonarqube {
@@ -355,7 +362,6 @@ dependencies {
     implementation "de.adorsys.android:securestoragelibrary:${libraries.latestSecureStorageVersion}"
 
     implementation 'com.google.firebase:firebase-perf:16.2.3'
-
 }
 
 apply plugin: 'kotlin-kapt'
