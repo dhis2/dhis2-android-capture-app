@@ -2,10 +2,8 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventInitial;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
@@ -13,6 +11,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.SparseBooleanArray;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,7 +30,6 @@ import com.unnamed.b.atv.view.AndroidTreeView;
 
 import org.dhis2.App;
 import org.dhis2.Bindings.Bindings;
-import org.dhis2.BuildConfig;
 import org.dhis2.R;
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
@@ -49,7 +47,6 @@ import org.dhis2.utils.EventCreationType;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.custom_views.CategoryOptionPopUp;
 import org.dhis2.utils.custom_views.CustomDialog;
-import org.dhis2.utils.custom_views.OrgUnitDialog;
 import org.dhis2.utils.custom_views.OrgUnitDialog_2;
 import org.dhis2.utils.custom_views.PeriodDialog;
 import org.dhis2.utils.custom_views.ProgressBarAnimation;
@@ -59,10 +56,8 @@ import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
-import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
@@ -82,7 +77,6 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import io.reactivex.functions.Consumer;
-import me.toptas.fancyshowcase.FancyShowCaseView;
 import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
@@ -426,9 +420,11 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         presenter.filterOrgUnits(DateUtils.uiDateFormat().format(selectedDate));
 
         if (eventModel != null &&
-                (DateUtils.getInstance().isEventExpired(eventModel.eventDate(), eventModel.completedDate(), eventModel.status(), program.completeEventsExpiryDays(), program.expiryPeriodType(), program.expiryDays()) ||
-                        eventModel.status() == EventStatus.COMPLETED ||
-                        eventModel.status() == EventStatus.SKIPPED)) {
+                (DateUtils.getInstance().isEventExpired(eventModel.eventDate(),
+                        eventModel.completedDate(), eventModel.status(),
+                        program.completeEventsExpiryDays(),
+                        program.expiryPeriodType(),
+                        program.expiryDays()) || eventModel.status() == EventStatus.COMPLETED || eventModel.status() == EventStatus.SKIPPED)) {
             binding.date.setEnabled(false);
             for (int i = 0; i < binding.catComboLayout.getChildCount(); i++)
                 binding.catComboLayout.getChildAt(i).findViewById(R.id.cat_combo).setEnabled(false);
@@ -919,9 +915,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             binding.lon.setEnabled(false);
             binding.executePendingBindings();
         }
-
-        if (!HelpManager.getInstance().isTutorialReadyForScreen(getClass().getName()))
-            setTutorial();
     }
 
     @Override
@@ -964,48 +957,11 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void setTutorial() {
-        super.setTutorial();
-
-        SharedPreferences prefs = getAbstracContext().getSharedPreferences(
-                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
 
         new Handler().postDelayed(() -> {
-            ArrayList<FancyShowCaseView> steps = new ArrayList<>();
-
-            if (eventUid == null) {
-
-                FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
-                        .title(getString(R.string.tuto_event_initial_new_1))
-                        .enableAutoTextPosition()
-                        .closeOnTouch(true)
-                        .build();
-                steps.add(tuto1);
-
-                HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
-
-                if (!prefs.getBoolean("TUTO_EVENT_INITIAL_NEW", false) && !BuildConfig.DEBUG) {
-                    HelpManager.getInstance().showHelp();
-                    prefs.edit().putBoolean("TUTO_EVENT_INITIAL_NEW", true).apply();
-                }
-            } else {
-
-                FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
-                        .title(getString(R.string.tuto_event_initial_1))
-                        .enableAutoTextPosition()
-                        .focusOn(binding.percentage)
-                        .closeOnTouch(true)
-                        .build();
-                steps.add(tuto1);
-
-                HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
-
-                if (!prefs.getBoolean("TUTO_EVENT_INITIAL", false) && !BuildConfig.DEBUG) {
-                    HelpManager.getInstance().showHelp();
-                    prefs.edit().putBoolean("TUTO_EVENT_INITIAL", true).apply();
-                }
-            }
-
-
+            SparseBooleanArray stepConditions = new SparseBooleanArray();
+            stepConditions.put(0, eventUid == null);
+            HelpManager.getInstance().show(getActivity(), HelpManager.TutorialName.EVENT_INITIAL, stepConditions);
         }, 500);
     }
 
@@ -1031,7 +987,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         popupMenu.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {
                 case R.id.showHelp:
-                    showTutorial(false);
+                    setTutorial();
                     break;
                 case R.id.menu_delete:
                     confirmDeleteEvent();
