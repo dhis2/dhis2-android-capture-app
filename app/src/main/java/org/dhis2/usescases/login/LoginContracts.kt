@@ -3,6 +3,7 @@ package org.dhis2.usescases.login
 
 import android.view.View
 import androidx.annotation.UiThread
+import org.dhis2.data.sharedPreferences.SharePreferencesProvider
 import org.dhis2.usescases.general.AbstractActivityContracts
 import retrofit2.Response
 
@@ -51,6 +52,7 @@ class LoginContracts {
 
         fun displayAlertDialog(titleResource:Int, descriptionResource:Int,negativeResource:Int?,positiveResource:Int)
         fun alreadyAuthenticated()
+        fun setPreference(sharePreferencesProvider: SharePreferencesProvider)
     }
 
     interface Presenter {

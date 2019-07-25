@@ -4,6 +4,7 @@ import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.metadata.MetadataRepository;
+import org.dhis2.data.sharedPreferences.SharePreferencesProvider;
 import org.hisp.dhis.android.core.D2;
 
 import androidx.annotation.NonNull;
@@ -33,8 +34,9 @@ public class ProgramEventDetailModule {
     @Provides
     @PerActivity
     ProgramEventDetailContract.Presenter providesPresenter(
-                                                           @NonNull ProgramEventDetailRepository programEventDetailRepository) {
-        return new ProgramEventDetailPresenter(programUid,programEventDetailRepository);
+            @NonNull ProgramEventDetailRepository programEventDetailRepository,
+            SharePreferencesProvider provider) {
+        return new ProgramEventDetailPresenter(programUid,programEventDetailRepository, provider);
     }
 
     @Provides

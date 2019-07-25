@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.RuleEngineRepository;
 import org.dhis2.data.metadata.MetadataRepository;
+import org.dhis2.data.sharedPreferences.SharePreferencesProvider;
 import org.dhis2.utils.AuthorityException;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.State;
@@ -31,6 +32,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     private final DashboardRepository dashboardRepository;
     private final MetadataRepository metadataRepository;
     private final D2 d2;
+    private final SharePreferencesProvider provider;
     private TeiDashboardContracts.View view;
 
     private String teUid;
@@ -42,11 +44,17 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
     private MutableLiveData<DashboardProgramModel> dashboardProgramModelLiveData = new MutableLiveData<>();
 
-    TeiDashboardPresenter(D2 d2, DashboardRepository dashboardRepository, MetadataRepository metadataRepository, RuleEngineRepository formRepository) {
+    TeiDashboardPresenter(D2 d2, DashboardRepository dashboardRepository, MetadataRepository metadataRepository, RuleEngineRepository formRepository, SharePreferencesProvider provider) {
         this.d2 = d2;
         this.dashboardRepository = dashboardRepository;
         this.metadataRepository = metadataRepository;
         compositeDisposable = new CompositeDisposable();
+        this.provider = provider;
+    }
+
+    @Override
+    public SharePreferencesProvider callPreference() {
+        return provider;
     }
 
     @Override
@@ -54,7 +62,6 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         this.view = view;
         this.teUid = teiUid;
         this.programUid = programUid;
-
         dashboardRepository.setDashboardDetails(teiUid, programUid);
 
         getData();

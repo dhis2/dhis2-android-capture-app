@@ -17,6 +17,7 @@ import org.dhis2.R;
 import org.dhis2.data.forms.FormFragment;
 import org.dhis2.data.forms.dataentry.DataEntryFragment;
 import org.dhis2.data.metadata.MetadataRepository;
+import org.dhis2.data.sharedPreferences.SharePreferencesProvider;
 import org.dhis2.databinding.WidgetDatepickerBinding;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.OnDialogClickListener;
@@ -59,20 +60,22 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
     private EventDetailContracts.View view;
     private CompositeDisposable disposable;
     private EventDetailModel eventDetailModel;
+    private SharePreferencesProvider provider;
 
     private boolean changedEventStatus = false;
 
-    EventDetailPresenter(EventDetailRepository eventDetailRepository, MetadataRepository metadataRepository, DataEntryStore dataEntryStore) {
+    EventDetailPresenter(EventDetailRepository eventDetailRepository, MetadataRepository metadataRepository, DataEntryStore dataEntryStore, SharePreferencesProvider provider) {
         this.metadataRepository = metadataRepository;
         this.eventDetailRepository = eventDetailRepository;
         this.dataEntryStore = dataEntryStore;
         disposable = new CompositeDisposable();
-
+        this.provider = provider;
     }
 
     @Override
     public void init(EventDetailContracts.View view) {
         this.view = view;
+        view.setPreference(provider);
     }
 
     @SuppressLint("CheckResult")

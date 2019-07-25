@@ -6,6 +6,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import org.dhis2.data.server.UserManager
+import org.dhis2.data.sharedPreferences.SharePreferencesProvider
 import org.dhis2.usescases.login.LoginActivity
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.sync.SyncActivity
@@ -14,7 +15,7 @@ import org.dhis2.utils.SyncUtils
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
-class SplashPresenter internal constructor(private val userManager: UserManager?) : SplashContracts.Presenter {
+class SplashPresenter internal constructor(private val userManager: UserManager?, val provider: SharePreferencesProvider) : SplashContracts.Presenter {
     private var view: SplashContracts.View? = null
     var compositeDisposable: CompositeDisposable = CompositeDisposable()
 
@@ -44,9 +45,7 @@ class SplashPresenter internal constructor(private val userManager: UserManager?
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
                             {
-                                val prefs = view!!.abstracContext.getSharedPreferences(
-                                        Constants.SHARE_PREFS, Context.MODE_PRIVATE)
-                                if (it!! && !prefs.getBoolean("SessionLocked", false)) {
+                                if (it!! && !provider.sharedPreferences().getBoolean("SessionLocked", false)!!) {
                                     navigateTo(MainActivity::class.java)
                                 } else {
                                     navigateTo(LoginActivity::class.java)

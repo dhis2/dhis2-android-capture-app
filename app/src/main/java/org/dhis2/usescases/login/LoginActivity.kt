@@ -25,6 +25,7 @@ import okhttp3.HttpUrl
 import org.dhis2.App
 import org.dhis2.Bindings.onRightDrawableClicked
 import org.dhis2.R
+import org.dhis2.data.sharedPreferences.SharePreferencesProvider
 import org.dhis2.data.tuples.Trio
 import org.dhis2.databinding.ActivityLoginBinding
 import org.dhis2.usescases.general.ActivityGlobalAbstract
@@ -43,6 +44,12 @@ import javax.inject.Inject
 
 
 class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
+
+    lateinit var provider: SharePreferencesProvider
+
+    override fun setPreference(sharePreferencesProvider: SharePreferencesProvider) {
+        this.provider = sharePreferencesProvider
+    }
 
     private lateinit var binding: ActivityLoginBinding
 
@@ -222,13 +229,13 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
                 getString(R.string.action_agree), getString(R.string.cancel),
                 object : OnDialogClickListener {
                     override fun onPossitiveClick(alertDialog: AlertDialog) {
-                        sharedPreferences.edit().putBoolean(Constants.USER_ASKED_CRASHLYTICS, true).apply()
-                        sharedPreferences.edit().putString(Constants.USER, binding.userName.editText?.text.toString()).apply()
+                        provider.sharedPreferences().putBoolean(Constants.USER_ASKED_CRASHLYTICS, true)
+                        provider.sharedPreferences().putString(Constants.USER, binding.userName.editText?.text.toString())
                         showLoginProgress(true)
                     }
 
                     override fun onNegativeClick(alertDialog: AlertDialog) {
-                        sharedPreferences.edit().putBoolean(Constants.USER_ASKED_CRASHLYTICS, true).apply()
+                        provider.sharedPreferences().putBoolean(Constants.USER_ASKED_CRASHLYTICS, true)
                         showLoginProgress(true)
                     }
                 })?.show()
@@ -348,6 +355,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         if (requestCode == RQ_QR_SCANNER && resultCode == Activity.RESULT_OK) {
             qrUrl = data?.getStringExtra(Constants.EXTRA_DATA)
         }
+        super.onActivityResult(requestCode, resultCode, data)
     }
 
     //region FingerPrint

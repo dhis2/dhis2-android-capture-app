@@ -1,8 +1,9 @@
 package org.dhis2.data.service;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 
+import org.dhis2.data.sharedPreferences.SharePreferencesProvider;
+import org.dhis2.data.sharedPreferences.SharePreferencesProviderImpl;
 import org.dhis2.utils.Constants;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.call.D2Progress;
@@ -21,17 +22,19 @@ final class SyncPresenterImpl implements SyncPresenter {
     @NonNull
     private final D2 d2;
 
-    SyncPresenterImpl(@NonNull D2 d2) {
+    @NonNull
+    private SharePreferencesProvider provider;
+
+    SyncPresenterImpl(@NonNull D2 d2, SharePreferencesProvider provider) {
         this.d2 = d2;
+        this.provider = provider;
     }
 
     @Override
     public void syncAndDownloadEvents(Context context) {
-        SharedPreferences prefs = context.getSharedPreferences(
-                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
-        int eventLimit = prefs.getInt(Constants.EVENT_MAX, Constants.EVENT_MAX_DEFAULT);
-        boolean limitByOU = prefs.getBoolean(Constants.LIMIT_BY_ORG_UNIT, false);
-        boolean limitByProgram = prefs.getBoolean(Constants.LIMIT_BY_PROGRAM, false);
+        int eventLimit = provider.sharedPreferences().getInt(Constants.EVENT_MAX, Constants.EVENT_MAX_DEFAULT);
+        boolean limitByOU = provider.sharedPreferences().getBoolean(Constants.LIMIT_BY_ORG_UNIT, false);
+        boolean limitByProgram = provider.sharedPreferences().getBoolean(Constants.LIMIT_BY_PROGRAM, false);
         Completable.fromObservable(d2.eventModule().events.upload())
                 .andThen(Completable.fromObservable(d2.eventModule().downloadSingleEvents(eventLimit, limitByOU, limitByProgram))).blockingAwait();
 
@@ -39,11 +42,9 @@ final class SyncPresenterImpl implements SyncPresenter {
 
     @Override
     public void syncAndDownloadTeis(Context context) {
-        SharedPreferences prefs = context.getSharedPreferences(
-                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
-        int teiLimit = prefs.getInt(Constants.TEI_MAX, Constants.TEI_MAX_DEFAULT);
-        boolean limitByOU = prefs.getBoolean(Constants.LIMIT_BY_ORG_UNIT, false);
-        boolean limitByProgram = prefs.getBoolean(Constants.LIMIT_BY_PROGRAM, false);
+        int teiLimit = provider.sharedPreferences().getInt(Constants.TEI_MAX, Constants.TEI_MAX_DEFAULT);
+        boolean limitByOU = provider.sharedPreferences().getBoolean(Constants.LIMIT_BY_ORG_UNIT, false);
+        boolean limitByProgram = provider.sharedPreferences().getBoolean(Constants.LIMIT_BY_PROGRAM, false);
         Completable.fromObservable(d2.trackedEntityModule().trackedEntityInstances.upload()).andThen(
         Completable.fromObservable(d2.trackedEntityModule()
                 .downloadTrackedEntityInstances(teiLimit, limitByOU, limitByProgram)
@@ -79,6 +80,11 @@ final class SyncPresenterImpl implements SyncPresenter {
         boolean eventsOk = d2.eventModule().events.byState().notIn(State.SYNCED).get().isEmpty();
         boolean teiOk = d2.trackedEntityModule().trackedEntityInstances.byState().notIn(State.SYNCED).get().isEmpty();
         return eventsOk && teiOk;
+    }
+
+    @Override
+    public SharePreferencesProvider getPreferences() {
+        return provider;
     }
 
     @Override

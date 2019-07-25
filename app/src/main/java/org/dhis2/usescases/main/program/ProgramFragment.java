@@ -27,6 +27,7 @@ import com.unnamed.b.atv.view.AndroidTreeView;
 import org.dhis2.BuildConfig;
 import org.dhis2.Components;
 import org.dhis2.R;
+import org.dhis2.data.sharedPreferences.SharePreferencesProvider;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.FragmentProgramBinding;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
@@ -76,6 +77,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
     private Period currentPeriod = NONE;
 
     private AndroidTreeView treeView;
+    private SharePreferencesProvider provider;
 
     private Date chosenDateDay = new Date();
     private ArrayList<Date> chosenDateWeek = new ArrayList<>();
@@ -437,6 +439,11 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
         ((MainActivity)context).startActivityForResult(ouTreeIntent, FilterManager.OU_TREE);
     }
 
+    @Override
+    public void setPreferences(SharePreferencesProvider preferences) {
+        this.provider = preferences;
+    }
+
 
     @Override
     public void apply() {
@@ -464,8 +471,6 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
 
     @Override
     public void setTutorial() {
-        SharedPreferences prefs = getAbstracContext().getSharedPreferences(
-                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
         try {
 
             if (getContext() != null && isAdded()) {
@@ -557,9 +562,9 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
 
                         HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
 
-                        if (!prefs.getBoolean(Constants.TUTORIAL_HOME, false) && !BuildConfig.DEBUG) {
+                        if (!provider.sharedPreferences().getBoolean(Constants.TUTORIAL_HOME, false) && !BuildConfig.DEBUG) {
                             HelpManager.getInstance().showHelp();
-                            prefs.edit().putBoolean(Constants.TUTORIAL_HOME, true).apply();
+                            provider.sharedPreferences().putBoolean(Constants.TUTORIAL_HOME, true);
                         }
                     }
 

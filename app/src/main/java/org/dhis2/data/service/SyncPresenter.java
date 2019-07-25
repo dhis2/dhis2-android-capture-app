@@ -2,6 +2,7 @@ package org.dhis2.data.service;
 
 import android.content.Context;
 
+import org.dhis2.data.sharedPreferences.SharePreferencesProvider;
 import org.hisp.dhis.android.core.arch.call.D2Progress;
 
 import androidx.annotation.NonNull;
@@ -20,6 +21,8 @@ interface SyncPresenter {
     void syncReservedValues();
 
     boolean checkSyncStatus();
+
+    SharePreferencesProvider getPreferences();
 
     Observable<D2Progress> syncGranularEvent(String eventUid);
 

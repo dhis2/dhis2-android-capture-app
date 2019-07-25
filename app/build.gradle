@@ -355,7 +355,6 @@ dependencies {
     implementation "de.adorsys.android:securestoragelibrary:${libraries.latestSecureStorageVersion}"
 
     implementation 'com.google.firebase:firebase-perf:16.2.3'
-
 }
 
 apply plugin: 'kotlin-kapt'

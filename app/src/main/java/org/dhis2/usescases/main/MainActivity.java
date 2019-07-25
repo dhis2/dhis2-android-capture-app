@@ -28,6 +28,7 @@ import com.andrognito.pinlockview.PinLockListener;
 
 import org.dhis2.App;
 import org.dhis2.R;
+import org.dhis2.data.sharedPreferences.SharePreferencesProvider;
 import org.dhis2.databinding.ActivityMainBinding;
 import org.dhis2.usescases.about.AboutFragment;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
@@ -62,8 +63,8 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
     ObservableInt currentFragment = new ObservableInt(R.id.menu_home);
     private boolean isPinLayoutVisible = false;
 
+    private SharePreferencesProvider provider;
     private int fragId;
-    private SharedPreferences prefs;
     private boolean backDropActive = false;
     private FiltersAdapter adapter;
 
@@ -109,8 +110,6 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
             changeFragment(R.id.menu_home);
         }
 
-        prefs = getAbstracContext().getSharedPreferences(
-                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
 
 
         adapter = new FiltersAdapter();
@@ -194,7 +193,7 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
 
     @Override
     public void onLockClick() {
-        if (prefs.getString("pin", null) == null) {
+        if (provider.sharedPreferences().getString("pin", null) == null) {
             binding.drawerLayout.closeDrawers();
             binding.pinLayout.getRoot().setVisibility(View.VISIBLE);
             isPinLayoutVisible = true;
@@ -279,6 +278,11 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
     @Override
     public void updateFilters(int totalFilters) {
         binding.setTotalFilters(totalFilters);
+    }
+
+    @Override
+    public void setPreferences(SharePreferencesProvider provider) {
+        this.provider = provider;
     }
 
     public void setTitle(String title) {

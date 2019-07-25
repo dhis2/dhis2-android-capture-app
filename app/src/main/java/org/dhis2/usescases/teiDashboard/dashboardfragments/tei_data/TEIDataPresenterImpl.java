@@ -11,6 +11,7 @@ import androidx.core.app.ActivityOptionsCompat;
 
 import org.dhis2.R;
 import org.dhis2.data.metadata.MetadataRepository;
+import org.dhis2.data.sharedPreferences.SharePreferencesProvider;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.qrCodes.QrActivity;
@@ -57,19 +58,22 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
     private TEIDataContracts.View view;
     private CompositeDisposable compositeDisposable;
     private DashboardProgramModel dashboardModel;
+    private SharePreferencesProvider provider;
 
     public TEIDataPresenterImpl(D2 d2, DashboardRepository dashboardRepository, MetadataRepository metadataRepository,
-                                String programUid, String teiUid) {
+                                String programUid, String teiUid, SharePreferencesProvider provider) {
         this.d2 = d2;
         this.metadataRepository = metadataRepository;
         this.dashboardRepository = dashboardRepository;
         this.programUid = programUid;
         this.teiUid = teiUid;
+        this.provider = provider;
     }
 
     @Override
     public void init(TEIDataContracts.View view) {
         this.view = view;
+        view.setPreference(provider);
         this.compositeDisposable = new CompositeDisposable();
 
         compositeDisposable.add(

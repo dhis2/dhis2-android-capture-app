@@ -20,6 +20,7 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.schedulers.SchedulerProvider;
+import org.dhis2.data.sharedPreferences.SharePreferencesProvider;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Quintet;
 import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryActivity;
@@ -71,6 +72,7 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     private final EventInitialRepository eventInitialRepository;
     private final EventSummaryRepository eventSummaryRepository;
     private final SchedulerProvider schedulerProvider;
+    private final SharePreferencesProvider provider;
     private FusedLocationProviderClient mFusedLocationClient;
     private String eventId;
 
@@ -84,17 +86,19 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     public EventInitialPresenter(@NonNull EventSummaryRepository eventSummaryRepository,
                                  @NonNull EventInitialRepository eventInitialRepository,
                                  @NonNull MetadataRepository metadataRepository,
-                                 @NonNull SchedulerProvider schedulerProvider, D2 d2) {
+                                 @NonNull SchedulerProvider schedulerProvider, D2 d2, SharePreferencesProvider provider) {
 
         this.metadataRepository = metadataRepository;
         this.eventInitialRepository = eventInitialRepository;
         this.eventSummaryRepository = eventSummaryRepository;
         this.schedulerProvider = schedulerProvider;
+        this.provider = provider;
     }
 
     @Override
     public void init(EventInitialContract.View mview, String programId, String eventId, String orgInitId, String programStageId) {
         view = mview;
+        view.setPreference(provider);
         this.eventId = eventId;
         this.programId = programId;
         this.programStageId = programStageId;

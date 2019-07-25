@@ -19,6 +19,7 @@ import com.airbnb.lottie.LottieDrawable;
 import org.dhis2.App;
 import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
+import org.dhis2.data.sharedPreferences.SharePreferencesProvider;
 import org.dhis2.databinding.ActivitySynchronizationBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.main.MainActivity;
@@ -40,6 +41,7 @@ public class SyncActivity extends ActivityGlobalAbstract implements SyncContract
     private boolean metadataDone;
     private boolean dataRunning;
     private boolean dataDone;
+    private SharePreferencesProvider provider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +69,7 @@ public class SyncActivity extends ActivityGlobalAbstract implements SyncContract
         binding = DataBindingUtil.setContentView(this, R.layout.activity_synchronization);
         binding.setPresenter(presenter);
         presenter.init(this);
-        presenter.syncMeta(getSharedPreferences().getInt(Constants.TIME_META, Constants.TIME_DAILY), Constants.META);
+        presenter.syncMeta(provider.sharedPreferences().getInt(Constants.TIME_META, Constants.TIME_DAILY), Constants.META);
     }
 
     private void handleMetaState(WorkInfo.State metadataState) {
@@ -82,7 +84,7 @@ public class SyncActivity extends ActivityGlobalAbstract implements SyncContract
                     binding.metadataText.setText(getString(R.string.configuration_ready));
                     Bindings.setDrawableEnd(binding.metadataText, AppCompatResources.getDrawable(this, R.drawable.animator_done));
                     presenter.getTheme();
-                    presenter.syncData(getSharedPreferences().getInt(Constants.TIME_DATA, Constants.TIME_DAILY), Constants.DATA);
+                    presenter.syncData(provider.sharedPreferences().getInt(Constants.TIME_DATA, Constants.TIME_DAILY), Constants.DATA);
                 }
                 break;
         }
@@ -132,9 +134,7 @@ public class SyncActivity extends ActivityGlobalAbstract implements SyncContract
 
     @Override
     public void saveTheme(Integer themeId) {
-        SharedPreferences prefs = getAbstracContext().getSharedPreferences(
-                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
-        prefs.edit().putInt(Constants.THEME, themeId).apply();
+         provider.sharedPreferences().putInt(Constants.THEME, themeId);
         setTheme(themeId);
 
         int startColor = ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY);
@@ -152,9 +152,7 @@ public class SyncActivity extends ActivityGlobalAbstract implements SyncContract
 
     @Override
     public void saveFlag(String s) {
-        SharedPreferences prefs = getAbstracContext().getSharedPreferences(
-                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
-        prefs.edit().putString("FLAG", s).apply();
+        provider.sharedPreferences().putString("FLAG", s);
 
         binding.logoFlag.setImageResource(getResources().getIdentifier(s, "drawable", getPackageName()));
         ValueAnimator alphaAnimator = ValueAnimator.ofFloat(0f, 1f);
@@ -165,6 +163,11 @@ public class SyncActivity extends ActivityGlobalAbstract implements SyncContract
         });
         alphaAnimator.start();
 
+    }
+
+    @Override
+    public void setPreferences(SharePreferencesProvider provider) {
+        this.provider = provider;
     }
 
 

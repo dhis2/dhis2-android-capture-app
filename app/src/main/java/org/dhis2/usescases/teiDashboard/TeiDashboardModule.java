@@ -11,6 +11,7 @@ import org.dhis2.data.forms.RulesRepository;
 import org.dhis2.data.forms.dataentry.EnrollmentRuleEngineRepository;
 import org.dhis2.data.forms.dataentry.RuleEngineRepository;
 import org.dhis2.data.metadata.MetadataRepository;
+import org.dhis2.data.sharedPreferences.SharePreferencesProvider;
 import org.dhis2.utils.CodeGenerator;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.enrollment.EnrollmentCollectionRepository;
@@ -46,8 +47,9 @@ public class TeiDashboardModule {
     @PerActivity
     TeiDashboardContracts.Presenter providePresenter(D2 d2, DashboardRepository dashboardRepository,
                                                      MetadataRepository metadataRepository,
-                                                     RuleEngineRepository ruleRepository) {
-        return new TeiDashboardPresenter(d2, dashboardRepository, metadataRepository, ruleRepository);
+                                                     RuleEngineRepository ruleRepository,
+                                                     SharePreferencesProvider provider) {
+        return new TeiDashboardPresenter(d2, dashboardRepository, metadataRepository, ruleRepository, provider);
     }
 
     @Provides

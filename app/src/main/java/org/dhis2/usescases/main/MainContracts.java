@@ -4,6 +4,7 @@ package org.dhis2.usescases.main;
 import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
 
+import org.dhis2.data.sharedPreferences.SharePreferencesProvider;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.hisp.dhis.android.core.imports.TrackerImportConflict;
 import org.hisp.dhis.android.core.maintenance.D2Error;
@@ -31,6 +32,8 @@ public final class MainContracts {
         void showSyncErrors(List<TrackerImportConflict> data);
 
         void updateFilters(int totalFilters);
+
+        void setPreferences(SharePreferencesProvider provider);
     }
 
     public interface Presenter {

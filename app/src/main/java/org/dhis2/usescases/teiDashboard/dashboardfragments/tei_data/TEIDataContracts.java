@@ -3,6 +3,7 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data;
 import android.content.Intent;
 import android.os.Bundle;
 
+import org.dhis2.data.sharedPreferences.SharePreferencesProvider;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import org.hisp.dhis.android.core.category.CategoryCombo;
@@ -52,6 +53,8 @@ public class TEIDataContracts {
         void openEventCapture(Intent intent);
 
         void showTeiImage(String fileName);
+
+        void setPreference(SharePreferencesProvider provider);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {

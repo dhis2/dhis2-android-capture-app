@@ -17,6 +17,7 @@ import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
+import org.dhis2.data.sharedPreferences.SharePreferencesProvider;
 import org.dhis2.databinding.FormEditTextCustomBinding;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.Preconditions;
@@ -47,9 +48,11 @@ final class EditTextCustomHolder extends FormViewHolder {
     private List<String> autoCompleteValues;
     private FormEditTextCustomBinding binding;
     private EditTextViewModel editTextModel;
+    private SharePreferencesProvider provider;
 
-    EditTextCustomHolder(FormEditTextCustomBinding binding, FlowableProcessor<RowAction> processor, boolean isSearchMode, MutableLiveData<String> currentSelection) {
+    EditTextCustomHolder(SharePreferencesProvider provider, FormEditTextCustomBinding binding, FlowableProcessor<RowAction> processor, boolean isSearchMode, MutableLiveData<String> currentSelection) {
         super(binding);
+        this.provider = provider;
         this.binding = binding;
         this.processor = processor;
         this.isSearchMode = isSearchMode;
@@ -140,12 +143,12 @@ final class EditTextCustomHolder extends FormViewHolder {
     private void saveListToPreference(String key, List<String> list) {
         Gson gson = new Gson();
         String json = gson.toJson(list);
-        binding.customEdittext.getContext().getSharedPreferences(Constants.SHARE_PREFS, MODE_PRIVATE).edit().putString(key, json).apply();
+        provider.sharedPreferences().putString(key, json);
     }
 
     private List<String> getListFromPreference(String key) {
         Gson gson = new Gson();
-        String json = binding.customEdittext.getContext().getSharedPreferences(Constants.SHARE_PREFS, MODE_PRIVATE).getString(key, "[]");
+        String json = provider.sharedPreferences().getString(key, "[]");
         Type type = new TypeToken<List<String>>() {
         }.getType();
 

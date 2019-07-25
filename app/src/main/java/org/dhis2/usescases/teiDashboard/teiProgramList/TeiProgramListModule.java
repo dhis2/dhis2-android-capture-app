@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.dagger.PerActivity;
+import org.dhis2.data.sharedPreferences.SharePreferencesProvider;
 import org.dhis2.utils.CodeGenerator;
 import org.hisp.dhis.android.core.D2;
 
@@ -33,8 +34,9 @@ public class TeiProgramListModule {
 
     @Provides
     @PerActivity
-    TeiProgramListContract.Presenter providesPresenter(TeiProgramListContract.Interactor interactor) {
-        return new TeiProgramListPresenter(interactor, teiUid);
+    TeiProgramListContract.Presenter providesPresenter(TeiProgramListContract.Interactor interactor,
+                                                       SharePreferencesProvider provider) {
+        return new TeiProgramListPresenter(interactor, teiUid, provider);
     }
 
     @Provides

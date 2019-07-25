@@ -11,6 +11,7 @@ import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import org.dhis2.data.sharedPreferences.SharePreferencesProvider;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.rules.RuleExpressionEvaluator;
 
@@ -44,8 +45,9 @@ public class EventSummaryModule {
 
     @Provides
     @PerActivity
-    EventSummaryContract.Presenter providesPresenter(EventSummaryContract.Interactor interactor) {
-        return new EventSummaryPresenter(interactor);
+    EventSummaryContract.Presenter providesPresenter(EventSummaryContract.Interactor interactor,
+                                                     SharePreferencesProvider provider) {
+        return new EventSummaryPresenter(interactor, provider);
     }
 
     @Provides

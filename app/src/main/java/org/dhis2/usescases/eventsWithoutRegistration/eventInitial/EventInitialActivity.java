@@ -35,6 +35,7 @@ import org.dhis2.R;
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel;
+import org.dhis2.data.sharedPreferences.SharePreferencesProvider;
 import org.dhis2.databinding.ActivityEventInitialBinding;
 import org.dhis2.databinding.CategorySelectorBinding;
 import org.dhis2.databinding.WidgetDatepickerBinding;
@@ -141,6 +142,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     private String savedLon;
     private ArrayList<String> sectionsToHide;
     private Boolean accessData;
+    private SharePreferencesProvider provider;
 
     public static Bundle getBundle(String programUid, String eventUid, String eventCreationType,
                                    String teiUid, PeriodType eventPeriodType, String orgUnit, String stageUid,
@@ -781,6 +783,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             savedLon = data.getStringExtra(MapSelectorActivity.LONGITUDE);
             setLocation(Double.valueOf(savedLat), Double.valueOf(savedLon));
         }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
@@ -883,6 +886,11 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     }
 
+    @Override
+    public void setPreference(SharePreferencesProvider provider) {
+        this.provider = provider;
+    }
+
     private int calculateCompletedFields(@NonNull List<FieldViewModel> updates) {
         int total = 0;
         for (FieldViewModel fieldViewModel : updates) {
@@ -982,9 +990,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     public void setTutorial() {
         super.setTutorial();
 
-        SharedPreferences prefs = getAbstracContext().getSharedPreferences(
-                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
-
         new Handler().postDelayed(() -> {
             ArrayList<FancyShowCaseView> steps = new ArrayList<>();
 
@@ -999,9 +1004,9 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
                 HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
 
-                if (!prefs.getBoolean("TUTO_EVENT_INITIAL_NEW", false) && !BuildConfig.DEBUG) {
+                if (!provider.sharedPreferences().getBoolean("TUTO_EVENT_INITIAL_NEW", false) && !BuildConfig.DEBUG) {
                     HelpManager.getInstance().showHelp();
-                    prefs.edit().putBoolean("TUTO_EVENT_INITIAL_NEW", true).apply();
+                    provider.sharedPreferences().putBoolean("TUTO_EVENT_INITIAL_NEW", true);
                 }
             } else {
 
@@ -1015,9 +1020,9 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
                 HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
 
-                if (!prefs.getBoolean("TUTO_EVENT_INITIAL", false) && !BuildConfig.DEBUG) {
+                if (!provider.sharedPreferences().getBoolean("TUTO_EVENT_INITIAL", false) && !BuildConfig.DEBUG) {
                     HelpManager.getInstance().showHelp();
-                    prefs.edit().putBoolean("TUTO_EVENT_INITIAL", true).apply();
+                    provider.sharedPreferences().putBoolean("TUTO_EVENT_INITIAL", true);
                 }
             }
 

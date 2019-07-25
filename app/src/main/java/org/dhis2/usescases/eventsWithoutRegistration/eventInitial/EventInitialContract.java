@@ -9,6 +9,7 @@ import com.unnamed.b.atv.model.TreeNode;
 
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
+import org.dhis2.data.sharedPreferences.SharePreferencesProvider;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.utils.EventCreationType;
 import org.hisp.dhis.android.core.category.CategoryCombo;
@@ -88,6 +89,8 @@ public class EventInitialContract {
         void latitudeWarning(boolean showWarning);
 
         void longitudeWarning(boolean showWarning);
+
+        void setPreference(SharePreferencesProvider provider);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {

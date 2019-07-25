@@ -32,6 +32,8 @@ import org.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerRow;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedRow;
+import org.dhis2.data.sharedPreferences.SharePreferencesProvider;
+import org.dhis2.data.sharedPreferences.SharePreferencesProviderImpl;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.utils.Constants;
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
@@ -85,6 +87,7 @@ public class FormAdapter extends RecyclerView.Adapter {
     private HashMap<String, String> queryData;
 
     public FormAdapter(FragmentManager fm, Context context) {
+        SharePreferencesProvider provider = new SharePreferencesProviderImpl(context);
         setHasStableIds(true);
         this.processor = PublishProcessor.create();
         this.processorOptionSet = PublishProcessor.create();
@@ -93,7 +96,7 @@ public class FormAdapter extends RecyclerView.Adapter {
         attributeList = new ArrayList<>();
         rows = new ArrayList<>();
 
-        rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, false, false));
+        rows.add(EDITTEXT, new EditTextRow(provider, layoutInflater, processor, false, false));
         rows.add(BUTTON, new FileRow(layoutInflater, processor, false));
         rows.add(CHECKBOX, new RadioButtonRow(layoutInflater, processor, false));
         rows.add(SPINNER, new SpinnerRow(layoutInflater, processor, processorOptionSet, false));
@@ -106,7 +109,7 @@ public class FormAdapter extends RecyclerView.Adapter {
         rows.add(ORG_UNIT, new OrgUnitRow(fm, layoutInflater, processor, false));
         rows.add(IMAGE, new ImageRow(layoutInflater, processor, null));
         rows.add(UNSUPPORTED, new UnsupportedRow(layoutInflater));
-        rows.add(LONG_TEXT, new EditTextRow(layoutInflater, processor, false, true));
+        rows.add(LONG_TEXT, new EditTextRow(provider, layoutInflater, processor, false, true));
     }
 
     @Override

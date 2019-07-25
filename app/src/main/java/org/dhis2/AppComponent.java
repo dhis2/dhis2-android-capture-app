@@ -6,6 +6,7 @@ import org.dhis2.data.qr.QRModule;
 import org.dhis2.data.schedulers.SchedulerModule;
 import org.dhis2.data.server.ServerComponent;
 import org.dhis2.data.server.ServerModule;
+import org.dhis2.data.sharedPreferences.SharedPreferencesModule;
 import org.dhis2.usescases.login.LoginComponent;
 import org.dhis2.usescases.login.LoginModule;
 import org.dhis2.usescases.splash.SplashComponent;
@@ -23,7 +24,7 @@ import dagger.Component;
  */
 @Singleton
 @Component(modules = {
-        AppModule.class, DbModule.class, SchedulerModule.class, UtilsModule.class, MetadataModule.class
+        AppModule.class, DbModule.class, SchedulerModule.class, UtilsModule.class, MetadataModule.class, SharedPreferencesModule.class
 })
 public interface AppComponent {
 
@@ -38,6 +39,8 @@ public interface AppComponent {
         Builder utilModule(UtilsModule utilsModule);
 
         Builder metadataModule(MetadataModule metadataModule);
+
+        Builder sharePrefsModule(SharedPreferencesModule sharedPreferencesModule);
 
         AppComponent build();
         //ter

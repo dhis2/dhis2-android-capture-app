@@ -5,6 +5,7 @@ import org.dhis2.data.server.ConfigurationRepository
 
 import dagger.Module
 import dagger.Provides
+import org.dhis2.data.sharedPreferences.SharePreferencesProvider
 
 /**
  * QUADRAM. Created by ppajuelo on 07/02/2018.
@@ -16,8 +17,9 @@ class LoginModule {
 
     @Provides
     @PerActivity
-    internal fun providePresenter(configurationRepository: ConfigurationRepository): LoginContracts.Presenter {
-        return LoginPresenter(configurationRepository)
+    internal fun providePresenter(configurationRepository: ConfigurationRepository,
+                                  sharePreferencesProvider: SharePreferencesProvider): LoginContracts.Presenter {
+        return LoginPresenter(configurationRepository,sharePreferencesProvider)
     }
 
 

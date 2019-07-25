@@ -16,6 +16,7 @@ import org.dhis2.R;
 import org.dhis2.data.forms.FormFragment;
 import org.dhis2.data.forms.FormViewArguments;
 import org.dhis2.data.metadata.MetadataRepository;
+import org.dhis2.data.sharedPreferences.SharePreferencesProvider;
 import org.dhis2.databinding.ActivityEventDetailBinding;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
@@ -61,6 +62,7 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
     EventDetailModel eventDetailModel;
     private String eventUid;
     private ObservableBoolean isEditable = new ObservableBoolean(false);
+    private SharePreferencesProvider provider;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -242,6 +244,11 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
     }
 
     @Override
+    public void setPreference(SharePreferencesProvider provider) {
+        this.provider = provider;
+    }
+
+    @Override
     public void onBackPressed() {
         presenter.back();
     }
@@ -249,9 +256,6 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
     @Override
     public void setTutorial() {
         super.setTutorial();
-
-        SharedPreferences prefs = getAbstracContext().getSharedPreferences(
-                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
 
         new Handler().postDelayed(() -> {
             FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
@@ -275,9 +279,9 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
 
             HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
 
-            if (!prefs.getBoolean("TUTO_TEI_EVENT", false) && !BuildConfig.DEBUG) {
+            if (!provider.sharedPreferences().getBoolean("TUTO_TEI_EVENT", false) && !BuildConfig.DEBUG) {
                 HelpManager.getInstance().showHelp();
-                prefs.edit().putBoolean("TUTO_TEI_EVENT", true).apply();
+                provider.sharedPreferences().putBoolean("TUTO_TEI_EVENT", true);
             }
 
         }, 500);
