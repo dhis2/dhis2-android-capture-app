@@ -35,7 +35,6 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.dhis2.App;
-import org.dhis2.BuildConfig;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.ProgramAdapter;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
@@ -43,10 +42,12 @@ import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.ActivitySearchBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
+import org.dhis2.usescases.main.program.ProgramFragment;
 import org.dhis2.usescases.searchTrackEntity.adapters.FormAdapter;
 import org.dhis2.usescases.searchTrackEntity.adapters.RelationshipLiveAdapter;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiLiveAdapter;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
+import org.dhis2.usescases.syncManager.SyncManagerFragment;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.HelpManager;
@@ -178,9 +179,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     public void setForm(List<TrackedEntityAttributeModel> trackedEntityAttributeModels, @Nullable ProgramModel program, HashMap<String, String> queryData) {
 
-        if (!HelpManager.getInstance().isTutorialReadyForScreen(getClass().getName()))
-            setTutorial();
-
         //TODO: refreshData for recycler
 
         //Form has been set.
@@ -206,9 +204,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     public void setTutorial() {
-        SharedPreferences prefs = getAbstracContext().getSharedPreferences(
-                "org.dhis2", Context.MODE_PRIVATE);
-
         new Handler().postDelayed(() -> {
             FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
                     .title(getString(R.string.tuto_search_1_v2))
@@ -243,10 +238,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
             HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
 
-            if (!prefs.getBoolean(Constants.TUTORIAL_SEARCH, false) && !BuildConfig.DEBUG) {
-                HelpManager.getInstance().showHelp();/* getAbstractActivity().fancyShowCaseQueue.show();*/
-                prefs.edit().putBoolean(Constants.TUTORIAL_SEARCH, true).apply();
-            }
+            HelpManager.getInstance().showHelp();
 
         }, 500);
     }
@@ -330,9 +322,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     ProgramModel selectedProgram = (ProgramModel) adapterView.getItemAtPosition(pos - 1);
                     setProgramColor(presenter.getProgramColor(selectedProgram.uid()));
                     presenter.setProgram((ProgramModel) adapterView.getItemAtPosition(pos - 1));
-                } else if (programModels.size() == 1){
+                } else if (programModels.size() == 1) {
                     presenter.setProgram(programModels.get(0));
-                }else
+                } else
                     presenter.setProgram(null);
             }
 
@@ -426,5 +418,10 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             binding.enrollmentButton.clearAnimation();
             hideKeyboard();
         }
+    }
+
+    @Override
+    public void showTutorial(boolean shaked) {
+        setTutorial();
     }
 }
