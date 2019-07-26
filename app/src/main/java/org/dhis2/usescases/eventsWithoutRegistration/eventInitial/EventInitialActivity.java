@@ -25,6 +25,7 @@ import androidx.core.view.GravityCompat;
 import androidx.core.view.ViewCompat;
 import androidx.databinding.DataBindingUtil;
 
+import com.jakewharton.rxbinding2.view.RxView;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
@@ -77,9 +78,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Consumer;
 import me.toptas.fancyshowcase.FancyShowCaseView;
 import timber.log.Timber;
@@ -142,6 +146,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     private ArrayList<String> sectionsToHide;
     private Boolean accessData;
 
+    private CompositeDisposable disposable;
+
     public static Bundle getBundle(String programUid, String eventUid, String eventCreationType,
                                    String teiUid, PeriodType eventPeriodType, String orgUnit, String stageUid,
                                    String enrollmentUid, int eventScheduleInterval, EnrollmentStatus enrollmentStatus) {
@@ -176,6 +182,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         programStageUid = getIntent().getStringExtra(Constants.PROGRAM_STAGE_UID);
         enrollmentStatus = (EnrollmentStatus) getIntent().getSerializableExtra(Constants.ENROLLMENT_STATUS);
         eventScheduleInterval = getIntent().getIntExtra(Constants.EVENT_SCHEDULE_INTERVAL, 0);
+        disposable = new CompositeDisposable();
 
         ((App) getApplicationContext()).userComponent().plus(new EventInitialModule(eventUid)).inject(this);
 
@@ -197,55 +204,58 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         }
 
         if (binding.actionButton != null) {
-            binding.actionButton.setOnClickListener(v -> {
-                String programStageModelUid = programStageModel == null ? "" : programStageModel.uid();
-                if (eventUid == null) { // This is a new Event
-                    if (eventCreationType == EventCreationType.REFERAL && tempCreate.equals(PERMANENT)) {
-                        presenter.scheduleEventPermanent(
-                                enrollmentUid,
-                                getTrackedEntityInstance,
-                                programStageModelUid,
-                                selectedDate,
-                                selectedOrgUnit,
-                                null,
-                                catOptionComboUid,
-                                isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? null : binding.lat.getText().toString(),
-                                isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? null : binding.lon.getText().toString()
-                        );
-                    } else if (eventCreationType == EventCreationType.SCHEDULE || eventCreationType == EventCreationType.REFERAL) {
-                        presenter.scheduleEvent(
-                                enrollmentUid,
-                                programStageModelUid,
-                                selectedDate,
-                                selectedOrgUnit,
-                                null,
-                                catOptionComboUid,
-                                isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? null : binding.lat.getText().toString(),
-                                isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? null : binding.lon.getText().toString()
-                        );
-                    } else {
-                        presenter.createEvent(
-                                enrollmentUid,
-                                programStageModelUid,
-                                selectedDate,
-                                selectedOrgUnit,
-                                null,
-                                catOptionComboUid,
-                                isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? null : binding.lat.getText().toString(),
-                                isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? null : binding.lon.getText().toString(),
-                                getTrackedEntityInstance);
-                    }
-                } else {
-                    presenter.editEvent(getTrackedEntityInstance,
-                            programStageModelUid,
-                            eventUid,
-                            DateUtils.databaseDateFormat().format(selectedDate), selectedOrgUnit, null,
-                            catOptionComboUid,
-                            isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? null : binding.lat.getText().toString(),
-                            isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? null : binding.lon.getText().toString()
-                    );
-                }
-            });
+            disposable.add(RxView.clicks(binding.actionButton)
+                    .debounce(300, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
+                    .subscribe(v -> {
+                                String programStageModelUid = programStageModel == null ? "" : programStageModel.uid();
+                                if (eventUid == null) { // This is a new Event
+                                    if (eventCreationType == EventCreationType.REFERAL && tempCreate.equals(PERMANENT)) {
+                                        presenter.scheduleEventPermanent(
+                                                enrollmentUid,
+                                                getTrackedEntityInstance,
+                                                programStageModelUid,
+                                                selectedDate,
+                                                selectedOrgUnit,
+                                                null,
+                                                catOptionComboUid,
+                                                isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? null : binding.lat.getText().toString(),
+                                                isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? null : binding.lon.getText().toString()
+                                        );
+                                    } else if (eventCreationType == EventCreationType.SCHEDULE || eventCreationType == EventCreationType.REFERAL) {
+                                        presenter.scheduleEvent(
+                                                enrollmentUid,
+                                                programStageModelUid,
+                                                selectedDate,
+                                                selectedOrgUnit,
+                                                null,
+                                                catOptionComboUid,
+                                                isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? null : binding.lat.getText().toString(),
+                                                isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? null : binding.lon.getText().toString()
+                                        );
+                                    } else {
+                                        presenter.createEvent(
+                                                enrollmentUid,
+                                                programStageModelUid,
+                                                selectedDate,
+                                                selectedOrgUnit,
+                                                null,
+                                                catOptionComboUid,
+                                                isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? null : binding.lat.getText().toString(),
+                                                isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? null : binding.lon.getText().toString(),
+                                                getTrackedEntityInstance);
+                                    }
+                                } else {
+                                    presenter.editEvent(getTrackedEntityInstance,
+                                            programStageModelUid,
+                                            eventUid,
+                                            DateUtils.databaseDateFormat().format(selectedDate), selectedOrgUnit, null,
+                                            catOptionComboUid,
+                                            isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? null : binding.lat.getText().toString(),
+                                            isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? null : binding.lon.getText().toString()
+                                    );
+                                }
+                            },
+                            Timber::e));
         }
     }
 
@@ -292,6 +302,12 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     protected void onPause() {
         presenter.onDettach();
         super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        disposable.dispose();
+        super.onDestroy();
     }
 
     private void initProgressBar() {
