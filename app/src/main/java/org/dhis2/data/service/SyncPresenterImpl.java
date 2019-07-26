@@ -7,9 +7,13 @@ import org.dhis2.utils.Constants;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.call.D2Progress;
 import org.hisp.dhis.android.core.common.State;
+import org.hisp.dhis.android.core.datavalue.DataSetReport;
+import org.hisp.dhis.android.core.imports.TrackerImportConflict;
+import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramType;
 
 import java.util.Collections;
+import java.util.List;
 
 import androidx.annotation.NonNull;
 import io.reactivex.Completable;
@@ -122,5 +126,58 @@ final class SyncPresenterImpl implements SyncPresenter {
                 .byOrganisationUnitUid().eq(orgUnit)
                 .byPeriod().eq(period)
                 .upload();
+    }
+
+    @Override
+    public boolean checkSyncEventStatus(String uid) {
+        return d2.eventModule().events.byUid().eq(uid).byState().notIn(State.SYNCED).get().isEmpty();
+    }
+
+    @Override
+    public boolean checkSyncTEIStatus(String uid) {
+        return d2.trackedEntityModule().trackedEntityInstances.byUid().eq(uid).byState().notIn(State.SYNCED).get().isEmpty();
+    }
+
+    @Override
+    public boolean checkSyncDataValueStatus(String orgUnit, String attributeOptionCombo, String period) {
+        return d2.dataValueModule().dataValues.byPeriod().eq(period)
+                .byOrganisationUnitUid().eq(orgUnit)
+                .byAttributeOptionComboUid().eq(attributeOptionCombo)
+                .get().isEmpty();
+    }
+
+    @Override
+    public boolean checkSyncProgramStatus(String uid) {
+        Program program = d2.programModule().programs.uid(uid).get();
+
+        if(program.programType() == ProgramType.WITH_REGISTRATION)
+            return d2.trackedEntityModule().trackedEntityInstances.byProgramUids(Collections.singletonList(uid)).get().isEmpty();
+        else
+            return d2.eventModule().events.byProgramUid().eq(uid).get().isEmpty();
+
+    }
+
+    @Override
+    public boolean checkSyncDataSetStatus(String uid) {
+        DataSetReport dataSetReport = d2.dataValueModule().dataSetReports.byDataSetUid().eq(uid).one().get();
+
+        return d2.dataValueModule().dataValues
+                .byOrganisationUnitUid().eq(dataSetReport.attributeOptionComboUid())
+                .byPeriod().eq(dataSetReport.period())
+                .byAttributeOptionComboUid().eq(dataSetReport.attributeOptionComboUid())
+                .get().isEmpty();
+    }
+
+    @Override
+    public List<TrackerImportConflict> messageTrackerImportConflict(String uid) {
+        List<TrackerImportConflict> trackerImportConflicts = d2.importModule().trackerImportConflicts.byTrackedEntityInstanceUid().eq(uid).get();
+        if(trackerImportConflicts != null && !trackerImportConflicts.isEmpty())
+            return trackerImportConflicts;
+
+        trackerImportConflicts = d2.importModule().trackerImportConflicts.byEventUid().eq(uid).get();
+        if(trackerImportConflicts != null && !trackerImportConflicts.isEmpty())
+            return trackerImportConflicts;
+
+        return null;
     }
 }
