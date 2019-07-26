@@ -160,6 +160,9 @@ final class EnrollmentRepository implements DataEntryRepository {
             dataValue = optionCodeName;
         }
 
+        if(valueType == ValueType.IMAGE)
+            uid = d2.enrollmentModule().enrollments.uid(enrollment).get().trackedEntityInstance()+"_"+uid;
+
         int optionCount = 0;
         if (!isEmpty(optionSet))
             try (Cursor countCursor = briteDatabase.query("SELECT COUNT (uid) FROM Option WHERE optionSet = ?", optionSet)) {

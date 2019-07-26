@@ -4,6 +4,8 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 
+import androidx.core.app.ActivityCompat;
+
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 
@@ -13,6 +15,7 @@ import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import org.dhis2.usescases.teiDashboard.DashboardRepository;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
+import org.dhis2.utils.FileResourcesUtil;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 
 import androidx.core.app.ActivityCompat;
@@ -105,6 +108,16 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
                             Timber::d)
             );
         }
+
+        disposable.add(dashboardRepository.getAttributeImage(uid)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        view::showTeiImage,
+                        Timber::e
+                )
+        );
+
     }
 
     @Override

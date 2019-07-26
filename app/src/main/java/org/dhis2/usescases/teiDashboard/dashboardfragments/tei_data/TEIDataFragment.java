@@ -18,6 +18,9 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CircleCrop;
+
 import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.databinding.FragmentTeiDataBinding;
@@ -30,6 +33,7 @@ import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.EventCreationType;
+import org.dhis2.utils.FileResourcesUtil;
 import org.dhis2.utils.custom_views.CategoryComboDialog;
 import org.dhis2.utils.custom_views.CustomDialog;
 import org.hisp.dhis.android.core.category.CategoryCombo;
@@ -38,6 +42,7 @@ import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,6 +52,7 @@ import io.reactivex.Single;
 import io.reactivex.functions.Consumer;
 
 import static android.app.Activity.RESULT_OK;
+import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
 import static org.dhis2.utils.Constants.ENROLLMENT_UID;
 import static org.dhis2.utils.Constants.EVENT_CREATION_TYPE;
 import static org.dhis2.utils.Constants.EVENT_SCHEDULE_INTERVAL;
@@ -399,5 +405,17 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     @Override
     public void openEventCapture(Intent intent) {
         this.startActivityForResult(intent, REQ_EVENT, null);
+    }
+
+    @Override
+    public void showTeiImage(String fileName) {
+        File file = FileResourcesUtil.getFileForAttribute(context, fileName);
+        Glide.with(this)
+                .load(file)
+                .placeholder(R.drawable.photo_temp_gray)
+                .error(R.drawable.photo_temp_gray)
+                .transition(withCrossFade())
+                .transform(new CircleCrop())
+                .into(binding.cardFront.teiImage);
     }
 }

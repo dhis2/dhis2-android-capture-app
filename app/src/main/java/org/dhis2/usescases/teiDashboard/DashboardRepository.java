@@ -1,6 +1,7 @@
 package org.dhis2.usescases.teiDashboard;
 
 import android.content.Context;
+
 import androidx.annotation.NonNull;
 
 import org.dhis2.data.tuples.Pair;
@@ -67,9 +68,11 @@ public interface DashboardRepository {
 
     Integer getObjectStyle(Context context, String uid);
 
-    Observable<List<Pair<RelationshipTypeModel,String>>> relationshipsForTeiType(String teType);
+    Observable<List<Pair<RelationshipTypeModel, String>>> relationshipsForTeiType(String teType);
 
     Observable<CategoryCombo> catComboForProgram(String program);
 
     void setDefaultCatOptCombToEvent(String eventUid);
+
+    Observable<String> getAttributeImage(String uid);
 }

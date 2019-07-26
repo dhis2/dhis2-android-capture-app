@@ -135,10 +135,11 @@ public class SearchRepositoryImpl implements SearchRepository {
     @NonNull
     @Override
     public LiveData<PagedList<SearchTeiModel>> searchTrackedEntitiesOffline(@Nullable Program selectedProgram,
+                                                                            @NonNull String trackedEntityType,
                                                                             @NonNull List<String> orgUnits,
                                                                             @Nullable HashMap<String, String> queryData) {
 
-        TrackedEntityInstanceQuery.Builder queryBuilder = setQueryBuilder(selectedProgram, orgUnits);
+        TrackedEntityInstanceQuery.Builder queryBuilder = setQueryBuilder(selectedProgram, trackedEntityType, orgUnits);
         if (queryData != null && !isEmpty(queryData.get(Constants.ENROLLMENT_DATE_UID))) {
             try {
                 Date enrollmentDate = DateUtils.uiDateFormat().parse(queryData.get(Constants.ENROLLMENT_DATE_UID));
@@ -166,10 +167,11 @@ public class SearchRepositoryImpl implements SearchRepository {
     @NonNull
     @Override
     public LiveData<PagedList<SearchTeiModel>> searchTrackedEntitiesAll(@Nullable Program selectedProgram,
+                                                                        @NonNull String trackedEntityType,
                                                                         @NonNull List<String> orgUnits,
                                                                         @Nullable HashMap<String, String> queryData) {
 
-        TrackedEntityInstanceQuery.Builder queryBuilder = setQueryBuilder(selectedProgram, orgUnits);
+        TrackedEntityInstanceQuery.Builder queryBuilder = setQueryBuilder(selectedProgram, trackedEntityType, orgUnits);
         if (queryData != null && !isEmpty(queryData.get(Constants.ENROLLMENT_DATE_UID))) {
             try {
                 Date enrollmentDate = DateUtils.uiDateFormat().parse(queryData.get(Constants.ENROLLMENT_DATE_UID));
@@ -378,7 +380,11 @@ public class SearchRepositoryImpl implements SearchRepository {
     @Override
     public String getProgramColor(@NonNull String programUid) {
         Program program = d2.programModule().programs.withStyle().byUid().eq(programUid).one().get();
-        return program.style() != null && program.style().color() != null ? program.style().color() : "";
+        return program.style() != null ?
+                program.style().color() != null ?
+                        program.style().color() :
+                        "" :
+                "";
     }
 
     @Override
@@ -397,10 +403,12 @@ public class SearchRepositoryImpl implements SearchRepository {
     }
 
     // Private Region Start //
-    private TrackedEntityInstanceQuery.Builder setQueryBuilder(@Nullable Program selectedProgram, @NonNull List<String> orgUnits) {
+    private TrackedEntityInstanceQuery.Builder setQueryBuilder(@Nullable Program selectedProgram, @NonNull String trackedEntityType, @NonNull List<String> orgUnits) {
         TrackedEntityInstanceQuery.Builder builder = TrackedEntityInstanceQuery.builder();
         if (selectedProgram != null)
             builder.program(selectedProgram.uid());
+        else
+            builder.trackedEntityType(trackedEntityType);
         builder.orgUnits(orgUnits);
         builder.orgUnitMode(OrganisationUnitMode.ACCESSIBLE.ACCESSIBLE);
         builder.pageSize(50);

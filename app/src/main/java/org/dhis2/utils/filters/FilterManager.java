@@ -134,4 +134,29 @@ public class FilterManager {
     public List<State> getStateFilters() {
         return stateFilters;
     }
+
+    public void removeAll() {
+        ouFilters = new ArrayList<>();
+        ouFiltersApplied.set(ouFilters.size());
+        filterProcessor.onNext(this);
+    }
+
+    public void addIfCan(OrganisationUnit content, boolean b) {
+        if (!b) {
+            if (ouFilters.contains(content)) {
+                ouFilters.remove(content);
+            }
+        } else {
+            if (ouFilters.contains(content)) {
+                ouFilters.remove(content);
+            }
+            ouFilters.add(content);
+        }
+        ouFiltersApplied.set(ouFilters.size());
+        filterProcessor.onNext(this);
+    }
+
+    public boolean exist(OrganisationUnit content) {
+        return ouFilters.contains(content);
+    }
 }

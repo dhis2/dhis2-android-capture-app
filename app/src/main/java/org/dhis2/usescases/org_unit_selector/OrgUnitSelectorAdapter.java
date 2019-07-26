@@ -4,19 +4,22 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.dhis2.databinding.ItemOuTreeBinding;
+import org.dhis2.utils.filters.FilterManager;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 
+import java.util.ArrayList;
 import java.util.List;
 
 class OrgUnitSelectorAdapter extends RecyclerView.Adapter<OrgUnitSelectorHolder> {
-    private final List<OrganisationUnit> orgUnits;
+    private List<TreeNode> treeNodes;
     private final OnOrgUnitClick listener;
 
-    public OrgUnitSelectorAdapter(List<OrganisationUnit> organisationUnits, OnOrgUnitClick ouClickListener) {
-        this.orgUnits = organisationUnits;
+    public OrgUnitSelectorAdapter(List<TreeNode> organisationUnits, OnOrgUnitClick ouClickListener) {
+        this.treeNodes = organisationUnits;
         this.listener = ouClickListener;
     }
 
@@ -30,26 +33,56 @@ class OrgUnitSelectorAdapter extends RecyclerView.Adapter<OrgUnitSelectorHolder>
 
     @Override
     public void onBindViewHolder(@NonNull OrgUnitSelectorHolder holder, int position) {
-        holder.bind(orgUnits.get(position));
-        holder.itemView.setOnClickListener(view -> listener.onOrgUnitClick(orgUnits.get(position), position));
+        holder.bind(treeNodes.get(holder.getAdapterPosition()));
+        holder.itemView.setOnClickListener(view -> {
+                    if (treeNodes.size() > holder.getAdapterPosition() &&
+                    holder.getAdapterPosition() >= 0)
+                        listener.onOrgUnitClick(treeNodes.get(holder.getAdapterPosition()), holder.getAdapterPosition());
+                }
+        );
     }
 
-    public void addOrgUnits(int location, List<OrganisationUnit> organisationUnits) {
-        if (orgUnits.containsAll(organisationUnits)) {
-            orgUnits.removeAll(organisationUnits);
-            notifyItemRangeRemoved(location + 1, organisationUnits.size());
+    public void addOrgUnits(int location, List<TreeNode> nodes) {
+        List<TreeNode> nodesCopy = new ArrayList<>(treeNodes);
+        nodesCopy.get(location).setOpen(!nodesCopy.get(location).isOpen());
+        notifyItemChanged(location);
+        if (!nodesCopy.get(location).isOpen()) {
+            TreeNode parent = nodesCopy.get(location);
+            List<TreeNode> deleteList = new ArrayList<>();
+            boolean sameLevel = true;
+            for (int i = location + 1; i < nodesCopy.size(); i++) {
+                if (sameLevel)
+                    if (nodesCopy.get(i).getLevel() > parent.getLevel()) {
+                        deleteList.add(nodesCopy.get(i));
+                    } else {
+                        sameLevel = false;
+                    }
+            }
+            nodesCopy.removeAll(deleteList);
         } else {
-            orgUnits.addAll(location + 1, organisationUnits);
-            notifyItemRangeInserted(location + 1, organisationUnits.size());
+            nodesCopy.addAll(location + 1, nodes);
         }
+
+        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new TreeNodeCallback(treeNodes, nodesCopy));
+        diffResult.dispatchUpdatesTo(this);
+        treeNodes.clear();
+        treeNodes.addAll(nodesCopy);
     }
 
     @Override
     public int getItemCount() {
-        return orgUnits.size();
+        return treeNodes.size();
+    }
+
+    public void clearAll() {
+        FilterManager.getInstance().removeAll();
+        for (TreeNode treeNode:treeNodes) {
+            treeNode.setChecked(false);
+        }
+        notifyDataSetChanged();
     }
 
     public interface OnOrgUnitClick {
-        void onOrgUnitClick(OrganisationUnit organisationUnit, int position);
+        void onOrgUnitClick(TreeNode treeNode, int position);
     }
 }

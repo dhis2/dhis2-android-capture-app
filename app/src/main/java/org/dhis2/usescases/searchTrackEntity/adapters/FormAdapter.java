@@ -116,6 +116,13 @@ public class FormAdapter extends RecyclerView.Adapter {
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+
+        int attrPosition;
+        if(programData==-1)
+            attrPosition = holder.getAdapterPosition();
+        else
+            attrPosition = holder.getAdapterPosition() - programData;
+
         FieldViewModel viewModel;
         if (position == 0 && programData != -1) {
             viewModel = DateTimeViewModel.create(
@@ -131,7 +138,7 @@ public class FormAdapter extends RecyclerView.Adapter {
                     ObjectStyleModel.builder().build());
 
         } else {
-            TrackedEntityAttribute attr = attributeList.get(holder.getAdapterPosition() - programData);
+            TrackedEntityAttribute attr = attributeList.get(attrPosition);
             //String label = attr.displayShortName() != null ? attr.displayShortName() : attr.displayName();
             String label = attr.displayName();
             switch (holder.getItemViewType()) {
@@ -177,15 +184,25 @@ public class FormAdapter extends RecyclerView.Adapter {
 
     @Override
     public int getItemCount() {
-        return attributeList != null ? attributeList.size() + programData : programData;
+        if (programData != -1)
+            return attributeList != null ? attributeList.size() + programData : programData;
+        else
+            return attributeList != null ? attributeList.size() : 0;
     }
 
     @Override
     public long getItemId(int position) {
+
+        int attrPosition;
+        if(programData==-1)
+            attrPosition = position;
+        else
+            attrPosition = position - programData;
+
         if (position < programData) {
             return position == 0 ? ENROLLMENT_DATE_ID : INCIDENT_DATE_ID;
         } else {
-            return attributeList.get(position - programData).uid().hashCode();
+            return attributeList.get(attrPosition).uid().hashCode();
         }
     }
 
@@ -195,10 +212,16 @@ public class FormAdapter extends RecyclerView.Adapter {
         if (position == 0 && programData != -1)
             return DATE;
 
-        if (attributeList.get(position - programData).optionSet() != null)
+        int attrPosition;
+        if(programData==-1)
+            attrPosition = position;
+        else
+            attrPosition = position - programData;
+
+        if (attributeList.get(attrPosition).optionSet() != null)
             return SPINNER;
         else {
-            switch (attributeList.get(position - programData).valueType()) {
+            switch (attributeList.get(attrPosition).valueType()) {
                 case AGE:
                     return AGEVIEW;
                 case TEXT:
