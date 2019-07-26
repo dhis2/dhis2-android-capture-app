@@ -3,6 +3,9 @@ package org.dhis2.data.service;
 import android.content.Context;
 
 import org.hisp.dhis.android.core.arch.call.D2Progress;
+import org.hisp.dhis.android.core.imports.TrackerImportConflict;
+
+import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
@@ -30,4 +33,16 @@ interface SyncPresenter {
     Observable<D2Progress> syncGranularDataSet(String uid);
 
     Observable<D2Progress> syncGranularDataValues(String orgUnit, String attributeOptionCombo, String period);
+
+    boolean checkSyncEventStatus(String uid);
+
+    boolean checkSyncTEIStatus(String uid);
+
+    boolean checkSyncDataValueStatus(String orgUnit, String attributeOptionCombo, String period);
+
+    boolean checkSyncProgramStatus(String uid);
+
+    boolean checkSyncDataSetStatus(String uid);
+
+    List<TrackerImportConflict> messageTrackerImportConflict(String uid);
 }
