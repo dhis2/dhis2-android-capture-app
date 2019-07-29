@@ -446,7 +446,7 @@
     <string name="biometrics_first_use_text">Para poder iniciar sesión por huella dactilar debe entrar primero por el modo normal</string>
     <string name="biometrics_security_title">Seguridad biométrica</string>
     <string name="biometrics_security_text">Usar huella dactilar para acceder con este usuario?</string>
-    <string name="login_https">https://|</string>
+    <string name="login_https">https://</string>
     <string name="delete_local_data_message">Los datos no sincronizados se perderán. Continuar?</string>
     <string name="local_data_accept">Aceptar</string>
     <string name="delete_local_data_error">Los datos no se pudieron borrar. Inténtelo de nuevo.</string>
