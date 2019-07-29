@@ -42,7 +42,7 @@ import org.dhis2.databinding.ActivityProgramEventDetailBinding;
 import org.dhis2.databinding.CatCombFilterBinding;
 import org.dhis2.databinding.WidgetDatepickerBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
-import org.dhis2.usescases.main.program.OrgUnitHolder;
+import org.dhis2.usescases.main.program.OrgUnitHolder_2;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.HelpManager;
@@ -50,7 +50,7 @@ import org.dhis2.utils.Period;
 import org.dhis2.utils.custom_views.RxDateDialog;
 import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryOption;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 
 import java.text.SimpleDateFormat;
@@ -394,14 +394,14 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         binding.orgUnitAll.setOnClickListener(view -> {
             treeView.selectAll(false);
             for (TreeNode node : treeView.getSelected()) {
-                ((OrgUnitHolder) node.getViewHolder()).check();
+                ((OrgUnitHolder_2) node.getViewHolder()).check();
             }
         });
 
         binding.orgUnitUnselectAll.setOnClickListener(view -> {
             for (TreeNode node : treeView.getSelected()) {
-                ((OrgUnitHolder) node.getViewHolder()).uncheck();
-                ((OrgUnitHolder) node.getViewHolder()).update();
+                ((OrgUnitHolder_2) node.getViewHolder()).uncheck();
+                ((OrgUnitHolder_2) node.getViewHolder()).update();
             }
             treeView.deselectAll();
             binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
@@ -424,7 +424,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                 binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
 
                 if (node.getChildren().isEmpty())
-                    presenter.onExpandOrgUnitNode(node, ((OrganisationUnitModel) node.getValue()).uid());
+                    presenter.onExpandOrgUnitNode(node, ((OrganisationUnit) node.getValue()).uid());
                 else
                     node.setExpanded(node.isExpanded());
             }
@@ -562,7 +562,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
             List<String> orgUnitsUids = new ArrayList<>();
             for (TreeNode treeNode : treeView.getSelected()) {
-                orgUnitsUids.add(((OrganisationUnitModel) treeNode.getValue()).uid());
+                orgUnitsUids.add(((OrganisationUnit) treeNode.getValue()).uid());
             }
 
             if (treeView.getSelected().size() >= 1) {

@@ -9,6 +9,7 @@ import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.period.DatePeriod;
 import org.hisp.dhis.android.core.program.Program;
@@ -79,17 +80,11 @@ public class ProgramEventDetailContract {
 
         void onBackClick();
 
-        void setProgram(ProgramModel program);
-
-        void onCatComboSelected(CategoryOptionComboModel categoryOptionComboModel);
-
-        void clearCatComboFilters();
-
         void onEventClick(String eventId, String orgUnit);
 
         void showFilter();
 
-        List<OrganisationUnitModel> getOrgUnits();
+        List<OrganisationUnit> getOrgUnits();
 
         void onExpandOrgUnitNode(TreeNode node, String uid);
 

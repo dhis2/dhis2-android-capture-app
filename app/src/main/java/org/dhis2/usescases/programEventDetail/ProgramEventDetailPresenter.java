@@ -17,9 +17,8 @@ import org.dhis2.utils.Period;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.period.DatePeriod;
-import org.hisp.dhis.android.core.program.ProgramModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,10 +44,9 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
 
     private final ProgramEventDetailRepository eventRepository;
     private ProgramEventDetailContract.View view;
-    protected ProgramModel program;
     protected String programId;
     private CompositeDisposable compositeDisposable;
-    private List<OrganisationUnitModel> orgUnits = new ArrayList<>();
+    private List<OrganisationUnit> orgUnits = new ArrayList<>();
     private FlowableProcessor<Pair<TreeNode, String>> parentOrgUnit;
     private FlowableProcessor<Trio<List<DatePeriod>, List<String>, List<CategoryOptionCombo>>> programQueries;
 
@@ -128,7 +126,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
         compositeDisposable.add(
                 parentOrgUnit
                         .flatMap(orgUnit -> eventRepository.orgUnits(orgUnit.val1()).toFlowable(BackpressureStrategy.LATEST)
-                                .map(orgUnits1 -> OrgUnitUtils.createNode(view.getContext(), orgUnits, true))
+                                .map(orgUnits1 -> OrgUnitUtils.createNode_2(view.getContext(), orgUnits, true))
                                 .map(nodeList -> Pair.create(orgUnit.val0(), nodeList)))
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
@@ -188,20 +186,14 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                                     data -> {
                                         this.orgUnits = data;
                                         view.orgUnitProgress(false);
-                                        view.addTree(OrgUnitUtils.renderTree(view.getContext(), orgUnits, true));
+                                        view.addTree(OrgUnitUtils.renderTree_2(view.getContext(), orgUnits, true));
                                     },
                                     throwable -> view.renderError(throwable.getMessage())));
         }
     }
 
     @Override
-    public void setProgram(ProgramModel program) {
-
-        this.program = program;
-    }
-
-    @Override
-    public List<OrganisationUnitModel> getOrgUnits() {
+    public List<OrganisationUnit> getOrgUnits() {
         return this.orgUnits;
     }
 
@@ -214,16 +206,6 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     @Override
     public void onSyncIconClick(String uid) {
         view.showSyncDialog(uid, SyncStatusDialog.ConflictType.EVENT, processorDismissDialog);
-    }
-
-    @Override
-    public void onCatComboSelected(CategoryOptionComboModel categoryOptionComboModel) {
-
-    }
-
-    @Override
-    public void clearCatComboFilters() {
-
     }
 
     @Override
