@@ -182,8 +182,6 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
         else
             initSet.connect(R.id.fragment_container, ConstraintSet.TOP, R.id.toolbar, ConstraintSet.BOTTOM, 0);
         initSet.applyTo(binding.backdropLayout);
-       /* programFragment.getBinding().filterLayout.setVisibility(programFragment.getBinding().filterLayout.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
-        checkFilterEnabled();*/
     }
 
     private void checkFilterEnabled() {

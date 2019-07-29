@@ -52,41 +52,41 @@ public class OUTreeActivity extends ActivityGlobalAbstract implements OrgUnitSel
 
         compositeDisposable.add(
                 onStartSearch
-                .flatMap(e -> d2.organisationUnitModule().organisationUnits
-                        .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_TEI_SEARCH)
-                        .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
-                        .byRootOrganisationUnit(true)
-                        .getAsync().toFlowable()
-                        .map(list -> {
-                            int minLevel = list.get(0).level();
-                            for (OrganisationUnit ou : list)
-                                minLevel = ou.level() < minLevel ? ou.level() : minLevel;
-                            Iterator<OrganisationUnit> it = list.iterator();
-                            while (it.hasNext()) {
-                                if (it.next().level() > minLevel)
-                                    it.remove();
-                            }
-                            return list;
-                        })
-                        .map(organisationUnits->{
-                            List<TreeNode> nodes = new ArrayList<>();
-                            for (OrganisationUnit org: organisationUnits) {
-                                nodes.add(new TreeNode(org,
-                                        false,
-                                        !d2.organisationUnitModule().organisationUnits.byParentUid().eq(org.uid()).isEmpty(),
-                                        FilterManager.getInstance().getOrgUnitFilters().contains(org),
-                                        org.level()));
-                            }
-                            return nodes;
-                        }))
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        organisationUnits ->
-                            binding.orgUnitRecycler.setAdapter(
-                                    new OrgUnitSelectorAdapter(organisationUnits, this)),
-                        Timber::e
-                )
+                        .flatMap(e -> d2.organisationUnitModule().organisationUnits
+                                .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_TEI_SEARCH)
+                                .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
+                                .byRootOrganisationUnit(true)
+                                .getAsync().toFlowable()
+                                .map(list -> {
+                                    int minLevel = list.get(0).level();
+                                    for (OrganisationUnit ou : list)
+                                        minLevel = ou.level() < minLevel ? ou.level() : minLevel;
+                                    Iterator<OrganisationUnit> it = list.iterator();
+                                    while (it.hasNext()) {
+                                        if (it.next().level() > minLevel)
+                                            it.remove();
+                                    }
+                                    return list;
+                                })
+                                .map(organisationUnits -> {
+                                    List<TreeNode> nodes = new ArrayList<>();
+                                    for (OrganisationUnit org : organisationUnits) {
+                                        nodes.add(new TreeNode(org,
+                                                false,
+                                                !d2.organisationUnitModule().organisationUnits.byParentUid().eq(org.uid()).isEmpty(),
+                                                FilterManager.getInstance().getOrgUnitFilters().contains(org),
+                                                org.level()));
+                                    }
+                                    return nodes;
+                                }))
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                organisationUnits ->
+                                        binding.orgUnitRecycler.setAdapter(
+                                                new OrgUnitSelectorAdapter(organisationUnits, this)),
+                                Timber::e
+                        )
         );
 
         compositeDisposable.add(
@@ -100,16 +100,16 @@ public class OUTreeActivity extends ActivityGlobalAbstract implements OrgUnitSel
                                         .getAsync().toFlowable()
                                         .map(ouList -> Pair.create(parentOu.val0(), ouList)))
                         .filter(list -> binding.orgUnitRecycler.getAdapter() != null)
-                        .map(organisationUnits->{
+                        .map(organisationUnits -> {
                             List<TreeNode> nodes = new ArrayList<>();
-                            for (OrganisationUnit org: organisationUnits.val1()) {
+                            for (OrganisationUnit org : organisationUnits.val1()) {
                                 nodes.add(new TreeNode(org,
                                         false,
                                         !d2.organisationUnitModule().organisationUnits.byParentUid().eq(org.uid()).isEmpty(),
                                         FilterManager.getInstance().getOrgUnitFilters().contains(org),
                                         org.level()));
                             }
-                            return Pair.create(organisationUnits.val0(),nodes);
+                            return Pair.create(organisationUnits.val0(), nodes);
                         })
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
@@ -126,25 +126,23 @@ public class OUTreeActivity extends ActivityGlobalAbstract implements OrgUnitSel
                         .filter(name ->
                                 name.length() > 3
                         )
-                        .flatMap(name -> {
-                            return d2.organisationUnitModule().organisationUnits
-                                    .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_TEI_SEARCH)
-                                    .byDisplayName().like("%" + name + "%")
-                                    .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
-                                    .getAsync().toFlowable();
-                        })
+                        .flatMap(name -> d2.organisationUnitModule().organisationUnits
+                                .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_TEI_SEARCH)
+                                .byDisplayName().like("%" + name + "%")
+                                .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
+                                .getAsync().toFlowable())
                         .filter(name -> binding.orgUnitRecycler.getAdapter() != null)
-                        .map(organisationUnits->{
+                        .map(organisationUnits -> {
                             List<TreeNode> nodes = new ArrayList<>();
                             List<String> orderedList = new ArrayList<>();
-                            for (OrganisationUnit org: organisationUnits) {
-                                for (String str: org.path().split("/")) {
+                            for (OrganisationUnit org : organisationUnits) {
+                                for (String str : org.path().split("/")) {
                                     orderedList = addToArray(orderedList, str);
                                 }
                                 orderedList = addToArray(orderedList, org.uid());
                             }
-                            for (String str: orderedList) {
-                                OrganisationUnit organisationUnitParent =  d2.organisationUnitModule().organisationUnits
+                            for (String str : orderedList) {
+                                OrganisationUnit organisationUnitParent = d2.organisationUnitModule().organisationUnits
                                         .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_TEI_SEARCH)
                                         .byUid().eq(str).one().get();
                                 if (organisationUnitParent != null)
@@ -157,8 +155,8 @@ public class OUTreeActivity extends ActivityGlobalAbstract implements OrgUnitSel
                                     );
                             }
                             for (int i = 1; i < nodes.size(); i++) {
-                                if (nodes.get(i).getLevel() > nodes.get(i-1).getLevel()) {
-                                    nodes.get(i-1).setOpen(true);
+                                if (nodes.get(i).getLevel() > nodes.get(i - 1).getLevel()) {
+                                    nodes.get(i - 1).setOpen(true);
                                 }
                             }
                             return nodes;
@@ -174,7 +172,9 @@ public class OUTreeActivity extends ActivityGlobalAbstract implements OrgUnitSel
         );
         binding.search.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                //Not used
+            }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -186,15 +186,14 @@ public class OUTreeActivity extends ActivityGlobalAbstract implements OrgUnitSel
             }
 
             @Override
-            public void afterTextChanged(Editable s) { }
+            public void afterTextChanged(Editable s) {
+                //Not used
+            }
         });
         onStartSearch.onNext(true);
-        binding.clearAll.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if ((binding.orgUnitRecycler.getAdapter()) != null) {
-                    ((OrgUnitSelectorAdapter) binding.orgUnitRecycler.getAdapter()).clearAll();
-                }
+        binding.clearAll.setOnClickListener(v -> {
+            if ((binding.orgUnitRecycler.getAdapter()) != null) {
+                ((OrgUnitSelectorAdapter) binding.orgUnitRecycler.getAdapter()).clearAll();
             }
         });
     }

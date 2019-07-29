@@ -236,6 +236,21 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     }
 
     @Override
+    public Single<Pair<CategoryCombo, List<CategoryOptionCombo>>> catOptionCombos() {
+        return d2.programModule().programs.uid(programUid).getAsync()
+                .filter(program -> program.categoryCombo() != null)
+                .flatMapSingle(program -> d2.categoryModule().categoryCombos.uid(program.categoryComboUid()).getAsync())
+                .filter(categoryCombo -> !categoryCombo.isDefault())
+                .flatMapSingle(categoryCombo -> Single.zip(
+                        d2.categoryModule().categoryCombos
+                                .uid(categoryCombo.uid()).getAsync(),
+                        d2.categoryModule().categoryOptionCombos
+                                .byCategoryComboUid().eq(categoryCombo.uid()).getAsync(),
+                        Pair::create
+                ));
+    }
+
+    @Override
     public Single<Boolean> hasAccessToAllCatOptions() {
         return d2.programModule().programs.uid(programUid).getAsync()
                 .filter(program -> program.categoryComboUid() != null)
@@ -243,14 +258,14 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
                 .filter(catCombo -> !catCombo.isDefault())
                 .map(catCombo -> {
                     boolean hasAccess = true;
-                    for(Category category : catCombo.categories()){
+                    for (Category category : catCombo.categories()) {
                         List<CategoryOption> options = d2.categoryModule().categories.withCategoryOptions().uid(category.uid()).get().categoryOptions();
                         int accesibleOptions = options.size();
-                        for(CategoryOption categoryOption : options) {
-                            if(!d2.categoryModule().categoryOptions.uid(categoryOption.uid()).get().access().data().write())
+                        for (CategoryOption categoryOption : options) {
+                            if (!d2.categoryModule().categoryOptions.uid(categoryOption.uid()).get().access().data().write())
                                 accesibleOptions--;
                         }
-                        if(accesibleOptions == 0) {
+                        if (accesibleOptions == 0) {
                             hasAccess = false;
                             break;
                         }

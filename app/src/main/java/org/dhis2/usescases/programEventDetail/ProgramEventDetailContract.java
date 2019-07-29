@@ -8,6 +8,7 @@ import org.dhis2.utils.Period;
 import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
+import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.period.DatePeriod;
@@ -15,7 +16,6 @@ import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramModel;
 
 import java.util.List;
-import java.util.Map;
 
 import androidx.lifecycle.LiveData;
 import androidx.paging.PagedList;
@@ -58,6 +58,10 @@ public class ProgramEventDetailContract {
         Period getCurrentPeriod();
 
         void setOptionComboAccess(Boolean canCreateEvent);
+
+        void updateFilters(int totalFilters);
+
+        void setCatOptionComboFilter(Pair<CategoryCombo, List<CategoryOptionCombo>> categoryOptionCombos);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {

@@ -1,15 +1,19 @@
 package org.dhis2.usescases.programEventDetail;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.transition.ChangeBounds;
+import android.transition.Transition;
+import android.transition.TransitionManager;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -22,10 +26,8 @@ import android.widget.PopupMenu;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.content.res.ResourcesCompat;
-import androidx.core.view.GravityCompat;
+import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.databinding.DataBindingUtil;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.lifecycle.LiveData;
 import androidx.paging.PagedList;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -42,15 +44,18 @@ import org.dhis2.databinding.ActivityProgramEventDetailBinding;
 import org.dhis2.databinding.CatCombFilterBinding;
 import org.dhis2.databinding.WidgetDatepickerBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
-import org.dhis2.usescases.main.program.OrgUnitHolder;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.Period;
 import org.dhis2.utils.custom_views.RxDateDialog;
+import org.dhis2.utils.filters.FilterManager;
+import org.dhis2.utils.filters.Filters;
+import org.dhis2.utils.filters.FiltersAdapter;
 import org.hisp.dhis.android.core.category.Category;
+import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
+import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.program.Program;
 
 import java.text.SimpleDateFormat;
@@ -86,8 +91,6 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     @Inject
     ProgramEventDetailContract.Presenter presenter;
 
-    @Inject
-    ProgramEventDetailAdapter adapter;
     private Period currentPeriod = Period.NONE;
 
     private Date chosenDateDay = new Date();
@@ -101,6 +104,8 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     private boolean isFilteredByCatCombo = false;
     private ProgramEventDetailLiveAdapter liveAdapter;
     private Map<String, CategoryOption> catCombFilter;
+    private boolean backDropActive;
+    private FiltersAdapter filtersAdapter;
 
     public static Bundle getBundle(String programUid, String period, List<Date> dates) {
         Bundle bundle = new Bundle();
@@ -124,19 +129,24 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         binding = DataBindingUtil.setContentView(this, activity_program_event_detail);
 
         binding.setPresenter(presenter);
-
-        binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+        binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
 
         liveAdapter = new ProgramEventDetailLiveAdapter(presenter);
         binding.recycler.setAdapter(liveAdapter);
         binding.recycler.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
+        filtersAdapter = new FiltersAdapter();
+        try {
+            binding.filterLayout.setAdapter(filtersAdapter);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        adapter.clearData();
         presenter.init(this, currentPeriod);
     }
 
@@ -144,7 +154,6 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     protected void onPause() {
         presenter.onDettach();
         super.onPause();
-        binding.treeViewContainer.removeAllViews();
     }
 
     @Override
@@ -157,13 +166,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void openDrawer() {
-        if (!binding.drawerLayout.isDrawerOpen(GravityCompat.END)) {
-            binding.drawerLayout.openDrawer(GravityCompat.END);
-            binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN);
-        } else {
-            binding.drawerLayout.closeDrawer(GravityCompat.END);
-            binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-        }
+
     }
 
     @SuppressLint({"CheckResult", "RxLeakedSubscription"})
@@ -196,7 +199,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                                     textToShow += "... " /*+ yearFormat.format(selectedDates.get(1))*/;
 
                             }
-                            binding.buttonPeriodText.setText(textToShow);
+//                            binding.buttonPeriodText.setText(textToShow);
 
                             presenter.updateDateFilter(DateUtils.getInstance().getDatePeriodListFor(selectedDates, currentPeriod));
 
@@ -222,7 +225,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                                 default:
                                     break;
                             }
-                            binding.buttonPeriodText.setText(text);
+//                            binding.buttonPeriodText.setText(text);
                             presenter.updateDateFilter(DateUtils.getInstance().getDatePeriodListFor(selectedDates, currentPeriod));
                         }
                     },
@@ -243,7 +246,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
             selectedDates.add(dates[0]);
 
             presenter.updateDateFilter(DateUtils.getInstance().getDatePeriodListFor(selectedDates, currentPeriod));
-            binding.buttonPeriodText.setText(DateUtils.getInstance().formatDate(dates[0]));
+//            binding.buttonPeriodText.setText(DateUtils.getInstance().formatDate(dates[0]));
             chosenDateDay = dates[0];
         }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
 
@@ -259,7 +262,6 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
     private void showCustomCalendar(Calendar calendar) {
         LayoutInflater layoutInflater = LayoutInflater.from(getContext());
-//        View datePickerView = layoutInflater.inflate(R.layout.widget_datepicker, null);
         WidgetDatepickerBinding widgetBinding = WidgetDatepickerBinding.inflate(layoutInflater);
         final DatePicker datePicker = widgetBinding.widgetDatepicker;
 
@@ -270,17 +272,6 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                 c.get(Calendar.DAY_OF_MONTH));
 
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(getContext(), R.style.DatePickerTheme);
-            /*    .setPositiveButton(R.string.action_accept, (dialog, which) -> {
-                    calendar.set(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
-                    Date[] dates = DateUtils.getInstance().getDateFromDateAndPeriod(calendar.getTime(), currentPeriod);
-                    ArrayList<Date> selectedDates = new ArrayList<>();
-                    selectedDates.add(dates[0]);
-
-                    presenter.updateDateFilter(DateUtils.getInstance().getDatePeriodListFor(selectedDates, currentPeriod));
-                    binding.buttonPeriodText.setText(DateUtils.getInstance().formatDate(dates[0]));
-                    chosenDateDay = dates[0];
-                })
-                .setNeutralButton(getContext().getResources().getString(R.string.change_calendar), (dialog, which) -> showNativeCalendar(calendar));*/
 
         alertDialog.setView(widgetBinding.getRoot());
         Dialog dialog = alertDialog.create();
@@ -297,7 +288,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
             selectedDates.add(dates[0]);
 
             presenter.updateDateFilter(DateUtils.getInstance().getDatePeriodListFor(selectedDates, currentPeriod));
-            binding.buttonPeriodText.setText(DateUtils.getInstance().formatDate(dates[0]));
+//            binding.buttonPeriodText.setText(DateUtils.getInstance().formatDate(dates[0]));
             chosenDateDay = dates[0];
             dialog.dismiss();
         });
@@ -334,7 +325,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                 drawable = AppCompatResources.getDrawable(getContext(), R.drawable.ic_view_none);
                 break;
         }
-        binding.buttonTime.setImageDrawable(drawable);
+//        binding.buttonTime.setImageDrawable(drawable);
 
         switch (currentPeriod) {
             case NONE:
@@ -378,12 +369,12 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                 break;
         }
 
-        binding.buttonPeriodText.setText(textToShow);
+//        binding.buttonPeriodText.setText(textToShow);
     }
 
     @Override
     public void addTree(TreeNode treeNode) {
-        this.treeNode = treeNode;
+      /*  this.treeNode = treeNode;
         binding.treeViewContainer.removeAllViews();
         binding.orgUnitApply.setOnClickListener(view -> apply());
         binding.orgUnitCancel.setOnClickListener(view -> {
@@ -430,7 +421,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
             }
         });
 
-        binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
+        binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));*/
     }
 
     @Override
@@ -482,7 +473,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void setCatComboOptions(List<Category> categories) {
-        if (binding.filterLayout.getChildCount() > 2)
+        /*if (binding.filterLayout.getChildCount() > 2)
             binding.filterLayout.removeViews(2, binding.filterLayout.getChildCount() - 1);
         if (categories != null && !categories.isEmpty()) {
             for (Category category : categories) {
@@ -518,36 +509,22 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                 binding.filterLayout.addView(catCombFilterBinding.getRoot());
 
             }
-        }
+        }*/
     }
 
     @Override
     public void showHideFilter() {
-        binding.filterLayout.setVisibility(binding.filterLayout.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
-        checkFilterEnabled();
-    }
-
-    private void checkFilterEnabled() {
-        if (binding.filterLayout.getVisibility() == View.VISIBLE) {
-            binding.filter.setBackgroundColor(getPrimaryColor());
-            binding.filter.setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
-            binding.filter.setBackgroundResource(0);
-        }
-        // when filter layout is hidden
-        else {
-            // not applied period filter
-            if (currentPeriod == Period.NONE && areAllOrgUnitsSelected() && !isFilteredByCatCombo) {
-                binding.filter.setBackgroundColor(getPrimaryColor());
-                binding.filter.setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
-                binding.filter.setBackgroundResource(0);
-            }
-            // applied period filter
-            else {
-                binding.filter.setBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.white, getTheme()));
-                binding.filter.setColorFilter(getPrimaryColor(), PorterDuff.Mode.SRC_IN);
-                binding.filter.setBackgroundResource(R.drawable.white_circle);
-            }
-        }
+        Transition transition = new ChangeBounds();
+        transition.setDuration(200);
+        TransitionManager.beginDelayedTransition(binding.backdropLayout, transition);
+        backDropActive = !backDropActive;
+        ConstraintSet initSet = new ConstraintSet();
+        initSet.clone(binding.backdropLayout);
+        if (backDropActive)
+            initSet.connect(R.id.recycler, ConstraintSet.TOP, R.id.backdropGuide, ConstraintSet.BOTTOM, 0);
+        else
+            initSet.connect(R.id.recycler, ConstraintSet.TOP, R.id.toolbar, ConstraintSet.BOTTOM, 0);
+        initSet.applyTo(binding.backdropLayout);
     }
 
     public boolean areAllOrgUnitsSelected() {
@@ -556,7 +533,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void apply() {
-        if (treeView != null && !treeView.getSelected().isEmpty()) {
+       /* if (treeView != null && !treeView.getSelected().isEmpty()) {
             binding.drawerLayout.closeDrawers();
             binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
@@ -571,7 +548,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
             presenter.updateOrgUnitFilter(orgUnitsUids);
 
         } else
-            displayMessage(getString(R.string.org_unit_selection_warning));
+            displayMessage(getString(R.string.org_unit_selection_warning));*/
     }
 
     @Override
@@ -630,11 +607,30 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void orgUnitProgress(boolean showProgress) {
-        binding.orgUnitProgress.setVisibility(showProgress ? View.VISIBLE : View.GONE);
+//        binding.orgUnitProgress.setVisibility(showProgress ? View.VISIBLE : View.GONE);
     }
 
     @Override
     public Period getCurrentPeriod() {
         return currentPeriod;
+    }
+
+    @Override
+    public void updateFilters(int totalFilters) {
+        binding.setTotalFilters(totalFilters);
+    }
+
+    @Override
+    public void setCatOptionComboFilter(Pair<CategoryCombo, List<CategoryOptionCombo>> categoryOptionCombos) {
+        filtersAdapter.addCatOptCombFilter(categoryOptionCombos);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == FilterManager.OU_TREE && resultCode == Activity.RESULT_OK) {
+            filtersAdapter.notifyDataSetChanged();
+            updateFilters(FilterManager.getInstance().getTotalFilters());
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }

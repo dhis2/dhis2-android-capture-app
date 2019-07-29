@@ -1,6 +1,8 @@
 package org.dhis2.usescases.programEventDetail;
 
+import org.dhis2.data.tuples.Pair;
 import org.hisp.dhis.android.core.category.Category;
+import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
@@ -14,7 +16,6 @@ import androidx.lifecycle.LiveData;
 import androidx.paging.PagedList;
 import io.reactivex.Observable;
 import io.reactivex.Single;
-import io.reactivex.disposables.Disposable;
 
 /**
  * Created by Cristian E. on 02/11/2017.
@@ -41,6 +42,8 @@ public interface ProgramEventDetailRepository {
     boolean getAccessDataWrite();
 
     List<CategoryOptionCombo> catOptionCombo(List<CategoryOption> selectedOptions);
+
+    Single<Pair<CategoryCombo, List<CategoryOptionCombo>>> catOptionCombos();
 
     Single<Boolean> hasAccessToAllCatOptions();
 }

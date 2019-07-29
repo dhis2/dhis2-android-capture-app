@@ -89,7 +89,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                canCreateEvent -> view.setOptionComboAccess(canCreateEvent),
+                                view::setOptionComboAccess,
                                 Timber::e
                         )
         );
@@ -100,6 +100,15 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                         .subscribeOn(Schedulers.computation())
                         .subscribe(
                                 view::setProgram,
+                                Timber::e
+                        )
+        );
+
+        compositeDisposable.add(
+                eventRepository.catOptionCombos()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(view::setCatOptionComboFilter,
                                 Timber::e
                         )
         );
@@ -140,7 +149,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
         manageProcessorDismissDialog();
     }
 
-    private void manageProcessorDismissDialog(){
+    private void manageProcessorDismissDialog() {
         compositeDisposable.add(processorDismissDialog
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
