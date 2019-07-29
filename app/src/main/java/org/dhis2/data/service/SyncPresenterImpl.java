@@ -77,7 +77,7 @@ final class SyncPresenterImpl implements SyncPresenter {
     @Override
     public boolean checkSyncStatus() {
         boolean eventsOk = d2.eventModule().events.byState().notIn(State.SYNCED).get().isEmpty();
-        boolean teiOk = d2.trackedEntityModule().trackedEntityInstances.byState().notIn(State.SYNCED).get().isEmpty();
+        boolean teiOk = d2.trackedEntityModule().trackedEntityInstances.byState().notIn(State.SYNCED,State.RELATIONSHIP).get().isEmpty();
         return eventsOk && teiOk;
     }
 
