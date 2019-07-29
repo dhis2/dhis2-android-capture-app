@@ -4,9 +4,8 @@ package org.dhis2.data.forms.dataentry.fields.coordinate;
 import android.annotation.SuppressLint;
 import android.graphics.Color;
 
-import androidx.appcompat.content.res.AppCompatResources;
+import androidx.lifecycle.MutableLiveData;
 
-import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.CustomFormCoordinateBinding;
@@ -25,23 +24,30 @@ public class CoordinateHolder extends FormViewHolder {
     private CoordinateViewModel model;
 
     @SuppressLint("CheckResult")
-    CoordinateHolder(CustomFormCoordinateBinding binding, FlowableProcessor<RowAction> processor, boolean isSearchMode) {
+    CoordinateHolder(CustomFormCoordinateBinding binding, FlowableProcessor<RowAction> processor, boolean isSearchMode, MutableLiveData<String> currentSelection) {
         super(binding);
         this.processor = processor;
         this.binding = binding;
+        this.currentUid = currentSelection;
+
         binding.formCoordinates.setCurrentLocationListener((latitude, longitude) -> {
                     closeKeyboard(binding.formCoordinates);
-                    processor.onNext(
-                            RowAction.create(model.uid(),
-                                    String.format(Locale.US, "[%.5f,%.5f]", latitude, longitude),
-                                    getAdapterPosition()));
-                    if (!isSearchMode)
-                        itemView.setBackgroundColor(Color.WHITE);
+                    if (latitude == null || longitude == null) {
+                        processor.onNext(
+                                RowAction.create(model.uid(), null, getAdapterPosition()));
+                    } else
+                        processor.onNext(
+                                RowAction.create(model.uid(),
+                                        String.format(Locale.US, "[%.5f,%.5f]", latitude, longitude),
+                                        getAdapterPosition()));
+                    clearBackground(isSearchMode);
                 }
         );
         binding.formCoordinates.setMapListener(
                 (CoordinatesView.OnMapPositionClick) binding.formCoordinates.getContext()
         );
+
+        binding.formCoordinates.setActivationListener(() -> setSelectedBackground(isSearchMode));
 
     }
 
@@ -49,6 +55,7 @@ public class CoordinateHolder extends FormViewHolder {
         binding.formCoordinates.setProcessor(coordinateViewModel.uid(), processor);
 
         model = coordinateViewModel;
+        fieldUid = coordinateViewModel.uid();
 
         descriptionText = coordinateViewModel.description();
         label = new StringBuilder(coordinateViewModel.label());
@@ -72,15 +79,12 @@ public class CoordinateHolder extends FormViewHolder {
         binding.formCoordinates.setEditable(coordinateViewModel.editable());
 
         binding.executePendingBindings();
+        initFieldFocus();
     }
 
     @Override
     public void dispose() {
     }
 
-    @Override
-    public void performAction() {
-        itemView.setBackground(AppCompatResources.getDrawable(itemView.getContext(), R.drawable.item_selected_bg));
-        binding.formCoordinates.performOnFocusAction();
-    }
+
 }

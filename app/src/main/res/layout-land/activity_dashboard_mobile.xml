@@ -62,6 +62,17 @@
                 app:srcCompat="@drawable/ic_program_border"
                 tools:ignore="ContentDescription" />
 
+            <ImageView
+                android:id="@+id/moreOptions"
+                style="@style/ActionIcon"
+                android:layout_height="match_parent"
+                android:onClick="showMoreOptions"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_more"
+                tools:ignore="ContentDescription" />
+
         </LinearLayout>
 
         <androidx.constraintlayout.widget.Guideline

@@ -3,6 +3,7 @@ package org.dhis2.usescases.teiDashboard.eventDetail;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventModel;
 
 import java.util.Date;
@@ -18,11 +19,11 @@ public interface DataEntryStore {
     @NonNull
     Flowable<Long> save(@NonNull String uid, @Nullable String value);
 
-    void updateEventStatus(EventModel eventModel);
+    void updateEventStatus(Event eventModel);
 
-    void skipEvent(EventModel eventModel);
+    void skipEvent(Event eventModel);
 
-    void rescheduleEvent(EventModel eventModel, Date newDate);
+    void rescheduleEvent(Event eventModel, Date newDate);
 
-    void updateEvent(@NonNull Date eventDate, @NonNull EventModel eventModel);
+    void updateEvent(@NonNull Date eventDate, @NonNull Event eventModel);
 }

@@ -7,22 +7,21 @@ import androidx.annotation.NonNull;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.tuples.Pair;
-import org.dhis2.data.tuples.Quartet;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.constant.Constant;
-import org.hisp.dhis.android.core.constant.ConstantTableInfo;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitGroup;
 import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.program.ProgramRuleActionModel;
+import org.hisp.dhis.android.core.program.ProgramRule;
+import org.hisp.dhis.android.core.program.ProgramRuleAction;
 import org.hisp.dhis.android.core.program.ProgramRuleActionType;
-import org.hisp.dhis.android.core.program.ProgramRuleModel;
+import org.hisp.dhis.android.core.program.ProgramRuleVariable;
 import org.hisp.dhis.android.core.program.ProgramRuleVariableModel;
 import org.hisp.dhis.android.core.program.ProgramRuleVariableSourceType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
@@ -75,18 +74,6 @@ import static android.text.TextUtils.isEmpty;
 
 @SuppressWarnings("PMD")
 public final class RulesRepository {
-    private static final String QUERY_CONSTANTS = "SELECT * " +
-            "FROM Constant";
-
-
-    private static final String QUERY_RULES = "SELECT\n" +
-            "  ProgramRule.uid, \n" +
-            "  ProgramRule.programStage,\n" +
-            "  ProgramRule.priority,\n" +
-            "  ProgramRule.condition\n" +
-            "FROM ProgramRule\n" +
-            "WHERE program = ?;";
-
     private static final String QUERY_VARIABLES = "SELECT\n" +
             "  name,\n" +
             "  programStage,\n" +
@@ -117,37 +104,6 @@ public final class RulesRepository {
             "  \"TEI_ATTRIBUTE\"\n" +
             ");";
 
-    private static final String QUERY_ACTIONS = "SELECT\n" +
-            "  ProgramRuleAction.programRule,\n" +
-            "  ProgramRuleAction.programStage,\n" +
-            "  ProgramRuleAction.programStageSection,\n" +
-            "  ProgramRuleAction.programRuleActionType,\n" +
-            "  ProgramRuleAction.programIndicator,\n" +
-            "  ProgramRuleAction.trackedEntityAttribute,\n" +
-            "  ProgramRuleAction.dataElement,\n" +
-            "  ProgramRuleAction.location,\n" +
-            "  ProgramRuleAction.content,\n" +
-            "  ProgramRuleAction.data,\n" +
-            "  ProgramRuleAction.option,\n" +
-            "  ProgramRuleAction.optionGroup\n" +
-            "FROM ProgramRuleAction\n" +
-            "  INNER JOIN ProgramRule ON ProgramRuleAction.programRule = ProgramRule.uid\n" +
-            "WHERE program = ? AND ProgramRuleAction.programRuleActionType IN (\n" +
-            "  \"DISPLAYTEXT\",\n" +
-            "  \"DISPLAYKEYVALUEPAIR\",\n" +
-            "  \"HIDEFIELD\",\n" +
-            "  \"HIDESECTION\",\n" +
-            "  \"ASSIGN\",\n" +
-            "  \"SHOWWARNING\",\n" +
-            "  \"WARNINGONCOMPLETE\",\n" +
-            "  \"SHOWERROR\",\n" +
-            "  \"ERRORONCOMPLETE\",\n" +
-            "  \"CREATEEVENT\",\n" +
-            "  \"HIDEPROGRAMSTAGE\",\n" +
-            "  \"SETMANDATORYFIELD\",\n" +
-            "  \"HIDEOPTION\",\n" +
-            "  \"HIDEOPTIONGROUP\"" +
-            ");";
 
     /**
      * Query all events except current one from a program without registration
@@ -248,22 +204,35 @@ public final class RulesRepository {
 
     @NonNull
     private final BriteDatabase briteDatabase;
+    private final D2 d2;
     private int count;
 
-    public RulesRepository(@NonNull BriteDatabase briteDatabase) {
+    public RulesRepository(@NonNull BriteDatabase briteDatabase, @NonNull D2 d2) {
         this.briteDatabase = briteDatabase;
+        this.d2 = d2;
     }
 
     @NonNull
     public Flowable<List<Rule>> rulesNew(@NonNull String programUid) {
-        return Flowable.combineLatest(queryRules(programUid),
-                queryRuleActionsList(programUid), RulesRepository::mapActionsToRulesNew);
+        return queryRules(programUid)
+                .map(this::translateToRules);
     }
 
     @NonNull
     public Flowable<List<RuleVariable>> ruleVariables(@NonNull String programUid) {
-        return briteDatabase.createQuery(ProgramRuleVariableModel.TABLE, QUERY_VARIABLES, programUid)
-                .mapToList(RulesRepository::mapToRuleVariable).toFlowable(BackpressureStrategy.LATEST);
+        return Flowable.fromCallable(() -> d2.programModule().programRuleVariables.byProgramUid().eq(programUid).get()).map(programRuleVariables -> this.translateToRuleVariable(programRuleVariables));
+        /*return briteDatabase.createQuery(ProgramRuleVariableModel.TABLE, QUERY_VARIABLES, programUid)
+                .mapToList(RulesRepository::mapToRuleVariable).toFlowable(BackpressureStrategy.LATEST);*/
+    }
+
+    private List<RuleVariable> translateToRuleVariable(List<ProgramRuleVariable> programRuleVariables) {
+        List<RuleVariable> ruleVariables = new ArrayList<>();
+        for (ProgramRuleVariable programRuleVariable : programRuleVariables) {
+            ruleVariables.add(
+                    translateToRuleVariable(programRuleVariable)
+            );
+        }
+        return ruleVariables;
     }
 
     @NonNull
@@ -274,80 +243,131 @@ public final class RulesRepository {
 
     @NonNull
     public Flowable<Map<String, String>> queryConstants() {
-        return briteDatabase.createQuery(ConstantTableInfo.TABLE_INFO.name(), QUERY_CONSTANTS)
-                .mapToList(Constant::create)
+        return Flowable.fromCallable(() -> d2.constantModule().constants.get())
                 .map(constants -> {
                     Map<String, String> constantsMap = new HashMap<>();
                     for (Constant constant : constants) {
                         constantsMap.put(constant.uid(), Objects.requireNonNull(constant.value()).toString());
                     }
                     return constantsMap;
-                })
-                .toFlowable(BackpressureStrategy.LATEST);
+                });
     }
 
     @NonNull
-    private Flowable<List<Quartet<String, String, Integer, String>>> queryRules(
+    private Flowable<List<ProgramRule>> queryRules(
             @NonNull String programUid) {
-        return briteDatabase.createQuery(ProgramRuleModel.TABLE, QUERY_RULES, programUid)
-                .mapToList(RulesRepository::mapToQuartet).toFlowable(BackpressureStrategy.LATEST);
+        return Flowable.fromCallable(() -> d2.programModule().programRules
+                .byProgramUid().eq(programUid)
+                .withProgramRuleActions()
+                .get());
+
     }
 
-    @NonNull
-    private Flowable<List<Pair<String, RuleAction>>> queryRuleActionsList(@NonNull String programUid) {
-        return briteDatabase.createQuery(ProgramRuleActionModel.TABLE, QUERY_ACTIONS, programUid)
-                .mapToList(RulesRepository::mapToActionPairs).toFlowable(BackpressureStrategy.LATEST);
-    }
-
-
-    @NonNull
-    private static List<Rule> mapActionsToRulesNew(
-            @NonNull List<Quartet<String, String, Integer, String>> rawRules, //ProgramRule uid, stage, priority and condition
-            @NonNull List<Pair<String, RuleAction>> ruleActions) {
+    private List<Rule> translateToRules(List<ProgramRule> programRules) {
         List<Rule> rules = new ArrayList<>();
-
-        for (Quartet<String, String, Integer, String> rawRule : rawRules) {
-
-            List<RuleAction> pairActions = new ArrayList<>();
-            for (Pair<String, RuleAction> pair : ruleActions) {
-                if (pair.val0().equals(rawRule.val0()))
-                    pairActions.add(pair.val1());
-            }
-
-            rules.add(Rule.create(rawRule.val1(), rawRule.val2(),
-                    rawRule.val3(), new ArrayList<>(pairActions), rawRule.val0())); //TODO: Change val0 to Rule Name
+        for (ProgramRule programRule : programRules) {
+            rules.add(
+                    Rule.create(
+                            programRule.programStage() != null ? programRule.programStage().uid() : null,
+                            programRule.priority(),
+                            programRule.condition() != null ? programRule.condition() : "",
+                            translateToActions(programRule.programRuleActions()),
+                            programRule.name())
+            );
         }
-
         return rules;
     }
 
-    @NonNull
-    private static Quartet<String, String, Integer, String> mapToQuartet(@NonNull Cursor cursor) {
-        String uid = cursor.getString(0);
-        String condition = cursor.getString(3) == null ? "" : cursor.getString(3);
+    private List<RuleAction> translateToActions(List<ProgramRuleAction> actionList) {
+        List<RuleAction> ruleActions = new ArrayList<>();
+        for (ProgramRuleAction programRuleAction : actionList) {
+            RuleAction ruleAction;
+            String dataElement = programRuleAction.dataElement() != null ?
+                    programRuleAction.dataElement().uid() : null;
+            String attribute = programRuleAction.trackedEntityAttribute() != null ?
+                    programRuleAction.trackedEntityAttribute().uid() : null;
+            String field = dataElement != null ? dataElement : attribute;
+            if (field == null)
+                field = "";
 
-        String stage = cursor.isNull(1) ? "" : cursor.getString(1);
-        Integer priority = cursor.isNull(2) ? 0 : cursor.getInt(2);
-
-        return Quartet.create(uid, stage, priority, condition);
+            switch (programRuleAction.programRuleActionType()) {
+                case HIDEFIELD:
+                    ruleAction = RuleActionHideField.create(programRuleAction.content(), field);
+                    break;
+                case ASSIGN:
+                    ruleAction = RuleActionAssign.create(programRuleAction.content(),
+                            programRuleAction.data(),
+                            field);
+                    break;
+                case SHOWERROR:
+                    ruleAction = RuleActionShowError.create(programRuleAction.content(),
+                            programRuleAction.data(), field);
+                    break;
+                case HIDEOPTION:
+                    ruleAction = RuleActionHideOption.create(programRuleAction.content(),
+                            programRuleAction.option().uid(), field);
+                    break;
+                case CREATEEVENT:
+                    ruleAction = RuleActionCreateEvent.create(programRuleAction.content(),
+                            programRuleAction.data(), programRuleAction.programStage().uid());
+                    break;
+                case DISPLAYTEXT:
+                    ruleAction = RuleActionDisplayText.createForFeedback(programRuleAction.content(),
+                            programRuleAction.data());
+                    break;
+                case HIDESECTION:
+                    ruleAction = RuleActionHideSection.create(programRuleAction.programStageSection().uid());
+                    break;
+                case SHOWWARNING:
+                    ruleAction = RuleActionShowWarning.create(programRuleAction.content(),
+                            programRuleAction.data(), field);
+                    break;
+                case ERRORONCOMPLETE:
+                    ruleAction = RuleActionErrorOnCompletion.create(programRuleAction.content(),
+                            programRuleAction.data(), field);
+                    break;
+                case HIDEOPTIONGROUP:
+                    ruleAction = RuleActionHideOptionGroup.create(programRuleAction.content(),
+                            programRuleAction.optionGroup().uid());
+                    break;
+                case HIDEPROGRAMSTAGE:
+                    ruleAction = RuleActionHideProgramStage.create(programRuleAction.programStage().uid());
+                    break;
+                case SETMANDATORYFIELD:
+                    ruleAction = RuleActionSetMandatoryField.create(field);
+                    break;
+                case WARNINGONCOMPLETE:
+                    ruleAction = RuleActionWarningOnCompletion.create(programRuleAction.content(),
+                            programRuleAction.data(), field);
+                    break;
+                case DISPLAYKEYVALUEPAIR:
+                    ruleAction = RuleActionDisplayKeyValuePair.createForIndicators(programRuleAction.content(),
+                            programRuleAction.data());
+                    break;
+                case SHOWOPTIONGROUP:
+                case SENDMESSAGE:
+                case SCHEDULEMESSAGE:
+                default:
+                    String content = programRuleAction.content() != null ? programRuleAction.content() : "unsupported";
+                    String ruleType = programRuleAction.programRuleActionType().name();
+                    ruleAction = RuleActionUnsupported.create(content, ruleType);
+                    break;
+            }
+            ruleActions.add(ruleAction);
+        }
+        return ruleActions;
     }
 
-    @NonNull
-    private static Pair<String, RuleAction> mapToActionPairs(@NonNull Cursor cursor) {
-        return Pair.create(cursor.getString(0), create(cursor));
-    }
-
-    @NonNull
-    private static RuleVariable mapToRuleVariable(@NonNull Cursor cursor) {
-        String name = cursor.getString(0);
-        String stage = cursor.getString(1);
-        String sourceType = cursor.getString(2);
-        String dataElement = cursor.getString(3);
-        String attribute = cursor.getString(4);
+    private RuleVariable translateToRuleVariable(ProgramRuleVariable programRuleVariable) {
+        String name = programRuleVariable.name();
+        String stage = programRuleVariable.programStage() != null ? programRuleVariable.programStage().uid() : null;
+        String sourceType = programRuleVariable.programRuleVariableSourceType().name();
+        String dataElement = programRuleVariable.dataElement() != null ? programRuleVariable.dataElement().uid() : null;
+        String attribute = programRuleVariable.trackedEntityAttribute() != null ? programRuleVariable.trackedEntityAttribute().uid() : null;
 
         // Mime types of the attribute and data element.
-        String attributeType = cursor.getString(6);
-        String elementType = cursor.getString(5);
+        String attributeType = attribute != null ? d2.trackedEntityModule().trackedEntityAttributes.uid(attribute).get().valueType().name() : null;
+        String elementType = dataElement != null ? d2.dataElementModule().dataElements.uid(dataElement).get().valueType().name() : null;
 
         // String representation of value type.
         RuleValueType mimeType = null;
@@ -367,12 +387,6 @@ public final class RulesRepository {
             default:
                 break;
         }
-      /*
-        if (!isEmpty(attributeType)) {
-            mimeType = convertType(attributeType);
-        } else if (!isEmpty(elementType)) {
-            mimeType = convertType(elementType);
-        }*/
 
         if (mimeType == null) {
             mimeType = RuleValueType.TEXT;
@@ -518,6 +532,8 @@ public final class RulesRepository {
                 return RuleActionWarningOnCompletion.create(content, data,
                         isEmpty(attribute) ? field : attribute);
             case SHOWERROR:
+                if (content == null && data == null)
+                    content = "This field has an error.";
                 return RuleActionShowError.create(content, data,
                         isEmpty(attribute) ? field : attribute);
             case ERRORONCOMPLETE:

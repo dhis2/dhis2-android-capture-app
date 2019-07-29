@@ -1,20 +1,17 @@
 package org.dhis2.data.forms.dataentry;
 
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.databinding.ObservableField;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.MutableLiveData;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView.Adapter;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
-import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
-import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.Row;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.forms.dataentry.fields.age.AgeRow;
@@ -29,7 +26,6 @@ import org.dhis2.data.forms.dataentry.fields.edittext.EditTextModel;
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextRow;
 import org.dhis2.data.forms.dataentry.fields.file.FileRow;
 import org.dhis2.data.forms.dataentry.fields.file.FileViewModel;
-import org.dhis2.data.forms.dataentry.fields.image.ImageHolder;
 import org.dhis2.data.forms.dataentry.fields.image.ImageRow;
 import org.dhis2.data.forms.dataentry.fields.image.ImageViewModel;
 import org.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitRow;
@@ -81,9 +77,11 @@ public final class DataEntryAdapter extends Adapter {
 
     private final FlowableProcessor<Trio<String, String, Integer>> processorOptionSet;
 
+    private MutableLiveData<String> currentFocusUid;
+
     private String lastFocusItem;
+    private String nextFocusUid;
     private int nextFocusPosition = -1;
-    private int lastFocusPosition = -1;
 
     public DataEntryAdapter(@NonNull LayoutInflater layoutInflater,
                             @NonNull FragmentManager fragmentManager,
@@ -94,21 +92,22 @@ public final class DataEntryAdapter extends Adapter {
         processor = PublishProcessor.create();
         imageSelector = new ObservableField<>("");
         this.processorOptionSet = PublishProcessor.create();
+        this.currentFocusUid = new MutableLiveData<>();
 
-        rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, true, dataEntryArguments.renderType(), false));
-        rows.add(BUTTON, new FileRow(layoutInflater, processor, true, dataEntryArguments.renderType()));
-        rows.add(CHECKBOX, new RadioButtonRow(layoutInflater, processor, true, dataEntryArguments.renderType()));
-        rows.add(SPINNER, new SpinnerRow(layoutInflater, processor, processorOptionSet, true, dataEntryArguments.renderType()));
-        rows.add(COORDINATES, new CoordinateRow(layoutInflater, processor, true, dataEntryArguments.renderType()));
-        rows.add(TIME, new DateTimeRow(layoutInflater, processor, TIME, true, dataEntryArguments.renderType()));
-        rows.add(DATE, new DateTimeRow(layoutInflater, processor, DATE, true, dataEntryArguments.renderType()));
-        rows.add(DATETIME, new DateTimeRow(layoutInflater, processor, DATETIME, true, dataEntryArguments.renderType()));
-        rows.add(AGEVIEW, new AgeRow(layoutInflater, processor, true, dataEntryArguments.renderType()));
-        rows.add(YES_NO, new RadioButtonRow(layoutInflater, processor, true, dataEntryArguments.renderType()));
-        rows.add(ORG_UNIT, new OrgUnitRow(fragmentManager, layoutInflater, processor, true, dataEntryArguments.renderType()));
+        rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, true, dataEntryArguments.renderType(), false, currentFocusUid));
+        rows.add(BUTTON, new FileRow(layoutInflater, processor, true, dataEntryArguments.renderType(), currentFocusUid));
+        rows.add(CHECKBOX, new RadioButtonRow(layoutInflater, processor, true, dataEntryArguments.renderType(), currentFocusUid));
+        rows.add(SPINNER, new SpinnerRow(layoutInflater, processor, processorOptionSet, true, dataEntryArguments.renderType(), currentFocusUid));
+        rows.add(COORDINATES, new CoordinateRow(layoutInflater, processor, true, dataEntryArguments.renderType(), currentFocusUid));
+        rows.add(TIME, new DateTimeRow(layoutInflater, processor, TIME, true, dataEntryArguments.renderType(), currentFocusUid));
+        rows.add(DATE, new DateTimeRow(layoutInflater, processor, DATE, true, dataEntryArguments.renderType(), currentFocusUid));
+        rows.add(DATETIME, new DateTimeRow(layoutInflater, processor, DATETIME, true, dataEntryArguments.renderType(), currentFocusUid));
+        rows.add(AGEVIEW, new AgeRow(layoutInflater, processor, true, dataEntryArguments.renderType(), currentFocusUid));
+        rows.add(YES_NO, new RadioButtonRow(layoutInflater, processor, true, dataEntryArguments.renderType(), currentFocusUid));
+        rows.add(ORG_UNIT, new OrgUnitRow(fragmentManager, layoutInflater, processor, true, dataEntryArguments.renderType(), currentFocusUid));
         rows.add(IMAGE, new ImageRow(layoutInflater, processor, dataEntryArguments.renderType()));
         rows.add(UNSUPPORTED, new UnsupportedRow(layoutInflater));
-        rows.add(LONG_TEXT, new EditTextRow(layoutInflater, processor, true, dataEntryArguments.renderType(), true));
+        rows.add(LONG_TEXT, new EditTextRow(layoutInflater, processor, true, dataEntryArguments.renderType(), true, currentFocusUid));
         rows.add(DISPLAY, new DisplayRow(layoutInflater));
 
     }
@@ -124,21 +123,22 @@ public final class DataEntryAdapter extends Adapter {
         this.processor = processor;
         imageSelector = new ObservableField<>("");
         this.processorOptionSet = processorOptSet;
+        this.currentFocusUid = new MutableLiveData<>();
 
-        rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, true, dataEntryArguments.renderType(), false));
-        rows.add(BUTTON, new FileRow(layoutInflater, processor, true, dataEntryArguments.renderType()));
-        rows.add(CHECKBOX, new RadioButtonRow(layoutInflater, processor, true, dataEntryArguments.renderType()));
-        rows.add(SPINNER, new SpinnerRow(layoutInflater, processor, processorOptionSet, true, dataEntryArguments.renderType()));
-        rows.add(COORDINATES, new CoordinateRow(layoutInflater, processor, true, dataEntryArguments.renderType()));
-        rows.add(TIME, new DateTimeRow(layoutInflater, processor, TIME, true, dataEntryArguments.renderType()));
-        rows.add(DATE, new DateTimeRow(layoutInflater, processor, DATE, true, dataEntryArguments.renderType()));
-        rows.add(DATETIME, new DateTimeRow(layoutInflater, processor, DATETIME, true, dataEntryArguments.renderType()));
-        rows.add(AGEVIEW, new AgeRow(layoutInflater, processor, true, dataEntryArguments.renderType()));
-        rows.add(YES_NO, new RadioButtonRow(layoutInflater, processor, true, dataEntryArguments.renderType()));
-        rows.add(ORG_UNIT, new OrgUnitRow(fragmentManager, layoutInflater, processor, true, dataEntryArguments.renderType()));
+        rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, true, dataEntryArguments.renderType(), false, currentFocusUid));
+        rows.add(BUTTON, new FileRow(layoutInflater, processor, true, dataEntryArguments.renderType(), currentFocusUid));
+        rows.add(CHECKBOX, new RadioButtonRow(layoutInflater, processor, true, dataEntryArguments.renderType(), currentFocusUid));
+        rows.add(SPINNER, new SpinnerRow(layoutInflater, processor, processorOptionSet, true, dataEntryArguments.renderType(), currentFocusUid));
+        rows.add(COORDINATES, new CoordinateRow(layoutInflater, processor, true, dataEntryArguments.renderType(), currentFocusUid));
+        rows.add(TIME, new DateTimeRow(layoutInflater, processor, TIME, true, dataEntryArguments.renderType(), currentFocusUid));
+        rows.add(DATE, new DateTimeRow(layoutInflater, processor, DATE, true, dataEntryArguments.renderType(), currentFocusUid));
+        rows.add(DATETIME, new DateTimeRow(layoutInflater, processor, DATETIME, true, dataEntryArguments.renderType(), currentFocusUid));
+        rows.add(AGEVIEW, new AgeRow(layoutInflater, processor, true, dataEntryArguments.renderType(), currentFocusUid));
+        rows.add(YES_NO, new RadioButtonRow(layoutInflater, processor, true, dataEntryArguments.renderType(), currentFocusUid));
+        rows.add(ORG_UNIT, new OrgUnitRow(fragmentManager, layoutInflater, processor, true, dataEntryArguments.renderType(), currentFocusUid));
         rows.add(IMAGE, new ImageRow(layoutInflater, processor, dataEntryArguments.renderType()));
         rows.add(UNSUPPORTED, new UnsupportedRow(layoutInflater));
-        rows.add(LONG_TEXT, new EditTextRow(layoutInflater, processor, true, dataEntryArguments.renderType(), true));
+        rows.add(LONG_TEXT, new EditTextRow(layoutInflater, processor, true, dataEntryArguments.renderType(), true, currentFocusUid));
         rows.add(DISPLAY, new DisplayRow(layoutInflater));
 
     }
@@ -157,14 +157,14 @@ public final class DataEntryAdapter extends Adapter {
         rows.get(holder.getItemViewType()).onBind(holder,
                 viewModels.get(holder.getAdapterPosition()));
 
-        if (position != 0 && position == nextFocusPosition && lastFocusPosition!= nextFocusPosition && holder instanceof FormViewHolder) {
+     /*   if (position != 0 && position == nextFocusPosition && lastFocusPosition != nextFocusPosition && holder instanceof FormViewHolder) {
             lastFocusPosition = position;
             ((FormViewHolder) holder).performAction();
             if (!(holder instanceof ImageHolder))
                 holder.itemView.setBackground(AppCompatResources.getDrawable(holder.itemView.getContext(), R.drawable.item_selected_bg));
         } else if (!(holder instanceof ImageHolder)) {
             holder.itemView.setBackgroundColor(Color.WHITE);
-        }
+        }*/
 
     }
 
@@ -224,10 +224,6 @@ public final class DataEntryAdapter extends Adapter {
         return processor;
     }
 
-    public FlowableProcessor<Trio<String, String, Integer>> asFlowableOption() {
-        return processorOptionSet;
-    }
-
     public void swap(@NonNull List<FieldViewModel> updates) {
         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(
                 new DataEntryDiffCallback(viewModels, updates));
@@ -235,22 +231,30 @@ public final class DataEntryAdapter extends Adapter {
         viewModels.clear();
         viewModels.addAll(updates);
 
+        int currentFocusPosition = -1;
+        int lastFocusPosition = -1;
+
         if (lastFocusItem != null) {
             nextFocusPosition = -1;
             for (int i = 0; i < updates.size(); i++) {
-                if (updates.get(i).uid().equals(lastFocusItem))
+                if (updates.get(i).uid().equals(lastFocusItem)) {
+                    lastFocusPosition = i;
                     nextFocusPosition = i + 1;
+                }
                 if (i == nextFocusPosition && !updates.get(i).editable()) {
                     nextFocusPosition++;
                 }
+                if (updates.get(i).uid().equals(currentFocusUid.getValue()))
+                    currentFocusPosition = i;
             }
         }
 
-
         diffResult.dispatchUpdatesTo(this);
 
-        if (nextFocusPosition != -1)
-            notifyItemChanged(nextFocusPosition);
+        if (nextFocusPosition != -1 && currentFocusPosition == lastFocusPosition && nextFocusPosition < viewModels.size())
+            currentFocusUid.setValue(viewModels.get(nextFocusPosition).uid());
+        else if (currentFocusPosition != -1 && currentFocusPosition < viewModels.size())
+            currentFocusUid.setValue(viewModels.get(currentFocusPosition).uid());
     }
 
     public void swapWithoutList() {
@@ -267,7 +271,7 @@ public final class DataEntryAdapter extends Adapter {
         }
 
         if (nextFocusPosition != -1)
-            notifyItemChanged(nextFocusPosition);
+            currentFocusUid.setValue(viewModels.get(nextFocusPosition).uid());
     }
 
     public boolean mandatoryOk() {
@@ -308,26 +312,8 @@ public final class DataEntryAdapter extends Adapter {
         return errorFieldNames.toString();
     }
 
-    public void notifyChanges(RowAction rowAction) {
-       /* List<FieldViewModel> helperModels = new ArrayList<>();
-        for (FieldViewModel field : viewModels) {
-            FieldViewModel toAdd = field;
-            if (field.uid().equals(rowAction.id()))
-                toAdd = field.withValue(rowAction.optionName() == null ? rowAction.value() : rowAction.optionName()).withEditMode(toAdd.editable());
-
-            helperModels.add(toAdd);
-        }
-
-        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(
-                new DataEntryDiffCallback(viewModels, helperModels));
-
-        viewModels.clear();
-        viewModels.addAll(helperModels);
-
-        diffResult.dispatchUpdatesTo(this);*/
-    }
-
     public void setLastFocusItem(String lastFocusItem) {
+        currentFocusUid.setValue(lastFocusItem);
         this.nextFocusPosition = -1;
         this.lastFocusItem = lastFocusItem;
     }

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -38,6 +39,18 @@
         <variable
             name="reschedule"
             type="java.lang.Boolean" />
+
+        <variable
+            name="mandatoryFields"
+            type="java.lang.Boolean" />
+
+        <variable
+            name="fieldsWithErrors"
+            type="java.lang.Boolean" />
+        
+        <variable
+            name="messageOnComplete"
+            type="java.lang.String" />
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -58,6 +71,46 @@
                 android:textColor="@color/text_black_333"
                 android:textSize="16sp" />
 
+            <TextView
+                android:visibility="@{mandatoryFields ? View.VISIBLE : View.GONE}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="8dp"
+                android:text="@string/missing_mandatory_fields_finish"
+                android:textColor="@color/warning_color"
+                android:textSize="14sp" />
+
+            <TextView
+                android:visibility="@{fieldsWithErrors ? View.VISIBLE : View.GONE}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="8dp"
+                android:text="@string/error_fields_events"
+                android:textColor="@color/error_color"
+                android:textSize="14sp" />
+
+            <TextView
+                android:visibility="@{messageOnComplete != null ? View.VISIBLE : View.GONE}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="8dp"
+                android:text="@{messageOnComplete}"
+                android:textColor="@color/error_color"
+                tools:text="This is a message for on complete rule action"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/check"
+                style="@style/BottomDialogItem"
+                android:onClick="@{()->listener.onActionSelected(ActionType.CHECK_FIELDS)}"
+                android:text="@string/check_mandatory_field"
+                android:visibility="@{fieldsWithErrors ? View.VISIBLE : View.GONE}" />
 
             <TextView
                 android:id="@+id/skip"
@@ -85,7 +138,8 @@
                 style="@style/BottomDialogItem"
                 android:onClick="@{()->listener.onActionSelected(ActionType.COMPLETE)}"
                 android:text="@string/finish_and_complete"
-                android:visibility="@{canWrite &amp;&amp; isEnrollmentOpen &amp;&amp;!hasExpired &amp;&amp;canComplete?View.VISIBLE:View.GONE}" />
+                android:enabled="@{!mandatoryFields}"
+                android:visibility="@{canWrite &amp;&amp; isEnrollmentOpen &amp;&amp;!hasExpired &amp;&amp; canComplete?View.VISIBLE:View.GONE}" />
 
             <TextView
                 android:id="@+id/finish"

@@ -3,13 +3,12 @@ package org.dhis2.usescases.programEventDetail;
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.SparseBooleanArray;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -35,7 +34,6 @@ import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
 import org.dhis2.App;
-import org.dhis2.BuildConfig;
 import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ActivityProgramEventDetailBinding;
@@ -43,7 +41,6 @@ import org.dhis2.databinding.CatCombFilterBinding;
 import org.dhis2.databinding.WidgetDatepickerBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.main.program.OrgUnitHolder;
-import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.Period;
@@ -65,7 +62,6 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import io.reactivex.functions.Consumer;
-import me.toptas.fancyshowcase.FancyShowCaseView;
 import timber.log.Timber;
 
 import static org.dhis2.R.layout.activity_program_event_detail;
@@ -571,43 +567,22 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void setTutorial() {
-        super.setTutorial();
-
-
-        SharedPreferences prefs = getAbstracContext().getSharedPreferences(
-                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
-
         new Handler().postDelayed(() -> {
-            FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
-                    .title(getString(R.string.tuto_program_event_1))
-                    .enableAutoTextPosition()
-                    .closeOnTouch(true)
-                    .build();
-            FancyShowCaseView tuto2 = new FancyShowCaseView.Builder(getAbstractActivity())
-                    .title(getString(R.string.tuto_program_event_2))
-                    .enableAutoTextPosition()
-                    .focusOn(getAbstractActivity().findViewById(R.id.addEventButton))
-                    .closeOnTouch(true)
-                    .build();
-
-
-            ArrayList<FancyShowCaseView> steps = new ArrayList<>();
-            steps.add(tuto1);
-            steps.add(tuto2);
-
-            HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
-
-            if (!prefs.getBoolean("TUTO_PROGRAM_EVENT", false) && !BuildConfig.DEBUG) {
-                HelpManager.getInstance().showHelp();/* getAbstractActivity().fancyShowCaseQueue.show();*/
-                prefs.edit().putBoolean("TUTO_PROGRAM_EVENT", true).apply();
-            }
+            SparseBooleanArray stepConditions = new SparseBooleanArray();
+            stepConditions.put(2, findViewById(R.id.addEventButton).getVisibility() == View.VISIBLE);
+            HelpManager.getInstance().show(getActivity(), HelpManager.TutorialName.PROGRAM_EVENT_LIST,
+                    stepConditions);
 
         }, 500);
-
     }
 
     @Override
     public void orgUnitProgress(boolean showProgress) {
         binding.orgUnitProgress.setVisibility(showProgress ? View.VISIBLE : View.GONE);
+    }
+
+    @Override
+    public void showTutorial(boolean shaked) {
+        setTutorial();
     }
 }

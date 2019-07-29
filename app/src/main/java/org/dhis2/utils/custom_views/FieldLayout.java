@@ -1,15 +1,11 @@
 package org.dhis2.utils.custom_views;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.RelativeLayout;
-
-import org.dhis2.utils.ColorUtils;
 
 import androidx.annotation.Nullable;
 
@@ -21,6 +17,7 @@ public abstract class FieldLayout extends RelativeLayout {
     protected boolean isBgTransparent;
     protected LayoutInflater inflater;
     protected String label;
+    protected OnActivation activationListener;
 
 
     public FieldLayout(Context context) {
@@ -42,20 +39,10 @@ public abstract class FieldLayout extends RelativeLayout {
         inflater = LayoutInflater.from(context);
     }
 
-    public abstract void performOnFocusAction();
-
     @Override
     protected void onFocusChanged(boolean gainFocus, int direction, @Nullable Rect previouslyFocusedRect) {
         super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
-       /* if(gainFocus)
-            performOnFocusAction();*/
-       /* if (gainFocus) {
-            setBackgroundColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY_LIGHT));
-            performOnFocusAction();
-        } else if (isBgTransparent) {
-            setBackgroundColor(0x00000000);
-        } else
-            setBackgroundColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY));*/
+
     }
 
     public void nextFocus(View view) {
@@ -63,4 +50,18 @@ public abstract class FieldLayout extends RelativeLayout {
         if ((nextView = view.focusSearch(FOCUS_DOWN)) != null)
             nextView.requestFocus();
     }
+
+    protected void activate() {
+        if (activationListener != null)
+            activationListener.onActivation();
+    }
+
+    public void setActivationListener(OnActivation onActivationListener){
+        this.activationListener = onActivationListener;
+    }
+
+    public interface OnActivation {
+        void onActivation();
+    }
 }
+

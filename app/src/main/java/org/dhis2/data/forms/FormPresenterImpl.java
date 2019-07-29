@@ -72,7 +72,7 @@ class FormPresenterImpl implements FormPresenter {
     private final D2 d2;
     private FormView view;
 
-    private boolean isEvent = false;
+    private boolean isEvent;
 
     FormPresenterImpl(@NonNull FormViewArguments formViewArguments,
                       @NonNull SchedulerProvider schedulerProvider,
@@ -387,25 +387,6 @@ class FormPresenterImpl implements FormPresenter {
                     view.isMandatoryFieldsRequired(new ArrayList<>());
                 })
         );
-    }
-
-    public Observable<Boolean> checkMandatory() {
-        Observable<List<FieldViewModel>> values = formRepository.fieldValues();
-        Observable<Result<RuleEffect>> ruleEffect = ruleEngineRepository.calculate().toObservable()
-                .subscribeOn(schedulerProvider.computation()).onErrorReturn(throwable -> Result.failure(new Exception(throwable)));
-
-        Observable<List<FieldViewModel>> fieldValues = Observable.zip(
-                values, ruleEffect, this::applyFieldViewEffects);
-
-        return fieldValues
-                .map(data -> {
-                    boolean mandatoryRequired = false;
-                    for (FieldViewModel viewModel : data) {
-                        if (viewModel.mandatory() && TextUtils.isEmpty(viewModel.value()))
-                            mandatoryRequired = true;
-                    }
-                    return mandatoryRequired;
-                });
     }
 
     private void deleteTrackedEntityAttributeValues(@NonNull String trackedEntityAttributeInstanceId) {

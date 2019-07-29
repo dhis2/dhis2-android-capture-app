@@ -19,16 +19,14 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
-import androidx.core.widget.NestedScrollView;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
-import androidx.work.State;
+import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.jakewharton.rxbinding2.widget.RxTextView;
 
-import org.dhis2.BuildConfig;
 import org.dhis2.Components;
 import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
@@ -40,7 +38,6 @@ import org.dhis2.utils.SyncUtils;
 import org.hisp.dhis.android.core.imports.TrackerImportConflict;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -50,9 +47,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
-import me.toptas.fancyshowcase.FancyShowCaseView;
-import me.toptas.fancyshowcase.FocusShape;
-import me.toptas.fancyshowcase.listener.DismissListener;
 import timber.log.Timber;
 
 import static org.dhis2.utils.Constants.DATA_NOW;
@@ -108,8 +102,8 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     @Override
     public void onResume() {
         super.onResume();
-        WorkManager.getInstance().getStatusesByTagLiveData(META_NOW).observe(this, workStatuses -> {
-            if (!workStatuses.isEmpty() && workStatuses.get(0).getState() == State.RUNNING) {
+        WorkManager.getInstance().getWorkInfosByTagLiveData(META_NOW).observe(this, workStatuses -> {
+            if (!workStatuses.isEmpty() && workStatuses.get(0).getState() == WorkInfo.State.RUNNING) {
                 binding.syncMetaLayout.message.setTextColor(ContextCompat.getColor(context, R.color.text_black_333));
                 String metaText = metaSyncSettings().concat("\n").concat(context.getString(R.string.syncing_configuration));
                 binding.syncMetaLayout.message.setText(metaText);
@@ -120,8 +114,8 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 presenter.checkData();
             }
         });
-        WorkManager.getInstance().getStatusesByTagLiveData(DATA_NOW).observe(this, workStatuses -> {
-            if (!workStatuses.isEmpty() && workStatuses.get(0).getState() == State.RUNNING) {
+        WorkManager.getInstance().getWorkInfosByTagLiveData(DATA_NOW).observe(this, workStatuses -> {
+            if (!workStatuses.isEmpty() && workStatuses.get(0).getState() == WorkInfo.State.RUNNING) {
                 String dataText = dataSyncSetting().concat("\n").concat(context.getString(R.string.syncing_data));
                 binding.syncDataLayout.message.setTextColor(ContextCompat.getColor(context, R.color.text_black_333));
                 binding.syncDataLayout.message.setText(dataText);
@@ -138,8 +132,6 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
             binding.buttonSyncData.setEnabled(false);
             binding.buttonSyncMeta.setEnabled(false);
         }
-
-        showTutorial();
 
         listenerDisposable = new CompositeDisposable();
 
@@ -221,7 +213,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
             binding.syncDataLayout.message.setTextColor(ContextCompat.getColor(getContext(), R.color.red_060));
 
         } else if (presenter.dataHasWarnings()) {
-            String src =dataSyncSetting().concat("\n").concat(getString(R.string.data_sync_warning));
+            String src = dataSyncSetting().concat("\n").concat(getString(R.string.data_sync_warning));
             SpannableString str = new SpannableString(src);
             int wIndex = src.indexOf('@');
             str.setSpan(new ImageSpan(getContext(), R.drawable.ic_sync_warning), wIndex, wIndex + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -375,100 +367,13 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
     @Override
     public void showTutorial() {
-        if (isAdded() && getContext() != null) {
-            NestedScrollView scrollView = getAbstractActivity().findViewById(R.id.scrollView);
+        if (isAdded() && getContext() != null)
             new Handler().postDelayed(() -> {
                 if (getAbstractActivity() != null) {
-                    FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
-                            .focusOn(getAbstractActivity().findViewById(R.id.settingsItemData))
-                            .title(getString(R.string.tuto_settings_1))
-                            .enableAutoTextPosition()
-                            .closeOnTouch(true)
-                            .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                            .build();
-
-                    FancyShowCaseView tuto2 = new FancyShowCaseView.Builder(getAbstractActivity())
-                            .focusOn(getAbstractActivity().findViewById(R.id.settingsItemMeta))
-                            .title(getString(R.string.tuto_settings_2))
-                            .enableAutoTextPosition()
-                            .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                            .closeOnTouch(true)
-                            .build();
-
-                    FancyShowCaseView tuto3 = new FancyShowCaseView.Builder(getAbstractActivity())
-                            .focusOn(getAbstractActivity().findViewById(R.id.settingsItemParams))
-                            .title(getString(R.string.tuto_settings_3))
-                            .enableAutoTextPosition()
-                            .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                            .closeOnTouch(true)
-                            .dismissListener(new DismissListener() {
-                                @Override
-                                public void onDismiss(String id) {
-                                    if (scrollView != null) {
-                                        scrollView.scrollTo((int) getAbstractActivity().findViewById(R.id.settingsItemValues).getX(), (int) getAbstractActivity().findViewById(R.id.settingsItemValues).getY());
-                                    }
-                                }
-
-                                @Override
-                                public void onSkipped(String id) {
-                                    // unused
-                                }
-                            })
-                            .build();
-
-                    FancyShowCaseView tuto4 = new FancyShowCaseView.Builder(getAbstractActivity())
-                            .focusOn(getAbstractActivity().findViewById(R.id.settingsItemValues))
-                            .title(getString(R.string.tuto_settings_reserved))
-                            .enableAutoTextPosition()
-                            .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                            .closeOnTouch(true)
-                            .build();
-
-                    FancyShowCaseView tuto5 = new FancyShowCaseView.Builder(getAbstractActivity())
-                            .focusOn(getAbstractActivity().findViewById(R.id.settingsItemLog))
-                            .title(getString(R.string.tuto_settings_errors))
-                            .enableAutoTextPosition()
-                            .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                            .closeOnTouch(true)
-                            .build();
-
-                    FancyShowCaseView tuto6 = new FancyShowCaseView.Builder(getAbstractActivity())
-                            .focusOn(getAbstractActivity().findViewById(R.id.settingsItemDeleteData))
-                            .title(getString(R.string.tuto_settings_reset))
-                            .enableAutoTextPosition()
-                            .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                            .closeOnTouch(true)
-                            .build();
-
-                    FancyShowCaseView tuto7 = new FancyShowCaseView.Builder(getAbstractActivity())
-                            .focusOn(getAbstractActivity().findViewById(R.id.settingsReset))
-                            .title(getString(R.string.tuto_settings_4))
-                            .enableAutoTextPosition()
-                            .closeOnTouch(true)
-                            .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                            .build();
-
-
-                    ArrayList<FancyShowCaseView> steps = new ArrayList<>();
-                    steps.add(tuto1);
-                    steps.add(tuto2);
-                    steps.add(tuto3);
-                    steps.add(tuto4);
-                    steps.add(tuto5);
-                    steps.add(tuto6);
-                    steps.add(tuto7);
-
-                    HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
-                    HelpManager.getInstance().setScroll(scrollView);
-
-                    if (prefs != null && !prefs.getBoolean("TUTO_SETTINGS_SHOWN", false) && !BuildConfig.DEBUG) {
-                        HelpManager.getInstance().showHelp();
-                        prefs.edit().putBoolean("TUTO_SETTINGS_SHOWN", true).apply();
-                    }
+                    HelpManager.getInstance().setScroll(getAbstractActivity().findViewById(R.id.scrollView));
+                    HelpManager.getInstance().show(getAbstractActivity(), HelpManager.TutorialName.SETTINGS_FRAGMENT, null);
                 }
-
             }, 500);
-        }
     }
 
     @Override

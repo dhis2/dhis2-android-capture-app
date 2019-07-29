@@ -21,7 +21,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.ContentLoadingProgressBar;
@@ -66,10 +65,6 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
     private CoordinatesView coordinatesView;
     private ContentLoadingProgressBar progressBar;
 
-    public ContentLoadingProgressBar getProgressBar() {
-        return progressBar;
-    }
-
     private BroadcastReceiver syncReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -100,7 +95,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
         if (!getResources().getBoolean(R.bool.is_tablet))
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
 
-        if (!BuildConfig.DEBUG)
+        if (!BuildConfig.DEBUG && !BuildConfig.BUILD_TYPE.equals("beta"))
             getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
         SharedPreferences prefs = getSharedPreferences();
         if (this instanceof MainActivity || this instanceof LoginActivity || this instanceof SplashActivity) {

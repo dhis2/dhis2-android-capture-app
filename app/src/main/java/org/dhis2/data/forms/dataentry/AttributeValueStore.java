@@ -30,7 +30,7 @@ import io.reactivex.Flowable;
 
 import static android.text.TextUtils.isEmpty;
 import static org.dhis2.data.forms.dataentry.DataEntryStore.valueType.ATTR;
-import static org.hisp.dhis.android.core.utils.StoreUtils.sqLiteBind;
+import static org.hisp.dhis.android.core.arch.db.stores.internal.StoreUtils.sqLiteBind;
 
 public final class AttributeValueStore implements DataEntryStore {
 
@@ -115,8 +115,8 @@ public final class AttributeValueStore implements DataEntryStore {
                     " WHERE TrackedEntityAttribute.uid = ? AND" +
                     " TrackedEntityAttribute.uniqueProperty = ? AND" +
                     " TrackedEntityAttributeValue.value = ?", uid, "1", value)) {
-                if (uniqueCursor != null && uniqueCursor.getCount() > 0) {
-                    delete(uid, ATTR);
+                if (uniqueCursor != null && uniqueCursor.getCount() > 0 && !uniqueCursor.getString(0).equals(value)) {
+                    delete(uid, ATTR); //TODO: TEST IF DELETE IS THE RIGHT WAY
                     return Flowable.just(false);
                 } else
                     return Flowable.just(true);
@@ -294,25 +294,6 @@ public final class AttributeValueStore implements DataEntryStore {
 
         return eventUid;
     }
-
-   /* private boolean checkUnique(String attribute, String value) {
-        if (attribute != null && value != null) {
-            Cursor uniqueCursor = briteDatabase.query("SELECT TrackedEntityAttributeValue.value FROM TrackedEntityAttributeValue" +
-                    " JOIN TrackedEntityAttribute ON TrackedEntityAttribute.uid = TrackedEntityAttributeValue.trackedEntityAttribute" +
-                    " WHERE TrackedEntityAttribute.uid = ? AND" +
-                    " TrackedEntityAttribute.uniqueProperty = ? AND" +
-                    " TrackedEntityAttributeValue.value = ?", attribute, "1", value);
-
-            if (uniqueCursor == null)
-                return true;
-            else {
-                boolean hasValue = uniqueCursor.getCount() > 0;
-                uniqueCursor.close();
-                return !hasValue;
-            }
-        } else
-            return true;
-    }*/
 
     @NonNull
     private Flowable<Long> updateEnrollment(long status) {

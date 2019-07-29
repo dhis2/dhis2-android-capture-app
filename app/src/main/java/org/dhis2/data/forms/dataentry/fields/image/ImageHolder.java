@@ -89,7 +89,4 @@ public class ImageHolder extends FormViewHolder {
         disposable.clear();
     }
 
-    @Override
-    public void performAction() {
-    }
 }

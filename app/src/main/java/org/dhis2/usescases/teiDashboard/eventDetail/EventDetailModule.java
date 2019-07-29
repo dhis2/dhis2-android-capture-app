@@ -7,6 +7,7 @@ import com.squareup.sqlbrite2.BriteDatabase;
 import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.user.UserRepository;
+import org.hisp.dhis.android.core.D2;
 
 import dagger.Module;
 import dagger.Provides;
@@ -40,8 +41,8 @@ public class EventDetailModule {
 
     @Provides
     @PerActivity
-    EventDetailRepository eventDetailRepository(BriteDatabase briteDatabase) {
-        return new EventDetailRepositoryImpl(briteDatabase, eventUid, teiUid);
+    EventDetailRepository eventDetailRepository(BriteDatabase briteDatabase, D2 d2) {
+        return new EventDetailRepositoryImpl(briteDatabase, eventUid, teiUid, d2);
     }
 
     @Provides

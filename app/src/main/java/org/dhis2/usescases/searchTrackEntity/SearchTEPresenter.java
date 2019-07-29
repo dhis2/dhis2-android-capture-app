@@ -105,24 +105,28 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         })
                         .subscribeOn(AndroidSchedulers.mainThread())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .flatMap(programModels -> {
-                            for (ProgramModel programModel : programModels)
-                                if (programModel.uid().equals(initialProgram))
-                                    this.selectedProgram = programModel;
-                            view.setPrograms(programModels);
+                        .subscribe(programModels -> {
 
-                            if (selectedProgram != null)
-                                return searchRepository.programAttributes(selectedProgram.uid());
-                            else
-                                return searchRepository.programAttributes();
+                                    List<ProgramModel> programsWithTEType = new ArrayList<>();
+                                    for (ProgramModel programModel : programModels) {
+                                        if (programModel.trackedEntityType().equals(trackedEntityType))
+                                            programsWithTEType.add(programModel);
+                                        if (programModel.uid().equals(initialProgram))
+                                            this.selectedProgram = programModel;
+                                    }
+                                    if(selectedProgram==null && programsWithTEType.size()==1) {
+                                        setProgram(programsWithTEType.get(0));
+                                        view.setPrograms(programsWithTEType);
+                                    } else if (selectedProgram != null) {
+                                        setProgram(selectedProgram);
+                                        view.setPrograms(programModels);
+                                    } else {
+                                        setProgram(null);
+                                        view.setPrograms(programModels);
+                                    }
 
-                        })
-                        .subscribeOn(AndroidSchedulers.mainThread())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                data -> view.setForm(data, selectedProgram, queryData),
-                                Timber::d)
-        );
+                                }, Timber::d
+                        ));
 
         compositeDisposable.add(
                 metadataRepository.getOrganisationUnits()
@@ -249,8 +253,9 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 messageId = String.format(view.getContext().getString(R.string.search_max_tei_reached), MAX_NO_SELECTED_PROGRAM_RESULTS);
         } else {
             if (size == 0 && !queryData.isEmpty()) {
-                if (selectedProgram.minAttributesRequiredToSearch() > 0 && queryData.size() == 1 && queryData.containsKey(Constants.ENROLLMENT_DATE_UID))
-                    messageId = view.getContext().getString(R.string.search_attr);
+                int realQuerySize = queryData.containsKey(Constants.ENROLLMENT_DATE_UID)? queryData.size()-1 : queryData.size();
+                if (selectedProgram.minAttributesRequiredToSearch() > realQuerySize)
+                    messageId = String.format(view.getContext().getString(R.string.search_min_num_attr), selectedProgram.minAttributesRequiredToSearch());
                 else
                     messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
                 canRegister = true;
@@ -479,7 +484,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private void showCustomCalendar(OrganisationUnitModel selectedOrgUnitModel, String programUid, String uid) {
 
         LayoutInflater layoutInflater = LayoutInflater.from(view.getContext());
-//        View datePickerView = layoutInflater.inflate(R.layout.widget_datepicker, null);
         WidgetDatepickerBinding binding = WidgetDatepickerBinding.inflate(layoutInflater);
         final DatePicker datePicker = binding.widgetDatepicker;
 
@@ -491,22 +495,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(view.getContext(), R.style.DatePickerTheme)
                 .setTitle(selectedProgram.enrollmentDateLabel());
-               /* .setPositiveButton(R.string.action_accept, (dialog, which) -> {
-                    Calendar selectedCalendar = Calendar.getInstance();
-                    selectedCalendar.set(Calendar.YEAR, datePicker.getYear());
-                    selectedCalendar.set(Calendar.MONTH, datePicker.getMonth());
-                    selectedCalendar.set(Calendar.DAY_OF_MONTH, datePicker.getDayOfMonth());
-                    selectedCalendar.set(Calendar.HOUR_OF_DAY, 0);
-                    selectedCalendar.set(Calendar.MINUTE, 0);
-                    selectedCalendar.set(Calendar.SECOND, 0);
-                    selectedCalendar.set(Calendar.MILLISECOND, 0);
-                    selectedEnrollmentDate = selectedCalendar.getTime();
-
-                    enrollInOrgUnit(selectedOrgUnitModel.uid(), programUid, uid, selectedEnrollmentDate);
-                })
-                .setNeutralButton(view.getContext().getResources().getString(R.string.change_calendar),
-                        (dialog, which) -> showNativeCalendar(selectedOrgUnitModel, programUid, uid))
-                .setNegativeButton(view.getContext().getString(R.string.date_dialog_clear), (dialog, which) -> dialog.dismiss());*/
 
         if (selectedOrgUnitModel.openingDate() != null)
             datePicker.setMinDate(selectedOrgUnitModel.openingDate().getTime());

@@ -3,19 +3,18 @@ package org.dhis2.utils.custom_views;
 import android.content.Context;
 import android.graphics.Rect;
 import android.util.AttributeSet;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
-import org.dhis2.BR;
-import org.dhis2.R;
-import org.hisp.dhis.android.core.common.ValueType;
-
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
+
+import org.dhis2.BR;
+import org.dhis2.R;
+import org.hisp.dhis.android.core.common.ValueType;
 
 
 /**
@@ -29,7 +28,7 @@ public class YesNoView extends FieldLayout implements RadioGroup.OnCheckedChange
     private RadioGroup radioGroup;
     private RadioButton yes;
     private RadioButton no;
-    //    private RadioButton no_value;
+
     private TextView labelView;
     private View clearButton;
 
@@ -50,11 +49,6 @@ public class YesNoView extends FieldLayout implements RadioGroup.OnCheckedChange
 
     public void init(Context context) {
         super.init(context);
-    }
-
-    @Override
-    public void performOnFocusAction() {
-        //no action to perform
     }
 
     public void setValueType(ValueType valueType) {
@@ -96,7 +90,6 @@ public class YesNoView extends FieldLayout implements RadioGroup.OnCheckedChange
         clearButton = findViewById(R.id.clearSelection);
         yes = findViewById(R.id.yes);
         no = findViewById(R.id.no);
-//        no_value = findViewById(R.id.no_value);
         labelView = findViewById(R.id.label);
         radioGroup.setOnCheckedChangeListener(this);
 
@@ -120,7 +113,5 @@ public class YesNoView extends FieldLayout implements RadioGroup.OnCheckedChange
     @Override
     protected void onFocusChanged(boolean gainFocus, int direction, @Nullable Rect previouslyFocusedRect) {
         super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
-
-
     }
 }

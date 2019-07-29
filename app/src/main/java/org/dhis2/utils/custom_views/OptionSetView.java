@@ -19,12 +19,13 @@ import org.dhis2.databinding.FormSpinnerAccentBinding;
 import org.dhis2.databinding.FormSpinnerBinding;
 import org.dhis2.utils.Constants;
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
+import org.hisp.dhis.android.core.option.Option;
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
 import static android.text.TextUtils.isEmpty;
 
-public class OptionSetView extends FieldLayout implements PopupMenu.OnMenuItemClickListener, OptionSetOnClickListener {
+public class OptionSetView extends FieldLayout implements OptionSetOnClickListener {
     private ViewDataBinding binding;
 
     private ImageView iconView;
@@ -91,31 +92,13 @@ public class OptionSetView extends FieldLayout implements PopupMenu.OnMenuItemCl
         delete.setVisibility(View.GONE);
     }
 
-    @Override
-    public void performOnFocusAction() {
-        editText.performClick();
-    }
-
     public void setOnSelectedOptionListener(OnSelectedOption listener) {
         this.listener = listener;
     }
 
     @Override
-    public boolean onMenuItemClick(MenuItem item) {
-        if (OptionSetPopUp.getInstance().getOptions() != null && item.getTitle() != null) {
-            OptionModel selectedOption = OptionSetPopUp.getInstance().getOptions().get(item.getTitle().toString());
-            if (selectedOption != null) {
-                setValueOption(selectedOption.displayName(), selectedOption.code());
-            }
-            OptionSetPopUp.getInstance().dismiss();
-        }
-        return false;
-    }
-
-    @Override
-    public void onSelectOption(OptionModel option) {
+    public void onSelectOption(Option option) {
         setValueOption(option.displayName(), option.code());
-        OptionSetDialog.newInstance().dismiss();
     }
 
     private void setValueOption(String optionDisplayName, String optionCode) {
@@ -161,6 +144,7 @@ public class OptionSetView extends FieldLayout implements PopupMenu.OnMenuItemCl
         } else if (!isEmpty(error)) {
             inputLayout.setErrorTextAppearance(R.style.error_appearance);
             inputLayout.setError(error);
+            editText.setText("");
         } else
             inputLayout.setError(null);
     }

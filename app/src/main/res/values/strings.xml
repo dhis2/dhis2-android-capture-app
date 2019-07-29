@@ -1,5 +1,4 @@
 <resources>
-    <string name="transifex">A test for transifex</string>
     <!--GENERAL-->
     <string name="app_name">Dhis2</string>
     <string name="logo_text">dhis</string>
