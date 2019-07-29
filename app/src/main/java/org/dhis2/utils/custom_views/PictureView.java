@@ -138,6 +138,7 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
                     .apply(new RequestOptions().centerCrop())
                     .apply(RequestOptions.skipMemoryCacheOf(true))
                     .apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.NONE))
+                    .skipMemoryCache(true)
                     .into(image);
         }
     }
