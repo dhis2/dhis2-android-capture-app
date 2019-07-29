@@ -7,6 +7,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.databinding.ObservableField;
 
+import com.evrencoskun.tableview.filter.Filter;
+
 import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.databinding.ItemFilterOrgUnitBinding;
@@ -16,7 +18,7 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 
 class OrgUnitFilterHolder extends FilterHolder {
 
-    OrganisationUnit currentOrgUnit;
+    private OrganisationUnit currentOrgUnit;
 
     OrgUnitFilterHolder(@NonNull ItemFilterOrgUnitBinding binding, ObservableField<Filters> openedFilter) {
         super(binding, openedFilter);
@@ -28,14 +30,15 @@ class OrgUnitFilterHolder extends FilterHolder {
         super.bind();
         filterIcon.setImageDrawable(AppCompatResources.getDrawable(itemView.getContext(), R.drawable.ic_filter_ou));
         filterTitle.setText("Org Unit");
-
+        filterValues.setText(
+                FilterManager.getInstance().getOrgUnitFilters().isEmpty()?"No filters applied" : "Filters applying"
+        );
         setUpAdapter();
 
     }
 
     private void setUpAdapter() {
         D2 d2 = ((App) itemView.getContext().getApplicationContext()).serverComponent().userManager().getD2();
-
 
         ItemFilterOrgUnitBinding localBinding = (ItemFilterOrgUnitBinding) binding;
 

@@ -2,6 +2,8 @@ package org.dhis2.utils.custom_views;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -90,7 +92,6 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
         descriptionLabel = binding.getRoot().findViewById(R.id.descriptionLabel);
 
         editText.setOnFocusChangeListener(this);
-
     }
 
     public void setDescription(String description) {
