@@ -38,6 +38,16 @@ public class OUTreeActivity extends ActivityGlobalAbstract implements OrgUnitSel
     FlowableProcessor<String> onSearchListener;
     FlowableProcessor<Boolean> onStartSearch;
 
+    public static Bundle getBundle(
+            @Nullable String programUid
+    ) {
+        Bundle bundle = new Bundle();
+
+        if (programUid != null)
+            bundle.putString("PROGRAM", programUid);
+        return bundle;
+    }
+
     @SuppressLint("RxDefaultScheduler")
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -47,6 +57,8 @@ public class OUTreeActivity extends ActivityGlobalAbstract implements OrgUnitSel
         ouChildListener = PublishProcessor.create();
         onSearchListener = PublishProcessor.create();
         onStartSearch = PublishProcessor.create();
+
+        String programUid = getIntent().getStringExtra("PROGRAM");
 
         D2 d2 = ((App) getApplicationContext()).serverComponent().userManager().getD2();
 

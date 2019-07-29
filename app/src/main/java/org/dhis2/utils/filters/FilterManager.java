@@ -186,4 +186,9 @@ public class FilterManager {
     public boolean exist(OrganisationUnit content) {
         return ouFilters.contains(content);
     }
+
+    public void clearCatOptCombo() {
+        catOptComboFilters.clear();
+        catOptCombFiltersApplied.set(catOptComboFilters.size());
+    }
 }

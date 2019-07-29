@@ -29,19 +29,7 @@ public interface ProgramEventDetailRepository {
     @NonNull
     Observable<Program> program();
 
-    @NonNull
-    Observable<List<Category>> catCombo();
-
-    @NonNull
-    Observable<List<OrganisationUnitModel>> orgUnits();
-
-    @NonNull
-    Observable<List<OrganisationUnitModel>> orgUnits(String parentUid);
-
-
     boolean getAccessDataWrite();
-
-    List<CategoryOptionCombo> catOptionCombo(List<CategoryOption> selectedOptions);
 
     Single<Pair<CategoryCombo, List<CategoryOptionCombo>>> catOptionCombos();
 

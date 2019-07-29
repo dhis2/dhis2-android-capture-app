@@ -29,73 +29,37 @@ public class ProgramEventDetailContract {
 
     public interface View extends AbstractActivityContracts.View {
 
-        void addTree(TreeNode treeNode);
-
-        void openDrawer();
-
-        void showTimeUnitPicker();
-
-        void showRageDatePicker();
-
         void setProgram(Program programModel);
 
         void renderError(String message);
 
-        void setCatComboOptions( List<Category> categories);
-
         void showHideFilter();
-
-        void apply();
 
         void setWritePermission(Boolean aBoolean);
 
-        void orgUnitProgress(boolean showProgress);
-
-        Consumer<Pair<TreeNode, List<TreeNode>>> addNodeToTree();
-
         void setLiveData(LiveData<PagedList<ProgramEventViewModel>> pagedListLiveData);
-
-        Period getCurrentPeriod();
 
         void setOptionComboAccess(Boolean canCreateEvent);
 
         void updateFilters(int totalFilters);
 
         void setCatOptionComboFilter(Pair<CategoryCombo, List<CategoryOptionCombo>> categoryOptionCombos);
+
+        void openOrgUnitTreeSelector();
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
-        void init(View view, Period period);
+        void init(View view);
 
         void updateDateFilter(List<DatePeriod> datePeriodList);
-
-        void updateOrgUnitFilter(List<String> orgUnitList);
-
-        void updateCatOptCombFilter(List<CategoryOption> categoryOptionComboMap);
-
-        void onTimeButtonClick();
-
-        void onDateRangeButtonClick();
-
-        void onOrgUnitButtonClick();
 
         void addEvent();
 
         void onBackClick();
 
-        void setProgram(ProgramModel program);
-
-        void onCatComboSelected(CategoryOptionComboModel categoryOptionComboModel);
-
-        void clearCatComboFilters();
-
         void onEventClick(String eventId, String orgUnit);
 
         void showFilter();
-
-        List<OrganisationUnitModel> getOrgUnits();
-
-        void onExpandOrgUnitNode(TreeNode node, String uid);
 
         void onSyncIconClick(String uid);
     }
