@@ -15,7 +15,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.appcompat.content.res.AppCompatResources;
@@ -30,9 +29,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import org.dhis2.R;
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetTableAdapter;
 import org.dhis2.usescases.programEventDetail.ProgramEventViewModel;
-import org.dhis2.utils.CatComboAdapter;
 import org.dhis2.utils.DateUtils;
-import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
@@ -48,7 +45,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import timber.log.Timber;
 
@@ -440,17 +436,6 @@ public class Bindings {
         }
     }
 
-    @BindingAdapter("spinnerOptions")
-    public static void setSpinnerOptions(Spinner spinner, List<CategoryOptionComboModel> options) {
-        CatComboAdapter adapter = new CatComboAdapter(spinner.getContext(),
-                R.layout.spinner_layout,
-                R.id.spinner_text,
-                options,
-                "",
-                R.color.white_faf);
-        spinner.setAdapter(adapter);
-    }
-
     @BindingAdapter("fromResBgColor")
     public static void setFromResBgColor(View view, int color) {
         String tintedColor;
@@ -579,7 +564,7 @@ public class Bindings {
     public static void setIconTint(ImageView view, boolean followUp) {
         Drawable wrappedDrawable = DrawableCompat.wrap(view.getDrawable());
         Drawable mutableDrawable = wrappedDrawable.mutate();
-        if(followUp)
+        if (followUp)
             DrawableCompat.setTint(mutableDrawable, ContextCompat.getColor(view.getContext(), R.color.white));
         else
             DrawableCompat.setTint(mutableDrawable, ContextCompat.getColor(view.getContext(), R.color.text_black_333));

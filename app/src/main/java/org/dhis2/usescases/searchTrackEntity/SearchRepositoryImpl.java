@@ -154,7 +154,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         List<QueryItem> filterList = formatQueryData(queryData, queryBuilder);
 
         TrackedEntityInstanceQuery query = queryBuilder.filter(filterList).build();
-        DataSource dataSource = d2.trackedEntityModule().trackedEntityInstanceQuery.offlineOnly().query(query).getDataSource().map(tei -> transform(tei, selectedProgram));
+        DataSource dataSource = d2.trackedEntityModule().trackedEntityInstanceQuery.offlineOnly().query(query).getDataSource().map(tei -> transform(tei, selectedProgram, true));
         return new LivePagedListBuilder(new DataSource.Factory() {
             @NonNull
             @Override
@@ -186,7 +186,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         List<QueryItem> filterList = formatQueryData(queryData, queryBuilder);
 
         TrackedEntityInstanceQuery query = queryBuilder.filter(filterList).build();
-        DataSource dataSource = d2.trackedEntityModule().trackedEntityInstanceQuery.offlineFirst().query(query).getDataSource().map(tei -> transform(tei, selectedProgram));
+        DataSource dataSource = d2.trackedEntityModule().trackedEntityInstanceQuery.offlineFirst().query(query).getDataSource().map(tei -> transform(tei, selectedProgram, false));
         return new LivePagedListBuilder(new DataSource.Factory() {
             @NonNull
             @Override
@@ -435,18 +435,21 @@ public class SearchRepositoryImpl implements SearchRepository {
     }
 
 
-    private SearchTeiModel transform(TrackedEntityInstance tei, @Nullable Program selectedProgram) {
+    private SearchTeiModel transform(TrackedEntityInstance tei, @Nullable Program selectedProgram, boolean offlineOnly) {
 
         SearchTeiModel searchTei = new SearchTeiModel();
         if (d2.trackedEntityModule().trackedEntityInstances.byUid().eq(tei.uid()).one().exists()) {
             TrackedEntityInstance localTei = d2.trackedEntityModule().trackedEntityInstances.byUid().eq(tei.uid()).one().get();
             searchTei.setTei(localTei);
-            if (selectedProgram != null)
-                if (d2.enrollmentModule().enrollments.byTrackedEntityInstance().eq(localTei.uid()).byProgram().eq(selectedProgram.uid()).one().exists()) {
-                    searchTei.setCurrentEnrollment(d2.enrollmentModule().enrollments.byTrackedEntityInstance().eq(localTei.uid()).byProgram().eq(selectedProgram.uid()).one().get());
-                    searchTei.setOnline(false);
-                } else if (d2.enrollmentModule().enrollments.byTrackedEntityInstance().eq(localTei.uid()).one().exists())
-                    searchTei.setOnline(false);
+            if (selectedProgram != null && d2.enrollmentModule().enrollments.byTrackedEntityInstance().eq(localTei.uid()).byProgram().eq(selectedProgram.uid()).one().exists()) {
+                searchTei.setCurrentEnrollment(d2.enrollmentModule().enrollments.byTrackedEntityInstance().eq(localTei.uid()).byProgram().eq(selectedProgram.uid()).one().get());
+                searchTei.setOnline(false);
+            } else if (d2.enrollmentModule().enrollments.byTrackedEntityInstance().eq(localTei.uid()).one().exists())
+                searchTei.setOnline(false);
+
+            if (offlineOnly)
+                searchTei.setOnline(!offlineOnly);
+
             setEnrollmentInfo(searchTei);
             setAttributesInfo(searchTei, selectedProgram);
             setOverdueEvents(searchTei, selectedProgram);

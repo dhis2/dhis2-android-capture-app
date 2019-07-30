@@ -20,6 +20,7 @@ import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.FormEditTextCustomBinding;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.Preconditions;
+import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.dhis2.utils.ValidationUtils;
 import org.dhis2.utils.custom_views.TextInputAutoCompleteTextView;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
@@ -96,6 +97,14 @@ final class EditTextCustomHolder extends FormViewHolder {
         binding.customEdittext.setValueType(editTextModel.valueType());
 
         binding.customEdittext.setObjectSyle(model.objectStyle());
+        if (model.objectStyle() != null) {
+            objectStyle = ObjectStyle.builder()
+                    .color(model.objectStyle().color())
+                    .icon(model.objectStyle().icon())
+                    .uid(model.objectStyle().uid())
+                    .objectTable(model.objectStyle().objectTable())
+                    .build();
+        }
         label = new StringBuilder(model.label());
         binding.customEdittext.setLabel(model.label(), model.mandatory());
         descriptionText = model.description();

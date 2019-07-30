@@ -2,16 +2,15 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventInitial;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.SparseBooleanArray;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,12 +24,12 @@ import androidx.core.view.GravityCompat;
 import androidx.core.view.ViewCompat;
 import androidx.databinding.DataBindingUtil;
 
+import com.jakewharton.rxbinding2.view.RxView;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
 import org.dhis2.App;
 import org.dhis2.Bindings.Bindings;
-import org.dhis2.BuildConfig;
 import org.dhis2.R;
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
@@ -77,11 +76,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Consumer;
-import me.toptas.fancyshowcase.FancyShowCaseView;
 import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
@@ -142,6 +143,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     private ArrayList<String> sectionsToHide;
     private Boolean accessData;
 
+    private CompositeDisposable disposable;
+
     public static Bundle getBundle(String programUid, String eventUid, String eventCreationType,
                                    String teiUid, PeriodType eventPeriodType, String orgUnit, String stageUid,
                                    String enrollmentUid, int eventScheduleInterval, EnrollmentStatus enrollmentStatus) {
@@ -176,6 +179,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         programStageUid = getIntent().getStringExtra(Constants.PROGRAM_STAGE_UID);
         enrollmentStatus = (EnrollmentStatus) getIntent().getSerializableExtra(Constants.ENROLLMENT_STATUS);
         eventScheduleInterval = getIntent().getIntExtra(Constants.EVENT_SCHEDULE_INTERVAL, 0);
+        disposable = new CompositeDisposable();
 
         ((App) getApplicationContext()).userComponent().plus(new EventInitialModule(eventUid)).inject(this);
 
@@ -197,55 +201,58 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         }
 
         if (binding.actionButton != null) {
-            binding.actionButton.setOnClickListener(v -> {
-                String programStageModelUid = programStageModel == null ? "" : programStageModel.uid();
-                if (eventUid == null) { // This is a new Event
-                    if (eventCreationType == EventCreationType.REFERAL && tempCreate.equals(PERMANENT)) {
-                        presenter.scheduleEventPermanent(
-                                enrollmentUid,
-                                getTrackedEntityInstance,
-                                programStageModelUid,
-                                selectedDate,
-                                selectedOrgUnit,
-                                null,
-                                catOptionComboUid,
-                                isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? null : binding.lat.getText().toString(),
-                                isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? null : binding.lon.getText().toString()
-                        );
-                    } else if (eventCreationType == EventCreationType.SCHEDULE || eventCreationType == EventCreationType.REFERAL) {
-                        presenter.scheduleEvent(
-                                enrollmentUid,
-                                programStageModelUid,
-                                selectedDate,
-                                selectedOrgUnit,
-                                null,
-                                catOptionComboUid,
-                                isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? null : binding.lat.getText().toString(),
-                                isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? null : binding.lon.getText().toString()
-                        );
-                    } else {
-                        presenter.createEvent(
-                                enrollmentUid,
-                                programStageModelUid,
-                                selectedDate,
-                                selectedOrgUnit,
-                                null,
-                                catOptionComboUid,
-                                isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? null : binding.lat.getText().toString(),
-                                isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? null : binding.lon.getText().toString(),
-                                getTrackedEntityInstance);
-                    }
-                } else {
-                    presenter.editEvent(getTrackedEntityInstance,
-                            programStageModelUid,
-                            eventUid,
-                            DateUtils.databaseDateFormat().format(selectedDate), selectedOrgUnit, null,
-                            catOptionComboUid,
-                            isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? null : binding.lat.getText().toString(),
-                            isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? null : binding.lon.getText().toString()
-                    );
-                }
-            });
+            disposable.add(RxView.clicks(binding.actionButton)
+                    .debounce(300, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
+                    .subscribe(v -> {
+                                String programStageModelUid = programStageModel == null ? "" : programStageModel.uid();
+                                if (eventUid == null) { // This is a new Event
+                                    if (eventCreationType == EventCreationType.REFERAL && tempCreate.equals(PERMANENT)) {
+                                        presenter.scheduleEventPermanent(
+                                                enrollmentUid,
+                                                getTrackedEntityInstance,
+                                                programStageModelUid,
+                                                selectedDate,
+                                                selectedOrgUnit,
+                                                null,
+                                                catOptionComboUid,
+                                                isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? null : binding.lat.getText().toString(),
+                                                isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? null : binding.lon.getText().toString()
+                                        );
+                                    } else if (eventCreationType == EventCreationType.SCHEDULE || eventCreationType == EventCreationType.REFERAL) {
+                                        presenter.scheduleEvent(
+                                                enrollmentUid,
+                                                programStageModelUid,
+                                                selectedDate,
+                                                selectedOrgUnit,
+                                                null,
+                                                catOptionComboUid,
+                                                isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? null : binding.lat.getText().toString(),
+                                                isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? null : binding.lon.getText().toString()
+                                        );
+                                    } else {
+                                        presenter.createEvent(
+                                                enrollmentUid,
+                                                programStageModelUid,
+                                                selectedDate,
+                                                selectedOrgUnit,
+                                                null,
+                                                catOptionComboUid,
+                                                isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? null : binding.lat.getText().toString(),
+                                                isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? null : binding.lon.getText().toString(),
+                                                getTrackedEntityInstance);
+                                    }
+                                } else {
+                                    presenter.editEvent(getTrackedEntityInstance,
+                                            programStageModelUid,
+                                            eventUid,
+                                            DateUtils.databaseDateFormat().format(selectedDate), selectedOrgUnit, null,
+                                            catOptionComboUid,
+                                            isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? null : binding.lat.getText().toString(),
+                                            isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? null : binding.lon.getText().toString()
+                                    );
+                                }
+                            },
+                            Timber::e));
         }
     }
 
@@ -292,6 +299,12 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     protected void onPause() {
         presenter.onDettach();
         super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        disposable.dispose();
+        super.onDestroy();
     }
 
     private void initProgressBar() {
@@ -425,9 +438,11 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         presenter.filterOrgUnits(DateUtils.uiDateFormat().format(selectedDate));
 
         if (eventModel != null &&
-                (DateUtils.getInstance().isEventExpired(eventModel.eventDate(), eventModel.completedDate(), eventModel.status(), program.completeEventsExpiryDays(), program.expiryPeriodType(), program.expiryDays()) ||
-                        eventModel.status() == EventStatus.COMPLETED ||
-                        eventModel.status() == EventStatus.SKIPPED)) {
+                (DateUtils.getInstance().isEventExpired(eventModel.eventDate(),
+                        eventModel.completedDate(), eventModel.status(),
+                        program.completeEventsExpiryDays(),
+                        program.expiryPeriodType(),
+                        program.expiryDays()) || eventModel.status() == EventStatus.COMPLETED || eventModel.status() == EventStatus.SKIPPED)) {
             binding.date.setEnabled(false);
             for (int i = 0; i < binding.catComboLayout.getChildCount(); i++)
                 binding.catComboLayout.getChildAt(i).findViewById(R.id.cat_combo).setEnabled(false);
@@ -935,9 +950,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             binding.lon.setEnabled(false);
             binding.executePendingBindings();
         }
-
-        if (!HelpManager.getInstance().isTutorialReadyForScreen(getClass().getName()))
-            setTutorial();
     }
 
     @Override
@@ -980,48 +992,11 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void setTutorial() {
-        super.setTutorial();
-
-        SharedPreferences prefs = getAbstracContext().getSharedPreferences(
-                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
 
         new Handler().postDelayed(() -> {
-            ArrayList<FancyShowCaseView> steps = new ArrayList<>();
-
-            if (eventUid == null) {
-
-                FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
-                        .title(getString(R.string.tuto_event_initial_new_1))
-                        .enableAutoTextPosition()
-                        .closeOnTouch(true)
-                        .build();
-                steps.add(tuto1);
-
-                HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
-
-                if (!prefs.getBoolean("TUTO_EVENT_INITIAL_NEW", false) && !BuildConfig.DEBUG) {
-                    HelpManager.getInstance().showHelp();
-                    prefs.edit().putBoolean("TUTO_EVENT_INITIAL_NEW", true).apply();
-                }
-            } else {
-
-                FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
-                        .title(getString(R.string.tuto_event_initial_1))
-                        .enableAutoTextPosition()
-                        .focusOn(binding.completion)
-                        .closeOnTouch(true)
-                        .build();
-                steps.add(tuto1);
-
-                HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
-
-                if (!prefs.getBoolean("TUTO_EVENT_INITIAL", false) && !BuildConfig.DEBUG) {
-                    HelpManager.getInstance().showHelp();
-                    prefs.edit().putBoolean("TUTO_EVENT_INITIAL", true).apply();
-                }
-            }
-
-
+            SparseBooleanArray stepConditions = new SparseBooleanArray();
+            stepConditions.put(0, eventUid == null);
+            HelpManager.getInstance().show(getActivity(), HelpManager.TutorialName.EVENT_INITIAL, stepConditions);
         }, 500);
     }
 
@@ -1047,7 +1022,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         popupMenu.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {
                 case R.id.showHelp:
-                    showTutorial(false);
+                    setTutorial();
                     break;
                 case R.id.menu_delete:
                     confirmDeleteEvent();

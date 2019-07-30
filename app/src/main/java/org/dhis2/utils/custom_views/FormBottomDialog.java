@@ -31,6 +31,8 @@ public class FormBottomDialog extends BottomSheetDialogFragment {
     private boolean accessDataWrite = true;
     private boolean hasExpired = false;
     private boolean mandatoryFields = false;
+    private String messageOnComplete = null;
+    private Boolean fieldsWithErrors = false;
 
     public FormBottomDialog setAccessDataWrite(boolean canWrite) {
         this.accessDataWrite = canWrite;
@@ -72,6 +74,16 @@ public class FormBottomDialog extends BottomSheetDialogFragment {
         return this;
     }
 
+    public FormBottomDialog setFieldsWithErrors(boolean fieldsWithErrors) {
+        this.fieldsWithErrors = fieldsWithErrors;
+        return this;
+    }
+
+    public FormBottomDialog setMessageOnComplete(String messageOnComplete) {
+        this.messageOnComplete = messageOnComplete;
+        return this;
+    }
+
     public enum ActionType {
         FINISH_ADD_NEW,
         SKIP,
@@ -79,7 +91,8 @@ public class FormBottomDialog extends BottomSheetDialogFragment {
         RESCHEDULE,
         FINISH,
         COMPLETE_ADD_NEW,
-        COMPLETE
+        COMPLETE,
+        CHECK_FIELDS
     }
 
     public static FormBottomDialog getInstance() {
@@ -107,6 +120,8 @@ public class FormBottomDialog extends BottomSheetDialogFragment {
         binding.setSkip(skip);
         binding.setReschedule(reschedule);
         binding.setMandatoryFields(mandatoryFields);
+        binding.setFieldsWithErrors(fieldsWithErrors);
+        binding.setMessageOnComplete(messageOnComplete);
         return binding.getRoot();
     }
 

@@ -31,7 +31,9 @@ class PeriodFilterHolder extends FilterHolder implements CompoundButton.OnChecke
         super.bind();
         filterIcon.setImageDrawable(AppCompatResources.getDrawable(itemView.getContext(), R.drawable.ic_calendar_positive));
         filterTitle.setText("Period");
-
+        filterValues.setText(
+                FilterManager.getInstance().getPeriodFilters().isEmpty()?"No filters applied" : "Filters applying"
+        );
         setListeners(localBinding.periodLayout);
     }
 
@@ -45,6 +47,8 @@ class PeriodFilterHolder extends FilterHolder implements CompoundButton.OnChecke
         periodLayout.thisMonth.setOnCheckedChangeListener(this);
         periodLayout.lastMonth.setOnCheckedChangeListener(this);
         periodLayout.nextMonth.setOnCheckedChangeListener(this);
+        periodLayout.fromTo.setOnCheckedChangeListener(this);
+        periodLayout.other.setOnCheckedChangeListener(this);
         periodLayout.anytime.setOnCheckedChangeListener(this);
     }
 
@@ -63,51 +67,57 @@ class PeriodFilterHolder extends FilterHolder implements CompoundButton.OnChecke
             localBinding.periodLayout.thisMonth.setChecked(id == R.id.this_month);
             localBinding.periodLayout.lastMonth.setChecked(id == R.id.last_month);
             localBinding.periodLayout.nextMonth.setChecked(id == R.id.next_month);
+            localBinding.periodLayout.fromTo.setChecked(id == R.id.fromTo);
+            localBinding.periodLayout.other.setChecked(id == R.id.other);
             localBinding.periodLayout.anytime.setChecked(id == R.id.anytime);
 
-            Date[] dates = null;
-            Calendar calendar = Calendar.getInstance();
-            switch (id) {
-                case R.id.today:
-                    dates = DateUtils.getInstance().getDateFromDateAndPeriod(calendar.getTime(), Period.DAILY);
-                    break;
-                case R.id.yesterday:
-                    calendar.add(Calendar.DAY_OF_YEAR, -1);
-                    dates = DateUtils.getInstance().getDateFromDateAndPeriod(calendar.getTime(), Period.DAILY);
-                    break;
-                case R.id.tomorrow:
-                    calendar.add(Calendar.DAY_OF_YEAR, 1);
-                    dates = DateUtils.getInstance().getDateFromDateAndPeriod(calendar.getTime(), Period.DAILY);
-                    break;
-                case R.id.this_week:
-                    dates = DateUtils.getInstance().getDateFromDateAndPeriod(calendar.getTime(), Period.WEEKLY);
-                    break;
-                case R.id.last_week:
-                    calendar.add(Calendar.WEEK_OF_YEAR, -1);
-                    dates = DateUtils.getInstance().getDateFromDateAndPeriod(calendar.getTime(), Period.WEEKLY);
-                    break;
-                case R.id.next_week:
-                    calendar.add(Calendar.WEEK_OF_YEAR, 1);
-                    dates = DateUtils.getInstance().getDateFromDateAndPeriod(calendar.getTime(), Period.WEEKLY);
-                    break;
-                case R.id.this_month:
-                    dates = DateUtils.getInstance().getDateFromDateAndPeriod(calendar.getTime(), Period.MONTHLY);
-                    break;
-                case R.id.last_month:
-                    calendar.add(Calendar.MONTH, -1);
-                    dates = DateUtils.getInstance().getDateFromDateAndPeriod(calendar.getTime(), Period.MONTHLY);
-                    break;
-                case R.id.next_month:
-                    calendar.add(Calendar.MONTH, 1);
-                    dates = DateUtils.getInstance().getDateFromDateAndPeriod(calendar.getTime(), Period.MONTHLY);
-                    break;
+            if (id != R.id.other && id != R.id.fromTo) {
+                Date[] dates = null;
+                Calendar calendar = Calendar.getInstance();
+                switch (id) {
+                    case R.id.today:
+                        dates = DateUtils.getInstance().getDateFromDateAndPeriod(calendar.getTime(), Period.DAILY);
+                        break;
+                    case R.id.yesterday:
+                        calendar.add(Calendar.DAY_OF_YEAR, -1);
+                        dates = DateUtils.getInstance().getDateFromDateAndPeriod(calendar.getTime(), Period.DAILY);
+                        break;
+                    case R.id.tomorrow:
+                        calendar.add(Calendar.DAY_OF_YEAR, 1);
+                        dates = DateUtils.getInstance().getDateFromDateAndPeriod(calendar.getTime(), Period.DAILY);
+                        break;
+                    case R.id.this_week:
+                        dates = DateUtils.getInstance().getDateFromDateAndPeriod(calendar.getTime(), Period.WEEKLY);
+                        break;
+                    case R.id.last_week:
+                        calendar.add(Calendar.WEEK_OF_YEAR, -1);
+                        dates = DateUtils.getInstance().getDateFromDateAndPeriod(calendar.getTime(), Period.WEEKLY);
+                        break;
+                    case R.id.next_week:
+                        calendar.add(Calendar.WEEK_OF_YEAR, 1);
+                        dates = DateUtils.getInstance().getDateFromDateAndPeriod(calendar.getTime(), Period.WEEKLY);
+                        break;
+                    case R.id.this_month:
+                        dates = DateUtils.getInstance().getDateFromDateAndPeriod(calendar.getTime(), Period.MONTHLY);
+                        break;
+                    case R.id.last_month:
+                        calendar.add(Calendar.MONTH, -1);
+                        dates = DateUtils.getInstance().getDateFromDateAndPeriod(calendar.getTime(), Period.MONTHLY);
+                        break;
+                    case R.id.next_month:
+                        calendar.add(Calendar.MONTH, 1);
+                        dates = DateUtils.getInstance().getDateFromDateAndPeriod(calendar.getTime(), Period.MONTHLY);
+                        break;
 
+                }
+
+                if (dates != null)
+                    FilterManager.getInstance().addPeriod(DatePeriod.builder().startDate(dates[0]).endDate(dates[1]).build());
+                else
+                    FilterManager.getInstance().addPeriod(null);
+            } else {
+                FilterManager.getInstance().addPeriodRequest(id == R.id.fromTo ? FilterManager.PeriodRequest.FROM_TO : FilterManager.PeriodRequest.OTHER);
             }
-
-            if (dates != null)
-                FilterManager.getInstance().addPeriod(DatePeriod.builder().startDate(dates[0]).endDate(dates[1]).build());
-            else
-                FilterManager.getInstance().addPeriod(null);
         }
     }
 }

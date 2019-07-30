@@ -3,6 +3,7 @@ package org.dhis2.utils.filters;
 import androidx.databinding.ObservableField;
 
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
+import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.period.DatePeriod;
@@ -19,16 +20,23 @@ public class FilterManager {
 
     public static final int OU_TREE = 1986;
 
+    public enum PeriodRequest {
+        FROM_TO, OTHER
+    }
+
     private List<OrganisationUnit> ouFilters;
     private List<State> stateFilters;
     private DatePeriod periodFilters;
+    private List<CategoryOptionCombo> catOptComboFilters;
 
     private ObservableField<Integer> ouFiltersApplied;
-    private ObservableField<Integer> stateFiltersApplyed;
-    private ObservableField<Integer> periodFiltersApplyed;
+    private ObservableField<Integer> stateFiltersApplied;
+    private ObservableField<Integer> periodFiltersApplied;
+    private ObservableField<Integer> catOptCombFiltersApplied;
 
     private FlowableProcessor<FilterManager> filterProcessor;
     private FlowableProcessor<Boolean> ouTreeProcessor;
+    private FlowableProcessor<PeriodRequest> periodRequestProcessor;
 
     private static FilterManager instance;
 
@@ -49,12 +57,20 @@ public class FilterManager {
     public void reset() {
         ouFilters = new ArrayList<>();
         stateFilters = new ArrayList<>();
+        periodFilters = null;
+        catOptComboFilters = new ArrayList<>();
+
         ouFiltersApplied = new ObservableField<>(0);
-        stateFiltersApplyed = new ObservableField<>(0);
-        periodFiltersApplyed = new ObservableField<>(0);
+        stateFiltersApplied = new ObservableField<>(0);
+        periodFiltersApplied = new ObservableField<>(0);
+        catOptCombFiltersApplied = new ObservableField<>(0);
+
         filterProcessor = PublishProcessor.create();
         ouTreeProcessor = PublishProcessor.create();
+        periodRequestProcessor = PublishProcessor.create();
     }
+
+//    region STATE FILTERS
 
     public void addState(State... states) {
         for (State stateToAdd : states) {
@@ -63,15 +79,16 @@ public class FilterManager {
             else
                 stateFilters.add(stateToAdd);
         }
-        stateFiltersApplyed.set(stateFilters.size());
+        stateFiltersApplied.set(stateFilters.size());
         filterProcessor.onNext(this);
     }
 
+//    endregion
 
     public void addPeriod(DatePeriod datePeriod) {
         this.periodFilters = datePeriod;
 
-        periodFiltersApplyed.set(datePeriod != null ? 1 : 0);
+        periodFiltersApplied.set(datePeriod != null ? 1 : 0);
         filterProcessor.onNext(this);
     }
 
@@ -86,26 +103,42 @@ public class FilterManager {
         filterProcessor.onNext(this);
     }
 
+    public void addCatOptCombo(CategoryOptionCombo catOptCombo) {
+        if (catOptComboFilters.contains(catOptCombo))
+            catOptComboFilters.remove(catOptCombo);
+        else
+            catOptComboFilters.add(catOptCombo);
+
+        catOptCombFiltersApplied.set(catOptComboFilters.size());
+        filterProcessor.onNext(this);
+    }
+
 
     public ObservableField<Integer> observeField(Filters filter) {
         switch (filter) {
             case ORG_UNIT:
                 return ouFiltersApplied;
             case SYNC_STATE:
-                return stateFiltersApplyed;
+                return stateFiltersApplied;
             case PERIOD:
-                return periodFiltersApplyed;
+                return periodFiltersApplied;
+            case CAT_OPT_COMB:
+                return catOptCombFiltersApplied;
             default:
                 return new ObservableField<>(0);
         }
     }
 
-    public FlowableProcessor<Boolean> getOuTreeProcessor(){
+    public FlowableProcessor<Boolean> getOuTreeProcessor() {
         return ouTreeProcessor;
     }
 
     public Flowable<FilterManager> asFlowable() {
         return filterProcessor;
+    }
+
+    public FlowableProcessor<PeriodRequest> getPeriodRequest() {
+        return periodRequestProcessor;
     }
 
     public Flowable<Boolean> ouTreeFlowable() {
@@ -127,6 +160,10 @@ public class FilterManager {
         return ouFilters;
     }
 
+    public List<CategoryOptionCombo> getCatOptComboFilters(){
+        return catOptComboFilters;
+    }
+
     public List<String> getOrgUnitUidsFilters() {
         return UidsHelper.getUidsList(ouFilters);
     }
@@ -134,6 +171,11 @@ public class FilterManager {
     public List<State> getStateFilters() {
         return stateFilters;
     }
+
+    public void addPeriodRequest(PeriodRequest periodRequest) {
+        periodRequestProcessor.onNext(periodRequest);
+    }
+
 
     public void removeAll() {
         ouFilters = new ArrayList<>();
@@ -158,5 +200,10 @@ public class FilterManager {
 
     public boolean exist(OrganisationUnit content) {
         return ouFilters.contains(content);
+    }
+
+    public void clearCatOptCombo() {
+        catOptComboFilters.clear();
+        catOptCombFiltersApplied.set(catOptComboFilters.size());
     }
 }
