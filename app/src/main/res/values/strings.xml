@@ -553,4 +553,5 @@
     <string name="cancel_sync">Cancelled synchronization.</string>
 
     <string name="copied_text">Copied</string>
+    <string name="image_selected">Image selected</string>
 </resources>
