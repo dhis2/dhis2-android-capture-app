@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.DiffUtil;
 
 
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
+import org.dhis2.data.forms.dataentry.fields.picture.PictureViewModel;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 
 import java.util.List;
@@ -60,6 +61,9 @@ final class DataEntryDiffCallback extends DiffUtil.Callback {
                             ((SpinnerViewModel) oldFields.get(newItemPosition)).getOptionsToHide()))
                 return false;
         }
+
+        if(oldFields.get(oldItemPosition) instanceof PictureViewModel && newFields.get(newItemPosition) instanceof PictureViewModel)
+            return false;
 
         return oldFields.get(oldItemPosition)
                 .equals(newFields.get(newItemPosition));

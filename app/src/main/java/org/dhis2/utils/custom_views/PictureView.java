@@ -10,6 +10,7 @@ import android.provider.MediaStore;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,6 +22,7 @@ import androidx.databinding.ViewDataBinding;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
+import com.google.android.material.textfield.TextInputEditText;
 
 import org.dhis2.BuildConfig;
 import org.dhis2.R;
@@ -42,6 +44,8 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
     private String uid;
     private TextView errorView;
     private ImageView image;
+    private LinearLayout layout;
+    private TextInputEditText formLabel;
     private OnIntentSelected onIntentSelected;
     private String primaryUid;
     private OnPictureSelected imageListener;
@@ -63,7 +67,7 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
 
     @Override
     public void onClick(View v) {
-        if (v == image) {
+        if (v == image || v == layout || v == formLabel) {
             selectImage();
         }
     }
@@ -82,6 +86,10 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
         errorView = findViewById(R.id.errorMessage);
         image = findViewById(R.id.image);
         image.setOnClickListener(this);
+        layout = findViewById(R.id.layout);
+        layout.setOnClickListener(this);
+        formLabel = findViewById(R.id.formLabel);
+        formLabel.setOnClickListener(this);
     }
 
     public void setLabel(String label) {
@@ -90,6 +98,13 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
             ((FormPictureBinding) binding).setLabel(label);
         else
             ((FormPictureAccentBinding) binding).setLabel(label);
+    }
+
+    public void setTextSelected(String text) {
+        if (binding instanceof FormPictureBinding)
+            ((FormPictureBinding) binding).setSelected(text);
+        else
+            ((FormPictureAccentBinding) binding).setLabel(text);
     }
 
     public void setDescription(String description) {
@@ -133,6 +148,8 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
         File file = FileResourcesUtil.getFileForAttribute(getContext(), primaryUid.concat("_").concat(uid).concat(".png"));
 
         if (file.exists()) {
+            setTextSelected(getContext().getString(R.string.image_selected));
+            image.setVisibility(View.VISIBLE);
             Glide.with(image)
                     .load(file)
                     .apply(new RequestOptions().centerCrop())
