@@ -24,6 +24,7 @@ import java.util.Date;
 public class DatePickerDialogFragment extends DialogFragment {
     private static final String TAG = DatePickerDialogFragment.class.getSimpleName();
     private static final String ARG_ALLOW_DATES_IN_FUTURE = "arg:allowDatesInFuture";
+    private static final String ARG_TITLE = "arg:title";
 
     @Nullable
     private FormattedOnDateSetListener onDateSetListener;
@@ -33,6 +34,18 @@ public class DatePickerDialogFragment extends DialogFragment {
     public static DatePickerDialogFragment create(boolean allowDatesInFuture) {
         Bundle arguments = new Bundle();
         arguments.putBoolean(ARG_ALLOW_DATES_IN_FUTURE, allowDatesInFuture);
+        arguments.putString(ARG_TITLE, null);
+
+        DatePickerDialogFragment fragment = new DatePickerDialogFragment();
+        fragment.setArguments(arguments);
+
+        return fragment;
+    }
+
+    public static DatePickerDialogFragment create(boolean allowDatesInFuture, String title) {
+        Bundle arguments = new Bundle();
+        arguments.putBoolean(ARG_ALLOW_DATES_IN_FUTURE, allowDatesInFuture);
+        arguments.putString(ARG_TITLE, title);
 
         DatePickerDialogFragment fragment = new DatePickerDialogFragment();
         fragment.setArguments(arguments);
@@ -137,6 +150,9 @@ public class DatePickerDialogFragment extends DialogFragment {
         }
 
         alertDialog.setView(datePickerView);
+        if (getArguments().getString(ARG_TITLE) != null)
+            alertDialog.setTitle(getArguments().getString(ARG_TITLE));
+
         return alertDialog.create();
     }
 
@@ -165,6 +181,7 @@ public class DatePickerDialogFragment extends DialogFragment {
          * @param date the date in the correct simple fate format
          */
         void onDateSet(@NonNull Date date);
+
         void onClearDate();
     }
 }

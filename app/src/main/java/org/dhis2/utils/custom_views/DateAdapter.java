@@ -1,16 +1,16 @@
 package org.dhis2.utils.custom_views;
 
-import androidx.databinding.DataBindingUtil;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+
+import androidx.core.content.ContextCompat;
+import androidx.databinding.DataBindingUtil;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.dhis2.R;
 import org.dhis2.databinding.ItemDateBinding;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.Period;
-import org.hisp.dhis.android.core.period.PeriodType;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -27,11 +27,11 @@ import java.util.Map;
 
 public class DateAdapter extends RecyclerView.Adapter<DateViewHolder> {
 
+    private final Period currentPeriod;
     private List<String> datesNames = new ArrayList<>();
     private List<String> seletedDatesName = new ArrayList<>();
     private List<Date> dates = new ArrayList<>();
     private List<Date> selectedDates = new ArrayList<>();
-    private Period currentPeriod = Period.WEEKLY;
     private SimpleDateFormat dayFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
     private SimpleDateFormat weeklyFormat = new SimpleDateFormat("'Week' w", Locale.getDefault());
     private String weeklyFormatWithDates = "%s, %s / %s";
@@ -40,7 +40,12 @@ public class DateAdapter extends RecyclerView.Adapter<DateViewHolder> {
     private Map<String, String> mapPeriod = new HashMap<>();
 
     public DateAdapter(Period period) {
-        currentPeriod = period;
+        this.currentPeriod = period;
+        if (period != Period.DAILY)
+            initData(period);
+    }
+
+    private void initData(Period period) {
         Calendar calendar = DateUtils.getInstance().getCalendar();
         calendar.add(Calendar.YEAR, 1); //let's the user select dates in the next year
         int year = calendar.get(Calendar.YEAR);
@@ -81,15 +86,15 @@ public class DateAdapter extends RecyclerView.Adapter<DateViewHolder> {
             }
 
         } while (calendar.get(Calendar.YEAR) > year - 11); //show last 10 years
-
     }
 
-    public DateAdapter(){
+    public DateAdapter() {
+        currentPeriod = Period.WEEKLY;
     }
 
-    public void swapMapPeriod(Map<String, String> mapPeriods){
+    public void swapMapPeriod(Map<String, String> mapPeriods) {
         this.mapPeriod = mapPeriods;
-        for(Map.Entry<String, String> entry: mapPeriods.entrySet())
+        for (Map.Entry<String, String> entry : mapPeriods.entrySet())
             datesNames.add(entry.getValue());
     }
 
@@ -110,7 +115,7 @@ public class DateAdapter extends RecyclerView.Adapter<DateViewHolder> {
         }
 
         holder.itemView.setOnClickListener(view -> {
-            if(mapPeriod == null) {
+            if (mapPeriod == null) {
                 if (!selectedDates.contains(dates.get(position))) {
                     selectedDates.add(dates.get(position));
                     holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.white_dfd));
@@ -118,7 +123,7 @@ public class DateAdapter extends RecyclerView.Adapter<DateViewHolder> {
                     selectedDates.remove(dates.get(position));
                     holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), android.R.color.transparent));
                 }
-            }else{
+            } else {
                 if (!seletedDatesName.contains(datesNames.get(position))) {
                     seletedDatesName.add(datesNames.get(position));
                     holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.white_dfd));
@@ -132,7 +137,7 @@ public class DateAdapter extends RecyclerView.Adapter<DateViewHolder> {
 
     @Override
     public int getItemCount() {
-        if(mapPeriod != null)
+        if (mapPeriod != null)
             return mapPeriod.size();
         return datesNames != null ? datesNames.size() : 0;
     }
@@ -142,7 +147,7 @@ public class DateAdapter extends RecyclerView.Adapter<DateViewHolder> {
         return selectedDates;
     }
 
-    public List<String> clearFiltersPeriod(){
+    public List<String> clearFiltersPeriod() {
         seletedDatesName.clear();
         return seletedDatesName;
     }
@@ -151,7 +156,25 @@ public class DateAdapter extends RecyclerView.Adapter<DateViewHolder> {
         return selectedDates;
     }
 
-    public List<String> getSeletedDatesName(){
+    public List<String> getSeletedDatesName() {
         return seletedDatesName;
+    }
+
+    public void swapPeriod() {
+        switch (currentPeriod) {
+            case DAILY:
+                initData(Period.WEEKLY);
+                break;
+            case WEEKLY:
+                initData(Period.MONTHLY);
+                break;
+            case MONTHLY:
+                initData(Period.YEARLY);
+                break;
+            case YEARLY:
+                initData(Period.DAILY);
+                break;
+        }
+        notifyDataSetChanged();
     }
 }

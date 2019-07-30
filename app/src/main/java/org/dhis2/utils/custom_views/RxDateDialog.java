@@ -82,6 +82,10 @@ public class RxDateDialog {
         return DateDialog.newInstace(actionTrigger, period);
     }
 
+    public DateDialog createForFilter(){
+        return DateDialog.newInstace(actionTrigger);
+    }
+
     private void notifyClick(SingleEmitter<List<Date>> callback, List<Date> button) {
         callback.onSuccess(button);
     }

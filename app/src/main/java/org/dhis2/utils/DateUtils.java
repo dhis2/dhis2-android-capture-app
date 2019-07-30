@@ -1,11 +1,12 @@
 package org.dhis2.utils;
 
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.dhis2.data.forms.section.viewmodels.date.DatePickerDialogFragment;
+import org.dhis2.usescases.general.ActivityGlobalAbstract;
+import org.dhis2.utils.custom_views.RxDateDialog;
 import org.hisp.dhis.android.core.dataset.DataInputPeriod;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
@@ -22,6 +23,9 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nonnull;
+
+import io.reactivex.disposables.Disposable;
+import timber.log.Timber;
 
 /**
  * QUADRAM. Created by ppajuelo on 16/01/2018.
@@ -1239,12 +1243,58 @@ public class DateUtils {
         return datePeriods;
     }
 
-    public void showFromToSelector(Context context, OnFromToSelector fromToListener) {
-        //TODO: SHOW FROM dialog then TO dialog
+    public void showFromToSelector(ActivityGlobalAbstract activity, OnFromToSelector fromToListener) {
+        DatePickerDialogFragment fromCalendar = DatePickerDialogFragment.create(true);
+        fromCalendar.setFormattedOnDateSetListener(new DatePickerDialogFragment.FormattedOnDateSetListener() {
+            @Override
+            public void onDateSet(@NonNull Date fromDate) {
+                DatePickerDialogFragment toCalendar = DatePickerDialogFragment.create(true);
+                toCalendar.setOpeningClosingDates(fromDate, null);
+                toCalendar.setFormattedOnDateSetListener(new DatePickerDialogFragment.FormattedOnDateSetListener() {
+                    @Override
+                    public void onDateSet(@NonNull Date toDate) {
+                        fromToListener.onFromToSelected(fromDate, toDate);
+                    }
+
+                    @Override
+                    public void onClearDate() {
+
+                    }
+                });
+                toCalendar.show(activity.getSupportFragmentManager(), "TO");
+
+            }
+
+            @Override
+            public void onClearDate() {
+
+            }
+        });
+
+        fromCalendar.show(activity.getSupportFragmentManager(), "FROM");
     }
 
-    public void showPeriodDialog(Context context, OnFromToSelector fromToListener) {
-        //TODO: SHOW Period dialog
+    public void showPeriodDialog(ActivityGlobalAbstract activity, OnFromToSelector fromToListener) {
+        DatePickerDialogFragment fromCalendar = DatePickerDialogFragment.create(true, "Daily");
+//        fromCalendar.setOpeningClosingDates(null, null); TODO: MAX 1 year in the future?
+        fromCalendar.setFormattedOnDateSetListener(new DatePickerDialogFragment.FormattedOnDateSetListener() {
+            @Override
+            public void onDateSet(@NonNull Date date) {
+
+            }
+
+            @Override
+            public void onClearDate() {
+                Disposable disposable = new RxDateDialog(activity, Period.WEEKLY)
+                        .createForFilter().show()
+                        .subscribe(
+                                selectedDates -> fromToListener.onFromToSelected(null, null),
+                                Timber::e
+                        );
+            }
+        });
+        fromCalendar.show(activity.getSupportFragmentManager(), "DAILY");
+
     }
 
     public interface OnFromToSelector {
