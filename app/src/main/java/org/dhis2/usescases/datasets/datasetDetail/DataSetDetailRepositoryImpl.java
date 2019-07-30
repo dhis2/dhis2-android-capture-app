@@ -6,7 +6,7 @@ import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.dataset.DataSetCompleteRegistration;
-import org.hisp.dhis.android.core.datavalue.DataSetReportCollectionRepository;
+import org.hisp.dhis.android.core.dataset.DataSetInstanceCollectionRepository;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.period.Period;
 
@@ -32,14 +32,14 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
 
     @Override
     public Flowable<List<DataSetDetailModel>> dataSetGroups(String dataSetUid, List<String> orgUnits, List<String> periodFilter, int page) {
-        DataSetReportCollectionRepository repo;
-        repo = d2.dataValueModule().dataSetReports.byDataSetUid().eq(dataSetUid);
+        DataSetInstanceCollectionRepository repo;
+        repo = d2.dataSetModule().dataSetInstances.byDataSetUid().eq(dataSetUid);
         if (!orgUnits.isEmpty())
             repo = repo.byOrganisationUnitUid().in(orgUnits);
         if (!periodFilter.isEmpty())
             repo = repo.byPeriod().in(periodFilter);
 
-        DataSetReportCollectionRepository finalRepo = repo;
+        DataSetInstanceCollectionRepository finalRepo = repo;
         return Flowable.fromIterable(finalRepo.get())
                 .map(dataSetReport -> {
                     Period period = d2.periodModule().periods.byPeriodId().eq(dataSetReport.period()).one().get();

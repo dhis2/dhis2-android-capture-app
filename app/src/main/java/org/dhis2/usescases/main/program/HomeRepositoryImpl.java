@@ -6,10 +6,10 @@ import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.dataset.DataSetCompleteRegistration;
+import org.hisp.dhis.android.core.dataset.DataSetInstanceCollectionRepository;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.dataset.DataSetElement;
-import org.hisp.dhis.android.core.datavalue.DataSetReportCollectionRepository;
 import org.hisp.dhis.android.core.datavalue.DataValue;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.period.DatePeriod;
@@ -41,7 +41,7 @@ class HomeRepositoryImpl implements HomeRepository {
         return Flowable.just(d2.dataSetModule().dataSets)
                 .flatMap(programRepo -> Flowable.fromIterable(programRepo.withAllChildren().get()))
                 .map(dataSet -> {
-                            DataSetReportCollectionRepository repo = d2.dataValueModule().dataSetReports.byDataSetUid().eq(dataSet.uid());
+                            DataSetInstanceCollectionRepository repo = d2.dataSetModule().dataSetInstances.byDataSetUid().eq(dataSet.uid());
                             if (!orgUnitFilter.isEmpty())
                                 repo = repo.byOrganisationUnitUid().in(orgUnitFilter);
                             if (!dateFilter.isEmpty())
