@@ -11,8 +11,6 @@ import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
-import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeModel;
 
 import java.util.List;
@@ -37,7 +35,6 @@ public interface MetadataRepository {
 
     Observable<TrackedEntityTypeModel> getTrackedEntity(String trackedEntityUid);
 
-    Observable<TrackedEntityInstanceModel> getTrackedEntityInstance(String teiUid);
 
     /*CATEGORY OPTION*/
 
@@ -59,10 +56,6 @@ public interface MetadataRepository {
     Observable<List<OrganisationUnitModel>> getTeiOrgUnits(String teiUid);
 
     Observable<List<OrganisationUnitModel>> getTeiOrgUnits(@NonNull String teiUid, @Nullable String programUid);
-
-    /*PROGRAM TRACKED ENTITY ATTRIBUTE*/
-
-    Observable<List<ProgramTrackedEntityAttributeModel>> getProgramTrackedEntityAttributes(String programUid);
 
 
     //ProgramStage

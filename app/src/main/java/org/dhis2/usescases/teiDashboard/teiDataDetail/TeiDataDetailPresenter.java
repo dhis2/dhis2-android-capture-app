@@ -58,7 +58,7 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
                     dashboardRepository.getEnrollment(programUid, uid),
                     dashboardRepository.getProgramStages(programUid),
                     dashboardRepository.getTEIEnrollmentEvents(programUid, uid),
-                    metadataRepository.getProgramTrackedEntityAttributes(programUid),
+                    dashboardRepository.getProgramTrackedEntityAttributes(programUid),
                     dashboardRepository.getTEIAttributeValues(programUid, uid),
                     metadataRepository.getTeiOrgUnits(uid),
                     metadataRepository.getTeiActivePrograms(uid, false),
@@ -93,7 +93,7 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
             //TODO: NO SE HA SELECCIONADO PROGRAMA
             disposable.add(Observable.zip(
                     dashboardRepository.getTrackedEntityInstance(uid),
-                    metadataRepository.getProgramTrackedEntityAttributes(null),
+                    dashboardRepository.getProgramTrackedEntityAttributes(null),
                     dashboardRepository.getTEIAttributeValues(null, uid),
                     metadataRepository.getTeiOrgUnits(uid),
                     metadataRepository.getTeiActivePrograms(uid, false),

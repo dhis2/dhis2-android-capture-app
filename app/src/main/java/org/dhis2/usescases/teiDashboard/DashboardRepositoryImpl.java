@@ -18,6 +18,7 @@ import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.FileResourcesUtil;
 import org.dhis2.utils.ValueUtils;
 import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
@@ -33,9 +34,11 @@ import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.legendset.LegendModel;
 import org.hisp.dhis.android.core.legendset.ProgramIndicatorLegendSetLinkModel;
+import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramIndicatorModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
+import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.relationship.RelationshipTypeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
@@ -601,5 +604,27 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     @Override
     public Observable<TrackedEntityInstance> getTrackedEntityInstance(String teiUid) {
         return Observable.fromCallable(() -> d2.trackedEntityModule().trackedEntityInstances.byUid().eq(teiUid).one().get());
+    }
+
+    @Override
+    public Observable<List<ProgramTrackedEntityAttribute>> getProgramTrackedEntityAttributes(String programUid) {
+        if (programUid != null)
+            return Observable.fromCallable(() -> d2.programModule().programs.withProgramTrackedEntityAttributes().byUid().eq(programUid).one().get().programTrackedEntityAttributes());
+        else
+            return Observable.fromCallable(() -> d2.trackedEntityModule().trackedEntityAttributes.byDisplayInListNoProgram().eq(true).get())
+                .map(trackedEntityAttributes -> {
+                    List<Program> programs = d2.programModule().programs.withProgramTrackedEntityAttributes().get();
+                    List<String> teaUids = UidsHelper.getUidsList(trackedEntityAttributes);
+                    List<ProgramTrackedEntityAttribute> programTrackedEntityAttributes = new ArrayList<>();
+                    for (Program program : programs) {
+                        for (ProgramTrackedEntityAttribute pteattr : program.programTrackedEntityAttributes()) {
+                            if(teaUids.contains(pteattr.uid()))
+                                programTrackedEntityAttributes.add(pteattr);
+                        }
+                    }
+                    return programTrackedEntityAttributes;
+                });
+
+
     }
 }
