@@ -110,6 +110,7 @@ final class DataEntryPresenterImpl implements DataEntryPresenter, RulesActionCal
                                 this.lastFocusItem = action.id();
                             }
                             ruleEngineRepository.updateRuleAttributeMap(action.id(), action.value());
+                            onAttach(dataEntryView);
                             return dataEntryStore.save(action.id(), action.value()).
                                     map(result -> Trio.create(result, action.id(), action.value()));
                         }
