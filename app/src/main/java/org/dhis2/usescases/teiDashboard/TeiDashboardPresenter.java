@@ -65,7 +65,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     public void getData() {
         if (programUid != null)
             compositeDisposable.add(Observable.zip(
-                    metadataRepository.getTrackedEntityInstance(teUid),
+                    dashboardRepository.getTrackedEntityInstance(teUid),
                     dashboardRepository.getEnrollment(programUid, teUid),
                     dashboardRepository.getProgramStages(programUid),
                     dashboardRepository.getTEIEnrollmentEvents(programUid, teUid),
@@ -95,7 +95,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
         else {
             compositeDisposable.add(Observable.zip(
-                    metadataRepository.getTrackedEntityInstance(teUid),
+                    dashboardRepository.getTrackedEntityInstance(teUid),
                     metadataRepository.getProgramTrackedEntityAttributes(null),
                     dashboardRepository.getTEIAttributeValues(null, teUid),
                     metadataRepository.getTeiOrgUnits(teUid),

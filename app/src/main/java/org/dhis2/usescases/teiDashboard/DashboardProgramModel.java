@@ -3,6 +3,7 @@ package org.dhis2.usescases.teiDashboard;
 import androidx.databinding.BaseObservable;
 
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
+import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
@@ -10,7 +11,7 @@ import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 
 import java.util.Collections;
 import java.util.List;
@@ -21,11 +22,11 @@ import java.util.Map;
  */
 public class DashboardProgramModel extends BaseObservable {
 
-    private TrackedEntityInstanceModel tei;
+    private TrackedEntityInstance tei;
     private List<ProgramTrackedEntityAttributeModel> trackedEntityAttributesModel;
     private List<TrackedEntityAttributeValueModel> trackedEntityAttributeValues;
     private List<EventModel> eventModels;
-    private EnrollmentModel currentEnrollment;
+    private Enrollment currentEnrollment;
     private List<ProgramStageModel> programStages;
     private List<ProgramModel> enrollmentProgramModels;
     private List<OrganisationUnitModel> orgsUnits;
@@ -33,8 +34,8 @@ public class DashboardProgramModel extends BaseObservable {
     private Map<String, ObjectStyleModel> programObjectStyles;
 
     public DashboardProgramModel(
-            TrackedEntityInstanceModel tei,
-            EnrollmentModel currentEnrollment,
+            TrackedEntityInstance tei,
+            Enrollment currentEnrollment,
             List<ProgramStageModel> programStages,
             List<EventModel> events,
             List<ProgramTrackedEntityAttributeModel> trackedEntityAttributeModels,
@@ -52,7 +53,7 @@ public class DashboardProgramModel extends BaseObservable {
         this.trackedEntityAttributeValues = trackedEntityAttributeValues;
     }
 
-    public DashboardProgramModel(TrackedEntityInstanceModel tei,
+    public DashboardProgramModel(TrackedEntityInstance tei,
                                  List<ProgramTrackedEntityAttributeModel> trackedEntityAttributeModels,
                                  List<TrackedEntityAttributeValueModel> trackedEntityAttributeValues,
                                  List<OrganisationUnitModel> orgsUnits,
@@ -66,11 +67,11 @@ public class DashboardProgramModel extends BaseObservable {
         this.teiEnrollments = teiEnrollments;
     }
 
-    public TrackedEntityInstanceModel getTei() {
+    public TrackedEntityInstance getTei() {
         return tei;
     }
 
-    public EnrollmentModel getCurrentEnrollment() {
+    public Enrollment getCurrentEnrollment() {
         return currentEnrollment;
     }
 

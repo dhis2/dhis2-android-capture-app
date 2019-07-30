@@ -3,6 +3,7 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data;
 import org.dhis2.BR;
 import org.dhis2.databinding.ItemEventBinding;
 import org.dhis2.utils.DateUtils;
+import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
@@ -25,7 +26,7 @@ class EventViewHolder extends RecyclerView.ViewHolder {
         this.binding = binding;
     }
 
-    public void bind(TEIDataContracts.Presenter presenter, EventModel eventModel, ProgramStageModel programStage, EnrollmentModel enrollment, ProgramModel program) {
+    public void bind(TEIDataContracts.Presenter presenter, EventModel eventModel, ProgramStageModel programStage, Enrollment enrollment, ProgramModel program) {
         binding.setVariable(BR.event, eventModel);
         binding.setVariable(BR.stage, programStage);
         binding.setVariable(BR.enrollment, enrollment);

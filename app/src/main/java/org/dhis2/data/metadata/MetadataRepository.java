@@ -4,10 +4,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.dhis2.data.tuples.Pair;
-import org.hisp.dhis.android.core.category.CategoryCombo;
-import org.hisp.dhis.android.core.category.CategoryComboModel;
-import org.hisp.dhis.android.core.category.CategoryModel;
-import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.imports.TrackerImportConflict;
@@ -16,7 +12,6 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
-import org.hisp.dhis.android.core.resource.internal.ResourceModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeModel;
 
@@ -51,21 +46,11 @@ public interface MetadataRepository {
 
     /*CATEGORY OPTION COMBO*/
 
-    Observable<CategoryOptionComboModel> getCategoryOptionComboWithId(String categoryOptionComboId);
-
-    Observable<List<CategoryOptionComboModel>> getCategoryComboOptions(String categoryComboId);
-
-    Observable<CategoryCombo> catComboForProgram(String programUid);
-
-    Observable<CategoryModel> getCategoryFromCategoryCombo(String categoryComboId);
 
     void saveCatOption(String eventUid, String catOptionComboUid);
 
     Observable<String> getDefaultCategoryOptionComboId();
 
-    /*CATEGORY COMBO*/
-
-    Observable<CategoryComboModel> getCategoryComboWithId(String categoryComboId);
 
     /*ORG UNIT*/
 

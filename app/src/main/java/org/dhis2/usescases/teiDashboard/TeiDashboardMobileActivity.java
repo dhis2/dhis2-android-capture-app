@@ -221,7 +221,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                     .replace(R.id.tei_main_view, new TEIDataFragment())
                     .commitAllowingStateLoss();
 
-        Boolean enrollmentStatus = program.getCurrentEnrollment() != null && program.getCurrentEnrollment().enrollmentStatus() == EnrollmentStatus.ACTIVE;
+        Boolean enrollmentStatus = program.getCurrentEnrollment() != null && program.getCurrentEnrollment().status() == EnrollmentStatus.ACTIVE;
         if (getIntent().getStringExtra(Constants.EVENT_UID) != null && enrollmentStatus)
             dashboardViewModel.updateEventUid(getIntent().getStringExtra(Constants.EVENT_UID));
     }

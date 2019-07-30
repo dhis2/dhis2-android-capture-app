@@ -11,12 +11,8 @@ import com.squareup.sqlbrite2.BriteDatabase;
 import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.utils.DateUtils;
-import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
-import org.hisp.dhis.android.core.category.CategoryModel;
-import org.hisp.dhis.android.core.category.CategoryOptionComboCategoryOptionLinkTableInfo;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
-import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
@@ -28,7 +24,6 @@ import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionModel;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
-import org.hisp.dhis.android.core.resource.internal.ResourceModel;
 import org.hisp.dhis.android.core.settings.SystemSettingModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
@@ -125,27 +120,6 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     private final String SELECT_PROGRAM_STAGE = String.format("SELECT * FROM %s WHERE %s.%s = ",
             ProgramStageModel.TABLE, ProgramStageModel.TABLE, ProgramStageModel.Columns.UID);
 
-    private final String SELECT_CATEGORY_OPTION_COMBO = String.format("SELECT * FROM %s WHERE %s.%s = ",
-            CategoryOptionComboModel.TABLE, CategoryOptionComboModel.TABLE, CategoryOptionComboModel.Columns.UID);
-
-    private final String SELECT_CATEGORY_OPTIONS_COMBO = String.format("SELECT %s.* FROM %s " +
-                    "JOIN %s ON %s.%s = %s.%s " +
-                    "JOIN %s ON %s.%s = %s.%s " +
-                    "WHERE %s.%s AND %s.%s = ",
-            CategoryOptionComboModel.TABLE, CategoryOptionComboModel.TABLE,
-            CategoryOptionComboCategoryOptionLinkTableInfo.TABLE_INFO.name(),
-            CategoryOptionComboCategoryOptionLinkTableInfo.TABLE_INFO.name(), CategoryOptionComboCategoryOptionLinkTableInfo.Columns.CATEGORY_OPTION_COMBO,
-            CategoryOptionComboModel.TABLE, CategoryOptionComboModel.Columns.UID,
-            CategoryOptionModel.TABLE, CategoryOptionComboCategoryOptionLinkTableInfo.TABLE_INFO.name(), CategoryOptionComboCategoryOptionLinkTableInfo.Columns.CATEGORY_OPTION,
-            CategoryOptionModel.TABLE, CategoryOptionModel.Columns.UID,
-            CategoryOptionModel.TABLE, CategoryOptionModel.Columns.ACCESS_DATA_WRITE, CategoryOptionComboModel.TABLE, CategoryOptionComboModel.Columns.CATEGORY_COMBO);
-
-    private final String SELECT_CATEGORY = "SELECT * FROM Category " +
-            "JOIN CategoryCategoryComboLink ON CategoryCategoryComboLink.category = Category.uid " +
-            "WHERE CategoryCategoryComboLink.categoryCombo = ?";
-
-    private final String SELECT_CATEGORY_COMBO = String.format("SELECT * FROM %s WHERE %s.%s = ",
-            CategoryComboModel.TABLE, CategoryComboModel.TABLE, CategoryComboModel.Columns.UID);
 
     private final String SELECT_DEFAULT_CAT_COMBO = String.format("SELECT %s FROM %s WHERE %s.%s = '1' LIMIT 1",
             CategoryComboModel.Columns.UID, CategoryComboModel.TABLE, CategoryComboModel.TABLE, CategoryComboModel.Columns.IS_DEFAULT);
@@ -153,8 +127,6 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     private final String SELECT_DEFAULT_CAT_OPTION_COMBO = String.format("SELECT %s FROM %s WHERE %s.%s = 'default'",
             CategoryOptionComboModel.Columns.UID, CategoryOptionComboModel.TABLE, CategoryOptionComboModel.TABLE, CategoryOptionComboModel.Columns.CODE);
 
-    private static final String RESOURCES_QUERY = String.format("SELECT * FROM %s WHERE %s.%s = ? LIMIT 1",
-            ResourceModel.TABLE, ResourceModel.TABLE, ResourceModel.Columns.RESOURCE_TYPE);
 
     private static final String EXPIRY_DATE_PERIOD_QUERY = String.format(
             "SELECT program.* FROM %s " +
@@ -179,13 +151,6 @@ public class MetadataRepositoryImpl implements MetadataRepository {
                 .mapToOne(TrackedEntityTypeModel::create);
     }
 
-    @Override
-    public Observable<CategoryComboModel> getCategoryComboWithId(String categoryComboId) {
-        String id = categoryComboId == null ? "" : categoryComboId;
-        return briteDatabase
-                .createQuery(CategoryComboModel.TABLE, SELECT_CATEGORY_COMBO + "'" + id + "' LIMIT 1")
-                .mapToOne(CategoryComboModel::create);
-    }
 
     @Override
     public Observable<String> getDefaultCategoryOptionId() {
@@ -208,33 +173,7 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     }
 
 
-    @Override
-    public Observable<CategoryOptionComboModel> getCategoryOptionComboWithId(String categoryOptionComboId) {
-        String id = categoryOptionComboId == null ? "" : categoryOptionComboId;
-        return briteDatabase
-                .createQuery(CategoryOptionModel.TABLE, SELECT_CATEGORY_OPTION_COMBO + "'" + id + "' LIMIT 1")
-                .mapToOne(CategoryOptionComboModel::create);
-    }
 
-
-    @Override
-    public Observable<List<CategoryOptionComboModel>> getCategoryComboOptions(String categoryComboId) {
-        String id = categoryComboId == null ? "" : categoryComboId;
-        return briteDatabase
-                .createQuery(CategoryOptionModel.TABLE, SELECT_CATEGORY_OPTIONS_COMBO + "'" + id + "'")
-                .mapToList(CategoryOptionComboModel::create);
-    }
-
-    @Override
-    public Observable<CategoryCombo> catComboForProgram(String programUid) {
-        return null;
-    }
-
-    @Override
-    public Observable<CategoryModel> getCategoryFromCategoryCombo(String categoryComboId) {
-        return briteDatabase.createQuery(CategoryModel.TABLE, SELECT_CATEGORY, categoryComboId)
-                .mapToOne(CategoryModel::create);
-    }
 
     @Override
     public void saveCatOption(String eventUid, String catOptComboUid) {

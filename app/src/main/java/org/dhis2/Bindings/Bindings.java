@@ -32,7 +32,7 @@ import org.dhis2.usescases.programEventDetail.ProgramEventViewModel;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.State;
-import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
+import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
@@ -188,10 +188,10 @@ public class Bindings {
     }
 
     @BindingAdapter(value = {"eventStatusIcon", "enrollmentStatusIcon", "eventProgramStage", "eventProgram"}, requireAll = false)
-    public static void setEventIcon(ImageView view, EventModel event, EnrollmentModel enrollmentModel, ProgramStageModel eventProgramStage, ProgramModel program) {
+    public static void setEventIcon(ImageView view, EventModel event, Enrollment enrollment, ProgramStageModel eventProgramStage, ProgramModel program) {
         if (event != null) {
             EventStatus status = event.status();
-            EnrollmentStatus enrollmentStatus = enrollmentModel.enrollmentStatus();
+            EnrollmentStatus enrollmentStatus = enrollment.status();
             if (status == null)
                 status = EventStatus.ACTIVE;
             if (enrollmentStatus == null)
@@ -233,10 +233,10 @@ public class Bindings {
     }
 
     @BindingAdapter(value = {"eventStatusText", "enrollmentStatus", "eventProgramStage", "eventProgram"})
-    public static void setEventText(TextView view, EventModel event, EnrollmentModel enrollmentModel, ProgramStageModel eventProgramStage, ProgramModel program) {
+    public static void setEventText(TextView view, EventModel event, Enrollment enrollment, ProgramStageModel eventProgramStage, ProgramModel program) {
         if (event != null) {
             EventStatus status = event.status();
-            EnrollmentStatus enrollmentStatus = enrollmentModel.enrollmentStatus();
+            EnrollmentStatus enrollmentStatus = enrollment.status();
             if (status == null)
                 status = EventStatus.ACTIVE;
             if (enrollmentStatus == null)
