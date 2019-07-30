@@ -15,6 +15,10 @@
             name="description"
             type="java.lang.String" />
 
+        <variable
+            name="selected"
+            type="java.lang.String"/>
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -22,29 +26,62 @@
         android:layout_height="wrap_content"
         android:padding="5dp">
 
-        <TextView
-            android:id="@+id/formLabel"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/layout"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="6dp"
-            android:paddingStart="4dp"
-            android:text="@{label}"
-            android:textSize="@dimen/textSize_12"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="Form Name" />
-
-        <ImageView
-            android:id="@+id/descriptionLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_margin="6dp"
-            android:visibility="@{(label.length()>16||description!=null)?View.VISIBLE : View.GONE}"
+            android:layout_below="@id/renderImage"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_info_outline"
-            app:tint="?colorPrimary" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
+            <ImageView
+                android:id="@+id/icImage"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_margin="10dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_add_image"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/inputLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="@{label}"
+                android:textColorHint="@color/text_black_808"
+                android:theme="@style/loginInputText"
+                tools:hint="Form name">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/formLabel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionNext"
+                    android:clickable="true"
+                    android:focusable="false"
+                    android:text="@{selected}"
+                    android:textAlignment="textStart"
+                    android:textColor="@color/text_black_333"
+                    android:textSize="15sp" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <ImageView
+                android:id="@+id/descriptionLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:visibility="@{(label.length()>16||description!=null)?View.VISIBLE : View.GONE}"
+                app:srcCompat="@drawable/ic_info_outline"
+                app:tint="?colorPrimary" />
+        </LinearLayout>
 
         <ImageView
             android:id="@+id/image"
@@ -54,9 +91,10 @@
             android:maxHeight="200dp"
             android:minHeight="100dp"
             android:scaleType="centerInside"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/formLabel"
+            app:layout_constraintTop_toBottomOf="@id/layout"
             app:srcCompat="@drawable/ic_camera" />
 
         <TextView
