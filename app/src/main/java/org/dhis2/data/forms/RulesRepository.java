@@ -559,7 +559,7 @@ public final class RulesRepository {
             case HIDEOPTIONGROUP:
                 return RuleActionHideOptionGroup.create(content, optionGroup);
             case SHOWOPTIONGROUP:
-                return RuleActionShowOptionGroup.create(content, optionGroup, attribute);
+                return RuleActionShowOptionGroup.create(content, optionGroup, isEmpty(attribute) ? field : attribute);
             default:
                 return RuleActionUnsupported.create("UNSUPPORTED RULE ACTION TYPE", actionType.name());
         }
