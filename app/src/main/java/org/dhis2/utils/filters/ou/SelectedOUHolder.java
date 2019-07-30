@@ -15,7 +15,7 @@ class SelectedOUHolder extends RecyclerView.ViewHolder {
     }
 
     public void bind(OrganisationUnit organisationUnit, OUFilterAdapter.OnClear clearListener) {
-        binding.setOu(organisationUnit);
+        binding.setItem(organisationUnit);
         binding.clear.setOnClickListener(view -> clearListener.onClear(organisationUnit));
     }
 }

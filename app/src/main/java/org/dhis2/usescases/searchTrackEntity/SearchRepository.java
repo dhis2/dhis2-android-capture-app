@@ -33,12 +33,14 @@ public interface SearchRepository {
     Observable<List<Program>> programsWithRegistration(String programTypeId);
 
     @NonNull
-    LiveData<PagedList<SearchTeiModel>> searchTrackedEntitiesOffline(@NonNull Program selectedProgram,
+    LiveData<PagedList<SearchTeiModel>> searchTrackedEntitiesOffline(@Nullable Program selectedProgram,
+                                                                     @NonNull String trackedEntityType,
                                                                      @NonNull List<String> orgUnits,
                                                                      @Nullable HashMap<String, String> queryData);
 
     @NonNull
-    LiveData<PagedList<SearchTeiModel>> searchTrackedEntitiesAll(@NonNull Program selectedProgram,
+    LiveData<PagedList<SearchTeiModel>> searchTrackedEntitiesAll(@Nullable Program selectedProgram,
+                                                                 @NonNull String trackedEntityType,
                                                                  @NonNull List<String> orgUnits,
                                                                  @Nullable HashMap<String, String> queryData);
 

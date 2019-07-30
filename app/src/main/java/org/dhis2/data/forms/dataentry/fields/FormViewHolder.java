@@ -2,6 +2,8 @@ package org.dhis2.data.forms.dataentry.fields;
 
 import android.app.Activity;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
@@ -12,8 +14,10 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.dhis2.R;
+import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.custom_views.CustomDialog;
+import org.hisp.dhis.android.core.common.ObjectStyle;
 
 import java.util.Objects;
 
@@ -29,6 +33,7 @@ public abstract class FormViewHolder extends RecyclerView.ViewHolder {
     protected String descriptionText;
     protected MutableLiveData<String> currentUid;
     protected String fieldUid;
+    protected ObjectStyle objectStyle;
 
     public FormViewHolder(ViewDataBinding binding) {
         super(binding.getRoot());
@@ -54,9 +59,17 @@ public abstract class FormViewHolder extends RecyclerView.ViewHolder {
         if (currentUid != null) {
             currentUid.observeForever(fieldUid -> {
                 if (Objects.equals(fieldUid, this.fieldUid)) {
-                    itemView.setBackground(AppCompatResources.getDrawable(itemView.getContext(), R.drawable.item_selected_bg));
-                }else
-                    itemView.setBackgroundColor(Color.WHITE);
+                    Drawable bgDrawable = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.item_selected_bg);
+                    if (objectStyle != null && objectStyle.color() != null) {
+                        bgDrawable.setColorFilter(ColorUtils.parseColor(objectStyle.color()), PorterDuff.Mode.MULTIPLY);
+                    }
+                    itemView.setBackground(bgDrawable);
+                } else {
+                    if (objectStyle != null && objectStyle.color() != null)
+                        itemView.setBackgroundColor(ColorUtils.parseColor(objectStyle.color()));
+                    else
+                        itemView.setBackgroundColor(Color.WHITE);
+                }
             });
 
         }
@@ -74,8 +87,12 @@ public abstract class FormViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void clearBackground(boolean isSarchMode) {
-        if (!isSarchMode)
-            itemView.setBackgroundColor(Color.WHITE);
+        if (!isSarchMode) {
+            if (objectStyle != null && objectStyle.color() != null)
+                itemView.setBackgroundColor(ColorUtils.parseColor(objectStyle.color()));
+            else
+                itemView.setBackgroundColor(Color.WHITE);
+        }
     }
 
     public void setSelectedBackground(boolean isSarchMode) {

@@ -209,10 +209,10 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 queryProcessor
                         .map(map -> {
                             HashMap<String, String> data = new HashMap<>(map);
-                            if (!NetworkUtils.isOnline(view.getContext()) || selectedProgram == null || data.isEmpty())
-                                return searchRepository.searchTrackedEntitiesOffline(selectedProgram, orgUnitsUid, data);
+                            if (!NetworkUtils.isOnline(view.getContext()))
+                                return searchRepository.searchTrackedEntitiesOffline(selectedProgram, trackedEntityType, orgUnitsUid, data);
                             else
-                                return searchRepository.searchTrackedEntitiesAll(selectedProgram, orgUnitsUid, data);
+                                return searchRepository.searchTrackedEntitiesAll(selectedProgram, trackedEntityType, orgUnitsUid, data);
                         })
                         .doOnError(this::handleError)
                         .subscribeOn(Schedulers.io())
@@ -261,7 +261,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 messageId = view.getContext().getString(R.string.search_init);
             }
         } else if (selectedProgram == null) {
-            if (queryData.isEmpty() && view.fromRelationshipTEI() == null)
+            if (size == 0 && queryData.isEmpty() && view.fromRelationshipTEI() == null)
                 messageId = view.getContext().getString(R.string.search_init);
             else if (size == 0) {
                 messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
@@ -270,8 +270,9 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 messageId = String.format(view.getContext().getString(R.string.search_max_tei_reached), MAX_NO_SELECTED_PROGRAM_RESULTS);
         } else {
             if (size == 0 && !queryData.isEmpty()) {
-                if (selectedProgram.minAttributesRequiredToSearch() > 0 && queryData.size() == 1 && queryData.containsKey(Constants.ENROLLMENT_DATE_UID))
-                    messageId = view.getContext().getString(R.string.search_attr);
+                int realQuerySize = queryData.containsKey(Constants.ENROLLMENT_DATE_UID)? queryData.size()-1 : queryData.size();
+                if (selectedProgram.minAttributesRequiredToSearch() > realQuerySize)
+                    messageId = String.format(view.getContext().getString(R.string.search_min_num_attr), selectedProgram.minAttributesRequiredToSearch());
                 else
                     messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
                 canRegister = true;
@@ -494,7 +495,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private void showCustomCalendar(OrganisationUnit selectedOrgUnit, String programUid, String uid) {
 
         LayoutInflater layoutInflater = LayoutInflater.from(view.getContext());
-//        View datePickerView = layoutInflater.inflate(R.layout.widget_datepicker, null);
         WidgetDatepickerBinding binding = WidgetDatepickerBinding.inflate(layoutInflater);
         final DatePicker datePicker = binding.widgetDatepicker;
 
@@ -506,22 +506,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(view.getContext(), R.style.DatePickerTheme)
                 .setTitle(selectedProgram.enrollmentDateLabel());
-               /* .setPositiveButton(R.string.action_accept, (dialog, which) -> {
-                    Calendar selectedCalendar = Calendar.getInstance();
-                    selectedCalendar.set(Calendar.YEAR, datePicker.getYear());
-                    selectedCalendar.set(Calendar.MONTH, datePicker.getMonth());
-                    selectedCalendar.set(Calendar.DAY_OF_MONTH, datePicker.getDayOfMonth());
-                    selectedCalendar.set(Calendar.HOUR_OF_DAY, 0);
-                    selectedCalendar.set(Calendar.MINUTE, 0);
-                    selectedCalendar.set(Calendar.SECOND, 0);
-                    selectedCalendar.set(Calendar.MILLISECOND, 0);
-                    selectedEnrollmentDate = selectedCalendar.getTime();
-
-                    enrollInOrgUnit(selectedOrgUnitModel.uid(), programUid, uid, selectedEnrollmentDate);
-                })
-                .setNeutralButton(view.getContext().getResources().getString(R.string.change_calendar),
-                        (dialog, which) -> showNativeCalendar(selectedOrgUnitModel, programUid, uid))
-                .setNegativeButton(view.getContext().getString(R.string.date_dialog_clear), (dialog, which) -> dialog.dismiss());*/
 
         if (selectedOrgUnit.openingDate() != null)
             datePicker.setMinDate(selectedOrgUnit.openingDate().getTime());

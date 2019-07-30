@@ -28,6 +28,7 @@ import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
 import org.dhis2.data.service.SyncGranularRxWorker;
 import org.dhis2.databinding.SyncBottomDialogBinding;
+import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.NetworkUtils;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.State;
@@ -36,6 +37,7 @@ import org.hisp.dhis.android.core.datavalue.DataValue;
 import org.hisp.dhis.android.core.imports.TrackerImportConflict;
 import org.hisp.dhis.android.core.program.ProgramType;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -130,6 +132,8 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
     }
 
     private void configureForDataValue() {
+        binding.programName.setText(R.string.qr_data_values);
+
         compositeDisposable.add(
                 Observable.fromCallable(()-> d2.dataValueModule().dataValues.byOrganisationUnitUid().eq(orgUnitDataValue)
                         .byAttributeOptionComboUid().eq(attributeComboDataValue)
@@ -169,7 +173,15 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
     }
 
     private void configureForDataSet() {
-
+        compositeDisposable.add(
+                Observable.fromCallable(() -> d2.dataSetModule().dataSets.uid(recordUid).get())
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                dataset -> binding.programName.setText(dataset.displayName()),
+                                error -> dismiss()
+                        )
+        );
         compositeDisposable.add(
                 Observable.fromCallable(()-> d2.dataSetModule().dataSets.uid(recordUid).withAllChildren().get().dataSetElements())
                         .map(dataSetElements -> {
@@ -569,7 +581,8 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
         WorkManager.getInstance().beginUniqueWork(uid, ExistingWorkPolicy.KEEP, request).enqueue();
         WorkManager.getInstance().getWorkInfosForUniqueWorkLiveData(uid)
                 .observe(this, workInfo -> {
-                    if(workInfo != null && workInfo.size() > 0)manageWorkInfo(workInfo.get(0));
+                    if(workInfo != null && workInfo.size() > 0)
+                        manageWorkInfo(workInfo.get(0));
                 });
     }
 
@@ -598,9 +611,25 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
                 Bindings.setStateIcon(binding.syncIcon, State.SYNCED);
                 break;
             case FAILED:
+                List<StatusLogItem> listStatusLog = new ArrayList<>();
+                if(workInfo.getOutputData().getKeyValueMap().get("conflict") != null) {
+                    for (String tracker : workInfo.getOutputData().getStringArray("conflict")) {
+                        try {
+                            listStatusLog.add(StatusLogItem.create(DateUtils.getInstance().databaseDateFormat().parse(tracker.split("/")[0])
+                                    , tracker.split("/")[1]));
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    adapter.addAllItems(listStatusLog);
+                }
+                else{
+                    adapter.addItem(StatusLogItem.create(Calendar.getInstance().getTime(),
+                            getString(R.string.error_sync)));
+                }
                 Bindings.setStateIcon(binding.syncIcon, State.ERROR);
-                adapter.addItem(StatusLogItem.create(Calendar.getInstance().getTime(),
-                        getString(R.string.error_sync)));
+                processor.onNext(false);
                 break;
             case BLOCKED:
                 break;

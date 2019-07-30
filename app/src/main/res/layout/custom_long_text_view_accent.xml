@@ -61,6 +61,7 @@
                     android:enabled="@{isEditable.get()}"
                     android:gravity="start"
                     android:imeOptions="actionNext"
+                    android:textIsSelectable="true"
                     android:maxLines="1"
                     android:textColor="?colorAccent"
                     android:textSize="15sp"

@@ -17,6 +17,7 @@ abstract class FilterHolder extends RecyclerView.ViewHolder {
     protected final View filterArrow;
     protected final ImageView filterIcon;
     protected final TextView filterTitle;
+    protected final TextView filterValues;
     protected Filters filterType;
     private ObservableField<Filters> openFilter;
     protected ViewDataBinding binding;
@@ -28,6 +29,7 @@ abstract class FilterHolder extends RecyclerView.ViewHolder {
         this.filterArrow = binding.getRoot().findViewById(R.id.filterArrow);
         this.filterIcon = binding.getRoot().findViewById(R.id.filterIcon);
         this.filterTitle = binding.getRoot().findViewById(R.id.filterTitle);
+        this.filterValues = binding.getRoot().findViewById(R.id.filterValues);
     }
 
     protected void bind() {

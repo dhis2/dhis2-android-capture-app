@@ -2,6 +2,8 @@ package org.dhis2.utils.custom_views;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -170,7 +172,6 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
                 default:
                     break;
             }
-
         binding.executePendingBindings();
     }
 
@@ -188,7 +189,7 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
     public void setEditable(Boolean editable) {
         editText.setFocusable(editable);
         editText.setFocusableInTouchMode(editable);
-        editText.setEnabled(editable);
+        editText.setEnabled(true);//Set true always cause if is disabled it loses the clickListener
     }
 
     public void setWarning(String warning, String error) {
@@ -325,5 +326,10 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
 
     public void setObjectSyle(ObjectStyleModel objectStyle) {
         Bindings.setObjectStyle(icon, this, objectStyle);
+    }
+
+    public void setOnLongActionListener(View.OnLongClickListener listener){
+        if(!editText.isFocusable())
+            editText.setOnLongClickListener(listener);
     }
 }

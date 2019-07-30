@@ -4,9 +4,8 @@ package org.dhis2.data.forms.dataentry.fields.edittext;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.view.MotionEvent;
-import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
@@ -14,13 +13,16 @@ import androidx.lifecycle.MutableLiveData;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.FormEditTextCustomBinding;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.Preconditions;
+import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.dhis2.utils.ValidationUtils;
+import org.dhis2.utils.custom_views.TextInputAutoCompleteTextView;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
 
@@ -28,6 +30,7 @@ import java.lang.reflect.Type;
 import java.util.List;
 
 import io.reactivex.processors.FlowableProcessor;
+import timber.log.Timber;
 
 import static android.content.Context.MODE_PRIVATE;
 import static android.text.TextUtils.isEmpty;
@@ -70,6 +73,7 @@ final class EditTextCustomHolder extends FormViewHolder {
             sendAction();
             return true;
         });
+
     }
 
     private void sendAction() {
@@ -93,6 +97,14 @@ final class EditTextCustomHolder extends FormViewHolder {
         binding.customEdittext.setValueType(editTextModel.valueType());
 
         binding.customEdittext.setObjectSyle(model.objectStyle());
+        if (model.objectStyle() != null) {
+            objectStyle = ObjectStyle.builder()
+                    .color(model.objectStyle().color())
+                    .icon(model.objectStyle().icon())
+                    .uid(model.objectStyle().uid())
+                    .objectTable(model.objectStyle().objectTable())
+                    .build();
+        }
         label = new StringBuilder(model.label());
         binding.customEdittext.setLabel(model.label(), model.mandatory());
         descriptionText = model.description();
@@ -107,6 +119,8 @@ final class EditTextCustomHolder extends FormViewHolder {
         setRenderingType(editTextModel.fieldRendering());
 
         initFieldFocus();
+
+        setLongClick();
     }
 
     private void checkAutocompleteRendering() {
@@ -150,5 +164,23 @@ final class EditTextCustomHolder extends FormViewHolder {
 
     public void dispose() {
 
+    }
+
+    private void setLongClick(){
+        binding.customEdittext.setOnLongActionListener(view -> {
+            ClipboardManager clipboard = (ClipboardManager)binding.getRoot().getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+            try {
+                if(!((TextInputAutoCompleteTextView) view).getText().toString().equals("")) {
+                    ClipData clip = ClipData.newPlainText("copy", ((TextInputAutoCompleteTextView) view).getText());
+                    clipboard.setPrimaryClip(clip);
+                    Toast.makeText(binding.getRoot().getContext(),
+                            binding.getRoot().getContext().getString(R.string.copied_text), Toast.LENGTH_LONG).show();
+                }
+                return true;
+            }catch (Exception e){
+                Timber.e(e);
+                return false;
+            }
+        }) ;
     }
 }

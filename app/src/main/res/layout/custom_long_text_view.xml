@@ -64,6 +64,7 @@
                     android:layout_height="match_parent"
                     android:gravity="start"
                     android:imeOptions="actionNext"
+                    android:textIsSelectable="true"
                     android:maxLines="1"
                     android:textAlignment="textStart"
                     android:textColor="@color/text_black_333"
