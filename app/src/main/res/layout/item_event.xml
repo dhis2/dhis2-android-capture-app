@@ -17,7 +17,7 @@
 
         <variable
             name="enrollment"
-            type="org.hisp.dhis.android.core.enrollment.EnrollmentModel" />
+            type="org.hisp.dhis.android.core.enrollment.Enrollment" />
 
         <variable
             name="program"

@@ -33,10 +33,8 @@ import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.legendset.LegendModel;
 import org.hisp.dhis.android.core.legendset.ProgramIndicatorLegendSetLinkModel;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramIndicatorModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.relationship.RelationshipTypeModel;
@@ -77,21 +75,10 @@ public class DashboardRepositoryImpl implements DashboardRepository {
             "WHERE Enrollment.trackedEntityInstance = ? AND Enrollment.program = ?\n" +
             "ORDER BY Note.storedDate DESC";
 
-    private final String PROGRAM_QUERY = String.format("SELECT %s.* FROM %s WHERE %s.%s = ",
-            ProgramModel.TABLE, ProgramModel.TABLE, ProgramModel.TABLE, ProgramModel.Columns.UID);
 
     private final String PROGRAM_INDICATORS_QUERY = String.format("SELECT %s.* FROM %s WHERE %s.%s = ",
             ProgramIndicatorModel.TABLE, ProgramIndicatorModel.TABLE, ProgramIndicatorModel.TABLE, ProgramIndicatorModel.Columns.PROGRAM);
 
-    private final String ATTRIBUTES_QUERY = String.format("SELECT %s.* FROM %s INNER JOIN %s ON %s.%s = %s.%s WHERE %s.%s = ",
-            TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.TABLE,
-            ProgramTrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.Columns.UID,
-            ProgramTrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.Columns.TRACKED_ENTITY_ATTRIBUTE,
-            ProgramTrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.Columns.PROGRAM);
-
-    private final String ORG_UNIT_QUERY = String.format("SELECT * FROM %s WHERE %s.%s = ",
-            OrganisationUnitModel.TABLE, OrganisationUnitModel.TABLE, OrganisationUnitModel.Columns.UID
-    );
 
     private final String ENROLLMENT_QUERY = String.format("SELECT * FROM %s WHERE %s.%s = ? AND %s.%s = ? ORDER BY %s DESC LIMIT 1",
             EnrollmentModel.TABLE, EnrollmentModel.TABLE, EnrollmentModel.Columns.PROGRAM,
@@ -265,11 +252,11 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     }
 
     @Override
-    public Observable<EnrollmentModel> getEnrollment(String programUid, String teiUid) {
+    public Observable<Enrollment> getEnrollment(String programUid, String teiUid) {
         String progId = programUid == null ? "" : programUid;
         String teiId = teiUid == null ? "" : teiUid;
-        return briteDatabase.createQuery(EnrollmentModel.TABLE, ENROLLMENT_QUERY, progId, teiId)
-                .mapToOne(EnrollmentModel::create);
+        return Observable.fromCallable(() -> d2.enrollmentModule().enrollments.byTrackedEntityInstance()
+        .eq(teiId).byProgram().eq(progId).one().get());
     }
 
     @Override
@@ -301,7 +288,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                 .mapToOne(ProgramStageModel::create);
     }
 
-    @Override
+    /*@Override
     public Observable<String> generateNewEvent(String lastModifiedEventUid, Integer standardInterval) {
         return briteDatabase.createQuery(EventModel.TABLE, GET_EVENT_FROM_UID, lastModifiedEventUid == null ? "" : lastModifiedEventUid)
                 .mapToOne(EventModel::create)
@@ -338,7 +325,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
                     return Observable.just("Event Created");
                 });
-    }
+    }*/
 
     @Override
     public Observable<Trio<ProgramIndicatorModel, String, String>> getLegendColorForIndicator(ProgramIndicatorModel indicator, String value) {
@@ -352,7 +339,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
         return Observable.just(Trio.create(indicator, value, color));
     }
 
-    @Override
+    /*@Override
     public Observable<String> generateNewEventFromDate(String lastModifiedEventUid, Calendar chosenDate) {
         return briteDatabase.createQuery(EventModel.TABLE, GET_EVENT_FROM_UID, lastModifiedEventUid == null ? "" : lastModifiedEventUid)
                 .mapToOne(EventModel::create)
@@ -389,7 +376,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
                     return Observable.just("Event Created");
                 });
-    }
+    }*/
 
     @Override
     public void updateTeiState() {
@@ -610,4 +597,9 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                 });
     }
 
+
+    @Override
+    public Observable<TrackedEntityInstance> getTrackedEntityInstance(String teiUid) {
+        return Observable.fromCallable(() -> d2.trackedEntityModule().trackedEntityInstances.byUid().eq(teiUid).one().get());
+    }
 }

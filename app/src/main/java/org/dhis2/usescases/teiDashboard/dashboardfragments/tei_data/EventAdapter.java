@@ -5,6 +5,7 @@ import android.view.ViewGroup;
 
 import org.dhis2.R;
 import org.dhis2.databinding.ItemEventBinding;
+import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -26,11 +27,11 @@ public class EventAdapter extends RecyclerView.Adapter<EventViewHolder> {
 
     private final List<ProgramStageModel> programStageList;
     private final TEIDataContracts.Presenter presenter;
-    private final EnrollmentModel enrollment;
+    private final Enrollment enrollment;
     private final ProgramModel program;
     private List<EventModel> events;
 
-    public EventAdapter(TEIDataContracts.Presenter presenter, List<ProgramStageModel> programStageList, List<EventModel> eventList, EnrollmentModel currentEnrollment, ProgramModel currentProgram) {
+    public EventAdapter(TEIDataContracts.Presenter presenter, List<ProgramStageModel> programStageList, List<EventModel> eventList, Enrollment currentEnrollment, ProgramModel currentProgram) {
         this.events = eventList;
         this.enrollment = currentEnrollment;
         this.programStageList = programStageList;

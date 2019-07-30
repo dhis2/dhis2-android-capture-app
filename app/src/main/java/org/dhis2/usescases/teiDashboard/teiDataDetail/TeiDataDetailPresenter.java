@@ -15,10 +15,7 @@ import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import org.dhis2.usescases.teiDashboard.DashboardRepository;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
-import org.dhis2.utils.FileResourcesUtil;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
-
-import androidx.core.app.ActivityCompat;
 
 import java.util.Date;
 
@@ -57,7 +54,7 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
 
         if (programUid != null) {
             disposable.add(Observable.zip(
-                    metadataRepository.getTrackedEntityInstance(uid),
+                    dashboardRepository.getTrackedEntityInstance(uid),
                     dashboardRepository.getEnrollment(programUid, uid),
                     dashboardRepository.getProgramStages(programUid),
                     dashboardRepository.getTEIEnrollmentEvents(programUid, uid),
@@ -95,7 +92,7 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
         } else {
             //TODO: NO SE HA SELECCIONADO PROGRAMA
             disposable.add(Observable.zip(
-                    metadataRepository.getTrackedEntityInstance(uid),
+                    dashboardRepository.getTrackedEntityInstance(uid),
                     metadataRepository.getProgramTrackedEntityAttributes(null),
                     dashboardRepository.getTEIAttributeValues(null, uid),
                     metadataRepository.getTeiOrgUnits(uid),
