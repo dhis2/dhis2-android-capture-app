@@ -3,6 +3,8 @@ package org.dhis2.data.service;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import androidx.annotation.NonNull;
+
 import org.dhis2.utils.Constants;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.call.D2Progress;
@@ -15,7 +17,6 @@ import org.hisp.dhis.android.core.program.ProgramType;
 import java.util.Collections;
 import java.util.List;
 
-import androidx.annotation.NonNull;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 import timber.log.Timber;
@@ -49,11 +50,11 @@ final class SyncPresenterImpl implements SyncPresenter {
         boolean limitByOU = prefs.getBoolean(Constants.LIMIT_BY_ORG_UNIT, false);
         boolean limitByProgram = prefs.getBoolean(Constants.LIMIT_BY_PROGRAM, false);
         Completable.fromObservable(d2.trackedEntityModule().trackedEntityInstances.upload()).andThen(
-        Completable.fromObservable(d2.trackedEntityModule()
-                .downloadTrackedEntityInstances(teiLimit, limitByOU, limitByProgram)
-                .doOnNext(data -> Timber.d(data.percentage() + "% " + data.doneCalls().size() + "/" + data.totalCalls())))
-                .doOnError(error -> Timber.d("error while downloading TEIs"))
-                .onErrorComplete())
+                Completable.fromObservable(d2.trackedEntityModule()
+                        .downloadTrackedEntityInstances(teiLimit, limitByOU, limitByProgram)
+                        .doOnNext(data -> Timber.d(data.percentage() + "% " + data.doneCalls().size() + "/" + data.totalCalls())))
+                        .doOnError(error -> Timber.d("error while downloading TEIs"))
+                        .onErrorComplete())
                 .blockingAwait();
     }
 
@@ -68,20 +69,20 @@ final class SyncPresenterImpl implements SyncPresenter {
 
     @Override
     public void syncMetadata(Context context) {
-        Completable.fromObservable(d2.syncMetaData()
+        Completable.fromObservable(d2.metadataModule().download()
                 .doOnNext(data -> Timber.d(data.percentage() + "% " + data.doneCalls().size() + "/" + data.totalCalls())))
                 .blockingAwait();
     }
 
     @Override
     public void syncReservedValues() {
-        d2.trackedEntityModule().reservedValueManager.syncReservedValues(null, null, 100);
+        d2.trackedEntityModule().reservedValueManager.blockingDownloadReservedValues(null, null, 100);
     }
 
     @Override
     public boolean checkSyncStatus() {
         boolean eventsOk = d2.eventModule().events.byState().notIn(State.SYNCED).get().isEmpty();
-        boolean teiOk = d2.trackedEntityModule().trackedEntityInstances.byState().notIn(State.SYNCED,State.RELATIONSHIP).get().isEmpty();
+        boolean teiOk = d2.trackedEntityModule().trackedEntityInstances.byState().notIn(State.SYNCED, State.RELATIONSHIP).get().isEmpty();
         return eventsOk && teiOk;
     }
 
@@ -91,10 +92,10 @@ final class SyncPresenterImpl implements SyncPresenter {
     }
 
     @Override
-    public Observable<D2Progress> syncGranularProgram(String uid){
+    public Observable<D2Progress> syncGranularProgram(String uid) {
         return d2.programModule().programs.uid(uid).getAsync().toObservable()
                 .flatMap(program -> {
-                    if(program.programType() == ProgramType.WITH_REGISTRATION)
+                    if (program.programType() == ProgramType.WITH_REGISTRATION)
                         return d2.trackedEntityModule().trackedEntityInstances.byProgramUids(Collections.singletonList(uid)).upload();
                     else
                         return d2.eventModule().events.byProgramUid().eq(uid).upload();
@@ -102,25 +103,25 @@ final class SyncPresenterImpl implements SyncPresenter {
     }
 
     @Override
-    public Observable<D2Progress> syncGranularTEI(String uid){
+    public Observable<D2Progress> syncGranularTEI(String uid) {
         return d2.trackedEntityModule().trackedEntityInstances.byUid().eq(uid).upload();
     }
 
     @Override
-    public Observable<D2Progress> syncGranularDataSet(String uid){
+    public Observable<D2Progress> syncGranularDataSet(String uid) {
         return d2.dataSetModule().dataSetInstances.byDataSetUid().eq(uid).getAsync().toObservable()
                 .flatMapIterable(dataSets -> dataSets)
-                .flatMap(dataSetInstance ->
-                     d2.dataValueModule().dataValues
-                            .byOrganisationUnitUid().eq(dataSetInstance.attributeOptionComboUid())
-                            .byPeriod().eq(dataSetInstance.period())
-                            .byAttributeOptionComboUid().eq(dataSetInstance.attributeOptionComboUid())
-                            .upload()
+                .flatMap(dataSetReport ->
+                        d2.dataValueModule().dataValues
+                                .byOrganisationUnitUid().eq(dataSetReport.attributeOptionComboUid())
+                                .byPeriod().eq(dataSetReport.period())
+                                .byAttributeOptionComboUid().eq(dataSetReport.attributeOptionComboUid())
+                                .upload()
                 );
     }
 
     @Override
-    public Observable<D2Progress> syncGranularDataValues(String orgUnit, String attributeOptionCombo, String period){
+    public Observable<D2Progress> syncGranularDataValues(String orgUnit, String attributeOptionCombo, String period) {
         return d2.dataValueModule().dataValues
                 .byAttributeOptionComboUid().eq(attributeOptionCombo)
                 .byOrganisationUnitUid().eq(orgUnit)
@@ -150,7 +151,7 @@ final class SyncPresenterImpl implements SyncPresenter {
     public boolean checkSyncProgramStatus(String uid) {
         Program program = d2.programModule().programs.uid(uid).get();
 
-        if(program.programType() == ProgramType.WITH_REGISTRATION)
+        if (program.programType() == ProgramType.WITH_REGISTRATION)
             return d2.trackedEntityModule().trackedEntityInstances.byProgramUids(Collections.singletonList(uid)).get().isEmpty();
         else
             return d2.eventModule().events.byProgramUid().eq(uid).get().isEmpty();
@@ -159,23 +160,23 @@ final class SyncPresenterImpl implements SyncPresenter {
 
     @Override
     public boolean checkSyncDataSetStatus(String uid) {
-        DataSetInstance dataSetInstance = d2.dataSetModule().dataSetInstances.byDataSetUid().eq(uid).one().get();
+        DataSetInstance dataSetReport = d2.dataSetModule().dataSetInstances.byDataSetUid().eq(uid).one().get();
 
         return d2.dataValueModule().dataValues
-                .byOrganisationUnitUid().eq(dataSetInstance.attributeOptionComboUid())
-                .byPeriod().eq(dataSetInstance.period())
-                .byAttributeOptionComboUid().eq(dataSetInstance.attributeOptionComboUid())
+                .byOrganisationUnitUid().eq(dataSetReport.attributeOptionComboUid())
+                .byPeriod().eq(dataSetReport.period())
+                .byAttributeOptionComboUid().eq(dataSetReport.attributeOptionComboUid())
                 .get().isEmpty();
     }
 
     @Override
     public List<TrackerImportConflict> messageTrackerImportConflict(String uid) {
         List<TrackerImportConflict> trackerImportConflicts = d2.importModule().trackerImportConflicts.byTrackedEntityInstanceUid().eq(uid).get();
-        if(trackerImportConflicts != null && !trackerImportConflicts.isEmpty())
+        if (trackerImportConflicts != null && !trackerImportConflicts.isEmpty())
             return trackerImportConflicts;
 
         trackerImportConflicts = d2.importModule().trackerImportConflicts.byEventUid().eq(uid).get();
-        if(trackerImportConflicts != null && !trackerImportConflicts.isEmpty())
+        if (trackerImportConflicts != null && !trackerImportConflicts.isEmpty())
             return trackerImportConflicts;
 
         return null;

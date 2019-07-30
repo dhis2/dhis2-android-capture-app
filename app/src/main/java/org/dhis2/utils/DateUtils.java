@@ -1,6 +1,10 @@
 package org.dhis2.utils;
 
 
+import android.content.Context;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.hisp.dhis.android.core.dataset.DataInputPeriod;
 import org.hisp.dhis.android.core.event.EventModel;
@@ -18,9 +22,6 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nonnull;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 /**
  * QUADRAM. Created by ppajuelo on 16/01/2018.
@@ -848,12 +849,12 @@ public class DateUtils {
                 calendar.set(Calendar.DAY_OF_MONTH, 1);
                 break;
             case Quarterly:
-                extra = 3 - page*(calendar.get(Calendar.MONTH)) % 3;
+                extra = 3 - page * (calendar.get(Calendar.MONTH)) % 3;
                 calendar.add(Calendar.MONTH, page * extra);
                 calendar.set(Calendar.DAY_OF_MONTH, 1);
                 break;
             case SixMonthly:
-                extra = 6 - page*(calendar.get(Calendar.MONTH)) % 6;
+                extra = 6 - page * (calendar.get(Calendar.MONTH)) % 6;
                 calendar.add(Calendar.MONTH, page * extra);
                 calendar.set(Calendar.DAY_OF_MONTH, 1);
                 break;
@@ -1189,18 +1190,18 @@ public class DateUtils {
     }
 
 
-    public Boolean isDataSetExpired(int expiredDays, Date periodInitialDate){
+    public Boolean isDataSetExpired(int expiredDays, Date periodInitialDate) {
         return Calendar.getInstance().getTime().getTime() > periodInitialDate.getTime() + TimeUnit.DAYS.toMillis(expiredDays);
     }
 
-    public Boolean isInsideInputPeriod(DataInputPeriod dataInputPeriodModel){
-        if(dataInputPeriodModel.openingDate() == null && dataInputPeriodModel.closingDate() != null)
+    public Boolean isInsideInputPeriod(DataInputPeriod dataInputPeriodModel) {
+        if (dataInputPeriodModel.openingDate() == null && dataInputPeriodModel.closingDate() != null)
             return Calendar.getInstance().getTime().getTime() < dataInputPeriodModel.closingDate().getTime();
 
-        if(dataInputPeriodModel.openingDate() != null && dataInputPeriodModel.closingDate() == null)
+        if (dataInputPeriodModel.openingDate() != null && dataInputPeriodModel.closingDate() == null)
             return dataInputPeriodModel.openingDate().getTime() < Calendar.getInstance().getTime().getTime();
 
-        if(dataInputPeriodModel.openingDate() == null && dataInputPeriodModel.closingDate() == null)
+        if (dataInputPeriodModel.openingDate() == null && dataInputPeriodModel.closingDate() == null)
             return true;
 
         return dataInputPeriodModel.openingDate().getTime() < Calendar.getInstance().getTime().getTime()
@@ -1236,5 +1237,17 @@ public class DateUtils {
             datePeriods.add(DatePeriod.builder().startDate(startEndDates[0]).endDate(startEndDates[1]).build());
         }
         return datePeriods;
+    }
+
+    public void showFromToSelector(Context context, OnFromToSelector fromToListener) {
+        //TODO: SHOW FROM dialog then TO dialog
+    }
+
+    public void showPeriodDialog(Context context, OnFromToSelector fromToListener) {
+        //TODO: SHOW Period dialog
+    }
+
+    public interface OnFromToSelector {
+        void onFromToSelected(Date from, Date to);
     }
 }

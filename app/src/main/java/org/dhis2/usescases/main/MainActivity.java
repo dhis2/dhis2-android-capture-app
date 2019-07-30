@@ -1,7 +1,7 @@
 package org.dhis2.usescases.main;
 
-import android.app.Activity;
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -39,9 +39,11 @@ import org.dhis2.usescases.syncManager.ErrorDialog;
 import org.dhis2.usescases.syncManager.SyncManagerFragment;
 import org.dhis2.usescases.teiDashboard.nfc_data.NfcDataWriteActivity;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.FiltersAdapter;
 import org.hisp.dhis.android.core.imports.TrackerImportConflict;
+import org.hisp.dhis.android.core.period.DatePeriod;
 
 import java.util.List;
 import java.util.Objects;
@@ -278,6 +280,27 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
     @Override
     public void updateFilters(int totalFilters) {
         binding.setTotalFilters(totalFilters);
+    }
+
+    @Override
+    public void showPeriodRequest(FilterManager.PeriodRequest periodRequest) {
+        if (periodRequest == FilterManager.PeriodRequest.FROM_TO) {
+            DateUtils.getInstance().showFromToSelector(this, (from, to) ->
+                    FilterManager.getInstance().addPeriod(
+                            DatePeriod.builder()
+                                    .startDate(from)
+                                    .endDate(to)
+                                    .build()
+                    ));
+        } else {
+            DateUtils.getInstance().showPeriodDialog(this, (from, to) ->
+                    FilterManager.getInstance().addPeriod(
+                            DatePeriod.builder()
+                                    .startDate(from)
+                                    .endDate(to)
+                                    .build()
+                    ));
+        }
     }
 
     public void setTitle(String title) {

@@ -20,6 +20,10 @@ public class FilterManager {
 
     public static final int OU_TREE = 1986;
 
+    public enum PeriodRequest {
+        FROM_TO, OTHER
+    }
+
     private List<OrganisationUnit> ouFilters;
     private List<State> stateFilters;
     private DatePeriod periodFilters;
@@ -32,6 +36,7 @@ public class FilterManager {
 
     private FlowableProcessor<FilterManager> filterProcessor;
     private FlowableProcessor<Boolean> ouTreeProcessor;
+    private FlowableProcessor<PeriodRequest> periodRequestProcessor;
 
     private static FilterManager instance;
 
@@ -62,6 +67,7 @@ public class FilterManager {
 
         filterProcessor = PublishProcessor.create();
         ouTreeProcessor = PublishProcessor.create();
+        periodRequestProcessor = PublishProcessor.create();
     }
 
 //    region STATE FILTERS
@@ -131,6 +137,10 @@ public class FilterManager {
         return filterProcessor;
     }
 
+    public FlowableProcessor<PeriodRequest> getPeriodRequest() {
+        return periodRequestProcessor;
+    }
+
     public Flowable<Boolean> ouTreeFlowable() {
         return ouTreeProcessor;
     }
@@ -161,6 +171,11 @@ public class FilterManager {
     public List<State> getStateFilters() {
         return stateFilters;
     }
+
+    public void addPeriodRequest(PeriodRequest periodRequest) {
+        periodRequestProcessor.onNext(periodRequest);
+    }
+
 
     public void removeAll() {
         ouFilters = new ArrayList<>();

@@ -88,6 +88,15 @@ final class MainPresenter implements MainContracts.Presenter {
                                 Timber::e
                         )
         );
+
+        compositeDisposable.add(
+                FilterManager.getInstance().getPeriodRequest()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                periodRequest -> view.showPeriodRequest(periodRequest),
+                                Timber::e
+                        ));
     }
 
     @Override
