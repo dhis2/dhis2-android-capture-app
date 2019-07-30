@@ -86,6 +86,8 @@ public class DateAdapter extends RecyclerView.Adapter<DateViewHolder> {
             }
 
         } while (calendar.get(Calendar.YEAR) > year - 11); //show last 10 years
+
+        notifyDataSetChanged();
     }
 
     public DateAdapter() {
@@ -137,7 +139,7 @@ public class DateAdapter extends RecyclerView.Adapter<DateViewHolder> {
 
     @Override
     public int getItemCount() {
-        if (mapPeriod != null)
+        if (mapPeriod != null && mapPeriod.size() > 0)
             return mapPeriod.size();
         return datesNames != null ? datesNames.size() : 0;
     }
