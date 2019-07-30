@@ -7,7 +7,7 @@ import org.dhis2.utils.Constants;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.call.D2Progress;
 import org.hisp.dhis.android.core.common.State;
-import org.hisp.dhis.android.core.datavalue.DataSetReport;
+import org.hisp.dhis.android.core.dataset.DataSetInstance;
 import org.hisp.dhis.android.core.imports.TrackerImportConflict;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramType;
@@ -108,13 +108,13 @@ final class SyncPresenterImpl implements SyncPresenter {
 
     @Override
     public Observable<D2Progress> syncGranularDataSet(String uid){
-        return d2.dataValueModule().dataSetReports.byDataSetUid().eq(uid).getAsync().toObservable()
+        return d2.dataSetModule().dataSetInstances.byDataSetUid().eq(uid).getAsync().toObservable()
                 .flatMapIterable(dataSets -> dataSets)
-                .flatMap(dataSetReport ->
+                .flatMap(dataSetInstance ->
                      d2.dataValueModule().dataValues
-                            .byOrganisationUnitUid().eq(dataSetReport.attributeOptionComboUid())
-                            .byPeriod().eq(dataSetReport.period())
-                            .byAttributeOptionComboUid().eq(dataSetReport.attributeOptionComboUid())
+                            .byOrganisationUnitUid().eq(dataSetInstance.attributeOptionComboUid())
+                            .byPeriod().eq(dataSetInstance.period())
+                            .byAttributeOptionComboUid().eq(dataSetInstance.attributeOptionComboUid())
                             .upload()
                 );
     }
@@ -159,12 +159,12 @@ final class SyncPresenterImpl implements SyncPresenter {
 
     @Override
     public boolean checkSyncDataSetStatus(String uid) {
-        DataSetReport dataSetReport = d2.dataValueModule().dataSetReports.byDataSetUid().eq(uid).one().get();
+        DataSetInstance dataSetInstance = d2.dataSetModule().dataSetInstances.byDataSetUid().eq(uid).one().get();
 
         return d2.dataValueModule().dataValues
-                .byOrganisationUnitUid().eq(dataSetReport.attributeOptionComboUid())
-                .byPeriod().eq(dataSetReport.period())
-                .byAttributeOptionComboUid().eq(dataSetReport.attributeOptionComboUid())
+                .byOrganisationUnitUid().eq(dataSetInstance.attributeOptionComboUid())
+                .byPeriod().eq(dataSetInstance.period())
+                .byAttributeOptionComboUid().eq(dataSetInstance.attributeOptionComboUid())
                 .get().isEmpty();
     }
 
