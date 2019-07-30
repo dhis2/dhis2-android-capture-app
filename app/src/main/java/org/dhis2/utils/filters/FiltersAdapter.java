@@ -4,15 +4,16 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ObservableField;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.dhis2.R;
-import org.dhis2.databinding.ItemFilterBinding;
+import org.dhis2.data.tuples.Pair;
+import org.dhis2.databinding.ItemFilterCatOptCombBinding;
 import org.dhis2.databinding.ItemFilterOrgUnitBinding;
 import org.dhis2.databinding.ItemFilterPeriodBinding;
 import org.dhis2.databinding.ItemFilterStateBinding;
+import org.hisp.dhis.android.core.category.CategoryCombo;
+import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +22,7 @@ public class FiltersAdapter extends RecyclerView.Adapter<FilterHolder> {
 
     private List<Filters> filtersList;
     private ObservableField<Filters> openedFilter;
+    private Pair<CategoryCombo, List<CategoryOptionCombo>> catCombData;
 
     public FiltersAdapter() {
         this.filtersList = new ArrayList<>();
@@ -40,8 +42,11 @@ public class FiltersAdapter extends RecyclerView.Adapter<FilterHolder> {
             case ORG_UNIT:
                 return new OrgUnitFilterHolder(ItemFilterOrgUnitBinding.inflate(inflater, parent, false), openedFilter);
             case SYNC_STATE:
-            default:
                 return new SyncStateFilterHolder(ItemFilterStateBinding.inflate(inflater, parent, false), openedFilter);
+            case CAT_OPT_COMB:
+                return new CatOptCombFilterHolder(ItemFilterCatOptCombBinding.inflate(inflater, parent, false), openedFilter, catCombData);
+            default:
+                throw new IllegalArgumentException("Unsupported filter value");
         }
     }
 
@@ -58,5 +63,13 @@ public class FiltersAdapter extends RecyclerView.Adapter<FilterHolder> {
     @Override
     public int getItemViewType(int position) {
         return filtersList.get(position).ordinal();
+    }
+
+    public void addCatOptCombFilter(Pair<CategoryCombo, List<CategoryOptionCombo>> categoryOptionCombos) {
+        if (!filtersList.contains(Filters.CAT_OPT_COMB)) {
+            filtersList.add(Filters.CAT_OPT_COMB);
+            this.catCombData = categoryOptionCombos;
+            notifyDataSetChanged();
+        }
     }
 }

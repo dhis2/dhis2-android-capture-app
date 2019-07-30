@@ -8,15 +8,14 @@ import org.dhis2.utils.Period;
 import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
+import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.period.DatePeriod;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramModel;
 
 import java.util.List;
-import java.util.Map;
 
 import androidx.lifecycle.LiveData;
 import androidx.paging.PagedList;
@@ -30,51 +29,29 @@ public class ProgramEventDetailContract {
 
     public interface View extends AbstractActivityContracts.View {
 
-        void addTree(TreeNode treeNode);
-
-        void openDrawer();
-
-        void showTimeUnitPicker();
-
-        void showRageDatePicker();
-
         void setProgram(Program programModel);
 
         void renderError(String message);
 
-        void setCatComboOptions( List<Category> categories);
-
         void showHideFilter();
-
-        void apply();
 
         void setWritePermission(Boolean aBoolean);
 
-        void orgUnitProgress(boolean showProgress);
-
-        Consumer<Pair<TreeNode, List<TreeNode>>> addNodeToTree();
-
         void setLiveData(LiveData<PagedList<ProgramEventViewModel>> pagedListLiveData);
 
-        Period getCurrentPeriod();
-
         void setOptionComboAccess(Boolean canCreateEvent);
+
+        void updateFilters(int totalFilters);
+
+        void setCatOptionComboFilter(Pair<CategoryCombo, List<CategoryOptionCombo>> categoryOptionCombos);
+
+        void openOrgUnitTreeSelector();
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
-        void init(View view, Period period);
+        void init(View view);
 
         void updateDateFilter(List<DatePeriod> datePeriodList);
-
-        void updateOrgUnitFilter(List<String> orgUnitList);
-
-        void updateCatOptCombFilter(List<CategoryOption> categoryOptionComboMap);
-
-        void onTimeButtonClick();
-
-        void onDateRangeButtonClick();
-
-        void onOrgUnitButtonClick();
 
         void addEvent();
 
@@ -83,10 +60,6 @@ public class ProgramEventDetailContract {
         void onEventClick(String eventId, String orgUnit);
 
         void showFilter();
-
-        List<OrganisationUnit> getOrgUnits();
-
-        void onExpandOrgUnitNode(TreeNode node, String uid);
 
         void onSyncIconClick(String uid);
     }

@@ -9,7 +9,7 @@ import org.hisp.dhis.android.core.dataset.DataSetCompleteRegistration;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.dataset.DataSetElement;
-import org.hisp.dhis.android.core.datavalue.DataSetReportCollectionRepository;
+import org.hisp.dhis.android.core.dataset.DataSetInstanceCollectionRepository;
 import org.hisp.dhis.android.core.datavalue.DataValue;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.period.DatePeriod;
@@ -27,9 +27,11 @@ import static org.hisp.dhis.android.core.program.ProgramType.WITH_REGISTRATION;
 class HomeRepositoryImpl implements HomeRepository {
 
     private final D2 d2;
+    private final String eventLabel;
 
-    HomeRepositoryImpl(D2 d2) {
+    HomeRepositoryImpl(D2 d2,String eventLabel) {
         this.d2 = d2;
+        this.eventLabel = eventLabel;
     }
 
     @NonNull
@@ -39,7 +41,7 @@ class HomeRepositoryImpl implements HomeRepository {
         return Flowable.just(d2.dataSetModule().dataSets)
                 .flatMap(programRepo -> Flowable.fromIterable(programRepo.withAllChildren().get()))
                 .map(dataSet -> {
-                            DataSetReportCollectionRepository repo = d2.dataValueModule().dataSetReports.byDataSetUid().eq(dataSet.uid());
+                            DataSetInstanceCollectionRepository repo = d2.dataSetModule().dataSetInstances.byDataSetUid().eq(dataSet.uid());
                             if (!orgUnitFilter.isEmpty())
                                 repo = repo.byOrganisationUnitUid().in(orgUnitFilter);
                             if (!dateFilter.isEmpty())
@@ -115,7 +117,7 @@ class HomeRepositoryImpl implements HomeRepository {
                         if (typeName == null)
                             typeName = d2.trackedEntityModule().trackedEntityTypes.uid(program.trackedEntityType().uid()).get().displayName();
                     } else if (program.programType() == WITHOUT_REGISTRATION)
-                        typeName = "Events";
+                        typeName = eventLabel;
                     else
                         typeName = "DataSets";
 

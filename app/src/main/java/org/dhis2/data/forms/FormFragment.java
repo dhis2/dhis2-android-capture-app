@@ -510,7 +510,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     }
 
     @Override
-    public void onCurrentLocationClick(double latitude, double longitude) {
+    public void onCurrentLocationClick(Double latitude, Double longitude) {
         publishCoordinatesChanged(latitude, longitude);
     }
 
@@ -618,6 +618,8 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
 
     private void checkAction() {
         if (isAdded() && getContext() != null) {
+            getActivity().finish(); //TODO: ASK IF USER WANTS TO DELETE RECORD
+/*
             CustomDialog dialog = new CustomDialog(
                     getContext(),
                     getString(R.string.warning_error_on_complete_title),
@@ -641,8 +643,8 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
             if (isAdded() && !isEmpty(messageOnComplete) && !dialog.isShowing())
                 dialog.show();
             else if (isAdded() && getActivity() != null) {
-                getActivity().finish(); //TODO: ASK IF USER WANTS TO DELETE RECORD
-            }
+                getActivity().finish();
+            }*/
         }
     }
 

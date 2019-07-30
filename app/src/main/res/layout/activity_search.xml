@@ -168,7 +168,7 @@
                 android:onClick="@{(view)->presenter.onFabClick(view, needsSearch)}"
                 android:tint="@color/white"
                 app:backgroundTint="?attr/colorPrimary"
-                app:elevation="7dp"
+                app:elevation="12dp"
                 app:fabSize="normal"
                 app:layout_behavior="org.dhis2.utils.FixedBottomViewBehavior"
                 app:searchOrAdd='@{ needsSearch }' />

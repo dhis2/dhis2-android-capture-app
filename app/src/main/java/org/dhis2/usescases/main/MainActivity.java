@@ -31,6 +31,7 @@ import org.dhis2.R;
 import org.dhis2.databinding.ActivityMainBinding;
 import org.dhis2.usescases.about.AboutFragment;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
+import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.usescases.jira.JiraFragment;
 import org.dhis2.usescases.main.program.ProgramFragment;
 import org.dhis2.usescases.qrReader.QrReaderFragment;
@@ -58,6 +59,7 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
     MainContracts.Presenter presenter;
 
     private ProgramFragment programFragment;
+    private FragmentGlobalAbstract activeFragment;
 
     ObservableInt currentFragment = new ObservableInt(R.id.menu_home);
     private boolean isPinLayoutVisible = false;
@@ -182,8 +184,6 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
         else
             initSet.connect(R.id.fragment_container, ConstraintSet.TOP, R.id.toolbar, ConstraintSet.BOTTOM, 0);
         initSet.applyTo(binding.backdropLayout);
-       /* programFragment.getBinding().filterLayout.setVisibility(programFragment.getBinding().filterLayout.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
-        checkFilterEnabled();*/
     }
 
     private void checkFilterEnabled() {
@@ -218,17 +218,17 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
     public void changeFragment(int id) {
         fragId = id;
         binding.navView.setCheckedItem(id);
-        Fragment fragment = null;
+        activeFragment = null;
         String tag = null;
 
         switch (id) {
             case R.id.sync_manager:
-                fragment = new SyncManagerFragment();
+                activeFragment = new SyncManagerFragment();
                 tag = getString(R.string.SYNC_MANAGER);
                 binding.filter.setVisibility(View.GONE);
                 break;
             case R.id.qr_scan:
-                fragment = new QrReaderFragment();
+                activeFragment = new QrReaderFragment();
                 tag = getString(R.string.QR_SCANNER);
                 binding.filter.setVisibility(View.GONE);
                 break;
@@ -237,12 +237,12 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
                 startActivity(intentNfc);
                 break;
             case R.id.menu_jira:
-                fragment = new JiraFragment();
+                activeFragment = new JiraFragment();
                 tag = getString(R.string.jira_report);
                 binding.filter.setVisibility(View.GONE);
                 break;
             case R.id.menu_about:
-                fragment = new AboutFragment();
+                activeFragment = new AboutFragment();
                 tag = getString(R.string.about);
                 binding.filter.setVisibility(View.GONE);
                 break;
@@ -254,17 +254,16 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
                 break;
             case R.id.menu_home:
             default:
-                fragment = new ProgramFragment();
-                programFragment = (ProgramFragment) fragment;
+                activeFragment = new ProgramFragment();
+                programFragment = (ProgramFragment) activeFragment;
                 tag = getString(R.string.done_task);
                 binding.filter.setVisibility(View.VISIBLE);
                 break;
         }
 
-        if (fragment != null) {
+        if (activeFragment != null) {
             currentFragment.set(id);
-
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment, tag).commitAllowingStateLoss();
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, activeFragment, tag).commitAllowingStateLoss();
             binding.title.setText(tag);
         }
         binding.drawerLayout.closeDrawers();
@@ -292,11 +291,17 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
 
     @Override
     public void showTutorial(boolean shaked) {
-        if (fragId == R.id.menu_home || fragId == R.id.sync_manager)
-            super.showTutorial(shaked);
-        else
-            showToast(getString(R.string.no_intructions));
-
+        switch (fragId) {
+            case R.id.menu_home:
+                ((ProgramFragment)activeFragment).setTutorial();
+                break;
+            case R.id.sync_manager:
+                ((SyncManagerFragment)activeFragment).showTutorial();
+                break;
+            default:
+                showToast(getString(R.string.no_intructions));
+                break;
+        }
     }
 
 

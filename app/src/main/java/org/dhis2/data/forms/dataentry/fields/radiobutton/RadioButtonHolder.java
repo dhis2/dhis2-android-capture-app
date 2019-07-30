@@ -99,8 +99,7 @@ public class RadioButtonHolder extends FormViewHolder {
             }
             binding.customYesNo.nextFocus(binding.customYesNo);
             processor.onNext(rowAction);
-            if (!isSearchMode)
-                itemView.setBackgroundColor(Color.WHITE);
+            clearBackground(isSearchMode);
         });
 
         clearButton.setOnClickListener(view -> {

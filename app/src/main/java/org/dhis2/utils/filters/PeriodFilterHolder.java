@@ -31,7 +31,9 @@ class PeriodFilterHolder extends FilterHolder implements CompoundButton.OnChecke
         super.bind();
         filterIcon.setImageDrawable(AppCompatResources.getDrawable(itemView.getContext(), R.drawable.ic_calendar_positive));
         filterTitle.setText("Period");
-
+        filterValues.setText(
+                FilterManager.getInstance().getPeriodFilters().isEmpty()?"No filters applied" : "Filters applying"
+        );
         setListeners(localBinding.periodLayout);
     }
 
