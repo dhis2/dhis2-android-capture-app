@@ -1,19 +1,20 @@
 package org.dhis2.usescases.programEventDetail;
 
+import androidx.annotation.NonNull;
+import androidx.lifecycle.LiveData;
+import androidx.paging.PagedList;
+
+import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions;
+
 import org.dhis2.data.tuples.Pair;
-import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryCombo;
-import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.period.DatePeriod;
 import org.hisp.dhis.android.core.program.Program;
 
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.lifecycle.LiveData;
-import androidx.paging.PagedList;
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 
@@ -27,6 +28,9 @@ public interface ProgramEventDetailRepository {
     LiveData<PagedList<ProgramEventViewModel>> filteredProgramEvents(List<DatePeriod> dateFilter, List<String> orgUnitFilter, List<CategoryOptionCombo> catOptionComboUid);
 
     @NonNull
+    Flowable<List<SymbolOptions>> filteredEventsForMap(List<DatePeriod> dateFilter, List<String> orgUnitFilter, List<CategoryOptionCombo> catOptionComboUid);
+
+    @NonNull
     Observable<Program> program();
 
     boolean getAccessDataWrite();
@@ -34,4 +38,6 @@ public interface ProgramEventDetailRepository {
     Single<Pair<CategoryCombo, List<CategoryOptionCombo>>> catOptionCombos();
 
     Single<Boolean> hasAccessToAllCatOptions();
+
+    Flowable<ProgramEventViewModel> getInfoForEvent(String eventUid);
 }
