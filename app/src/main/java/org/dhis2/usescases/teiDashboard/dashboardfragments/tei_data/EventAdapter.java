@@ -3,20 +3,20 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.databinding.DataBindingUtil;
+import androidx.recyclerview.widget.RecyclerView;
+
 import org.dhis2.R;
 import org.dhis2.databinding.ItemEventBinding;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
-import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
-import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
 import java.util.List;
 import java.util.Objects;
 
-import androidx.annotation.NonNull;
-import androidx.databinding.DataBindingUtil;
-import androidx.recyclerview.widget.RecyclerView;
 import timber.log.Timber;
 
 /**
@@ -28,10 +28,10 @@ public class EventAdapter extends RecyclerView.Adapter<EventViewHolder> {
     private final List<ProgramStageModel> programStageList;
     private final TEIDataContracts.Presenter presenter;
     private final Enrollment enrollment;
-    private final ProgramModel program;
+    private final Program program;
     private List<EventModel> events;
 
-    public EventAdapter(TEIDataContracts.Presenter presenter, List<ProgramStageModel> programStageList, List<EventModel> eventList, Enrollment currentEnrollment, ProgramModel currentProgram) {
+    public EventAdapter(TEIDataContracts.Presenter presenter, List<ProgramStageModel> programStageList, List<EventModel> eventList, Enrollment currentEnrollment, Program currentProgram) {
         this.events = eventList;
         this.enrollment = currentEnrollment;
         this.programStageList = programStageList;

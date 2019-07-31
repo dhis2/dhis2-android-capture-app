@@ -56,16 +56,6 @@ public class MetadataRepositoryImpl implements MetadataRepository {
             EnrollmentModel.TABLE,
             EnrollmentModel.TABLE, EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE);
 
-    private final String ACTIVE_TEI_PROGRAMS = String.format(
-            " SELECT %s.* FROM %s " +
-                    "JOIN %s ON %s.%s = %s.%s " +
-                    "WHERE %s.%s = ? ",
-            ProgramModel.TABLE,
-            ProgramModel.TABLE,
-            EnrollmentModel.TABLE, EnrollmentModel.TABLE, EnrollmentModel.Columns.PROGRAM, ProgramModel.TABLE, ProgramModel.Columns.UID,
-            EnrollmentModel.TABLE, EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE);
-
-    private Set<String> ACTIVE_TEI_PROGRAMS_TABLES = new HashSet<>(Arrays.asList(ProgramModel.TABLE, EnrollmentModel.TABLE));
 
 
     private final String PROGRAM_LIST_ALL_QUERY = String.format("SELECT * FROM %s WHERE %s.%s = ",
@@ -77,9 +67,6 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     private final String ORG_UNIT_QUERY = String.format("SELECT * FROM %s WHERE %s.%s = ",
             OrganisationUnitModel.TABLE, OrganisationUnitModel.TABLE, OrganisationUnitModel.Columns.UID);
 
-
-    private final String SELECT_PROGRAM_STAGE = String.format("SELECT * FROM %s WHERE %s.%s = ",
-            ProgramStageModel.TABLE, ProgramStageModel.TABLE, ProgramStageModel.Columns.UID);
 
 
     private final String SELECT_DEFAULT_CAT_COMBO = String.format("SELECT %s FROM %s WHERE %s.%s = '1' LIMIT 1",
@@ -152,38 +139,12 @@ public class MetadataRepositoryImpl implements MetadataRepository {
 
 
     @Override
-    public Observable<Map<String, ObjectStyleModel>> getObjectStylesForPrograms(List<ProgramModel> enrollmentProgramModels) {
-        Map<String, ObjectStyleModel> objectStyleMap = new HashMap<>();
-        for (ProgramModel programModel : enrollmentProgramModels) {
-            ObjectStyleModel objectStyle = ObjectStyleModel.builder().build();
-            try (Cursor cursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ? LIMIT 1", programModel.uid())) {
-                if (cursor.moveToFirst())
-                    objectStyle = ObjectStyleModel.create(cursor);
-            } catch (Exception e) {
-                Timber.e(e);
-            }
-            objectStyleMap.put(programModel.uid(), objectStyle);
-        }
-
-        return Observable.just(objectStyleMap);
-    }
-
-    @Override
     public Flowable<ProgramStageModel> programStageForEvent(String eventId) {
         return briteDatabase.createQuery(ProgramStageSectionModel.TABLE, "SELECT ProgramStage.* FROM ProgramStage JOIN Event ON Event.programStage = ProgramStage.uid WHERE Event.uid = ? LIMIT 1", eventId)
                 .mapToOne(ProgramStageModel::create).toFlowable(BackpressureStrategy.LATEST);
     }
 
 
-    @Override
-    public Observable<List<ProgramModel>> getTeiActivePrograms(String teiUid, boolean showOnlyActive) {
-        String query = ACTIVE_TEI_PROGRAMS;
-        if (showOnlyActive)
-            query = query + " and Enrollment.status = 'ACTIVE'";
-
-        return briteDatabase.createQuery(ACTIVE_TEI_PROGRAMS_TABLES, query, teiUid == null ? "" : teiUid)
-                .mapToList(ProgramModel::create);
-    }
 
     @Override
     public Observable<ProgramModel> getProgramWithId(String programUid) {

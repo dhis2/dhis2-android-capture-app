@@ -14,6 +14,7 @@ import org.hisp.dhis.android.core.enrollment.note.NoteModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
+import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramIndicatorModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute;
@@ -82,4 +83,7 @@ public interface DashboardRepository {
     Observable<List<ProgramTrackedEntityAttribute>> getProgramTrackedEntityAttributes(String programUid);
 
     Observable<List<OrganisationUnit>> getTeiOrgUnits(@NonNull String teiUid, @Nullable String programUid);
+
+    Observable<List<Program>> getTeiActivePrograms(String teiUid, boolean showOnlyActive);
+
 }

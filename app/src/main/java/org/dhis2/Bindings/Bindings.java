@@ -30,14 +30,17 @@ import org.dhis2.R;
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetTableAdapter;
 import org.dhis2.usescases.programEventDetail.ProgramEventViewModel;
 import org.dhis2.utils.DateUtils;
+import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.State;
+import org.hisp.dhis.android.core.common.objectstyle.internal.ObjectStyleEntityDIModule;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.imports.ImportStatus;
 import org.hisp.dhis.android.core.period.PeriodType;
+import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
@@ -188,7 +191,7 @@ public class Bindings {
     }
 
     @BindingAdapter(value = {"eventStatusIcon", "enrollmentStatusIcon", "eventProgramStage", "eventProgram"}, requireAll = false)
-    public static void setEventIcon(ImageView view, EventModel event, Enrollment enrollment, ProgramStageModel eventProgramStage, ProgramModel program) {
+    public static void setEventIcon(ImageView view, EventModel event, Enrollment enrollment, ProgramStageModel eventProgramStage, Program program) {
         if (event != null) {
             EventStatus status = event.status();
             EnrollmentStatus enrollmentStatus = enrollment.status();
@@ -233,7 +236,7 @@ public class Bindings {
     }
 
     @BindingAdapter(value = {"eventStatusText", "enrollmentStatus", "eventProgramStage", "eventProgram"})
-    public static void setEventText(TextView view, EventModel event, Enrollment enrollment, ProgramStageModel eventProgramStage, ProgramModel program) {
+    public static void setEventText(TextView view, EventModel event, Enrollment enrollment, ProgramStageModel eventProgramStage, Program program) {
         if (event != null) {
             EventStatus status = event.status();
             EnrollmentStatus enrollmentStatus = enrollment.status();
@@ -288,7 +291,7 @@ public class Bindings {
     }
 
     @BindingAdapter(value = {"eventColor", "eventProgramStage", "eventProgram"})
-    public static void setEventColor(View view, EventModel event, ProgramStageModel programStage, ProgramModel program) {
+    public static void setEventColor(View view, EventModel event, ProgramStageModel programStage, Program program) {
         if (event != null) {
             int bgColor;
             if (DateUtils.getInstance().isEventExpired(null, event.completedDate(), program.completeEventsExpiryDays())) {
@@ -498,6 +501,36 @@ public class Bindings {
             else
                 colorRes = Color.parseColor(color);
 
+            itemView.setBackgroundColor(colorRes);
+            setFromResBgColor(view, colorRes);
+        }
+    }
+
+    public static void setObjectStyle(View view, View itemView, ObjectStyle objectStyle) {
+        Resources resources = view.getContext().getResources();
+        if (objectStyle != null && objectStyle.icon() != null) {
+            String iconName = objectStyle.icon().startsWith("ic_") ? objectStyle.icon() : "ic_" + objectStyle.icon();
+            int icon = resources.getIdentifier(iconName, "drawable", view.getContext().getPackageName());
+            if (view instanceof ImageView)
+                ((ImageView) view).setImageResource(icon);
+        }
+
+        if (objectStyle != null && objectStyle.color() != null) {
+            String color = objectStyle.color().startsWith("#") ? objectStyle.color() : "#" + objectStyle.color();
+            int colorRes;
+            if (color.length() == 4)
+                colorRes = ContextCompat.getColor(view.getContext(), R.color.colorPrimary);
+            else
+                colorRes = Color.parseColor(color);
+
+            itemView.setBackgroundColor(colorRes);
+            setFromResBgColor(view, colorRes);
+        }
+        if (objectStyle == null){
+            Drawable drawable = resources.getDrawable(R.drawable.ic_program_default);
+            if (view instanceof ImageView)
+                ((ImageView) view).setImageDrawable(drawable);
+            int colorRes = ContextCompat.getColor(view.getContext(), R.color.colorPrimary);
             itemView.setBackgroundColor(colorRes);
             setFromResBgColor(view, colorRes);
         }

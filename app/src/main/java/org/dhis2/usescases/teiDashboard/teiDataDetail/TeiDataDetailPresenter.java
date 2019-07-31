@@ -61,7 +61,7 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
                     dashboardRepository.getProgramTrackedEntityAttributes(programUid),
                     dashboardRepository.getTEIAttributeValues(programUid, uid),
                     dashboardRepository.getTeiOrgUnits(uid, programUid),
-                    metadataRepository.getTeiActivePrograms(uid, false),
+                    dashboardRepository.getTeiActivePrograms(uid, false),
                     DashboardProgramModel::new)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -96,7 +96,7 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
                     dashboardRepository.getProgramTrackedEntityAttributes(null),
                     dashboardRepository.getTEIAttributeValues(null, uid),
                     dashboardRepository.getTeiOrgUnits(uid, null),
-                    metadataRepository.getTeiActivePrograms(uid, false),
+                    dashboardRepository.getTeiActivePrograms(uid, false),
                     metadataRepository.getTEIEnrollments(uid),
                     DashboardProgramModel::new)
                     .subscribeOn(Schedulers.io())
@@ -124,7 +124,7 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
 
     @Override
     public void onDeactivate(DashboardProgramModel dashboardProgramModel) {
-        if (dashboardProgramModel.getCurrentProgram().accessDataWrite())
+        if (dashboardProgramModel.getCurrentProgram().access().data().write())
             disposable.add(enrollmentStore.save(dashboardProgramModel.getCurrentEnrollment().uid(), EnrollmentStatus.CANCELLED)
                     .subscribeOn(Schedulers.computation())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -140,7 +140,7 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
 
     @Override
     public void onReOpen(DashboardProgramModel dashboardProgramModel) {
-        if (dashboardProgramModel.getCurrentProgram().accessDataWrite())
+        if (dashboardProgramModel.getCurrentProgram().access().data().write())
             disposable.add(enrollmentStore.save(dashboardProgramModel.getCurrentEnrollment().uid(), EnrollmentStatus.ACTIVE)
                     .subscribeOn(Schedulers.computation())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -155,7 +155,7 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
 
     @Override
     public void onComplete(DashboardProgramModel dashboardProgramModel) {
-        if (dashboardProgramModel.getCurrentProgram().accessDataWrite())
+        if (dashboardProgramModel.getCurrentProgram().access().data().write())
             disposable.add(enrollmentStore.save(dashboardProgramModel.getCurrentEnrollment().uid(), EnrollmentStatus.COMPLETED)
                     .subscribeOn(Schedulers.computation())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -170,7 +170,7 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
 
     @Override
     public void onActivate(DashboardProgramModel dashboardProgramModel) {
-        if (dashboardProgramModel.getCurrentProgram().accessDataWrite())
+        if (dashboardProgramModel.getCurrentProgram().access().data().write())
             disposable.add(enrollmentStore.save(dashboardProgramModel.getCurrentEnrollment().uid(), EnrollmentStatus.ACTIVE)
                     .subscribeOn(Schedulers.computation())
                     .observeOn(AndroidSchedulers.mainThread())

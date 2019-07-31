@@ -23,9 +23,6 @@ import io.reactivex.Observable;
 
 public interface MetadataRepository {
 
-    /*PROGRAMS*/
-    Observable<List<ProgramModel>> getTeiActivePrograms(String teiUid, boolean showOnlyActive);
-
     Observable<ProgramModel> getProgramWithId(String programUid);
 
     /*TRACKED ENTITY*/
@@ -76,7 +73,7 @@ public interface MetadataRepository {
 
     Observable<List<OptionModel>> searchOptions(String text, String idOptionSet, int page, List<String> optionsToHide, List<String> optionsGroupsToHide);
 
-    Observable<Map<String, ObjectStyleModel>> getObjectStylesForPrograms(List<ProgramModel> enrollmentProgramModels);
+
 
     Flowable<ProgramStageModel> programStageForEvent(String eventId);
 }

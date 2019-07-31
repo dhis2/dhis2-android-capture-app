@@ -649,4 +649,16 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                 });
     }
 
+    @Override
+    public Observable<List<Program>> getTeiActivePrograms(String teiUid, boolean showOnlyActive) {
+        EnrollmentCollectionRepository enrollmentRepo = d2.enrollmentModule().enrollments.byTrackedEntityInstance().eq(teiUid);
+        if (showOnlyActive)
+            enrollmentRepo.byStatus().eq(EnrollmentStatus.ACTIVE);
+        return enrollmentRepo.getAsync().toObservable().flatMapIterable(enrollments -> enrollments)
+                .map(Enrollment::program)
+                .toList().toObservable()
+                .map(programUids -> d2.programModule().programs.byUid().in(programUids).withStyle().get());
+    }
+
+
 }
