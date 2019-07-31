@@ -26,7 +26,7 @@ public class ProgramModule {
 
     @Provides
     @PerFragment
-    HomeRepository homeRepository(BriteDatabase briteDatabase, D2 d2, Context context) {
+    HomeRepository homeRepository(D2 d2, Context context) {
         String eventsLabel = context.getString(R.string.events);
         return new HomeRepositoryImpl(d2, eventsLabel);
     }

@@ -30,7 +30,6 @@ class HomeRepositoryImpl implements HomeRepository {
     private final D2 d2;
     private final String eventLabel;
 
-    HomeRepositoryImpl(D2 d2) {
     HomeRepositoryImpl(D2 d2,String eventLabel) {
         this.d2 = d2;
         this.eventLabel = eventLabel;
