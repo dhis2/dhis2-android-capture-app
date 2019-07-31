@@ -9,7 +9,6 @@ import androidx.core.app.ActivityCompat;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 
-import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.usescases.map.MapSelectorActivity;
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import org.dhis2.usescases.teiDashboard.DashboardRepository;
@@ -34,15 +33,13 @@ import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventIn
 public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter {
 
     private final DashboardRepository dashboardRepository;
-    private final MetadataRepository metadataRepository;
     private final CompositeDisposable disposable;
     private final EnrollmentStatusStore enrollmentStore;
     private TeiDataDetailContracts.View view;
     private FusedLocationProviderClient mFusedLocationClient;
 
-    TeiDataDetailPresenter(DashboardRepository dashboardRepository, MetadataRepository metadataRepository, EnrollmentStatusStore enrollmentStatusStore) {
+    TeiDataDetailPresenter(DashboardRepository dashboardRepository, EnrollmentStatusStore enrollmentStatusStore) {
         this.dashboardRepository = dashboardRepository;
-        this.metadataRepository = metadataRepository;
         this.enrollmentStore = enrollmentStatusStore;
         disposable = new CompositeDisposable();
     }
