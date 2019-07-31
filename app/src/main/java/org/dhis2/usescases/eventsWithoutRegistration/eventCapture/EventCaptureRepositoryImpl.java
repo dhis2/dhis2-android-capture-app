@@ -369,7 +369,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         boolean blockAfterComplete = event.status() == EventStatus.COMPLETED && stage.blockEntryForm();
         boolean isInCaptureOrgUnit = d2.organisationUnitModule().organisationUnits
                 .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
-                .byUid().eq(event.organisationUnit()).one().exists();
+                .byUid().eq(event.organisationUnit()).one().blockingExists();
 
         boolean editable = isEnrollmentOpen() && !blockAfterComplete && !isExpired &&
                 getAccessDataWrite() && inOrgUnitRange(eventUid) && isInCaptureOrgUnit;
@@ -834,7 +834,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     @Override
     public Single<Boolean> canReOpenEvent() {
         return Single.defer(() -> Single.fromCallable(() -> d2.userModule().authorities
-                .byName().in("F_UNCOMPLETE_EVENT", "ALL").one().exists()
+                .byName().in("F_UNCOMPLETE_EVENT", "ALL").one().blockingExists()
         ));
     }
 }

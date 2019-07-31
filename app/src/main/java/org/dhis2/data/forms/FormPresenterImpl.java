@@ -95,7 +95,7 @@ class FormPresenterImpl implements FormPresenter {
 
     @Override
     public String getEnrollmentOu(String enrollmentUid) {
-        if (d2.enrollmentModule().enrollments.uid(enrollmentUid).exists())
+        if (d2.enrollmentModule().enrollments.uid(enrollmentUid).blockingExists())
             return d2.enrollmentModule().enrollments.uid(enrollmentUid).blockingGet().organisationUnit();
         else
             return null;

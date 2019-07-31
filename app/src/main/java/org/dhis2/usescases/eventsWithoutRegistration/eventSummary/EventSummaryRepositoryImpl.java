@@ -211,7 +211,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
     @Override
     public boolean isEnrollmentOpen() {
         boolean isEnrollmentOpen = true;
-        if(d2.eventModule().events.byUid().eq(eventUid).one().exists()) {
+        if(d2.eventModule().events.byUid().eq(eventUid).one().blockingExists()) {
             isEnrollmentOpen = d2.enrollmentModule().enrollments.byUid()
                     .eq(d2.eventModule().events.byUid().eq(eventUid).one().blockingGet().enrollment())
                     .one().blockingGet().status() == EnrollmentStatus.ACTIVE;
