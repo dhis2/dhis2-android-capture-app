@@ -85,7 +85,7 @@ public class OUTreeActivity extends ActivityGlobalAbstract implements OrgUnitSel
                                     for (OrganisationUnit org : organisationUnits) {
                                         nodes.add(new TreeNode(org,
                                                 false,
-                                                !d2.organisationUnitModule().organisationUnits.byParentUid().eq(org.uid()).isEmpty(),
+                                                !d2.organisationUnitModule().organisationUnits.byParentUid().eq(org.uid()).blockingIsEmpty(),
                                                 FilterManager.getInstance().getOrgUnitFilters().contains(org),
                                                 org.level()));
                                     }
@@ -117,7 +117,7 @@ public class OUTreeActivity extends ActivityGlobalAbstract implements OrgUnitSel
                             for (OrganisationUnit org : organisationUnits.val1()) {
                                 nodes.add(new TreeNode(org,
                                         false,
-                                        !d2.organisationUnitModule().organisationUnits.byParentUid().eq(org.uid()).isEmpty(),
+                                        !d2.organisationUnitModule().organisationUnits.byParentUid().eq(org.uid()).blockingIsEmpty(),
                                         FilterManager.getInstance().getOrgUnitFilters().contains(org),
                                         org.level()));
                             }
@@ -161,7 +161,7 @@ public class OUTreeActivity extends ActivityGlobalAbstract implements OrgUnitSel
                                     nodes.add(
                                             new TreeNode(organisationUnitParent,
                                                     false,
-                                                    !d2.organisationUnitModule().organisationUnits.byParentUid().eq(organisationUnitParent.uid()).isEmpty(),
+                                                    !d2.organisationUnitModule().organisationUnits.byParentUid().eq(organisationUnitParent.uid()).blockingIsEmpty(),
                                                     FilterManager.getInstance().getOrgUnitFilters().contains(organisationUnitParent),
                                                     organisationUnitParent.level())
                                     );
