@@ -35,9 +35,6 @@ public interface MetadataRepository {
 
     /*CATEGORY OPTION COMBO*/
 
-
-    void saveCatOption(String eventUid, String catOptionComboUid);
-
     Observable<String> getDefaultCategoryOptionComboId();
 
 

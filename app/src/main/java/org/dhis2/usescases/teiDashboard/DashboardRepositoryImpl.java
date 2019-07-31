@@ -23,6 +23,7 @@ import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
+import org.hisp.dhis.android.core.common.BaseDataModel;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.data.database.DbDateColumnAdapter;
@@ -33,7 +34,10 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.enrollment.note.NoteModel;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.event.EventObjectRepository;
 import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.event.EventTableInfo;
+import org.hisp.dhis.android.core.event.internal.EventFields;
 import org.hisp.dhis.android.core.legendset.LegendModel;
 import org.hisp.dhis.android.core.legendset.ProgramIndicatorLegendSetLinkModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
@@ -653,5 +657,13 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     @Override
     public Observable<List<Enrollment>> getTEIEnrollments(String teiUid) {
         return d2.enrollmentModule().enrollments.byTrackedEntityInstance().eq(teiUid).getAsync().toObservable();
+    }
+
+    @Override
+    public void saveCatOption(String eventUid, String catOptionComboUid) {
+        // TODO: we need to use the sdk, when the setAttributeOptionCombo() method on the EventObjectRepository is available
+        ContentValues event = new ContentValues();
+        event.put(EventFields.ATTRIBUTE_OPTION_COMBO, catOptionComboUid);
+        briteDatabase.update(EventTableInfo.TABLE_INFO.name(), event, EventFields.UID + " = ?", eventUid == null ? "" : eventUid);
     }
 }

@@ -1,6 +1,5 @@
 package org.dhis2.data.metadata;
 
-import android.content.ContentValues;
 import android.database.Cursor;
 
 import androidx.annotation.NonNull;
@@ -45,13 +44,6 @@ import static android.text.TextUtils.join;
  */
 
 public class MetadataRepositoryImpl implements MetadataRepository {
-
-    private static final String SELECT_TEI_ENROLLMENTS = String.format(
-            "SELECT * FROM %s WHERE %s.%s =",
-            EnrollmentModel.TABLE,
-            EnrollmentModel.TABLE, EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE);
-
-
 
     private final String PROGRAM_LIST_ALL_QUERY = String.format("SELECT * FROM %s WHERE %s.%s = ",
             ProgramModel.TABLE, ProgramModel.TABLE, ProgramModel.Columns.UID);
@@ -106,13 +98,6 @@ public class MetadataRepositoryImpl implements MetadataRepository {
         return briteDatabase
                 .createQuery(CategoryOptionComboModel.TABLE, SELECT_DEFAULT_CAT_OPTION_COMBO)
                 .mapToOne(cursor -> cursor.getString(0));
-    }
-
-    @Override
-    public void saveCatOption(String eventUid, String catOptComboUid) {
-        ContentValues event = new ContentValues();
-        event.put(EventModel.Columns.ATTRIBUTE_OPTION_COMBO, catOptComboUid);
-        briteDatabase.update(EventModel.TABLE, event, EventModel.Columns.UID + " = ?", eventUid == null ? "" : eventUid);
     }
 
     @Override

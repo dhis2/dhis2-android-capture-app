@@ -53,15 +53,13 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
     private final DashboardRepository dashboardRepository;
     private String programUid;
     private final String teiUid;
-    private final MetadataRepository metadataRepository;
     private TEIDataContracts.View view;
     private CompositeDisposable compositeDisposable;
     private DashboardProgramModel dashboardModel;
 
-    public TEIDataPresenterImpl(D2 d2, DashboardRepository dashboardRepository, MetadataRepository metadataRepository,
+    public TEIDataPresenterImpl(D2 d2, DashboardRepository dashboardRepository,
                                 String programUid, String teiUid) {
         this.d2 = d2;
-        this.metadataRepository = metadataRepository;
         this.dashboardRepository = dashboardRepository;
         this.programUid = programUid;
         this.teiUid = teiUid;
@@ -138,7 +136,7 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
 
     @Override
     public void changeCatOption(String eventUid, String catOptionComboUid) {
-        metadataRepository.saveCatOption(eventUid, catOptionComboUid);
+        dashboardRepository.saveCatOption(eventUid, catOptionComboUid);
     }
 
     @Override
