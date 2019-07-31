@@ -110,6 +110,16 @@
                 app:srcCompat="@drawable/ic_map"
                 tools:ignore="ContentDescription" />
 
+            <ImageButton
+                style="@style/ActionIcon"
+                android:id="@+id/clearButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="6dp"
+                app:srcCompat="@drawable/ic_clear"
+                android:tint="@color/colorGreyDefault"
+                tools:ignore="ContentDescription" />
+
             <ImageView
                 android:id="@+id/descriptionLabel"
                 android:layout_width="wrap_content"

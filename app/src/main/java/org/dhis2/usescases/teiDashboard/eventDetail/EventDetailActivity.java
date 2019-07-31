@@ -1,17 +1,20 @@
 package org.dhis2.usescases.teiDashboard.eventDetail;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.SparseBooleanArray;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.PopupMenu;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ObservableBoolean;
+
 import org.dhis2.App;
-import org.dhis2.BuildConfig;
 import org.dhis2.R;
 import org.dhis2.data.forms.FormFragment;
 import org.dhis2.data.forms.FormViewArguments;
@@ -20,32 +23,21 @@ import org.dhis2.databinding.ActivityEventDetailBinding;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.custom_views.CategoryComboDialog;
 import org.dhis2.utils.custom_views.CustomDialog;
-import org.dhis2.utils.custom_views.OrgUnitDialog;
 import org.dhis2.utils.custom_views.OrgUnitDialog_2;
-import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 
 import javax.inject.Inject;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.databinding.DataBindingUtil;
-import androidx.databinding.ObservableBoolean;
 import io.reactivex.functions.Consumer;
-import me.toptas.fancyshowcase.FancyShowCaseView;
-import me.toptas.fancyshowcase.FocusShape;
 import timber.log.Timber;
 
 /**
@@ -129,9 +121,6 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
                             FormViewArguments.createForEvent(eventUid), false,
                             false, true), "EVENT_DATA_ENTRY")
                     .commit();
-
-            if (!HelpManager.getInstance().isTutorialReadyForScreen(getClass().getName()))
-                setTutorial();
         }
     }
 
@@ -248,38 +237,10 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
 
     @Override
     public void setTutorial() {
-        super.setTutorial();
-
-        SharedPreferences prefs = getAbstracContext().getSharedPreferences(
-                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
-
         new Handler().postDelayed(() -> {
-            FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
-                    .title(getString(R.string.tuto_tei_event_1))
-                    .enableAutoTextPosition()
-                    .focusOn(getAbstractActivity().findViewById(R.id.moreOptions))
-                    .closeOnTouch(true)
-                    .build();
-            FancyShowCaseView tuto2 = new FancyShowCaseView.Builder(getAbstractActivity())
-                    .title(getString(R.string.tuto_tei_event_2))
-                    .enableAutoTextPosition()
-                    .focusOn(getAbstractActivity().findViewById(R.id.deactivate_button))
-                    .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                    .closeOnTouch(true)
-                    .build();
-
-
-            ArrayList<FancyShowCaseView> steps = new ArrayList<>();
-            steps.add(tuto1);
-            steps.add(tuto2);
-
-            HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
-
-            if (!prefs.getBoolean("TUTO_TEI_EVENT", false) && !BuildConfig.DEBUG) {
-                HelpManager.getInstance().showHelp();
-                prefs.edit().putBoolean("TUTO_TEI_EVENT", true).apply();
-            }
-
+            SparseBooleanArray stepConditions = new SparseBooleanArray();
+            stepConditions.put(2, getAbstractActivity().findViewById(R.id.deactivate_button).getVisibility() == View.VISIBLE);
+            HelpManager.getInstance().show(getActivity(), HelpManager.TutorialName.EVENT_DETAIL, stepConditions);
         }, 500);
 
     }
@@ -306,7 +267,7 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
         popupMenu.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {
                 case R.id.showHelp:
-                    showTutorial(false);
+                    setTutorial();
                     break;
                 case R.id.menu_delete:
                     presenter.confirmDeleteEvent();
