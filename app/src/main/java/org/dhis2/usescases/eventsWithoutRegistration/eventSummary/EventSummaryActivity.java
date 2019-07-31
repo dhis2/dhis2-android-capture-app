@@ -1,7 +1,5 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventSummary;
 
-import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -21,21 +19,18 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel;
 import org.dhis2.databinding.ActivityEventSummaryBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
-import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.HelpManager;
-import org.dhis2.utils.custom_views.CircularCompletionView;
 import org.dhis2.utils.custom_views.CustomDialog;
 import org.dhis2.utils.custom_views.ProgressBarAnimation;
 import org.hisp.dhis.android.core.event.EventModel;
-import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.program.Program;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import javax.inject.Inject;
 
@@ -71,7 +66,7 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
     private CustomDialog dialog;
     private boolean fieldsWithErrors;
     private EventModel eventModel;
-    private ProgramModel programModel;
+    private Program program;
     private ArrayList<String> sectionsToHide;
 
     @Override
@@ -106,9 +101,9 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
     }
 
     @Override
-    public void setProgram(@NonNull ProgramModel program) {
+    public void setProgram(@NonNull Program program) {
         binding.setName(program.displayName());
-        programModel = program;
+        this.program = program;
     }
 
     @Override
@@ -194,7 +189,7 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
     @Override
     public void accessDataWrite(Boolean canWrite) {
 
-        if (DateUtils.getInstance().isEventExpired(null, eventModel.completedDate(), programModel.completeEventsExpiryDays())) {
+        if (DateUtils.getInstance().isEventExpired(null, eventModel.completedDate(), program.completeEventsExpiryDays())) {
             binding.actionButton.setVisibility(View.GONE);
         } else {
             switch (eventModel.status()) {

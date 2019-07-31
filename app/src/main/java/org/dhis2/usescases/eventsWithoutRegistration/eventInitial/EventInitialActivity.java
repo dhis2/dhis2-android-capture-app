@@ -56,14 +56,14 @@ import org.dhis2.utils.custom_views.ProgressBarAnimation;
 import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
-import org.hisp.dhis.android.core.common.ObjectStyleModel;
+import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.period.PeriodType;
-import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
+import org.hisp.dhis.android.core.program.Program;
+import org.hisp.dhis.android.core.program.ProgramStage;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -126,7 +126,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     private Date selectedDate;
     private Date selectedOrgUnitOpeningDate;
     private Date selectedOrgUnitClosedDate;
-    private ProgramStageModel programStageModel;
+    private ProgramStage programStage;
 
     private int totalFields;
     private int totalCompletedFields;
@@ -137,7 +137,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     private CategoryCombo catCombo;
     private Map<String, CategoryOption> selectedCatOption;
     private OrgUnitDialog_2 orgUnitDialog;
-    private ProgramModel program;
+    private Program program;
     private String savedLat;
     private String savedLon;
     private ArrayList<String> sectionsToHide;
@@ -204,7 +204,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             disposable.add(RxView.clicks(binding.actionButton)
                     .debounce(300, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
                     .subscribe(v -> {
-                                String programStageModelUid = programStageModel == null ? "" : programStageModel.uid();
+                                String programStageModelUid = programStage == null ? "" : programStage.uid();
                                 if (eventUid == null) { // This is a new Event
                                     if (eventCreationType == EventCreationType.REFERAL && tempCreate.equals(PERMANENT)) {
                                         presenter.scheduleEventPermanent(
@@ -363,7 +363,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     }
 
     @Override
-    public void setProgram(@NonNull ProgramModel program) {
+    public void setProgram(@NonNull Program program) {
         this.program = program;
 
         String activityTitle;
@@ -581,9 +581,9 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     }
 
     @Override
-    public void setProgramStage(ProgramStageModel programStage) {
-        this.programStageModel = programStage;
-        if (programStageModel.captureCoordinates()) {
+    public void setProgramStage(ProgramStage programStage) {
+        this.programStage = programStage;
+        if (this.programStage.captureCoordinates()) {
             binding.coordinatesLayout.setVisibility(View.VISIBLE);
             binding.location1.setOnClickListener(v -> {
                 if (v.isClickable()) presenter.onLocationClick();
@@ -619,7 +619,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                 selectedDateString = DateUtils.getInstance().getPeriodUIString(periodType, selectedDate, Locale.getDefault());
             }
         }
-        presenter.getStageObjectStyle(programStageModel.uid());
+        presenter.getStageObjectStyle(this.programStage.uid());
     }
 
     @Override
@@ -791,6 +791,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == Constants.RQ_MAP_LOCATION && resultCode == RESULT_OK) {
             savedLat = data.getStringExtra(MapSelectorActivity.LATITUDE);
             savedLon = data.getStringExtra(MapSelectorActivity.LONGITUDE);
@@ -844,7 +845,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     }
 
     @Override
-    public void renderObjectStyle(ObjectStyleModel data) {
+    public void renderObjectStyle(ObjectStyle data) {
         if (data.icon() != null) {
             Resources resources = getResources();
             String iconName = data.icon().startsWith("ic_") ? data.icon() : "ic_" + data.icon();

@@ -1,12 +1,10 @@
 package org.dhis2.data.metadata;
 
 import org.dhis2.data.tuples.Pair;
-import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.imports.TrackerImportConflict;
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeModel;
 
 import java.util.List;
@@ -21,7 +19,7 @@ import io.reactivex.Observable;
 
 public interface MetadataRepository {
 
-    Observable<ProgramModel> getProgramWithId(String programUid);
+
 
     /*TRACKED ENTITY*/
 
@@ -38,10 +36,6 @@ public interface MetadataRepository {
     Observable<String> getDefaultCategoryOptionComboId();
 
 
-    /*ORG UNIT*/
-
-    Observable<OrganisationUnitModel> getOrganisationUnit(String orgUnitUid);
-
     /*EVENTS*/
 
     Observable<ProgramModel> getExpiryDateFromEvent(String eventUid);
@@ -51,8 +45,6 @@ public interface MetadataRepository {
 
     /*SETINGS*/
     Observable<Pair<String, Integer>> getTheme();
-
-    Observable<ObjectStyleModel> getObjectStyle(String uid);
 
     Observable<List<OrganisationUnitModel>> getOrganisationUnits();
 
@@ -66,5 +58,5 @@ public interface MetadataRepository {
 
 
 
-    Flowable<ProgramStageModel> programStageForEvent(String eventId);
+
 }
