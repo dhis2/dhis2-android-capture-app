@@ -10,63 +10,58 @@
             type="java.lang.String" />
     </data>
 
-    <RelativeLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="?colorPrimary"
+            android:gravity="center"
+            android:text="@{titleText}"
+            tools:text = "Title"
+            android:textColor="?colorAccent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_date"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintBottom_toTopOf="@id/optionsLayout"
+            app:layout_constraintTop_toBottomOf="@id/title"
+            tools:listitem="@layout/item_date" />
+
         <LinearLayout
+            android:id="@+id/optionsLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="90dp"
-            android:layout_marginTop="90dp"
-            android:background="?colorAccent"
-            android:orientation="vertical"
-            tools:ignore="UselessParent">
+            android:gravity="end"
+            app:layout_constraintBottom_toBottomOf="parent">
 
-            <TextView
-                android:id="@+id/title"
-                android:layout_width="match_parent"
+            <Button
+                android:id="@+id/clear_button"
+                style="?borderlessButtonStyle"
+                android:layout_width="wrap_content"
                 android:layout_height="40dp"
-                android:background="?colorPrimary"
-                android:gravity="center"
-                android:text="@{titleText}"
-                android:textColor="?colorAccent" />
+                android:layout_gravity="end"
+                android:layout_margin="5dp"
+                android:background="@android:color/transparent"
+                android:text="@string/clear_filters"
+                android:textColor="?colorPrimary" />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recycler_date"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:listitem="@layout/item_date" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="end">
-
-                <Button
-                    android:id="@+id/clear_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp"
-                    android:layout_gravity="end"
-                    android:background="@android:color/transparent"
-                    android:text="@string/clear_filters"
-                    android:textColor="?colorPrimary"
-                    android:layout_margin="5dp"
-                    style="?borderlessButtonStyle"/>
-
-                <Button
-                    android:id="@+id/accept_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp"
-                    android:layout_gravity="end"
-                    android:background="@android:color/transparent"
-                    android:text="@string/action_accept"
-                    android:textColor="?colorPrimary"
-                    android:layout_margin="5dp"
-                    style="?borderlessButtonStyle"/>
-            </LinearLayout>
+            <Button
+                android:id="@+id/accept_button"
+                style="?borderlessButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_gravity="end"
+                android:layout_margin="5dp"
+                android:background="@android:color/transparent"
+                android:text="@string/action_accept"
+                android:textColor="?colorPrimary" />
         </LinearLayout>
-    </RelativeLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
