@@ -265,10 +265,7 @@
   <string name="tuto_settings_2">...ການປັບແລະຕັ້ງຄ່າຂອງທ່ານ...</string>
   <string name="tuto_settings_3">...ຕັ້ງຄ່າຂີດຄວາມສາມາດໃນການບັນທຶກຂອງໂທລະສັບຂອງທ່ານ...</string>
   <string name="tuto_settings_4">... ຫຼືລືບທຸກສີ່ງທຸກຢ່າງເພື່ອເລີ່ມໃໝ່</string>
-  <string name="tuto_search_1">ຊອກຫາຂໍ້ມູນຂອງທ່ານທັງໃນໜ່ວຍບັນທຶກຄວາມຈໍາຂອງ ໂທລະສັບ ແລະ ໃນຄອມພີວເຕີໜ່ວຍແມ່ທາງອອນລາຍ</string>
   <string name="tuto_search_2">ທ່ານສາມາດປ່ຽນໄປເລືອກເອົາໂປຣແກຣມອື່ນ</string>
-  <string name="tuto_search_3">ເພີ່ມຂໍ້ມູນສ່ວນຕົວໃໝ່</string>
-  <string name="tuto_search_4">ກົດທີ່ນີ້ເພື່ອເລີ່ມໃໝ່</string>
   <string name="tuto_dashboard_1">ນີ້ແມ່ນກະດານຂ່າວສໍາລັບຂໍ້ມູນສ່ວນຕົວ</string>
   <string name="tuto_dashboard_2">ເບີ່ງຂໍ້ມູນກ່ຽວກັບປະຫັວດສ່ວນຕົວ</string>
   <string name="tuto_dashboard_3">...ແບ່ງປັນຂໍ້ມູນຜ່ານທາງ QR ຫຼື ຂໍ້ຄວາມ SMS...</string>

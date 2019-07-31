@@ -4,6 +4,9 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 
+import com.mapbox.mapboxsdk.geometry.LatLng;
+
+import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
@@ -11,6 +14,7 @@ import org.dhis2.usescases.main.program.SyncStatusDialog;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.filters.FilterManager;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
+import org.hisp.dhis.android.core.common.Unit;
 import org.hisp.dhis.android.core.period.DatePeriod;
 
 import java.util.ArrayList;
@@ -45,12 +49,16 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     private List<String> currentOrgUnitFilter;
     private List<CategoryOptionCombo> currentCatOptionCombo;
     private FlowableProcessor<Boolean> processorDismissDialog;
+    private FlowableProcessor<Pair<String, LatLng>> eventInfoProcessor;
+    private FlowableProcessor<Unit> mapProcessor;
 
     ProgramEventDetailPresenter(
             @NonNull String programUid, @NonNull ProgramEventDetailRepository programEventDetailRepository) {
         this.eventRepository = programEventDetailRepository;
         this.programId = programUid;
         this.currentCatOptionCombo = new ArrayList<>();
+        eventInfoProcessor = PublishProcessor.create();
+        mapProcessor = PublishProcessor.create();
     }
 
     @Override
@@ -117,6 +125,34 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                         ));
 
         compositeDisposable.add(
+                mapProcessor
+                        .flatMap(unit ->
+                                FilterManager.getInstance().asFlowable()
+                                        .startWith(FilterManager.getInstance())
+                                        .flatMap(filterManager -> eventRepository.filteredEventsForMap(
+                                                filterManager.getPeriodFilters(),
+                                                filterManager.getOrgUnitUidsFilters(),
+                                                filterManager.getCatOptComboFilters()
+                                        )))
+                        .subscribeOn(Schedulers.computation())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                view::setMap,
+                                throwable -> view.renderError(throwable.getMessage())
+                        ));
+
+        compositeDisposable.add(
+                eventInfoProcessor
+                        .flatMap(eventInfo -> eventRepository.getInfoForEvent(eventInfo.val0())
+                                .map(eventData -> Pair.create(eventData, eventInfo.val1())))
+                        .subscribeOn(Schedulers.computation())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                view::setEventInfo,
+                                throwable -> view.renderError(throwable.getMessage())
+                        ));
+
+        compositeDisposable.add(
                 FilterManager.getInstance().ouTreeFlowable()
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
@@ -143,6 +179,16 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     @Override
     public void onSyncIconClick(String uid) {
         view.showSyncDialog(uid, SyncStatusDialog.ConflictType.EVENT, processorDismissDialog);
+    }
+
+    @Override
+    public void getEventInfo(String eventUid, LatLng latLng) {
+        eventInfoProcessor.onNext(Pair.create(eventUid, latLng));
+    }
+
+    @Override
+    public void getMapData() {
+        mapProcessor.onNext(new Unit());
     }
 
     @Override
