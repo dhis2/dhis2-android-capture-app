@@ -178,13 +178,13 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
 
     @Override
     public Single<Pair<CategoryCombo, List<CategoryOptionCombo>>> catOptionCombos() {
-        return d2.programModule().programs.uid(programUid).getAsync()
+        return d2.programModule().programs.uid(programUid).get()
                 .filter(program -> program.categoryCombo() != null)
-                .flatMapSingle(program -> d2.categoryModule().categoryCombos.uid(program.categoryComboUid()).getAsync())
+                .flatMapSingle(program -> d2.categoryModule().categoryCombos.uid(program.categoryComboUid()).get())
                 .filter(categoryCombo -> !categoryCombo.isDefault())
                 .flatMapSingle(categoryCombo -> Single.zip(
                         d2.categoryModule().categoryCombos
-                                .uid(categoryCombo.uid()).getAsync(),
+                                .uid(categoryCombo.uid()).get(),
                         d2.categoryModule().categoryOptionCombos
                                 .byCategoryComboUid().eq(categoryCombo.uid()).get(),
                         Pair::create
@@ -193,7 +193,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
 
     @Override
     public Single<Boolean> hasAccessToAllCatOptions() {
-        return d2.programModule().programs.uid(programUid).getAsync()
+        return d2.programModule().programs.uid(programUid).get()
                 .filter(program -> program.categoryComboUid() != null)
                 .map(program -> d2.categoryModule().categoryCombos.uid(program.categoryComboUid()).withAllChildren().blockingGet())
                 .filter(catCombo -> !catCombo.isDefault())
