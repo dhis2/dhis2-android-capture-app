@@ -35,7 +35,6 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.dhis2.App;
-import org.dhis2.BuildConfig;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.ProgramAdapter;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
@@ -50,22 +49,19 @@ import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.HelpManager;
-import org.dhis2.utils.custom_views.OptionSetDialog;
-import org.dhis2.utils.custom_views.OptionSetPopUp;
 import org.hisp.dhis.android.core.option.OptionModel;
+import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import io.reactivex.Flowable;
-import me.toptas.fancyshowcase.FancyShowCaseView;
-import me.toptas.fancyshowcase.FocusShape;
 import timber.log.Timber;
 
 /**
@@ -178,16 +174,13 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     //region SearchForm
 
     @Override
-    public void setForm(List<TrackedEntityAttributeModel> trackedEntityAttributeModels, @Nullable ProgramModel program, HashMap<String, String> queryData) {
-
-        if (!HelpManager.getInstance().isTutorialReadyForScreen(getClass().getName()))
-            setTutorial();
+    public void setForm(List<TrackedEntityAttribute> trackedEntityAttributes, @Nullable Program program, HashMap<String, String> queryData) {
 
         //TODO: refreshData for recycler
 
         //Form has been set.
         FormAdapter formAdapter = (FormAdapter) binding.formRecycler.getAdapter();
-        formAdapter.setList(trackedEntityAttributeModels, program, queryData);
+        formAdapter.setList(trackedEntityAttributes, program, queryData);
     }
 
     @NonNull
@@ -208,49 +201,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     public void setTutorial() {
-        SharedPreferences prefs = getAbstracContext().getSharedPreferences(
-                "org.dhis2", Context.MODE_PRIVATE);
-
-        new Handler().postDelayed(() -> {
-            FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
-                    .title(getString(R.string.tuto_search_1_v2))
-                    .enableAutoTextPosition()
-                    .closeOnTouch(true)
-                    .build();
-            FancyShowCaseView tuto2 = new FancyShowCaseView.Builder(getAbstractActivity())
-                    .title(getString(R.string.tuto_search_2))
-                    .enableAutoTextPosition()
-                    .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                    .focusOn(getAbstractActivity().findViewById(R.id.program_spinner))
-                    .closeOnTouch(true)
-                    .build();
-            FancyShowCaseView tuto3 = new FancyShowCaseView.Builder(getAbstractActivity())
-                    .title(getString(R.string.tuto_search_3_v2))
-                    .enableAutoTextPosition()
-                    .focusOn(getAbstractActivity().findViewById(R.id.enrollmentButton))
-                    .closeOnTouch(true)
-                    .build();
-            FancyShowCaseView tuto4 = new FancyShowCaseView.Builder(getAbstractActivity())
-                    .focusOn(getAbstractActivity().findViewById(R.id.clear_button))
-                    .title(getString(R.string.tuto_search_4_v2))
-                    .enableAutoTextPosition()
-                    .closeOnTouch(true)
-                    .build();
-
-            ArrayList<FancyShowCaseView> steps = new ArrayList<>();
-            steps.add(tuto1);
-            steps.add(tuto2);
-            steps.add(tuto3);
-            steps.add(tuto4);
-
-            HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
-
-            if (!prefs.getBoolean(Constants.TUTORIAL_SEARCH, false) && !BuildConfig.DEBUG) {
-                HelpManager.getInstance().showHelp();/* getAbstractActivity().fancyShowCaseQueue.show();*/
-                prefs.edit().putBoolean(Constants.TUTORIAL_SEARCH, true).apply();
-            }
-
-        }, 500);
+        new Handler().postDelayed(() ->
+                        HelpManager.getInstance().show(getActivity(),
+                                HelpManager.TutorialName.TEI_SEARCH,
+                                null),
+                500);
     }
 
     //endregion
@@ -291,6 +246,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     binding.messageContainer.setVisibility(View.VISIBLE);
                     binding.message.setText(data.val1());
                 }
+                if (!presenter.getQueryData().isEmpty() && data.val2())
+                    animSearchFab(false);
             });
         }
     }
@@ -304,10 +261,10 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     //endregion
 
     @Override
-    public void setPrograms(List<ProgramModel> programModels) {
-        binding.programSpinner.setAdapter(new ProgramAdapter(this, R.layout.spinner_program_layout, R.id.spinner_text, programModels, presenter.getTrackedEntityName().displayName()));
+    public void setPrograms(List<Program> programs) {
+        binding.programSpinner.setAdapter(new ProgramAdapter(this, R.layout.spinner_program_layout, R.id.spinner_text, programs, presenter.getTrackedEntityName().displayName()));
         if (initialProgram != null && !initialProgram.isEmpty())
-            setInitialProgram(programModels);
+            setInitialProgram(programs);
         else
             binding.programSpinner.setSelection(0);
         try {
@@ -327,12 +284,13 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long id) {
                 if (pos > 0) {
-                    ProgramModel selectedProgram = (ProgramModel) adapterView.getItemAtPosition(pos - 1);
+                    Program selectedProgram = (Program) adapterView.getItemAtPosition(pos - 1);
                     setProgramColor(presenter.getProgramColor(selectedProgram.uid()));
-                    presenter.setProgram((ProgramModel) adapterView.getItemAtPosition(pos - 1));
-                } else {
+                    presenter.setProgram((Program) adapterView.getItemAtPosition(pos - 1));
+                } else if (programs.size() == 1 && pos != 0){
+                    presenter.setProgram(programs.get(0));
+                }else
                     presenter.setProgram(null);
-                }
             }
 
             @Override
@@ -342,9 +300,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         });
     }
 
-    private void setInitialProgram(List<ProgramModel> programModels) {
-        for (int i = 0; i < programModels.size(); i++) {
-            if (programModels.get(i).uid().equals(initialProgram)) {
+    private void setInitialProgram(List<Program> programs) {
+        for (int i = 0; i < programs.size(); i++) {
+            if (programs.get(i).uid().equals(initialProgram)) {
                 binding.programSpinner.setSelection(i + 1);
             }
         }
@@ -409,10 +367,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     public void setListOptions(List<OptionModel> options) {
-        if (OptionSetDialog.isCreated())
-            OptionSetDialog.newInstance().setOptions(options);
-        else if (OptionSetPopUp.isCreated())
-            OptionSetPopUp.getInstance().setOptions(options);
     }
 
     @Override
@@ -429,5 +383,10 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             binding.enrollmentButton.clearAnimation();
             hideKeyboard();
         }
+    }
+
+    @Override
+    public void showTutorial(boolean shaked) {
+        setTutorial();
     }
 }

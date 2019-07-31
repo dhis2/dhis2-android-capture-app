@@ -1,19 +1,17 @@
 package org.dhis2.usescases.datasets.datasetDetail;
 
-import androidx.annotation.NonNull;
-
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
-import org.hisp.dhis.android.core.period.PeriodType;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 
 public interface DataSetDetailRepository {
 
     @NonNull
-    Observable<List<OrganisationUnitModel>> orgUnits();
+    Observable<List<OrganisationUnit>> orgUnits();
 
-    Flowable<List<DataSetDetailModel>> dataSetGroups(String dataSetUid, List<String> selectedOrgUnit, PeriodType selectedPeriodType, int page);
+    Flowable<List<DataSetDetailModel>> dataSetGroups(String dataSetUid, List<String> selectedOrgUnit, List<String> periodFilter, int page);
 }

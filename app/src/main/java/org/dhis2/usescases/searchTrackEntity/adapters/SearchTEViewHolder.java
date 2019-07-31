@@ -6,9 +6,8 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
-import android.net.Uri;
+import android.widget.Toast;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.recyclerview.widget.RecyclerView;
@@ -22,13 +21,15 @@ import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.ItemSearchTrackedEntityBinding;
 import org.dhis2.usescases.searchTrackEntity.SearchTEContractsModule;
 import org.dhis2.utils.ColorUtils;
+import org.dhis2.utils.FileResourcesUtil;
 import org.dhis2.utils.ObjectStyleUtils;
+import org.hisp.dhis.android.core.common.State;
+import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 
 import java.io.File;
 import java.util.List;
-import java.util.Random;
 
 import timber.log.Timber;
 
@@ -53,9 +54,13 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
         binding.setPresenter(presenter);
         binding.setOverdue(searchTeiModel.isHasOverdue());
         binding.setIsOnline(searchTeiModel.isOnline());
-        binding.setSyncState(searchTeiModel.getTei().state());
+        if (searchTeiModel.getTei().state() == State.TO_DELETE ||
+                searchTeiModel.getSelectedEnrollment() != null && searchTeiModel.getSelectedEnrollment().state() == State.TO_DELETE)
+            binding.setSyncState(State.TO_DELETE);
+        else
+            binding.setSyncState(searchTeiModel.getTei().state());
 
-        setEnrollment(searchTeiModel.getEnrollmentModels());
+        setEnrollment(searchTeiModel.getEnrollments());
         setEnrollmentInfo(searchTeiModel.getEnrollmentInfo());
 
         setTEIData(searchTeiModel.getAttributeValueModels());
@@ -63,14 +68,25 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
         binding.trackedEntityImage.setBackground(AppCompatResources.getDrawable(itemView.getContext(), R.drawable.photo_temp_gray));
         binding.followUp.setBackground(AppCompatResources.getDrawable(itemView.getContext(), R.drawable.ic_circle_red));
 
-        binding.syncState.setOnClickListener(view -> presenter.onSyncIconClick(searchTeiModel.getTei().uid()));
+        binding.syncState.setOnClickListener(view -> {
+            if (searchTeiModel.getTei().state() == State.TO_DELETE ||
+                    searchTeiModel.getSelectedEnrollment() != null && searchTeiModel.getSelectedEnrollment().state() == State.TO_DELETE)
+                Toast.makeText(itemView.getContext(), itemView.getContext().getString(R.string.record_marked_for_deletion), Toast.LENGTH_SHORT).show();
+            else
+                presenter.onSyncIconClick(searchTeiModel.getTei().uid());
+        });
 
         binding.executePendingBindings();
 
-        itemView.setOnClickListener(view -> presenter.onTEIClick(searchTeiModel.getTei().uid(), searchTeiModel.isOnline()));
+        itemView.setOnClickListener(view -> {
+            if (searchTeiModel.getTei().state() == State.TO_DELETE ||
+                    searchTeiModel.getSelectedEnrollment() != null && searchTeiModel.getSelectedEnrollment().state() == State.TO_DELETE)
+                Toast.makeText(itemView.getContext(), itemView.getContext().getString(R.string.record_marked_for_deletion), Toast.LENGTH_SHORT).show();
+            else
+                presenter.onTEIClick(searchTeiModel.getTei().uid(), searchTeiModel.isOnline());
+        });
 
-        String fileName = searchTeiModel.getTei().uid() + "_" + searchTeiModel.getProfilePictureUid() + ".png";
-        File file = new File(itemView.getContext().getFilesDir(), fileName);
+        File file = FileResourcesUtil.getFileForAttribute(itemView.getContext(), searchTeiModel.getTei().uid() + "_" + searchTeiModel.getProfilePictureUid() + ".png");
         Drawable placeHolderId = ObjectStyleUtils.getIconResource(itemView.getContext(), searchTeiModel.getDefaultTypeIcon(), R.drawable.photo_temp_gray);
         Glide.with(itemView.getContext())
                 .load(file)
@@ -88,10 +104,10 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
         binding.executePendingBindings();
     }
 
-    private void setEnrollment(List<EnrollmentModel> enrollments) {
+    private void setEnrollment(List<Enrollment> enrollments) {
 //        binding.linearLayout.removeAllViews();
         boolean isFollowUp = false;
-        for (EnrollmentModel enrollment : enrollments) {
+        for (Enrollment enrollment : enrollments) {
             if (enrollment.followUp() != null && enrollment.followUp())
                 isFollowUp = true;
         }
@@ -106,7 +122,7 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
         Context parentContext = binding.chipContainer.getContext();
         for (Trio<String, String, String> enrollmentInfo : enrollmentsInfo) {
             if (/*binding.chipContainer.getChildCount() < 2 &&*/
-                    (binding.getPresenter().getProgramModel() == null || !binding.getPresenter().getProgramModel().displayName().equals(enrollmentInfo.val0()))) {
+                    (binding.getPresenter().getProgram() == null || !binding.getPresenter().getProgram().displayName().equals(enrollmentInfo.val0()))) {
 
                 Chip chip = new Chip(parentContext);
                 chip.setText(enrollmentInfo.val0());

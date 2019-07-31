@@ -5,6 +5,8 @@ import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 
+import java.util.Date;
+
 import io.reactivex.functions.Consumer;
 
 public class TeiDataDetailContracts {
@@ -17,6 +19,12 @@ public class TeiDataDetailContracts {
         Consumer<EnrollmentStatus> handleStatus();
 
         void setLocation(double latitude, double longitude);
+
+        void showCustomIncidentCalendar(Date date);
+
+        void showCustomEnrollmentCalendar(Date date);
+
+        void showTeiImage(String fileName);
     }
 
     public interface Presenter {
@@ -39,6 +47,14 @@ public class TeiDataDetailContracts {
         void onLocation2Click();
 
         void onDestroy();
+
+        void onIncidentDateClick(Date date);
+
+        void onEnrollmentDateClick(Date date);
+
+        void updateIncidentDate(Date date);
+
+        void updateEnrollmentDate(Date date);
 
     }
 

@@ -15,11 +15,19 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.PopupMenu;
+
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
 
 import org.dhis2.App;
-import org.dhis2.BuildConfig;
 import org.dhis2.R;
 import org.dhis2.data.forms.FormActivity;
 import org.dhis2.data.forms.FormViewArguments;
@@ -32,22 +40,15 @@ import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListActivity;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.HelpManager;
+import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 import javax.inject.Inject;
 
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.databinding.DataBindingUtil;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentStatePagerAdapter;
-import androidx.lifecycle.ViewModelProviders;
-import androidx.viewpager.widget.ViewPager;
-import me.toptas.fancyshowcase.FancyShowCaseView;
-import me.toptas.fancyshowcase.FocusShape;
 import timber.log.Timber;
 
 /**
@@ -73,7 +74,6 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     private DashboardViewModel dashboardViewModel;
     private boolean fromRelationship;
-
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -198,7 +198,8 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     public void setData(DashboardProgramModel program) {
 
         dashboardViewModel.updateDashboard(program);
-        setProgramColor(program.getObjectStyleForProgram(program.getCurrentProgram().uid()).color());
+        ObjectStyle style = program.getObjectStyleForProgram(program.getCurrentProgram().uid());
+        setProgramColor(style == null ? "" : style.color());
 
 
         binding.setDashboardModel(program);
@@ -222,13 +223,9 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                     .replace(R.id.tei_main_view, new TEIDataFragment())
                     .commitAllowingStateLoss();
 
-        Boolean enrollmentStatus = program.getCurrentEnrollment() != null && program.getCurrentEnrollment().enrollmentStatus() == EnrollmentStatus.ACTIVE;
+        Boolean enrollmentStatus = program.getCurrentEnrollment() != null && program.getCurrentEnrollment().status() == EnrollmentStatus.ACTIVE;
         if (getIntent().getStringExtra(Constants.EVENT_UID) != null && enrollmentStatus)
             dashboardViewModel.updateEventUid(getIntent().getStringExtra(Constants.EVENT_UID));
-
-        if (!HelpManager.getInstance().isTutorialReadyForScreen(getClass().getName())) {
-            setTutorial();
-        }
     }
 
     @Override
@@ -241,14 +238,21 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         presenter.init(this, teiUid, programUid);
     }
 
-   /* @Override
-    public void showCatComboDialog(String eventId, CategoryCombo categoryCombo) {
-        CategoryComboDialog dialog = new CategoryComboDialog(getAbstracContext(), categoryCombo, 123,
-                selectedOption -> presenter.changeCatOption(eventId, selectedOption), categoryCombo.displayName());
-        dialog.setCancelable(false);
-        dialog.setCanceledOnTouchOutside(false);
-        dialog.show();
-    }*/
+    @Override
+    public void handleTEIdeletion() {
+        finish();
+    }
+
+    @Override
+    public void handleEnrollmentDeletion(Boolean hasMoreEnrollments) {
+        if (hasMoreEnrollments) {
+            Bundle bundle = new Bundle();
+            bundle.putString("TEI_UID", teiUid);
+            bundle.putString("PROGRAM_UID", null);
+            startActivity(TeiDashboardMobileActivity.class, bundle, true, false, null);
+        } else
+            finish();
+    }
 
     @Override
     public void setDataWithOutProgram(DashboardProgramModel program) {
@@ -273,18 +277,6 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                     .replace(R.id.tei_main_view, new TEIDataFragment())
                     .commitAllowingStateLoss();
     }
-
-    /*@Override
-    public FragmentStatePagerAdapter getAdapter() {
-        return currentAdapter;
-    }*/
-
-    /*@Override
-    public void showQR() {
-        Intent intent = new Intent(TeiDashboardMobileActivity.this, QrActivity.class);
-        intent.putExtra("TEI_UID", teiUid);
-        startActivity(intent);
-    }*/
 
     @Override
     public void goToEnrollmentList(Bundle extras) {
@@ -325,95 +317,16 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void setTutorial() {
-        super.setTutorial();
-
-        SharedPreferences prefs = getAbstracContext().getSharedPreferences(
-                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
-
         new Handler().postDelayed(() -> {
-            if(getAbstractActivity()!=null) {
-                FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
-                        .title(getString(R.string.tuto_dashboard_1))
-                        .enableAutoTextPosition()
-                        .closeOnTouch(true)
-                        .build();
-                FancyShowCaseView tuto2 = new FancyShowCaseView.Builder(getAbstractActivity())
-                        .title(getString(R.string.tuto_dashboard_2))
-                        .enableAutoTextPosition()
-                        .focusOn(getAbstractActivity().findViewById(R.id.viewMore))
-                        .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                        .titleGravity(Gravity.BOTTOM)
-                        .closeOnTouch(true)
-                        .build();
-                FancyShowCaseView tuto3 = new FancyShowCaseView.Builder(getAbstractActivity())
-                        .title(getString(R.string.tuto_dashboard_3))
-                        .enableAutoTextPosition()
-                        .focusOn(getAbstractActivity().findViewById(R.id.shareContainer))
-                        .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                        .titleGravity(Gravity.BOTTOM)
-                        .closeOnTouch(true)
-                        .build();
-                FancyShowCaseView tuto4 = new FancyShowCaseView.Builder(getAbstractActivity())
-                        .title(getString(R.string.tuto_dashboard_4))
-                        .enableAutoTextPosition()
-                        .focusOn(getAbstractActivity().findViewById(R.id.follow_up))
-                        .closeOnTouch(true)
-                        .build();
-                FancyShowCaseView tuto5 = new FancyShowCaseView.Builder(getAbstractActivity())
-                        .title(getString(R.string.tuto_dashboard_5))
-                        .enableAutoTextPosition()
-                        .focusOn(getAbstractActivity().findViewById(R.id.fab))
-                        .closeOnTouch(true)
-                        .build();
-                FancyShowCaseView tuto6 = new FancyShowCaseView.Builder(getAbstractActivity())
-                        .title(getString(R.string.tuto_dashboard_6))
-                        .enableAutoTextPosition()
-                        .focusOn(getAbstractActivity().findViewById(R.id.tei_recycler))
-                        .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                        .titleGravity(Gravity.TOP)
-                        .closeOnTouch(true)
-                        .build();
-                FancyShowCaseView tuto7 = new FancyShowCaseView.Builder(getAbstractActivity())
-                        .title(getString(R.string.tuto_dashboard_7))
-                        .enableAutoTextPosition()
-                        .focusOn(getAbstractActivity().findViewById(R.id.tab_layout))
-                        .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                        .closeOnTouch(true)
-                        .build();
-                FancyShowCaseView tuto8 = new FancyShowCaseView.Builder(getAbstractActivity())
-                        .title(getString(R.string.tuto_dashboard_8))
-                        .enableAutoTextPosition()
-                        .focusOn(getAbstractActivity().findViewById(R.id.program_selector_button))
-                        .closeOnTouch(true)
-                        .build();
-
-                ArrayList<FancyShowCaseView> steps = new ArrayList<>();
-                steps.add(tuto1);
-                steps.add(tuto2);
-                steps.add(tuto3);
-                steps.add(tuto4);
-                steps.add(tuto5);
-                steps.add(tuto6);
-                steps.add(tuto7);
-                steps.add(tuto8);
-
-                HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
-
-                if (!prefs.getBoolean("TUTO_DASHBOARD_SHOWN", false) && !BuildConfig.DEBUG) {
-                    HelpManager.getInstance().showHelp();/* getAbstractActivity().fancyShowCaseQueue.show();*/
-                    prefs.edit().putBoolean("TUTO_DASHBOARD_SHOWN", true).apply();
-                }
-            }
-
+            if (getAbstractActivity() != null)
+                HelpManager.getInstance().show(getActivity(), HelpManager.TutorialName.TEI_DASHBOARD, null);
         }, 500);
-
-
     }
 
     @Override
     public void showTutorial(boolean shaked) {
-        if (binding.tabLayout.getSelectedTabPosition() == 0)
-            super.showTutorial(shaked);
+        if (binding.tabLayout.getSelectedTabPosition() == 0 && !changingProgram)
+            setTutorial();
         else
             showToast(getString(R.string.no_intructions));
 
@@ -447,7 +360,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             prefs.edit().putInt(Constants.PROGRAM_THEME, programTheme).apply();
             binding.toolbar.setBackgroundColor(programColor);
             binding.tabLayout.setBackgroundColor(programColor);
-            if(getOrientation() == Configuration.ORIENTATION_LANDSCAPE)
+            if (getOrientation() == Configuration.ORIENTATION_LANDSCAPE)
                 if (binding.dotsIndicator.getVisibility() == View.VISIBLE) {
                     binding.dotsIndicator.setDotIndicatorColor(programColor);
                     binding.dotsIndicator.setStrokeDotsIndicatorColor(programColor);
@@ -474,7 +387,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             }
             binding.toolbar.setBackgroundColor(ContextCompat.getColor(this, colorPrimary));
             binding.tabLayout.setBackgroundColor(ContextCompat.getColor(this, colorPrimary));
-            if(getOrientation() == Configuration.ORIENTATION_LANDSCAPE)
+            if (getOrientation() == Configuration.ORIENTATION_LANDSCAPE)
                 if (binding.dotsIndicator.getVisibility() == View.VISIBLE) {
                     binding.dotsIndicator.setDotIndicatorColor(ContextCompat.getColor(this, colorPrimary));
                     binding.dotsIndicator.setStrokeDotsIndicatorColor(ContextCompat.getColor(this, colorPrimary));
@@ -493,5 +406,41 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             a.recycle();
             window.setStatusBarColor(colorToReturn);
         }
+    }
+
+    public void showMoreOptions(View view) {
+        PopupMenu popupMenu = new PopupMenu(this, view, Gravity.BOTTOM);
+        try {
+            Field[] fields = popupMenu.getClass().getDeclaredFields();
+            for (Field field : fields) {
+                if ("mPopup".equals(field.getName())) {
+                    field.setAccessible(true);
+                    Object menuPopupHelper = field.get(popupMenu);
+                    Class<?> classPopupHelper = Class.forName(menuPopupHelper.getClass().getName());
+                    Method setForceIcons = classPopupHelper.getMethod("setForceShowIcon", boolean.class);
+                    setForceIcons.invoke(menuPopupHelper, true);
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            Timber.e(e);
+        }
+        popupMenu.getMenuInflater().inflate(R.menu.dashboard_menu, popupMenu.getMenu());
+        popupMenu.setOnMenuItemClickListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.showHelp:
+                    showTutorial(true);
+                    break;
+                case R.id.deleteTei:
+                    presenter.deteleteTei();
+                    break;
+                case R.id.deleteEnrollment:
+                    presenter.deleteEnrollment();
+                    break;
+            }
+            return true;
+
+        });
+        popupMenu.show();
     }
 }

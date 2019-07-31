@@ -5,6 +5,7 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.database.sqlite.SQLiteStatement;
 import android.os.Build;
+import android.webkit.MimeTypeMap;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
@@ -82,15 +83,17 @@ public class FilesWorker extends Worker {
             uploadBulkResources();
 
         cancelNotification();
-        return Result.SUCCESS;
+        return Result.success();
     }
 
     private void uploadBulkResources() {
         triggerNotification("File processor", "Uploading files...", file_upload_channel);
         File[] filesToUpload = FileResourcesUtil.getUploadDirectory(getApplicationContext()).listFiles();
+        int count = 1;
         for (File file : filesToUpload) {
-            String[] fileName = file.getName().split("."); //tei, attr, extension
-            upload(file, fileName[0], fileName[1]);
+            triggerNotification("File processor", String.format("Uploading file %s/%s", count++, filesToUpload.length), file_upload_channel);
+            String[] fileName = file.getName().split("_"); //tei/event, attr/de, extension
+            upload(file, fileName[0], fileName[1].split("\\.")[0]);
         }
     }
 
@@ -104,17 +107,21 @@ public class FilesWorker extends Worker {
         upload(file, teiUid, attrUid);
     }
 
-    private void upload(File file, String teiUid, String attrUid) {
+    private void upload(File file, String teiOrEvent, String attrUid) {
         Completable.fromCallable(() -> {
             Response<ResponseBody> response = fileService.uploadFile(getFilePart(file)).execute();
 
             if (response.isSuccessful()) {
-                FileResourceResponse fileResourceResponse = new Gson().fromJson(response.body().string(), FileResourceResponse.class);
-                String updateAttr = String.format("UPDATE TrackedEntityAttributeValue SET value = %s " +
-                                "WHERE trackedEntityInstance = %s AND trackedEntityAttribute = %s",
-                        fileResourceResponse.getResponse().getId(), teiUid, attrUid);
+                String jsonResponse = response.body().string();
+                FileResourceResponse fileResourceResponse = new Gson().fromJson(jsonResponse, FileResourceResponse.class);
+
+                String updateAttr = String.format("UPDATE TrackedEntityAttributeValue SET value = '%s' " +
+                                "WHERE trackedEntityInstance = '%s' AND trackedEntityAttribute = '%s'",
+                        fileResourceResponse.getResponse().getFileResource().getId(), teiOrEvent, attrUid);
                 SQLiteStatement update = d2.databaseAdapter().compileStatement(updateAttr);
-                return d2.databaseAdapter().executeUpdateDelete("TrackedEntityAttributeValue", update) != -1;
+                int updated = d2.databaseAdapter().executeUpdateDelete("TrackedEntityAttributeValue", update);
+                return updated > -1;
+
             } else
                 return false;
 
@@ -135,15 +142,14 @@ public class FilesWorker extends Worker {
         List<TrackedEntityAttributeValue> imageValues = d2.trackedEntityModule().trackedEntityAttributeValues
                 .byTrackedEntityAttribute().in(attrUids).get();
 
+        int downloadCount = 1;
         for (TrackedEntityAttributeValue attributeValue : imageValues) {
-
+            triggerNotification("File processor", String.format("Downloading file %s/%s", downloadCount++, imageValues.size()), file_download_channel);
             Completable.fromCallable(() -> {
                 Response<ResponseBody> response = fileService.getFile(attributeValue.trackedEntityInstance(),
                         attributeValue.trackedEntityAttribute()).execute();
                 if (response.isSuccessful()) {
-                    String fileName = response.headers().get("Content-Disposition") != null ?
-                            response.headers().get("Content-Disposition").split("=")[1] : "file_" + System.currentTimeMillis();
-                    return writeResponseBodyToDisk(response.body(), fileName, attributeValue.trackedEntityInstance() + "_" + attributeValue.trackedEntityAttribute());
+                    return writeResponseBodyToDisk(response.body(), FileResourcesUtil.generateFileName(attributeValue.trackedEntityInstance(), attributeValue.trackedEntityAttribute()));
                 } else
                     return false;
             }).blockingAwait();
@@ -151,9 +157,9 @@ public class FilesWorker extends Worker {
         }
     }
 
-    private boolean writeResponseBodyToDisk(ResponseBody body, String fileName, String teiUid_attrUid) {
+    private boolean writeResponseBodyToDisk(ResponseBody body, String generatedFileName) {
         try {
-            File futureStudioIconFile = new File(getApplicationContext().getFilesDir() + File.separator + "images" + File.separator + teiUid_attrUid + ".png");
+            File futureStudioIconFile = new File(FileResourcesUtil.getDownloadDirectory(getApplicationContext()), generatedFileName);
 
             InputStream inputStream = null;
             OutputStream outputStream = null;
@@ -201,7 +207,11 @@ public class FilesWorker extends Worker {
     }
 
     private MultipartBody.Part getFilePart(File file) {
-        return MultipartBody.Part.createFormData("file", file.getName(), RequestBody.create(MediaType.parse("image/*"), file));
+        String extension = MimeTypeMap.getFileExtensionFromUrl(file.getPath());
+        String type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+        if(type == null)
+            type = "image/*";
+        return MultipartBody.Part.createFormData("file", file.getName(), RequestBody.create(MediaType.parse(type), file));
     }
 
     private interface FileService {

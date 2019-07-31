@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+
+    <data>
+        <variable
+            name="ou"
+            type="org.hisp.dhis.android.core.organisationunit.OrganisationUnit" />
+
+        <variable
+            name="item"
+            type="org.hisp.dhis.android.core.common.BaseIdentifiableObject" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        tools:background="?colorPrimaryDark">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="32dp"
+            android:layout_weight="1"
+            android:text="@{item.displayName()}"
+            android:gravity="center_vertical"
+            android:textColor="@color/white"
+            tools:text="Org Unit Name" />
+
+        <ImageView
+            android:id="@+id/clear"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            app:srcCompat="@drawable/ic_remove" />
+    </LinearLayout>
+</layout>

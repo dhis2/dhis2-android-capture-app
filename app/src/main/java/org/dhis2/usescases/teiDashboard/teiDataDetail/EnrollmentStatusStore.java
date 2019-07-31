@@ -20,7 +20,7 @@ import androidx.annotation.NonNull;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 
-import static org.hisp.dhis.android.core.utils.StoreUtils.sqLiteBind;
+import static org.hisp.dhis.android.core.arch.db.stores.internal.StoreUtils.sqLiteBind;
 
 public final class EnrollmentStatusStore implements EnrollmentStatusEntryStore {
 
@@ -150,6 +150,28 @@ public final class EnrollmentStatusStore implements EnrollmentStatusEntryStore {
 
                     return Flowable.just(status);
                 });
+    }
+
+    @Override
+    public Flowable<Long> saveIncidentDate(String date) {
+        return Flowable.defer(() -> {
+            ContentValues cv = new ContentValues();
+            cv.put(EnrollmentModel.Columns.INCIDENT_DATE, date);
+            long updated = briteDatabase.update(EnrollmentModel.TABLE, cv, "uid = ?", enrollment);
+            return Flowable.just(updated);
+        }).switchMap(this::updateEnrollment);
+
+    }
+
+    @Override
+    public Flowable<Long> saveEnrollmentDate(String date) {
+        return Flowable.defer(() -> {
+            ContentValues cv = new ContentValues();
+            cv.put(EnrollmentModel.Columns.ENROLLMENT_DATE, date);
+            long updated = briteDatabase.update(EnrollmentModel.TABLE, cv, "uid = ?", enrollment);
+            return Flowable.just(updated);
+        }).switchMap(this::updateEnrollment);
+
     }
 
 

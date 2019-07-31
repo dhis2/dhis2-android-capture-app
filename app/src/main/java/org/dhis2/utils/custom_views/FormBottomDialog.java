@@ -16,13 +16,18 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import org.dhis2.R;
+import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.databinding.FormBottomDialogBinding;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * QUADRAM. Created by ppajuelo on 17/01/2019.
  */
 public class FormBottomDialog extends BottomSheetDialogFragment {
     OnFormBottomDialogItemSelection listener;
+    private FormBottomDialogBinding binding;
     private boolean canComplete = false;
     private boolean reopen = false;
     private boolean skip = false;
@@ -30,6 +35,10 @@ public class FormBottomDialog extends BottomSheetDialogFragment {
     private boolean isEnrollmentOpen = true;
     private boolean accessDataWrite = true;
     private boolean hasExpired = false;
+    private boolean mandatoryFields = false;
+    private String messageOnComplete = null;
+    private Boolean fieldsWithErrors = false;
+    private Map<String, FieldViewModel> emptyMandatoryFields = new HashMap<>();
 
     public FormBottomDialog setAccessDataWrite(boolean canWrite) {
         this.accessDataWrite = canWrite;
@@ -66,6 +75,26 @@ public class FormBottomDialog extends BottomSheetDialogFragment {
         return this;
     }
 
+    public FormBottomDialog setMandatoryFields(boolean mandatoryFields) {
+        this.mandatoryFields = mandatoryFields;
+        return this;
+    }
+
+    public FormBottomDialog setFieldsWithErrors(boolean fieldsWithErrors) {
+        this.fieldsWithErrors = fieldsWithErrors;
+        return this;
+    }
+
+    public FormBottomDialog setMessageOnComplete(String messageOnComplete) {
+        this.messageOnComplete = messageOnComplete;
+        return this;
+    }
+
+    public FormBottomDialog setEmptyMandatoryFields(Map<String, FieldViewModel> emptyMandatoryFields){
+        this.emptyMandatoryFields = emptyMandatoryFields;
+        return this;
+    }
+
     public enum ActionType {
         FINISH_ADD_NEW,
         SKIP,
@@ -73,7 +102,8 @@ public class FormBottomDialog extends BottomSheetDialogFragment {
         RESCHEDULE,
         FINISH,
         COMPLETE_ADD_NEW,
-        COMPLETE
+        COMPLETE,
+        CHECK_FIELDS
     }
 
     public static FormBottomDialog getInstance() {
@@ -88,7 +118,7 @@ public class FormBottomDialog extends BottomSheetDialogFragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        FormBottomDialogBinding binding = DataBindingUtil.inflate(inflater, R.layout.form_bottom_dialog, container, false);
+        binding = DataBindingUtil.inflate(inflater, R.layout.form_bottom_dialog, container, false);
         binding.setCanWrite(accessDataWrite);
         binding.setIsEnrollmentOpen(isEnrollmentOpen);
         binding.setHasExpired(hasExpired);
@@ -100,6 +130,11 @@ public class FormBottomDialog extends BottomSheetDialogFragment {
         binding.setReopen(reopen);
         binding.setSkip(skip);
         binding.setReschedule(reschedule);
+        binding.setMandatoryFields(mandatoryFields);
+        binding.setFieldsWithErrors(fieldsWithErrors);
+        binding.setMessageOnComplete(messageOnComplete);
+
+        showMissingMandatoryFields();
         return binding.getRoot();
     }
 
@@ -122,5 +157,17 @@ public class FormBottomDialog extends BottomSheetDialogFragment {
         if (listener == null)
             throw new IllegalArgumentException("Call this method after setting listener");
         super.show(manager, tag);
+    }
+
+    private void showMissingMandatoryFields(){
+        if(mandatoryFields){
+            String fields = "";
+            for(Map.Entry<String, FieldViewModel> viewModel: emptyMandatoryFields.entrySet()){
+                fields = fields + "\n " + viewModel.getValue().label();
+            }
+            String textMandatory = binding.txtMandatoryFields.getText().toString() + "\n " + fields;
+
+            binding.txtMandatoryFields.setText(textMandatory);
+        }
     }
 }

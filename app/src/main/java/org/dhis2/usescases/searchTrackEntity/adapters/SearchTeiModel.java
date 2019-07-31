@@ -2,55 +2,37 @@ package org.dhis2.usescases.searchTrackEntity.adapters;
 
 import org.dhis2.data.tuples.Trio;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
-import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class SearchTeiModel {
 
+    private List<TrackedEntityAttributeValueModel> attributeValueModels;
 
-    private TrackedEntityInstanceModel teiModel; //7
-
-    private List<TrackedEntityAttributeValueModel> attributeValueModels; //3,4
-    private List<EnrollmentModel> enrollmentModels;
-
-    private List<Trio<String, String, String>> enrollmentsInfo;//2
-    private boolean hasOverdue; //6
-    private boolean isOnline;//8
+    private List<Trio<String, String, String>> enrollmentsInfo;
+    private boolean hasOverdue;
+    private boolean isOnline;
 
     private TrackedEntityInstance tei;
     private String profilePictureUid;
     private String defaultTypeIcon;
 
+    private Enrollment selectedEnrollment;
+    private List<Enrollment> enrollments;
 
     public SearchTeiModel() {
         this.tei = null;
+        this.selectedEnrollment = null;
         this.attributeValueModels = new ArrayList<>();
-        this.enrollmentModels = new ArrayList<>();
         this.enrollmentsInfo = new ArrayList<>();
         this.isOnline = true;
+        this.enrollments = new ArrayList<>();
     }
 
-    public TrackedEntityInstanceModel getTeiModel() {
-        return teiModel;
-    }
-
-    public List<EnrollmentModel> getEnrollmentModels() {
-        return enrollmentModels;
-    }
-
-    public void setEnrollmentModels(List<EnrollmentModel> enrollmentModels) {
-        this.enrollmentModels = enrollmentModels;
-    }
-
-    public void addEnrollment(EnrollmentModel enrollmentModel) {
-        this.enrollmentModels.add(enrollmentModel);
-    }
 
     public void addEnrollmentInfo(Trio<String, String, String> enrollmentInfo) {
         enrollmentsInfo.add(enrollmentInfo);
@@ -71,7 +53,6 @@ public class SearchTeiModel {
     public void setOnline(boolean online) {
         isOnline = online;
         this.attributeValueModels.clear();
-        //this.attributeValues.clear();
     }
 
     public List<TrackedEntityAttributeValueModel> getAttributeValueModels() {
@@ -83,16 +64,13 @@ public class SearchTeiModel {
     }
 
     public void resetEnrollments() {
-        this.enrollmentModels.clear();
+        this.enrollments.clear();
         this.enrollmentsInfo.clear();
     }
 
     public List<Trio<String, String, String>> getEnrollmentInfo() {
+        Collections.sort(enrollmentsInfo, (enrollment1, enrollment2) -> enrollment1.val0().compareToIgnoreCase(enrollment2.val0()));
         return enrollmentsInfo;
-    }
-
-    public void toLocalTei(TrackedEntityInstanceModel localTei) {
-        this.teiModel = localTei;
     }
 
     public void setAttributeValueModels(List<TrackedEntityAttributeValueModel> attributeValueModels) {
@@ -116,11 +94,27 @@ public class SearchTeiModel {
         return profilePictureUid;
     }
 
-    public void setDefaultTypeIcon(String defaultTypeIcon){
+    public void setDefaultTypeIcon(String defaultTypeIcon) {
         this.defaultTypeIcon = defaultTypeIcon;
     }
 
     public String getDefaultTypeIcon() {
         return defaultTypeIcon;
+    }
+
+    public void setCurrentEnrollment(Enrollment enrollment) {
+        this.selectedEnrollment = enrollment;
+    }
+
+    public Enrollment getSelectedEnrollment(){
+        return this.selectedEnrollment;
+    }
+
+    public void addEnrollment(Enrollment enrollment) {
+        this.enrollments.add(enrollment);
+    }
+
+    public List<Enrollment> getEnrollments() {
+        return enrollments;
     }
 }

@@ -1,6 +1,7 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventSummary;
 
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -9,35 +10,36 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
+
 import org.dhis2.App;
-import org.dhis2.BuildConfig;
 import org.dhis2.R;
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
+import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel;
 import org.dhis2.databinding.ActivityEventSummaryBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
+import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.HelpManager;
+import org.dhis2.utils.custom_views.CircularCompletionView;
 import org.dhis2.utils.custom_views.CustomDialog;
 import org.dhis2.utils.custom_views.ProgressBarAnimation;
 import org.hisp.dhis.android.core.event.EventModel;
-import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramModel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import javax.inject.Inject;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.databinding.DataBindingUtil;
 import io.reactivex.functions.Consumer;
-import me.toptas.fancyshowcase.FancyShowCaseView;
-import me.toptas.fancyshowcase.FocusShape;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -60,6 +62,7 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
     private int completionPercent;
     private int totalFields;
     private int totalCompletedFields;
+    private int unsupportedFields;
     private int fieldsToCompleteBeforeClosing;
     String eventId;
     String programId;
@@ -110,8 +113,8 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void onUpdate(boolean lost, float value) {
-        String text = String.valueOf((int) value) + "%";
-        binding.progress.setText(text);
+        /*String text = String.valueOf((int) value) + "%";
+        binding.progress.setText(text);*/
     }
 
     @Override
@@ -191,10 +194,9 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
     @Override
     public void accessDataWrite(Boolean canWrite) {
 
-        if (DateUtils.getInstance().isEventExpired(null, eventModel.completedDate(), programModel.completeEventsExpiryDays())){
+        if (DateUtils.getInstance().isEventExpired(null, eventModel.completedDate(), programModel.completeEventsExpiryDays())) {
             binding.actionButton.setVisibility(View.GONE);
-        }
-        else {
+        } else {
             switch (eventModel.status()) {
                 case ACTIVE:
                     binding.actionButton.setText(getString(R.string.complete_and_close));
@@ -215,9 +217,6 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
                     break;
             }
         }
-
-        if (!HelpManager.getInstance().isTutorialReadyForScreen(getClass().getName()))
-            setTutorial();
     }
 
     @Override
@@ -240,6 +239,7 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
             int totalSectionFields = updates.size();
             totalFields = totalFields + totalSectionFields;
             totalCompletedFields = totalCompletedFields + completedSectionFields;
+            unsupportedFields = unsupportedFields + calculateUnsupportedFields(updates);
             fieldsToCompleteBeforeClosing = fieldsToCompleteBeforeClosing + calculateMandatoryUnansweredFields(updates);
             String completionText = completedSectionFields + "/" + totalSectionFields;
             ((TextView) sectionView.findViewById(R.id.section_percent)).setText(completionText);
@@ -279,11 +279,8 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
         }
 
         binding.summaryHeader.setText(String.format(getString(R.string.event_summary_header), String.valueOf(totalCompletedFields), String.valueOf(totalFields)));
-        float completionPerone = (float) totalCompletedFields / (float) totalFields;
-        completionPercent = (int) (completionPerone * 100);
-        ProgressBarAnimation gainAnim = new ProgressBarAnimation(binding.progressGains, 0, completionPercent, false, this);
-        gainAnim.setDuration(PROGRESS_TIME);
-        binding.progressGains.startAnimation(gainAnim);
+        binding.completion.setCompletionPercentage((float) totalCompletedFields / (float) totalFields);
+        binding.completion.setSecondaryPercentage((float) unsupportedFields / (float) totalFields);
         checkButton();
     }
 
@@ -300,6 +297,15 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
         return total;
     }
 
+    private int calculateUnsupportedFields(@NonNull List<FieldViewModel> updates) {
+        int total = 0;
+        for (FieldViewModel fieldViewModel : updates) {
+            if (fieldViewModel instanceof UnsupportedViewModel)
+                total++;
+        }
+        return total;
+    }
+
     private int calculateMandatoryUnansweredFields(@NonNull List<FieldViewModel> updates) {
         int total = 0;
         for (FieldViewModel fieldViewModel : updates) {
@@ -311,30 +317,15 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void setTutorial() {
-        super.setTutorial();
-
-        SharedPreferences prefs = getSharedPreferences();
-
         new Handler().postDelayed(() -> {
-            ArrayList<FancyShowCaseView> steps = new ArrayList<>();
-
-
-            FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
-                    .title(getString(R.string.tuto_event_summary))
-                    .enableAutoTextPosition()
-                    .focusOn(binding.actionButton)
-                    .closeOnTouch(true)
-                    .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                    .build();
-            steps.add(tuto1);
-
-            HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
-
-            if (!prefs.getBoolean("TUTO_EVENT_SUMMARY", false) && !BuildConfig.DEBUG) {
-                HelpManager.getInstance().showHelp();
-                prefs.edit().putBoolean("TUTO_EVENT_SUMMARY", true).apply();
+            if (binding.actionButton.getVisibility() == View.VISIBLE) {
+                HelpManager.getInstance().show(getActivity(), HelpManager.TutorialName.EVENT_SUMMARY, null);
             }
-
         }, 500);
+    }
+
+    @Override
+    public void showTutorial(boolean shaked) {
+        setTutorial();
     }
 }

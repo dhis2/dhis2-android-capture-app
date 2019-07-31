@@ -1,13 +1,15 @@
 package org.dhis2.utils.custom_views;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.text.method.DigitsKeyListener;
 import android.util.AttributeSet;
 import android.util.Patterns;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +17,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.core.content.res.ResourcesCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
 
@@ -27,6 +30,8 @@ import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
+import java.util.regex.Pattern;
+
 import static android.text.TextUtils.isEmpty;
 
 /**
@@ -34,6 +39,9 @@ import static android.text.TextUtils.isEmpty;
  */
 
 public class CustomTextView extends FieldLayout implements View.OnFocusChangeListener {
+
+    String urlStringPattern = "^(http:\\/\\/www\\.|https:\\/\\/www\\.|http:\\/\\/|https:\\/\\/)[a-z0-9]+([\\-\\.]{1}[a-z0-9]+)*\\.[a-z]{2,5}(:[0-9]{1,5})?(\\/.*)?$";
+    Pattern urlPattern = Pattern.compile(urlStringPattern);
 
     private boolean isBgTransparent;
     private TextInputAutoCompleteTextView editText;
@@ -66,12 +74,6 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
 
     public void init(Context context) {
         inflater = LayoutInflater.from(context);
-    }
-
-    @Override
-    public void performOnFocusAction() {
-        editText.requestFocus();
-        editText.performClick();
     }
 
     private void setLayout() {
@@ -117,6 +119,7 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
                     break;
                 case TEXT:
                     editText.setInputType(InputType.TYPE_CLASS_TEXT);
+                    editText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(50000)});
                     editText.setLines(1);
                     editText.setEllipsize(TextUtils.TruncateAt.END);
                     break;
@@ -169,7 +172,6 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
                 default:
                     break;
             }
-
         binding.executePendingBindings();
     }
 
@@ -187,15 +189,19 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
     public void setEditable(Boolean editable) {
         editText.setFocusable(editable);
         editText.setFocusableInTouchMode(editable);
-        editText.setEnabled(editable);
+        editText.setEnabled(true);//Set true always cause if is disabled it loses the clickListener
     }
 
     public void setWarning(String warning, String error) {
         if (!isEmpty(error)) {
             inputLayout.setErrorTextAppearance(R.style.error_appearance);
             inputLayout.setError(error);
+            inputLayout.setErrorTextColor(ColorStateList.valueOf(ResourcesCompat.getColor(getResources(), R.color.error_color, null)));
+            editText.setText(null);
+            editText.requestFocus();
         } else if (!isEmpty(warning)) {
             inputLayout.setErrorTextAppearance(R.style.warning_appearance);
+            inputLayout.setErrorTextColor(ColorStateList.valueOf(ResourcesCompat.getColor(getResources(), R.color.warning_color, null)));
             inputLayout.setError(warning);
         } else
             inputLayout.setError(null);
@@ -254,7 +260,7 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
                         return false;
                     }
                 case INTEGER_NEGATIVE:
-                    if (Integer.valueOf(editText.getText().toString()) < 0)
+                    if (Float.valueOf(editText.getText().toString()) < 0)
                         return true;
                     else {
                         inputLayout.setError(editText.getContext().getString(R.string.invalid_negative_number));
@@ -262,14 +268,14 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
                     }
                 case INTEGER_ZERO_OR_POSITIVE:
                     if (editText.getText() != null &&
-                            Integer.valueOf(editText.getText().toString()) >= 0)
+                            Float.valueOf(editText.getText().toString()) >= 0)
                         return true;
                     else {
                         inputLayout.setError(editText.getContext().getString(R.string.invalid_possitive_zero));
                         return false;
                     }
                 case INTEGER_POSITIVE:
-                    if (Integer.valueOf(editText.getText().toString()) > 0)
+                    if (Float.valueOf(editText.getText().toString()) > 0)
                         return true;
                     else {
                         inputLayout.setError(editText.getContext().getString(R.string.invalid_possitive));
@@ -287,6 +293,14 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
                         return true;
                     else {
                         inputLayout.setError(editText.getContext().getString(R.string.invalid_percentage));
+                        return false;
+                    }
+                case URL:
+                    if (urlPattern.matcher(editText.getText().toString()).matches()) {
+                        inputLayout.setError(null);
+                        return true;
+                    } else {
+                        inputLayout.setError(getContext().getString(R.string.validation_url));
                         return false;
                     }
                 default:
@@ -312,5 +326,10 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
 
     public void setObjectSyle(ObjectStyleModel objectStyle) {
         Bindings.setObjectStyle(icon, this, objectStyle);
+    }
+
+    public void setOnLongActionListener(View.OnLongClickListener listener){
+        if(!editText.isFocusable())
+            editText.setOnLongClickListener(listener);
     }
 }

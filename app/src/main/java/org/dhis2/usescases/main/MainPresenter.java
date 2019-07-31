@@ -10,6 +10,7 @@ import androidx.work.WorkManager;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.usescases.login.LoginActivity;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.filters.FilterManager;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.user.User;
 
@@ -64,17 +65,50 @@ final class MainPresenter implements MainContracts.Presenter {
                         )
         );
 
+
+        compositeDisposable.add(
+                metadataRepository.getDefaultCategoryOptionComboId()
+                        .subscribeOn(Schedulers.io())
+                        .subscribe(
+                                id -> {
+                                    SharedPreferences prefs = view.getAbstracContext().getSharedPreferences(
+                                            Constants.SHARE_PREFS, Context.MODE_PRIVATE);
+                                    prefs.edit().putString(Constants.PREF_DEFAULT_CAT_OPTION_COMBO, id).apply();
+                                },
+                                Timber::e
+                        )
+        );
+
+        compositeDisposable.add(
+                FilterManager.getInstance().asFlowable()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                filterManager -> view.updateFilters(filterManager.getTotalFilters()),
+                                Timber::e
+                        )
+        );
+
+        compositeDisposable.add(
+                FilterManager.getInstance().getPeriodRequest()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                periodRequest -> view.showPeriodRequest(periodRequest),
+                                Timber::e
+                        ));
     }
 
     @Override
     public void logOut() {
-        try {
-            WorkManager.getInstance().cancelAllWork();
-            d2.userModule().logOut().call();
-            view.startActivity(LoginActivity.class, null, true, true, null);
-        } catch (Exception e) {
-            Timber.e(e);
-        }
+        compositeDisposable.add(d2.userModule().logOut()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(() -> {
+                    WorkManager.getInstance().cancelAllWork();
+                    view.startActivity(LoginActivity.class, null, true, true, null);
+                }, Timber::e)
+        );
     }
 
     @Override

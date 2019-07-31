@@ -69,15 +69,17 @@ class FormPresenterImpl implements FormPresenter {
 
     @NonNull
     private final FlowableProcessor<String> processor;
+    private final D2 d2;
     private FormView view;
 
-    private boolean isEvent = false;
+    private boolean isEvent;
 
     FormPresenterImpl(@NonNull FormViewArguments formViewArguments,
                       @NonNull SchedulerProvider schedulerProvider,
                       @NonNull BriteDatabase briteDatabase,
                       @NonNull FormRepository formRepository,
                       @NonNull D2 d2) {
+        this.d2 = d2;
         this.formViewArguments = formViewArguments;
         this.formRepository = formRepository;
         this.schedulerProvider = schedulerProvider;
@@ -91,6 +93,14 @@ class FormPresenterImpl implements FormPresenter {
         }
 
         this.processor = PublishProcessor.create();
+    }
+
+    @Override
+    public String getEnrollmentOu(String enrollmentUid) {
+        if (d2.enrollmentModule().enrollments.uid(enrollmentUid).exists())
+            return d2.enrollmentModule().enrollments.uid(enrollmentUid).get().organisationUnit();
+        else
+            return null;
     }
 
     @Override
@@ -379,25 +389,6 @@ class FormPresenterImpl implements FormPresenter {
         );
     }
 
-    public Observable<Boolean> checkMandatory() {
-        Observable<List<FieldViewModel>> values = formRepository.fieldValues();
-        Observable<Result<RuleEffect>> ruleEffect = ruleEngineRepository.calculate().toObservable()
-                .subscribeOn(schedulerProvider.computation()).onErrorReturn(throwable -> Result.failure(new Exception(throwable)));
-
-        Observable<List<FieldViewModel>> fieldValues = Observable.zip(
-                values, ruleEffect, this::applyFieldViewEffects);
-
-        return fieldValues
-                .map(data -> {
-                    boolean mandatoryRequired = false;
-                    for (FieldViewModel viewModel : data) {
-                        if (viewModel.mandatory() && TextUtils.isEmpty(viewModel.value()))
-                            mandatoryRequired = true;
-                    }
-                    return mandatoryRequired;
-                });
-    }
-
     private void deleteTrackedEntityAttributeValues(@NonNull String trackedEntityAttributeInstanceId) {
         formRepository.deleteTrackedEntityAttributeValues(trackedEntityAttributeInstanceId);
     }
@@ -441,7 +432,7 @@ class FormPresenterImpl implements FormPresenter {
         formRepository.saveCategoryOption(selectedOption);
     }
 
-    public void getNeedInitial(String eventUid){
+    public void getNeedInitial(String eventUid) {
         compositeDisposable.add(
                 Flowable.zip(
                         formRepository.getProgramStage(eventUid),
@@ -455,7 +446,7 @@ class FormPresenterImpl implements FormPresenter {
                                     ProgramStage programStage = pair.val0();
                                     Trio<Boolean, CategoryComboModel, List<CategoryOptionComboModel>> trio = pair.val1();
                                     view.setNeedInitial(programStage.featureType().equals(FeatureType.POINT) || !trio.val1().isDefault(), programStage.uid());
-                                    },
+                                },
                                 Timber::e
                         )
         );

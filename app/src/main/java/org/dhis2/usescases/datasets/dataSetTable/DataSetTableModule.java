@@ -1,8 +1,9 @@
 package org.dhis2.usescases.datasets.dataSetTable;
 
-import com.squareup.sqlbrite2.BriteDatabase;
-
 import org.dhis2.data.dagger.PerActivity;
+import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialRepository;
+import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialRepositoryImpl;
+import org.hisp.dhis.android.core.D2;
 
 import dagger.Module;
 import dagger.Provides;
@@ -12,9 +13,15 @@ import dagger.Provides;
 public class DataSetTableModule {
 
     private final String dataSetUid;
+    private final String periodId;
+    private final String orgUnitUid;
+    private final String catOptCombo;
 
-    DataSetTableModule(String dataSetUid) {
+    DataSetTableModule(String dataSetUid, String periodId, String orgUnitUid, String catOptCombo) {
         this.dataSetUid = dataSetUid;
+        this.periodId = periodId;
+        this.orgUnitUid = orgUnitUid;
+        this.catOptCombo = catOptCombo;
     }
 
     @Provides
@@ -31,8 +38,14 @@ public class DataSetTableModule {
 
     @Provides
     @PerActivity
-    DataSetTableRepository DataSetTableRepository(BriteDatabase briteDatabase) {
-        return new DataSetTableRepositoryImpl(briteDatabase, dataSetUid);
+    DataSetTableRepository DataSetTableRepository(D2 d2) {
+        return new DataSetTableRepositoryImpl(d2, dataSetUid, periodId, orgUnitUid, catOptCombo);
+    }
+
+    @Provides
+    @PerActivity
+    DataSetInitialRepository DataSetInitialRepository(D2 d2) {
+        return new DataSetInitialRepositoryImpl(d2, dataSetUid);
     }
 
 }

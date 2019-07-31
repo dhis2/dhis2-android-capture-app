@@ -13,10 +13,16 @@ import android.view.View;
 import android.widget.DatePicker;
 import android.widget.PopupMenu;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.databinding.DataBindingUtil;
+
 import com.google.android.material.snackbar.Snackbar;
 
 import org.dhis2.App;
 import org.dhis2.R;
+import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.databinding.ActivityEventCaptureBinding;
 import org.dhis2.databinding.WidgetDatepickerBinding;
@@ -27,22 +33,14 @@ import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.custom_views.CustomDialog;
 import org.dhis2.utils.custom_views.FormBottomDialog;
-import org.dhis2.utils.custom_views.ProgressBarAnimation;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.databinding.DataBindingUtil;
 import io.reactivex.functions.Consumer;
 import timber.log.Timber;
 
@@ -61,7 +59,6 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     private ActivityEventCaptureBinding binding;
     @Inject
     EventCaptureContract.Presenter presenter;
-    private int completionPercentage = 0;
     private String programStageUid;
     private Boolean isEventCompleted = false;
 
@@ -113,40 +110,20 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void setUp() {
-        binding.eventViewPager.setAdapter(new EventCapturePagerAdapter(getSupportFragmentManager()));
+        if (binding.eventViewPager.getAdapter() == null)
+            binding.eventViewPager.setAdapter(new EventCapturePagerAdapter(getSupportFragmentManager()));
     }
 
     @Override
-    public Consumer<Float> updatePercentage() {
-        return percentage -> {
-            int newPercentage = (int) (percentage * 100);
-
-            ProgressBarAnimation gainAnim = new ProgressBarAnimation(binding.progressGains, completionPercentage, 0, newPercentage, false,
-                    (lost, value) -> {
-                        String text = String.valueOf((int) value) + "%";
-                        binding.progress.setText(text);
-                    });
-            gainAnim.setDuration(1000);
-            binding.progressGains.startAnimation(gainAnim);
-
-            this.completionPercentage = (int) (percentage * 100);
-
+    public Consumer<Pair<Float, Float>> updatePercentage() {
+        return pair -> {
+            binding.completion.setCompletionPercentage(pair.val0());
+            binding.completion.setSecondaryPercentage(pair.val1());
         };
     }
 
-    private String getMandatoryFieldNames(List<FieldViewModel> mandatoryValues) {
-        StringBuilder mandatoryFieldNames = new StringBuilder();
-        for (FieldViewModel fieldViewModel : mandatoryValues) {
-            mandatoryFieldNames.append(fieldViewModel.label());
-            if (mandatoryValues.indexOf(fieldViewModel) < mandatoryValues.size() - 1)
-                mandatoryFieldNames.append(", ");
-        }
-
-        return mandatoryFieldNames.toString();
-    }
-
     @Override
-    public void showCompleteActions(boolean canComplete) {
+    public void showCompleteActions(boolean canComplete, String completeMessage, Map<String, String> errors, Map<String, FieldViewModel> emptyMandatoryFields) {
 
         FormBottomDialog.getInstance()
                 .setAccessDataWrite(presenter.canWrite())
@@ -154,6 +131,10 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                 .setIsExpired(presenter.hasExpired())
                 .setCanComplete(canComplete)
                 .setListener(this::setAction)
+                .setMessageOnComplete(completeMessage)
+                .setEmptyMandatoryFields(emptyMandatoryFields)
+                .setFieldsWithErrors(!errors.isEmpty())
+                .setMandatoryFields(!emptyMandatoryFields.isEmpty())
                 .show(getSupportFragmentManager(), "SHOW_OPTIONS");
     }
 
@@ -214,8 +195,11 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
             case RESCHEDULE:
                 reschedule();
                 break;
+            case CHECK_FIELDS:
+                presenter.goToSection();
+                break;
             case FINISH:
-                default:
+            default:
                 finishDataEntry();
                 break;
         }
@@ -245,7 +229,6 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
     private void showCustomCalendar() {
         LayoutInflater layoutInflater = LayoutInflater.from(getContext());
-        //        View datePickerView = layoutInflater.inflate(R.layout.widget_datepicker, null);
         WidgetDatepickerBinding widgetBinding = WidgetDatepickerBinding.inflate(layoutInflater);
         final DatePicker datePicker = widgetBinding.widgetDatepicker;
 
@@ -257,24 +240,16 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         datePicker.updateDate(year, month, day);
 
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(getContext(), R.style.DatePickerTheme);
-                /*.setPositiveButton(R.string.action_accept, (dialog, which) -> {
-                    Calendar chosenDate = Calendar.getInstance();
-                    chosenDate.set(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
-                    presenter.rescheduleEvent(chosenDate.getTime());
-                })
-                .setNeutralButton(getContext().getResources().getString(R.string.change_calendar), (dialog, which) -> {
-                    showNativeCalendar();
-                });*/
 
         alertDialog.setView(widgetBinding.getRoot());
         Dialog dialog = alertDialog.create();
 
-        widgetBinding.changeCalendarButton.setOnClickListener(calendarButton->{
+        widgetBinding.changeCalendarButton.setOnClickListener(calendarButton -> {
             showNativeCalendar();
             dialog.dismiss();
         });
-        widgetBinding.clearButton.setOnClickListener(clearButton->dialog.dismiss());
-        widgetBinding.acceptButton.setOnClickListener(acceptButton->{
+        widgetBinding.clearButton.setOnClickListener(clearButton -> dialog.dismiss());
+        widgetBinding.acceptButton.setOnClickListener(acceptButton -> {
             Calendar chosenDate = Calendar.getInstance();
             chosenDate.set(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
             presenter.rescheduleEvent(chosenDate.getTime());
@@ -323,12 +298,12 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                 getAbstracContext().getString(R.string.error_fields_title),
                 getAbstracContext().getString(R.string.error_fields_events),
                 getAbstracContext().getString(R.string.button_ok),
-                "Check",
+                getString(R.string.check_mandatory_field),
                 Constants.RQ_MANDATORY_EVENTS,
                 new DialogClickListener() {
                     @Override
                     public void onPositive() {
-                        showCompleteActions(false);
+                        showCompleteActions(false, null, errors, null);
                     }
 
                     @Override
@@ -349,7 +324,13 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void attemptToFinish(boolean canComplete) {
-        showCompleteActions(canComplete);
+        FormBottomDialog.getInstance()
+                .setAccessDataWrite(presenter.canWrite())
+                .setIsExpired(presenter.hasExpired())
+                .setMandatoryFields(canComplete)
+                .setCanComplete(canComplete)
+                .setListener(this::setAction)
+                .show(getSupportFragmentManager(), "SHOW_OPTIONS");
     }
 
 

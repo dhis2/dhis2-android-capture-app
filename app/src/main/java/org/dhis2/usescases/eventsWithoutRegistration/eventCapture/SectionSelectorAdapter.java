@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import org.dhis2.R;
+import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ItemSectionSelectorBinding;
 
 import java.util.ArrayList;
@@ -21,16 +22,16 @@ import io.reactivex.processors.PublishProcessor;
  */
 public class SectionSelectorAdapter extends RecyclerView.Adapter<EventSectionHolder> {
     private final EventCaptureContract.Presenter presenter;
-    List<EventSectionModel> items;
+    private List<EventSectionModel> items;
     private float percentage;
-    private FlowableProcessor<Float> percentageFlowable;
+    private FlowableProcessor<Pair<Float, Float>> percentageFlowable;
 
     public SectionSelectorAdapter(EventCaptureContract.Presenter presenter) {
         this.presenter = presenter;
         this.items = new ArrayList<>();
         percentage = 0;
         percentageFlowable = PublishProcessor.create();
-        percentageFlowable.onNext(0f);
+        percentageFlowable.onNext(Pair.create(0f, 0f));
     }
 
     @NonNull
@@ -50,17 +51,17 @@ public class SectionSelectorAdapter extends RecyclerView.Adapter<EventSectionHol
         return items != null ? items.size() : 0;
     }
 
-    public void swapData(String currentSection, List<EventSectionModel> update) {
+    public void swapData(List<EventSectionModel> update, float unsupportedPercentage) {
 
         this.items.clear();
         this.items.addAll(update);
         notifyDataSetChanged();
 
-        percentageFlowable.onNext(calculateCompletionPercentage());
+        percentageFlowable.onNext(Pair.create(calculateCompletionPercentage(), unsupportedPercentage));
 
     }
 
-    public FlowableProcessor<Float> completionPercentage() {
+    public FlowableProcessor<Pair<Float, Float>> completionPercentage() {
         return percentageFlowable;
     }
 

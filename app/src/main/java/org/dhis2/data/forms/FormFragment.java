@@ -40,6 +40,7 @@ import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.usescases.map.MapSelectorActivity;
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.custom_views.CategoryComboDialog;
 import org.dhis2.utils.custom_views.CoordinatesView;
@@ -116,6 +117,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     private DataEntryFragment enrollmentFragment;
     private boolean needInitial;
     private String programStageUid;
+    private String enrollmentUid;
 
     public View getDatesLayout() {
         return datesLayout;
@@ -271,6 +273,8 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
             }
 
             this.isEnrollment = getArguments().getBoolean(IS_ENROLLMENT);
+            if (isEnrollment)
+                enrollmentUid = arguments.uid();
         }
     }
 
@@ -382,7 +386,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
             enrollmentTrio = trio;
             progressBar.setVisibility(View.VISIBLE);
             formPresenter.checkMandatoryFields();
-            if(trio.val2()!=null)
+            if (trio.val2() != null)
                 formPresenter.getNeedInitial(trio.val2());
         };
     }
@@ -473,7 +477,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
 
             @Override
             public void onClearDate() {
-                onReportDateChanged.onNext("");
+                onReportDateChanged.onNext(BaseIdentifiableObject.DATE_FORMAT.format(new Date()));
             }
         };
     }
@@ -491,7 +495,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
 
             @Override
             public void onClearDate() {
-                onIncidentDateChanged.onNext("");
+                onIncidentDateChanged.onNext(BaseIdentifiableObject.DATE_FORMAT.format(new Date()));
             }
         };
 
@@ -506,7 +510,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     }
 
     @Override
-    public void onCurrentLocationClick(double latitude, double longitude) {
+    public void onCurrentLocationClick(Double latitude, Double longitude) {
         publishCoordinatesChanged(latitude, longitude);
     }
 
@@ -548,10 +552,6 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
         }
     }
 
-    public void hideSections(String uid) {
-        formPresenter.checkSections();
-    }
-
     @Override
     public void messageOnComplete(String content, boolean canComplete) {
         this.messageOnComplete = content;
@@ -575,13 +575,25 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
                 if (!enrollmentTrio.val2().isEmpty()) { //val0 is teiUid uid, val1 is programUid, val2 is event uid
                     this.programUid = enrollmentTrio.val1();
                     this.teiUid = enrollmentTrio.val0();
-                    if(needInitial){
-                        Intent eventInitialIntent= new Intent(getAbstracContext(), EventInitialActivity.class);
-                        eventInitialIntent.putExtra(Constants.PROGRAM_UID, programUid);
+                    if (needInitial) {
+                        Bundle bundle = EventInitialActivity.getBundle(
+                                programUid,
+                                enrollmentTrio.val2(),
+                                null,
+                                enrollmentTrio.val0(),
+                                null,
+                                formPresenter.getEnrollmentOu(enrollmentUid),
+                                programStageUid,
+                                enrollmentUid,
+                                0,
+                                EnrollmentStatus.ACTIVE);
+                        Intent eventInitialIntent = new Intent(getAbstracContext(), EventInitialActivity.class);
+                        eventInitialIntent.putExtras(bundle);
+                      /*  eventInitialIntent.putExtra(Constants.PROGRAM_UID, programUid);
                         eventInitialIntent.putExtra(Constants.EVENT_UID, enrollmentTrio.val2());
-                        eventInitialIntent.putExtra(Constants.PROGRAM_STAGE_UID, programStageUid);
+                        eventInitialIntent.putExtra(Constants.PROGRAM_STAGE_UID, programStageUid);*/
                         startActivityForResult(eventInitialIntent, RQ_EVENT);
-                    }else {
+                    } else {
                         Intent eventCreationIntent = new Intent(getAbstracContext(), EventCaptureActivity.class);
                         eventCreationIntent.putExtras(EventCaptureActivity.getActivityBundle(enrollmentTrio.val2(), enrollmentTrio.val1()));
                         eventCreationIntent.putExtra(Constants.TRACKED_ENTITY_INSTANCE, enrollmentTrio.val0());
@@ -606,6 +618,8 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
 
     private void checkAction() {
         if (isAdded() && getContext() != null) {
+            getActivity().finish(); //TODO: ASK IF USER WANTS TO DELETE RECORD
+/*
             CustomDialog dialog = new CustomDialog(
                     getContext(),
                     getString(R.string.warning_error_on_complete_title),
@@ -629,8 +643,8 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
             if (isAdded() && !isEmpty(messageOnComplete) && !dialog.isShowing())
                 dialog.show();
             else if (isAdded() && getActivity() != null) {
-                getActivity().finish(); //TODO: ASK IF USER WANTS TO DELETE RECORD
-            }
+                getActivity().finish();
+            }*/
         }
     }
 

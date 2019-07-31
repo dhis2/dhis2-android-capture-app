@@ -1,5 +1,13 @@
 package org.dhis2.utils;
 
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import org.dhis2.data.forms.section.viewmodels.date.DatePickerDialogFragment;
+import org.dhis2.usescases.general.ActivityGlobalAbstract;
+import org.dhis2.utils.custom_views.RxDateDialog;
+import org.hisp.dhis.android.core.dataset.DataInputPeriod;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.period.DatePeriod;
@@ -16,8 +24,8 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nonnull;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import io.reactivex.disposables.Disposable;
+import timber.log.Timber;
 
 /**
  * QUADRAM. Created by ppajuelo on 16/01/2018.
@@ -845,6 +853,136 @@ public class DateUtils {
                 calendar.set(Calendar.DAY_OF_MONTH, 1);
                 break;
             case Quarterly:
+                extra = 3 - page * (calendar.get(Calendar.MONTH)) % 3;
+                calendar.add(Calendar.MONTH, page * extra);
+                calendar.set(Calendar.DAY_OF_MONTH, 1);
+                break;
+            case SixMonthly:
+                extra = 6 - page * (calendar.get(Calendar.MONTH)) % 6;
+                calendar.add(Calendar.MONTH, page * extra);
+                calendar.set(Calendar.DAY_OF_MONTH, 1);
+                break;
+            case SixMonthlyApril:
+                if (calendar.get(Calendar.MONTH) < Calendar.APRIL) {
+                    calendar.add(Calendar.YEAR, -1);
+                    calendar.set(Calendar.MONTH, Calendar.OCTOBER);
+                } else if (calendar.get(Calendar.MONTH) >= Calendar.APRIL && calendar.get(Calendar.MONTH) < Calendar.OCTOBER)
+                    calendar.set(Calendar.MONTH, Calendar.APRIL);
+                else
+                    calendar.set(Calendar.MONTH, Calendar.OCTOBER);
+                calendar.set(Calendar.DAY_OF_MONTH, 1);
+                calendar.add(Calendar.MONTH, page * 6);
+                break;
+            case Yearly:
+                calendar.add(Calendar.YEAR, page);
+                calendar.set(Calendar.DAY_OF_YEAR, 1);
+                break;
+            case FinancialApril:
+                if (calendar.get(Calendar.MONTH) < Calendar.APRIL) {
+                    calendar.add(Calendar.YEAR, -1);
+                    calendar.set(Calendar.MONTH, Calendar.APRIL);
+                } else
+                    calendar.set(Calendar.MONTH, Calendar.APRIL);
+
+                calendar.add(Calendar.YEAR, page);
+                calendar.set(Calendar.DAY_OF_MONTH, 1);
+                break;
+            case FinancialJuly:
+                if (calendar.get(Calendar.MONTH) < Calendar.JULY) {
+                    calendar.add(Calendar.YEAR, -1);
+                    calendar.set(Calendar.MONTH, Calendar.JULY);
+                } else
+                    calendar.set(Calendar.MONTH, Calendar.JULY);
+                calendar.add(Calendar.YEAR, page);
+                calendar.set(Calendar.DAY_OF_MONTH, 1);
+                break;
+            case FinancialOct:
+                if (calendar.get(Calendar.MONTH) < Calendar.OCTOBER) {
+                    calendar.add(Calendar.YEAR, -1);
+                    calendar.set(Calendar.MONTH, Calendar.OCTOBER);
+                } else
+                    calendar.set(Calendar.MONTH, Calendar.OCTOBER);
+
+                calendar.add(Calendar.YEAR, page);
+                calendar.set(Calendar.DAY_OF_MONTH, 1);
+                break;
+            default:
+                break;
+        }
+        return calendar.getTime();
+    }
+
+    /**
+     * @param period      Period in which the date will be selected
+     * @param currentDate Current selected date
+     * @param page        1 for next, 0 for now, -1 for previous
+     * @return Next/Previous date calculated from the currentDate and Period
+     */
+    public Date getNextPeriod(PeriodType period, Date currentDate, int page, boolean lastDate) {
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(currentDate);
+        int extra;
+        if (period == null)
+            period = PeriodType.Daily;
+
+        switch (period) {
+            case Daily:
+                calendar.add(Calendar.DAY_OF_YEAR, page);
+                break;
+            case Weekly:
+                calendar.add(Calendar.WEEK_OF_YEAR, page);
+                if (!lastDate)
+                    calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+                else
+                    calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+                break;
+            case WeeklyWednesday:
+                calendar.add(Calendar.WEEK_OF_YEAR, page);
+                if (!lastDate)
+                    calendar.set(Calendar.DAY_OF_WEEK, Calendar.WEDNESDAY);
+                else
+                    calendar.set(Calendar.DAY_OF_WEEK, Calendar.THURSDAY);
+                break;
+            case WeeklyThursday:
+                calendar.add(Calendar.WEEK_OF_YEAR, page);
+                if (!lastDate)
+                    calendar.set(Calendar.DAY_OF_WEEK, Calendar.THURSDAY);
+                else
+                    calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+                break;
+            case WeeklySaturday:
+                calendar.add(Calendar.WEEK_OF_YEAR, page);
+                if (!lastDate)
+                    calendar.set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY);
+                else
+                    calendar.set(Calendar.DAY_OF_WEEK, Calendar.FRIDAY);
+                break;
+            case WeeklySunday:
+                calendar.add(Calendar.WEEK_OF_YEAR, page);
+                if (!lastDate)
+                    calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+                else
+                    calendar.set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY);
+                break;
+            case BiWeekly:
+                extra = calendar.get(Calendar.WEEK_OF_YEAR) % 2 == 0 ? 1 : 2;
+                calendar.add(Calendar.WEEK_OF_YEAR, page * extra);
+                if (!lastDate)
+                    calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+                else
+                    calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+                break;
+            case Monthly:
+                calendar.add(Calendar.MONTH, page);
+                calendar.set(Calendar.DAY_OF_MONTH, 1);
+                break;
+            case BiMonthly:
+                extra = (calendar.get(Calendar.MONTH) + 1) % 2 == 0 ? 1 : 2;
+                calendar.add(Calendar.MONTH, page * extra);
+                calendar.set(Calendar.DAY_OF_MONTH, 1);
+                break;
+            case Quarterly:
                 extra = 1 + 4 - (calendar.get(Calendar.MONTH) + 1) % 4;
                 calendar.add(Calendar.MONTH, page * extra);
                 calendar.set(Calendar.DAY_OF_MONTH, 1);
@@ -1038,7 +1176,7 @@ public class DateUtils {
         expiredBecouseOfCompletion = status == EventStatus.COMPLETED ?
                 isEventExpired(null, eventDate, compExpDays) : false;
 
-        if (programPeriodType != null || expDays > 0) {
+        if (programPeriodType != null) {
             Date expDate = getNextPeriod(programPeriodType, eventDate, 1); //Initial date of next period
             if (expDays > 0) {
                 Calendar calendar = getCalendar();
@@ -1055,6 +1193,47 @@ public class DateUtils {
 
     }
 
+
+    public Boolean isDataSetExpired(int expiredDays, Date periodInitialDate) {
+        return Calendar.getInstance().getTime().getTime() > periodInitialDate.getTime() + TimeUnit.DAYS.toMillis(expiredDays);
+    }
+
+    public Boolean isInsideInputPeriod(DataInputPeriod dataInputPeriodModel) {
+        if (dataInputPeriodModel.openingDate() == null && dataInputPeriodModel.closingDate() != null)
+            return Calendar.getInstance().getTime().getTime() < dataInputPeriodModel.closingDate().getTime();
+
+        if (dataInputPeriodModel.openingDate() != null && dataInputPeriodModel.closingDate() == null)
+            return dataInputPeriodModel.openingDate().getTime() < Calendar.getInstance().getTime().getTime();
+
+        if (dataInputPeriodModel.openingDate() == null && dataInputPeriodModel.closingDate() == null)
+            return true;
+
+        return dataInputPeriodModel.openingDate().getTime() < Calendar.getInstance().getTime().getTime()
+                && Calendar.getInstance().getTime().getTime() < dataInputPeriodModel.closingDate().getTime();
+    }
+
+    public String generateId(PeriodType periodType, Date date, Locale locale) {
+
+        String formattedDate;
+        Date initDate = getNextPeriod(periodType, date, 0);
+
+        switch (periodType) {
+            case Monthly:
+                formattedDate = new SimpleDateFormat("yyyyMM", locale).format(initDate);
+                break;
+            case Yearly:
+                formattedDate = new SimpleDateFormat("yyyy", locale).format(initDate);
+                break;
+            case Daily:
+                formattedDate = new SimpleDateFormat("yyyyMMdd", locale).format(initDate);
+                break;
+            default:
+                formattedDate = new SimpleDateFormat("yyyy", locale).format(initDate);
+                break;
+        }
+        return formattedDate;
+    }
+
     public List<DatePeriod> getDatePeriodListFor(List<Date> selectedDates, Period period) {
         List<DatePeriod> datePeriods = new ArrayList<>();
         for (Date date : selectedDates) {
@@ -1062,5 +1241,63 @@ public class DateUtils {
             datePeriods.add(DatePeriod.builder().startDate(startEndDates[0]).endDate(startEndDates[1]).build());
         }
         return datePeriods;
+    }
+
+    public void showFromToSelector(ActivityGlobalAbstract activity, OnFromToSelector fromToListener) {
+        DatePickerDialogFragment fromCalendar = DatePickerDialogFragment.create(true);
+        fromCalendar.setFormattedOnDateSetListener(new DatePickerDialogFragment.FormattedOnDateSetListener() {
+            @Override
+            public void onDateSet(@NonNull Date fromDate) {
+                DatePickerDialogFragment toCalendar = DatePickerDialogFragment.create(true);
+                toCalendar.setOpeningClosingDates(fromDate, null);
+                toCalendar.setFormattedOnDateSetListener(new DatePickerDialogFragment.FormattedOnDateSetListener() {
+                    @Override
+                    public void onDateSet(@NonNull Date toDate) {
+                        fromToListener.onFromToSelected(fromDate, toDate);
+                    }
+
+                    @Override
+                    public void onClearDate() {
+
+                    }
+                });
+                toCalendar.show(activity.getSupportFragmentManager(), "TO");
+
+            }
+
+            @Override
+            public void onClearDate() {
+
+            }
+        });
+
+        fromCalendar.show(activity.getSupportFragmentManager(), "FROM");
+    }
+
+    public void showPeriodDialog(ActivityGlobalAbstract activity, OnFromToSelector fromToListener) {
+        DatePickerDialogFragment fromCalendar = DatePickerDialogFragment.create(true, "Daily");
+//        fromCalendar.setOpeningClosingDates(null, null); TODO: MAX 1 year in the future?
+        fromCalendar.setFormattedOnDateSetListener(new DatePickerDialogFragment.FormattedOnDateSetListener() {
+            @Override
+            public void onDateSet(@NonNull Date date) {
+
+            }
+
+            @Override
+            public void onClearDate() {
+                Disposable disposable = new RxDateDialog(activity, Period.WEEKLY)
+                        .createForFilter().show()
+                        .subscribe(
+                                selectedDates -> fromToListener.onFromToSelected(null, null),
+                                Timber::e
+                        );
+            }
+        });
+        fromCalendar.show(activity.getSupportFragmentManager(), "DAILY");
+
+    }
+
+    public interface OnFromToSelector {
+        void onFromToSelected(Date from, Date to);
     }
 }

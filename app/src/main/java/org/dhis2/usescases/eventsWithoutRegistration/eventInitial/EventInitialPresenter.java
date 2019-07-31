@@ -36,6 +36,7 @@ import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.period.FeatureType;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.rules.models.RuleAction;
 import org.hisp.dhis.rules.models.RuleActionHideField;
@@ -49,6 +50,8 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
@@ -79,7 +82,7 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     private CategoryCombo catCombo;
     private String programId;
     private String programStageId;
-    private List<OrganisationUnitModel> orgUnits;
+    private List<OrganisationUnit> orgUnits;
 
     public EventInitialPresenter(@NonNull EventSummaryRepository eventSummaryRepository,
                                  @NonNull EventInitialRepository eventInitialRepository,
@@ -180,7 +183,7 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
                 .subscribe(
                         orgUnits -> {
                             this.orgUnits = orgUnits;
-                            view.addTree(OrgUnitUtils.renderTree(view.getContext(), orgUnits, false));
+                            view.addTree(OrgUnitUtils.renderTree_2(view.getContext(), orgUnits, false));
                         },
                         throwable -> view.renderError(throwable.getMessage())
                 ));
@@ -199,13 +202,13 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     }
 
     @Override
-    public List<OrganisationUnitModel> getOrgUnits() {
+    public List<OrganisationUnit> getOrgUnits() {
         return orgUnits;
     }
 
     @Override
     public void onShareClick(View mView) {
-        view.showQR();
+        view.runSmsSubmission();
     }
 
     @Override
@@ -370,6 +373,32 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     }
 
     @Override
+    public void onLatChanged(CharSequence s, int start, int before, int count) {
+        String latLongRegex = "^(\\-?\\d+(\\.\\d+)?)";
+        Pattern latLongPattern = Pattern.compile(latLongRegex, Pattern.MULTILINE);
+        Matcher latLOngMatcher = latLongPattern.matcher(s);
+        if (!latLOngMatcher.matches()) {
+            view.latitudeWarning(true);
+        } else {
+            view.longitudeWarning(false);
+            view.checkActionButtonVisibility();
+        }
+    }
+
+    @Override
+    public void onLonChanged(CharSequence s, int start, int before, int count) {
+        String latLongRegex = "^(\\-?\\d+(\\.\\d+)?)";
+        Pattern latLongPattern = Pattern.compile(latLongRegex, Pattern.MULTILINE);
+        Matcher latLOngMatcher = latLongPattern.matcher(s);
+        if (!latLOngMatcher.matches()) {
+            view.longitudeWarning(true);
+        } else {
+            view.longitudeWarning(false);
+            view.checkActionButtonVisibility();
+        }
+    }
+
+    @Override
     public void onFieldChanged(CharSequence s, int start, int before, int count) {
         view.checkActionButtonVisibility();
     }
@@ -387,7 +416,7 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     @Override
     public void filterOrgUnits(String date) {
 
-        Observable<List<OrganisationUnitModel>> orgUnitObservable =
+        Observable<List<OrganisationUnit>> orgUnitObservable =
                 view.eventcreateionType() != EventCreationType.REFERAL ? eventInitialRepository.filteredOrgUnits(date, programId) :
                         eventInitialRepository.searchOrgUnits(date, programId);
 
@@ -398,7 +427,7 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
                         .subscribe(
                                 orgUnits -> {
                                     this.orgUnits = orgUnits;
-                                    view.addTree(OrgUnitUtils.renderTree(view.getContext(), orgUnits, true));
+                                    view.addTree(OrgUnitUtils.renderTree_2(view.getContext(), orgUnits, true));
                                 },
                                 throwable -> view.showNoOrgUnits()
                         ));

@@ -193,6 +193,7 @@
                                         android:id="@+id/shareIcon"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
+                                        android:tint="@color/text_black_333"
                                         app:srcCompat="@drawable/ic_share" />
 
                                     <TextView
@@ -299,8 +300,8 @@
                                     android:id="@+id/lat"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:inputType="numberDecimal"
-                                    android:onTextChanged="@{presenter::onFieldChanged}"
+                                    android:inputType="numberDecimal|numberSigned"
+                                    android:onTextChanged="@{presenter::onLatChanged}"
                                     android:textSize="15sp" />
 
                             </com.google.android.material.textfield.TextInputLayout>
@@ -318,8 +319,8 @@
                                     android:id="@+id/lon"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:inputType="numberDecimal"
-                                    android:onTextChanged="@{presenter::onFieldChanged}"
+                                    android:inputType="numberDecimal|numberSigned"
+                                    android:onTextChanged="@{presenter::onLonChanged}"
                                     android:textSize="15sp" />
 
                             </com.google.android.material.textfield.TextInputLayout>

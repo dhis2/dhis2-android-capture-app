@@ -31,7 +31,7 @@ public class RelationshipViewHolder extends RecyclerView.ViewHolder {
 
         binding.setPresenter(presenter);
         binding.setRelationship(relationship);
-        String relationshipNameText = from ? relationships.relationshipType().aIsToB() : relationships.relationshipType().bIsToA();
+        String relationshipNameText = from ? relationships.relationshipType().toFromName() : relationships.relationshipType().fromToName();
         binding.relationshipName.setText(relationshipNameText != null ? relationshipNameText : relationships.relationshipType().displayName());
 
         if (relationships.teiAttributes() != null)

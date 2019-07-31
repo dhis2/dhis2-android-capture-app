@@ -26,23 +26,23 @@ public class QrPresenter implements QrContracts.Presenter {
     @SuppressLint({"RxLeakedSubscription", "CheckResult"})
     public void generateQrs(@NonNull String teUid, @NonNull QrContracts.View view) {
         this.view = view;
-        /*disposable.add(qrInterface.teiQRs(teUid)
+        disposable.add(qrInterface.teiQRs(teUid)
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         view::showQR,
                         Timber::d
                 )
-        );*/
+        );
 
-        disposable.add(qrInterface.getUncodedData(teUid)
+        /*disposable.add(qrInterface.getUncodedData(teUid)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         view::showQRBitmap,
                         Timber::e
                 )
-        );
+        );*/
     }
 
     @Override

@@ -1,18 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="tableScale"
+            type="androidx.databinding.ObservableField&lt;org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetTableAdapter.TableScale&gt;" />
+    </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:background="?colorPrimaryLight">
+        android:layout_height="wrap_content"
+        android:minHeight="@dimen/default_column_header_height"
+        android:paddingStart="5dp"
+        android:paddingEnd="5dp"
+        tools:background="@color/black_de0">
+
 
         <TextView
             android:id="@+id/title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="10dp"
-            tools:text="DATA ELEMENT TEXT" />
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:gravity="center_vertical"
+            android:maxLines="2"
+            android:minHeight="@dimen/default_column_header_height"
+            android:textColor="@color/table_view_default_text_color"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/descriptionLabel"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tableScaleTextSize="@{tableScale}"
+            tools:text="DATA ELEMENT TEXT\nTWO LINES" />
 
+        <ImageView
+            android:id="@+id/descriptionLabel"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:layout_marginTop="5dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_info_outline"
+            app:tint="@color/table_view_default_text_color" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

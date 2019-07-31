@@ -20,4 +20,6 @@ interface HomeRepository {
     @NonNull
     Observable<List<OrganisationUnit>> orgUnits();
 
+    @NonNull
+    Flowable<List<ProgramViewModel>> aggregatesModels(List<DatePeriod> dateFilter, List<String> orgUnitFilter);
 }

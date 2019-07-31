@@ -4,17 +4,20 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 
+import androidx.core.app.ActivityCompat;
+
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 
-import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.usescases.map.MapSelectorActivity;
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import org.dhis2.usescases.teiDashboard.DashboardRepository;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 
-import androidx.core.app.ActivityCompat;
+import java.util.Date;
+
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -30,15 +33,13 @@ import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventIn
 public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter {
 
     private final DashboardRepository dashboardRepository;
-    private final MetadataRepository metadataRepository;
     private final CompositeDisposable disposable;
     private final EnrollmentStatusStore enrollmentStore;
     private TeiDataDetailContracts.View view;
     private FusedLocationProviderClient mFusedLocationClient;
 
-    TeiDataDetailPresenter(DashboardRepository dashboardRepository, MetadataRepository metadataRepository, EnrollmentStatusStore enrollmentStatusStore) {
+    TeiDataDetailPresenter(DashboardRepository dashboardRepository, EnrollmentStatusStore enrollmentStatusStore) {
         this.dashboardRepository = dashboardRepository;
-        this.metadataRepository = metadataRepository;
         this.enrollmentStore = enrollmentStatusStore;
         disposable = new CompositeDisposable();
     }
@@ -50,14 +51,14 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
 
         if (programUid != null) {
             disposable.add(Observable.zip(
-                    metadataRepository.getTrackedEntityInstance(uid),
+                    dashboardRepository.getTrackedEntityInstance(uid),
                     dashboardRepository.getEnrollment(programUid, uid),
                     dashboardRepository.getProgramStages(programUid),
                     dashboardRepository.getTEIEnrollmentEvents(programUid, uid),
-                    metadataRepository.getProgramTrackedEntityAttributes(programUid),
+                    dashboardRepository.getProgramTrackedEntityAttributes(programUid),
                     dashboardRepository.getTEIAttributeValues(programUid, uid),
-                    metadataRepository.getTeiOrgUnits(uid),
-                    metadataRepository.getTeiActivePrograms(uid, false),
+                    dashboardRepository.getTeiOrgUnits(uid, programUid),
+                    dashboardRepository.getTeiActivePrograms(uid, false),
                     DashboardProgramModel::new)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -88,12 +89,12 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
         } else {
             //TODO: NO SE HA SELECCIONADO PROGRAMA
             disposable.add(Observable.zip(
-                    metadataRepository.getTrackedEntityInstance(uid),
-                    metadataRepository.getProgramTrackedEntityAttributes(null),
+                    dashboardRepository.getTrackedEntityInstance(uid),
+                    dashboardRepository.getProgramTrackedEntityAttributes(null),
                     dashboardRepository.getTEIAttributeValues(null, uid),
-                    metadataRepository.getTeiOrgUnits(uid),
-                    metadataRepository.getTeiActivePrograms(uid, false),
-                    metadataRepository.getTEIEnrollments(uid),
+                    dashboardRepository.getTeiOrgUnits(uid, null),
+                    dashboardRepository.getTeiActivePrograms(uid, false),
+                    dashboardRepository.getTEIEnrollments(uid),
                     DashboardProgramModel::new)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -101,6 +102,16 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
                             Timber::d)
             );
         }
+
+        disposable.add(dashboardRepository.getAttributeImage(uid)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        view::showTeiImage,
+                        Timber::e
+                )
+        );
+
     }
 
     @Override
@@ -110,7 +121,7 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
 
     @Override
     public void onDeactivate(DashboardProgramModel dashboardProgramModel) {
-        if (dashboardProgramModel.getCurrentProgram().accessDataWrite())
+        if (dashboardProgramModel.getCurrentProgram().access().data().write())
             disposable.add(enrollmentStore.save(dashboardProgramModel.getCurrentEnrollment().uid(), EnrollmentStatus.CANCELLED)
                     .subscribeOn(Schedulers.computation())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -126,7 +137,7 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
 
     @Override
     public void onReOpen(DashboardProgramModel dashboardProgramModel) {
-        if (dashboardProgramModel.getCurrentProgram().accessDataWrite())
+        if (dashboardProgramModel.getCurrentProgram().access().data().write())
             disposable.add(enrollmentStore.save(dashboardProgramModel.getCurrentEnrollment().uid(), EnrollmentStatus.ACTIVE)
                     .subscribeOn(Schedulers.computation())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -141,7 +152,7 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
 
     @Override
     public void onComplete(DashboardProgramModel dashboardProgramModel) {
-        if (dashboardProgramModel.getCurrentProgram().accessDataWrite())
+        if (dashboardProgramModel.getCurrentProgram().access().data().write())
             disposable.add(enrollmentStore.save(dashboardProgramModel.getCurrentEnrollment().uid(), EnrollmentStatus.COMPLETED)
                     .subscribeOn(Schedulers.computation())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -156,7 +167,7 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
 
     @Override
     public void onActivate(DashboardProgramModel dashboardProgramModel) {
-        if (dashboardProgramModel.getCurrentProgram().accessDataWrite())
+        if (dashboardProgramModel.getCurrentProgram().access().data().write())
             disposable.add(enrollmentStore.save(dashboardProgramModel.getCurrentEnrollment().uid(), EnrollmentStatus.ACTIVE)
                     .subscribeOn(Schedulers.computation())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -212,6 +223,42 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
                         .subscribe(
                                 data -> {
                                 },
+                                Timber::e
+                        )
+        );
+    }
+
+    @Override
+    public void onIncidentDateClick(Date date) {
+        view.showCustomIncidentCalendar(date);
+    }
+
+    @Override
+    public void onEnrollmentDateClick(Date date) {
+        view.showCustomEnrollmentCalendar(date);
+    }
+
+    @Override
+    public void updateIncidentDate(Date date) {
+        disposable.add(
+                enrollmentStore.saveIncidentDate(DateUtils.databaseDateFormat().format(date))
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                data -> {},
+                                Timber::e
+                        )
+        );
+    }
+
+    @Override
+    public void updateEnrollmentDate(Date date) {
+        disposable.add(
+                enrollmentStore.saveEnrollmentDate(DateUtils.databaseDateFormat().format(date))
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                data -> {},
                                 Timber::e
                         )
         );

@@ -253,6 +253,5 @@
   <string name="event_completed_title">Avslutade händelser</string>
   <string name="event_completed_message">Alla händelser i detta program är avslutade. Vill du stänga programmet också?</string>
   <string name="check_event">Kontrollera</string>
-  <string name="chinesse_test">Ming: Vad är det här? (Wang Ming: Vad är det här?) Li Hong: Det här är en bok.</string>
   <string name="relationships">relationer</string>
 </resources>

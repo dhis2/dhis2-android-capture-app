@@ -231,12 +231,13 @@ public class EnrollmentFormRepository implements FormRepository {
                         rulesRepository.ruleVariables(program),
                         rulesRepository.enrollmentEvents(enrollmentUid),
                         rulesRepository.queryConstants(),
-                        (rules, variables, events, constants) -> {
+                        rulesRepository.getSuplementaryData(d2),
+                        (rules, variables, events, constants,supplData) -> {
                             RuleEngine.Builder builder = RuleEngineContext.builder(expressionEvaluator)
                                     .rules(rules)
                                     .ruleVariables(variables)
                                     .calculatedValueMap(new HashMap<>())
-                                    .supplementaryData(new HashMap<>())
+                                    .supplementaryData(supplData)
                                     .constantsValue(constants)
                                     .build().toEngineBuilder();
                             builder.triggerEnvironment(TriggerEnvironment.ANDROIDCLIENT);
@@ -491,6 +492,9 @@ public class EnrollmentFormRepository implements FormRepository {
 
 
                     String programStage = cursor.getString(0);
+                    ProgramStage stage = d2.programModule().programStages.uid(programStage).get();
+                    boolean hideDueDate = stage.hideDueDate()!=null ? stage.hideDueDate() : false;
+
                     String program = cursor.getString(1);
                     String orgUnit = cursor.getString(2);
                     int minDaysFromStart = cursor.getInt(3);
@@ -533,6 +537,9 @@ public class EnrollmentFormRepository implements FormRepository {
                     if (!generatedByEnrollmentDate && incidentDate != null)
                         cal.setTime(incidentDate);
 
+                    if (generatedByEnrollmentDate)
+                        cal.setTime(enrollmentDate);
+
                     cal.set(Calendar.HOUR_OF_DAY, 0);
                     cal.set(Calendar.MINUTE, 0);
                     cal.set(Calendar.SECOND, 0);
@@ -551,15 +558,13 @@ public class EnrollmentFormRepository implements FormRepository {
                                     .uid(codeGenerator.generate())
                                     .created(Calendar.getInstance().getTime())
                                     .lastUpdated(Calendar.getInstance().getTime())
-//                            .eventDate(eventDate)
-//                            .dueDate(eventDate)
                                     .enrollment(enrollmentUid)
                                     .program(program)
                                     .programStage(programStage)
                                     .organisationUnit(orgUnit)
-                                    .status(eventDate.after(now) ? EventStatus.SCHEDULE : EventStatus.ACTIVE)
+                                    .status(eventDate.after(now) && !hideDueDate ? EventStatus.SCHEDULE : EventStatus.ACTIVE)
                                     .state(State.TO_POST);
-                            if (eventDate.after(now)) //scheduling
+                            if (eventDate.after(now) && !hideDueDate) //scheduling
                                 eventBuilder.dueDate(eventDate);
                             else
                                 eventBuilder.eventDate(eventDate);
@@ -679,14 +684,15 @@ public class EnrollmentFormRepository implements FormRepository {
         boolean mandatory = cursor.getInt(3) == 1;
         String optionSetUid = cursor.getString(4);
         String dataValue = cursor.getString(5);
-        String optionCodeName = cursor.getString(6);
-        String section = cursor.getString(7);
-        Boolean allowFutureDates = cursor.getInt(8) == 1;
+        String displayName = cursor.getString(6);
+        Boolean allowFutureDates = cursor.getInt(7) == 1;
+        Boolean generated = cursor.getInt(8) == 1;
+        String orgUnit = cursor.getString(9);
         EnrollmentStatus status = EnrollmentStatus.valueOf(cursor.getString(10));
         String description = cursor.getString(11);
-        if (!isEmpty(optionCodeName)) {
-            dataValue = optionCodeName;
-        }
+
+        if(generated && isEmpty(dataValue))
+            mandatory = true;
 
         int optionCount = 0;
         if (optionSetUid != null)
@@ -696,14 +702,6 @@ public class EnrollmentFormRepository implements FormRepository {
             } catch (Exception e) {
                 Timber.e(e);
             }
-
-        ValueTypeDeviceRenderingModel fieldRendering = null;
-        try (Cursor rendering = briteDatabase.query("SELECT ValueTypeDeviceRendering.* FROM ValueTypeDeviceRendering " +
-                "JOIN ProgramTrackedEntityAttribute ON ProgramTrackedEntityAttribute.uid = ValueTypeDeviceRendering.uid WHERE ProgramTrackedEntityAttribute.trackedEntityAttribute = ?", uid)) {
-            if (rendering != null && rendering.moveToFirst()) {
-                fieldRendering = ValueTypeDeviceRenderingModel.create(rendering);
-            }
-        }
 
         FieldViewModelFactoryImpl fieldFactory = new FieldViewModelFactoryImpl(
                 "",
@@ -726,8 +724,8 @@ public class EnrollmentFormRepository implements FormRepository {
             dataValue = dataValue + "_ou_" + d2.organisationUnitModule().organisationUnits.uid(dataValue).get().displayName();
         }
 
-        return fieldFactory.create(uid, label, valueType, mandatory, optionSetUid, dataValue, section,
-                allowFutureDates, status == EnrollmentStatus.ACTIVE, null, description, fieldRendering, optionCount, objectStyle);
+        return fieldFactory.create(uid, label, valueType, mandatory, optionSetUid, dataValue, null,
+                allowFutureDates, status == EnrollmentStatus.ACTIVE, null, description, null, optionCount, objectStyle);
     }
 
     @NonNull
@@ -819,7 +817,7 @@ public class EnrollmentFormRepository implements FormRepository {
                 .toFlowable(BackpressureStrategy.LATEST);
     }
 
-    public Flowable<ProgramStage> getProgramStage(String eventUid){
+    public Flowable<ProgramStage> getProgramStage(String eventUid) {
         return Flowable.fromCallable(() -> d2.eventModule().events.byUid().eq(eventUid).one().get())
                 .map(event -> d2.programModule().programStages.byUid().eq(event.programStage()).one().get());
     }

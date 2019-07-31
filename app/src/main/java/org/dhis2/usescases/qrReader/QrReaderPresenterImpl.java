@@ -524,8 +524,6 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                         eventModelBuilder.status(EventStatus.valueOf(event.getString("status")));
                     if (event.has("attributeOptionCombo"))
                         eventModelBuilder.attributeOptionCombo(event.getString("attributeOptionCombo"));
-                    if (event.has("trackedEntityInstance"))
-                        eventModelBuilder.trackedEntityInstance(event.getString("trackedEntityInstance"));
                     if (event.has("latitude"))
                         eventModelBuilder.latitude(event.getString("latitude"));
                     if (event.has("longitude"))
@@ -588,7 +586,7 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
         List<String> uidToDownload = new ArrayList<>();
         uidToDownload.add(teiUid);
         compositeDisposable.add(
-                Observable.defer(() -> Observable.fromCallable(d2.trackedEntityModule().downloadTrackedEntityInstancesByUid(uidToDownload))).toFlowable(BackpressureStrategy.LATEST)
+                d2.trackedEntityModule().downloadTrackedEntityInstancesByUid(uidToDownload)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
@@ -675,9 +673,6 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                 }
                 if (eventWORegistrationJson.has("attributeOptionCombo")) {
                     eventModelBuilder.attributeOptionCombo(eventWORegistrationJson.getString("attributeOptionCombo"));
-                }
-                if (eventWORegistrationJson.has("trackedEntityInstance")) {
-                    eventModelBuilder.trackedEntityInstance(eventWORegistrationJson.getString("trackedEntityInstance"));
                 }
 
                 eventModelBuilder.state(State.TO_UPDATE);

@@ -3,16 +3,16 @@ package org.dhis2.data.forms.dataentry.fields.spinner;
 import android.graphics.Color;
 import android.view.View;
 
-import org.dhis2.R;
+import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.MutableLiveData;
+
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
-import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.FormOptionSetBinding;
+import org.dhis2.utils.custom_views.FieldLayout;
 import org.dhis2.utils.custom_views.OptionSetDialog;
 import org.dhis2.utils.custom_views.OptionSetPopUp;
 
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.fragment.app.FragmentActivity;
 import io.reactivex.processors.FlowableProcessor;
 
 /**
@@ -21,32 +21,34 @@ import io.reactivex.processors.FlowableProcessor;
 
 public class SpinnerHolder extends FormViewHolder implements View.OnClickListener {
 
+    private final boolean isSearchMode;
     private FormOptionSetBinding binding;
-    private final FlowableProcessor<Trio<String, String, Integer>> processorOptionSet;
 
     private SpinnerViewModel viewModel;
 
-    SpinnerHolder(FormOptionSetBinding binding, FlowableProcessor<RowAction> processor, FlowableProcessor<Trio<String, String, Integer>> processorOptionSet, boolean isSearchMode) {
+    SpinnerHolder(FormOptionSetBinding binding, FlowableProcessor<RowAction> processor, boolean isSearchMode, MutableLiveData<String> currentSelection) {
         super(binding);
         this.binding = binding;
-
-        this.processorOptionSet = processorOptionSet;
+        this.isSearchMode = isSearchMode;
+        this.currentUid = currentSelection;
 
         binding.optionSetView.setOnSelectedOptionListener((optionName, optionCode) -> {
             processor.onNext(
-                    RowAction.create(viewModel.uid(), isSearchMode ? optionName + "_os_" + optionCode : optionCode, true, optionCode, optionName,getAdapterPosition())
+                    RowAction.create(viewModel.uid(), isSearchMode ? optionName + "_os_" + optionCode : optionCode, true, optionCode, optionName, getAdapterPosition())
             );
             if (isSearchMode)
                 viewModel.withValue(optionName);
-            if(!isSearchMode)
-                itemView.setBackgroundColor(Color.WHITE);
+            clearBackground(isSearchMode);
         });
+
+        binding.optionSetView.setActivationListener(() -> setSelectedBackground(isSearchMode));
 
     }
 
 
     public void update(SpinnerViewModel viewModel) {
         this.viewModel = viewModel;
+        fieldUid = viewModel.uid();
         binding.optionSetView.setNumberOfOptions(viewModel.numberOfOptions());
         binding.optionSetView.setObjectStyle(viewModel.objectStyle());
         binding.optionSetView.updateEditable(viewModel.editable());
@@ -57,38 +59,25 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
         binding.optionSetView.setDescription(descriptionText);
         binding.optionSetView.setOnClickListener(this);
         label = new StringBuilder().append(viewModel.label());
+        initFieldFocus();
     }
 
     public void dispose() {
     }
 
     @Override
-    public void performAction() {
-        itemView.setBackground(AppCompatResources.getDrawable(itemView.getContext(), R.drawable.item_selected_bg));
-        binding.optionSetView.performOnFocusAction();
-    }
-
-    @Override
     public void onClick(View v) {
         closeKeyboard(v);
+        setSelectedBackground(isSearchMode);
         if (binding.optionSetView.openOptionDialog()) {
-            OptionSetDialog dialog = OptionSetDialog.newInstance();
-            dialog
-                    .setProcessor(processorOptionSet)
-                    .setOptionSetUid(viewModel)
-                    .setOnClick(binding.optionSetView)
-                    .setCancelListener(view -> dialog.dismiss())
-                    .setClearListener(view -> {
-                                binding.optionSetView.deleteSelectedOption();
-                                dialog.dismiss();
-                            }
-                    ).show(((FragmentActivity) binding.getRoot().getContext()).getSupportFragmentManager(), null);
-        } else {
-            OptionSetPopUp.getInstance()
-                    .setOptionSetUid(viewModel)
-                    .setProcessor(processorOptionSet)
-                    .setOnClick(binding.optionSetView)
-                    .show(itemView.getContext(), v);
-        }
+            OptionSetDialog dialog = new OptionSetDialog(viewModel,
+                    binding.optionSetView,
+                    (view) -> binding.optionSetView.deleteSelectedOption()
+            );
+            if (dialog.isDialogShown()) { dialog.dismiss(); }
+            dialog.show(((FragmentActivity) binding.getRoot().getContext()).getSupportFragmentManager(), OptionSetDialog.TAG);
+        } else
+            new OptionSetPopUp(itemView.getContext(), v, viewModel,
+                    binding.optionSetView);
     }
 }

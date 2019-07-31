@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.DatePicker;
 
 import androidx.databinding.ViewDataBinding;
+import androidx.lifecycle.MutableLiveData;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -44,6 +45,7 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
     private OnAgeSet listener;
     private String label;
     private TextInputLayout inputLayout;
+    private MutableLiveData<String> currentUidListener;
 
     public AgeView(Context context) {
         super(context);
@@ -58,11 +60,6 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
     public AgeView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context);
-    }
-
-    @Override
-    public void performOnFocusAction() {
-        date.performClick();
     }
 
     public void setLabel(String label, String description) {
@@ -84,6 +81,8 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
     public void setError(String msg) {
         inputLayout.setErrorTextAppearance(R.style.error_appearance);
         inputLayout.setError(msg);
+        clearValues();
+        date.requestFocus();
     }
 
     private void onFocusChanged(View view, boolean b) {
@@ -93,6 +92,7 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
 
     @Override
     public void onClick(View view) {
+        activate();
         showCustomCalendar(view);
     }
 
@@ -130,6 +130,8 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
                     handleSingleInputs(false);
                     break;
             }
+        else
+            activate();
     }
 
     protected void handleSingleInputs(boolean finish) {
@@ -192,14 +194,16 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
                 Timber.e(e);
             }
 
-        String result = dateFormat.format(initialDate);
+        if(initialDate != null) {
+            String result = dateFormat.format(initialDate);
 
-        int[] dateDifference = DateUtils.getDifference(initialDate, Calendar.getInstance().getTime());
-        day.setText(String.valueOf(dateDifference[2]));
-        month.setText(String.valueOf(dateDifference[1]));
-        year.setText(String.valueOf(dateDifference[0]));
+            int[] dateDifference = DateUtils.getDifference(initialDate, Calendar.getInstance().getTime());
+            day.setText(String.valueOf(dateDifference[2]));
+            month.setText(String.valueOf(dateDifference[1]));
+            year.setText(String.valueOf(dateDifference[0]));
 
-        date.setText(result);
+            date.setText(result);
+        }
     }
 
 
@@ -265,6 +269,10 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
         day.setText(null);
         month.setText(null);
         year.setText(null);
+    }
+
+    public OnClickListener getClickListener() {
+        return this;
     }
 
     public interface OnAgeSet {

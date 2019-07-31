@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
+import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.tuples.Trio;
@@ -13,29 +14,18 @@ import org.dhis2.utils.RulesActionCallbacks;
 import org.dhis2.utils.RulesUtilsProvider;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
-import org.hisp.dhis.rules.models.RuleAction;
-import org.hisp.dhis.rules.models.RuleActionAssign;
-import org.hisp.dhis.rules.models.RuleActionCreateEvent;
-import org.hisp.dhis.rules.models.RuleActionErrorOnCompletion;
-import org.hisp.dhis.rules.models.RuleActionHideField;
-import org.hisp.dhis.rules.models.RuleActionHideOption;
-import org.hisp.dhis.rules.models.RuleActionHideOptionGroup;
-import org.hisp.dhis.rules.models.RuleActionHideSection;
-import org.hisp.dhis.rules.models.RuleActionSetMandatoryField;
 import org.hisp.dhis.rules.models.RuleActionShowError;
-import org.hisp.dhis.rules.models.RuleActionShowWarning;
-import org.hisp.dhis.rules.models.RuleActionWarningOnCompletion;
 import org.hisp.dhis.rules.models.RuleEffect;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
@@ -68,7 +58,7 @@ final class DataEntryPresenterImpl implements DataEntryPresenter, RulesActionCal
     private List<String> optionsToHide = new ArrayList<>();
     private List<String> optionsGroupsToHide = new ArrayList<>();
     private FlowableProcessor<RowAction> assignProcessor;
-
+    private Map<String, List<String>> optionsGroupToShow = new HashMap<>();
     @Override
     public String getLastFocusItem() {
         return lastFocusItem;
@@ -114,12 +104,13 @@ final class DataEntryPresenterImpl implements DataEntryPresenter, RulesActionCal
         disposable.add(dataEntryView.rowActions().onBackpressureBuffer()
                 .switchMap(rowAction -> dataEntryStore.checkUnique(rowAction.id(), rowAction.value())
                         .filter(checkPass -> checkPass) //If not unique
-                        .map(checkPass->rowAction)) //save value
+                        .map(checkPass -> rowAction)) //save value
                 .switchMap(action -> {
                             if (action.lastFocusPosition() != null && action.lastFocusPosition() >= 0) { //Triggered by form field
                                 this.lastFocusItem = action.id();
                             }
                             ruleEngineRepository.updateRuleAttributeMap(action.id(), action.value());
+                            onAttach(dataEntryView);
                             return dataEntryStore.save(action.id(), action.value()).
                                     map(result -> Trio.create(result, action.id(), action.value()));
                         }
@@ -158,18 +149,6 @@ final class DataEntryPresenterImpl implements DataEntryPresenter, RulesActionCal
                                 Timber::e
                         )
         );
-
-        disposable.add(
-                dataEntryView.optionSetActions()
-                        .switchMap(
-                                data -> metadataRepository.searchOptions(data.val0(), data.val1(), data.val2(), optionsToHide, optionsGroupsToHide).toFlowable(BackpressureStrategy.LATEST)
-                        )
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                dataEntryView::setListOptions,
-                                Timber::e
-                        ));
     }
 
     @Override
@@ -199,10 +178,16 @@ final class DataEntryPresenterImpl implements DataEntryPresenter, RulesActionCal
 
         optionsToHide.clear();
         optionsGroupsToHide.clear();
-
+        optionsGroupToShow.clear();
         Map<String, FieldViewModel> fieldViewModels = toMap(viewModels);
         ruleUtils.applyRuleEffects(fieldViewModels, calcResult, this);
-//        applyRuleEffects(fieldViewModels, calcResult);
+
+        for (FieldViewModel fieldViewModel : fieldViewModels.values())
+            if (fieldViewModel instanceof SpinnerViewModel) {
+                ((SpinnerViewModel) fieldViewModel).setOptionsToHide(optionsToHide, optionsGroupsToHide);
+                if(optionsGroupToShow.keySet().contains(fieldViewModel.uid()))
+                    ((SpinnerViewModel) fieldViewModel).setOptionGroupsToShow(optionsGroupToShow.get(fieldViewModel.uid()));
+            }
 
         return new ArrayList<>(fieldViewModels.values());
 
@@ -215,79 +200,6 @@ final class DataEntryPresenterImpl implements DataEntryPresenter, RulesActionCal
             map.put(fieldViewModel.uid(), fieldViewModel);
         }
         return map;
-    }
-
-    private void applyRuleEffects(Map<String, FieldViewModel> fieldViewModels, Result<RuleEffect> calcResult) {
-
-        for (RuleEffect ruleEffect : calcResult.items()) {
-            RuleAction ruleAction = ruleEffect.ruleAction();
-            if (ruleAction instanceof RuleActionShowWarning) {
-                RuleActionShowWarning showWarning = (RuleActionShowWarning) ruleAction;
-                FieldViewModel model = fieldViewModels.get(showWarning.field());
-
-                if (model != null)
-                    fieldViewModels.put(showWarning.field(),
-                            model.withWarning(showWarning.content() + ruleEffect.data()));
-                else
-                    Timber.d("Field with uid %s is missing", showWarning.field());
-
-            } else if (ruleAction instanceof RuleActionShowError) {
-                RuleActionShowError showError = (RuleActionShowError) ruleAction;
-                FieldViewModel model = fieldViewModels.get(showError.field());
-
-                if (model != null)
-                    fieldViewModels.put(showError.field(),
-                            model.withError(showError.content() + ruleEffect.data()));
-
-            } else if (ruleAction instanceof RuleActionHideField) {
-                RuleActionHideField hideField = (RuleActionHideField) ruleAction;
-                fieldViewModels.remove(hideField.field());
-                save(hideField.field(), null);
-            } else if (ruleAction instanceof RuleActionHideSection) {
-                RuleActionHideSection hideSection = (RuleActionHideSection) ruleAction;
-                dataEntryView.removeSection(hideSection.programStageSection());
-            } else if (ruleAction instanceof RuleActionAssign) {
-                RuleActionAssign assign = (RuleActionAssign) ruleAction;
-
-                if (fieldViewModels.get(assign.field()) == null)
-                    save(assign.field(), ruleEffect.data());
-                else {
-                    String value = fieldViewModels.get(assign.field()).value();
-
-                    if (value == null || !value.equals(ruleEffect.data())) {
-                        save(assign.field(), ruleEffect.data());
-                    }
-
-                    fieldViewModels.put(assign.field(), fieldViewModels.get(assign.field()).withValue(ruleEffect.data()));
-
-                }
-
-            } else if (ruleAction instanceof RuleActionCreateEvent) {
-                RuleActionCreateEvent createEvent = (RuleActionCreateEvent) ruleAction;
-                //TODO: CREATE event with data from createEvent
-            } else if (ruleAction instanceof RuleActionSetMandatoryField) {
-                RuleActionSetMandatoryField mandatoryField = (RuleActionSetMandatoryField) ruleAction;
-                FieldViewModel model = fieldViewModels.get(mandatoryField.field());
-                if (model != null)
-                    fieldViewModels.put(mandatoryField.field(), model.setMandatory());
-            } else if (ruleAction instanceof RuleActionWarningOnCompletion) {
-                RuleActionWarningOnCompletion warningOnCompletion = (RuleActionWarningOnCompletion) ruleAction;
-                dataEntryView.messageOnComplete(warningOnCompletion.content(), true);
-            } else if (ruleAction instanceof RuleActionErrorOnCompletion) {
-                RuleActionErrorOnCompletion errorOnCompletion = (RuleActionErrorOnCompletion) ruleAction;
-                dataEntryView.messageOnComplete(errorOnCompletion.content(), false);
-            } else if (ruleAction instanceof RuleActionHideOption) {
-                RuleActionHideOption hideOption = (RuleActionHideOption) ruleAction;
-                dataEntryStore.save(hideOption.field(), null);
-                optionsToHide.add(hideOption.field());
-            } else if (ruleAction instanceof RuleActionHideOptionGroup) {
-                RuleActionHideOptionGroup hideOptionGroup = (RuleActionHideOptionGroup) ruleAction;
-                optionsGroupsToHide.add(hideOptionGroup.optionGroup());
-            }
-
-            dataEntryView.removeSection(null);
-
-        }
     }
 
     @Override
@@ -316,7 +228,7 @@ final class DataEntryPresenterImpl implements DataEntryPresenter, RulesActionCal
     }
 
     @Override
-    public void sethideSection(String sectionUid) {
+    public void setHideSection(String sectionUid) {
 
     }
 
@@ -336,8 +248,14 @@ final class DataEntryPresenterImpl implements DataEntryPresenter, RulesActionCal
     }
 
     @Override
-    public void setOptionGroupToHide(String optionGroupUid) {
-        optionsGroupsToHide.add(optionGroupUid);
+    public void setOptionGroupToHide(String optionGroupUid, boolean toHide, String field) {
+        if (toHide)
+            optionsGroupsToHide.add(optionGroupUid);
+        else if(!optionsGroupsToHide.contains(optionGroupUid))//When combined with show option group the hide option group takes precedence.
+            if(optionsGroupToShow.get(field) != null)
+                optionsGroupToShow.get(field).add(optionGroupUid);
+            else
+                optionsGroupToShow.put(field, Collections.singletonList(optionGroupUid));
 
     }
 

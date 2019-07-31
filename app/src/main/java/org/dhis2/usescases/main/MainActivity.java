@@ -1,15 +1,25 @@
 package org.dhis2.usescases.main;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.transition.ChangeBounds;
+import android.transition.Transition;
+import android.transition.TransitionManager;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintSet;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ObservableInt;
 import androidx.fragment.app.Fragment;
@@ -21,6 +31,7 @@ import org.dhis2.R;
 import org.dhis2.databinding.ActivityMainBinding;
 import org.dhis2.usescases.about.AboutFragment;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
+import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.usescases.jira.JiraFragment;
 import org.dhis2.usescases.main.program.ProgramFragment;
 import org.dhis2.usescases.qrReader.QrReaderFragment;
@@ -28,8 +39,11 @@ import org.dhis2.usescases.syncManager.ErrorDialog;
 import org.dhis2.usescases.syncManager.SyncManagerFragment;
 import org.dhis2.usescases.teiDashboard.nfc_data.NfcDataWriteActivity;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.SharedPreferenceBooleanLiveData;
+import org.dhis2.utils.DateUtils;
+import org.dhis2.utils.filters.FilterManager;
+import org.dhis2.utils.filters.FiltersAdapter;
 import org.hisp.dhis.android.core.imports.TrackerImportConflict;
+import org.hisp.dhis.android.core.period.DatePeriod;
 
 import java.util.List;
 import java.util.Objects;
@@ -41,17 +55,21 @@ import io.reactivex.functions.Consumer;
 
 public class MainActivity extends ActivityGlobalAbstract implements MainContracts.View {
 
+    private static final int PERMISSION_REQUEST = 1987;
     public ActivityMainBinding binding;
     @Inject
     MainContracts.Presenter presenter;
 
     private ProgramFragment programFragment;
+    private FragmentGlobalAbstract activeFragment;
 
     ObservableInt currentFragment = new ObservableInt(R.id.menu_home);
     private boolean isPinLayoutVisible = false;
 
     private int fragId;
     private SharedPreferences prefs;
+    private boolean backDropActive = false;
+    private FiltersAdapter adapter;
 
     //-------------------------------------
     //region LIFECYCLE
@@ -98,8 +116,9 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
         prefs = getAbstracContext().getSharedPreferences(
                 Constants.SHARE_PREFS, Context.MODE_PRIVATE);
 
-        SharedPreferenceBooleanLiveData lastMetaSyncStatus = new SharedPreferenceBooleanLiveData(prefs, Constants.LAST_META_SYNC_STATUS, true);
-        SharedPreferenceBooleanLiveData lastMetaNoNetWork = new SharedPreferenceBooleanLiveData(prefs, Constants.LAST_META_SYNC_NO_NETWORK, false);
+
+        adapter = new FiltersAdapter();
+        binding.filterLayout.setAdapter(adapter);
 
     }
 
@@ -113,6 +132,15 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
     protected void onResume() {
         super.onResume();
         presenter.init(this);
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                || ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA},
+                    PERMISSION_REQUEST);
+        }
+
     }
 
     @Override
@@ -147,8 +175,17 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
 
     @Override
     public void showHideFilter() {
-        programFragment.getBinding().filterLayout.setVisibility(programFragment.getBinding().filterLayout.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
-        checkFilterEnabled();
+        Transition transition = new ChangeBounds();
+        transition.setDuration(200);
+        TransitionManager.beginDelayedTransition(binding.backdropLayout, transition);
+        backDropActive = !backDropActive;
+        ConstraintSet initSet = new ConstraintSet();
+        initSet.clone(binding.backdropLayout);
+        if (backDropActive)
+            initSet.connect(R.id.fragment_container, ConstraintSet.TOP, R.id.backdropGuide, ConstraintSet.BOTTOM, 0);
+        else
+            initSet.connect(R.id.fragment_container, ConstraintSet.TOP, R.id.toolbar, ConstraintSet.BOTTOM, 0);
+        initSet.applyTo(binding.backdropLayout);
     }
 
     private void checkFilterEnabled() {
@@ -183,17 +220,17 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
     public void changeFragment(int id) {
         fragId = id;
         binding.navView.setCheckedItem(id);
-        Fragment fragment = null;
+        activeFragment = null;
         String tag = null;
 
         switch (id) {
             case R.id.sync_manager:
-                fragment = new SyncManagerFragment();
+                activeFragment = new SyncManagerFragment();
                 tag = getString(R.string.SYNC_MANAGER);
                 binding.filter.setVisibility(View.GONE);
                 break;
             case R.id.qr_scan:
-                fragment = new QrReaderFragment();
+                activeFragment = new QrReaderFragment();
                 tag = getString(R.string.QR_SCANNER);
                 binding.filter.setVisibility(View.GONE);
                 break;
@@ -202,12 +239,12 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
                 startActivity(intentNfc);
                 break;
             case R.id.menu_jira:
-                fragment = new JiraFragment();
+                activeFragment = new JiraFragment();
                 tag = getString(R.string.jira_report);
                 binding.filter.setVisibility(View.GONE);
                 break;
             case R.id.menu_about:
-                fragment = new AboutFragment();
+                activeFragment = new AboutFragment();
                 tag = getString(R.string.about);
                 binding.filter.setVisibility(View.GONE);
                 break;
@@ -219,17 +256,16 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
                 break;
             case R.id.menu_home:
             default:
-                fragment = new ProgramFragment();
-                programFragment = (ProgramFragment) fragment;
+                activeFragment = new ProgramFragment();
+                programFragment = (ProgramFragment) activeFragment;
                 tag = getString(R.string.done_task);
                 binding.filter.setVisibility(View.VISIBLE);
                 break;
         }
 
-        if (fragment != null) {
+        if (activeFragment != null) {
             currentFragment.set(id);
-
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment, tag).commitAllowingStateLoss();
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, activeFragment, tag).commitAllowingStateLoss();
             binding.title.setText(tag);
         }
         binding.drawerLayout.closeDrawers();
@@ -239,6 +275,32 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
     @Override
     public void showSyncErrors(List<TrackerImportConflict> data) {
         new ErrorDialog().setData(data).show(getSupportFragmentManager().beginTransaction(), ErrorDialog.TAG);
+    }
+
+    @Override
+    public void updateFilters(int totalFilters) {
+        binding.setTotalFilters(totalFilters);
+    }
+
+    @Override
+    public void showPeriodRequest(FilterManager.PeriodRequest periodRequest) {
+        if (periodRequest == FilterManager.PeriodRequest.FROM_TO) {
+            DateUtils.getInstance().showFromToSelector(this, (from, to) ->
+                    FilterManager.getInstance().addPeriod(
+                            DatePeriod.builder()
+                                    .startDate(from)
+                                    .endDate(to)
+                                    .build()
+                    ));
+        } else {
+            DateUtils.getInstance().showPeriodDialog(this, (from, to) ->
+                    FilterManager.getInstance().addPeriod(
+                            DatePeriod.builder()
+                                    .startDate(from)
+                                    .endDate(to)
+                                    .build()
+                    ));
+        }
     }
 
     public void setTitle(String title) {
@@ -252,10 +314,26 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
 
     @Override
     public void showTutorial(boolean shaked) {
-        if (fragId == R.id.menu_home || fragId == R.id.sync_manager)
-            super.showTutorial(shaked);
-        else
-            showToast(getString(R.string.no_intructions));
+        switch (fragId) {
+            case R.id.menu_home:
+                ((ProgramFragment)activeFragment).setTutorial();
+                break;
+            case R.id.sync_manager:
+                ((SyncManagerFragment)activeFragment).showTutorial();
+                break;
+            default:
+                showToast(getString(R.string.no_intructions));
+                break;
+        }
+    }
 
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == FilterManager.OU_TREE && resultCode == Activity.RESULT_OK) {
+            adapter.notifyDataSetChanged();
+            updateFilters(FilterManager.getInstance().getTotalFilters());
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }

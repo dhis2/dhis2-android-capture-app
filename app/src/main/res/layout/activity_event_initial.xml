@@ -14,10 +14,6 @@
             type="java.lang.String" />
 
         <variable
-            name="event"
-            type="org.hisp.dhis.android.core.event.EventModel" />
-
-        <variable
             name="programStage"
             type="org.hisp.dhis.android.core.program.ProgramStageModel" />
 
@@ -55,45 +51,30 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_marginStart="12dp"
+                android:layout_marginEnd="8dp"
                 android:ellipsize="end"
                 android:gravity="center_vertical"
                 android:maxLines="2"
                 android:text="@{ name }"
                 android:textColor="@android:color/white"
                 android:textSize="20sp"
-                app:layout_constraintEnd_toStartOf="@+id/percentage"
+                app:layout_constraintEnd_toStartOf="@+id/completion"
                 app:layout_constraintStart_toEndOf="@id/menu"
                 tools:text="TITLE\ntest\n234" />
 
-            <RelativeLayout
-                android:id="@+id/percentage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="6dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/moreOptions">
+            <org.dhis2.utils.custom_views.CircularCompletionView
+                android:id="@+id/completion"
+                android:layout_width="60dp"
+                android:layout_height="0dp"
+                android:layout_margin="3dp"
+                android:onClick="@{()->presenter.goToSummary()}"
+                app:layout_constraintBottom_toBottomOf="@id/moreOptions"
+                app:layout_constraintEnd_toStartOf="@id/moreOptions"
+                app:layout_constraintTop_toTopOf="@+id/moreOptions"
+                app:percentageColor="@color/bg_white_f9f"
+                app:percentageSize="13sp"
+                app:strokeSize="3dp" />
 
-                <ProgressBar
-                    android:id="@+id/progressGains"
-                    style="?android:attr/progressBarStyleHorizontal"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/circle_shape"
-                    android:indeterminate="false"
-                    android:max="100"
-                    android:onClick="@{()->presenter.goToSummary()}"
-                    android:progress="0"
-                    android:progressDrawable="@drawable/progress_circle" />
-
-                <TextView
-                    android:id="@+id/progress"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:textColor="@color/yellow_fdd"
-                    android:textSize="12sp"
-                    tools:text="100%" />
-            </RelativeLayout>
 
             <ImageView
                 android:id="@+id/moreOptions"
@@ -314,9 +295,8 @@
                                     android:id="@+id/lat"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:focusable="false"
-                                    android:inputType="numberDecimal"
-                                    android:onTextChanged="@{presenter::onFieldChanged}"
+                                    android:inputType="numberDecimal|numberSigned"
+                                    android:onTextChanged="@{presenter::onLatChanged}"
                                     android:textSize="15sp" />
 
                             </com.google.android.material.textfield.TextInputLayout>
@@ -333,9 +313,8 @@
                                     android:id="@+id/lon"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:focusable="false"
-                                    android:inputType="numberDecimal"
-                                    android:onTextChanged="@{presenter::onFieldChanged}"
+                                    android:inputType="numberDecimal|numberSigned"
+                                    android:onTextChanged="@{presenter::onLonChanged}"
                                     android:textSize="15sp" />
 
                             </com.google.android.material.textfield.TextInputLayout>

@@ -14,21 +14,22 @@ import android.text.style.ImageSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
-import androidx.core.widget.NestedScrollView;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
-import androidx.work.State;
+import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 
 import com.google.android.material.snackbar.Snackbar;
+import com.jakewharton.rxbinding2.widget.RxCompoundButton;
 import com.jakewharton.rxbinding2.widget.RxTextView;
 
-import org.dhis2.BuildConfig;
 import org.dhis2.Components;
 import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
@@ -40,7 +41,6 @@ import org.dhis2.utils.SyncUtils;
 import org.hisp.dhis.android.core.imports.TrackerImportConflict;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -50,9 +50,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
-import me.toptas.fancyshowcase.FancyShowCaseView;
-import me.toptas.fancyshowcase.FocusShape;
-import me.toptas.fancyshowcase.listener.DismissListener;
 import timber.log.Timber;
 
 import static org.dhis2.utils.Constants.DATA_NOW;
@@ -68,9 +65,6 @@ import static org.dhis2.utils.Constants.TIME_WEEKLY;
  */
 public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncManagerContracts.View {
 
-    private int metaInitializationCheck = 0;
-    private int dataInitializationCheck = 0;
-
     @Inject
     SyncManagerContracts.Presenter presenter;
 
@@ -78,7 +72,6 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     private SharedPreferences prefs;
     private CompositeDisposable listenerDisposable;
     private Context context;
-
 
     public SyncManagerFragment() {
         // Required empty public constructor
@@ -112,10 +105,11 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     @Override
     public void onResume() {
         super.onResume();
-        WorkManager.getInstance().getStatusesByTagLiveData(META_NOW).observe(this, workStatuses -> {
-            if (!workStatuses.isEmpty() && workStatuses.get(0).getState() == State.RUNNING) {
+        WorkManager.getInstance().getWorkInfosByTagLiveData(META_NOW).observe(this, workStatuses -> {
+            if (!workStatuses.isEmpty() && workStatuses.get(0).getState() == WorkInfo.State.RUNNING) {
                 binding.syncMetaLayout.message.setTextColor(ContextCompat.getColor(context, R.color.text_black_333));
-                binding.syncMetaLayout.message.setText(R.string.syncing_configuration);
+                String metaText = metaSyncSettings().concat("\n").concat(context.getString(R.string.syncing_configuration));
+                binding.syncMetaLayout.message.setText(metaText);
                 binding.buttonSyncMeta.setEnabled(false);
             } else {
                 binding.buttonSyncMeta.setEnabled(true);
@@ -123,10 +117,11 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 presenter.checkData();
             }
         });
-        WorkManager.getInstance().getStatusesByTagLiveData(DATA_NOW).observe(this, workStatuses -> {
-            if (!workStatuses.isEmpty() && workStatuses.get(0).getState() == State.RUNNING) {
+        WorkManager.getInstance().getWorkInfosByTagLiveData(DATA_NOW).observe(this, workStatuses -> {
+            if (!workStatuses.isEmpty() && workStatuses.get(0).getState() == WorkInfo.State.RUNNING) {
+                String dataText = dataSyncSetting().concat("\n").concat(context.getString(R.string.syncing_data));
                 binding.syncDataLayout.message.setTextColor(ContextCompat.getColor(context, R.color.text_black_333));
-                binding.syncDataLayout.message.setText(R.string.syncing_data);
+                binding.syncDataLayout.message.setText(dataText);
                 binding.buttonSyncData.setEnabled(false);
             } else {
                 binding.buttonSyncData.setEnabled(true);
@@ -140,8 +135,6 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
             binding.buttonSyncData.setEnabled(false);
             binding.buttonSyncMeta.setEnabled(false);
         }
-
-        showTutorial();
 
         listenerDisposable = new CompositeDisposable();
 
@@ -158,6 +151,49 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                         data -> prefs.edit().putInt(Constants.TEI_MAX, Integer.valueOf(data.toString())).apply(),
                         Timber::d
                 ));
+
+        listenerDisposable.add(RxTextView.textChanges(binding.settingsSms.findViewById(R.id.settings_sms_receiver))
+                .debounce(1000, TimeUnit.MILLISECONDS, Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        data -> presenter.smsNumberSet(data.toString()),
+                        Timber::d
+                ));
+
+        listenerDisposable.add(RxCompoundButton.checkedChanges(binding.settingsSms.findViewById(R.id.settings_sms_switch))
+                .debounce(1000, TimeUnit.MILLISECONDS, Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        isChecked -> presenter.smsSwitch(isChecked),
+                        Timber::d
+                ));
+
+        listenerDisposable.add(RxCompoundButton.checkedChanges(binding.settingsSms.findViewById(R.id.settings_sms_response_wait_switch))
+                .debounce(1000, TimeUnit.MILLISECONDS, Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        isChecked -> presenter.smsWaitForResponse(isChecked),
+                        Timber::d
+                ));
+
+        listenerDisposable.add(RxTextView.textChanges(binding.settingsSms.findViewById(R.id.settings_sms_result_sender))
+                .debounce(1000, TimeUnit.MILLISECONDS, Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        number -> presenter.smsResponseSenderSet(number.toString()),
+                        Timber::d
+                ));
+
+        listenerDisposable.add(RxTextView.textChanges(binding.settingsSms.findViewById(R.id.settings_sms_result_timeout))
+                .debounce(1000, TimeUnit.MILLISECONDS, Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        value -> presenter.smsWaitForResponseTimeout(Integer.valueOf(value.toString())),
+                        Timber::d
+                ));
+        if (!getResources().getBoolean(R.bool.sms_enabled)) {
+            binding.settingsSms.setVisibility(View.GONE);
+        }
 
         binding.limitByOrgUnit.setOnCheckedChangeListener((buttonView, isChecked) -> prefs.edit().putBoolean(Constants.LIMIT_BY_ORG_UNIT, isChecked).apply());
         binding.limitByProgram.setOnCheckedChangeListener((buttonView, isChecked) -> prefs.edit().putBoolean(Constants.LIMIT_BY_PROGRAM, isChecked).apply());
@@ -199,19 +235,35 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         };
     }
 
+    @Override
+    public void showSmsSettings(boolean enabled, String number, boolean waitForResponse, String responseSender, int timeout) {
+        ((CompoundButton) binding.settingsSms.findViewById(R.id.settings_sms_switch))
+                .setChecked(enabled);
+        ((TextView) binding.settingsSms.findViewById(R.id.settings_sms_receiver))
+                .setText(number);
+        ((CompoundButton) binding.settingsSms.findViewById(R.id.settings_sms_response_wait_switch))
+                .setChecked(waitForResponse);
+        ((TextView) binding.settingsSms.findViewById(R.id.settings_sms_result_sender))
+                .setText(responseSender);
+        ((TextView) binding.settingsSms.findViewById(R.id.settings_sms_result_timeout))
+                .setText(Integer.toString(timeout));
+    }
+
     private void setLastSyncDate() {
         boolean dataStatus = prefs.getBoolean(Constants.LAST_DATA_SYNC_STATUS, true);
         boolean metaStatus = prefs.getBoolean(Constants.LAST_META_SYNC_STATUS, true);
 
         if (dataStatus) {
-            binding.syncDataLayout.message.setText(String.format(getString(R.string.last_data_sync_date), prefs.getString(Constants.LAST_DATA_SYNC, "-")));
+            String dataText = dataSyncSetting().concat("\n").concat(String.format(getString(R.string.last_data_sync_date), prefs.getString(Constants.LAST_DATA_SYNC, "-")));
+            binding.syncDataLayout.message.setText(dataText);
             binding.syncDataLayout.message.setTextColor(ContextCompat.getColor(context, R.color.text_black_333));
         } else {
-            binding.syncDataLayout.message.setText(getString(R.string.sync_error_text));
+            String dataText = dataSyncSetting().concat("\n").concat(getString(R.string.sync_error_text));
+            binding.syncDataLayout.message.setText(dataText);
         }
 
         if (presenter.dataHasErrors()) {
-            String src = getString(R.string.data_sync_error);
+            String src = dataSyncSetting().concat("\n").concat(getString(R.string.data_sync_error));
             SpannableString str = new SpannableString(src);
             int wIndex = src.indexOf('@');
             int eIndex = src.indexOf('$');
@@ -221,7 +273,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
             binding.syncDataLayout.message.setTextColor(ContextCompat.getColor(getContext(), R.color.red_060));
 
         } else if (presenter.dataHasWarnings()) {
-            String src = getString(R.string.data_sync_warning);
+            String src = dataSyncSetting().concat("\n").concat(getString(R.string.data_sync_warning));
             SpannableString str = new SpannableString(src);
             int wIndex = src.indexOf('@');
             str.setSpan(new ImageSpan(getContext(), R.drawable.ic_sync_warning), wIndex, wIndex + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -230,10 +282,12 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         }
 
         if (metaStatus) {
-            binding.syncMetaLayout.message.setText(String.format(getString(R.string.last_data_sync_date), prefs.getString(Constants.LAST_META_SYNC, "-")));
+            String metaText = metaSyncSettings().concat("\n").concat(String.format(getString(R.string.last_data_sync_date), prefs.getString(Constants.LAST_META_SYNC, "-")));
+            binding.syncMetaLayout.message.setText(metaText);
             binding.syncMetaLayout.message.setTextColor(ContextCompat.getColor(context, R.color.text_black_333));
         } else {
-            binding.syncMetaLayout.message.setText(getString(R.string.metadata_sync_error));
+            String metaText = metaSyncSettings().concat("\n").concat(getString(R.string.metadata_sync_error));
+            binding.syncMetaLayout.message.setText(metaText);
             binding.syncMetaLayout.message.setTextColor(ContextCompat.getColor(context, R.color.red_060));
         }
 
@@ -373,100 +427,13 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
     @Override
     public void showTutorial() {
-        if (isAdded() && getContext() != null) {
-            NestedScrollView scrollView = getAbstractActivity().findViewById(R.id.scrollView);
+        if (isAdded() && getContext() != null)
             new Handler().postDelayed(() -> {
                 if (getAbstractActivity() != null) {
-                    FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
-                            .focusOn(getAbstractActivity().findViewById(R.id.settingsItemData))
-                            .title(getString(R.string.tuto_settings_1))
-                            .enableAutoTextPosition()
-                            .closeOnTouch(true)
-                            .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                            .build();
-
-                    FancyShowCaseView tuto2 = new FancyShowCaseView.Builder(getAbstractActivity())
-                            .focusOn(getAbstractActivity().findViewById(R.id.settingsItemMeta))
-                            .title(getString(R.string.tuto_settings_2))
-                            .enableAutoTextPosition()
-                            .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                            .closeOnTouch(true)
-                            .build();
-
-                    FancyShowCaseView tuto3 = new FancyShowCaseView.Builder(getAbstractActivity())
-                            .focusOn(getAbstractActivity().findViewById(R.id.settingsItemParams))
-                            .title(getString(R.string.tuto_settings_3))
-                            .enableAutoTextPosition()
-                            .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                            .closeOnTouch(true)
-                            .dismissListener(new DismissListener() {
-                                @Override
-                                public void onDismiss(String id) {
-                                    if (scrollView != null) {
-                                        scrollView.scrollTo((int) getAbstractActivity().findViewById(R.id.settingsItemValues).getX(), (int) getAbstractActivity().findViewById(R.id.settingsItemValues).getY());
-                                    }
-                                }
-
-                                @Override
-                                public void onSkipped(String id) {
-                                    // unused
-                                }
-                            })
-                            .build();
-
-                    FancyShowCaseView tuto4 = new FancyShowCaseView.Builder(getAbstractActivity())
-                            .focusOn(getAbstractActivity().findViewById(R.id.settingsItemValues))
-                            .title(getString(R.string.tuto_settings_reserved))
-                            .enableAutoTextPosition()
-                            .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                            .closeOnTouch(true)
-                            .build();
-
-                    FancyShowCaseView tuto5 = new FancyShowCaseView.Builder(getAbstractActivity())
-                            .focusOn(getAbstractActivity().findViewById(R.id.settingsItemLog))
-                            .title(getString(R.string.tuto_settings_errors))
-                            .enableAutoTextPosition()
-                            .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                            .closeOnTouch(true)
-                            .build();
-
-                    FancyShowCaseView tuto6 = new FancyShowCaseView.Builder(getAbstractActivity())
-                            .focusOn(getAbstractActivity().findViewById(R.id.settingsItemDeleteData))
-                            .title(getString(R.string.tuto_settings_reset))
-                            .enableAutoTextPosition()
-                            .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                            .closeOnTouch(true)
-                            .build();
-
-                    FancyShowCaseView tuto7 = new FancyShowCaseView.Builder(getAbstractActivity())
-                            .focusOn(getAbstractActivity().findViewById(R.id.settingsReset))
-                            .title(getString(R.string.tuto_settings_4))
-                            .enableAutoTextPosition()
-                            .closeOnTouch(true)
-                            .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                            .build();
-
-
-                    ArrayList<FancyShowCaseView> steps = new ArrayList<>();
-                    steps.add(tuto1);
-                    steps.add(tuto2);
-                    steps.add(tuto3);
-                    steps.add(tuto4);
-                    steps.add(tuto5);
-                    steps.add(tuto6);
-                    steps.add(tuto7);
-
-                    HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
-                    HelpManager.getInstance().setScroll(scrollView);
-
-                    if (prefs != null && !prefs.getBoolean("TUTO_SETTINGS_SHOWN", false) && !BuildConfig.DEBUG) {
-                        HelpManager.getInstance().showHelp();
-                        prefs.edit().putBoolean("TUTO_SETTINGS_SHOWN", true).apply();
-                    }
+                    HelpManager.getInstance().setScroll(getAbstractActivity().findViewById(R.id.scrollView));
+                    HelpManager.getInstance().show(getAbstractActivity(), HelpManager.TutorialName.SETTINGS_FRAGMENT, null);
                 }
-
             }, 500);
-        }
     }
 
     @Override
@@ -490,12 +457,14 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
     @Override
     public void syncData() {
-        binding.syncDataLayout.message.setText(R.string.syncing_data);
+        String dataText = dataSyncSetting().concat("\n").concat(context.getString(R.string.syncing_data));
+        binding.syncDataLayout.message.setText(dataText);
     }
 
     @Override
     public void syncMeta() {
-        binding.syncMetaLayout.message.setText(R.string.syncing_configuration);
+        String metaText = metaSyncSettings().concat("\n").concat(getString(R.string.syncing_configuration));
+        binding.syncMetaLayout.message.setText(metaText);
     }
 
     @Override
@@ -523,5 +492,46 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 binding.resetButton.setVisibility(View.VISIBLE);
                 break;
         }
+    }
+
+    private String dataSyncSetting() {
+        int timeData = prefs.getInt("timeData", TIME_DAILY);
+        String setting;
+        switch (timeData) {
+            case TIME_15M:
+                setting = getString(R.string.data_every_fifteen_minutes);
+                break;
+            case TIME_HOURLY:
+                setting = getString(R.string.data_every_hour);
+                break;
+            case TIME_MANUAL:
+                setting = getString(R.string.Manual);
+                break;
+            case TIME_DAILY:
+            default:
+                setting = getString(R.string.data_every_day);
+                break;
+        }
+
+        return String.format(context.getString(R.string.sync_setting), setting);
+    }
+
+    private String metaSyncSettings() {
+        int timeMeta = prefs.getInt("timeMeta", TIME_DAILY);
+        String setting;
+        switch (timeMeta) {
+            case TIME_MANUAL:
+                setting = getString(R.string.Manual);
+                break;
+            case TIME_WEEKLY:
+                setting = getString(R.string.data_every_week);
+                break;
+            case TIME_DAILY:
+            default:
+                setting = getString(R.string.data_every_day);
+                break;
+        }
+
+        return String.format(context.getString(R.string.sync_setting), setting);
     }
 }

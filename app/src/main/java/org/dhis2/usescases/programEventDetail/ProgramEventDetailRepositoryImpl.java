@@ -1,19 +1,20 @@
 package org.dhis2.usescases.programEventDetail;
 
-import android.database.Cursor;
-
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.paging.DataSource;
 import androidx.paging.LivePagedListBuilder;
 import androidx.paging.PagedList;
 
+import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.ValueUtils;
 import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
 import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryCombo;
@@ -25,7 +26,6 @@ import org.hisp.dhis.android.core.dataelement.DataElement;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventCollectionRepository;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.period.DatePeriod;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStageDataElement;
@@ -35,7 +35,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.reactivex.Single;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -64,8 +66,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
         if (!orgUnitFilter.isEmpty())
             eventRepo = eventRepo.byOrganisationUnitUid().in(orgUnitFilter);
         if (!catOptCombList.isEmpty())
-            for (CategoryOptionCombo catOptComb : catOptCombList)
-                eventRepo = eventRepo.byAttributeOptionComboUid().eq(catOptComb.uid());
+            eventRepo = eventRepo.byAttributeOptionComboUid().in(UidsHelper.getUids(catOptCombList));
         DataSource dataSource = eventRepo.byState().notIn(State.TO_DELETE).orderByEventDate(RepositoryScope.OrderByDirection.DESC).withAllChildren().getDataSource().map(event -> transformToProgramEventModel(event));
         return new LivePagedListBuilder(new DataSource.Factory() {
             @Override
@@ -73,7 +74,42 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
                 return dataSource;
             }
         }, 20).build();
-//        return Transformations.switchMap(eventRepo.byState().notIn(State.TO_DELETE).orderByEventDate(RepositoryScope.OrderByDirection.DESC).withAllChildren().getPaged(20), events -> transform(events));Transformations.switchMap(eventRepo.byState().notIn(State.TO_DELETE).orderByEventDate(RepositoryScope.OrderByDirection.DESC).withAllChildren().getPaged(20), events -> transform(events));
+    }
+
+    @NonNull
+    @Override
+    public Flowable<List<SymbolOptions>> filteredEventsForMap(List<DatePeriod> dateFilter, List<String> orgUnitFilter, List<CategoryOptionCombo> catOptCombList) {
+        EventCollectionRepository eventRepo = d2.eventModule().events.byProgramUid().eq(programUid);
+        if (!dateFilter.isEmpty())
+            eventRepo = eventRepo.byEventDate().inDatePeriods(dateFilter);
+        if (!orgUnitFilter.isEmpty())
+            eventRepo = eventRepo.byOrganisationUnitUid().in(orgUnitFilter);
+        if (!catOptCombList.isEmpty())
+            eventRepo = eventRepo.byAttributeOptionComboUid().in(UidsHelper.getUids(catOptCombList));
+        return eventRepo.byState().notIn(State.TO_DELETE).orderByEventDate(RepositoryScope.OrderByDirection.DESC).withAllChildren().getAsync()
+                .toFlowable()
+                .flatMap(list -> Flowable.fromCallable(() -> {
+                    List<SymbolOptions> options = new ArrayList<>();
+                    for (Event event : list)
+                        if (event.coordinate() != null && event.coordinate().latitude() != null && event.coordinate().longitude() != null)
+                            options.add(
+                                    new SymbolOptions()
+                                            .withLatLng(new LatLng(event.coordinate().latitude(), event.coordinate().longitude()))
+                                            .withIconImage("ICON_ID")
+                                            .withTextField(event.uid())
+                                            .withTextSize(0f)
+                                            .withDraggable(false)
+                            );
+                    return options;
+                }));
+    }
+
+
+    @Override
+    public Flowable<ProgramEventViewModel> getInfoForEvent(String eventUid) {
+        return d2.eventModule().events.uid(eventUid).withAllChildren().getAsync()
+                .map(this::transformToProgramEventModel)
+                .toFlowable();
     }
 
     private ProgramEventViewModel transformToProgramEventModel(Event event) {
@@ -127,7 +163,6 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
                 program.completeEventsExpiryDays(),
                 program.expiryPeriodType(),
                 program.expiryDays());
-
     }
 
     private boolean checkOrgUnitRange(String orgUnitUid, Date eventDate) {
@@ -143,12 +178,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     }
 
     private String getOrgUnitName(String orgUnitUid) {
-        String orgUrgUnitName = "";
-        try (Cursor orgUnitCursor = briteDatabase.query("SELECT displayName FROM OrganisationUnit WHERE uid = ?", orgUnitUid)) {
-            if (orgUnitCursor != null && orgUnitCursor.moveToFirst())
-                orgUrgUnitName = orgUnitCursor.getString(0);
-        }
-        return orgUrgUnitName;
+        return d2.organisationUnitModule().organisationUnits.uid(orgUnitUid).get().displayName();
     }
 
     private List<Pair<String, String>> getData(List<TrackedEntityDataValue> dataValueList, List<String> showInReportsDataElements) {
@@ -173,43 +203,6 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
         return data;
     }
 
-
-    @NonNull
-    @Override
-    public Observable<List<OrganisationUnitModel>> orgUnits() {
-        String SELECT_ORG_UNITS = "SELECT * FROM " + OrganisationUnitModel.TABLE + " " +
-                "WHERE uid IN (SELECT UserOrganisationUnit.organisationUnit FROM UserOrganisationUnit " +
-                "WHERE UserOrganisationUnit.organisationUnitScope = 'SCOPE_DATA_CAPTURE')";
-        return briteDatabase.createQuery(OrganisationUnitModel.TABLE, SELECT_ORG_UNITS)
-                .mapToList(OrganisationUnitModel::create);
-    }
-
-    @NonNull
-    @Override
-    public Observable<List<OrganisationUnitModel>> orgUnits(String parentUid) {
-        String SELECT_ORG_UNITS_BY_PARENT = "SELECT OrganisationUnit.* FROM OrganisationUnit " +
-                "JOIN UserOrganisationUnit ON UserOrganisationUnit.organisationUnit = OrganisationUnit.uid " +
-                "WHERE OrganisationUnit.parent = ? AND UserOrganisationUnit.organisationUnitScope = 'SCOPE_DATA_CAPTURE' " +
-                "ORDER BY OrganisationUnit.displayName ASC";
-
-        return briteDatabase.createQuery(OrganisationUnitModel.TABLE, SELECT_ORG_UNITS_BY_PARENT, parentUid)
-                .mapToList(OrganisationUnitModel::create);
-    }
-
-    @NonNull
-    @Override
-    public Observable<List<Category>> catCombo() {
-        Program program = d2.programModule().programs.uid(programUid).withAllChildren().get();
-        CategoryCombo categoryCombo = d2.categoryModule().categoryCombos.byUid().eq(program.categoryCombo().uid()).withAllChildren().one().get();
-        if (categoryCombo.isDefault())
-            return Observable.just(new ArrayList<>());
-        List<String> categoriesUids = new ArrayList<>();
-        for (Category category : categoryCombo.categories())
-            categoriesUids.add(category.uid());
-        List<Category> categories = d2.categoryModule().categories.byUid().in(categoriesUids).withAllChildren().get();
-        return Observable.just(categories);
-    }
-
     @Override
     public boolean getAccessDataWrite() {
         boolean canWrite;
@@ -223,22 +216,42 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     }
 
     @Override
-    public List<CategoryOptionCombo> catOptionCombo(List<CategoryOption> selectedOptions) {
-        List<CategoryOptionCombo> categoryOptionComboList = d2.categoryModule().categoryOptionCombos.byCategoryComboUid().eq(
-                d2.programModule().programs.uid(programUid).get().categoryCombo().uid()
-        ).withAllChildren().get();
-
-
-        List<CategoryOptionCombo> finalCatOptComb = new ArrayList<>();
-        if (categoryOptionComboList != null)
-            for (CategoryOptionCombo categoryOptionCombo : categoryOptionComboList) {
-                for (CategoryOption catOpt : categoryOptionCombo.categoryOptions()) {
-                    if (selectedOptions.contains(catOpt) && !finalCatOptComb.contains(categoryOptionCombo))
-                        finalCatOptComb.add(categoryOptionCombo);
-                }
-            }
-
-        return finalCatOptComb;
-
+    public Single<Pair<CategoryCombo, List<CategoryOptionCombo>>> catOptionCombos() {
+        return d2.programModule().programs.uid(programUid).getAsync()
+                .filter(program -> program.categoryCombo() != null)
+                .flatMapSingle(program -> d2.categoryModule().categoryCombos.uid(program.categoryComboUid()).getAsync())
+                .filter(categoryCombo -> !categoryCombo.isDefault())
+                .flatMapSingle(categoryCombo -> Single.zip(
+                        d2.categoryModule().categoryCombos
+                                .uid(categoryCombo.uid()).getAsync(),
+                        d2.categoryModule().categoryOptionCombos
+                                .byCategoryComboUid().eq(categoryCombo.uid()).getAsync(),
+                        Pair::create
+                ));
     }
+
+    @Override
+    public Single<Boolean> hasAccessToAllCatOptions() {
+        return d2.programModule().programs.uid(programUid).getAsync()
+                .filter(program -> program.categoryComboUid() != null)
+                .map(program -> d2.categoryModule().categoryCombos.uid(program.categoryComboUid()).withAllChildren().get())
+                .filter(catCombo -> !catCombo.isDefault())
+                .map(catCombo -> {
+                    boolean hasAccess = true;
+                    for (Category category : catCombo.categories()) {
+                        List<CategoryOption> options = d2.categoryModule().categories.withCategoryOptions().uid(category.uid()).get().categoryOptions();
+                        int accesibleOptions = options.size();
+                        for (CategoryOption categoryOption : options) {
+                            if (!d2.categoryModule().categoryOptions.uid(categoryOption.uid()).get().access().data().write())
+                                accesibleOptions--;
+                        }
+                        if (accesibleOptions == 0) {
+                            hasAccess = false;
+                            break;
+                        }
+                    }
+                    return hasAccess;
+                }).toSingle();
+    }
+
 }

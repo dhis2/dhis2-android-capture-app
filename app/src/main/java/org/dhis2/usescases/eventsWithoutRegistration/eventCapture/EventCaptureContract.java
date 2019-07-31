@@ -1,8 +1,9 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
 import org.dhis2.data.forms.FormSectionViewModel;
+import org.dhis2.data.forms.dataentry.fields.FieldViewModel;;
+import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
-import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.event.EventStatus;
@@ -18,6 +19,7 @@ import androidx.annotation.NonNull;
 import androidx.databinding.ObservableField;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.reactivex.Single;
 import io.reactivex.functions.Consumer;
 import io.reactivex.processors.FlowableProcessor;
 
@@ -34,11 +36,11 @@ public class EventCaptureContract {
 
         void setUp();
 
-        Consumer<Float> updatePercentage();
+        Consumer<Pair<Float, Float>> updatePercentage();
 
         void attemptToFinish(boolean canComplete);
 
-        void showCompleteActions(boolean canComplete);
+        void showCompleteActions(boolean canComplete, String completeMessage, Map<String, String> errors, Map<String, FieldViewModel> emptyMandatoryFields);
 
         void restartDataEntry();
 
@@ -86,9 +88,11 @@ public class EventCaptureContract {
 
         void onSectionSelectorClick(boolean isCurrentSection, int position, String sectionUid);
 
-        void initCompletionPercentage(FlowableProcessor<Float> integerFlowableProcessor);
+        void initCompletionPercentage(FlowableProcessor<Pair<Float, Float>> integerFlowableProcessor);
 
         void goToSection(String sectionUid);
+
+        void goToSection();
 
         void completeEvent(boolean addNew);
 
@@ -155,6 +159,10 @@ public class EventCaptureContract {
         Observable<List<OrganisationUnitLevel>> getOrgUnitLevels();
 
         boolean optionIsInOptionGroup(String optionUid, String optionGroupToHide);
+
+        String getSectionFor(String field);
+
+        Single<Boolean> canReOpenEvent();
     }
 
 }

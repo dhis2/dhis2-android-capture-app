@@ -1,8 +1,7 @@
 package org.dhis2.usescases.datasets.datasetInitial;
 
-import com.squareup.sqlbrite2.BriteDatabase;
-
 import org.dhis2.data.dagger.PerActivity;
+import org.hisp.dhis.android.core.D2;
 
 import dagger.Module;
 import dagger.Provides;
@@ -27,13 +26,13 @@ public class DataSetInitialModule {
 
     @Provides
     @PerActivity
-    DataSetInitialContract.Presenter providesPresenter(DataSetInitialRepository dataSetInitialRepository) {
-        return new DataSetInitialPresenter(dataSetInitialRepository);
+    DataSetInitialContract.Presenter providesPresenter(DataSetInitialRepository dataSetInitialRepository, D2 d2) {
+        return new DataSetInitialPresenter(dataSetInitialRepository, d2);
     }
 
     @Provides
     @PerActivity
-    DataSetInitialRepository dataSetInitialRepository(BriteDatabase briteDatabase) {
-        return new DataSetInitialRepositoryImpl(briteDatabase, dataSetUid);
+    DataSetInitialRepository dataSetInitialRepository(D2 d2) {
+        return new DataSetInitialRepositoryImpl(d2, dataSetUid);
     }
 }
