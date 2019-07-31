@@ -1,8 +1,5 @@
 package org.dhis2.data.metadata;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.dhis2.data.tuples.Pair;
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
@@ -53,16 +50,6 @@ public interface MetadataRepository {
 
     Observable<OrganisationUnitModel> getOrganisationUnit(String orgUnitUid);
 
-    Observable<List<OrganisationUnitModel>> getTeiOrgUnits(String teiUid);
-
-    Observable<List<OrganisationUnitModel>> getTeiOrgUnits(@NonNull String teiUid, @Nullable String programUid);
-
-
-    //ProgramStage
-
-    @NonNull
-    Observable<ProgramStageModel> programStage(String programStageId);
-
     /*ENROLLMENTS*/
     Observable<List<EnrollmentModel>> getTEIEnrollments(String teiUid);
 
@@ -73,11 +60,6 @@ public interface MetadataRepository {
 
     Observable<Boolean> isCompletedEventExpired(String eventUid);
 
-
-    /*OPTION SET*/
-    List<OptionModel> optionSet(String optionSetId);
-
-    /*RESOURCE*/
 
     /*SETINGS*/
     Observable<Pair<String, Integer>> getTheme();

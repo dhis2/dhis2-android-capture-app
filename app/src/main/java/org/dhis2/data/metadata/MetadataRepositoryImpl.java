@@ -4,7 +4,6 @@ import android.content.ContentValues;
 import android.database.Cursor;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
@@ -24,7 +23,6 @@ import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionModel;
 import org.hisp.dhis.android.core.settings.SystemSettingModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeModel;
 import org.hisp.dhis.android.core.user.AuthenticatedUserModel;
 
@@ -78,27 +76,6 @@ public class MetadataRepositoryImpl implements MetadataRepository {
 
     private final String ORG_UNIT_QUERY = String.format("SELECT * FROM %s WHERE %s.%s = ",
             OrganisationUnitModel.TABLE, OrganisationUnitModel.TABLE, OrganisationUnitModel.Columns.UID);
-
-    private final String TEI_ORG_UNIT_QUERY = String.format(
-            "SELECT * FROM %s " +
-                    "WHERE %s.%s IN (" +
-                    "SELECT %s.%s FROM %s " +
-                    "JOIN %s ON %s.%s = %s.%s " +
-                    "WHERE  %s.%s = ?)",
-            OrganisationUnitModel.TABLE,
-            OrganisationUnitModel.TABLE, OrganisationUnitModel.Columns.UID,
-            EnrollmentModel.TABLE, EnrollmentModel.Columns.ORGANISATION_UNIT, EnrollmentModel.TABLE,
-            TrackedEntityInstanceModel.TABLE, TrackedEntityInstanceModel.TABLE, TrackedEntityInstanceModel.Columns.UID, EnrollmentModel.TABLE, EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE,
-            EnrollmentModel.TABLE, EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE);
-
-    private final String ENROLLMENT_ORG_UNIT_QUERY =
-            "SELECT OrganisationUnit.* FROM OrganisationUnit " +
-                    "WHERE OrganisationUnit.uid IN (" +
-                    "SELECT Enrollment.organisationUnit FROM Enrollment " +
-                    "JOIN Program ON Program.uid = Enrollment.program WHERE Enrollment.trackedEntityInstance = ? AND Program.uid = ?)";
-
-
-    private Set<String> TEI_ORG_UNIT_TABLES = new HashSet<>(Arrays.asList(OrganisationUnitModel.TABLE, TrackedEntityInstanceModel.TABLE));
 
 
     private final String SELECT_PROGRAM_STAGE = String.format("SELECT * FROM %s WHERE %s.%s = ",
@@ -164,33 +141,6 @@ public class MetadataRepositoryImpl implements MetadataRepository {
                 .mapToOne(OrganisationUnitModel::create);
     }
 
-    @Override
-    public Observable<List<OrganisationUnitModel>> getTeiOrgUnits(String teiUid) {
-        return briteDatabase
-                .createQuery(TEI_ORG_UNIT_TABLES, TEI_ORG_UNIT_QUERY, teiUid == null ? "" : teiUid)
-                .mapToList(OrganisationUnitModel::create);
-    }
-
-    @Override
-    public Observable<List<OrganisationUnitModel>> getTeiOrgUnits(@NonNull String teiUid, @Nullable String programUid) {
-        if (programUid == null)
-            return getTeiOrgUnits(teiUid);
-        else
-            return briteDatabase
-                    .createQuery(TEI_ORG_UNIT_TABLES, ENROLLMENT_ORG_UNIT_QUERY, teiUid, programUid)
-                    .mapToList(OrganisationUnitModel::create);
-    }
-
-
-    @NonNull
-    @Override
-    public Observable<ProgramStageModel> programStage(String programStageId) {
-        String id = programStageId == null ? "" : programStageId;
-        return briteDatabase
-                .createQuery(ProgramStageModel.TABLE, SELECT_PROGRAM_STAGE + "'" + id + "' LIMIT 1")
-                .mapToOne(ProgramStageModel::create);
-    }
-
 
     @Override
     public Observable<List<EnrollmentModel>> getTEIEnrollments(String teiUid) {
@@ -200,21 +150,6 @@ public class MetadataRepositoryImpl implements MetadataRepository {
                 .mapToList(EnrollmentModel::create);
     }
 
-
-    @Override
-    public List<OptionModel> optionSet(String optionSetId) {
-        List<OptionModel> options = new ArrayList<>();
-        String SELECT_OPTION_SET = "SELECT * FROM " + OptionModel.TABLE + " WHERE Option.optionSet = ?";
-        try (Cursor cursor = briteDatabase.query(SELECT_OPTION_SET, optionSetId == null ? "" : optionSetId)) {
-            if (cursor != null && cursor.moveToFirst()) {
-                for (int i = 0; i < cursor.getCount(); i++) {
-                    options.add(OptionModel.create(cursor));
-                    cursor.moveToNext();
-                }
-            }
-        }
-        return options;
-    }
 
     @Override
     public Observable<Map<String, ObjectStyleModel>> getObjectStylesForPrograms(List<ProgramModel> enrollmentProgramModels) {
