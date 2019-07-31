@@ -18,7 +18,6 @@ import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
-import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
@@ -114,7 +113,7 @@ final class EnrollmentRepository implements DataEntryRepository {
 
     @Override
     public Observable<List<OrganisationUnitLevel>> getOrgUnitLevels() {
-        return Observable.just(d2.organisationUnitModule().organisationUnitLevels.get());
+        return Observable.just(d2.organisationUnitModule().organisationUnitLevels.blockingGet());
     }
 
     public List<FieldViewModel> fieldList() {

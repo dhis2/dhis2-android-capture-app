@@ -33,7 +33,7 @@ public class DataSetInitialRepositoryImpl implements DataSetInitialRepository {
         return Flowable.just(d2.dataSetModule().dataSets.withDataInputPeriods().byUid().eq(dataSetUid).one().get())
                 .flatMapIterable(dataSet -> dataSet.dataInputPeriods())
                 .flatMap(dataInputPeriod ->
-                        Flowable.just(d2.periodModule().periods.byPeriodId().eq(dataInputPeriod.period().uid()).get())
+                        Flowable.just(d2.periodModule().periods.byPeriodId().eq(dataInputPeriod.period().uid()).blockingGet())
                                 .flatMapIterable(periods -> periods)
                                 .map(period -> {
                                     Date periodStartDate = period.startDate();
@@ -69,7 +69,7 @@ public class DataSetInitialRepositoryImpl implements DataSetInitialRepository {
     @NonNull
     @Override
     public Observable<List<OrganisationUnit>> orgUnits() {
-        return Observable.just(d2.organisationUnitModule().organisationUnits.withDataSets().get())
+        return Observable.just(d2.organisationUnitModule().organisationUnits.withDataSets().blockingGet())
                 .flatMapIterable(organisationUnits -> organisationUnits)
                 .filter(organisationUnit -> {
                     boolean result = false;

@@ -66,7 +66,7 @@ public class OptionSetCellPopUp extends PopupMenu {
                                 optionRepository = optionRepository
                                         .byUid().notIn(finalOptionsToHide);
 
-                            return optionRepository.get();
+                            return optionRepository.blockingGet();
                         })
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())

@@ -137,7 +137,7 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
         compositeDisposable.add(
                 Observable.fromCallable(()-> d2.dataValueModule().dataValues.byOrganisationUnitUid().eq(orgUnitDataValue)
                         .byAttributeOptionComboUid().eq(attributeComboDataValue)
-                        .byPeriod().eq(periodIdDataValue).get())
+                        .byPeriod().eq(periodIdDataValue).blockingGet())
                         .map(dataSetElements -> {
                             State state = State.SYNCED;
                             for(DataValue dataValue: dataSetElements){
@@ -187,7 +187,7 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
                         .map(dataSetElements -> {
                             State state = State.SYNCED;
                             for(DataSetElement dataSetElement: dataSetElements){
-                                for(DataValue dataValue: d2.dataValueModule().dataValues.byDataElementUid().eq(dataSetElement.dataElement().uid()).get()){
+                                for(DataValue dataValue: d2.dataValueModule().dataValues.byDataElementUid().eq(dataSetElement.dataElement().uid()).blockingGet()){
                                     if(dataValue.state() != State.SYNCED)
                                         state = State.TO_UPDATE;
                                 }
@@ -239,24 +239,24 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
                         .map(program -> {
                             State state = State.SYNCED;
                             if (program.programType() == ProgramType.WITHOUT_REGISTRATION) {
-                                if (!d2.eventModule().events.byProgramUid().eq(program.uid()).byState().in(State.ERROR).get().isEmpty())
+                                if (!d2.eventModule().events.byProgramUid().eq(program.uid()).byState().in(State.ERROR).blockingGet().isEmpty())
                                     state = State.ERROR;
-                                else if (!d2.eventModule().events.byProgramUid().eq(program.uid()).byState().in(State.WARNING).get().isEmpty())
+                                else if (!d2.eventModule().events.byProgramUid().eq(program.uid()).byState().in(State.WARNING).blockingGet().isEmpty())
                                     state = State.WARNING;
-                                else if (!d2.eventModule().events.byProgramUid().eq(program.uid()).byState().in(State.SENT_VIA_SMS, State.SYNCED_VIA_SMS).get().isEmpty())
+                                else if (!d2.eventModule().events.byProgramUid().eq(program.uid()).byState().in(State.SENT_VIA_SMS, State.SYNCED_VIA_SMS).blockingGet().isEmpty())
                                     state = State.SENT_VIA_SMS;
-                                else if (!d2.eventModule().events.byProgramUid().eq(program.uid()).byState().in(State.TO_UPDATE, State.TO_POST, State.TO_DELETE).get().isEmpty())
+                                else if (!d2.eventModule().events.byProgramUid().eq(program.uid()).byState().in(State.TO_UPDATE, State.TO_POST, State.TO_DELETE).blockingGet().isEmpty())
                                     state = State.TO_UPDATE;
                             } else {
                                 List<String> programUids = new ArrayList<>();
                                 programUids.add(program.uid());
-                                if (!d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().in(State.ERROR).get().isEmpty())
+                                if (!d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().in(State.ERROR).blockingGet().isEmpty())
                                     state = State.ERROR;
-                                else if (!d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().in(State.WARNING).get().isEmpty())
+                                else if (!d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().in(State.WARNING).blockingGet().isEmpty())
                                     state = State.WARNING;
-                                else if (!d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().in(State.SENT_VIA_SMS, State.SYNCED_VIA_SMS).get().isEmpty())
+                                else if (!d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().in(State.SENT_VIA_SMS, State.SYNCED_VIA_SMS).blockingGet().isEmpty())
                                     state = State.SENT_VIA_SMS;
-                                else if (!d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().in(State.TO_UPDATE, State.TO_POST, State.TO_DELETE).get().isEmpty())
+                                else if (!d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().in(State.TO_UPDATE, State.TO_POST, State.TO_DELETE).blockingGet().isEmpty())
                                     state = State.TO_UPDATE;
                             }
                             return state;
@@ -292,18 +292,18 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
                             if (program.programType() == ProgramType.WITH_REGISTRATION) {
                                 List<String> programUids = new ArrayList<>();
                                 programUids.add(program.uid());
-                                if (!d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().in(State.ERROR, State.WARNING).get().isEmpty())
+                                if (!d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().in(State.ERROR, State.WARNING).blockingGet().isEmpty())
                                     state = State.WARNING;
-                                else if (!d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().in(State.SENT_VIA_SMS, State.SYNCED_VIA_SMS).get().isEmpty())
+                                else if (!d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().in(State.SENT_VIA_SMS, State.SYNCED_VIA_SMS).blockingGet().isEmpty())
                                     state = State.SENT_VIA_SMS;
-                                else if (!d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().in(State.TO_UPDATE, State.TO_POST, State.TO_DELETE).get().isEmpty())
+                                else if (!d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().in(State.TO_UPDATE, State.TO_POST, State.TO_DELETE).blockingGet().isEmpty())
                                     state = State.TO_UPDATE;
                             } else {
-                                if (!d2.eventModule().events.byProgramUid().eq(program.uid()).byState().in(State.ERROR, State.WARNING).get().isEmpty())
+                                if (!d2.eventModule().events.byProgramUid().eq(program.uid()).byState().in(State.ERROR, State.WARNING).blockingGet().isEmpty())
                                     state = State.WARNING;
-                                else if (!d2.eventModule().events.byProgramUid().eq(program.uid()).byState().in(State.SENT_VIA_SMS, State.SYNCED_VIA_SMS).get().isEmpty())
+                                else if (!d2.eventModule().events.byProgramUid().eq(program.uid()).byState().in(State.SENT_VIA_SMS, State.SYNCED_VIA_SMS).blockingGet().isEmpty())
                                     state = State.SENT_VIA_SMS;
-                                else if (!d2.eventModule().events.byProgramUid().eq(program.uid()).byState().in(State.TO_UPDATE, State.TO_POST, State.TO_DELETE).get().isEmpty())
+                                else if (!d2.eventModule().events.byProgramUid().eq(program.uid()).byState().in(State.TO_UPDATE, State.TO_POST, State.TO_DELETE).blockingGet().isEmpty())
                                     state = State.TO_UPDATE;
                             }
                             return state;
@@ -338,7 +338,7 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
         );
 
         compositeDisposable.add(
-                Observable.fromCallable(() -> d2.importModule().trackerImportConflicts.byTrackedEntityInstanceUid().eq(recordUid).get())
+                Observable.fromCallable(() -> d2.importModule().trackerImportConflicts.byTrackedEntityInstanceUid().eq(recordUid).blockingGet())
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
@@ -378,7 +378,7 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
         binding.programName.setText(R.string.event_event);
 
         compositeDisposable.add(
-                Observable.fromCallable(() -> d2.importModule().trackerImportConflicts.byEventUid().eq(recordUid).get())
+                Observable.fromCallable(() -> d2.importModule().trackerImportConflicts.byEventUid().eq(recordUid).blockingGet())
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(

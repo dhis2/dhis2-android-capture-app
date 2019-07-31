@@ -186,7 +186,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
                         d2.categoryModule().categoryCombos
                                 .uid(categoryCombo.uid()).getAsync(),
                         d2.categoryModule().categoryOptionCombos
-                                .byCategoryComboUid().eq(categoryCombo.uid()).getAsync(),
+                                .byCategoryComboUid().eq(categoryCombo.uid()).get(),
                         Pair::create
                 ));
     }

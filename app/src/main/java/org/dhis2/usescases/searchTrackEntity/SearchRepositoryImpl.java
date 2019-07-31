@@ -121,15 +121,15 @@ public class SearchRepositoryImpl implements SearchRepository {
                         else if (d2.trackedEntityModule().trackedEntityAttributes.byUid().eq(pteAttribute.trackedEntityAttribute().uid()).one().get().unique())
                             uids.add(pteAttribute.trackedEntityAttribute().uid());
                     }
-                    return Observable.just(d2.trackedEntityModule().trackedEntityAttributes.byUid().in(uids).get());
+                    return Observable.just(d2.trackedEntityModule().trackedEntityAttributes.byUid().in(uids).blockingGet());
                 });
     }
 
     @Override
     public Observable<List<Program>> programsWithRegistration(String programTypeId) {
-        return Observable.fromCallable(() -> d2.organisationUnitModule().organisationUnits.byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).get())
+        return Observable.fromCallable(() -> d2.organisationUnitModule().organisationUnits.byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).blockingGet())
                 .map(UidsHelper::getUidsList)
-                .flatMap(orgUnitsUids -> Observable.just(d2.programModule().programs.byOrganisationUnitList(orgUnitsUids).byRegistration().isTrue().byTrackedEntityTypeUid().eq(teiType).get()));
+                .flatMap(orgUnitsUids -> Observable.just(d2.programModule().programs.byOrganisationUnitList(orgUnitsUids).byRegistration().isTrue().byTrackedEntityTypeUid().eq(teiType).blockingGet()));
     }
 
     @NonNull
@@ -301,17 +301,17 @@ public class SearchRepositoryImpl implements SearchRepository {
 
 
         if (selectedProgramUid != null) {
-            return d2.organisationUnitModule().organisationUnits.byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).withPrograms().getAsync()
+            return d2.organisationUnitModule().organisationUnits.byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).withPrograms().get()
                     .toFlowable().flatMapIterable(orgs->orgs)
                     .filter(organisationUnit -> UidsHelper.getUidsList(organisationUnit.programs()).contains(selectedProgramUid))
                     .toList().toObservable();
         } else
-            return Observable.fromCallable(() -> d2.organisationUnitModule().organisationUnits.get());
+            return Observable.fromCallable(() -> d2.organisationUnitModule().organisationUnits.blockingGet());
     }
 
 
     private void setEnrollmentInfo(SearchTeiModel searchTei) {
-        List<Enrollment> enrollments = d2.enrollmentModule().enrollments.byTrackedEntityInstance().eq(searchTei.getTei().uid()).byStatus().eq(EnrollmentStatus.ACTIVE).get();
+        List<Enrollment> enrollments = d2.enrollmentModule().enrollments.byTrackedEntityInstance().eq(searchTei.getTei().uid()).byStatus().eq(EnrollmentStatus.ACTIVE).blockingGet();
         for (Enrollment enrollment : enrollments) {
             if (enrollments.indexOf(enrollment) == 0)
                 searchTei.resetEnrollments();
@@ -363,7 +363,7 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     private void setOverdueEvents(@NonNull SearchTeiModel tei, Program selectedProgram) {
         String teiId = tei.getTei() != null && tei.getTei().uid() != null ? tei.getTei().uid() : "";
-        List<Enrollment> enrollments = d2.enrollmentModule().enrollments.byTrackedEntityInstance().eq(teiId).get();
+        List<Enrollment> enrollments = d2.enrollmentModule().enrollments.byTrackedEntityInstance().eq(teiId).blockingGet();
         EventCollectionRepository repo = d2.eventModule().events.byEnrollmentUid().in(UidsHelper.getUidsList(enrollments)).byStatus().eq(EventStatus.SKIPPED);
         int count;
 
@@ -398,7 +398,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                         else if (d2.trackedEntityModule().trackedEntityAttributes.byUid().eq(tetAttribute.trackedEntityAttribute().uid()).one().get().unique())
                             uids.add(tetAttribute.trackedEntityAttribute().uid());
                     }
-                    return Observable.just(d2.trackedEntityModule().trackedEntityAttributes.byUid().in(uids).get());
+                    return Observable.just(d2.trackedEntityModule().trackedEntityAttributes.byUid().in(uids).blockingGet());
                 });
     }
 
@@ -487,7 +487,7 @@ public class SearchRepositoryImpl implements SearchRepository {
     }
 
     private String profilePictureUid(TrackedEntityInstance tei) {
-        List<TrackedEntityAttribute> imageAttributes = d2.trackedEntityModule().trackedEntityAttributes.byValueType().eq(ValueType.IMAGE).get();
+        List<TrackedEntityAttribute> imageAttributes = d2.trackedEntityModule().trackedEntityAttributes.byValueType().eq(ValueType.IMAGE).blockingGet();
         List<String> imageAttributesUids = new ArrayList<>();
         for (TrackedEntityAttribute attr : imageAttributes)
             imageAttributesUids.add(attr.uid());

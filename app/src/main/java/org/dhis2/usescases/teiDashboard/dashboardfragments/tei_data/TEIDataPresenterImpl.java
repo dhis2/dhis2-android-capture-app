@@ -75,7 +75,7 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
         compositeDisposable.add(
                 Observable.fromCallable(() -> {
 
-                    Iterator<TrackedEntityAttribute> iterator = d2.trackedEntityModule().trackedEntityAttributes.byValueType().eq(ValueType.IMAGE).get().iterator();
+                    Iterator<TrackedEntityAttribute> iterator = d2.trackedEntityModule().trackedEntityAttributes.byValueType().eq(ValueType.IMAGE).blockingGet().iterator();
                     List<String> attrUids = new ArrayList<>();
                     while (iterator.hasNext())
                         attrUids.add(iterator.next().uid());

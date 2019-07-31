@@ -105,7 +105,7 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
                     .byEnrollmentUid().eq(enrollmentUid)
                     .byStatus().in(EventStatus.ACTIVE, EventStatus.COMPLETED)
                     .withTrackedEntityDataValues()
-                    .orderByEventDate(RepositoryScope.OrderByDirection.DESC).get();
+                    .orderByEventDate(RepositoryScope.OrderByDirection.DESC).blockingGet();
 
             List<RuleEvent> ruleEvents = new ArrayList<>();
 
@@ -174,13 +174,13 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
     public Flowable<List<ProgramStage>> enrollmentProgramStages(String programId, String enrollmentUid) {
         List<String> currentProgramStages = new ArrayList<>();
         List<ProgramStage> selectableStages = new ArrayList<>();
-        List<Event> events = d2.eventModule().events.byEnrollmentUid().eq(enrollmentUid == null ? "" : enrollmentUid).byState().neq(State.TO_DELETE).get();
+        List<Event> events = d2.eventModule().events.byEnrollmentUid().eq(enrollmentUid == null ? "" : enrollmentUid).byState().neq(State.TO_DELETE).blockingGet();
         for (Event event : events)
             currentProgramStages.add(event.programStage());
 
         return Observable.just(!Objects.equals(eventCreationType, EventCreationType.SCHEDULE.name()) ?
-                d2.programModule().programStages.byProgramUid().eq(programId).withStyle().get() :
-                d2.programModule().programStages.byProgramUid().eq(programId).withStyle().byHideDueDate().eq(false).get())
+                d2.programModule().programStages.byProgramUid().eq(programId).withStyle().blockingGet() :
+                d2.programModule().programStages.byProgramUid().eq(programId).withStyle().byHideDueDate().eq(false).blockingGet())
                 .map(programStages -> {
                     boolean isSelectable;
                     for (ProgramStage programStage : programStages) {

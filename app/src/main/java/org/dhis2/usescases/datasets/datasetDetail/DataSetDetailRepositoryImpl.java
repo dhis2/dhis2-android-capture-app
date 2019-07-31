@@ -27,7 +27,7 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
     @NonNull
     @Override
     public Observable<List<OrganisationUnit>> orgUnits() {
-        return Observable.just(d2.organisationUnitModule().organisationUnits.get());
+        return Observable.just(d2.organisationUnitModule().organisationUnits.blockingGet());
     }
 
     @Override
@@ -40,7 +40,7 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
             repo = repo.byPeriod().in(periodFilter);
 
         DataSetInstanceCollectionRepository finalRepo = repo;
-        return Flowable.fromIterable(finalRepo.get())
+        return Flowable.fromIterable(finalRepo.blockingGet())
                 .map(dataSetReport -> {
                     Period period = d2.periodModule().periods.byPeriodId().eq(dataSetReport.period()).one().get();
                     String periodName = DateUtils.getInstance().getPeriodUIString(period.periodType(), period.startDate(), Locale.getDefault());

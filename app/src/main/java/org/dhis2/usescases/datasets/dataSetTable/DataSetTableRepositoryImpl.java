@@ -36,7 +36,7 @@ public class DataSetTableRepositoryImpl implements DataSetTableRepository {
     @Override
     public Flowable<List<String>> getSections() {
 
-        return Flowable.fromCallable(() -> d2.dataSetModule().sections.byDataSetUid().eq(dataSetUid).get())
+        return Flowable.fromCallable(() -> d2.dataSetModule().sections.byDataSetUid().eq(dataSetUid).blockingGet())
                 .switchMap(sections -> {
                     List<String> sectionUids = new ArrayList<>();
                     if (sections.isEmpty()) {

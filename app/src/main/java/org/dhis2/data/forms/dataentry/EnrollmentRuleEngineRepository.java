@@ -142,7 +142,7 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
     private Map<String, String> getAttributesValueMap(Enrollment enrollment, Program program) {
         List<TrackedEntityAttributeValue> attributeValueList = d2.trackedEntityModule().trackedEntityAttributeValues
                 .byTrackedEntityInstance().eq(enrollment.trackedEntityInstance())
-                .withAllChildren().get();
+                .withAllChildren().blockingGet();
 
         Map<String, String> attrValueMap = new HashMap<>();
         for (TrackedEntityAttributeValue attributeValue : attributeValueList) {
@@ -171,7 +171,7 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
     }
 
     private void loadAttrRules(String programUid) {
-        List<ProgramRule> rules = d2.programModule().programRules.byProgramUid().eq(programUid).withAllChildren().get();
+        List<ProgramRule> rules = d2.programModule().programRules.byProgramUid().eq(programUid).withAllChildren().blockingGet();
         mandatoryRules = new ArrayList<>();
         Iterator<ProgramRule> ruleIterator = rules.iterator();
         while (ruleIterator.hasNext()) {
@@ -196,7 +196,7 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
 
         List<ProgramRuleVariable> variables = d2.programModule().programRuleVariables
                 .byProgramUid().eq(programUid)
-                .withAllChildren().get();
+                .withAllChildren().blockingGet();
         Iterator<ProgramRuleVariable> variableIterator = variables.iterator();
         while (variableIterator.hasNext()) {
             ProgramRuleVariable variable = variableIterator.next();

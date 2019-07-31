@@ -222,7 +222,7 @@ public final class RulesRepository {
 
     @NonNull
     public Flowable<List<RuleVariable>> ruleVariables(@NonNull String programUid) {
-        return Flowable.fromCallable(() -> d2.programModule().programRuleVariables.byProgramUid().eq(programUid).get()).map(programRuleVariables -> this.translateToRuleVariable(programRuleVariables));
+        return Flowable.fromCallable(() -> d2.programModule().programRuleVariables.byProgramUid().eq(programUid).blockingGet()).map(programRuleVariables -> this.translateToRuleVariable(programRuleVariables));
         /*return briteDatabase.createQuery(ProgramRuleVariableModel.TABLE, QUERY_VARIABLES, programUid)
                 .mapToList(RulesRepository::mapToRuleVariable).toFlowable(BackpressureStrategy.LATEST);*/
     }
@@ -245,7 +245,7 @@ public final class RulesRepository {
 
     @NonNull
     public Flowable<Map<String, String>> queryConstants() {
-        return Flowable.fromCallable(() -> d2.constantModule().constants.get())
+        return Flowable.fromCallable(() -> d2.constantModule().constants.blockingGet())
                 .map(constants -> {
                     Map<String, String> constantsMap = new HashMap<>();
                     for (Constant constant : constants) {
@@ -261,7 +261,7 @@ public final class RulesRepository {
         return Flowable.fromCallable(() -> d2.programModule().programRules
                 .byProgramUid().eq(programUid)
                 .withProgramRuleActions()
-                .get());
+                .blockingGet());
 
     }
 
@@ -778,11 +778,11 @@ public final class RulesRepository {
             Map<String, List<String>> supData = new HashMap<>();
 
             //ORG UNIT GROUPS
-            for (OrganisationUnitGroup ouGroup : d2.organisationUnitModule().organisationUnitGroups.get())
+            for (OrganisationUnitGroup ouGroup : d2.organisationUnitModule().organisationUnitGroups.blockingGet())
                 if (ouGroup.code() != null)
                     supData.put(ouGroup.code(), new ArrayList<>());
 
-            for (OrganisationUnit ou : d2.organisationUnitModule().organisationUnits.withOrganisationUnitGroups().get()) {
+            for (OrganisationUnit ou : d2.organisationUnitModule().organisationUnits.withOrganisationUnitGroups().blockingGet()) {
                 if (ou.organisationUnitGroups() != null) {
                     for (OrganisationUnitGroup ouGroup : ou.organisationUnitGroups()) {
                         List<String> groupOUs = supData.get(ouGroup.code());
@@ -793,7 +793,7 @@ public final class RulesRepository {
             }
 
             //USER ROLES
-            List<String> userRoleUids = UidsHelper.getUidsList(d2.userModule().userRoles.get());
+            List<String> userRoleUids = UidsHelper.getUidsList(d2.userModule().userRoles.blockingGet());
             supData.put("USER", userRoleUids);
 
             return supData;

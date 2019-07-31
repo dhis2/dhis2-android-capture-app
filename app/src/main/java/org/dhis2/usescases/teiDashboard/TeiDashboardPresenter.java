@@ -189,7 +189,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                                     enrollmentObjectRepository.delete();
                                     return !d2.enrollmentModule().enrollments.byTrackedEntityInstance().eq(teUid)
                                             .byState().notIn(State.TO_DELETE)
-                                            .byStatus().eq(EnrollmentStatus.ACTIVE).get().isEmpty();
+                                            .byStatus().eq(EnrollmentStatus.ACTIVE).blockingGet().isEmpty();
                                 });
                             else
                                 return Single.error(new AuthorityException(view.getContext().getString(R.string.delete_authority_error)));

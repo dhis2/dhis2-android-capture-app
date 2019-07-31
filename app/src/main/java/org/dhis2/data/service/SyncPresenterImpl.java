@@ -81,8 +81,8 @@ final class SyncPresenterImpl implements SyncPresenter {
 
     @Override
     public boolean checkSyncStatus() {
-        boolean eventsOk = d2.eventModule().events.byState().notIn(State.SYNCED).get().isEmpty();
-        boolean teiOk = d2.trackedEntityModule().trackedEntityInstances.byState().notIn(State.SYNCED, State.RELATIONSHIP).get().isEmpty();
+        boolean eventsOk = d2.eventModule().events.byState().notIn(State.SYNCED).blockingGet().isEmpty();
+        boolean teiOk = d2.trackedEntityModule().trackedEntityInstances.byState().notIn(State.SYNCED, State.RELATIONSHIP).blockingGet().isEmpty();
         return eventsOk && teiOk;
     }
 
@@ -109,7 +109,7 @@ final class SyncPresenterImpl implements SyncPresenter {
 
     @Override
     public Observable<D2Progress> syncGranularDataSet(String uid) {
-        return d2.dataSetModule().dataSetInstances.byDataSetUid().eq(uid).getAsync().toObservable()
+        return d2.dataSetModule().dataSetInstances.byDataSetUid().eq(uid).get().toObservable()
                 .flatMapIterable(dataSets -> dataSets)
                 .flatMap(dataSetReport ->
                         d2.dataValueModule().dataValues
@@ -131,12 +131,12 @@ final class SyncPresenterImpl implements SyncPresenter {
 
     @Override
     public boolean checkSyncEventStatus(String uid) {
-        return d2.eventModule().events.byUid().eq(uid).byState().notIn(State.SYNCED).get().isEmpty();
+        return d2.eventModule().events.byUid().eq(uid).byState().notIn(State.SYNCED).blockingGet().isEmpty();
     }
 
     @Override
     public boolean checkSyncTEIStatus(String uid) {
-        return d2.trackedEntityModule().trackedEntityInstances.byUid().eq(uid).byState().notIn(State.SYNCED).get().isEmpty();
+        return d2.trackedEntityModule().trackedEntityInstances.byUid().eq(uid).byState().notIn(State.SYNCED).blockingGet().isEmpty();
     }
 
     @Override
@@ -144,7 +144,7 @@ final class SyncPresenterImpl implements SyncPresenter {
         return d2.dataValueModule().dataValues.byPeriod().eq(period)
                 .byOrganisationUnitUid().eq(orgUnit)
                 .byAttributeOptionComboUid().eq(attributeOptionCombo)
-                .get().isEmpty();
+                .blockingGet().isEmpty();
     }
 
     @Override
@@ -152,9 +152,9 @@ final class SyncPresenterImpl implements SyncPresenter {
         Program program = d2.programModule().programs.uid(uid).get();
 
         if (program.programType() == ProgramType.WITH_REGISTRATION)
-            return d2.trackedEntityModule().trackedEntityInstances.byProgramUids(Collections.singletonList(uid)).get().isEmpty();
+            return d2.trackedEntityModule().trackedEntityInstances.byProgramUids(Collections.singletonList(uid)).blockingGet().isEmpty();
         else
-            return d2.eventModule().events.byProgramUid().eq(uid).get().isEmpty();
+            return d2.eventModule().events.byProgramUid().eq(uid).blockingGet().isEmpty();
 
     }
 
@@ -166,16 +166,16 @@ final class SyncPresenterImpl implements SyncPresenter {
                 .byOrganisationUnitUid().eq(dataSetReport.attributeOptionComboUid())
                 .byPeriod().eq(dataSetReport.period())
                 .byAttributeOptionComboUid().eq(dataSetReport.attributeOptionComboUid())
-                .get().isEmpty();
+                .blockingGet().isEmpty();
     }
 
     @Override
     public List<TrackerImportConflict> messageTrackerImportConflict(String uid) {
-        List<TrackerImportConflict> trackerImportConflicts = d2.importModule().trackerImportConflicts.byTrackedEntityInstanceUid().eq(uid).get();
+        List<TrackerImportConflict> trackerImportConflicts = d2.importModule().trackerImportConflicts.byTrackedEntityInstanceUid().eq(uid).blockingGet();
         if (trackerImportConflicts != null && !trackerImportConflicts.isEmpty())
             return trackerImportConflicts;
 
-        trackerImportConflicts = d2.importModule().trackerImportConflicts.byEventUid().eq(uid).get();
+        trackerImportConflicts = d2.importModule().trackerImportConflicts.byEventUid().eq(uid).blockingGet();
         if (trackerImportConflicts != null && !trackerImportConflicts.isEmpty())
             return trackerImportConflicts;
 

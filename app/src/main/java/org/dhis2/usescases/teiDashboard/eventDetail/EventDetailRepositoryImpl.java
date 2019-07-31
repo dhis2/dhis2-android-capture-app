@@ -7,9 +7,7 @@ import com.squareup.sqlbrite2.BriteDatabase;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
-import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
@@ -61,7 +59,7 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
     @Override
     public Observable<List<ProgramStageSection>> programStageSection(String eventUid) {
         return eventModelDetail(eventUid)
-                .map(event -> d2.programModule().programStageSections.byProgramStageUid().eq(event.programStage()).get());
+                .map(event -> d2.programModule().programStageSections.byProgramStageUid().eq(event.programStage()).blockingGet());
 
     }
 
@@ -150,7 +148,7 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
 
     @Override
     public Observable<List<OrganisationUnit>> getOrgUnits() {
-        return Observable.fromCallable(() -> d2.organisationUnitModule().organisationUnits.withPrograms().get())
+        return Observable.fromCallable(() -> d2.organisationUnitModule().organisationUnits.withPrograms().blockingGet())
                 .map(organisationUnits -> {
                     List<OrganisationUnit> programOrganisationUnits = new ArrayList<>();
                     String programId = d2.eventModule().events.uid(eventUid).get().program();
@@ -186,7 +184,7 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
                 .map(program -> {
                     CategoryCombo catCombo = program.categoryCombo();
                     if (catCombo != null && !catCombo.isDefault())
-                        return Pair.create(catCombo.name(), d2.categoryModule().categoryOptionCombos.byCategoryComboUid().eq(catCombo.uid()).get());
+                        return Pair.create(catCombo.name(), d2.categoryModule().categoryOptionCombos.byCategoryComboUid().eq(catCombo.uid()).blockingGet());
                     else
                         return Pair.create("", new ArrayList<>());
                 });*/

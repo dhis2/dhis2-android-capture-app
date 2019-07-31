@@ -68,7 +68,7 @@ public class OUTreeActivity extends ActivityGlobalAbstract implements OrgUnitSel
                                 .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_TEI_SEARCH)
                                 .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
                                 .byRootOrganisationUnit(true)
-                                .getAsync().toFlowable()
+                                .get().toFlowable()
                                 .map(list -> {
                                     int minLevel = list.get(0).level();
                                     for (OrganisationUnit ou : list)
@@ -109,7 +109,7 @@ public class OUTreeActivity extends ActivityGlobalAbstract implements OrgUnitSel
                                         .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_TEI_SEARCH)
                                         .byParentUid().eq(parentOu.val1().uid())
                                         .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
-                                        .getAsync().toFlowable()
+                                        .get().toFlowable()
                                         .map(ouList -> Pair.create(parentOu.val0(), ouList)))
                         .filter(list -> binding.orgUnitRecycler.getAdapter() != null)
                         .map(organisationUnits -> {
@@ -142,7 +142,7 @@ public class OUTreeActivity extends ActivityGlobalAbstract implements OrgUnitSel
                                 .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_TEI_SEARCH)
                                 .byDisplayName().like("%" + name + "%")
                                 .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
-                                .getAsync().toFlowable())
+                                .get().toFlowable())
                         .filter(name -> binding.orgUnitRecycler.getAdapter() != null)
                         .map(organisationUnits -> {
                             List<TreeNode> nodes = new ArrayList<>();

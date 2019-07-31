@@ -31,6 +31,6 @@ public class UserRepositoryImpl implements UserRepository {
     /*@NonNull
     @Override
     public Flowable<User> me() {
-        return Flowable.fromCallable(() -> d2.userModule().user.get());
+        return Flowable.fromCallable(() -> d2.userModule().user.blockingGet());
     }*/
 }

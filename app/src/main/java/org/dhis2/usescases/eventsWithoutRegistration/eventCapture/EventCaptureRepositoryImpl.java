@@ -195,7 +195,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     private void loadDataElementRules(Event event) {
         float init = System.currentTimeMillis();
-        rules = d2.programModule().programRules.byProgramUid().eq(event.program()).withAllChildren().get();
+        rules = d2.programModule().programRules.byProgramUid().eq(event.program()).withAllChildren().blockingGet();
         Timber.d("LOAD ALL RULES  AT %s", System.currentTimeMillis() - init);
         mandatoryRules = new ArrayList<>();
         Iterator<ProgramRule> ruleIterator = rules.iterator();
@@ -224,7 +224,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
         List<ProgramRuleVariable> variables = d2.programModule().programRuleVariables
                 .byProgramUid().eq(event.program())
-                .withAllChildren().get();
+                .withAllChildren().blockingGet();
         Timber.d("LOAD VARIABLES RULES  AT %s", System.currentTimeMillis() - init);
 
         Iterator<ProgramRuleVariable> variableIterator = variables.iterator();
@@ -803,7 +803,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     @Override
     public Observable<List<OrganisationUnitLevel>> getOrgUnitLevels() {
-        return Observable.just(d2.organisationUnitModule().organisationUnitLevels.get());
+        return Observable.just(d2.organisationUnitModule().organisationUnitLevels.blockingGet());
     }
 
     @Override
@@ -821,7 +821,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     @Override
     public String getSectionFor(String field) {
         String sectionToReturn = "NO_SECTION";
-        List<ProgramStageSection> programStages = d2.programModule().programStageSections.byProgramStageUid().eq(currentEvent.programStage()).withDataElements().get();
+        List<ProgramStageSection> programStages = d2.programModule().programStageSections.byProgramStageUid().eq(currentEvent.programStage()).withDataElements().blockingGet();
         for (ProgramStageSection section : programStages) {
             if (UidsHelper.getUidsList(section.dataElements()).contains(field)) {
                 sectionToReturn = section.uid();

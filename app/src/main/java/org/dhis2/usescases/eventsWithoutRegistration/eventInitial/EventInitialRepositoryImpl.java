@@ -76,7 +76,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     @NonNull
     @Override
     public Observable<List<OrganisationUnit>> orgUnits(String programId) {
-        return Observable.fromCallable(() -> d2.organisationUnitModule().organisationUnits.byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).withPrograms().get())
+        return Observable.fromCallable(() -> d2.organisationUnitModule().organisationUnits.byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).withPrograms().blockingGet())
                 .map(organisationUnits -> {
                     List<OrganisationUnit> programOrganisationUnits = new ArrayList<>();
                     for(OrganisationUnit organisationUnit : organisationUnits){
@@ -127,9 +127,9 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     @Override
     public Date getStageLastDate(String programStageUid, String enrollmentUid) {
         List<Event> activeEvents = d2.eventModule().events.byEnrollmentUid().eq(enrollmentUid).byProgramStageUid().eq(programStageUid)
-                .orderByEventDate(RepositoryScope.OrderByDirection.DESC).get();
+                .orderByEventDate(RepositoryScope.OrderByDirection.DESC).blockingGet();
         List<Event> scheduleEvents = d2.eventModule().events.byEnrollmentUid().eq(enrollmentUid).byProgramStageUid().eq(programStageUid)
-                .orderByDueDate(RepositoryScope.OrderByDirection.DESC).get();
+                .orderByDueDate(RepositoryScope.OrderByDirection.DESC).blockingGet();
 
         Date activeDate = null;
         Date scheduleDate = null;
@@ -172,7 +172,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     @NonNull
     @Override
     public Observable<List<OrganisationUnit>> searchOrgUnits(String date, String programId) {
-        return Observable.fromCallable(() -> d2.organisationUnitModule().organisationUnits.withPrograms().get())
+        return Observable.fromCallable(() -> d2.organisationUnitModule().organisationUnits.withPrograms().blockingGet())
                     .map(organisationUnits -> {
                         List<OrganisationUnit> programOrganisationUnits = new ArrayList<>();
                         for(OrganisationUnit organisationUnit : organisationUnits){

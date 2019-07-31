@@ -293,7 +293,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
         return briteDatabase.createQuery(EventModel.TABLE, GET_EVENT_FROM_UID, lastModifiedEventUid == null ? "" : lastModifiedEventUid)
                 .mapToOne(EventModel::create)
                 .flatMap(event -> {
-                    ProgramStage programStage = d2.programModule().programStages.uid(event.programStage()).get();
+                    ProgramStage programStage = d2.programModule().programStages.uid(event.programStage()).blockingGet();
                     boolean hideDueDate = programStage.hideDueDate() != null ? programStage.hideDueDate() : false;
 
                     ContentValues values = new ContentValues();
@@ -345,7 +345,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                 .mapToOne(EventModel::create)
                 .flatMap(event -> {
 
-                    ProgramStage programStage = d2.programModule().programStages.uid(event.programStage()).get();
+                    ProgramStage programStage = d2.programModule().programStages.uid(event.programStage()).blockingGet();
                     boolean hideDueDate = programStage.hideDueDate() != null ? programStage.hideDueDate() : false;
 
                     ContentValues values = new ContentValues();
@@ -457,7 +457,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     public void setDefaultCatOptCombToEvent(String eventUid) {
         Event event = d2.eventModule().events.uid(eventUid).get();
         ContentValues cv = event.toContentValues();
-        List<CategoryCombo> categoryCombos = d2.categoryModule().categoryCombos.byIsDefault().isTrue().withAllChildren().get();
+        List<CategoryCombo> categoryCombos = d2.categoryModule().categoryCombos.byIsDefault().isTrue().withAllChildren().blockingGet();
         cv.put(EventModel.Columns.ATTRIBUTE_OPTION_COMBO, categoryCombos.get(0).categoryOptionCombos().get(0).uid());
         cv.put(EventModel.Columns.STATE, event.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
         briteDatabase.update("Event", cv, "Event.uid = ?", eventUid);
@@ -468,7 +468,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
         return Observable.fromCallable(() -> {
             Iterator<TrackedEntityAttribute> iterator = d2.trackedEntityModule().trackedEntityAttributes
                     .byValueType().eq(ValueType.IMAGE)
-                    .get().iterator();
+                    .blockingGet().iterator();
             List<String> attrUids = new ArrayList<>();
             while (iterator.hasNext())
                 attrUids.add(iterator.next().uid());

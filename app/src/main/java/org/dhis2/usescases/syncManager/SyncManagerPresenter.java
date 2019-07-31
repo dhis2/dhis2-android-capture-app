@@ -9,7 +9,6 @@ import androidx.work.ExistingWorkPolicy;
 import androidx.work.NetworkType;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.PeriodicWorkRequest;
-import androidx.work.WorkContinuation;
 import androidx.work.WorkManager;
 
 import org.dhis2.data.metadata.MetadataRepository;
@@ -257,12 +256,12 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
 
     @Override
     public boolean dataHasErrors() {
-        return !d2.eventModule().events.byState().in(State.ERROR).get().isEmpty() || !d2.trackedEntityModule().trackedEntityInstances.byState().in(State.ERROR).get().isEmpty();
+        return !d2.eventModule().events.byState().in(State.ERROR).blockingGet().isEmpty() || !d2.trackedEntityModule().trackedEntityInstances.byState().in(State.ERROR).blockingGet().isEmpty();
     }
 
     @Override
     public boolean dataHasWarnings() {
-        return !d2.eventModule().events.byState().in(State.WARNING).get().isEmpty() || !d2.trackedEntityModule().trackedEntityInstances.byState().in(State.WARNING).get().isEmpty();
+        return !d2.eventModule().events.byState().in(State.WARNING).blockingGet().isEmpty() || !d2.trackedEntityModule().trackedEntityInstances.byState().in(State.WARNING).blockingGet().isEmpty();
     }
 
     @Override
