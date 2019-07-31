@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
@@ -18,6 +19,7 @@ import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.FileResourcesUtil;
 import org.dhis2.utils.ValueUtils;
 import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
@@ -25,6 +27,7 @@ import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.data.database.DbDateColumnAdapter;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
+import org.hisp.dhis.android.core.enrollment.EnrollmentCollectionRepository;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.enrollment.note.NoteModel;
@@ -33,11 +36,12 @@ import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.legendset.LegendModel;
 import org.hisp.dhis.android.core.legendset.ProgramIndicatorLegendSetLinkModel;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
+import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramIndicatorModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
+import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.relationship.RelationshipTypeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
@@ -77,26 +81,10 @@ public class DashboardRepositoryImpl implements DashboardRepository {
             "WHERE Enrollment.trackedEntityInstance = ? AND Enrollment.program = ?\n" +
             "ORDER BY Note.storedDate DESC";
 
-    private final String PROGRAM_QUERY = String.format("SELECT %s.* FROM %s WHERE %s.%s = ",
-            ProgramModel.TABLE, ProgramModel.TABLE, ProgramModel.TABLE, ProgramModel.Columns.UID);
 
     private final String PROGRAM_INDICATORS_QUERY = String.format("SELECT %s.* FROM %s WHERE %s.%s = ",
             ProgramIndicatorModel.TABLE, ProgramIndicatorModel.TABLE, ProgramIndicatorModel.TABLE, ProgramIndicatorModel.Columns.PROGRAM);
 
-    private final String ATTRIBUTES_QUERY = String.format("SELECT %s.* FROM %s INNER JOIN %s ON %s.%s = %s.%s WHERE %s.%s = ",
-            TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.TABLE,
-            ProgramTrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.Columns.UID,
-            ProgramTrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.Columns.TRACKED_ENTITY_ATTRIBUTE,
-            ProgramTrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.Columns.PROGRAM);
-
-    private final String ORG_UNIT_QUERY = String.format("SELECT * FROM %s WHERE %s.%s = ",
-            OrganisationUnitModel.TABLE, OrganisationUnitModel.TABLE, OrganisationUnitModel.Columns.UID
-    );
-
-    private final String ENROLLMENT_QUERY = String.format("SELECT * FROM %s WHERE %s.%s = ? AND %s.%s = ? ORDER BY %s DESC LIMIT 1",
-            EnrollmentModel.TABLE, EnrollmentModel.TABLE, EnrollmentModel.Columns.PROGRAM,
-            EnrollmentModel.TABLE, EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE,
-            EnrollmentModel.Columns.CREATED);
 
     private final String PROGRAM_STAGE_QUERY = String.format("SELECT * FROM %s WHERE %s.%s = ",
             ProgramStageModel.TABLE, ProgramStageModel.TABLE, ProgramStageModel.Columns.PROGRAM);
@@ -110,9 +98,6 @@ public class DashboardRepositoryImpl implements DashboardRepository {
             ProgramStageModel.TABLE, ProgramStageModel.Columns.UID, EventModel.TABLE, EventModel.Columns.PROGRAM_STAGE,
             EventModel.TABLE, EventModel.Columns.UID);
 
-    private final String GET_EVENT_FROM_UID = String.format(
-            "SELECT * FROM %s WHERE %s.%s = ? LIMIT 1",
-            EventModel.TABLE, EventModel.TABLE, EventModel.Columns.UID);
 
     private final String EVENTS_QUERY = String.format(
             "SELECT DISTINCT %s.* FROM %s " +
@@ -265,11 +250,11 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     }
 
     @Override
-    public Observable<EnrollmentModel> getEnrollment(String programUid, String teiUid) {
+    public Observable<Enrollment> getEnrollment(String programUid, String teiUid) {
         String progId = programUid == null ? "" : programUid;
         String teiId = teiUid == null ? "" : teiUid;
-        return briteDatabase.createQuery(EnrollmentModel.TABLE, ENROLLMENT_QUERY, progId, teiId)
-                .mapToOne(EnrollmentModel::create);
+        return Observable.fromCallable(() -> d2.enrollmentModule().enrollments.byTrackedEntityInstance()
+                .eq(teiId).byProgram().eq(progId).one().get());
     }
 
     @Override
@@ -301,7 +286,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                 .mapToOne(ProgramStageModel::create);
     }
 
-    @Override
+    /*@Override
     public Observable<String> generateNewEvent(String lastModifiedEventUid, Integer standardInterval) {
         return briteDatabase.createQuery(EventModel.TABLE, GET_EVENT_FROM_UID, lastModifiedEventUid == null ? "" : lastModifiedEventUid)
                 .mapToOne(EventModel::create)
@@ -338,7 +323,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
                     return Observable.just("Event Created");
                 });
-    }
+    }*/
 
     @Override
     public Observable<Trio<ProgramIndicatorModel, String, String>> getLegendColorForIndicator(ProgramIndicatorModel indicator, String value) {
@@ -352,7 +337,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
         return Observable.just(Trio.create(indicator, value, color));
     }
 
-    @Override
+    /*@Override
     public Observable<String> generateNewEventFromDate(String lastModifiedEventUid, Calendar chosenDate) {
         return briteDatabase.createQuery(EventModel.TABLE, GET_EVENT_FROM_UID, lastModifiedEventUid == null ? "" : lastModifiedEventUid)
                 .mapToOne(EventModel::create)
@@ -389,7 +374,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
                     return Observable.just("Event Created");
                 });
-    }
+    }*/
 
     @Override
     public void updateTeiState() {
@@ -610,4 +595,63 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                 });
     }
 
+
+    @Override
+    public Observable<TrackedEntityInstance> getTrackedEntityInstance(String teiUid) {
+        return Observable.fromCallable(() -> d2.trackedEntityModule().trackedEntityInstances.byUid().eq(teiUid).one().get());
+    }
+
+    @Override
+    public Observable<List<ProgramTrackedEntityAttribute>> getProgramTrackedEntityAttributes(String programUid) {
+        if (programUid != null)
+            return Observable.fromCallable(() -> d2.programModule().programs.withProgramTrackedEntityAttributes().byUid().eq(programUid).one().get().programTrackedEntityAttributes());
+        else
+            return Observable.fromCallable(() -> d2.trackedEntityModule().trackedEntityAttributes.byDisplayInListNoProgram().eq(true).get())
+                    .map(trackedEntityAttributes -> {
+                        List<Program> programs = d2.programModule().programs.withProgramTrackedEntityAttributes().get();
+                        List<String> teaUids = UidsHelper.getUidsList(trackedEntityAttributes);
+                        List<ProgramTrackedEntityAttribute> programTrackedEntityAttributes = new ArrayList<>();
+                        for (Program program : programs) {
+                            for (ProgramTrackedEntityAttribute pteattr : program.programTrackedEntityAttributes()) {
+                                if (teaUids.contains(pteattr.uid()))
+                                    programTrackedEntityAttributes.add(pteattr);
+                            }
+                        }
+                        return programTrackedEntityAttributes;
+                    });
+    }
+
+
+    @Override
+    public Observable<List<OrganisationUnit>> getTeiOrgUnits(@NonNull String teiUid, @Nullable String programUid) {
+        EnrollmentCollectionRepository enrollmentRepo =  d2.enrollmentModule().enrollments.withAllChildren().byTrackedEntityInstance().eq(teiUid);
+        if (programUid != null) {
+            enrollmentRepo = enrollmentRepo.byProgram().eq(programUid);
+        }
+
+        return enrollmentRepo.getAsync().toObservable()
+                .map(enrollments -> {
+                    List<String> orgUnitIds = new ArrayList<>();
+                    for (Enrollment enrollment : enrollments) {
+                        orgUnitIds.add(enrollment.organisationUnit());
+                    }
+                    return d2.organisationUnitModule().organisationUnits.byUid().in(orgUnitIds).get();
+                });
+    }
+
+    @Override
+    public Observable<List<Program>> getTeiActivePrograms(String teiUid, boolean showOnlyActive) {
+        EnrollmentCollectionRepository enrollmentRepo = d2.enrollmentModule().enrollments.byTrackedEntityInstance().eq(teiUid);
+        if (showOnlyActive)
+            enrollmentRepo.byStatus().eq(EnrollmentStatus.ACTIVE);
+        return enrollmentRepo.getAsync().toObservable().flatMapIterable(enrollments -> enrollments)
+                .map(Enrollment::program)
+                .toList().toObservable()
+                .map(programUids -> d2.programModule().programs.byUid().in(programUids).withStyle().get());
+    }
+
+    @Override
+    public Observable<List<Enrollment>> getTEIEnrollments(String teiUid) {
+        return d2.enrollmentModule().enrollments.byTrackedEntityInstance().eq(teiUid).getAsync().toObservable();
+    }
 }

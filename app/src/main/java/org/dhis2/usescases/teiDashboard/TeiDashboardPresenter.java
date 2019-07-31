@@ -6,8 +6,6 @@ import android.os.Bundle;
 import androidx.lifecycle.MutableLiveData;
 
 import org.dhis2.R;
-import org.dhis2.data.forms.dataentry.RuleEngineRepository;
-import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.utils.AuthorityException;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.State;
@@ -29,23 +27,20 @@ import timber.log.Timber;
 public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
     private final DashboardRepository dashboardRepository;
-    private final MetadataRepository metadataRepository;
     private final D2 d2;
     private TeiDashboardContracts.View view;
 
     private String teUid;
     private String programUid;
-    private boolean programWritePermission;
 
     private CompositeDisposable compositeDisposable;
     private DashboardProgramModel dashboardProgramModel;
 
     private MutableLiveData<DashboardProgramModel> dashboardProgramModelLiveData = new MutableLiveData<>();
 
-    TeiDashboardPresenter(D2 d2, DashboardRepository dashboardRepository, MetadataRepository metadataRepository, RuleEngineRepository formRepository) {
+    TeiDashboardPresenter(D2 d2, DashboardRepository dashboardRepository) {
         this.d2 = d2;
         this.dashboardRepository = dashboardRepository;
-        this.metadataRepository = metadataRepository;
         compositeDisposable = new CompositeDisposable();
     }
 
@@ -65,28 +60,21 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     public void getData() {
         if (programUid != null)
             compositeDisposable.add(Observable.zip(
-                    metadataRepository.getTrackedEntityInstance(teUid),
+                    dashboardRepository.getTrackedEntityInstance(teUid),
                     dashboardRepository.getEnrollment(programUid, teUid),
                     dashboardRepository.getProgramStages(programUid),
                     dashboardRepository.getTEIEnrollmentEvents(programUid, teUid),
-                    metadataRepository.getProgramTrackedEntityAttributes(programUid),
+                    dashboardRepository.getProgramTrackedEntityAttributes(programUid),
                     dashboardRepository.getTEIAttributeValues(programUid, teUid),
-                    metadataRepository.getTeiOrgUnits(teUid, programUid),
-                    metadataRepository.getTeiActivePrograms(teUid, false),
+                    dashboardRepository.getTeiOrgUnits(teUid, programUid),
+                    dashboardRepository.getTeiActivePrograms(teUid, false),
                     DashboardProgramModel::new)
-                    .flatMap(dashboardProgramModel1 -> metadataRepository.getObjectStylesForPrograms(dashboardProgramModel1.getEnrollmentProgramModels())
-                            .map(stringObjectStyleMap -> {
-                                dashboardProgramModel1.setProgramsObjectStyles(stringObjectStyleMap);
-                                return dashboardProgramModel1;
-                            }))
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
                             dashboardModel -> {
                                 this.dashboardProgramModel = dashboardModel;
                                 this.dashboardProgramModelLiveData.setValue(dashboardModel);
-                                if (dashboardProgramModel.getCurrentProgram() != null)
-                                    this.programWritePermission = dashboardProgramModel.getCurrentProgram().accessDataWrite();
                                 view.setData(dashboardProgramModel);
                             },
                             Timber::e
@@ -95,18 +83,13 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
         else {
             compositeDisposable.add(Observable.zip(
-                    metadataRepository.getTrackedEntityInstance(teUid),
-                    metadataRepository.getProgramTrackedEntityAttributes(null),
+                    dashboardRepository.getTrackedEntityInstance(teUid),
+                    dashboardRepository.getProgramTrackedEntityAttributes(null),
                     dashboardRepository.getTEIAttributeValues(null, teUid),
-                    metadataRepository.getTeiOrgUnits(teUid),
-                    metadataRepository.getTeiActivePrograms(teUid, true),
-                    metadataRepository.getTEIEnrollments(teUid),
+                    dashboardRepository.getTeiOrgUnits(teUid, null),
+                    dashboardRepository.getTeiActivePrograms(teUid, true),
+                    dashboardRepository.getTEIEnrollments(teUid),
                     DashboardProgramModel::new)
-                    .flatMap(dashboardProgramModel1 -> metadataRepository.getObjectStylesForPrograms(dashboardProgramModel1.getEnrollmentProgramModels())
-                            .map(stringObjectStyleMap -> {
-                                dashboardProgramModel1.setProgramsObjectStyles(stringObjectStyleMap);
-                                return dashboardProgramModel1;
-                            }))
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(

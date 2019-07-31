@@ -212,11 +212,10 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
     @Override
     public boolean isEnrollmentOpen() {
         boolean isEnrollmentOpen = true;
-        try (Cursor enrollmentCursor = briteDatabase.query("SELECT Enrollment.* FROM Enrollment JOIN Event ON Event.enrollment = Enrollment.uid WHERE Event.uid = ?", eventUid)) {
-            if (enrollmentCursor != null && enrollmentCursor.moveToFirst()) {
-                EnrollmentModel enrollment = EnrollmentModel.create(enrollmentCursor);
-                isEnrollmentOpen = enrollment.enrollmentStatus() == EnrollmentStatus.ACTIVE;
-            }
+        if(d2.eventModule().events.byUid().eq(eventUid).one().exists()) {
+            isEnrollmentOpen = d2.enrollmentModule().enrollments.byUid()
+                    .eq(d2.eventModule().events.byUid().eq(eventUid).one().get().enrollment())
+                    .one().get().status() == EnrollmentStatus.ACTIVE;
         }
         return isEnrollmentOpen;
     }

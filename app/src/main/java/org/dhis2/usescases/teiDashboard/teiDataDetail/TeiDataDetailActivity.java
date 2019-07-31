@@ -116,10 +116,10 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
     @Override
     public void setData(DashboardProgramModel program) {
         this.dashboardProgramModel = program;
-        this.enrollmentStatus = program.getCurrentEnrollment().enrollmentStatus();
+        this.enrollmentStatus = program.getCurrentEnrollment().status();
         binding.setDashboardModel(program);
         binding.setProgram(program.getCurrentProgram());
-        binding.setEnrollmentStatus(program.getCurrentEnrollment().enrollmentStatus());
+        binding.setEnrollmentStatus(program.getCurrentEnrollment().status());
         binding.setEnrollmentDate(dashboardProgramModel.getCurrentEnrollment().enrollmentDate());
         binding.setIncidentDate(dashboardProgramModel.getCurrentEnrollment().incidentDate());
         binding.executePendingBindings();
