@@ -3,6 +3,7 @@ package org.dhis2.usescases.teiDashboard;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
@@ -12,6 +13,7 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.enrollment.note.NoteModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.ProgramIndicatorModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute;
@@ -78,4 +80,6 @@ public interface DashboardRepository {
     Observable<TrackedEntityInstance> getTrackedEntityInstance(String teiUid);
 
     Observable<List<ProgramTrackedEntityAttribute>> getProgramTrackedEntityAttributes(String programUid);
+
+    Observable<List<OrganisationUnit>> getTeiOrgUnits(@NonNull String teiUid, @Nullable String programUid);
 }

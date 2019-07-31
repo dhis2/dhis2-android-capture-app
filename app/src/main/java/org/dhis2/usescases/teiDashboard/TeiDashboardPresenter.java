@@ -71,7 +71,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                     dashboardRepository.getTEIEnrollmentEvents(programUid, teUid),
                     dashboardRepository.getProgramTrackedEntityAttributes(programUid),
                     dashboardRepository.getTEIAttributeValues(programUid, teUid),
-                    metadataRepository.getTeiOrgUnits(teUid, programUid),
+                    dashboardRepository.getTeiOrgUnits(teUid, programUid),
                     metadataRepository.getTeiActivePrograms(teUid, false),
                     DashboardProgramModel::new)
                     .flatMap(dashboardProgramModel1 -> metadataRepository.getObjectStylesForPrograms(dashboardProgramModel1.getEnrollmentProgramModels())
@@ -98,7 +98,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                     dashboardRepository.getTrackedEntityInstance(teUid),
                     dashboardRepository.getProgramTrackedEntityAttributes(null),
                     dashboardRepository.getTEIAttributeValues(null, teUid),
-                    metadataRepository.getTeiOrgUnits(teUid),
+                    dashboardRepository.getTeiOrgUnits(teUid, null),
                     metadataRepository.getTeiActivePrograms(teUid, true),
                     metadataRepository.getTEIEnrollments(teUid),
                     DashboardProgramModel::new)

@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
@@ -26,6 +27,7 @@ import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.data.database.DbDateColumnAdapter;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
+import org.hisp.dhis.android.core.enrollment.EnrollmentCollectionRepository;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.enrollment.note.NoteModel;
@@ -34,6 +36,7 @@ import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.legendset.LegendModel;
 import org.hisp.dhis.android.core.legendset.ProgramIndicatorLegendSetLinkModel;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramIndicatorModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -259,7 +262,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
         String progId = programUid == null ? "" : programUid;
         String teiId = teiUid == null ? "" : teiUid;
         return Observable.fromCallable(() -> d2.enrollmentModule().enrollments.byTrackedEntityInstance()
-        .eq(teiId).byProgram().eq(progId).one().get());
+                .eq(teiId).byProgram().eq(progId).one().get());
     }
 
     @Override
@@ -612,19 +615,38 @@ public class DashboardRepositoryImpl implements DashboardRepository {
             return Observable.fromCallable(() -> d2.programModule().programs.withProgramTrackedEntityAttributes().byUid().eq(programUid).one().get().programTrackedEntityAttributes());
         else
             return Observable.fromCallable(() -> d2.trackedEntityModule().trackedEntityAttributes.byDisplayInListNoProgram().eq(true).get())
-                .map(trackedEntityAttributes -> {
-                    List<Program> programs = d2.programModule().programs.withProgramTrackedEntityAttributes().get();
-                    List<String> teaUids = UidsHelper.getUidsList(trackedEntityAttributes);
-                    List<ProgramTrackedEntityAttribute> programTrackedEntityAttributes = new ArrayList<>();
-                    for (Program program : programs) {
-                        for (ProgramTrackedEntityAttribute pteattr : program.programTrackedEntityAttributes()) {
-                            if(teaUids.contains(pteattr.uid()))
-                                programTrackedEntityAttributes.add(pteattr);
+                    .map(trackedEntityAttributes -> {
+                        List<Program> programs = d2.programModule().programs.withProgramTrackedEntityAttributes().get();
+                        List<String> teaUids = UidsHelper.getUidsList(trackedEntityAttributes);
+                        List<ProgramTrackedEntityAttribute> programTrackedEntityAttributes = new ArrayList<>();
+                        for (Program program : programs) {
+                            for (ProgramTrackedEntityAttribute pteattr : program.programTrackedEntityAttributes()) {
+                                if (teaUids.contains(pteattr.uid()))
+                                    programTrackedEntityAttributes.add(pteattr);
+                            }
                         }
-                    }
-                    return programTrackedEntityAttributes;
-                });
+                        return programTrackedEntityAttributes;
+                    });
 
 
     }
+
+
+    @Override
+    public Observable<List<OrganisationUnit>> getTeiOrgUnits(@NonNull String teiUid, @Nullable String programUid) {
+        EnrollmentCollectionRepository enrollmentRepo =  d2.enrollmentModule().enrollments.withAllChildren().byTrackedEntityInstance().eq(teiUid);
+        if (programUid != null) {
+            enrollmentRepo = enrollmentRepo.byProgram().eq(programUid);
+        }
+
+        return enrollmentRepo.getAsync().toObservable()
+                .map(enrollments -> {
+                    List<String> orgUnitIds = new ArrayList<>();
+                    for (Enrollment enrollment : enrollments) {
+                        orgUnitIds.add(enrollment.organisationUnit());
+                    }
+                    return d2.organisationUnitModule().organisationUnits.byUid().in(orgUnitIds).get();
+                });
+    }
+
 }

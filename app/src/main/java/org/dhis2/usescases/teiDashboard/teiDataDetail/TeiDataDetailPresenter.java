@@ -60,7 +60,7 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
                     dashboardRepository.getTEIEnrollmentEvents(programUid, uid),
                     dashboardRepository.getProgramTrackedEntityAttributes(programUid),
                     dashboardRepository.getTEIAttributeValues(programUid, uid),
-                    metadataRepository.getTeiOrgUnits(uid),
+                    dashboardRepository.getTeiOrgUnits(uid, programUid),
                     metadataRepository.getTeiActivePrograms(uid, false),
                     DashboardProgramModel::new)
                     .subscribeOn(Schedulers.io())
@@ -95,7 +95,7 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
                     dashboardRepository.getTrackedEntityInstance(uid),
                     dashboardRepository.getProgramTrackedEntityAttributes(null),
                     dashboardRepository.getTEIAttributeValues(null, uid),
-                    metadataRepository.getTeiOrgUnits(uid),
+                    dashboardRepository.getTeiOrgUnits(uid, null),
                     metadataRepository.getTeiActivePrograms(uid, false),
                     metadataRepository.getTEIEnrollments(uid),
                     DashboardProgramModel::new)

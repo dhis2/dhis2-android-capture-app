@@ -6,7 +6,7 @@ import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute;
@@ -29,7 +29,7 @@ public class DashboardProgramModel extends BaseObservable {
     private Enrollment currentEnrollment;
     private List<ProgramStageModel> programStages;
     private List<ProgramModel> enrollmentProgramModels;
-    private List<OrganisationUnitModel> orgsUnits;
+    private List<OrganisationUnit> orgsUnits;
     private List<EnrollmentModel> teiEnrollments;
     private Map<String, ObjectStyleModel> programObjectStyles;
 
@@ -40,7 +40,7 @@ public class DashboardProgramModel extends BaseObservable {
             List<EventModel> events,
             List<ProgramTrackedEntityAttribute> trackedEntityAttributes,
             List<TrackedEntityAttributeValueModel> trackedEntityAttributeValues,
-            List<OrganisationUnitModel> orgsUnits,
+            List<OrganisationUnit> orgsUnits,
             List<ProgramModel> enrollmentProgramModels) {
 
         this.currentEnrollment = currentEnrollment;
@@ -56,7 +56,7 @@ public class DashboardProgramModel extends BaseObservable {
     public DashboardProgramModel(TrackedEntityInstance tei,
                                  List<ProgramTrackedEntityAttribute> trackedEntityAttributes,
                                  List<TrackedEntityAttributeValueModel> trackedEntityAttributeValues,
-                                 List<OrganisationUnitModel> orgsUnits,
+                                 List<OrganisationUnit> orgsUnits,
                                  List<ProgramModel> enrollmentProgramModels,
                                  List<EnrollmentModel> teiEnrollments) {
         this.tei = tei;
@@ -79,14 +79,14 @@ public class DashboardProgramModel extends BaseObservable {
         return programStages;
     }
 
-    public List<OrganisationUnitModel> getOrgUnits() {
+    public List<OrganisationUnit> getOrgUnits() {
         return orgsUnits;
     }
 
-    public OrganisationUnitModel getCurrentOrgUnit() {
-        OrganisationUnitModel currentOrgUnit = null;
+    public OrganisationUnit getCurrentOrgUnit() {
+        OrganisationUnit currentOrgUnit = null;
         if (currentEnrollment != null)
-            for (OrganisationUnitModel orgUnit : orgsUnits) {
+            for (OrganisationUnit orgUnit : orgsUnits) {
                 if (currentEnrollment.organisationUnit().equals(orgUnit.uid()))
                     currentOrgUnit = orgUnit;
             }
