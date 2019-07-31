@@ -6,6 +6,8 @@ import androidx.paging.DataSource;
 import androidx.paging.LivePagedListBuilder;
 import androidx.paging.PagedList;
 
+import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.tuples.Pair;
@@ -33,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 
@@ -63,7 +66,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
         if (!orgUnitFilter.isEmpty())
             eventRepo = eventRepo.byOrganisationUnitUid().in(orgUnitFilter);
         if (!catOptCombList.isEmpty())
-                eventRepo = eventRepo.byAttributeOptionComboUid().in(UidsHelper.getUids(catOptCombList));
+            eventRepo = eventRepo.byAttributeOptionComboUid().in(UidsHelper.getUids(catOptCombList));
         DataSource dataSource = eventRepo.byState().notIn(State.TO_DELETE).orderByEventDate(RepositoryScope.OrderByDirection.DESC).withAllChildren().getDataSource().map(event -> transformToProgramEventModel(event));
         return new LivePagedListBuilder(new DataSource.Factory() {
             @Override
@@ -71,6 +74,42 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
                 return dataSource;
             }
         }, 20).build();
+    }
+
+    @NonNull
+    @Override
+    public Flowable<List<SymbolOptions>> filteredEventsForMap(List<DatePeriod> dateFilter, List<String> orgUnitFilter, List<CategoryOptionCombo> catOptCombList) {
+        EventCollectionRepository eventRepo = d2.eventModule().events.byProgramUid().eq(programUid);
+        if (!dateFilter.isEmpty())
+            eventRepo = eventRepo.byEventDate().inDatePeriods(dateFilter);
+        if (!orgUnitFilter.isEmpty())
+            eventRepo = eventRepo.byOrganisationUnitUid().in(orgUnitFilter);
+        if (!catOptCombList.isEmpty())
+            eventRepo = eventRepo.byAttributeOptionComboUid().in(UidsHelper.getUids(catOptCombList));
+        return eventRepo.byState().notIn(State.TO_DELETE).orderByEventDate(RepositoryScope.OrderByDirection.DESC).withAllChildren().getAsync()
+                .toFlowable()
+                .flatMap(list -> Flowable.fromCallable(() -> {
+                    List<SymbolOptions> options = new ArrayList<>();
+                    for (Event event : list)
+                        if (event.coordinate() != null && event.coordinate().latitude() != null && event.coordinate().longitude() != null)
+                            options.add(
+                                    new SymbolOptions()
+                                            .withLatLng(new LatLng(event.coordinate().latitude(), event.coordinate().longitude()))
+                                            .withIconImage("ICON_ID")
+                                            .withTextField(event.uid())
+                                            .withTextSize(0f)
+                                            .withDraggable(false)
+                            );
+                    return options;
+                }));
+    }
+
+
+    @Override
+    public Flowable<ProgramEventViewModel> getInfoForEvent(String eventUid) {
+        return d2.eventModule().events.uid(eventUid).withAllChildren().getAsync()
+                .map(this::transformToProgramEventModel)
+                .toFlowable();
     }
 
     private ProgramEventViewModel transformToProgramEventModel(Event event) {
@@ -214,4 +253,5 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
                     return hasAccess;
                 }).toSingle();
     }
+
 }

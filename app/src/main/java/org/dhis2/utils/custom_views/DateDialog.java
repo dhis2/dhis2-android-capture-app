@@ -1,20 +1,21 @@
 package org.dhis2.utils.custom_views;
 
 import android.app.Dialog;
-import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.DialogFragment;
+
 import org.dhis2.R;
 import org.dhis2.databinding.DialogDateBinding;
 import org.dhis2.utils.Period;
-import org.hisp.dhis.android.core.period.PeriodType;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Date;
 import java.util.List;
@@ -39,15 +40,6 @@ public class DateDialog extends DialogFragment {
     private View.OnClickListener possitiveListener;
     private View.OnClickListener negativeListener;
 
-    public static DateDialog newInstace(Period mPeriod) {
-        if (period != mPeriod || instace == null) {
-            period = mPeriod;
-            instace = new DateDialog();
-            adapter = new DateAdapter(period);
-        }
-        return instace;
-    }
-
     public static DateDialog newInstace(ActionTrigger<DateDialog> mActionTrigger, Period mPeriod) {
         if (period != mPeriod || instace == null) {
             period = mPeriod;
@@ -67,6 +59,15 @@ public class DateDialog extends DialogFragment {
         }
 
         adapter.swapMapPeriod(mapPeriods);
+        return instace;
+    }
+
+    public static DateDialog newInstace(ActionTrigger<DateDialog> mActionTrigger) {
+        period = Period.WEEKLY;
+        dialogActionTrigger = mActionTrigger;
+
+        instace = new DateDialog();
+        adapter = new DateAdapter(period);
         return instace;
     }
 
@@ -96,7 +97,7 @@ public class DateDialog extends DialogFragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NotNull LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         DialogDateBinding binding = DataBindingUtil.inflate(inflater, R.layout.dialog_date, container, false);
 
         binding.recyclerDate.setAdapter(adapter);
@@ -106,6 +107,10 @@ public class DateDialog extends DialogFragment {
         binding.acceptButton.setOnClickListener(possitiveListener);
         binding.acceptButton.setOnClickListener(possitiveListener);
         binding.clearButton.setOnClickListener(negativeListener);
+
+        binding.title.setOnClickListener(v -> {
+            adapter.swapPeriod();
+        });
 
 
         return binding.getRoot();
@@ -133,7 +138,7 @@ public class DateDialog extends DialogFragment {
         return adapter.getSelectedDates();
     }
 
-    public List<String> getFiltersPeriod(){
+    public List<String> getFiltersPeriod() {
         return adapter.getSeletedDatesName();
     }
 
@@ -141,7 +146,7 @@ public class DateDialog extends DialogFragment {
         return adapter.clearFilters();
     }
 
-    public List<String> clearFiltersPeriod(){
+    public List<String> clearFiltersPeriod() {
         return adapter.clearFiltersPeriod();
     }
 }

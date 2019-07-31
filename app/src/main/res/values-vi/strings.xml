@@ -265,10 +265,7 @@
   <string name="tuto_settings_2">...cấu hình...</string>
   <string name="tuto_settings_3">...cài đặt dung lượng lưu trữ cục bộ...</string>
   <string name="tuto_settings_4">...hoặc xóa tất cả để bắt đầu lại từ đầu.</string>
-  <string name="tuto_search_1">Tìm các thực thể của bạn trong cả bộ nhớ cục bộ và máy chủ trực tuyến.</string>
   <string name="tuto_search_2">Bạn có thể đổi sang các chương trình khác.</string>
-  <string name="tuto_search_3">Thêm các thực thể mới.</string>
-  <string name="tuto_search_4">Nhấn vào đây để bắt đầu lại</string>
   <string name="tuto_dashboard_1">Đây là bảng tin thực của thực thể</string>
   <string name="tuto_dashboard_2">Xem thông tin hồ sơ của các thực thể...</string>
   <string name="tuto_dashboard_3">...Chia sẻ thông tin qua QR hoặc SMS...</string>

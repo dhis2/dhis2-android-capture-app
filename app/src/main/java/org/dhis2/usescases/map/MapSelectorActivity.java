@@ -4,7 +4,10 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -13,18 +16,40 @@ import androidx.core.app.ActivityCompat;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.gson.Gson;
+import com.mapbox.geojson.Feature;
+import com.mapbox.geojson.Polygon;
 import com.mapbox.mapboxsdk.Mapbox;
+import com.mapbox.mapboxsdk.annotations.MarkerOptions;
+import com.mapbox.mapboxsdk.annotations.PolygonOptions;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.Style;
+import com.mapbox.mapboxsdk.style.layers.FillLayer;
+import com.mapbox.mapboxsdk.style.layers.Layer;
+import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
+import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
+import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 
 import org.dhis2.BuildConfig;
 import org.dhis2.R;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
+import org.hisp.dhis.android.core.period.FeatureType;
 import org.jetbrains.annotations.NotNull;
+import com.mapbox.geojson.Point;
+import com.mapbox.mapboxsdk.style.sources.Source;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Random;
+import java.util.UUID;
+
+import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.fillColor;
 
 
 /**
@@ -38,12 +63,24 @@ public class MapSelectorActivity extends ActivityGlobalAbstract {
     private static final int ACCESS_COARSE_LOCATION_PERMISSION_REQUEST = 102;
     private FusedLocationProviderClient mFusedLocationClient;
     public static final String LATITUDE = "latitude";
+    public static final String POLYGON_DATA = "polygon_data";
+    public static final String MULTI_POLYGON_DATA = "multi_polygon_data";
     public static final String LONGITUDE = "longitude";
     private TextView latLon;
+    private Style style;
+    private FloatingActionButton save;
+    private static List<CustomMark> points = new ArrayList<>();
+    private static int index = 0;
+    private List<Source> markers = new ArrayList<>();
+    private List<Layer> layers = new ArrayList<>();
+    private FeatureType location_type;
+    private static final String LOCATION_TYPE_EXTRA = "LOCATION_TYPE_EXTRA";
 
     @NonNull
-    public static Intent create(@NonNull Activity activity) {
-        return new Intent(activity, MapSelectorActivity.class);
+    public static Intent create(@NonNull Activity activity, FeatureType locationType) {
+        Intent intent = new Intent(activity, MapSelectorActivity.class);
+        intent.putExtra(LOCATION_TYPE_EXTRA, locationType.toString());
+        return intent;
     }
 
     @Override
@@ -53,19 +90,46 @@ public class MapSelectorActivity extends ActivityGlobalAbstract {
         setContentView(R.layout.activity_map_selector);
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         findViewById(R.id.back).setOnClickListener(v -> finish());
-        findViewById(R.id.fab).setOnClickListener(v -> {
-            if (map != null && map.getCameraPosition().target != null) {
-                Intent data = new Intent();
-                data.putExtra(LATITUDE, String.valueOf(map.getCameraPosition().target.getLatitude()));
-                data.putExtra(LONGITUDE, String.valueOf(map.getCameraPosition().target.getLongitude()));
-                setResult(RESULT_OK, data);
-                finish();
-            } else {
-                setResult(RESULT_CANCELED);
-                finish();
+        FloatingActionButton fab = findViewById(R.id.fab);
+        location_type = FeatureType.valueOf(
+                getIntent().getStringExtra(LOCATION_TYPE_EXTRA)
+        );
+        if (location_type == FeatureType.NONE) {finish();}
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (points.size() <= index) {
+                    points.add(new CustomMark(new ArrayList<>(), UUID.randomUUID().toString()));
+                    points.get(index).marker.add(new ArrayList<>());
+                }
+                Point point = Point.fromLngLat(map.getCameraPosition().target.getLongitude(),
+                        map.getCameraPosition().target.getLatitude());
+                points.get(index).marker.get(0).add(point);
+                if (location_type == FeatureType.POINT) {
+                    if (map != null && map.getCameraPosition().target != null) {
+                        setList();
+                    } else {
+                        setResult(RESULT_CANCELED);
+                        finish();
+                    }
+                    return;
+                }
+                addPoint(point);
+
             }
         });
-
+        save = findViewById(R.id.save);
+        save.setVisibility(location_type == FeatureType.POLYGON ? View.VISIBLE : View.GONE);
+        save.setOnClickListener(v -> {
+            setList();
+        });
+        FloatingActionButton add = findViewById(R.id.add);
+        add.setVisibility(location_type == FeatureType.MULTI_POLYGON ? View.VISIBLE : View.GONE);
+        add.setOnClickListener(v -> {
+            index++;
+            updateVector();
+        });
         latLon = findViewById(R.id.latlon);
 
         mapView = findViewById(R.id.map_view);
@@ -73,6 +137,7 @@ public class MapSelectorActivity extends ActivityGlobalAbstract {
         mapView.getMapAsync(mapboxMap -> {
             map = mapboxMap;
             mapboxMap.setStyle(Style.MAPBOX_STREETS, style -> {
+                this.style = style;
                 centerMapOnCurrentLocation();
             });
             map.addOnCameraIdleListener(() -> {
@@ -82,6 +147,87 @@ public class MapSelectorActivity extends ActivityGlobalAbstract {
                 }
             });
         });
+    }
+
+    private void setList() {
+        Intent data = new Intent();
+        if (location_type == FeatureType.POLYGON) {
+            List<Point> returnList = new ArrayList<>();
+            for (CustomMark lst: points) {
+                returnList.addAll(lst.marker.get(0));
+            }
+            data.putExtra(LATITUDE, String.valueOf(returnList.get(0).latitude()));
+            data.putExtra(LONGITUDE, String.valueOf(returnList.get(0).longitude()));
+            data.putExtra(POLYGON_DATA, new Gson().toJson(returnList));
+        } else if (location_type == FeatureType.POINT) {
+            data.putExtra(LATITUDE, String.valueOf(map.getCameraPosition().target.getLatitude()));
+            data.putExtra(LONGITUDE, String.valueOf(map.getCameraPosition().target.getLongitude()));
+        } else if (location_type == FeatureType.MULTI_POLYGON) {
+            List<List<Point>> returnList = new ArrayList<>();
+            for (CustomMark lst: points) {
+                returnList.addAll(lst.marker);
+            }
+            data.putExtra(LATITUDE, String.valueOf(returnList.get(0).get(0).latitude()));
+            data.putExtra(LONGITUDE, String.valueOf(returnList.get(0).get(0).longitude()));
+            data.putExtra(MULTI_POLYGON_DATA, new Gson().toJson(returnList));
+        }
+
+        setResult(RESULT_OK, data);
+        finish();
+    }
+
+    public void addPoint(Point point) {
+        String uuid = UUID.randomUUID().toString();
+        style.addImage(uuid,
+                BitmapFactory.decodeResource(
+                        this.getResources(), R.drawable.mapbox_marker_icon_default));
+
+        GeoJsonSource geoJsonSource = new GeoJsonSource(uuid, Feature.fromGeometry(
+                point));
+        markers.add(geoJsonSource);
+        style.addSource(geoJsonSource);
+
+        SymbolLayer symbolLayer = new SymbolLayer(uuid, uuid);
+        symbolLayer.withProperties(
+                PropertyFactory.iconImage(uuid)
+        );
+        layers.add(symbolLayer);
+        style.addLayer(symbolLayer);
+    }
+
+    public void updateVector() {
+        for (Source s: markers) {
+            style.removeSource(s);
+        }
+        for (Layer l: layers) {
+            style.removeLayer(l);
+        }
+        markers.clear();
+        layers.clear();
+        for (CustomMark lst: points) {
+            List<List<Point>> list = new ArrayList<>();
+            for (List<Point> pointsList: lst.marker) {
+                if (pointsList.size() == 1) {
+                    pointsList.add(pointsList.get(0));
+                }
+                if (pointsList.get(0).longitude() != pointsList.get(pointsList.size() - 1).longitude()
+                        && pointsList.get(0).latitude() != pointsList.get(pointsList.size() - 1).latitude()) {
+                    pointsList.add(pointsList.get(0));
+                }
+                list.add(pointsList);
+            }
+            if (style.getSource(lst.uuid) == null) {
+                style.addSource(new GeoJsonSource(lst.uuid, Polygon.fromLngLats(list)));
+                Random rnd = new Random();
+                int color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
+                style.addLayer(new FillLayer(lst.uuid, lst.uuid).withProperties(
+                        fillColor(color))
+                );
+            } else {
+                ((GeoJsonSource) style.getSource(lst.uuid)).setGeoJson(Polygon.fromLngLats(list));
+            }
+        }
+
     }
 
     // Add the mapView's own lifecycle methods to the activity's lifecycle methods
@@ -169,3 +315,14 @@ public class MapSelectorActivity extends ActivityGlobalAbstract {
         }
     }
 }
+
+class CustomMark {
+    List<List<Point>> marker;
+    String uuid;
+
+    CustomMark(List<List<Point>> marker, String uuid) {
+        this.marker = marker;
+        this.uuid = uuid;
+    }
+}
+

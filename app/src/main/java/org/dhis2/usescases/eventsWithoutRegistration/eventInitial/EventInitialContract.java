@@ -17,6 +17,7 @@ import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
+import org.hisp.dhis.android.core.period.FeatureType;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
 
@@ -118,7 +119,7 @@ public class EventInitialContract {
 
         void onLocationClick();
 
-        void onLocation2Click();
+        void onLocation2Click(FeatureType featureType);
 
         void onLatChanged(CharSequence s, int start, int before, int count);
 
