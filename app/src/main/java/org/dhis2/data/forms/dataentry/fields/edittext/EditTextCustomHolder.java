@@ -1,11 +1,6 @@
 package org.dhis2.data.forms.dataentry.fields.edittext;
 
 
-import android.content.ClipData;
-import android.content.ClipboardManager;
-import android.content.Context;
-import android.view.MotionEvent;
-import android.view.View;
 import android.widget.ArrayAdapter;
 
 import androidx.annotation.NonNull;
@@ -20,6 +15,7 @@ import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.FormEditTextCustomBinding;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.Preconditions;
+import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
 
@@ -89,6 +85,14 @@ final class EditTextCustomHolder extends FormViewHolder {
         fieldUid = model.uid();
 
         binding.customEdittext.setObjectSyle(model.objectStyle());
+        if (model.objectStyle() != null) {
+            objectStyle = ObjectStyle.builder()
+                    .color(model.objectStyle().color())
+                    .icon(model.objectStyle().icon())
+                    .uid(model.objectStyle().uid())
+                    .objectTable(model.objectStyle().objectTable())
+                    .build();
+        }
         label = new StringBuilder(model.label());
         binding.customEdittext.setLabel(model.label(), model.mandatory());
         descriptionText = model.description();
