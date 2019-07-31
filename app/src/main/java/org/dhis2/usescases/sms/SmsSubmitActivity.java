@@ -83,9 +83,9 @@ public class SmsSubmitActivity extends ActivityGlobalAbstract {
             stateChanged(states);
         } catch (Exception e) {
             if (submissionFinished) {
-                finish(); // nothing to show, will not blockingGet it from service
+                finish(); // nothing to show, will not get it from service
             }
-            // nothing scary, will blockingGet it from service later
+            // nothing scary, will get it from service later
         }
     }
 

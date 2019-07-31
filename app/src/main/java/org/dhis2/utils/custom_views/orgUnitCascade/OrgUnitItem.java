@@ -59,7 +59,7 @@ public class OrgUnitItem {
         while (orgUnitList.isEmpty() && nextLevel <= maxLevel)
             orgUnitList = ouRepo.byLevel().eq(nextLevel++).blockingGet();
 
-        if (orgUnitList.isEmpty())//When parent is set and list is empty the ou has not been downloaded, we have to blockingGet it from the uidPath
+        if (orgUnitList.isEmpty())//When parent is set and list is empty the ou has not been downloaded, we have to get it from the uidPath
             orgUnitList = ouRepo.blockingGet();
 
         Map<String, Trio<String, String, Boolean>> menuOrgUnits = new HashMap<>();

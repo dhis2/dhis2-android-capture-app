@@ -56,7 +56,7 @@ public class DateAdapter extends RecyclerView.Adapter<DateViewHolder> {
                     String firstDay = dayFormat.format(calendar.getTime());
 
                     calendar.add(Calendar.WEEK_OF_YEAR, 1); //Move to next week
-                    calendar.add(Calendar.DAY_OF_MONTH, -1);//Substract one day to blockingGet last day of current week
+                    calendar.add(Calendar.DAY_OF_MONTH, -1);//Substract one day to get last day of current week
                     String lastDay = dayFormat.format(calendar.getTime());
 
                     calendar.add(Calendar.DAY_OF_MONTH, 1); //Move back to current date

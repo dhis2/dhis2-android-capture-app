@@ -155,18 +155,18 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                             textToShow = weeklyFormat.format(selectedDates.get(0)) + ", " + yearFormat.format(selectedDates.get(0));
                             chosenDateWeek = (ArrayList<Date>) selectedDates;
                             if (selectedDates.size() > 1)
-                                textToShow += "... " /*+ weeklyFormat.format(selectedDates.blockingGet(1))*/;
+                                textToShow += "... " /*+ weeklyFormat.format(selectedDates.get(1))*/;
                         } else if (currentPeriod == MONTHLY) {
                             String dateFormatted = monthFormat.format(selectedDates.get(0));
                             textToShow = dateFormatted.substring(0, 1).toUpperCase() + dateFormatted.substring(1);
                             chosenDateMonth = (ArrayList<Date>) selectedDates;
                             if (selectedDates.size() > 1)
-                                textToShow += "... " /*+ monthFormat.format(selectedDates.blockingGet(1))*/;
+                                textToShow += "... " /*+ monthFormat.format(selectedDates.get(1))*/;
                         } else {
                             textToShow = yearFormat.format(selectedDates.get(0));
                             chosenDateYear = (ArrayList<Date>) selectedDates;
                             if (selectedDates.size() > 1)
-                                textToShow += "... " /*+ yearFormat.format(selectedDates.blockingGet(1))*/;
+                                textToShow += "... " /*+ yearFormat.format(selectedDates.get(1))*/;
 
                         }
                         binding.buttonPeriodText.setText(textToShow);

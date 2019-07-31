@@ -116,7 +116,7 @@ public class DateUtils {
 
         calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
         calendar.add(Calendar.WEEK_OF_YEAR, 1); //Move to next week
-        calendar.add(Calendar.DAY_OF_MONTH, -1);//Substract one day to blockingGet last day of current week
+        calendar.add(Calendar.DAY_OF_MONTH, -1);//Substract one day to get last day of current week
 
         return calendar.getTime();
     }

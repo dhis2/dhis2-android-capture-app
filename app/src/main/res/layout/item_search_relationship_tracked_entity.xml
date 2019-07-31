@@ -135,7 +135,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="15dp"
-                    android:text='@{attribute.size()>0 ? attribute.blockingGet(0).value() : "" , default="attribute 1"}'
+                    android:text='@{attribute.size()>0 ? attribute.get(0).value() : "" , default="attribute 1"}'
                     android:textColor="@color/text_black_333"
                     android:textSize="18sp"
                     android:textStyle="bold"
@@ -146,7 +146,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="15dp"
-                    android:text='@{attribute.size() > 1 ? attribute.blockingGet(1).value() : "" , default="attribute 2"}'
+                    android:text='@{attribute.size() > 1 ? attribute.get(1).value() : "" , default="attribute 2"}'
                     android:textColor="@color/text_black_333"
                     android:textSize="18sp"
                     android:textStyle="bold"
