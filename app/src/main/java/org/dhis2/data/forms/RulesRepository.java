@@ -347,7 +347,7 @@ public final class RulesRepository {
                             programRuleAction.data());
                     break;
                 case SHOWOPTIONGROUP:
-                    ruleAction = RuleActionShowOptionGroup.create(programRuleAction.content(), programRuleAction.optionGroup().uid());
+                    ruleAction = RuleActionShowOptionGroup.create(programRuleAction.content(), programRuleAction.optionGroup().uid(), field);
                     break;
                 case SENDMESSAGE:
                 case SCHEDULEMESSAGE:

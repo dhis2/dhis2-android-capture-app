@@ -15,6 +15,8 @@ import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.State;
+import org.hisp.dhis.android.core.dataapproval.DataApproval;
+import org.hisp.dhis.android.core.dataapproval.DataApprovalState;
 import org.hisp.dhis.android.core.dataelement.DataElement;
 import org.hisp.dhis.android.core.dataelement.DataElementOperand;
 import org.hisp.dhis.android.core.dataset.DataInputPeriod;
@@ -478,8 +480,14 @@ public class DataValueRepositoryImpl implements DataValueRepository {
 
     @Override
     public Flowable<Boolean> isApproval(String orgUnit, String period, String attributeOptionCombo){
-        return briteDatabase.createQuery("DataApproval", SELECT_APPROVAL, orgUnit, period, attributeOptionCombo)
-                .mapToOneOrDefault(data -> true, false)
-                .toFlowable(BackpressureStrategy.LATEST);
+        return Flowable.fromCallable(() -> {
+            List<DataApproval> approvals = d2.dataSetModule().dataApprovals.byPeriodId().eq(period)
+                            .byOrganisationUnitUid().eq(orgUnit)
+                            .byAttributeOptionComboUid().eq(attributeOptionCombo)
+                            .byState().in(DataApprovalState.ACCEPTED_ELSEWHERE, DataApprovalState.ACCEPTED_HERE, DataApprovalState.APPROVED_ABOVE,
+                            DataApprovalState.APPROVED_ELSEWHERE, DataApprovalState.APPROVED_HERE).get();
+            return approvals.size() > 0;
+        });
+
     }
 }
