@@ -370,8 +370,8 @@ public final class RulesRepository {
         String attribute = programRuleVariable.trackedEntityAttribute() != null ? programRuleVariable.trackedEntityAttribute().uid() : null;
 
         // Mime types of the attribute and data element.
-        String attributeType = attribute != null ? d2.trackedEntityModule().trackedEntityAttributes.uid(attribute).get().valueType().name() : null;
-        String elementType = dataElement != null ? d2.dataElementModule().dataElements.uid(dataElement).get().valueType().name() : null;
+        String attributeType = attribute != null ? d2.trackedEntityModule().trackedEntityAttributes.uid(attribute).blockingGet().valueType().name() : null;
+        String elementType = dataElement != null ? d2.dataElementModule().dataElements.uid(dataElement).blockingGet().valueType().name() : null;
 
         // String representation of value type.
         RuleValueType mimeType = null;

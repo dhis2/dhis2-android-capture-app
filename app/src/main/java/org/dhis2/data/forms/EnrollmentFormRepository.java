@@ -21,7 +21,6 @@ import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
-import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
@@ -492,7 +491,7 @@ public class EnrollmentFormRepository implements FormRepository {
 
 
                     String programStage = cursor.getString(0);
-                    ProgramStage stage = d2.programModule().programStages.uid(programStage).get();
+                    ProgramStage stage = d2.programModule().programStages.uid(programStage).blockingGet();
                     boolean hideDueDate = stage.hideDueDate()!=null ? stage.hideDueDate() : false;
 
                     String program = cursor.getString(1);
@@ -672,8 +671,8 @@ public class EnrollmentFormRepository implements FormRepository {
 
     @Override
     public Observable<OrganisationUnit> getOrgUnitDates() {
-        return Observable.defer(() -> Observable.just(d2.enrollmentModule().enrollments.uid(enrollmentUid).get()))
-                .switchMap(enrollment -> Observable.just(d2.organisationUnitModule().organisationUnits.uid(enrollment.organisationUnit()).get()));
+        return Observable.defer(() -> Observable.just(d2.enrollmentModule().enrollments.uid(enrollmentUid).blockingGet()))
+                .switchMap(enrollment -> Observable.just(d2.organisationUnitModule().organisationUnits.uid(enrollment.organisationUnit()).blockingGet()));
     }
 
     @NonNull
@@ -721,7 +720,7 @@ public class EnrollmentFormRepository implements FormRepository {
         }
 
         if (valueType == ValueType.ORGANISATION_UNIT && !isEmpty(dataValue)) {
-            dataValue = dataValue + "_ou_" + d2.organisationUnitModule().organisationUnits.uid(dataValue).get().displayName();
+            dataValue = dataValue + "_ou_" + d2.organisationUnitModule().organisationUnits.uid(dataValue).blockingGet().displayName();
         }
 
         return fieldFactory.create(uid, label, valueType, mandatory, optionSetUid, dataValue, null,
@@ -818,8 +817,8 @@ public class EnrollmentFormRepository implements FormRepository {
     }
 
     public Flowable<ProgramStage> getProgramStage(String eventUid) {
-        return Flowable.fromCallable(() -> d2.eventModule().events.byUid().eq(eventUid).one().get())
-                .map(event -> d2.programModule().programStages.byUid().eq(event.programStage()).one().get());
+        return Flowable.fromCallable(() -> d2.eventModule().events.byUid().eq(eventUid).one().blockingGet())
+                .map(event -> d2.programModule().programStages.byUid().eq(event.programStage()).one().blockingGet());
     }
 
 }

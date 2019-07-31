@@ -3,13 +3,9 @@ package org.dhis2.data.user;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.android.core.user.User;
 import org.hisp.dhis.android.core.user.UserCredentials;
-import org.hisp.dhis.android.core.user.UserCredentialsModel;
-import org.hisp.dhis.android.core.user.UserModel;
 
 import androidx.annotation.NonNull;
-import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 
 public class UserRepositoryImpl implements UserRepository {
@@ -25,7 +21,7 @@ public class UserRepositoryImpl implements UserRepository {
     @NonNull
     @Override
     public Flowable<UserCredentials> credentials() {
-        return Flowable.fromCallable(() -> d2.userModule().userCredentials.get());
+        return Flowable.fromCallable(() -> d2.userModule().userCredentials.blockingGet());
     }
 
     /*@NonNull

@@ -117,7 +117,7 @@ public class OptionSetCellDialog extends DialogFragment {
                     if (!optionGroupsToHide.isEmpty()) {
                         for (String groupUid : optionGroupsToHide) {
                             finalOptionsToHide.addAll(
-                                    UidsHelper.getUidsList(d2.optionModule().optionGroups.withOptions().uid(groupUid).get().options())
+                                    UidsHelper.getUidsList(d2.optionModule().optionGroups.withOptions().uid(groupUid).blockingGet().options())
                             );
                         }
                     }

@@ -52,7 +52,7 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
     @NonNull
     @Override
     public Observable<Event> eventModelDetail(String uid) {
-        return Observable.fromCallable(() -> d2.eventModule().events.uid(uid).get()).filter(event -> event.state() != State.TO_DELETE);
+        return Observable.fromCallable(() -> d2.eventModule().events.uid(uid).blockingGet()).filter(event -> event.state() != State.TO_DELETE);
     }
 
     @NonNull
@@ -92,7 +92,7 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
     @Override
     public Observable<ProgramStage> programStage(String eventUid) {
         return eventModelDetail(eventUid)
-                .map(event -> d2.programModule().programStages.uid(event.programStage()).get());
+                .map(event -> d2.programModule().programStages.uid(event.programStage()).blockingGet());
     }
 
     @Override
@@ -136,14 +136,14 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
     @Override
     public Observable<String> orgUnitName(String eventUid) {
         return eventModelDetail(eventUid)
-                .map(event -> d2.organisationUnitModule().organisationUnits.uid(event.organisationUnit()).get().displayName());
+                .map(event -> d2.organisationUnitModule().organisationUnits.uid(event.organisationUnit()).blockingGet().displayName());
     }
 
     @NonNull
     @Override
     public Observable<OrganisationUnit> orgUnit(String eventUid) {
         return eventModelDetail(eventUid)
-                .map(event -> d2.organisationUnitModule().organisationUnits.uid(event.organisationUnit()).get());
+                .map(event -> d2.organisationUnitModule().organisationUnits.uid(event.organisationUnit()).blockingGet());
     }
 
     @Override
@@ -151,7 +151,7 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
         return Observable.fromCallable(() -> d2.organisationUnitModule().organisationUnits.withPrograms().blockingGet())
                 .map(organisationUnits -> {
                     List<OrganisationUnit> programOrganisationUnits = new ArrayList<>();
-                    String programId = d2.eventModule().events.uid(eventUid).get().program();
+                    String programId = d2.eventModule().events.uid(eventUid).blockingGet().program();
                     for(OrganisationUnit organisationUnit : organisationUnits){
                         for (Program program : organisationUnit.programs()) {
                             if (program.uid().equals(programId))
@@ -193,13 +193,13 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
     @NonNull
     @Override
     public Flowable<EventStatus> eventStatus(String eventUid) {
-        return Flowable.fromCallable(() -> d2.eventModule().events.uid(eventUid).get().status());
+        return Flowable.fromCallable(() -> d2.eventModule().events.uid(eventUid).blockingGet().status());
     }
 
     @Override
     public Observable<Program> getProgram(String eventUid) {
         return eventModelDetail(eventUid)
-                .map(event -> d2.programModule().programs.uid(event.program()).get());
+                .map(event -> d2.programModule().programs.uid(event.program()).blockingGet());
     }
 
     @Override
@@ -215,8 +215,8 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
 
     @Override
     public Observable<Boolean> isEnrollmentActive(String eventUid) {
-        Event event = d2.eventModule().events.uid(eventUid).withAllChildren().get();
-        return Observable.fromCallable(() -> event == null || event.enrollment() == null || d2.enrollmentModule().enrollments.uid(event.enrollment()).get().status() == EnrollmentStatus.ACTIVE);
+        Event event = d2.eventModule().events.uid(eventUid).withAllChildren().blockingGet();
+        return Observable.fromCallable(() -> event == null || event.enrollment() == null || d2.enrollmentModule().enrollments.uid(event.enrollment()).blockingGet().status() == EnrollmentStatus.ACTIVE);
     }
 
     private void updateProgramTable(Date lastUpdated, String programUid) {

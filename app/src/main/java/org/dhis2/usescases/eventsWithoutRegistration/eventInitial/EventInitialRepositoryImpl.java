@@ -70,7 +70,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     @NonNull
     @Override
     public Observable<Event> event(String eventId) {
-        return Observable.fromCallable(() -> d2.eventModule().events.uid(eventId).get()).filter(event -> event.state() != State.TO_DELETE);
+        return Observable.fromCallable(() -> d2.eventModule().events.uid(eventId).blockingGet()).filter(event -> event.state() != State.TO_DELETE);
     }
 
     @NonNull
@@ -92,27 +92,27 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     @NonNull
     @Override
     public Observable<CategoryCombo> catCombo(String programUid) {
-        return Observable.defer(() -> Observable.just(d2.categoryModule().categoryCombos.uid(d2.programModule().programs.uid(programUid).get().categoryCombo().uid()).withAllChildren().get()))
+        return Observable.defer(() -> Observable.just(d2.categoryModule().categoryCombos.uid(d2.programModule().programs.uid(programUid).blockingGet().categoryCombo().uid()).withAllChildren().blockingGet()))
                 .map(categoryCombo -> {
                     List<Category> fullCategories = new ArrayList<>();
                     List<CategoryOptionCombo> fullOptionCombos = new ArrayList<>();
                     for (Category category : categoryCombo.categories()) {
-                        fullCategories.add(d2.categoryModule().categories.uid(category.uid()).withAllChildren().get());
+                        fullCategories.add(d2.categoryModule().categories.uid(category.uid()).withAllChildren().blockingGet());
                     }
                     for (CategoryOptionCombo categoryOptionCombo : categoryCombo.categoryOptionCombos())
-                        fullOptionCombos.add(d2.categoryModule().categoryOptionCombos.uid(categoryOptionCombo.uid()).withAllChildren().get());
+                        fullOptionCombos.add(d2.categoryModule().categoryOptionCombos.uid(categoryOptionCombo.uid()).withAllChildren().blockingGet());
                     return categoryCombo.toBuilder().categories(fullCategories).categoryOptionCombos(fullOptionCombos).build();
                 });
     }
 
     @Override
     public Flowable<Map<String, CategoryOption>> getOptionsFromCatOptionCombo(String eventId) {
-        return Flowable.just(d2.eventModule().events.uid(eventUid).get())
+        return Flowable.just(d2.eventModule().events.uid(eventUid).blockingGet())
                 .flatMap(event -> catCombo(event.program()).toFlowable(BackpressureStrategy.LATEST)
                         .flatMap(categoryCombo -> {
                             Map<String, CategoryOption> map = new HashMap<>();
                             if (!categoryCombo.isDefault() && event.attributeOptionCombo() != null) {
-                                List<CategoryOption> selectedCatOptions = d2.categoryModule().categoryOptionCombos.uid(event.attributeOptionCombo()).withAllChildren().get().categoryOptions();
+                                List<CategoryOption> selectedCatOptions = d2.categoryModule().categoryOptionCombos.uid(event.attributeOptionCombo()).withAllChildren().blockingGet().categoryOptions();
                                 for (Category category : categoryCombo.categories()) {
                                     for (CategoryOption categoryOption : selectedCatOptions)
                                         if (category.categoryOptions().contains(categoryOption))
@@ -307,7 +307,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
         } else {
             if (enrollmentUid != null)
                 updateEnrollment(enrollmentUid);
-            String tei = d2.enrollmentModule().enrollments.uid(enrollmentUid).get().trackedEntityInstance();
+            String tei = d2.enrollmentModule().enrollments.uid(enrollmentUid).blockingGet().trackedEntityInstance();
             if (!isEmpty(tei))
                 updateTei(tei);
 
@@ -317,7 +317,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     @Override
     public Observable<String> updateTrackedEntityInstance(String eventId, String trackedEntityInstanceUid, String orgUnitUid) {
-        return  Observable.just(d2.trackedEntityModule().trackedEntityInstances.uid(trackedEntityInstanceUid).get())
+        return  Observable.just(d2.trackedEntityModule().trackedEntityInstances.uid(trackedEntityInstanceUid).blockingGet())
                 .map(trackedEntityInstanceModel -> {
                     ContentValues contentValues = trackedEntityInstanceModel.toContentValues();
                     contentValues.put(TrackedEntityInstanceModel.Columns.ORGANISATION_UNIT, orgUnitUid);
@@ -364,7 +364,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                                        String catOptionCombo,
                                        String latitude, String longitude) {
 
-        Event event = d2.eventModule().events.uid(eventUid).get();
+        Event event = d2.eventModule().events.uid(eventUid).blockingGet();
 
         boolean hasChanged = false;
 
@@ -427,13 +427,13 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     @Override
     public Observable<Boolean> accessDataWrite(String programId) {
         return Observable.fromCallable(() ->
-                d2.programModule().programStages.byProgramUid().eq(programId).one().get().access().data().write()
-                && d2.programModule().programs.uid(programId).get().access().data().write());
+                d2.programModule().programStages.byProgramUid().eq(programId).one().blockingGet().access().data().write()
+                && d2.programModule().programs.uid(programId).blockingGet().access().data().write());
     }
 
     @Override
     public void deleteEvent(String eventId, String trackedEntityInstance) {
-        Event event = d2.eventModule().events.uid(eventId).get();
+        Event event = d2.eventModule().events.uid(eventId).blockingGet();
             if (event != null ) {
                 if (event.state() == State.TO_POST) {
                     String DELETE_WHERE = String.format(
@@ -457,13 +457,13 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     @Override
     public boolean isEnrollmentOpen() {
-        Event event = d2.eventModule().events.uid(eventUid).withAllChildren().get();
-        return event == null || event.enrollment() == null || d2.enrollmentModule().enrollments.uid(event.enrollment()).get().status() == EnrollmentStatus.ACTIVE;
+        Event event = d2.eventModule().events.uid(eventUid).withAllChildren().blockingGet();
+        return event == null || event.enrollment() == null || d2.enrollmentModule().enrollments.uid(event.enrollment()).blockingGet().status() == EnrollmentStatus.ACTIVE;
     }
 
 
     private void updateEnrollment(String enrollmentUid) {
-        Enrollment enrollment = d2.enrollmentModule().enrollments.uid(enrollmentUid).get();
+        Enrollment enrollment = d2.enrollmentModule().enrollments.uid(enrollmentUid).blockingGet();
         ContentValues cv = enrollment.toContentValues();
         cv.put(EnrollmentModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
         cv.put(EnrollmentModel.Columns.STATE, enrollment.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
@@ -472,7 +472,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     }
 
     private void updateTei(String teiUid) {
-        TrackedEntityInstance tei = d2.trackedEntityModule().trackedEntityInstances.uid(teiUid).get();
+        TrackedEntityInstance tei = d2.trackedEntityModule().trackedEntityInstances.uid(teiUid).blockingGet();
         ContentValues cv = tei.toContentValues();
         cv.put(TrackedEntityInstanceModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
         cv.put(TrackedEntityInstanceModel.Columns.STATE, tei.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());

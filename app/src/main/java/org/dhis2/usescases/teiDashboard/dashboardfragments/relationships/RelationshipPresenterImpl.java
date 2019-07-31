@@ -61,7 +61,7 @@ public class RelationshipPresenterImpl implements RelationshipContracts.Presente
         this.dashboardRepository = dashboardRepository;
         this.updateRelationships = PublishProcessor.create();
 
-        teiType = d2.trackedEntityModule().trackedEntityInstances.byUid().eq(teiUid).withAllChildren().one().get().trackedEntityType();
+        teiType = d2.trackedEntityModule().trackedEntityInstances.byUid().eq(teiUid).withAllChildren().one().blockingGet().trackedEntityType();
     }
 
     @Override
@@ -117,7 +117,7 @@ public class RelationshipPresenterImpl implements RelationshipContracts.Presente
                                                 direction = RelationshipViewModel.RelationshipDirection.TO;
                                             }
 
-                                            TrackedEntityInstance tei = d2.trackedEntityModule().trackedEntityInstances.withTrackedEntityAttributeValues().uid(relationshipTEIUid).get();
+                                            TrackedEntityInstance tei = d2.trackedEntityModule().trackedEntityInstances.withTrackedEntityAttributeValues().uid(relationshipTEIUid).blockingGet();
                                             List<TrackedEntityTypeAttribute> typeAttributes = d2.trackedEntityModule().trackedEntityTypeAttributes
                                                     .byTrackedEntityTypeUid().eq(tei.trackedEntityType())
                                                     .byDisplayInList().isTrue()
@@ -162,7 +162,7 @@ public class RelationshipPresenterImpl implements RelationshipContracts.Presente
 
     @Override
     public void goToAddRelationship(String teiTypeToAdd) {
-        if (d2.programModule().programs.uid(programUid).withAllChildren().get().access().data().write()) {
+        if (d2.programModule().programs.uid(programUid).withAllChildren().blockingGet().access().data().write()) {
             Intent intent = new Intent(view.getContext(), SearchTEActivity.class);
             Bundle extras = new Bundle();
             extras.putBoolean("FROM_RELATIONSHIP", true);
@@ -200,7 +200,7 @@ public class RelationshipPresenterImpl implements RelationshipContracts.Presente
 
     @Override
     public void openDashboard(String teiUid) {
-        if (d2.trackedEntityModule().trackedEntityInstances.byUid().eq(teiUid).one().get().state() != State.RELATIONSHIP) {
+        if (d2.trackedEntityModule().trackedEntityInstances.byUid().eq(teiUid).one().blockingGet().state() != State.RELATIONSHIP) {
             if(!d2.enrollmentModule().enrollments.byTrackedEntityInstance().eq(teiUid).blockingGet().isEmpty()) {
                 Intent intent = new Intent(view.getContext(), TeiDashboardMobileActivity.class);
                 Bundle bundle = new Bundle();
@@ -209,7 +209,7 @@ public class RelationshipPresenterImpl implements RelationshipContracts.Presente
                 intent.putExtras(bundle);
                 view.getAbstractActivity().startActivity(intent);
             }else
-                view.showInfoDialog(String.format(view.getContext().getString(R.string.resource_not_found), d2.trackedEntityModule().trackedEntityTypes.uid(teiType).get().displayName()),
+                view.showInfoDialog(String.format(view.getContext().getString(R.string.resource_not_found), d2.trackedEntityModule().trackedEntityTypes.uid(teiType).blockingGet().displayName()),
                         view.getContext().getString(R.string.relationship_without_enrollment),
                         view.getContext().getString(R.string.ok),
                         view.getContext().getString(R.string.no),
@@ -225,7 +225,7 @@ public class RelationshipPresenterImpl implements RelationshipContracts.Presente
                             }
                         }).show();
         } else {
-            view.showInfoDialog(String.format(view.getContext().getString(R.string.resource_not_found), d2.trackedEntityModule().trackedEntityTypes.uid(teiType).get().displayName()),
+            view.showInfoDialog(String.format(view.getContext().getString(R.string.resource_not_found), d2.trackedEntityModule().trackedEntityTypes.uid(teiType).blockingGet().displayName()),
                     view.getContext().getString(R.string.relationship_not_found_message),
                     view.getContext().getString(R.string.yes),
                     view.getContext().getString(R.string.no),

@@ -185,7 +185,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                             if (canDelete)
                                 return Single.fromCallable(() -> {
                                     EnrollmentObjectRepository enrollmentObjectRepository = d2.enrollmentModule().enrollments.uid(dashboardProgramModel.getCurrentEnrollment().uid());
-                                    enrollmentObjectRepository.setStatus(enrollmentObjectRepository.get().status());
+                                    enrollmentObjectRepository.setStatus(enrollmentObjectRepository.blockingGet().status());
                                     enrollmentObjectRepository.delete();
                                     return !d2.enrollmentModule().enrollments.byTrackedEntityInstance().eq(teUid)
                                             .byState().notIn(State.TO_DELETE)
@@ -211,7 +211,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     private Single<Boolean> canDeleteTEI() {
         return Single.defer(() -> Single.fromCallable(() -> {
                     boolean local = d2.trackedEntityModule().trackedEntityInstances.uid(
-                            teUid).get().state() == State.TO_POST;
+                            teUid).blockingGet().state() == State.TO_POST;
                     boolean hasAuthority = d2.userModule().authorities
                             .byName().eq("F_TEI_CASCADE_DELETE").one().exists();
                     return local || hasAuthority;
@@ -222,7 +222,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     private Single<Boolean> canDeleteEnrollment() {
         return Single.defer(() -> Single.fromCallable(() -> {
                     boolean local = d2.enrollmentModule().enrollments.uid(
-                            dashboardProgramModel.getCurrentEnrollment().uid()).get().state() == State.TO_POST;
+                            dashboardProgramModel.getCurrentEnrollment().uid()).blockingGet().state() == State.TO_POST;
                     boolean hasAuthority = d2.userModule().authorities
                             .byName().eq("F_ENROLLMENT_CASCADE_DELETE").one().exists();
                     return local || hasAuthority;

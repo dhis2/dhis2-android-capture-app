@@ -41,7 +41,7 @@ final class MainPresenter implements MainContracts.Presenter {
         this.view = view;
         this.compositeDisposable = new CompositeDisposable();
 
-        compositeDisposable.add(Observable.defer(() -> Observable.just(d2.userModule().user.get()))
+        compositeDisposable.add(Observable.defer(() -> Observable.just(d2.userModule().user.blockingGet()))
                 .map(this::username)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

@@ -130,7 +130,7 @@ public class OrgUnitCascadeDialog extends DialogFragment {
                                 OrgUnitItem orgUnitItem = new OrgUnitItem(d2.organisationUnitModule().organisationUnits, ouSelectionType);
                                 orgUnitItem.setMaxLevel(maxLevel);
                                 orgUnitItem.setLevel(i);
-                                orgUnitItem.setOrganisationUnitLevel(d2.organisationUnitModule().organisationUnitLevels.byLevel().eq(i).one().get());//TODO: CHECK IF OU ALREADY SELECTED
+                                orgUnitItem.setOrganisationUnitLevel(d2.organisationUnitModule().organisationUnitLevels.byLevel().eq(i).one().blockingGet());//TODO: CHECK IF OU ALREADY SELECTED
                                 orgUnitItems.add(orgUnitItem);
                             }
                             return orgUnitItems;
@@ -164,7 +164,7 @@ public class OrgUnitCascadeDialog extends DialogFragment {
                 binding.orgUnitSearchEditText.getText().clear();
                 showChips(new ArrayList<>());
                 String selectedOrgUnitUid = ((OrgUnitCascadeAdapter) binding.recycler.getAdapter()).getSelectedOrgUnit();
-                callbacks.textChangedConsumer(selectedOrgUnitUid, d2.organisationUnitModule().organisationUnits.uid(selectedOrgUnitUid).get().displayName());
+                callbacks.textChangedConsumer(selectedOrgUnitUid, d2.organisationUnitModule().organisationUnits.uid(selectedOrgUnitUid).blockingGet().displayName());
                 dismiss();
             }
         });
@@ -188,7 +188,7 @@ public class OrgUnitCascadeDialog extends DialogFragment {
             Chip chip = new Chip(getContext());
 
             String level = "";
-            OrganisationUnitLevel ouLevel = d2.organisationUnitModule().organisationUnitLevels.byLevel().eq(ou.level()).one().get();
+            OrganisationUnitLevel ouLevel = d2.organisationUnitModule().organisationUnitLevels.byLevel().eq(ou.level()).one().blockingGet();
             if (ouLevel != null) {
                 level = ouLevel.displayName() + " : ";
             } else

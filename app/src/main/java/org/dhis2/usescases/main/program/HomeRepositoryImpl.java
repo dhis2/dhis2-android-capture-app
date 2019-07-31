@@ -115,7 +115,7 @@ class HomeRepositoryImpl implements HomeRepository {
                     if (program.programType() == WITH_REGISTRATION) {
                         typeName = program.trackedEntityType() != null ? program.trackedEntityType().displayName() : "TEI";
                         if (typeName == null)
-                            typeName = d2.trackedEntityModule().trackedEntityTypes.uid(program.trackedEntityType().uid()).get().displayName();
+                            typeName = d2.trackedEntityModule().trackedEntityTypes.uid(program.trackedEntityType().uid()).blockingGet().displayName();
                     } else if (program.programType() == WITHOUT_REGISTRATION)
                         typeName = eventLabel;
                     else

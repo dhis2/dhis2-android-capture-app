@@ -1,7 +1,5 @@
 package org.dhis2.data.forms;
 
-import android.text.TextUtils;
-
 import androidx.annotation.NonNull;
 
 import com.squareup.sqlbrite2.BriteDatabase;
@@ -98,7 +96,7 @@ class FormPresenterImpl implements FormPresenter {
     @Override
     public String getEnrollmentOu(String enrollmentUid) {
         if (d2.enrollmentModule().enrollments.uid(enrollmentUid).exists())
-            return d2.enrollmentModule().enrollments.uid(enrollmentUid).get().organisationUnit();
+            return d2.enrollmentModule().enrollments.uid(enrollmentUid).blockingGet().organisationUnit();
         else
             return null;
     }

@@ -28,7 +28,7 @@ class SplashModule internal constructor(serverComponent: ServerComponent?) {
     @Named(FLAG)
     fun provideFlag(): String {
         return if (userManager?.d2 != null) {
-            val systemSetting = userManager.d2.systemSettingModule().systemSetting.flag().get()
+            val systemSetting = userManager.d2.systemSettingModule().systemSetting.flag().blockingGet()
             if (systemSetting != null)
                 systemSetting.value() ?: ""
             else

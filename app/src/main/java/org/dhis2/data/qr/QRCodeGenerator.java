@@ -362,7 +362,7 @@ public class QRCodeGenerator implements QRInterface {
     private String getData(String teiUid) {
         StringBuilder dataBuilder = new StringBuilder();
         dataBuilder.append(TEI_FLAG);
-        TrackedEntityInstance tei = d2.trackedEntityModule().trackedEntityInstances.uid(teiUid).get();
+        TrackedEntityInstance tei = d2.trackedEntityModule().trackedEntityInstances.uid(teiUid).blockingGet();
         dataBuilder.append(setTeiData(tei));
         List<Enrollment> enrollments = d2.enrollmentModule().enrollments.byTrackedEntityInstance().eq(teiUid).blockingGet();
         for (Enrollment enrollment : enrollments) {

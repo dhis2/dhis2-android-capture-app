@@ -102,7 +102,7 @@ public class FilesWorker extends Worker {
 
         String fileName = d2.trackedEntityModule().trackedEntityAttributeValues
                 .byTrackedEntityAttribute().eq(attrUid)
-                .byTrackedEntityInstance().eq(teiUid).one().get().value();
+                .byTrackedEntityInstance().eq(teiUid).one().blockingGet().value();
         File file = new File(FileResourcesUtil.getUploadDirectory(getApplicationContext()), fileName);
         upload(file, teiUid, attrUid);
     }

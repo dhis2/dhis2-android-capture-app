@@ -120,12 +120,12 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
                 RuleEvent ruleEvent = RuleEvent.builder()
                         .event(event.uid())
                         .programStage(event.programStage())
-                        .programStageName(d2.programModule().programStages.uid(event.programStage()).get().displayName())
+                        .programStageName(d2.programModule().programStages.uid(event.programStage()).blockingGet().displayName())
                         .status(RuleEvent.Status.valueOf(event.status().name()))
                         .eventDate(event.eventDate() == null ? event.dueDate():event.eventDate())
                         .dueDate(event.dueDate() != null ? event.dueDate() : event.eventDate())
                         .organisationUnit(event.organisationUnit())
-                        .organisationUnitCode(d2.organisationUnitModule().organisationUnits.uid(event.organisationUnit()).get().code())
+                        .organisationUnitCode(d2.organisationUnitModule().organisationUnits.uid(event.organisationUnit()).blockingGet().code())
                         .dataValues(dataValues)
                         .build();
                 ruleEvents.add(ruleEvent);
@@ -144,8 +144,8 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
                 ).toFlowable(BackpressureStrategy.LATEST)
                 .flatMap(attributeValues -> {
 
-                    Enrollment enrollment = d2.enrollmentModule().enrollments.byUid().eq(enrollmentUid == null ? "" : enrollmentUid).one().get();
-                    String programName = d2.programModule().programs.byUid().eq(enrollment.program()).one().get().displayName();
+                    Enrollment enrollment = d2.enrollmentModule().enrollments.byUid().eq(enrollmentUid == null ? "" : enrollmentUid).one().blockingGet();
+                    String programName = d2.programModule().programs.byUid().eq(enrollment.program()).one().blockingGet().displayName();
                     Date enrollmentDate = enrollment.enrollmentDate();
                     Date incidentDate = enrollment.incidentDate() == null ? enrollmentDate : enrollment.incidentDate();
                     RuleEnrollment.Status status = RuleEnrollment.Status.valueOf(enrollment.status().name());
@@ -165,7 +165,7 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
 
     @Nonnull
     private String getOrgUnitCode(String orgUnitUid) {
-        String ouCode = d2.organisationUnitModule().organisationUnits.byUid().eq(orgUnitUid).one().get().code();
+        String ouCode = d2.organisationUnitModule().organisationUnits.byUid().eq(orgUnitUid).one().blockingGet().code();
         return ouCode == null ? "" : ouCode;
     }
 
@@ -210,6 +210,6 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
 
     @Override
     public ProgramStage getStage(String programStageUid) {
-        return d2.programModule().programStages.uid(programStageUid).get();
+        return d2.programModule().programStages.uid(programStageUid).blockingGet();
     }
 }

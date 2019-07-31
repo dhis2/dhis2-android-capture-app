@@ -149,7 +149,7 @@ final class SyncPresenterImpl implements SyncPresenter {
 
     @Override
     public boolean checkSyncProgramStatus(String uid) {
-        Program program = d2.programModule().programs.uid(uid).get();
+        Program program = d2.programModule().programs.uid(uid).blockingGet();
 
         if (program.programType() == ProgramType.WITH_REGISTRATION)
             return d2.trackedEntityModule().trackedEntityInstances.byProgramUids(Collections.singletonList(uid)).blockingGet().isEmpty();
@@ -160,7 +160,7 @@ final class SyncPresenterImpl implements SyncPresenter {
 
     @Override
     public boolean checkSyncDataSetStatus(String uid) {
-        DataSetInstance dataSetReport = d2.dataSetModule().dataSetInstances.byDataSetUid().eq(uid).one().get();
+        DataSetInstance dataSetReport = d2.dataSetModule().dataSetInstances.byDataSetUid().eq(uid).one().blockingGet();
 
         return d2.dataValueModule().dataValues
                 .byOrganisationUnitUid().eq(dataSetReport.attributeOptionComboUid())

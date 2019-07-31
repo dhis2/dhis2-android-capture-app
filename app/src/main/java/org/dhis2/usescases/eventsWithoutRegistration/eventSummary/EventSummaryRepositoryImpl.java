@@ -23,7 +23,6 @@ import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
-import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
@@ -214,8 +213,8 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
         boolean isEnrollmentOpen = true;
         if(d2.eventModule().events.byUid().eq(eventUid).one().exists()) {
             isEnrollmentOpen = d2.enrollmentModule().enrollments.byUid()
-                    .eq(d2.eventModule().events.byUid().eq(eventUid).one().get().enrollment())
-                    .one().get().status() == EnrollmentStatus.ACTIVE;
+                    .eq(d2.eventModule().events.byUid().eq(eventUid).one().blockingGet().enrollment())
+                    .one().blockingGet().status() == EnrollmentStatus.ACTIVE;
         }
         return isEnrollmentOpen;
     }
@@ -293,7 +292,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
 
 
         if (valueType == ValueType.ORGANISATION_UNIT && !isEmpty(dataValue)) {
-            dataValue = dataValue + "_ou_" + d2.organisationUnitModule().organisationUnits.uid(dataValue).get().displayName();
+            dataValue = dataValue + "_ou_" + d2.organisationUnitModule().organisationUnits.uid(dataValue).blockingGet().displayName();
         }
 
         return fieldFactory.create(uid, formName == null ? cursor.getString(1) : formName,

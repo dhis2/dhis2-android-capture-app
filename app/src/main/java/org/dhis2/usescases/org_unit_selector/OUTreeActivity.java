@@ -156,7 +156,7 @@ public class OUTreeActivity extends ActivityGlobalAbstract implements OrgUnitSel
                             for (String str : orderedList) {
                                 OrganisationUnit organisationUnitParent = d2.organisationUnitModule().organisationUnits
                                         .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_TEI_SEARCH)
-                                        .byUid().eq(str).one().get();
+                                        .byUid().eq(str).one().blockingGet();
                                 if (organisationUnitParent != null)
                                     nodes.add(
                                             new TreeNode(organisationUnitParent,

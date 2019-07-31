@@ -50,8 +50,8 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
         return Observable.fromCallable(() -> d2.enrollmentModule().enrollments.byTrackedEntityInstance().eq(trackedEntityId).byStatus().eq(EnrollmentStatus.ACTIVE).withAllChildren().blockingGet())
                 .flatMapIterable(enrollments -> enrollments)
                 .map(enrollment -> {
-                    Program program = d2.programModule().programs.byUid().eq(enrollment.program()).withStyle().one().get();
-                    OrganisationUnit orgUnit = d2.organisationUnitModule().organisationUnits.byUid().eq(enrollment.organisationUnit()).one().get();
+                    Program program = d2.programModule().programs.byUid().eq(enrollment.program()).withStyle().one().blockingGet();
+                    OrganisationUnit orgUnit = d2.organisationUnitModule().organisationUnits.byUid().eq(enrollment.organisationUnit()).one().blockingGet();
                     return EnrollmentViewModel.create(
                             enrollment.uid(),
                             DateUtils.getInstance().formatDate(enrollment.enrollmentDate()),
@@ -73,8 +73,8 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
         return Observable.fromCallable(() -> d2.enrollmentModule().enrollments.byTrackedEntityInstance().eq(trackedEntityId).byStatus().neq(EnrollmentStatus.ACTIVE).withAllChildren().blockingGet())
                 .flatMapIterable(enrollments -> enrollments)
                 .map(enrollment -> {
-                    Program program = d2.programModule().programs.byUid().eq(enrollment.program()).withStyle().one().get();
-                    OrganisationUnit orgUnit = d2.organisationUnitModule().organisationUnits.byUid().eq(enrollment.organisationUnit()).one().get();
+                    Program program = d2.programModule().programs.byUid().eq(enrollment.program()).withStyle().one().blockingGet();
+                    OrganisationUnit orgUnit = d2.organisationUnitModule().organisationUnits.byUid().eq(enrollment.organisationUnit()).one().blockingGet();
                     return EnrollmentViewModel.create(
                             enrollment.uid(),
                             DateUtils.getInstance().formatDate(enrollment.enrollmentDate()),
@@ -93,7 +93,7 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
     @NonNull
     @Override
     public Observable<List<ProgramViewModel>> allPrograms(String trackedEntityId) {
-        String trackedEntityType = d2.trackedEntityModule().trackedEntityInstances.byUid().eq(trackedEntityId).one().get().trackedEntityType();
+        String trackedEntityType = d2.trackedEntityModule().trackedEntityInstances.byUid().eq(trackedEntityId).one().blockingGet().trackedEntityType();
         return Observable.just(d2.organisationUnitModule().organisationUnits.byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).blockingGet())
                 .map(captureOrgUnits -> {
                     Iterator<OrganisationUnit> it = captureOrgUnits.iterator();
@@ -130,7 +130,7 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
     public Observable<List<Program>> alreadyEnrolledPrograms(String trackedEntityId) {
         return Observable.fromCallable(() -> d2.enrollmentModule().enrollments.byTrackedEntityInstance().eq(trackedEntityId).withAllChildren().blockingGet())
                 .flatMapIterable(enrollments -> enrollments)
-                .map(enrollment -> d2.programModule().programs.byUid().eq(enrollment.program()).one().get())
+                .map(enrollment -> d2.programModule().programs.byUid().eq(enrollment.program()).one().blockingGet())
                 .toList()
                 .toObservable();
     }
@@ -201,13 +201,13 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
 
     @Override
     public String getProgramColor(@NonNull String programUid) {
-        Program program = d2.programModule().programs.byUid().eq(programUid).withStyle().one().get();
+        Program program = d2.programModule().programs.byUid().eq(programUid).withStyle().one().blockingGet();
         return program.style() != null ? program.style().color() : null;
     }
 
     @Override
     public Program getProgram(String programUid) {
-        Program program = d2.programModule().programs.byUid().eq(programUid).one().get();
+        Program program = d2.programModule().programs.byUid().eq(programUid).one().blockingGet();
         return program;
     }
 }

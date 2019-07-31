@@ -42,13 +42,13 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
         DataSetInstanceCollectionRepository finalRepo = repo;
         return Flowable.fromIterable(finalRepo.blockingGet())
                 .map(dataSetReport -> {
-                    Period period = d2.periodModule().periods.byPeriodId().eq(dataSetReport.period()).one().get();
+                    Period period = d2.periodModule().periods.byPeriodId().eq(dataSetReport.period()).one().blockingGet();
                     String periodName = DateUtils.getInstance().getPeriodUIString(period.periodType(), period.startDate(), Locale.getDefault());
                     DataSetCompleteRegistration dscr = d2.dataSetModule().dataSetCompleteRegistrations
                             .byDataSetUid().eq(dataSetUid)
                             .byAttributeOptionComboUid().eq(dataSetReport.attributeOptionComboUid())
                             .byOrganisationUnitUid().eq(dataSetReport.organisationUnitUid())
-                            .byPeriod().eq(dataSetReport.period()).one().get();
+                            .byPeriod().eq(dataSetReport.period()).one().blockingGet();
                     State state;
                     if(dscr != null && dscr.state() != State.SYNCED) {
                         if (dscr.state() == State.TO_DELETE)

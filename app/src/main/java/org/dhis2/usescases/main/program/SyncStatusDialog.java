@@ -174,7 +174,7 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
 
     private void configureForDataSet() {
         compositeDisposable.add(
-                Observable.fromCallable(() -> d2.dataSetModule().dataSets.uid(recordUid).get())
+                Observable.fromCallable(() -> d2.dataSetModule().dataSets.uid(recordUid).blockingGet())
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
@@ -183,7 +183,7 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
                         )
         );
         compositeDisposable.add(
-                Observable.fromCallable(()-> d2.dataSetModule().dataSets.uid(recordUid).withAllChildren().get().dataSetElements())
+                Observable.fromCallable(()-> d2.dataSetModule().dataSets.uid(recordUid).withAllChildren().blockingGet().dataSetElements())
                         .map(dataSetElements -> {
                             State state = State.SYNCED;
                             for(DataSetElement dataSetElement: dataSetElements){
@@ -225,7 +225,7 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
     private void configureForProgram() {
 
         compositeDisposable.add(
-                Observable.fromCallable(() -> d2.programModule().programs.uid(recordUid).get())
+                Observable.fromCallable(() -> d2.programModule().programs.uid(recordUid).blockingGet())
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
@@ -235,7 +235,7 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
         );
 
         compositeDisposable.add(
-                Observable.fromCallable(() -> d2.programModule().programs.uid(recordUid).get())
+                Observable.fromCallable(() -> d2.programModule().programs.uid(recordUid).blockingGet())
                         .map(program -> {
                             State state = State.SYNCED;
                             if (program.programType() == ProgramType.WITHOUT_REGISTRATION) {
@@ -286,7 +286,7 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
         );
 
         compositeDisposable.add(
-                Observable.fromCallable(() -> d2.programModule().programs.uid(recordUid).get())
+                Observable.fromCallable(() -> d2.programModule().programs.uid(recordUid).blockingGet())
                         .map(program -> {
                             State state = State.SYNCED;
                             if (program.programType() == ProgramType.WITH_REGISTRATION) {
@@ -327,8 +327,8 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
 
         compositeDisposable.add(
                 Observable.fromCallable(() -> d2.trackedEntityModule().trackedEntityTypes
-                        .uid(d2.trackedEntityModule().trackedEntityInstances.byUid().eq(recordUid).one().get().trackedEntityType())
-                        .get())
+                        .uid(d2.trackedEntityModule().trackedEntityInstances.byUid().eq(recordUid).one().blockingGet().trackedEntityType())
+                        .blockingGet())
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
@@ -351,7 +351,7 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
         );
 
         compositeDisposable.add(
-                Observable.fromCallable(() -> d2.trackedEntityModule().trackedEntityInstances.byUid().eq(recordUid).one().get().state())
+                Observable.fromCallable(() -> d2.trackedEntityModule().trackedEntityInstances.byUid().eq(recordUid).one().blockingGet().state())
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
@@ -391,7 +391,7 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
         );
 
         compositeDisposable.add(
-                Observable.fromCallable(() -> d2.eventModule().events.uid(recordUid).get().state())
+                Observable.fromCallable(() -> d2.eventModule().events.uid(recordUid).blockingGet().state())
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
