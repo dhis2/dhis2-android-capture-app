@@ -14,7 +14,10 @@ import androidx.fragment.app.DialogFragment;
 
 import org.dhis2.R;
 import org.dhis2.databinding.DialogDateBinding;
+import org.dhis2.usescases.general.ActivityGlobalAbstract;
+import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.Period;
+import org.dhis2.utils.filters.FilterManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Date;
@@ -30,6 +33,7 @@ import io.reactivex.SingleEmitter;
 
 public class DateDialog extends DialogFragment {
 
+    private DialogDateBinding binding;
     private static ActionTrigger<DateDialog> dialogActionTrigger;
     protected SingleEmitter<List<Date>> callback;
     protected SingleEmitter<List<String>> callbackPeriod;
@@ -39,6 +43,7 @@ public class DateDialog extends DialogFragment {
 
     private View.OnClickListener possitiveListener;
     private View.OnClickListener negativeListener;
+    private static ActivityGlobalAbstract activity;
 
     public static DateDialog newInstace(ActionTrigger<DateDialog> mActionTrigger, Period mPeriod) {
         if (period != mPeriod || instace == null) {
@@ -62,9 +67,10 @@ public class DateDialog extends DialogFragment {
         return instace;
     }
 
-    public static DateDialog newInstace(ActionTrigger<DateDialog> mActionTrigger) {
+    public static DateDialog newInstace(ActionTrigger<DateDialog> mActionTrigger, ActivityGlobalAbstract activityGlobal) {
         period = Period.WEEKLY;
         dialogActionTrigger = mActionTrigger;
+        activity = activityGlobal;
 
         instace = new DateDialog();
         adapter = new DateAdapter(period);
@@ -98,22 +104,31 @@ public class DateDialog extends DialogFragment {
     @Nullable
     @Override
     public View onCreateView(@NotNull LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        DialogDateBinding binding = DataBindingUtil.inflate(inflater, R.layout.dialog_date, container, false);
+        binding = DataBindingUtil.inflate(inflater, R.layout.dialog_date, container, false);
 
         binding.recyclerDate.setAdapter(adapter);
 
-        binding.setTitleText(getString(R.string.date_dialog_tigle));
+        binding.setTitleText(getString(period.getNameResouce()));
 
-        binding.acceptButton.setOnClickListener(possitiveListener);
         binding.acceptButton.setOnClickListener(possitiveListener);
         binding.clearButton.setOnClickListener(negativeListener);
 
-        binding.title.setOnClickListener(v -> {
-            adapter.swapPeriod();
-        });
-
-
+        binding.nextPeriod.setOnClickListener(v -> manageButtonPeriods(true));
+        binding.previousPeriod.setOnClickListener(v -> manageButtonPeriods(false));
         return binding.getRoot();
+    }
+
+    private void manageButtonPeriods(boolean next){
+        Period period = adapter.swapPeriod(next);
+        if(period == Period.DAILY) {
+            DateUtils.getInstance().showPeriodDialog(activity, (from, to) ->
+                    FilterManager.getInstance().addPeriod(
+                            null
+                    ), true);
+            dismiss();
+        }
+
+        binding.setTitleText(getString(period.getNameResouce()));
     }
 
     private DateDialog withEmitter(final SingleEmitter<List<Date>> emitter) {

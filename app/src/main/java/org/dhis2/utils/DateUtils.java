@@ -1274,8 +1274,8 @@ public class DateUtils {
         fromCalendar.show(activity.getSupportFragmentManager(), "FROM");
     }
 
-    public void showPeriodDialog(ActivityGlobalAbstract activity, OnFromToSelector fromToListener) {
-        DatePickerDialogFragment fromCalendar = DatePickerDialogFragment.create(true, "Daily");
+    public void showPeriodDialog(ActivityGlobalAbstract activity, OnFromToSelector fromToListener, boolean fromOtherPeriod) {
+        DatePickerDialogFragment fromCalendar = DatePickerDialogFragment.create(true, "Daily", fromOtherPeriod);
 //        fromCalendar.setOpeningClosingDates(null, null); TODO: MAX 1 year in the future?
         fromCalendar.setFormattedOnDateSetListener(new DatePickerDialogFragment.FormattedOnDateSetListener() {
             @Override

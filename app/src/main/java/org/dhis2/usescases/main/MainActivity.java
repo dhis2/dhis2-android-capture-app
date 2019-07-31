@@ -295,11 +295,8 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
         } else {
             DateUtils.getInstance().showPeriodDialog(this, (from, to) ->
                     FilterManager.getInstance().addPeriod(
-                            DatePeriod.builder()
-                                    .startDate(from)
-                                    .endDate(to)
-                                    .build()
-                    ));
+                            null
+                    ), true);
         }
     }
 

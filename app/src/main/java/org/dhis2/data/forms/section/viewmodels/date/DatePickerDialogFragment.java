@@ -25,6 +25,7 @@ public class DatePickerDialogFragment extends DialogFragment {
     private static final String TAG = DatePickerDialogFragment.class.getSimpleName();
     private static final String ARG_ALLOW_DATES_IN_FUTURE = "arg:allowDatesInFuture";
     private static final String ARG_TITLE = "arg:title";
+    private static final String ARG_FROM_OTHER_PERIOD = "arg:fromOtherPeriod";
 
     @Nullable
     private FormattedOnDateSetListener onDateSetListener;
@@ -42,11 +43,11 @@ public class DatePickerDialogFragment extends DialogFragment {
         return fragment;
     }
 
-    public static DatePickerDialogFragment create(boolean allowDatesInFuture, String title) {
+    public static DatePickerDialogFragment create(boolean allowDatesInFuture, String title, boolean fromOtherPeriod) {
         Bundle arguments = new Bundle();
         arguments.putBoolean(ARG_ALLOW_DATES_IN_FUTURE, allowDatesInFuture);
         arguments.putString(ARG_TITLE, title);
-
+        arguments.putBoolean(ARG_FROM_OTHER_PERIOD, fromOtherPeriod);
         DatePickerDialogFragment fragment = new DatePickerDialogFragment();
         fragment.setArguments(arguments);
 
@@ -105,6 +106,8 @@ public class DatePickerDialogFragment extends DialogFragment {
         final ImageButton changeCalendarButton = datePickerView.findViewById(R.id.changeCalendarButton);
         final Button clearButton = datePickerView.findViewById(R.id.clearButton);
         final Button acceptButton = datePickerView.findViewById(R.id.acceptButton);
+        if(fromOtherPeriod())
+            clearButton.setText(getString(R.string.sectionSelectorNext));
 
         Calendar c = Calendar.getInstance();
         int year = c.get(Calendar.YEAR);
@@ -166,6 +169,10 @@ public class DatePickerDialogFragment extends DialogFragment {
 
     private boolean isAllowDatesInFuture() {
         return getArguments().getBoolean(ARG_ALLOW_DATES_IN_FUTURE, false);
+    }
+
+    private boolean fromOtherPeriod(){
+        return getArguments().getBoolean(ARG_FROM_OTHER_PERIOD, false);
     }
 
     public void setOpeningClosingDates(Date openingDate, Date closingDate) {
