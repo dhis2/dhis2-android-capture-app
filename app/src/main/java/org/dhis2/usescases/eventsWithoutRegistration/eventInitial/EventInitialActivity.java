@@ -61,6 +61,7 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
+import org.hisp.dhis.android.core.period.FeatureType;
 import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
@@ -583,13 +584,17 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     @Override
     public void setProgramStage(ProgramStageModel programStage) {
         this.programStageModel = programStage;
+        if (programStageModel.featureType() == FeatureType.MULTI_POLYGON
+            || programStageModel.featureType() == FeatureType.POLYGON) {
+            binding.location1.setVisibility(View.GONE);
+        }
         if (programStageModel.captureCoordinates()) {
             binding.coordinatesLayout.setVisibility(View.VISIBLE);
             binding.location1.setOnClickListener(v -> {
                 if (v.isClickable()) presenter.onLocationClick();
             });
             binding.location2.setOnClickListener(v -> {
-                if (v.isClickable()) presenter.onLocation2Click();
+                if (v.isClickable()) presenter.onLocation2Click(programStage.featureType());
             });
         } else {
             binding.coordinatesLayout.setVisibility(View.GONE);
@@ -792,9 +797,19 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == Constants.RQ_MAP_LOCATION && resultCode == RESULT_OK) {
-            savedLat = data.getStringExtra(MapSelectorActivity.LATITUDE);
-            savedLon = data.getStringExtra(MapSelectorActivity.LONGITUDE);
-            setLocation(Double.valueOf(savedLat), Double.valueOf(savedLon));
+            if (data.hasExtra(MapSelectorActivity.POLYGON_DATA)) {
+                savedLat = data.getStringExtra(MapSelectorActivity.LATITUDE);
+                savedLon = data.getStringExtra(MapSelectorActivity.LONGITUDE);
+                setLocation(Double.valueOf(savedLat), Double.valueOf(savedLon));
+            } else if (data.hasExtra(MapSelectorActivity.MULTI_POLYGON_DATA)) {
+                savedLat = data.getStringExtra(MapSelectorActivity.LATITUDE);
+                savedLon = data.getStringExtra(MapSelectorActivity.LONGITUDE);
+                setLocation(Double.valueOf(savedLat), Double.valueOf(savedLon));
+            } else if (data.hasExtra(MapSelectorActivity.LATITUDE)) {
+                savedLat = data.getStringExtra(MapSelectorActivity.LATITUDE);
+                savedLon = data.getStringExtra(MapSelectorActivity.LONGITUDE);
+                setLocation(Double.valueOf(savedLat), Double.valueOf(savedLon));
+            }
         }
     }
 
