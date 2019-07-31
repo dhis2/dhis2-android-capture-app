@@ -2,7 +2,6 @@ package org.dhis2.data.metadata;
 
 import org.dhis2.data.tuples.Pair;
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
-import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.imports.TrackerImportConflict;
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
@@ -11,7 +10,6 @@ import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeModel;
 
 import java.util.List;
-import java.util.Map;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -46,10 +44,6 @@ public interface MetadataRepository {
     /*ORG UNIT*/
 
     Observable<OrganisationUnitModel> getOrganisationUnit(String orgUnitUid);
-
-    /*ENROLLMENTS*/
-    Observable<List<EnrollmentModel>> getTEIEnrollments(String teiUid);
-
 
     /*EVENTS*/
 

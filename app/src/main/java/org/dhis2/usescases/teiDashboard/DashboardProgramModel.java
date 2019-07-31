@@ -4,7 +4,6 @@ import androidx.databinding.BaseObservable;
 
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
-import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
@@ -29,7 +28,7 @@ public class DashboardProgramModel extends BaseObservable {
     private List<ProgramStageModel> programStages;
     private List<Program> enrollmentPrograms;
     private List<OrganisationUnit> orgsUnits;
-    private List<EnrollmentModel> teiEnrollments;
+    private List<Enrollment> teiEnrollments;
 
     public DashboardProgramModel(
             TrackedEntityInstance tei,
@@ -56,7 +55,7 @@ public class DashboardProgramModel extends BaseObservable {
                                  List<TrackedEntityAttributeValueModel> trackedEntityAttributeValues,
                                  List<OrganisationUnit> orgsUnits,
                                  List<Program> enrollmentPrograms,
-                                 List<EnrollmentModel> teiEnrollments) {
+                                 List<Enrollment> teiEnrollments) {
         this.tei = tei;
         this.trackedEntityAttributes = trackedEntityAttributes;
         this.trackedEntityAttributeValues = trackedEntityAttributeValues;
@@ -126,8 +125,8 @@ public class DashboardProgramModel extends BaseObservable {
         return trackedEntityAttributeValues;
     }
 
-    public EnrollmentModel getEnrollmentForProgram(String uid) {
-        for (EnrollmentModel enrollment : teiEnrollments)
+    public Enrollment getEnrollmentForProgram(String uid) {
+        for (Enrollment enrollment : teiEnrollments)
             if (enrollment.program().equals(uid))
                 return enrollment;
         return null;

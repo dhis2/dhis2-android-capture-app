@@ -97,7 +97,7 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
                     dashboardRepository.getTEIAttributeValues(null, uid),
                     dashboardRepository.getTeiOrgUnits(uid, null),
                     dashboardRepository.getTeiActivePrograms(uid, false),
-                    metadataRepository.getTEIEnrollments(uid),
+                    dashboardRepository.getTEIEnrollments(uid),
                     DashboardProgramModel::new)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())

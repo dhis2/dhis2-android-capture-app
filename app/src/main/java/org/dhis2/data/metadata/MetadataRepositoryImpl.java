@@ -27,14 +27,9 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeModel;
 import org.hisp.dhis.android.core.user.AuthenticatedUserModel;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
@@ -126,15 +121,6 @@ public class MetadataRepositoryImpl implements MetadataRepository {
         return briteDatabase
                 .createQuery(OrganisationUnitModel.TABLE, ORG_UNIT_QUERY + "'" + id + "' LIMIT 1")
                 .mapToOne(OrganisationUnitModel::create);
-    }
-
-
-    @Override
-    public Observable<List<EnrollmentModel>> getTEIEnrollments(String teiUid) {
-        String id = teiUid == null ? "" : teiUid;
-        return briteDatabase
-                .createQuery(EnrollmentModel.TABLE, SELECT_TEI_ENROLLMENTS + "'" + id + "'")
-                .mapToList(EnrollmentModel::create);
     }
 
 

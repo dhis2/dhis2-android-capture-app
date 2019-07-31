@@ -86,11 +86,6 @@ public class DashboardRepositoryImpl implements DashboardRepository {
             ProgramIndicatorModel.TABLE, ProgramIndicatorModel.TABLE, ProgramIndicatorModel.TABLE, ProgramIndicatorModel.Columns.PROGRAM);
 
 
-    private final String ENROLLMENT_QUERY = String.format("SELECT * FROM %s WHERE %s.%s = ? AND %s.%s = ? ORDER BY %s DESC LIMIT 1",
-            EnrollmentModel.TABLE, EnrollmentModel.TABLE, EnrollmentModel.Columns.PROGRAM,
-            EnrollmentModel.TABLE, EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE,
-            EnrollmentModel.Columns.CREATED);
-
     private final String PROGRAM_STAGE_QUERY = String.format("SELECT * FROM %s WHERE %s.%s = ",
             ProgramStageModel.TABLE, ProgramStageModel.TABLE, ProgramStageModel.Columns.PROGRAM);
 
@@ -103,9 +98,6 @@ public class DashboardRepositoryImpl implements DashboardRepository {
             ProgramStageModel.TABLE, ProgramStageModel.Columns.UID, EventModel.TABLE, EventModel.Columns.PROGRAM_STAGE,
             EventModel.TABLE, EventModel.Columns.UID);
 
-    private final String GET_EVENT_FROM_UID = String.format(
-            "SELECT * FROM %s WHERE %s.%s = ? LIMIT 1",
-            EventModel.TABLE, EventModel.TABLE, EventModel.Columns.UID);
 
     private final String EVENTS_QUERY = String.format(
             "SELECT DISTINCT %s.* FROM %s " +
@@ -627,8 +619,6 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                         }
                         return programTrackedEntityAttributes;
                     });
-
-
     }
 
 
@@ -660,5 +650,8 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                 .map(programUids -> d2.programModule().programs.byUid().in(programUids).withStyle().get());
     }
 
-
+    @Override
+    public Observable<List<Enrollment>> getTEIEnrollments(String teiUid) {
+        return d2.enrollmentModule().enrollments.byTrackedEntityInstance().eq(teiUid).getAsync().toObservable();
+    }
 }
