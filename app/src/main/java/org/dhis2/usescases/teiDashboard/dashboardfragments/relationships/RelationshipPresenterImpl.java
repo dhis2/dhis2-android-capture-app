@@ -178,7 +178,7 @@ public class RelationshipPresenterImpl implements RelationshipContracts.Presente
     @Override
     public void deleteRelationship(Relationship relationship) {
         try {
-            d2.relationshipModule().relationships.withAllChildren().uid(relationship.uid()).delete();
+            d2.relationshipModule().relationships.withAllChildren().uid(relationship.uid()).blockingDelete();
         } catch (D2Error e) {
             Timber.d(e);
         } finally {
