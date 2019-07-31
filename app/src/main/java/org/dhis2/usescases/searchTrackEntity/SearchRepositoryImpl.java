@@ -368,9 +368,9 @@ public class SearchRepositoryImpl implements SearchRepository {
         int count;
 
         if (selectedProgram == null)
-            count = repo.count();
+            count = repo.blockingCount();
         else
-            count = repo.byProgramUid().eq(selectedProgram.uid()).count();
+            count = repo.byProgramUid().eq(selectedProgram.uid()).blockingCount();
 
         if (count > 0)
             tei.setHasOverdue(true);

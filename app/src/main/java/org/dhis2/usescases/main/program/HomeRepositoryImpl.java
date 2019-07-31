@@ -47,7 +47,7 @@ class HomeRepositoryImpl implements HomeRepository {
                             if (!dateFilter.isEmpty())
                                 repo = repo.byPeriodStartDate().inDatePeriods(dateFilter);
 
-                            int count = repo.count();
+                            int count = repo.blockingCount();
 
 
                             State state = State.SYNCED;
@@ -131,25 +131,25 @@ class HomeRepositoryImpl implements HomeRepository {
                                         .byEventDate().inDatePeriods(dateFilter)
                                         .byOrganisationUnitUid().in(orgUnitFilter)
                                         .byState().notIn(State.TO_DELETE)
-                                        .count();
+                                        .blockingCount();
                             } else {
                                 count = d2.eventModule().events
                                         .byProgramUid().eq(program.uid())
                                         .byEventDate().inDatePeriods(dateFilter)
                                         .byState().notIn(State.TO_DELETE)
-                                        .count();
+                                        .blockingCount();
                             }
                         } else if (!orgUnitFilter.isEmpty()) {
                             count = d2.eventModule().events
                                     .byProgramUid().eq(program.uid())
                                     .byOrganisationUnitUid().in(orgUnitFilter)
                                     .byState().notIn(State.TO_DELETE)
-                                    .count();
+                                    .blockingCount();
                         } else {
                             count = d2.eventModule().events
                                     .byProgramUid().eq(program.uid())
                                     .byState().notIn(State.TO_DELETE)
-                                    .count();
+                                    .blockingCount();
                         }
 
                         if (!d2.eventModule().events.byProgramUid().eq(program.uid()).byState().in(State.ERROR, State.WARNING).blockingGet().isEmpty())
