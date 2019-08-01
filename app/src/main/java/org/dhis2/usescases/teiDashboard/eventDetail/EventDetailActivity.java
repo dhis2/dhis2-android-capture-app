@@ -18,7 +18,6 @@ import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.data.forms.FormFragment;
 import org.dhis2.data.forms.FormViewArguments;
-import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.databinding.ActivityEventDetailBinding;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
@@ -81,7 +80,7 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
     }
 
     @Override
-    public void setData(EventDetailModel eventDetailModel, MetadataRepository metadataRepository) {
+    public void setData(EventDetailModel eventDetailModel) {
         if (eventDetailModel.getEvent().status() != EventStatus.SCHEDULE && eventDetailModel.getEvent().eventDate() != null) {
             Intent intent2 = new Intent(this, EventCaptureActivity.class);
             intent2.putExtras(EventCaptureActivity.getActivityBundle(eventDetailModel.getEvent().uid(), eventDetailModel.getEvent().program()));

@@ -16,7 +16,6 @@ import androidx.fragment.app.Fragment;
 import org.dhis2.R;
 import org.dhis2.data.forms.FormFragment;
 import org.dhis2.data.forms.dataentry.DataEntryFragment;
-import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.databinding.WidgetDatepickerBinding;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.OnDialogClickListener;
@@ -49,7 +48,6 @@ import static android.text.TextUtils.isEmpty;
 public class EventDetailPresenter implements EventDetailContracts.Presenter {
 
     private final EventDetailRepository eventDetailRepository;
-    private final MetadataRepository metadataRepository;
     private final DataEntryStore dataEntryStore;
     private EventDetailContracts.View view;
     private CompositeDisposable disposable;
@@ -57,8 +55,7 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
 
     private boolean changedEventStatus = false;
 
-    EventDetailPresenter(EventDetailRepository eventDetailRepository, MetadataRepository metadataRepository, DataEntryStore dataEntryStore) {
-        this.metadataRepository = metadataRepository;
+    EventDetailPresenter(EventDetailRepository eventDetailRepository, DataEntryStore dataEntryStore) {
         this.eventDetailRepository = eventDetailRepository;
         this.dataEntryStore = dataEntryStore;
         disposable = new CompositeDisposable();
@@ -93,7 +90,7 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
                         .subscribe(
                                 data -> {
                                     eventDetailModel = data;
-                                    view.setData(data, metadataRepository);
+                                    view.setData(data);
                                 },
                                 throwable -> Log.d("ERROR", throwable.getMessage()))
 
@@ -103,7 +100,7 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
     @Override
     public void getExpiryDate(String eventUid) {
         disposable.add(
-                metadataRepository.getExpiryDateFromEvent(eventUid)
+                eventDetailRepository.getExpiryDateFromEvent(eventUid)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
