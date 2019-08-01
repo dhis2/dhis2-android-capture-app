@@ -1,26 +1,22 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection;
 
+import androidx.annotation.NonNull;
+
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.hisp.dhis.android.core.category.Category;
-import org.hisp.dhis.android.core.category.CategoryModel;
 import org.hisp.dhis.android.core.category.CategoryOption;
-import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.dataset.DataInputPeriod;
-import org.hisp.dhis.android.core.dataset.DataInputPeriodModel;
-import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.period.Period;
-import org.hisp.dhis.android.core.period.PeriodModel;
 
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nullable;
 
-import androidx.annotation.NonNull;
 import io.reactivex.processors.FlowableProcessor;
 
 public class DataValueContract {
@@ -28,15 +24,11 @@ public class DataValueContract {
     public interface View extends AbstractActivityContracts.View{
         void showSnackBar();
 
-        void onComplete();
-
         void setPeriod(Period periodModel);
 
         void goToTable(int numTable);
 
         void showAlertDialog(String title, String message);
-
-        void setListOptions(List<OptionModel> options);
 
         boolean isOpenOrReopen();
 
