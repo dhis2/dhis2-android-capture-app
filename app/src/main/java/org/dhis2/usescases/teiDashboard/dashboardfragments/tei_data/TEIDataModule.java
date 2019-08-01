@@ -1,7 +1,6 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data;
 
 import org.dhis2.data.dagger.PerFragment;
-import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.usescases.teiDashboard.DashboardRepository;
 import org.hisp.dhis.android.core.D2;
 

@@ -15,7 +15,7 @@ public class QRModule {
 
     @Provides
     @Singleton
-    QRInterface provideMetadataRepository(BriteDatabase briteDatabase) {
+    QRInterface provideRepository(BriteDatabase briteDatabase) {
         return new QRCodeGenerator(briteDatabase, null);
     }
 }

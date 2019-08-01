@@ -4,12 +4,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Looper;
-import android.util.Log;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.multidex.MultiDex;
+import androidx.multidex.MultiDexApplication;
 
 import com.crashlytics.android.Crashlytics;
 import com.facebook.stetho.Stetho;
 import com.google.android.gms.security.ProviderInstaller;
-import com.mapbox.mapboxsdk.Mapbox;
 
 import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.dagger.PerServer;
@@ -17,8 +21,6 @@ import org.dhis2.data.dagger.PerUser;
 import org.dhis2.data.database.DbModule;
 import org.dhis2.data.forms.FormComponent;
 import org.dhis2.data.forms.FormModule;
-import org.dhis2.data.metadata.MetadataModule;
-import org.dhis2.data.qr.QRModule;
 import org.dhis2.data.schedulers.SchedulerModule;
 import org.dhis2.data.schedulers.SchedulersProviderImpl;
 import org.dhis2.data.server.ServerComponent;
@@ -29,7 +31,6 @@ import org.dhis2.data.user.UserModule;
 import org.dhis2.usescases.login.LoginComponent;
 import org.dhis2.usescases.login.LoginModule;
 import org.dhis2.usescases.sync.SyncComponent;
-import org.dhis2.usescases.sync.SyncModule;
 import org.dhis2.usescases.teiDashboard.TeiDashboardComponent;
 import org.dhis2.usescases.teiDashboard.TeiDashboardModule;
 import org.dhis2.utils.UtilsModule;
@@ -41,11 +42,6 @@ import org.hisp.dhis.android.core.configuration.ConfigurationManager;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatDelegate;
-import androidx.multidex.MultiDex;
-import androidx.multidex.MultiDexApplication;
 import io.fabric.sdk.android.Fabric;
 import io.ona.kujaku.KujakuLibrary;
 import io.reactivex.Scheduler;
@@ -190,7 +186,6 @@ public class App extends MultiDexApplication implements Components {
                 .dbModule(new DbModule(DATABASE_NAME))
                 .appModule(new AppModule(this))
                 .schedulerModule(new SchedulerModule(new SchedulersProviderImpl()))
-                .metadataModule(new MetadataModule())
                 .utilModule(new UtilsModule());
     }
 
@@ -224,23 +219,6 @@ public class App extends MultiDexApplication implements Components {
     @Override
     public void releaseLoginComponent() {
         loginComponent = null;
-    }
-
-    @NonNull
-    @Override
-    public SyncComponent createSyncComponent() {
-        return (syncComponent = appComponent.plus(new SyncModule()));
-    }
-
-    @Nullable
-    @Override
-    public SyncComponent syncComponent() {
-        return syncComponent;
-    }
-
-    @Override
-    public void releaseSyncComponent() {
-        syncComponent = null;
     }
 
     ////////////////////////////////////////////////////////////////////////

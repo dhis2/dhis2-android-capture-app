@@ -43,12 +43,7 @@ public class SyncActivity extends ActivityGlobalAbstract implements SyncContract
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        SyncComponent syncComponent = ((App) getApplicationContext()).syncComponent();
-        if (syncComponent == null) {
-            // in case if we don't have cached presenter
-            syncComponent = ((App) getApplicationContext()).createSyncComponent();
-        }
-        syncComponent.inject(this);
+       ((App) getApplicationContext()).userComponent().plus(new SyncModule()).inject(this);
         super.onCreate(savedInstanceState);
 
         WorkManager.getInstance().getWorkInfosByTagLiveData(Constants.META).observe(this, workInfoList -> {
@@ -122,7 +117,6 @@ public class SyncActivity extends ActivityGlobalAbstract implements SyncContract
 
     @Override
     protected void onStop() {
-        ((App) getApplicationContext()).releaseSyncComponent();
         if (binding.lottieView != null) {
             binding.lottieView.cancelAnimation();
         }

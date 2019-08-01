@@ -7,7 +7,6 @@ import android.view.Gravity;
 import androidx.annotation.NonNull;
 import androidx.work.WorkManager;
 
-import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.usescases.login.LoginActivity;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.filters.FilterManager;
@@ -24,16 +23,16 @@ import static android.text.TextUtils.isEmpty;
 
 final class MainPresenter implements MainContracts.Presenter {
 
-    private final MetadataRepository metadataRepository;
+    public static final String DEFAULT = "default";
+
     private MainContracts.View view;
     private CompositeDisposable compositeDisposable;
 
 
     private final D2 d2;
 
-    MainPresenter(@NonNull D2 d2, MetadataRepository metadataRepository) {
+    MainPresenter(@NonNull D2 d2) {
         this.d2 = d2;
-        this.metadataRepository = metadataRepository;
     }
 
     @Override
@@ -53,13 +52,13 @@ final class MainPresenter implements MainContracts.Presenter {
 
 
         compositeDisposable.add(
-                metadataRepository.getDefaultCategoryOptionId()
+                d2.categoryModule().categoryCombos.byIsDefault().eq(true).one().getAsync().toObservable()
                         .subscribeOn(Schedulers.io())
                         .subscribe(
-                                id -> {
+                                categoryCombo -> {
                                     SharedPreferences prefs = view.getAbstracContext().getSharedPreferences(
                                             Constants.SHARE_PREFS, Context.MODE_PRIVATE);
-                                    prefs.edit().putString(Constants.DEFAULT_CAT_COMBO, id).apply();
+                                    prefs.edit().putString(Constants.DEFAULT_CAT_COMBO, categoryCombo.uid()).apply();
                                 },
                                 Timber::e
                         )
@@ -67,13 +66,13 @@ final class MainPresenter implements MainContracts.Presenter {
 
 
         compositeDisposable.add(
-                metadataRepository.getDefaultCategoryOptionComboId()
+                d2.categoryModule().categoryOptionCombos.byCode().eq(DEFAULT).one().getAsync().toObservable()
                         .subscribeOn(Schedulers.io())
                         .subscribe(
-                                id -> {
+                                categoryOptionCombo -> {
                                     SharedPreferences prefs = view.getAbstracContext().getSharedPreferences(
                                             Constants.SHARE_PREFS, Context.MODE_PRIVATE);
-                                    prefs.edit().putString(Constants.PREF_DEFAULT_CAT_OPTION_COMBO, id).apply();
+                                    prefs.edit().putString(Constants.PREF_DEFAULT_CAT_OPTION_COMBO, categoryOptionCombo.uid()).apply();
                                 },
                                 Timber::e
                         )
@@ -136,7 +135,7 @@ final class MainPresenter implements MainContracts.Presenter {
 
     @Override
     public void getErrors() {
-        view.showSyncErrors(metadataRepository.getSyncErrors());
+        view.showSyncErrors(d2.importModule().trackerImportConflicts.get());
     }
 
     @Override
