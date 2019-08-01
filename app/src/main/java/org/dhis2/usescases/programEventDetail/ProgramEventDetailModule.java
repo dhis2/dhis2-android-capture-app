@@ -1,12 +1,12 @@
 package org.dhis2.usescases.programEventDetail;
 
+import androidx.annotation.NonNull;
+
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.dagger.PerActivity;
-import org.dhis2.data.metadata.MetadataRepository;
 import org.hisp.dhis.android.core.D2;
 
-import androidx.annotation.NonNull;
 import dagger.Module;
 import dagger.Provides;
 

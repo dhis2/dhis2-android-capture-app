@@ -16,7 +16,6 @@ import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel;
 import org.dhis2.data.forms.dataentry.fields.image.ImageViewModel;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel;
-import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Quartet;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureFragment.EventCaptureFormFragment;
@@ -26,7 +25,6 @@ import org.dhis2.utils.RulesActionCallbacks;
 import org.dhis2.utils.RulesUtilsProvider;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.rules.models.RuleActionShowError;
 import org.hisp.dhis.rules.models.RuleEffect;
 import org.jetbrains.annotations.NotNull;
@@ -60,7 +58,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private final EventCaptureContract.EventCaptureRepository eventCaptureRepository;
     private final RulesUtilsProvider rulesUtils;
     private final DataEntryStore dataEntryStore;
-    private final MetadataRepository metadataRepository;
     private final String eventUid;
     private CompositeDisposable compositeDisposable;
     private EventCaptureContract.View view;
@@ -95,10 +92,9 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         this.lastFocusItem = null;
     }
 
-    public EventCapturePresenterImpl(String eventUid, EventCaptureContract.EventCaptureRepository eventCaptureRepository, MetadataRepository metadataRepository, RulesUtilsProvider rulesUtils, DataEntryStore dataEntryStore) {
+    public EventCapturePresenterImpl(String eventUid, EventCaptureContract.EventCaptureRepository eventCaptureRepository, RulesUtilsProvider rulesUtils, DataEntryStore dataEntryStore) {
         this.eventUid = eventUid;
         this.eventCaptureRepository = eventCaptureRepository;
-        this.metadataRepository = metadataRepository;
         this.rulesUtils = rulesUtils;
         this.dataEntryStore = dataEntryStore;
         this.currentPosition = 0;
@@ -312,7 +308,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private void checkExpiration() {
         if (eventStatus == EventStatus.COMPLETED)
             compositeDisposable.add(
-                    metadataRepository.isCompletedEventExpired(eventUid)
+                    eventCaptureRepository.isCompletedEventExpired(eventUid)
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(
@@ -548,11 +544,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
             if (!sectionsToHide.contains(section.sectionUid()))
                 finalSections.add(section);
         return finalSections;
-    }
-
-    @Override
-    public Observable<List<OrganisationUnitModel>> getOrgUnits() {
-        return metadataRepository.getOrganisationUnits();
     }
 
     @Override

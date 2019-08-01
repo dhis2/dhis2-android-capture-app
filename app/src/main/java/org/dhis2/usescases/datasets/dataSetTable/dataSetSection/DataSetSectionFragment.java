@@ -38,7 +38,6 @@ import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.dataelement.DataElement;
 import org.hisp.dhis.android.core.dataset.DataSet;
-import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.period.Period;
 
 import java.util.ArrayList;
@@ -405,11 +404,6 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
     }
 
     @Override
-    public void onComplete() {
-        binding.actionButton.setText(getString(R.string.re_open));
-    }
-
-    @Override
     public void setPeriod(Period periodModel) {
         this.periodModel = periodModel;
     }
@@ -442,14 +436,6 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
     @Override
     public void showAlertDialog(String title, String message) {
         super.showInfoDialog(title, message);
-    }
-
-    @Override
-    public void setListOptions(List<OptionModel> options) {
-        /*if (OptionSetCellDialog.isCreated())
-            OptionSetCellDialog.newInstance().setOptions(options);
-        else if (OptionSetCellPopUp.isCreated())
-            OptionSetCellPopUp.getInstance().setOptions(options);*/
     }
 
     @Override

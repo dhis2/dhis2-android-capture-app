@@ -80,8 +80,6 @@ public class EventCaptureContract {
 
         void onPreviousSection();
 
-        Observable<List<OrganisationUnitModel>> getOrgUnits();
-
         ObservableField<String> getCurrentSection();
 
         boolean isEnrollmentOpen();
@@ -163,6 +161,8 @@ public class EventCaptureContract {
         String getSectionFor(String field);
 
         Single<Boolean> canReOpenEvent();
+
+        Observable<Boolean> isCompletedEventExpired(String eventUid);
     }
 
 }

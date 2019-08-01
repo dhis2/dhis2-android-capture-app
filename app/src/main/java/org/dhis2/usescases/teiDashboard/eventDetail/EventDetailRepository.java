@@ -11,6 +11,7 @@ import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
+import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.program.ProgramStageSection;
 
@@ -62,4 +63,6 @@ public interface EventDetailRepository {
     void saveCatOption(CategoryOptionComboModel selectedOption);
 
     Observable<Boolean> isEnrollmentActive(String eventUid);
+
+    Observable<ProgramModel> getExpiryDateFromEvent(String eventUid);
 }

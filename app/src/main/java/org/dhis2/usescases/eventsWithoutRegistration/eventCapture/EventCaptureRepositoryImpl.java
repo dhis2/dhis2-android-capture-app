@@ -33,6 +33,7 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.event.EventTableInfo;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
 import org.hisp.dhis.android.core.program.Program;
@@ -47,6 +48,7 @@ import org.hisp.dhis.android.core.program.ProgramStageSection;
 import org.hisp.dhis.android.core.program.ProgramStageSectionDeviceRendering;
 import org.hisp.dhis.android.core.program.ProgramStageSectionModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
+import org.hisp.dhis.android.core.program.ProgramTableInfo;
 import org.hisp.dhis.android.core.program.ProgramType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
@@ -838,5 +840,27 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         return Single.defer(() -> Single.fromCallable(() -> d2.userModule().authorities
                 .byName().in("F_UNCOMPLETE_EVENT", "ALL").one().exists()
         ));
+    }
+
+    private Observable<Program> getExpiryDateFromEvent(String eventUid) {
+        String EXPIRY_DATE_PERIOD_QUERY = String.format(
+                "SELECT program.* FROM %s " +
+                        "JOIN %s ON %s.%s = %s.%s " +
+                        "WHERE %s.%s = ? " +
+                        "LIMIT 1",
+                ProgramTableInfo.TABLE_INFO.name(),
+                EventTableInfo.TABLE_INFO.name(), ProgramTableInfo.TABLE_INFO.name(), ProgramModel.Columns.UID, EventModel.TABLE, EventModel.Columns.PROGRAM,
+                EventModel.TABLE, EventModel.Columns.UID);
+        return briteDatabase
+                .createQuery(ProgramTableInfo.TABLE_INFO.name(), EXPIRY_DATE_PERIOD_QUERY, eventUid == null ? "" : eventUid)
+                .mapToOne(Program::create);
+    }
+
+    @Override
+    public Observable<Boolean> isCompletedEventExpired(String eventUid) {
+        return Observable.zip(briteDatabase.createQuery(EventTableInfo.TABLE_INFO.name(), "SELECT * FROM Event WHERE uid = ?", eventUid)
+                        .mapToOne(Event::create),
+                getExpiryDateFromEvent(eventUid),
+                ((event, program) -> DateUtils.getInstance().isEventExpired(null, event.completedDate(), program.completeEventsExpiryDays())));
     }
 }

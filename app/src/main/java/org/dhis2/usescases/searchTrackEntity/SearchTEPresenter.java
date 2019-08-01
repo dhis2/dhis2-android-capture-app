@@ -15,7 +15,6 @@ import androidx.paging.PagedList;
 import org.dhis2.R;
 import org.dhis2.data.forms.FormActivity;
 import org.dhis2.data.forms.FormViewArguments;
-import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.WidgetDatepickerBinding;
 import org.dhis2.usescases.main.program.SyncStatusDialog;
@@ -23,14 +22,12 @@ import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.NetworkUtils;
-import org.dhis2.utils.custom_views.OrgUnitDialog;
 import org.dhis2.utils.custom_views.OrgUnitDialog_2;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.Program;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -42,7 +39,6 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
-import io.reactivex.BackpressureStrategy;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -61,7 +57,6 @@ import static android.text.TextUtils.isEmpty;
 public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     private static final int MAX_NO_SELECTED_PROGRAM_RESULTS = 5;
-    private final MetadataRepository metadataRepository;
     private final SearchRepository searchRepository;
     private final D2 d2;
     private SearchTEContractsModule.View view;
@@ -69,7 +64,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private Program selectedProgram;
 
     private CompositeDisposable compositeDisposable;
-    private TrackedEntityTypeModel trackedEntity;
+    private TrackedEntityType trackedEntity;
     private HashMap<String, String> queryData;
     private Map<String, String> queryDataEQ;
 
@@ -81,8 +76,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private String trackedEntityType;
     private String initialProgram;
 
-    public SearchTEPresenter(SearchRepository searchRepository, MetadataRepository metadataRepository, D2 d2) {
-        this.metadataRepository = metadataRepository;
+    public SearchTEPresenter(D2 d2, SearchRepository searchRepository) {
         this.searchRepository = searchRepository;
         this.d2 = d2;
         queryData = new HashMap<>();
@@ -102,7 +96,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         this.initialProgram = initialProgram;
 
         compositeDisposable.add(
-                metadataRepository.getTrackedEntity(trackedEntityType)
+                searchRepository.getTrackedEntityType(trackedEntityType)
                         .subscribeOn(Schedulers.io())
                         .observeOn(Schedulers.io())
                         .flatMap(trackedEntity ->
@@ -137,12 +131,12 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         ));
 
         compositeDisposable.add(
-                metadataRepository.getOrganisationUnits()
+                searchRepository.getOrganisationUnits()
                         .subscribeOn(Schedulers.io())
                         .observeOn(Schedulers.io())
                         .subscribe(
                                 orgUnits -> {
-                                    for (OrganisationUnitModel orgUnit : orgUnits) {
+                                    for (OrganisationUnit orgUnit : orgUnits) {
                                         this.orgUnitsUid.add(orgUnit.uid());
                                     }
                                 },
@@ -192,18 +186,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         },
                         Timber::d)
         );
-
-        compositeDisposable.add(
-                view.optionSetActions()
-                        .switchMap(
-                                data -> metadataRepository.searchOptions(data.val0(), data.val1(), data.val2(), new ArrayList<>(), new ArrayList<>()).toFlowable(BackpressureStrategy.LATEST)
-                        )
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                view::setListOptions,
-                                Timber::e
-                        ));
 
         compositeDisposable.add(
                 queryProcessor
@@ -329,7 +311,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     }
 
     @Override
-    public TrackedEntityTypeModel getTrackedEntityName() {
+    public TrackedEntityType getTrackedEntityName() {
         return trackedEntity;
     }
 
