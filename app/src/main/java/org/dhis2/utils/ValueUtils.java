@@ -47,49 +47,8 @@ public class ValueUtils {
                     for (int i = 0; i < optionsCursor.getCount(); i++) {
                         Option option = Option.create(optionsCursor);
                         if (option.code().equals(optionCode) || option.name().equals(optionCode)) {
-                            teAttrValue = TrackedEntityAttributeValue.builder()
-                                    .trackedEntityInstance(teAttrValue.trackedEntityInstance())
-                                    .lastUpdated(teAttrValue.lastUpdated())
-                                    .created(teAttrValue.created())
-                                    .trackedEntityAttribute(teAttrValue.trackedEntityAttribute())
-                                    .value(option.displayName())
-                                    .build();
-                        }
-                        optionsCursor.moveToNext();
-                    }
-                }
-            }
-        }
-        return teAttrValue;
-    }
 
-    public static TrackedEntityAttributeValueModel transformToModel(BriteDatabase briteDatabase, Cursor cursor) {
-        TrackedEntityAttributeValueModel teAttrValue = TrackedEntityAttributeValueModel.create(cursor);
-        int valueTypeIndex = cursor.getColumnIndex("valueType");
-        int optionSetIndex = cursor.getColumnIndex("optionSet");
-        if (cursor.getString(valueTypeIndex).equals(ValueType.ORGANISATION_UNIT.name())) {
-            String orgUnitUid = cursor.getString(cursor.getColumnIndex("value"));
-            try (Cursor orgUnitCursor = briteDatabase.query("SELECT OrganisationUnit.displayName FROM OrganisationUnit WHERE OrganisationUnit.uid = ?", orgUnitUid)) {
-                if (orgUnitCursor != null && orgUnitCursor.moveToFirst()) {
-                    String orgUnitName = orgUnitCursor.getString(0);
-                    teAttrValue = TrackedEntityAttributeValueModel.builder()
-                            .trackedEntityInstance(teAttrValue.trackedEntityInstance())
-                            .lastUpdated(teAttrValue.lastUpdated())
-                            .created(teAttrValue.created())
-                            .trackedEntityAttribute(teAttrValue.trackedEntityAttribute())
-                            .value(orgUnitName)
-                            .build();
-                }
-            }
-        } else if (cursor.getString(optionSetIndex) != null) {
-            String optionSet = cursor.getString(optionSetIndex);
-            String optionCode = cursor.getString(cursor.getColumnIndex("value"));
-            try (Cursor optionsCursor = briteDatabase.query("SELECT * FROM Option WHERE optionSet = ?", optionSet)) {
-                if (optionsCursor != null && optionsCursor.moveToFirst()) {
-                    for (int i = 0; i < optionsCursor.getCount(); i++) {
-                        Option option = Option.create(optionsCursor);
-                        if (option.code().equals(optionCode) || option.name().equals(optionCode)) {
-                            teAttrValue = TrackedEntityAttributeValueModel.builder()
+                            teAttrValue = TrackedEntityAttributeValue.builder()
                                     .trackedEntityInstance(teAttrValue.trackedEntityInstance())
                                     .lastUpdated(teAttrValue.lastUpdated())
                                     .created(teAttrValue.created())

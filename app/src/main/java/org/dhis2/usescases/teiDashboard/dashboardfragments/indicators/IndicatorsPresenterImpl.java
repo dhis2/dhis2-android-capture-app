@@ -7,6 +7,7 @@ import org.dhis2.usescases.teiDashboard.DashboardRepository;
 import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.enrollment.EnrollmentCollectionRepository;
+import org.hisp.dhis.android.core.program.ProgramIndicator;
 import org.hisp.dhis.android.core.program.ProgramIndicatorModel;
 import org.hisp.dhis.rules.models.RuleAction;
 import org.hisp.dhis.rules.models.RuleActionDisplayKeyValuePair;
@@ -81,7 +82,7 @@ public class IndicatorsPresenterImpl implements IndicatorsContracts.Presenter {
                                 .flatMap(ruleEngine -> ruleEngineRepository.reCalculate())
                                 .map(this::applyRuleEffects) //Restart rule engine to take into account value changes
                                 .map(ruleIndicators -> {
-                                    for (Trio<ProgramIndicatorModel, String, String> indicator : ruleIndicators)
+                                    for (Trio<ProgramIndicator, String, String> indicator : ruleIndicators)
                                         if (!indicators.contains(indicator))
                                             indicators.add(indicator);
                                     return indicators;
@@ -95,9 +96,9 @@ public class IndicatorsPresenterImpl implements IndicatorsContracts.Presenter {
         );
     }
 
-    private List<Trio<ProgramIndicatorModel, String, String>> applyRuleEffects(Result<RuleEffect> calcResult) {
+    private List<Trio<ProgramIndicator, String, String>> applyRuleEffects(Result<RuleEffect> calcResult) {
 
-        List<Trio<ProgramIndicatorModel, String, String>> indicators = new ArrayList<>();
+        List<Trio<ProgramIndicator, String, String>> indicators = new ArrayList<>();
 
         if (calcResult.error() != null) {
             Timber.e(calcResult.error());
@@ -108,12 +109,12 @@ public class IndicatorsPresenterImpl implements IndicatorsContracts.Presenter {
             RuleAction ruleAction = ruleEffect.ruleAction();
             if (!ruleEffect.data().contains("#{")) //Avoid display unavailable variables
                 if (ruleAction instanceof RuleActionDisplayKeyValuePair) {
-                    Trio<ProgramIndicatorModel, String, String> indicator = Trio.create(
-                            ProgramIndicatorModel.builder().displayName(((RuleActionDisplayKeyValuePair) ruleAction).content()).build(),
+                    Trio<ProgramIndicator, String, String> indicator = Trio.create(
+                            ProgramIndicator.builder().displayName(((RuleActionDisplayKeyValuePair) ruleAction).content()).build(),
                             ruleEffect.data(), "");
                     indicators.add(indicator);
                 } else if (ruleAction instanceof RuleActionDisplayText) {
-                    Trio<ProgramIndicatorModel, String, String> indicator = Trio.create(null,
+                    Trio<ProgramIndicator, String, String> indicator = Trio.create(null,
                             ((RuleActionDisplayText) ruleAction).content() + ruleEffect.data(), "");
                     indicators.add(indicator);
                 }

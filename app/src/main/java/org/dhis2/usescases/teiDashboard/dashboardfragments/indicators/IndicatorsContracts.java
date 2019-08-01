@@ -2,7 +2,7 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.indicators;
 
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.general.AbstractActivityContracts;
-import org.hisp.dhis.android.core.program.ProgramIndicatorModel;
+import org.hisp.dhis.android.core.program.ProgramIndicator;
 
 import java.util.List;
 
@@ -15,7 +15,7 @@ public class IndicatorsContracts {
 
     public interface View extends AbstractActivityContracts.View {
 
-        Consumer<List<Trio<ProgramIndicatorModel, String, String>>> swapIndicators();
+        Consumer<List<Trio<ProgramIndicator, String, String>>> swapIndicators();
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {

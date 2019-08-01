@@ -6,6 +6,7 @@ import android.view.ViewGroup;
 import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ItemNotesBinding;
+import org.hisp.dhis.android.core.enrollment.note.Note;
 import org.hisp.dhis.android.core.enrollment.note.NoteModel;
 import org.jetbrains.annotations.NotNull;
 
@@ -24,7 +25,7 @@ import io.reactivex.processors.PublishProcessor;
 
 public class NotesAdapter extends RecyclerView.Adapter<NotesViewholder> {
 
-    private List<NoteModel> notes;
+    private List<Note> notes;
     private final FlowableProcessor<Pair<String, Boolean>> processor;
 
     public NotesAdapter() {
@@ -53,7 +54,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesViewholder> {
         processor.onNext(Pair.create(noteText, true));
     }
 
-    public void setItems(List<NoteModel> notes) {
+    public void setItems(List<Note> notes) {
         this.notes = notes;
         notifyDataSetChanged();
     }

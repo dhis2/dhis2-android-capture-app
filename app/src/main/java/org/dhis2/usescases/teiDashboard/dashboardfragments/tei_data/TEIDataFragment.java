@@ -38,7 +38,9 @@ import org.dhis2.utils.custom_views.CategoryComboDialog;
 import org.dhis2.utils.custom_views.CustomDialog;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
+import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.jetbrains.annotations.NotNull;
 
@@ -81,11 +83,11 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     private EventAdapter adapter;
     private CustomDialog dialog;
     private String lastModifiedEventUid;
-    private ProgramStageModel programStageFromEvent;
+    private ProgramStage programStageFromEvent;
     private ObservableBoolean followUp = new ObservableBoolean(false);
 
     private boolean hasCatComb;
-    private ArrayList<EventModel> catComboShowed = new ArrayList<>();
+    private ArrayList<Event> catComboShowed = new ArrayList<>();
     private Context context;
     private DashboardViewModel dashboardViewModel;
     private DashboardProgramModel dashboardModel;
@@ -158,8 +160,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
             presenter.setDashboardProgram(this.dashboardModel);
             SharedPreferences prefs = context.getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE);
             hasCatComb = nprogram.getCurrentProgram() != null && !nprogram.getCurrentProgram().categoryComboUid().equals(prefs.getString(Constants.DEFAULT_CAT_COMBO, ""));
-            List<EventModel> events = new ArrayList<>();
-            adapter = new EventAdapter(presenter, nprogram.getProgramStages(), events, nprogram.getCurrentEnrollment(), nprogram.getCurrentProgram());
+            adapter = new EventAdapter(presenter, nprogram.getProgramStages(),  new ArrayList<>(), nprogram.getCurrentEnrollment(), nprogram.getCurrentProgram());
             binding.teiRecycler.setLayoutManager(new LinearLayoutManager(getAbstracContext()));
             binding.teiRecycler.setAdapter(adapter);
             binding.setTrackEntity(nprogram.getTei());
@@ -225,7 +226,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     }
 
     @Override
-    public Consumer<List<EventModel>> setEvents() {
+    public Consumer<List<Event>> setEvents() {
         return events -> {
             if (events.isEmpty()) {
                 binding.emptyTeis.setVisibility(View.VISIBLE);
@@ -237,7 +238,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
             } else {
                 binding.emptyTeis.setVisibility(View.GONE);
                 adapter.swapItems(events);
-                for (EventModel event : events) {
+                for (Event event : events) {
                     if (event.eventDate() != null) {
                         if (event.eventDate().after(DateUtils.getInstance().getToday()))
                             binding.teiRecycler.scrollToPosition(events.indexOf(event));
@@ -253,7 +254,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     }
 
     @Override
-    public Consumer<ProgramStageModel> displayGenerateEvent() {
+    public Consumer<ProgramStage> displayGenerateEvent() {
         return programStageModel -> {
             this.programStageFromEvent = programStageModel;
             if (programStageModel.displayGenerateEventBox() || programStageModel.allowGenerateNextVisit()) {
