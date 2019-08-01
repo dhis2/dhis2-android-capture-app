@@ -1,6 +1,8 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.firebase.firebase-perf'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'kotlin-android-extensions'
 apply plugin: 'io.fabric'
 
 def libraries = rootProject.ext.libraries
@@ -360,6 +362,5 @@ dependencies {
 
 }
 
-apply plugin: 'kotlin-kapt'
-apply plugin: 'kotlin-android-extensions'
+
 apply plugin: 'com.google.gms.google-services'

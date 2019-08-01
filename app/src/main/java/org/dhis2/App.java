@@ -226,23 +226,6 @@ public class App extends MultiDexApplication implements Components {
         loginComponent = null;
     }
 
-    @NonNull
-    @Override
-    public SyncComponent createSyncComponent() {
-        return (syncComponent = appComponent.plus(new SyncModule()));
-    }
-
-    @Nullable
-    @Override
-    public SyncComponent syncComponent() {
-        return syncComponent;
-    }
-
-    @Override
-    public void releaseSyncComponent() {
-        syncComponent = null;
-    }
-
     ////////////////////////////////////////////////////////////////////////
     // Server component
     ////////////////////////////////////////////////////////////////////////

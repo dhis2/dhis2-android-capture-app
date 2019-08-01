@@ -30,9 +30,6 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventCollectionRepository;
 import org.hisp.dhis.android.core.event.EventStatus;
-import org.hisp.dhis.android.core.option.Option;
-import org.hisp.dhis.android.core.option.OptionGroup;
-import org.hisp.dhis.android.core.option.OptionTableInfo;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitMode;
 import org.hisp.dhis.android.core.program.Program;
@@ -56,7 +53,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -65,7 +61,6 @@ import io.reactivex.Observable;
 import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
-import static android.text.TextUtils.join;
 
 /**
  * QUADRAM. Created by ppajuelo on 02/11/2017.
@@ -416,45 +411,6 @@ public class SearchRepositoryImpl implements SearchRepository {
     @Override
     public Observable<List<OrganisationUnit>> getOrganisationUnits() {
         return d2.organisationUnitModule().organisationUnits.getAsync().toObservable();
-    }
-
-    @Override
-    public Observable<List<Option>> searchOptions(String text, String idOptionSet, int page, List<String> optionsToHide, List<String> optionsGroupsToHide) {
-        String pageQuery = String.format(Locale.US, "GROUP BY Option.uid ORDER BY sortOrder LIMIT %d,%d", page * 15, 15);
-        String formattedOptionsToHide = "'" + join("','", optionsToHide) + "'";
-
-        String optionQuery = "SELECT Option.* FROM Option WHERE Option.optionSet = ? " +
-                (!optionsToHide.isEmpty() ? "AND Option.uid NOT IN (" + formattedOptionsToHide + ") " : " ") +
-                (!isEmpty(text) ? "AND Option.displayName LIKE '%" + text + "%' " : " ") +
-                pageQuery;
-
-        return briteDatabase.createQuery(OptionTableInfo.TABLE_INFO.name(), optionQuery, idOptionSet)
-                .mapToList(Option::create)
-                .map(optionList -> {
-                    Iterator<Option> iterator = optionList.iterator();
-                    while (iterator.hasNext()) {
-                        Option option = iterator.next();
-                        List<String> optionGroupUids = new ArrayList<>();
-                        try (Cursor optionGroupCursor = briteDatabase.query("SELECT OptionGroup.* FROM OptionGroup " +
-                                "LEFT JOIN OptionGroupOptionLink ON OptionGroupOptionLink.optionGroup = OptionGroup.uid WHERE OptionGroupOptionLink.option = ?", option.uid())) {
-                            if (optionGroupCursor.moveToFirst()) {
-                                for (int i = 0; i < optionGroupCursor.getCount(); i++) {
-                                    optionGroupUids.add(OptionGroup.create(optionGroupCursor).uid());
-                                    optionGroupCursor.moveToNext();
-                                }
-                            }
-                        }
-                        boolean remove = false;
-                        for (String group : optionGroupUids)
-                            if (optionsGroupsToHide.contains(group))
-                                remove = true;
-
-                        if (remove)
-                            iterator.remove();
-
-                    }
-                    return optionList;
-                });
     }
 
     // Private Region Start //

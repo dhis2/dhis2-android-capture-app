@@ -39,7 +39,6 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
-import io.reactivex.BackpressureStrategy;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -187,18 +186,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         },
                         Timber::d)
         );
-
-        compositeDisposable.add(
-                view.optionSetActions()
-                        .switchMap(
-                                data -> searchRepository.searchOptions(data.val0(), data.val1(), data.val2(), new ArrayList<>(), new ArrayList<>()).toFlowable(BackpressureStrategy.LATEST)
-                        )
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                view::setListOptions,
-                                Timber::e
-                        ));
 
         compositeDisposable.add(
                 queryProcessor

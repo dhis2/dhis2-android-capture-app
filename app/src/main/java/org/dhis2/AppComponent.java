@@ -53,6 +53,4 @@ public interface AppComponent {
 
     LoginComponent plus(LoginModule loginContractsModule);
 
-    SyncComponent plus(SyncModule syncModule);
-
 }

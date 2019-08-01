@@ -6,7 +6,6 @@ import androidx.lifecycle.LiveData;
 import androidx.paging.PagedList;
 
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
-import org.hisp.dhis.android.core.option.Option;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
@@ -53,6 +52,4 @@ public interface SearchRepository {
     Observable<TrackedEntityType> getTrackedEntityType(String trackedEntityUid);
 
     Observable<List<OrganisationUnit>> getOrganisationUnits();
-
-    Observable<List<Option>> searchOptions(String text, String idOptionSet, int page, List<String> optionsToHide, List<String> optionsGroupsToHide);
 }

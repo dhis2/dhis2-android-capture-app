@@ -2,7 +2,6 @@ package org.dhis2.usescases.about;
 
 import androidx.annotation.NonNull;
 
-import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.user.UserRepository;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.systeminfo.SystemInfo;

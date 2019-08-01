@@ -32,19 +32,6 @@ public interface Components {
     void releaseLoginComponent();
 
 
-    ///////////////////////////////////////////////////////////////////
-    // Synchronization component
-    ///////////////////////////////////////////////////////////////////
-
-
-    @NonNull
-    SyncComponent createSyncComponent();
-
-    @Nullable
-    SyncComponent syncComponent();
-
-    void releaseSyncComponent();
-
 
     ////////////////////////////////////////////////////////////////////
     // Server component

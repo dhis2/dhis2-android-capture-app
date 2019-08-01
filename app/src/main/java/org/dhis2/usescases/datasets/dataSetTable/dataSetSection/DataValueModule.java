@@ -3,7 +3,6 @@ package org.dhis2.usescases.datasets.dataSetTable.dataSetSection;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.dagger.PerFragment;
-import org.dhis2.data.metadata.MetadataRepository;
 import org.hisp.dhis.android.core.D2;
 
 import dagger.Module;
@@ -26,8 +25,8 @@ public class DataValueModule {
 
     @Provides
     @PerFragment
-    DataValueContract.Presenter providesPresenter(DataValueRepository repository, MetadataRepository metadataRepository){
-        return new DataValuePresenter(repository, metadataRepository);
+    DataValueContract.Presenter providesPresenter(DataValueRepository repository){
+        return new DataValuePresenter(repository);
     }
 
     @Provides

@@ -9,22 +9,24 @@ import androidx.work.ExistingWorkPolicy;
 import androidx.work.NetworkType;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.PeriodicWorkRequest;
-import androidx.work.WorkContinuation;
 import androidx.work.WorkManager;
 
-import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.service.SyncDataWorker;
 import org.dhis2.data.service.SyncMetadataWorker;
+import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.login.LoginActivity;
 import org.dhis2.usescases.reservedValue.ReservedValueActivity;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.FileResourcesUtil;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.State;
+import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.sms.domain.interactor.ConfigCase;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -44,13 +46,11 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
 
     private final D2 d2;
 
-    private MetadataRepository metadataRepository;
     private CompositeDisposable compositeDisposable;
     private SyncManagerContracts.View view;
     private FlowableProcessor<Boolean> checkData;
 
-    SyncManagerPresenter(MetadataRepository metadataRepository, D2 d2) {
-        this.metadataRepository = metadataRepository;
+    SyncManagerPresenter(D2 d2) {
         this.d2 = d2;
         checkData = PublishProcessor.create();
     }
@@ -68,8 +68,19 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
         compositeDisposable.add(
                 checkData
                         .startWith(true)
-                        .flatMap(start ->
-                                metadataRepository.getDownloadedData())
+                        .map(start -> {
+                            int teiCount = d2.trackedEntityModule().trackedEntityInstances.byState().neq(State.RELATIONSHIP).count();
+                            int eventCount = d2.eventModule().events.getAsync().toObservable()
+                                    .map(events -> {
+                                        List<Event> eventsToCount = new ArrayList<>();
+                                        for (Event event : events) {
+                                            if(event.enrollment() == null)
+                                                eventsToCount.add(event);
+                                        }
+                                        return eventsToCount.size();
+                                    }).blockingLast();
+                            return Pair.create(teiCount, eventCount);
+                        })
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(

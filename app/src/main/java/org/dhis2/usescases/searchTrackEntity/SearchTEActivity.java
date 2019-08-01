@@ -48,7 +48,6 @@ import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.HelpManager;
-import org.hisp.dhis.android.core.option.Option;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 
@@ -181,11 +180,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @NonNull
     public Flowable<RowAction> rowActionss() {
         return ((FormAdapter) binding.formRecycler.getAdapter()).asFlowableRA();
-    }
-
-    @Override
-    public Flowable<Trio<String, String, Integer>> optionSetActions() {
-        return ((FormAdapter) binding.formRecycler.getAdapter()).asFlowableOption();
     }
 
     @Override
@@ -358,10 +352,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     public String fromRelationshipTEI() {
         return fromRelationshipTeiUid;
-    }
-
-    @Override
-    public void setListOptions(List<Option> options) {
     }
 
     @Override

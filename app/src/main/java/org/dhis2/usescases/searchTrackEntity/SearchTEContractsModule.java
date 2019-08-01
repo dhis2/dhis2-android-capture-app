@@ -8,7 +8,6 @@ import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
-import org.hisp.dhis.android.core.option.Option;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
@@ -35,8 +34,6 @@ public class SearchTEContractsModule {
 
         Flowable<RowAction> rowActionss();
 
-        Flowable<Trio<String, String, Integer>> optionSetActions();
-
         void clearData();
 
         void setTutorial();
@@ -44,8 +41,6 @@ public class SearchTEContractsModule {
         void setProgramColor(String data);
 
         String fromRelationshipTEI();
-
-        void setListOptions(List<Option> options);
 
         void setLiveData(LiveData<PagedList<SearchTeiModel>> liveData);
 
