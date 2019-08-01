@@ -12,7 +12,7 @@ import org.dhis2.R;
 import org.dhis2.databinding.ItemSearchRelationshipTrackedEntityBinding;
 import org.dhis2.usescases.searchTrackEntity.SearchTEContractsModule;
 import org.dhis2.utils.ObjectStyleUtils;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 
 import java.io.File;
 import java.util.List;
@@ -35,7 +35,7 @@ public class SearchRelationshipViewHolder extends RecyclerView.ViewHolder {
     public void bind(SearchTEContractsModule.Presenter presenter, SearchTeiModel teiModel) {
         binding.setPresenter(presenter);
 
-        setTEIData(teiModel.getAttributeValueModels());
+        setTEIData(teiModel.getAttributeValues());
         binding.executePendingBindings();
         itemView.setOnClickListener(view -> presenter.addRelationship(teiModel.getTei().uid(), teiModel.isOnline()));
 
@@ -52,8 +52,8 @@ public class SearchRelationshipViewHolder extends RecyclerView.ViewHolder {
                 .into(binding.trackedEntityImage);
     }
 
-    private void setTEIData(List<TrackedEntityAttributeValueModel> trackedEntityAttributeValueModels) {
-        binding.setAttribute(trackedEntityAttributeValueModels);
+    private void setTEIData(List<TrackedEntityAttributeValue> trackedEntityAttributeValues) {
+        binding.setAttribute(trackedEntityAttributeValues);
         binding.executePendingBindings();
     }
 

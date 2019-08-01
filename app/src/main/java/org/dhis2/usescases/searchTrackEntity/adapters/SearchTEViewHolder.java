@@ -25,8 +25,7 @@ import org.dhis2.utils.FileResourcesUtil;
 import org.dhis2.utils.ObjectStyleUtils;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
-import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 
 import java.io.File;
 import java.util.List;
@@ -63,7 +62,7 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
         setEnrollment(searchTeiModel.getEnrollments());
         setEnrollmentInfo(searchTeiModel.getEnrollmentInfo());
 
-        setTEIData(searchTeiModel.getAttributeValueModels());
+        setTEIData(searchTeiModel.getAttributeValues());
 
         binding.trackedEntityImage.setBackground(AppCompatResources.getDrawable(itemView.getContext(), R.drawable.photo_temp_gray));
         binding.followUp.setBackground(AppCompatResources.getDrawable(itemView.getContext(), R.drawable.ic_circle_red));
@@ -99,8 +98,8 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
     }
 
 
-    private void setTEIData(List<TrackedEntityAttributeValueModel> trackedEntityAttributeValueModels) {
-        binding.setAttribute(trackedEntityAttributeValueModels);
+    private void setTEIData(List<TrackedEntityAttributeValue> trackedEntityAttributeValues) {
+        binding.setAttribute(trackedEntityAttributeValues);
         binding.executePendingBindings();
     }
 
