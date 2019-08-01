@@ -14,6 +14,7 @@ import org.dhis2.utils.Period;
 import org.hisp.dhis.android.core.period.DatePeriod;
 
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 
 class PeriodFilterHolder extends FilterHolder implements CompoundButton.OnCheckedChangeListener {
@@ -112,7 +113,7 @@ class PeriodFilterHolder extends FilterHolder implements CompoundButton.OnChecke
                 }
 
                 if (dates != null)
-                    FilterManager.getInstance().addPeriod(DatePeriod.builder().startDate(dates[0]).endDate(dates[1]).build());
+                    FilterManager.getInstance().addPeriod(Collections.singletonList(DatePeriod.builder().startDate(dates[0]).endDate(dates[1]).build()));
                 else
                     FilterManager.getInstance().addPeriod(null);
             } else {

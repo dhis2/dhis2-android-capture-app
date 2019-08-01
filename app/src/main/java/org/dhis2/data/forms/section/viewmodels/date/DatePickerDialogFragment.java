@@ -184,6 +184,7 @@ public class DatePickerDialogFragment extends DialogFragment {
      * The listener used to indicate the user has finished selecting a date.
      */
     public interface FormattedOnDateSetListener {
+        //TODO Should change names of methods cause it make no sense with the new filter
         /**
          * @param date the date in the correct simple fate format
          */

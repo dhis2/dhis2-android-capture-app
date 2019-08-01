@@ -13,6 +13,7 @@ import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.DialogFragment;
 
 import org.dhis2.R;
+import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.DialogDateBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.DateUtils;
@@ -35,7 +36,7 @@ public class DateDialog extends DialogFragment {
 
     private DialogDateBinding binding;
     private static ActionTrigger<DateDialog> dialogActionTrigger;
-    protected SingleEmitter<List<Date>> callback;
+    protected SingleEmitter<Pair<Period, List<Date>>> callback;
     protected SingleEmitter<List<String>> callbackPeriod;
     private static DateDialog instace;
     private static Period period = Period.WEEKLY;
@@ -121,7 +122,7 @@ public class DateDialog extends DialogFragment {
     private void manageButtonPeriods(boolean next){
         Period period = adapter.swapPeriod(next);
         if(period == Period.DAILY) {
-            DateUtils.getInstance().showPeriodDialog(activity, (from, to) ->
+            DateUtils.getInstance().showPeriodDialog(activity, datePeriods ->
                     FilterManager.getInstance().addPeriod(
                             null
                     ), true);
@@ -131,7 +132,7 @@ public class DateDialog extends DialogFragment {
         binding.setTitleText(getString(period.getNameResouce()));
     }
 
-    private DateDialog withEmitter(final SingleEmitter<List<Date>> emitter) {
+    private DateDialog withEmitter(final SingleEmitter<Pair<Period, List<Date>>> emitter) {
         this.callback = emitter;
         return this;
     }
@@ -141,7 +142,7 @@ public class DateDialog extends DialogFragment {
         return this;
     }
 
-    public Single<List<Date>> show() {
+    public Single<Pair<Period, List<Date>>> show() {
         return Single.create(emitter -> dialogActionTrigger.trigger(withEmitter(emitter)));
     }
 
@@ -149,7 +150,7 @@ public class DateDialog extends DialogFragment {
         return Single.create(emitter -> dialogActionTrigger.trigger(withEmitterSelectedPeriod(emitter)));
     }
 
-    public List<Date> getFilters() {
+    public Pair<Period, List<Date>> getFilters() {
         return adapter.getSelectedDates();
     }
 
@@ -157,7 +158,7 @@ public class DateDialog extends DialogFragment {
         return adapter.getSeletedDatesName();
     }
 
-    public List<Date> clearFilters() {
+    public Pair<Period, List<Date>> clearFilters() {
         return adapter.clearFilters();
     }
 

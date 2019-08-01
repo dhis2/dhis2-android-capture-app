@@ -8,6 +8,7 @@ import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.dhis2.R;
+import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ItemDateBinding;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.Period;
@@ -31,7 +32,7 @@ public class DateAdapter extends RecyclerView.Adapter<DateViewHolder> {
     private List<String> datesNames = new ArrayList<>();
     private List<String> seletedDatesName = new ArrayList<>();
     private List<Date> dates = new ArrayList<>();
-    private List<Date> selectedDates = new ArrayList<>();
+    private Pair<Period, List<Date>> selectedDates;
     private SimpleDateFormat dayFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
     private SimpleDateFormat weeklyFormat = new SimpleDateFormat("'Week' w", Locale.getDefault());
     private String weeklyFormatWithDates = "%s, %s / %s";
@@ -46,6 +47,7 @@ public class DateAdapter extends RecyclerView.Adapter<DateViewHolder> {
 
     private void initData(Period period) {
         this.currentPeriod = period;
+        selectedDates = Pair.create(currentPeriod, new ArrayList<>());
         Calendar calendar = DateUtils.getInstance().getCalendar();
         calendar.add(Calendar.YEAR, 1); //let's the user select dates in the next year
         int year = calendar.get(Calendar.YEAR);
@@ -111,7 +113,7 @@ public class DateAdapter extends RecyclerView.Adapter<DateViewHolder> {
     public void onBindViewHolder(DateViewHolder holder, int position) {
         holder.bind(datesNames.get(position));
 
-        if ((dates.size() > 0 && selectedDates.contains(dates.get(position))) || (datesNames.size() > 0 && seletedDatesName.contains(datesNames.get(position)))) {
+        if ((dates.size() > 0 && selectedDates.val1().contains(dates.get(position))) || (datesNames.size() > 0 && seletedDatesName.contains(datesNames.get(position)))) {
             holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.colorPrimaryLight));
         } else {
             holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.white));
@@ -119,11 +121,11 @@ public class DateAdapter extends RecyclerView.Adapter<DateViewHolder> {
 
         holder.itemView.setOnClickListener(view -> {
             if (mapPeriod == null || mapPeriod.size() == 0) {
-                if (!selectedDates.contains(dates.get(position))) {
-                    selectedDates.add(dates.get(position));
+                if (!selectedDates.val1().contains(dates.get(position))) {
+                    selectedDates.val1().add(dates.get(position));
                     holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.colorPrimaryLight));
                 } else {
-                    selectedDates.remove(dates.get(position));
+                    selectedDates.val1().remove(dates.get(position));
                     holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.white));
                 }
             } else {
@@ -146,8 +148,8 @@ public class DateAdapter extends RecyclerView.Adapter<DateViewHolder> {
         return datesNames != null ? datesNames.size() : 0;
     }
 
-    public List<Date> clearFilters() {
-        selectedDates.clear();
+    public Pair<Period, List<Date>> clearFilters() {
+        selectedDates.val1().clear();
         return selectedDates;
     }
 
@@ -156,7 +158,7 @@ public class DateAdapter extends RecyclerView.Adapter<DateViewHolder> {
         return seletedDatesName;
     }
 
-    public List<Date> getSelectedDates() {
+    public Pair<Period, List<Date>> getSelectedDates() {
         return selectedDates;
     }
 

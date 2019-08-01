@@ -70,6 +70,9 @@ public class ProgramPresenter implements ProgramContract.Presenter {
         parentOrgUnit = PublishProcessor.create();
         this.processorDismissDialog = PublishProcessor.create();
 
+        if(FilterManager.getInstance().getPeriodFilters().size() != 0)
+            currentDateFilter = FilterManager.getInstance().getPeriodFilters();
+
         compositeDisposable.add(
                 programQueries
                         .startWith(Pair.create(currentDateFilter, currentOrgUnitFilter))

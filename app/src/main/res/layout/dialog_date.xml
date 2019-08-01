@@ -80,6 +80,7 @@
                     android:layout_gravity="end"
                     android:background="@android:color/transparent"
                     android:text="@string/clear_filters"
+                    android:visibility="gone"
                     android:textColor="?colorPrimary"
                     android:layout_margin="5dp"
                     style="?borderlessButtonStyle"/>
