@@ -23,10 +23,10 @@ import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
-import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionModel;
@@ -456,5 +456,10 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
         } catch (ParseException parseException) {
             throw new RuntimeException(parseException);
         }
+    }
+
+    @Override
+    public Observable<Program> getProgramWithId(String programUid) {
+        return d2.programModule().programs.withAllChildren().byUid().eq(programUid).one().getAsync().toObservable();
     }
 }

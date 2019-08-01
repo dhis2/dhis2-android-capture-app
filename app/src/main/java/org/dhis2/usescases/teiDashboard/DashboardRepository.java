@@ -87,4 +87,6 @@ public interface DashboardRepository {
     Observable<List<Program>> getTeiActivePrograms(String teiUid, boolean showOnlyActive);
 
     Observable<List<Enrollment>> getTEIEnrollments(String teiUid);
+
+    void saveCatOption(String eventUid, String catOptionComboUid);
 }

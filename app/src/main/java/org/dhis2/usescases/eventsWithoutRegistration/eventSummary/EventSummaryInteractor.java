@@ -2,8 +2,10 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventSummary;
 
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
-import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.event.EventStatus;
@@ -22,8 +24,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -37,8 +37,7 @@ import timber.log.Timber;
 
 public class EventSummaryInteractor implements EventSummaryContract.Interactor {
     private EventSummaryContract.View view;
-    @NonNull
-    private final MetadataRepository metadataRepository;
+
     @NonNull
     private final EventSummaryRepository eventSummaryRepository;
     @NonNull
@@ -51,9 +50,8 @@ public class EventSummaryInteractor implements EventSummaryContract.Interactor {
 
 
     EventSummaryInteractor(@NonNull EventSummaryRepository eventSummaryRepository,
-                           @NonNull MetadataRepository metadataRepository,
                            @NonNull SchedulerProvider schedulerProvider) {
-        this.metadataRepository = metadataRepository;
+
         this.eventSummaryRepository = eventSummaryRepository;
         this.schedulerProvider = schedulerProvider;
         compositeDisposable = new CompositeDisposable();
@@ -93,7 +91,7 @@ public class EventSummaryInteractor implements EventSummaryContract.Interactor {
 
     @Override
     public void getProgram(@NonNull String programUid) {
-        compositeDisposable.add(metadataRepository.getProgramWithId(programUid)
+        compositeDisposable.add(eventSummaryRepository.getProgramWithId(programUid)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(

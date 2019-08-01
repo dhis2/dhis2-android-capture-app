@@ -14,12 +14,8 @@
             type="java.lang.String" />
 
         <variable
-            name="event"
-            type="org.hisp.dhis.android.core.event.EventModel" />
-
-        <variable
             name="programStage"
-            type="org.hisp.dhis.android.core.program.ProgramStageModel" />
+            type="org.hisp.dhis.android.core.program.ProgramStage" />
 
         <variable
             name="presenter"
@@ -224,7 +220,6 @@
                                 android:layout_weight="1"
                                 android:textColorHint="@color/text_black_808"
                                 tools:hint="executionDateLabel">
-                                <!--android:hint="@{programStage.executionDateLabel()!=null?programStage.executionDateLabel():@string/event_date}"-->
 
                                 <com.google.android.material.textfield.TextInputEditText
                                     android:id="@+id/date"

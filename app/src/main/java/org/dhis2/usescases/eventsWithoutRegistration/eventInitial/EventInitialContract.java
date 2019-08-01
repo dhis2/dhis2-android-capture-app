@@ -14,13 +14,12 @@ import org.dhis2.utils.EventCreationType;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
-import org.hisp.dhis.android.core.common.ObjectStyleModel;
+import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.period.FeatureType;
-import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
+import org.hisp.dhis.android.core.program.Program;
+import org.hisp.dhis.android.core.program.ProgramStage;
 
 import java.util.Date;
 import java.util.List;
@@ -37,7 +36,7 @@ public class EventInitialContract {
     public interface View extends AbstractActivityContracts.View {
         void checkActionButtonVisibility();
 
-        void setProgram(@NonNull ProgramModel program);
+        void setProgram(@NonNull Program program);
 
         void setCatComboOptions(CategoryCombo catCombo, Map<String, CategoryOption> stringCategoryOptionMap);
 
@@ -57,7 +56,7 @@ public class EventInitialContract {
 
         void onEventUpdated(String eventUid);
 
-        void setProgramStage(ProgramStageModel programStage);
+        void setProgramStage(ProgramStage programStage);
 
         void onEventSections(List<FormSectionViewModel> formSectionViewModels);
 
@@ -80,7 +79,7 @@ public class EventInitialContract {
 
         void setHideSection(String sectionUid);
 
-        void renderObjectStyle(ObjectStyleModel objectStyleModel);
+        void renderObjectStyle(ObjectStyle objectStyle);
 
         void runSmsSubmission();
 

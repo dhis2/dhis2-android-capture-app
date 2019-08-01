@@ -1,6 +1,5 @@
 package org.dhis2.data.metadata;
 
-import android.content.ContentValues;
 import android.database.Cursor;
 
 import androidx.annotation.NonNull;
@@ -12,16 +11,12 @@ import org.dhis2.data.tuples.Pair;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
-import org.hisp.dhis.android.core.common.ObjectStyleModel;
-import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.imports.TrackerImportConflict;
 import org.hisp.dhis.android.core.option.OptionGroup;
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
-import org.hisp.dhis.android.core.program.ProgramStageSectionModel;
 import org.hisp.dhis.android.core.settings.SystemSettingModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeModel;
 import org.hisp.dhis.android.core.user.AuthenticatedUserModel;
@@ -31,7 +26,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
-import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import timber.log.Timber;
@@ -46,23 +40,8 @@ import static android.text.TextUtils.join;
 
 public class MetadataRepositoryImpl implements MetadataRepository {
 
-    private static final String SELECT_TEI_ENROLLMENTS = String.format(
-            "SELECT * FROM %s WHERE %s.%s =",
-            EnrollmentModel.TABLE,
-            EnrollmentModel.TABLE, EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE);
-
-
-
-    private final String PROGRAM_LIST_ALL_QUERY = String.format("SELECT * FROM %s WHERE %s.%s = ",
-            ProgramModel.TABLE, ProgramModel.TABLE, ProgramModel.Columns.UID);
-
     private final String TRACKED_ENTITY_QUERY = String.format("SELECT * FROM %s WHERE %s.%s = ",
             TrackedEntityTypeModel.TABLE, TrackedEntityTypeModel.TABLE, TrackedEntityTypeModel.Columns.UID);
-
-    private final String ORG_UNIT_QUERY = String.format("SELECT * FROM %s WHERE %s.%s = ",
-            OrganisationUnitModel.TABLE, OrganisationUnitModel.TABLE, OrganisationUnitModel.Columns.UID);
-
-
 
     private final String SELECT_DEFAULT_CAT_COMBO = String.format("SELECT %s FROM %s WHERE %s.%s = '1' LIMIT 1",
             CategoryComboModel.Columns.UID, CategoryComboModel.TABLE, CategoryComboModel.TABLE, CategoryComboModel.Columns.IS_DEFAULT);
@@ -108,38 +87,6 @@ public class MetadataRepositoryImpl implements MetadataRepository {
                 .mapToOne(cursor -> cursor.getString(0));
     }
 
-    @Override
-    public void saveCatOption(String eventUid, String catOptComboUid) {
-        ContentValues event = new ContentValues();
-        event.put(EventModel.Columns.ATTRIBUTE_OPTION_COMBO, catOptComboUid);
-        briteDatabase.update(EventModel.TABLE, event, EventModel.Columns.UID + " = ?", eventUid == null ? "" : eventUid);
-    }
-
-    @Override
-    public Observable<OrganisationUnitModel> getOrganisationUnit(String orgUnitUid) {
-        String id = orgUnitUid == null ? "" : orgUnitUid;
-        return briteDatabase
-                .createQuery(OrganisationUnitModel.TABLE, ORG_UNIT_QUERY + "'" + id + "' LIMIT 1")
-                .mapToOne(OrganisationUnitModel::create);
-    }
-
-
-    @Override
-    public Flowable<ProgramStageModel> programStageForEvent(String eventId) {
-        return briteDatabase.createQuery(ProgramStageSectionModel.TABLE, "SELECT ProgramStage.* FROM ProgramStage JOIN Event ON Event.programStage = ProgramStage.uid WHERE Event.uid = ? LIMIT 1", eventId)
-                .mapToOne(ProgramStageModel::create).toFlowable(BackpressureStrategy.LATEST);
-    }
-
-
-
-    @Override
-    public Observable<ProgramModel> getProgramWithId(String programUid) {
-        String id = programUid == null ? "" : programUid;
-        return briteDatabase
-                .createQuery(ProgramModel.TABLE, PROGRAM_LIST_ALL_QUERY + "'" + id + "' LIMIT 1")
-                .mapToOne(ProgramModel::create);
-    }
-
 
     @Override
     public Observable<Pair<String, Integer>> getTheme() {
@@ -165,12 +112,6 @@ public class MetadataRepositoryImpl implements MetadataRepository {
                         return Pair.create(flag, R.style.AppTheme);
                 });
 
-    }
-
-    @Override
-    public Observable<ObjectStyleModel> getObjectStyle(String uid) {
-        return briteDatabase.createQuery(ObjectStyleModel.TABLE, "SELECT * FROM ObjectStyle WHERE uid = ? LIMIT 1", uid == null ? "" : uid)
-                .mapToOneOrDefault((ObjectStyleModel::create), ObjectStyleModel.builder().build());
     }
 
     @Override
