@@ -19,16 +19,6 @@ import io.reactivex.Observable;
 
 public interface MetadataRepository {
 
-    /*CATEGORY OPTION*/
-
-    Observable<String> getDefaultCategoryOptionId();
-
-
-    /*CATEGORY OPTION COMBO*/
-
-    Observable<String> getDefaultCategoryOptionComboId();
-
-
     /*EVENTS*/
 
     Observable<ProgramModel> getExpiryDateFromEvent(String eventUid);

@@ -40,12 +40,6 @@ import static android.text.TextUtils.join;
 
 public class MetadataRepositoryImpl implements MetadataRepository {
 
-    private final String TRACKED_ENTITY_QUERY = String.format("SELECT * FROM %s WHERE %s.%s = ",
-            TrackedEntityTypeModel.TABLE, TrackedEntityTypeModel.TABLE, TrackedEntityTypeModel.Columns.UID);
-
-    private final String SELECT_DEFAULT_CAT_COMBO = String.format("SELECT %s FROM %s WHERE %s.%s = '1' LIMIT 1",
-            CategoryComboModel.Columns.UID, CategoryComboModel.TABLE, CategoryComboModel.TABLE, CategoryComboModel.Columns.IS_DEFAULT);
-
     private final String SELECT_DEFAULT_CAT_OPTION_COMBO = String.format("SELECT %s FROM %s WHERE %s.%s = 'default'",
             CategoryOptionComboModel.Columns.UID, CategoryOptionComboModel.TABLE, CategoryOptionComboModel.TABLE, CategoryOptionComboModel.Columns.CODE);
 
@@ -65,21 +59,7 @@ public class MetadataRepositoryImpl implements MetadataRepository {
         this.briteDatabase = briteDatabase;
     }
 
-    @Override
-    public Observable<TrackedEntityTypeModel> getTrackedEntity(String trackedEntityUid) {
-        String id = trackedEntityUid == null ? "" : trackedEntityUid;
-        return briteDatabase
-                .createQuery(TrackedEntityTypeModel.TABLE, TRACKED_ENTITY_QUERY + "'" + id + "' LIMIT 1")
-                .mapToOne(TrackedEntityTypeModel::create);
-    }
 
-
-    @Override
-    public Observable<String> getDefaultCategoryOptionId() {
-        return briteDatabase
-                .createQuery(CategoryComboModel.TABLE, SELECT_DEFAULT_CAT_COMBO)
-                .mapToOne(cursor -> cursor.getString(0));
-    }
     @Override
     public Observable<String> getDefaultCategoryOptionComboId() {
         return briteDatabase
@@ -112,12 +92,6 @@ public class MetadataRepositoryImpl implements MetadataRepository {
                         return Pair.create(flag, R.style.AppTheme);
                 });
 
-    }
-
-    @Override
-    public Observable<List<OrganisationUnitModel>> getOrganisationUnits() {
-        return briteDatabase.createQuery(OrganisationUnitModel.TABLE, "SELECT * FROM OrganisationUnit")
-                .mapToList(OrganisationUnitModel::create);
     }
 
 
