@@ -1,25 +1,22 @@
 package org.dhis2.usescases.searchTrackEntity;
 
+import androidx.annotation.Nullable;
+import androidx.lifecycle.LiveData;
+import androidx.paging.PagedList;
+
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
-import org.hisp.dhis.android.core.option.OptionModel;
+import org.hisp.dhis.android.core.option.Option;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.Program;
-import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
 
 import java.util.HashMap;
 import java.util.List;
 
-import androidx.annotation.Nullable;
-import androidx.lifecycle.LiveData;
-import androidx.paging.PagedList;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 
@@ -48,7 +45,7 @@ public class SearchTEContractsModule {
 
         String fromRelationshipTEI();
 
-        void setListOptions(List<OptionModel> options);
+        void setListOptions(List<Option> options);
 
         void setLiveData(LiveData<PagedList<SearchTeiModel>> liveData);
 
@@ -75,7 +72,7 @@ public class SearchTEContractsModule {
 
         void onTEIClick(String TEIuid, boolean isOnline);
 
-        TrackedEntityTypeModel getTrackedEntityName();
+        TrackedEntityType getTrackedEntityName();
 
         Program getProgram();
 

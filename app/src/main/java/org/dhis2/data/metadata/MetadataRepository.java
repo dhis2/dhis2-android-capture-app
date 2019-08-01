@@ -19,13 +19,6 @@ import io.reactivex.Observable;
 
 public interface MetadataRepository {
 
-
-
-    /*TRACKED ENTITY*/
-
-    Observable<TrackedEntityTypeModel> getTrackedEntity(String trackedEntityUid);
-
-
     /*CATEGORY OPTION*/
 
     Observable<String> getDefaultCategoryOptionId();
@@ -46,7 +39,7 @@ public interface MetadataRepository {
     /*SETINGS*/
     Observable<Pair<String, Integer>> getTheme();
 
-    Observable<List<OrganisationUnitModel>> getOrganisationUnits();
+
 
     Flowable<Pair<Integer, Integer>> getDownloadedData();
 
