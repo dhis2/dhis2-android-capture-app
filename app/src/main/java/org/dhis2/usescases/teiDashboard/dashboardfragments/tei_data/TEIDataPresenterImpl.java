@@ -30,6 +30,7 @@ import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.Program;
+import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 
@@ -98,7 +99,7 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
         compositeDisposable.add(
                 dashboardRepository.getTEIEnrollmentEvents(programUid, teiUid)
                         .map(eventModels -> {
-                            for (EventModel eventModel : eventModels) {
+                            for (Event eventModel : eventModels) {
                                 if (eventModel.status() == EventStatus.SCHEDULE && eventModel.dueDate() != null && eventModel.dueDate().before(DateUtils.getInstance().getToday())) { //If a schedule event dueDate is before today the event is skipped
                                     dashboardRepository.updateState(eventModel, EventStatus.SKIPPED);
                                 }
@@ -115,13 +116,13 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
     }
 
     @Override
-    public void getCatComboOptions(EventModel event) {
+    public void getCatComboOptions(Event event) {
         compositeDisposable.add(
                 dashboardRepository.catComboForProgram(event.program())
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(catCombo -> {
-                                    for (ProgramStageModel programStage : dashboardModel.getProgramStages()) {
+                                    for (ProgramStage programStage : dashboardModel.getProgramStages()) {
                                         if (event.programStage().equals(programStage.uid()))
                                             view.showCatComboDialog(event.uid(), catCombo);
                                     }

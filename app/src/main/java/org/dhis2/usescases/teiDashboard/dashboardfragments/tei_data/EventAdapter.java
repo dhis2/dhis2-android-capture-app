@@ -10,8 +10,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.dhis2.R;
 import org.dhis2.databinding.ItemEventBinding;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
+import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.program.Program;
+import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
 import java.util.List;
@@ -25,13 +27,13 @@ import timber.log.Timber;
 
 public class EventAdapter extends RecyclerView.Adapter<EventViewHolder> {
 
-    private final List<ProgramStageModel> programStageList;
+    private final List<ProgramStage> programStageList;
     private final TEIDataContracts.Presenter presenter;
     private final Enrollment enrollment;
     private final Program program;
-    private List<EventModel> events;
+    private List<Event> events;
 
-    public EventAdapter(TEIDataContracts.Presenter presenter, List<ProgramStageModel> programStageList, List<EventModel> eventList, Enrollment currentEnrollment, Program currentProgram) {
+    public EventAdapter(TEIDataContracts.Presenter presenter, List<ProgramStage> programStageList, List<Event> eventList, Enrollment currentEnrollment, Program currentProgram) {
         this.events = eventList;
         this.enrollment = currentEnrollment;
         this.programStageList = programStageList;
@@ -48,8 +50,8 @@ public class EventAdapter extends RecyclerView.Adapter<EventViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull EventViewHolder holder, int position) {
-        ProgramStageModel programStage = null;
-        for (ProgramStageModel stage : programStageList)
+        ProgramStage programStage = null;
+        for (ProgramStage stage : programStageList)
             if (Objects.equals(events.get(position).programStage(), stage.uid()))
                 programStage = stage;
         if (programStage != null)
@@ -65,7 +67,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventViewHolder> {
         return events != null ? events.size() : 0;
     }
 
-    public void swapItems(List<EventModel> events) {
+    public void swapItems(List<Event> events) {
         this.events.clear();
         this.events.addAll(events);
         notifyDataSetChanged();

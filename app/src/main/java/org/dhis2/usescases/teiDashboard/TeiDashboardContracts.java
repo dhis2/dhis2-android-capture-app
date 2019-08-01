@@ -19,8 +19,6 @@ public class TeiDashboardContracts {
 
         void setDataWithOutProgram(DashboardProgramModel programModel);
 
-        String getToolbarTitle();
-
         void goToEnrollmentList(Bundle extras);
 
         void restoreAdapter(String programUid);

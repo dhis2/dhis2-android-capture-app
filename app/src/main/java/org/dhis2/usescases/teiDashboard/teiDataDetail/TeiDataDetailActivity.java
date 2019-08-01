@@ -29,6 +29,7 @@ import org.dhis2.utils.DatePickerUtils;
 import org.dhis2.utils.FileResourcesUtil;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.enrollment.internal.EnrollmentFields;
+import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
 import java.util.Calendar;
@@ -130,7 +131,7 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
             binding.location2.setOnClickListener(v -> presenter.onLocation2Click());
         }
 
-        for(ProgramStageModel programStage: program.getProgramStages())
+        for(ProgramStage programStage: program.getProgramStages())
             if(programStage.autoGenerateEvent())
                 if(programStage.reportDateToUse() != null && programStage.reportDateToUse().equals(EnrollmentFields.ENROLLMENT_DATE) || programStage.generatedByEnrollmentDate()) {
                     binding.enrollmentDate.setEnabled(false);
