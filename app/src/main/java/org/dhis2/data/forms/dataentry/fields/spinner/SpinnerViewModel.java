@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 import com.google.auto.value.AutoValue;
 
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
+import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
 
 import java.util.ArrayList;
@@ -33,7 +34,7 @@ public abstract class SpinnerViewModel extends FieldViewModel {
     public abstract Integer numberOfOptions();
 
     public static SpinnerViewModel create(String id, String label, String hintFilterOptions, Boolean mandatory,
-                                          String optionSet, String value, String section, Boolean editable, String description, Integer numberOfOptions, ObjectStyleModel objectStyle) {
+                                          String optionSet, String value, String section, Boolean editable, String description, Integer numberOfOptions, ObjectStyle objectStyle) {
         return new AutoValue_SpinnerViewModel(id, label, mandatory, value, section, null, editable, null, null, description, objectStyle, hintFilterOptions, optionSet, numberOfOptions == null ? 0 : numberOfOptions);
     }
 

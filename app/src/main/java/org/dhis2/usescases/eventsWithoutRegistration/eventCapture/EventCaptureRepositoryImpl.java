@@ -20,10 +20,12 @@ import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
+import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.ObjectWithUid;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
+import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
@@ -452,18 +454,18 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                             String displayName = cursor.getString(1);
                             String optionCode = cursor.getString(2);
 
-                            ValueTypeDeviceRenderingModel fieldRendering = null;
+                            ValueTypeDeviceRendering fieldRendering = null;
                             try (Cursor rendering = briteDatabase.query("SELECT ValueTypeDeviceRendering.* FROM ValueTypeDeviceRendering" +
                                     " JOIN ProgramStageDataElement ON ProgramStageDataElement.uid = ValueTypeDeviceRendering.uid" +
                                     " WHERE ProgramStageDataElement.uid = ?", uid)) {
                                 if (rendering != null && rendering.moveToFirst())
-                                    fieldRendering = ValueTypeDeviceRenderingModel.create(rendering);
+                                    fieldRendering = ValueTypeDeviceRendering.create(rendering);
                             }
 
-                            ObjectStyleModel objectStyle = ObjectStyleModel.builder().build();
+                            ObjectStyle objectStyle = ObjectStyle.builder().build();
                             try (Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", uid)) {
                                 if (objStyleCursor != null && objStyleCursor.moveToFirst())
-                                    objectStyle = ObjectStyleModel.create(objStyleCursor);
+                                    objectStyle = ObjectStyle.create(objStyleCursor);
                             }
 
                             renderList.add(fieldFactory.create(
@@ -565,18 +567,18 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
             }
         }
 
-        ValueTypeDeviceRenderingModel fieldRendering = null;
+        ValueTypeDeviceRendering fieldRendering = null;
         try (Cursor rendering = briteDatabase.query("SELECT ValueTypeDeviceRendering.* FROM ValueTypeDeviceRendering" +
                 " JOIN ProgramStageDataElement ON ProgramStageDataElement.uid = ValueTypeDeviceRendering.uid" +
                 " WHERE ProgramStageDataElement.dataElement = ? LIMIT 1", uid)) {
             if (rendering != null && rendering.moveToFirst())
-                fieldRendering = ValueTypeDeviceRenderingModel.create(rendering);
+                fieldRendering = ValueTypeDeviceRendering.create(rendering);
         }
 
-        ObjectStyleModel objectStyle = ObjectStyleModel.builder().build();
+        ObjectStyle objectStyle = ObjectStyle.builder().build();
         try (Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", uid)) {
             if (objStyleCursor != null && objStyleCursor.moveToFirst())
-                objectStyle = ObjectStyleModel.create(objStyleCursor);
+                objectStyle = ObjectStyle.create(objStyleCursor);
         }
 
         if (ValueType.valueOf(valueTypeName) == ValueType.ORGANISATION_UNIT && !isEmpty(dataValue)) {

@@ -12,8 +12,9 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.android.core.common.ObjectStyleModel;
+import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ValueType;
+import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
@@ -180,10 +181,10 @@ final class ProgramStageRepository implements DataEntryRepository {
                                 String displayName = cursor.getString(1);
                                 String optionCode = cursor.getString(2);
 
-                                ObjectStyleModel objectStyle = ObjectStyleModel.builder().build();
+                                ObjectStyle objectStyle = ObjectStyle.builder().build();
                                 try (Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", fieldViewModel.uid())) {
                                     if (objStyleCursor.moveToFirst())
-                                        objectStyle = ObjectStyleModel.create(objStyleCursor);
+                                        objectStyle = ObjectStyle.create(objStyleCursor);
                                 }
 
                                 renderList.add(fieldFactory.create(
@@ -255,12 +256,12 @@ final class ProgramStageRepository implements DataEntryRepository {
         } catch (Exception e) {
             Timber.e(e);
         }
-        ValueTypeDeviceRenderingModel fieldRendering = null;
+        ValueTypeDeviceRendering fieldRendering = null;
         try (Cursor rendering = briteDatabase.query("SELECT ValueTypeDeviceRendering.* FROM ValueTypeDeviceRendering" +
                 " JOIN ProgramStageDataElement ON ProgramStageDataElement.uid = ValueTypeDeviceRendering.uid" +
                 " WHERE ProgramStageDataElement.uid = ?", uid)) {
             if (rendering != null && rendering.moveToFirst()) {
-                fieldRendering = ValueTypeDeviceRenderingModel.create(rendering);
+                fieldRendering = ValueTypeDeviceRendering.create(rendering);
             }
         }
 
@@ -284,10 +285,10 @@ final class ProgramStageRepository implements DataEntryRepository {
 
         boolean hasExpired = DateUtils.getInstance().hasExpired(eventModel, programModel.expiryDays(), programModel.completeEventsExpiryDays(), programStageModel.periodType() != null ? programStageModel.periodType() : programModel.expiryPeriodType());
 
-        ObjectStyleModel objectStyle = ObjectStyleModel.builder().build();
+        ObjectStyle objectStyle = ObjectStyle.builder().build();
         try (Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", uid)) {
             if (objStyleCursor != null && objStyleCursor.moveToFirst())
-                objectStyle = ObjectStyleModel.create(objStyleCursor);
+                objectStyle = ObjectStyle.create(objStyleCursor);
         }
 
         if (valueType == ValueType.ORGANISATION_UNIT && !isEmpty(dataValue)) {
