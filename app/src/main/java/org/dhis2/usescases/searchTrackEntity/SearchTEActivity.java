@@ -38,7 +38,6 @@ import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.ProgramAdapter;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
-import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.ActivitySearchBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
@@ -73,8 +72,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     ActivitySearchBinding binding;
     @Inject
     SearchTEContractsModule.Presenter presenter;
-    @Inject
-    MetadataRepository metadataRepository;
 
     private String initialProgram;
     private String tEType;

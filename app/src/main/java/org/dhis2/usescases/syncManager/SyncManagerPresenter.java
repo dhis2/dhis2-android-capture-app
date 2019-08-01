@@ -336,7 +336,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
 
     @Override
     public void checkSyncErrors() {
-        view.showSyncErrors(metadataRepository.getSyncErrors());
+        view.showSyncErrors(d2.importModule().trackerImportConflicts.get());
     }
 
     @Override

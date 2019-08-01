@@ -6,20 +6,11 @@ import androidx.annotation.NonNull;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
-import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
-import org.dhis2.utils.DateUtils;
-import org.hisp.dhis.android.core.category.CategoryComboModel;
-import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.event.EventModel;
-import org.hisp.dhis.android.core.imports.TrackerImportConflict;
 import org.hisp.dhis.android.core.option.OptionGroup;
 import org.hisp.dhis.android.core.option.OptionModel;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.settings.SystemSettingModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeModel;
-import org.hisp.dhis.android.core.user.AuthenticatedUserModel;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -28,7 +19,6 @@ import java.util.Locale;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
-import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
 import static android.text.TextUtils.join;
@@ -39,9 +29,6 @@ import static android.text.TextUtils.join;
  */
 
 public class MetadataRepositoryImpl implements MetadataRepository {
-
-    private final String SELECT_DEFAULT_CAT_OPTION_COMBO = String.format("SELECT %s FROM %s WHERE %s.%s = 'default'",
-            CategoryOptionComboModel.Columns.UID, CategoryOptionComboModel.TABLE, CategoryOptionComboModel.TABLE, CategoryOptionComboModel.Columns.CODE);
 
 
     private static final String EXPIRY_DATE_PERIOD_QUERY = String.format(
@@ -61,53 +48,10 @@ public class MetadataRepositoryImpl implements MetadataRepository {
 
 
     @Override
-    public Observable<String> getDefaultCategoryOptionComboId() {
-        return briteDatabase
-                .createQuery(CategoryOptionComboModel.TABLE, SELECT_DEFAULT_CAT_OPTION_COMBO)
-                .mapToOne(cursor -> cursor.getString(0));
-    }
-
-
-    @Override
-    public Observable<Pair<String, Integer>> getTheme() {
-        return briteDatabase
-                .createQuery(SystemSettingModel.TABLE, "SELECT * FROM " + SystemSettingModel.TABLE)
-                .mapToList(SystemSettingModel::create)
-                .map(systemSettingModels -> {
-                    String flag = "";
-                    String style = "";
-                    for (SystemSettingModel settingModel : systemSettingModels)
-                        if (settingModel.key().equals("style"))
-                            style = settingModel.value();
-                        else
-                            flag = settingModel.value();
-
-                    if (style.contains("green"))
-                        return Pair.create(flag, R.style.GreenTheme);
-                    if (style.contains("india"))
-                        return Pair.create(flag, R.style.OrangeTheme);
-                    if (style.contains("myanmar"))
-                        return Pair.create(flag, R.style.RedTheme);
-                    else
-                        return Pair.create(flag, R.style.AppTheme);
-                });
-
-    }
-
-
-    @Override
     public Observable<ProgramModel> getExpiryDateFromEvent(String eventUid) {
         return briteDatabase
                 .createQuery(ProgramModel.TABLE, EXPIRY_DATE_PERIOD_QUERY, eventUid == null ? "" : eventUid)
                 .mapToOne(ProgramModel::create);
-    }
-
-    @Override
-    public Observable<Boolean> isCompletedEventExpired(String eventUid) {
-        return Observable.zip(briteDatabase.createQuery(EventModel.TABLE, "SELECT * FROM Event WHERE uid = ?", eventUid)
-                        .mapToOne(EventModel::create),
-                getExpiryDateFromEvent(eventUid),
-                ((eventModel, programModel) -> DateUtils.getInstance().isEventExpired(null, eventModel.completedDate(), programModel.completeEventsExpiryDays())));
     }
 
 
@@ -133,30 +77,6 @@ public class MetadataRepositoryImpl implements MetadataRepository {
         return Flowable.just(Pair.create(currentEvent, currentTei));
     }
 
-
-    @Override
-    public Observable<String> getServerUrl() {
-        return briteDatabase.createQuery(AuthenticatedUserModel.TABLE, "SELECT SystemInfo.contextPath FROM SystemInfo LIMIT 1")
-                .mapToOne(cursor -> cursor.getString(0));
-    }
-
-
-    @Override
-    public List<TrackerImportConflict> getSyncErrors() {
-        List<TrackerImportConflict> conflicts = new ArrayList<>();
-        try (Cursor cursor = briteDatabase.query("SELECT * FROM TrackerImportConflict ORDER BY created DESC")) {
-            if (cursor != null && cursor.moveToFirst()) {
-                for (int i = 0; i < cursor.getCount(); i++) {
-                    TrackerImportConflict conflict = TrackerImportConflict.create(cursor);
-                    conflicts.add(conflict);
-                    cursor.moveToNext();
-                }
-            }
-        } catch (Exception e) {
-            Timber.e(e);
-        }
-        return conflicts;
-    }
 
     @Override
     public Observable<List<OptionModel>> searchOptions(String text, String idOptionSet, int page, List<String> optionsToHide, List<String> optionsGroupsToHide) {

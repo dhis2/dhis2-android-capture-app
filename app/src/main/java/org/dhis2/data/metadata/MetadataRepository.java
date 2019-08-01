@@ -23,19 +23,10 @@ public interface MetadataRepository {
 
     Observable<ProgramModel> getExpiryDateFromEvent(String eventUid);
 
-    Observable<Boolean> isCompletedEventExpired(String eventUid);
-
 
     /*SETINGS*/
-    Observable<Pair<String, Integer>> getTheme();
-
-
 
     Flowable<Pair<Integer, Integer>> getDownloadedData();
-
-    Observable<String> getServerUrl();
-
-    List<TrackerImportConflict> getSyncErrors();
 
     Observable<List<OptionModel>> searchOptions(String text, String idOptionSet, int page, List<String> optionsToHide, List<String> optionsGroupsToHide);
 

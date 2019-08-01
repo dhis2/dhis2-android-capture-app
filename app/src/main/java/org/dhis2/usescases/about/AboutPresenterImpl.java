@@ -4,6 +4,8 @@ import androidx.annotation.NonNull;
 
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.user.UserRepository;
+import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.systeminfo.SystemInfo;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -15,12 +17,12 @@ import timber.log.Timber;
  */
 
 public class AboutPresenterImpl implements AboutContracts.AboutPresenter {
-    private final MetadataRepository metadata;
+    private final D2 d2;
     private final UserRepository userRepository;
     private CompositeDisposable compositeDisposable;
 
-    AboutPresenterImpl(@NonNull MetadataRepository metadataRepository, @NonNull UserRepository userRepository) {
-        this.metadata = metadataRepository;
+    AboutPresenterImpl(@NonNull D2 d2, @NonNull UserRepository userRepository) {
+        this.d2 = d2;
         this.userRepository = userRepository;
     }
 
@@ -38,7 +40,8 @@ public class AboutPresenterImpl implements AboutContracts.AboutPresenter {
                         Timber::e
                 ));
 
-        compositeDisposable.add(metadata.getServerUrl()
+        compositeDisposable.add(
+                d2.systemInfoModule().systemInfo.getAsync().toObservable().map(SystemInfo::contextPath)
                 .cacheWithInitialCapacity(1)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
