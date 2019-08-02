@@ -44,11 +44,11 @@ import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.custom_views.CategoryComboDialog;
 import org.dhis2.utils.custom_views.CoordinatesView;
 import org.dhis2.utils.custom_views.CustomDialog;
-import org.hisp.dhis.android.core.category.CategoryComboModel;
-import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
+import org.hisp.dhis.android.core.category.CategoryCombo;
+import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
-import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.rules.models.RuleActionErrorOnCompletion;
 import org.hisp.dhis.rules.models.RuleActionShowError;
 import org.hisp.dhis.rules.models.RuleActionWarningOnCompletion;
@@ -332,20 +332,20 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
 
     @NonNull
     @Override
-    public Consumer<Pair<ProgramModel, String>> renderReportDate() {
-        return programModelAndDate -> {
-            reportDate.setText(programModelAndDate.val1());
-            reportDateLayout.setHint(programModelAndDate.val0().enrollmentDateLabel());
+    public Consumer<Pair<Program, String>> renderReportDate() {
+        return programAndDate -> {
+            reportDate.setText(programAndDate.val1());
+            reportDateLayout.setHint(programAndDate.val0().enrollmentDateLabel());
         };
     }
 
     @NonNull
     @Override
-    public Consumer<Pair<ProgramModel, String>> renderIncidentDate() {
-        return programModelAndDate -> {
-            incidentDateLayout.setHint(programModelAndDate.val0().incidentDateLabel());
+    public Consumer<Pair<Program, String>> renderIncidentDate() {
+        return programAndDate -> {
+            incidentDateLayout.setHint(programAndDate.val0().incidentDateLabel());
             incidentDateLayout.setVisibility(View.VISIBLE);
-            incidentDate.setText(programModelAndDate.val1());
+            incidentDate.setText(programAndDate.val1());
         };
     }
 
@@ -786,7 +786,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     }
 
     @Override
-    public void showCatComboDialog(CategoryComboModel categoryComboModel, List<CategoryOptionComboModel> categoryOptionComboModels) {
-        new CategoryComboDialog(getAbstracContext(), categoryComboModel, categoryOptionComboModels, 123, selectedOption -> formPresenter.saveCategoryOption(selectedOption)).show();
+    public void showCatComboDialog(CategoryCombo categoryCombo, List<CategoryOptionCombo> categoryOptionCombos) {
+        new CategoryComboDialog(getAbstracContext(), categoryCombo, categoryOptionCombos, 123, selectedOption -> formPresenter.saveCategoryOption(selectedOption)).show();
     }
 }
