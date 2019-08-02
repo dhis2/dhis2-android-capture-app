@@ -53,8 +53,6 @@ public interface EventInitialRepository {
                                      @NonNull String orgUnitUid, @NonNull String catComboUid,
                                      @NonNull String catOptionUid, @NonNull String latitude, @NonNull String longitude);
 
-    Observable<String> updateTrackedEntityInstance(String eventId, String trackedEntityInstanceUid, String orgUnitUid);
-
     @NonNull
     Observable<ProgramStage> programStage(String programUid);
 
