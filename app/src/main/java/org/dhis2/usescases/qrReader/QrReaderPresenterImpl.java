@@ -528,7 +528,7 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                         Coordinates coordinates = Coordinates.create(
                                 Double.parseDouble(eventJson.getString("latitude")),
                                 Double.parseDouble(eventJson.getString("longitude")));
-                        eventBuilder.coordinate(coordinates);
+//                        eventBuilder.coordinate(coordinates);
                     }
                     if (eventJson.has("completedDate"))
                         eventBuilder.completedDate(DateUtils.databaseDateFormat().parse(eventJson.getString("completedDate")));
@@ -644,11 +644,11 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                 if (eventWORegistrationJson.has("status")) {
                     eventBuilder.status(EventStatus.valueOf(eventWORegistrationJson.getString("status")));
                 }
-                if (eventWORegistrationJson.has("latitude") && eventWORegistrationJson.has("longitude")) {
+                if (eventWORegistrationJson.has("latitude") && eventWORegistrationJson.has("longitude")) { //TODO: FIX QRs -> SHOULD USE SMS COMPRESSION LIBRARY
                     Coordinates coordinates = Coordinates.create(
                             Double.parseDouble(eventWORegistrationJson.getString("latitude")),
                             Double.parseDouble(eventWORegistrationJson.getString("longitude")));
-                    eventBuilder.coordinate(coordinates);
+//                    eventBuilder.coordinate(coordinates);
                 }
                 if (eventWORegistrationJson.has("program")) {
                     eventBuilder.program(eventWORegistrationJson.getString("program"));

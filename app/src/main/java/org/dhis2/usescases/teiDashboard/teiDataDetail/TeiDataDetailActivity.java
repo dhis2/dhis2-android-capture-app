@@ -30,11 +30,10 @@ import org.dhis2.utils.FileResourcesUtil;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.enrollment.internal.EnrollmentFields;
 import org.hisp.dhis.android.core.program.ProgramStage;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
 
+import java.io.File;
 import java.util.Calendar;
 import java.util.Date;
-import java.io.File;
 import java.util.Locale;
 
 import javax.inject.Inject;
@@ -125,18 +124,30 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
         binding.setIncidentDate(dashboardProgramModel.getCurrentEnrollment().incidentDate());
         binding.executePendingBindings();
 
-        if (program.getCurrentProgram().captureCoordinates()) {
-            binding.coordinatesLayout.setVisibility(View.VISIBLE);
-            binding.location1.setOnClickListener(v -> presenter.onLocationClick());
-            binding.location2.setOnClickListener(v -> presenter.onLocation2Click());
+        //TODO: Change layout depending on program FEATYRE TYPE AND Enrollment GEOMETRY
+        switch (program.getCurrentProgram().featureType()) {
+            case NONE:
+                binding.coordinatesLayout.setVisibility(View.GONE);
+            case POINT:
+                binding.coordinatesLayout.setVisibility(View.VISIBLE);
+                binding.location1.setOnClickListener(v -> presenter.onLocationClick());
+                binding.location2.setOnClickListener(v -> presenter.onLocation2Click());
+                //TODO: IF program.getCurrentEnrollment()!=null SET LAT AND LONG in editTexts
+                break;
+            case POLYGON:
+                //TODO: MAP FOR POLYGON CAPTURE
+                break;
+            case MULTI_POLYGON:
+                //TODO: MAP FOR MULTIPOLYGON CAPTURE
+                break;
         }
 
-        for(ProgramStage programStage: program.getProgramStages())
-            if(programStage.autoGenerateEvent())
-                if(programStage.reportDateToUse() != null && programStage.reportDateToUse().equals(EnrollmentFields.ENROLLMENT_DATE) || programStage.generatedByEnrollmentDate()) {
+        for (ProgramStage programStage : program.getProgramStages())
+            if (programStage.autoGenerateEvent())
+                if (programStage.reportDateToUse() != null && programStage.reportDateToUse().equals(EnrollmentFields.ENROLLMENT_DATE) || programStage.generatedByEnrollmentDate()) {
                     binding.enrollmentDate.setEnabled(false);
                     binding.enrollmentDate.setBackground(null);
-                }else {
+                } else {
                     binding.incidentDate.setEnabled(false);
                     binding.incidentDate.setBackground(null);
                 }
@@ -210,6 +221,7 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
+
     @Override
     public void showCustomIncidentCalendar(Date date) {
         DatePickerUtils.getDatePickerDialog(

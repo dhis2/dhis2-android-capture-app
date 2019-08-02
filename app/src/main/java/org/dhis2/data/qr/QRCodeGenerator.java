@@ -18,6 +18,8 @@ import org.dhis2.usescases.qrCodes.QrViewModel;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.Coordinates;
+import org.hisp.dhis.android.core.common.FeatureType;
+import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
@@ -25,7 +27,6 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentTableInfo;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.event.EventTableInfo;
-import org.hisp.dhis.android.core.period.FeatureType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueTableInfo;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue;
@@ -63,7 +64,7 @@ import static org.dhis2.data.qr.QRjson.TEI_JSON;
 /**
  * QUADRAM. Created by ppajuelo on 22/05/2018.
  */
-
+/*TODO: CHANGE THIS TO GET INFO FROM SMS Library*/
 public class QRCodeGenerator implements QRInterface {
 
     private final BriteDatabase briteDatabase;
@@ -303,15 +304,14 @@ public class QRCodeGenerator implements QRInterface {
 
         String[] tei_substring_split = tei_substring.split("|");
 
-        TrackedEntityInstance tei = TrackedEntityInstance.builder()
+    /*    TrackedEntityInstance tei = TrackedEntityInstance.builder() TODO: UPDATE QR GENERATION WITH SMS LIBRARY
                 .uid(tei_substring_split[0])
-                .created(/*DateUtils.databaseDateFormat().parse(teiSubstring[1])*/new Date())
+                .created(*//*DateUtils.databaseDateFormat().parse(teiSubstring[1])*//*new Date())
                 .organisationUnit(tei_substring_split[2])
                 .trackedEntityType(tei_substring_split[3])
-                .featureType(!isEmpty(tei_substring_split[4]) ? FeatureType.valueOf(tei_substring_split[4]) : null)
                 .coordinates(!isEmpty(tei_substring_split[5]) ? tei_substring_split[5] : null)
                 .state(State.valueOf(tei_substring_split[6]))
-                .build();
+                .build();*/
 
         return true;
     }
@@ -407,8 +407,8 @@ public class QRCodeGenerator implements QRInterface {
         data.add(event.uid());
         data.add(DateUtils.databaseDateFormat().format(event.created()));
         data.add(event.status().name());
-        data.add(event.coordinate() != null ? String.valueOf(event.coordinate().latitude()) : "");
-        data.add(event.coordinate() != null ? String.valueOf(event.coordinate().longitude()) : "");
+      /*  data.add(event.coordinate() != null ? String.valueOf(event.coordinate().latitude()) : "");
+        data.add(event.coordinate() != null ? String.valueOf(event.coordinate().longitude()) : "");*/
         data.add(event.program()); //TEI OR ENROLLMENT?
         data.add(event.programStage());
         data.add(event.eventDate() != null ? DateUtils.databaseDateFormat().format(event.eventDate()) : "");
@@ -426,8 +426,8 @@ public class QRCodeGenerator implements QRInterface {
         data.add(DateUtils.databaseDateFormat().format(tei.created()));
         data.add(tei.organisationUnit());
         data.add(tei.trackedEntityType());
-        data.add(tei.featureType() != null ? tei.featureType().name() : "");
-        data.add(tei.coordinates() != null ? tei.coordinates() : "");
+    /*    data.add(tei.featureType() != null ? tei.featureType().name() : "");
+        data.add(tei.coordinates() != null ? tei.coordinates() : "");*/
         data.add(tei.state() != null ? tei.state().name() : "");
         return TextUtils.join("|", data);
     }
@@ -442,8 +442,8 @@ public class QRCodeGenerator implements QRInterface {
         data.add(enrollment.incidentDate() != null ? DateUtils.databaseDateFormat().format(enrollment.incidentDate()) : "");
         data.add(enrollment.followUp() ? "t" : "f");
         data.add(enrollment.status().name());
-        data.add(enrollment.coordinate() != null ? String.valueOf(enrollment.coordinate().latitude()) : "");
-        data.add(enrollment.coordinate() != null ? String.valueOf(enrollment.coordinate().longitude()) : "");
+/*        data.add(enrollment.coordinate() != null ? String.valueOf(enrollment.coordinate().latitude()) : "");
+        data.add(enrollment.coordinate() != null ? String.valueOf(enrollment.coordinate().longitude()) : "");*/
         data.add(enrollment.state().name());
         return TextUtils.join("|", data);
     }
@@ -493,8 +493,11 @@ public class QRCodeGenerator implements QRInterface {
                 .lastUpdated(Calendar.getInstance().getTime())
                 .organisationUnit(data[2])
                 .trackedEntityType(data[3])
-                .featureType(data[4].isEmpty() ? null : FeatureType.valueOf(data[4]))
-                .coordinates(data[5].isEmpty() ? null : data[5])
+                .geometry(data[5].isEmpty() ? null : //TODO: CHANGE TO SUPPORT ALL FEATURE TYPES
+                        Geometry.builder()
+                                .type(FeatureType.POINT)
+                                .coordinates(data[5])
+                                .build())
                 .state(State.valueOf(data[6]))
                 .build();
 
@@ -535,7 +538,10 @@ public class QRCodeGenerator implements QRInterface {
                 .incidentDate(incidentDate)
                 .followUp(data[6].equals("t"))
                 .status(EnrollmentStatus.valueOf(data[7]))
-                .coordinate(data[8].isEmpty() ? null : Coordinates.create(Double.valueOf(data[8]), Double.valueOf(data[9])))
+                .geometry(data[8].isEmpty() ? null : Geometry.builder() //TODO: CHANGE TO SUPPORT ALL FEATURE TYPES
+                        .type(FeatureType.POINT)
+                        .coordinates(Coordinates.create(Double.valueOf(data[8]), Double.valueOf(data[9])).toString())
+                        .build())
                 .state(State.valueOf(data[10]))
                 .trackedEntityInstance(tei.uid())
                 .build();
@@ -589,7 +595,10 @@ public class QRCodeGenerator implements QRInterface {
                 .uid(data[0])
                 .created(created)
                 .status(EventStatus.valueOf(data[2]))
-                .coordinate(data[3].isEmpty() ? null : Coordinates.create(Double.valueOf(data[3]), Double.valueOf(data[4])))
+                .geometry(data[3].isEmpty() ? null : Geometry.builder() //TODO: CHANGE TO SUPPORT ALL FEATYRE TYPES
+                        .type(FeatureType.POINT)
+                        .coordinates(Coordinates.create(Double.valueOf(data[3]), Double.valueOf(data[4])).toString())
+                        .build())
                 .organisationUnit(data[11])
                 .program(data[5])
                 .programStage(data[6])
