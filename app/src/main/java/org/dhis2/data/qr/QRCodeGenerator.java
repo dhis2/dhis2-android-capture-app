@@ -20,18 +20,18 @@ import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.Coordinates;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
-import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
+import org.hisp.dhis.android.core.enrollment.EnrollmentTableInfo;
 import org.hisp.dhis.android.core.event.Event;
-import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.event.EventTableInfo;
 import org.hisp.dhis.android.core.period.FeatureType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueTableInfo;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueTableInfo;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceTableInfo;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -84,17 +84,17 @@ public class QRCodeGenerator implements QRInterface {
 
     private static String data;
 
-    private static final String TEI = "SELECT * FROM " + TrackedEntityInstanceModel.TABLE + " WHERE " + TrackedEntityInstanceModel.TABLE + "." + TrackedEntityInstanceModel.Columns.UID + " = ? LIMIT 1";
+    private static final String TEI = "SELECT * FROM TrackedEntityInstance WHERE TrackedEntityInstance.uid = ? LIMIT 1";
 
-    private static final String EVENT = "SELECT * FROM " + EventModel.TABLE + " WHERE " + EventModel.TABLE + "." + EventModel.Columns.UID + " = ? LIMIT 1";
+    private static final String EVENT = "SELECT * FROM Event WHERE Event.uid = ? LIMIT 1";
 
-    private static final String TEI_ATTR = "SELECT * FROM " + TrackedEntityAttributeValueModel.TABLE + " WHERE " + TrackedEntityAttributeValueModel.TABLE + "." + TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_INSTANCE + " = ?";
+    private static final String TEI_ATTR = "SELECT * FROM TrackedEntityAttributeValue WHERE TrackedEntityAttributeValue.trackedEntityAttribute = ?";
 
-    private static final String TEI_DATA = "SELECT * FROM " + TrackedEntityDataValueModel.TABLE + " WHERE " + TrackedEntityDataValueModel.TABLE + "." + TrackedEntityDataValueModel.Columns.EVENT + " = ?";
+    private static final String TEI_DATA = "SELECT * FROM TrackedEntityDataValue WHERE TrackedEntityDataValue.event = ?";
 
-    private static final String TEI_ENROLLMENTS = "SELECT * FROM " + EnrollmentModel.TABLE + " WHERE " + EnrollmentModel.TABLE + "." + EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE + " = ?";
+    private static final String TEI_ENROLLMENTS = "SELECT * FROM Enrollment WHERE Enrollment.trackedEntityInstance = ?";
 
-    private static final String TEI_EVENTS = "SELECT * FROM " + EventModel.TABLE + " WHERE " + EventModel.TABLE + "." + EventModel.Columns.ENROLLMENT + " =?";
+    private static final String TEI_EVENTS = "SELECT * FROM Event WHERE Event.enrollment =?";
 
    /* private static final String TEI_RELATIONSHIPS = "SELECT * FROM " + RelationshipModel.TABLE + " WHERE " + RelationshipModel.TABLE + "." + RelationshipModel.Columns.TRACKED_ENTITY_INSTANCE_A + " = ? OR " +
             RelationshipModel.TABLE + "." + RelationshipModel.Columns.TRACKED_ENTITY_INSTANCE_B + " = ?";*/
@@ -111,15 +111,15 @@ public class QRCodeGenerator implements QRInterface {
         List<QrViewModel> bitmaps = new ArrayList<>();
 
         return
-                briteDatabase.createQuery(TrackedEntityInstanceModel.TABLE, TEI, teiUid == null ? "" : teiUid)
-                        .mapToOne(TrackedEntityInstanceModel::create)
+                briteDatabase.createQuery(TrackedEntityInstanceTableInfo.TABLE_INFO.name(), TEI, teiUid == null ? "" : teiUid)
+                        .mapToOne(TrackedEntityInstance::create)
                         .map(data -> bitmaps.add(new QrViewModel(TEI_JSON, gson.toJson(data))))
 
 
-                        .flatMap(data -> briteDatabase.createQuery(TrackedEntityAttributeValueModel.TABLE, TEI_ATTR, teiUid == null ? "" : teiUid)
-                                .mapToList(TrackedEntityAttributeValueModel::create))
+                        .flatMap(data -> briteDatabase.createQuery(TrackedEntityAttributeValueTableInfo.TABLE_INFO.name(), TEI_ATTR, teiUid == null ? "" : teiUid)
+                                .mapToList(TrackedEntityAttributeValue::create))
                         .map(data -> {
-                            ArrayList<TrackedEntityAttributeValueModel> arrayListAux = new ArrayList<>();
+                            ArrayList<TrackedEntityAttributeValue> arrayListAux = new ArrayList<>();
                             // DIVIDE ATTR QR GENERATION -> 1 QR PER 2 ATTR
                             int count = 0;
                             for (int i = 0; i < data.size(); i++) {
@@ -138,10 +138,10 @@ public class QRCodeGenerator implements QRInterface {
                         })
 
 
-                        .flatMap(data -> briteDatabase.createQuery(EnrollmentModel.TABLE, TEI_ENROLLMENTS, teiUid == null ? "" : teiUid)
-                                .mapToList(EnrollmentModel::create))
+                        .flatMap(data -> briteDatabase.createQuery(EnrollmentTableInfo.TABLE_INFO.name(), TEI_ENROLLMENTS, teiUid == null ? "" : teiUid)
+                                .mapToList(Enrollment::create))
                         .map(data -> {
-                            ArrayList<EnrollmentModel> arrayListAux = new ArrayList<>();
+                            ArrayList<Enrollment> arrayListAux = new ArrayList<>();
                             // DIVIDE ENROLLMENT QR GENERATION -> 1 QR PER 2 ENROLLMENT
                             int count = 0;
                             for (int i = 0; i < data.size(); i++) {
@@ -162,18 +162,18 @@ public class QRCodeGenerator implements QRInterface {
 
                         .flatMap(data ->
                                 Observable.fromIterable(data)
-                                        .flatMap(enrollment -> briteDatabase.createQuery(EventModel.TABLE, TEI_EVENTS, enrollment.uid() == null ? "" : enrollment.uid())
-                                                .mapToList(EventModel::create)
+                                        .flatMap(enrollment -> briteDatabase.createQuery(EventTableInfo.TABLE_INFO.name(), TEI_EVENTS, enrollment.uid() == null ? "" : enrollment.uid())
+                                                .mapToList(Event::create)
                                         )
                         )
                         .flatMap(data ->
                                 Observable.fromIterable(data)
                                         .flatMap(event -> {
                                                     bitmaps.add(new QrViewModel(EVENTS_JSON, gson.toJson(event)));
-                                                    return briteDatabase.createQuery(TrackedEntityDataValueModel.TABLE, TEI_DATA, event.uid() == null ? "" : event.uid())
-                                                            .mapToList(TrackedEntityDataValueModel::create)
+                                                    return briteDatabase.createQuery(TrackedEntityDataValueTableInfo.TABLE_INFO.name(), TEI_DATA, event.uid() == null ? "" : event.uid())
+                                                            .mapToList(TrackedEntityDataValue::create)
                                                             .map(dataValueList -> {
-                                                                ArrayList<TrackedEntityDataValueModel> arrayListAux = new ArrayList<>();
+                                                                ArrayList<TrackedEntityDataValue> arrayListAux = new ArrayList<>();
                                                                 // DIVIDE ATTR QR GENERATION -> 1 QR PER 2 ATTR
                                                                 int count = 0;
                                                                 for (int i = 0; i < dataValueList.size(); i++) {
@@ -202,16 +202,16 @@ public class QRCodeGenerator implements QRInterface {
         List<QrViewModel> bitmaps = new ArrayList<>();
 
         return
-                briteDatabase.createQuery(EventModel.TABLE, EVENT, eventUid == null ? "" : eventUid)
-                        .mapToOne(EventModel::create)
+                briteDatabase.createQuery(EventTableInfo.TABLE_INFO.name(), EVENT, eventUid == null ? "" : eventUid)
+                        .mapToOne(Event::create)
                         .map(data -> {
                             bitmaps.add(new QrViewModel(EVENT_JSON, gson.toJson(data)));
                             return data;
                         })
-                        .flatMap(data -> briteDatabase.createQuery(TrackedEntityDataValueModel.TABLE, TEI_DATA, data.uid() == null ? "" : data.uid())
-                                .mapToList(TrackedEntityDataValueModel::create))
+                        .flatMap(data -> briteDatabase.createQuery(TrackedEntityDataValueTableInfo.TABLE_INFO.name(), TEI_DATA, data.uid() == null ? "" : data.uid())
+                                .mapToList(TrackedEntityDataValue::create))
                         .map(data -> {
-                            ArrayList<TrackedEntityDataValueModel> arrayListAux = new ArrayList<>();
+                            ArrayList<TrackedEntityDataValue> arrayListAux = new ArrayList<>();
                             // DIVIDE ATTR QR GENERATION -> 1 QR PER 2 ATTR
                             int count = 0;
                             for (int i = 0; i < data.size(); i++) {
