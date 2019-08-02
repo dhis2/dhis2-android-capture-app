@@ -6,7 +6,6 @@ import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
-import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.utils.Result;
@@ -50,8 +49,6 @@ final class DataEntryPresenterImpl implements DataEntryPresenter, RulesActionCal
     private final SchedulerProvider schedulerProvider;
 
     @NonNull
-    private final MetadataRepository metadataRepository;
-    @NonNull
     private final CompositeDisposable disposable;
     private final RulesUtilsProvider ruleUtils;
     private DataEntryView dataEntryView;
@@ -74,14 +71,12 @@ final class DataEntryPresenterImpl implements DataEntryPresenter, RulesActionCal
     DataEntryPresenterImpl(@NonNull DataEntryStore dataEntryStore,
                            @NonNull DataEntryRepository dataEntryRepository,
                            @NonNull RuleEngineRepository ruleEngineRepository,
-                           @NonNull SchedulerProvider schedulerProvider,
-                           @NonNull MetadataRepository metadataRepository, RulesUtilsProvider ruleUtils) {
+                           @NonNull SchedulerProvider schedulerProvider, RulesUtilsProvider ruleUtils) {
         this.dataEntryStore = dataEntryStore;
         this.dataEntryRepository = dataEntryRepository;
         this.ruleEngineRepository = ruleEngineRepository;
         this.schedulerProvider = schedulerProvider;
         this.disposable = new CompositeDisposable();
-        this.metadataRepository = metadataRepository;
         this.assignProcessor = PublishProcessor.create();
         this.ruleUtils = ruleUtils;
 

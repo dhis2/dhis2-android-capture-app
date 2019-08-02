@@ -5,7 +5,6 @@ import androidx.annotation.NonNull;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
-import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Quintet;
 import org.dhis2.data.tuples.Sextet;
@@ -30,8 +29,6 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
-import androidx.annotation.NonNull;
-import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -61,15 +58,13 @@ public class DataValuePresenter implements DataValueContract.Presenter{
     private List<List<List<FieldViewModel>>> tableCells;
     private List<List<FieldViewModel>> cells;
     private List<DataInputPeriod> dataInputPeriodModel;
-    private MetadataRepository metadataRepository;
     @NonNull
     private FlowableProcessor<RowAction> processor;
     private FlowableProcessor<Trio<String, String, Integer>> processorOptionSet;
     private Boolean isApproval;
 
-    public DataValuePresenter(DataValueRepository repository, MetadataRepository metadataRepository){
+    public DataValuePresenter(DataValueRepository repository) {
         this.repository = repository;
-        this.metadataRepository = metadataRepository;
     }
 
     @Override
@@ -203,17 +198,6 @@ public class DataValuePresenter implements DataValueContract.Presenter{
 
     @Override
     public void initializeProcessor(@NonNull DataSetSectionFragment dataSetSectionFragment){
-
-        compositeDisposable.add(dataSetSectionFragment.optionSetActions()
-                .flatMap(
-                        data -> metadataRepository.searchOptions(data.val0(), data.val1(), data.val2(), new ArrayList<>(), new ArrayList<>()).toFlowable(BackpressureStrategy.LATEST)
-                )
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        view::setListOptions,
-                        Timber::e
-                ));
 
         compositeDisposable.add(dataSetSectionFragment.rowActions()
                 .flatMap(rowAction -> {

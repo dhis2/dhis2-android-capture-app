@@ -40,6 +40,7 @@ import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListActivity;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.HelpManager;
+import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.jetbrains.annotations.NotNull;
 
@@ -197,7 +198,8 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     public void setData(DashboardProgramModel program) {
 
         dashboardViewModel.updateDashboard(program);
-        setProgramColor(program.getObjectStyleForProgram(program.getCurrentProgram().uid()).color());
+        ObjectStyle style = program.getObjectStyleForProgram(program.getCurrentProgram().uid());
+        setProgramColor(style == null ? "" : style.color());
 
 
         binding.setDashboardModel(program);
@@ -221,7 +223,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                     .replace(R.id.tei_main_view, new TEIDataFragment())
                     .commitAllowingStateLoss();
 
-        Boolean enrollmentStatus = program.getCurrentEnrollment() != null && program.getCurrentEnrollment().enrollmentStatus() == EnrollmentStatus.ACTIVE;
+        Boolean enrollmentStatus = program.getCurrentEnrollment() != null && program.getCurrentEnrollment().status() == EnrollmentStatus.ACTIVE;
         if (getIntent().getStringExtra(Constants.EVENT_UID) != null && enrollmentStatus)
             dashboardViewModel.updateEventUid(getIntent().getStringExtra(Constants.EVENT_UID));
     }

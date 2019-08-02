@@ -8,11 +8,14 @@ import androidx.work.OneTimeWorkRequest;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
-import org.dhis2.data.metadata.MetadataRepository;
+import org.dhis2.R;
 import org.dhis2.data.service.ReservedValuesWorker;
 import org.dhis2.data.service.SyncDataWorker;
 import org.dhis2.data.service.SyncMetadataWorker;
+import org.dhis2.data.tuples.Pair;
 import org.dhis2.utils.Constants;
+import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.settings.SystemSetting;
 
 import java.util.concurrent.TimeUnit;
 
@@ -23,14 +26,14 @@ import timber.log.Timber;
 
 public class SyncPresenter implements SyncContracts.Presenter {
 
-    private final MetadataRepository metadataRepository;
+    private final D2 d2;
     private SyncContracts.View view;
 
     private CompositeDisposable disposable;
 
 
-    SyncPresenter(MetadataRepository metadataRepository) {
-        this.metadataRepository = metadataRepository;
+    SyncPresenter(D2 d2) {
+        this.d2 = d2;
     }
 
     @Override
@@ -85,7 +88,25 @@ public class SyncPresenter implements SyncContracts.Presenter {
     }
 
     public void getTheme() {
-        disposable.add(metadataRepository.getTheme()
+        disposable.add(d2.systemSettingModule().systemSetting.getAsync().toObservable()
+                .map(systemSettings -> {
+                    String flag = "";
+                    String style = "";
+                    for (SystemSetting settingModel : systemSettings)
+                        if (settingModel.key().equals("style"))
+                            style = settingModel.value();
+                        else
+                            flag = settingModel.value();
+
+                    if (style.contains("green"))
+                        return Pair.create(flag, R.style.GreenTheme);
+                    if (style.contains("india"))
+                        return Pair.create(flag, R.style.OrangeTheme);
+                    if (style.contains("myanmar"))
+                        return Pair.create(flag, R.style.RedTheme);
+                    else
+                        return Pair.create(flag, R.style.AppTheme);
+                })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(flagTheme -> {

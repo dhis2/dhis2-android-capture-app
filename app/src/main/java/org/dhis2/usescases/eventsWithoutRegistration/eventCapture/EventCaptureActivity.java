@@ -132,6 +132,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                 .setCanComplete(canComplete)
                 .setListener(this::setAction)
                 .setMessageOnComplete(completeMessage)
+                .setEmptyMandatoryFields(emptyMandatoryFields)
                 .setFieldsWithErrors(!errors.isEmpty())
                 .setMandatoryFields(!emptyMandatoryFields.isEmpty())
                 .show(getSupportFragmentManager(), "SHOW_OPTIONS");

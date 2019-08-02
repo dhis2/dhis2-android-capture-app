@@ -11,7 +11,7 @@
 
         <variable
             name="program"
-            type="org.hisp.dhis.android.core.program.ProgramModel" />
+            type="org.hisp.dhis.android.core.program.Program" />
 
         <variable
             name="dashboardModel"
@@ -175,7 +175,7 @@
                                 android:id="@+id/program_lock"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                app:enrolmentIcon='@{dashboardModel.currentEnrollment.enrollmentStatus()}'
+                                app:enrolmentIcon='@{dashboardModel.currentEnrollment.status()}'
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:srcCompat="@drawable/ic_lock_open_green"
@@ -192,7 +192,7 @@
                                 android:textColor="#787878"
                                 android:textSize="14sp"
                                 android:textStyle="normal"
-                                app:enrolmentText='@{dashboardModel.currentEnrollment.enrollmentStatus()}'
+                                app:enrolmentText='@{dashboardModel.currentEnrollment.status()}'
                                 app:layout_constraintEnd_toEndOf="@id/program_lock"
                                 app:layout_constraintStart_toStartOf="@id/program_lock"
                                 app:layout_constraintTop_toBottomOf="@id/program_lock"
@@ -309,9 +309,9 @@
                             android:id="@+id/lat"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:enabled="@{dashboardModel.currentEnrollment.enrollmentStatus()==EnrollmentStatus.ACTIVE}"
+                            android:enabled="@{dashboardModel.currentEnrollment.status()==EnrollmentStatus.ACTIVE}"
                             android:inputType="numberDecimal|numberSigned"
-                            android:text='@{dashboardModel.currentEnrollment!=null?dashboardModel.currentEnrollment.latitude():""}'
+                            android:text='@{dashboardModel.currentEnrollment!=null?dashboardModel.currentEnrollment.coordinate().latitude():""}'
                             android:textSize="15sp" />
 
                     </com.google.android.material.textfield.TextInputLayout>
@@ -328,9 +328,9 @@
                             android:id="@+id/lon"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:enabled="@{dashboardModel.currentEnrollment.enrollmentStatus()==EnrollmentStatus.ACTIVE}"
+                            android:enabled="@{dashboardModel.currentEnrollment.status()==EnrollmentStatus.ACTIVE}"
                             android:inputType="numberDecimal|numberSigned"
-                            android:text='@{dashboardModel.currentEnrollment!=null?dashboardModel.currentEnrollment.longitude():""}'
+                            android:text='@{dashboardModel.currentEnrollment!=null?dashboardModel.currentEnrollment.coordinate().longitude():""}'
                             android:textSize="15sp" />
 
                     </com.google.android.material.textfield.TextInputLayout>
@@ -347,7 +347,7 @@
                             android:layout_height="32dp"
                             android:layout_centerInParent="true"
                             android:background="@drawable/selector_gray_button_round_7"
-                            android:clickable="@{dashboardModel.currentEnrollment.enrollmentStatus()==EnrollmentStatus.ACTIVE}"
+                            android:clickable="@{dashboardModel.currentEnrollment.status()==EnrollmentStatus.ACTIVE}"
                             android:padding="6dp"
                             app:srcCompat="@drawable/ic_my_location" />
                     </RelativeLayout>
@@ -363,7 +363,7 @@
                             android:layout_height="32dp"
                             android:layout_centerInParent="true"
                             android:background="@drawable/selector_gray_button_round_7"
-                            android:clickable="@{dashboardModel.currentEnrollment.enrollmentStatus()==EnrollmentStatus.ACTIVE}"
+                            android:clickable="@{dashboardModel.currentEnrollment.status()==EnrollmentStatus.ACTIVE}"
                             android:padding="6dp"
                             app:srcCompat="@drawable/ic_map" />
                     </RelativeLayout>

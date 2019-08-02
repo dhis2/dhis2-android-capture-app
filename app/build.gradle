@@ -1,6 +1,8 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.firebase.firebase-perf'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'kotlin-android-extensions'
 apply plugin: 'io.fabric'
 
 def libraries = rootProject.ext.libraries
@@ -275,7 +277,9 @@ dependencies {
     //endregion
 
     // Kujaku dependencies
-    implementation 'io.ona.kujaku:library:0.7.1'
+    implementation 'io.ona.kujaku:library:0.7.7'
+    implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-markerview-v8:0.3.0'
+
 
     // Jake Wharton libraries
     //timber
@@ -358,6 +362,5 @@ dependencies {
 
 }
 
-apply plugin: 'kotlin-kapt'
-apply plugin: 'kotlin-android-extensions'
+
 apply plugin: 'com.google.gms.google-services'

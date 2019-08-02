@@ -17,64 +17,57 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:paddingStart="16dp"
-        android:paddingTop="10dp"
-        android:paddingEnd="16dp">
+        android:background="@color/white"
+        android:paddingStart="14dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="14dp"
+        android:paddingBottom="8dp">
 
         <TextView
             android:id="@+id/eventDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:ellipsize="end"
             android:fontFamily="@font/rubik_regular"
+            android:maxLines="1"
             android:textColor="@color/black_de0"
-            android:textSize="12sp"
+            android:textSize="10sp"
             android:textStyle="bold"
-            app:date='@{event.date()}'
+            app:date="@{event.date()}"
+            app:layout_constraintBottom_toBottomOf="@id/orgUnit"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="04/10/2017 - 8:55 AM" />
 
         <TextView
             android:id="@+id/orgUnit"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:ellipsize="end"
             android:fontFamily="@font/rubik_regular"
+            android:maxLines="1"
             android:text="@{event.orgUnitName()}"
             android:textColor="@color/black_de0"
-            android:textSize="14sp"
+            android:textSize="12sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/eventDate"
-            app:layout_constraintEnd_toStartOf="@id/status_text"
+            app:layout_constraintTop_toBottomOf="@id/sync_icon"
             tools:text="OrgUnit" />
 
         <TextView
-            android:id="@+id/dataValue"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/rubik_regular"
-            android:textColor="@color/black_de0"
-            android:textSize="12sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/orgUnit"
-            tools:text="69 | Transferred | C123 Posterior wall of hypopharynx" />
-
-
-        <TextView
             android:id="@+id/optionCombo"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:ellipsize="end"
             android:fontFamily="@font/rubik_regular"
-            android:gravity="end"
+            android:maxLines="1"
             android:text="@{event.attributeOptionComboName()}"
             android:textColor="@color/black_de0"
-            android:textSize="12sp"
-            app:layout_constraintTop_toBottomOf="@id/dataValue"
+            android:textSize="10sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/orgUnit"
             tools:text="Cat combo" />
 
         <ImageView
@@ -91,9 +84,9 @@
             android:id="@+id/status_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
             android:tint="@color/text_black_333"
             app:eventWithoutRegistrationStatusIcon='@{event}'
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintEnd_toStartOf="@id/sync_icon"
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="ContentDescription"
@@ -103,17 +96,18 @@
             android:id="@+id/status_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:maxWidth="50dp"
             android:layout_gravity="center"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
+            android:layout_marginStart="6dp"
+            android:layout_marginEnd="6dp"
             android:fontFamily="@font/rubik_regular"
-            android:textSize="9sp"
             android:gravity="end"
+            android:maxWidth="40dp"
             android:textColor="@color/text_black_333"
+            android:textSize="7sp"
             app:eventWithoutRegistrationStatusText='@{event}'
             app:layout_constraintBottom_toBottomOf="@id/status_icon"
             app:layout_constraintEnd_toStartOf="@id/status_icon"
+            app:layout_constraintStart_toEndOf="@id/eventDate"
             app:layout_constraintTop_toTopOf="@id/status_icon"
             tools:text="Event completed" />
 

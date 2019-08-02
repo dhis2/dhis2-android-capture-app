@@ -1,16 +1,16 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventSummary;
 
 import android.content.Context;
+
 import androidx.annotation.NonNull;
+
+import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.forms.EventRepository;
 import org.dhis2.data.forms.FormRepository;
 import org.dhis2.data.forms.RulesRepository;
-import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.schedulers.SchedulerProvider;
-import com.squareup.sqlbrite2.BriteDatabase;
-
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.rules.RuleExpressionEvaluator;
 
@@ -51,9 +51,8 @@ public class EventSummaryModule {
     @Provides
     @PerActivity
     EventSummaryContract.Interactor provideInteractor(@NonNull EventSummaryRepository eventSummaryRepository,
-                                                      @NonNull MetadataRepository metadataRepository,
                                                       @NonNull SchedulerProvider schedulerProvider) {
-        return new EventSummaryInteractor(eventSummaryRepository, metadataRepository, schedulerProvider);
+        return new EventSummaryInteractor(eventSummaryRepository, schedulerProvider);
     }
 
     @Provides

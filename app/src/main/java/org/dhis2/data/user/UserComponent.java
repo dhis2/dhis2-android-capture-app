@@ -49,6 +49,8 @@ import org.dhis2.usescases.searchTrackEntity.SearchTEComponent;
 import org.dhis2.usescases.searchTrackEntity.SearchTEModule;
 import org.dhis2.usescases.sms.SmsComponent;
 import org.dhis2.usescases.sms.SmsModule;
+import org.dhis2.usescases.sync.SyncComponent;
+import org.dhis2.usescases.sync.SyncModule;
 import org.dhis2.usescases.syncManager.SyncManagerComponent;
 import org.dhis2.usescases.syncManager.SyncManagerModule;
 import org.dhis2.usescases.teiDashboard.TeiDashboardComponent;
@@ -159,4 +161,7 @@ public interface UserComponent {
 
     @NonNull
     SyncGranularRxComponent plus(SyncGranularRxModule syncGranularEventModule);
+
+    @NonNull
+    SyncComponent plus(SyncModule syncModule);
 }

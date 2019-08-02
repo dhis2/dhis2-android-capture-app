@@ -11,7 +11,6 @@ import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.forms.EventRepository;
 import org.dhis2.data.forms.FormRepository;
 import org.dhis2.data.forms.RulesRepository;
-import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryRepository;
 import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryRepositoryImpl;
@@ -46,10 +45,8 @@ public class EventInitialModule {
     @PerActivity
     EventInitialContract.Presenter providesPresenter(@NonNull EventSummaryRepository eventSummaryRepository,
                                                      @NonNull EventInitialRepository eventInitialRepository,
-                                                     @NonNull MetadataRepository metadataRepository,
-                                                     @NonNull SchedulerProvider schedulerProvider,
-                                                     @NonNull D2 d2) {
-        return new EventInitialPresenter(eventSummaryRepository, eventInitialRepository, metadataRepository, schedulerProvider, d2);
+                                                     @NonNull SchedulerProvider schedulerProvider) {
+        return new EventInitialPresenter(eventSummaryRepository, eventInitialRepository, schedulerProvider);
     }
 
 
