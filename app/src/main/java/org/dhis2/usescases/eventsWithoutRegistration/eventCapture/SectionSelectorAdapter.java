@@ -1,11 +1,11 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
-import androidx.databinding.DataBindingUtil;
-import androidx.databinding.ObservableField;
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
+import androidx.databinding.DataBindingUtil;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;

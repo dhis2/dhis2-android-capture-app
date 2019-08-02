@@ -1,10 +1,9 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
-import org.dhis2.databinding.ItemSectionSelectorBinding;
-
 import androidx.annotation.NonNull;
-import androidx.databinding.Observable;
 import androidx.recyclerview.widget.RecyclerView;
+
+import org.dhis2.databinding.ItemSectionSelectorBinding;
 
 /**
  * QUADRAM. Created by ppajuelo on 20/11/2018.
