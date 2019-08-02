@@ -112,6 +112,8 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
             switch (valueType) {
                 case PHONE_NUMBER:
                     editText.setInputType(InputType.TYPE_CLASS_PHONE);
+                    editText.setCompoundDrawablesWithIntrinsicBounds(null, null,
+                            getContext().getResources().getDrawable(R.drawable.ic_form_number), null);
                     break;
                 case EMAIL:
                     editText.setInputType(InputType.TYPE_CLASS_TEXT |
@@ -122,6 +124,8 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
                     editText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(50000)});
                     editText.setLines(1);
                     editText.setEllipsize(TextUtils.TruncateAt.END);
+                    editText.setCompoundDrawablesWithIntrinsicBounds(null, null,
+                            getContext().getResources().getDrawable(R.drawable.ic_form_text), null);
                     break;
                 case LONG_TEXT:
                     editText.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
@@ -145,18 +149,26 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
                                     return source;
                                 return "";
                             }});
+                    editText.setCompoundDrawablesWithIntrinsicBounds(getContext().getResources().getDrawable(R.drawable.ic_form_letter), null,
+                            null, null);
                     break;
                 case NUMBER:
                     editText.setInputType(InputType.TYPE_CLASS_NUMBER |
                             InputType.TYPE_NUMBER_FLAG_DECIMAL |
                             InputType.TYPE_NUMBER_FLAG_SIGNED);
+                    editText.setCompoundDrawablesWithIntrinsicBounds(getContext().getResources().getDrawable(R.drawable.ic_form_number), null,
+                            null, null);
                     break;
                 case INTEGER_NEGATIVE:
                 case INTEGER:
+                    editText.setCompoundDrawablesWithIntrinsicBounds(getContext().getResources().getDrawable(R.drawable.ic_form_number), null,
+                            null, null);
                     editText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_SIGNED);
                     break;
                 case INTEGER_ZERO_OR_POSITIVE:
                 case INTEGER_POSITIVE:
+                    editText.setCompoundDrawablesWithIntrinsicBounds(getContext().getResources().getDrawable(R.drawable.ic_form_number), null,
+                            null, null);
                     editText.setInputType(InputType.TYPE_CLASS_NUMBER);
                     editText.setKeyListener(DigitsKeyListener.getInstance(false, false));
                     break;
@@ -164,14 +176,19 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
                     editText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
                     break;
                 case PERCENTAGE:
+                    editText.setCompoundDrawablesWithIntrinsicBounds(getContext().getResources().getDrawable(R.drawable.ic_form_decimal), null,
+                            null, null);
                     editText.setInputType(InputType.TYPE_CLASS_NUMBER);
                     break;
                 case URL:
+                    editText.setCompoundDrawablesWithIntrinsicBounds(getContext().getResources().getDrawable(R.drawable.ic_i_url), null,
+                            null, null);
                     editText.setInputType(InputType.TYPE_TEXT_VARIATION_WEB_EDIT_TEXT);
                     break;
                 default:
                     break;
             }
+        editText.setCompoundDrawablePadding(24);
         binding.executePendingBindings();
     }
 
