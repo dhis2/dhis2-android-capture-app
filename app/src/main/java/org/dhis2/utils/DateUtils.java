@@ -17,6 +17,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -1253,7 +1254,9 @@ public class DateUtils {
                 toCalendar.setFormattedOnDateSetListener(new DatePickerDialogFragment.FormattedOnDateSetListener() {
                     @Override
                     public void onDateSet(@NonNull Date toDate) {
-                        fromToListener.onFromToSelected(fromDate, toDate);
+                        List<DatePeriod> list = new ArrayList<>();
+                        list.add(DatePeriod.builder().startDate(fromDate).endDate(toDate).build());
+                        fromToListener.onFromToSelected(list);
                     }
 
                     @Override
@@ -1274,13 +1277,13 @@ public class DateUtils {
         fromCalendar.show(activity.getSupportFragmentManager(), "FROM");
     }
 
-    public void showPeriodDialog(ActivityGlobalAbstract activity, OnFromToSelector fromToListener) {
-        DatePickerDialogFragment fromCalendar = DatePickerDialogFragment.create(true, "Daily");
+    public void showPeriodDialog(ActivityGlobalAbstract activity, OnFromToSelector fromToListener, boolean fromOtherPeriod) {
+        DatePickerDialogFragment fromCalendar = DatePickerDialogFragment.create(true, "Daily", fromOtherPeriod);
 //        fromCalendar.setOpeningClosingDates(null, null); TODO: MAX 1 year in the future?
         fromCalendar.setFormattedOnDateSetListener(new DatePickerDialogFragment.FormattedOnDateSetListener() {
             @Override
             public void onDateSet(@NonNull Date date) {
-
+                fromToListener.onFromToSelected(getDatePeriodListFor(Collections.singletonList(date), Period.DAILY));
             }
 
             @Override
@@ -1288,7 +1291,8 @@ public class DateUtils {
                 Disposable disposable = new RxDateDialog(activity, Period.WEEKLY)
                         .createForFilter().show()
                         .subscribe(
-                                selectedDates -> fromToListener.onFromToSelected(null, null),
+                                selectedDates -> fromToListener.onFromToSelected(getDatePeriodListFor(selectedDates.val1(),
+                                        selectedDates.val0())),
                                 Timber::e
                         );
             }
@@ -1298,6 +1302,6 @@ public class DateUtils {
     }
 
     public interface OnFromToSelector {
-        void onFromToSelected(Date from, Date to);
+        void onFromToSelected(List<DatePeriod> datePeriods);
     }
 }
