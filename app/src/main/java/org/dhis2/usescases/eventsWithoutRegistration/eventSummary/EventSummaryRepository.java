@@ -5,7 +5,7 @@ import androidx.annotation.NonNull;
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.utils.Result;
-import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.rules.models.RuleEffect;
 
@@ -29,9 +29,9 @@ public interface EventSummaryRepository {
     @NonNull
     Flowable<Result<RuleEffect>> calculate();
 
-    Observable<EventModel> changeStatus(String eventUid);
+    Observable<Event> changeStatus(String eventUid);
 
-    Flowable<EventModel> getEvent(String eventId);
+    Flowable<Event> getEvent(String eventId);
 
     Observable<Boolean> accessDataWrite(String eventId);
 

@@ -2,7 +2,7 @@ package org.dhis2.usescases.enrollment;
 
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.usescases.general.AbstractActivityContracts;
-import org.hisp.dhis.android.core.period.FeatureType;
+import org.hisp.dhis.android.core.common.FeatureType;
 
 import io.reactivex.functions.Consumer;
 
