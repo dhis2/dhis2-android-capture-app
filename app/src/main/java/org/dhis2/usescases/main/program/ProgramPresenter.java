@@ -72,6 +72,8 @@ public class ProgramPresenter implements ProgramContract.Presenter {
 
         if(FilterManager.getInstance().getPeriodFilters().size() != 0)
             currentDateFilter = FilterManager.getInstance().getPeriodFilters();
+        if(FilterManager.getInstance().getOrgUnitFilters().size() != 0)
+            currentOrgUnitFilter = FilterManager.getInstance().getOrgUnitUidsFilters();
 
         compositeDisposable.add(
                 programQueries
