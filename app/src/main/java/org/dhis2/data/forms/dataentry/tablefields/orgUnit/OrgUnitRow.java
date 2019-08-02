@@ -28,16 +28,14 @@ public class OrgUnitRow implements Row<OrgUnitHolder, OrgUnitViewModel> {
     private final FlowableProcessor<RowAction> processor;
     private final LayoutInflater inflater;
     private final FragmentManager fm;
-    private final Observable<List<OrganisationUnitModel>> orgUnits;
     private final String renderType;
 
     public OrgUnitRow(FragmentManager fm, LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor,
-                      boolean isBgTransparent, Observable<List<OrganisationUnitModel>> orgUnits, String renderType) {
+                      boolean isBgTransparent, String renderType) {
         this.inflater = layoutInflater;
         this.processor = processor;
         this.isBgTransparent = isBgTransparent;
         this.fm = fm;
-        this.orgUnits = orgUnits;
         this.renderType = renderType;
     }
 
@@ -56,7 +54,7 @@ public class OrgUnitRow implements Row<OrgUnitHolder, OrgUnitViewModel> {
         binding.getRoot().findViewById(R.id.input_editText).setFocusable(false); //Makes editText
         binding.getRoot().findViewById(R.id.input_editText).setClickable(true);//  but clickable
 
-        return new OrgUnitHolder(fm, binding, processor, orgUnits);
+        return new OrgUnitHolder(fm, binding, processor);
     }
 
     @Override

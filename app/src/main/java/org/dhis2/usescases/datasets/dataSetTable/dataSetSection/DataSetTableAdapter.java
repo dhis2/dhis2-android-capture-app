@@ -143,7 +143,7 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, Da
         rows.add(DATETIME, new DateTimeRow(layoutInflater, processor, DATETIME, true, accessDataWrite, currentTableScale));
         rows.add(AGEVIEW, new AgeRow(layoutInflater, processor, accessDataWrite, currentTableScale));
         rows.add(YES_NO, new RadioButtonRow(layoutInflater, processor, accessDataWrite, currentTableScale));
-        rows.add(ORG_UNIT, new OrgUnitRow(null, layoutInflater, processor, true, null, ProgramStageSectionRenderingType.LISTING.name())); //TODO: TABLE SCALE
+        rows.add(ORG_UNIT, new OrgUnitRow(null, layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name())); //TODO: TABLE SCALE
         rows.add(IMAGE, new ImageRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name()));
         rows.add(UNSUPPORTED, new UnsupportedRow(layoutInflater, processor));
     }
