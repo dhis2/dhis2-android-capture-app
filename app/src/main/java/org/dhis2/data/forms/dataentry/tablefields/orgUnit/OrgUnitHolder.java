@@ -25,31 +25,27 @@ import timber.log.Timber;
 /**
  * QUADRAM. Created by ppajuelo on 19/03/2018.
  */
-
+//TODO: CHECK IF THIS IS BEING USED IN DATASETS
 public class OrgUnitHolder extends FormViewHolder {
     private final TextInputAutoCompleteTextView editText;
     private final TextInputLayout inputLayout;
-    private final Observable<List<OrganisationUnitModel>> orgUnitsObservable;
     private final ImageView description;
-    private List<OrganisationUnitModel> orgUnits;
     private OrgUnitDialog orgUnitDialog;
     private CompositeDisposable compositeDisposable;
     private OrgUnitViewModel model;
 
-    OrgUnitHolder(FragmentManager fm, ViewDataBinding binding, FlowableProcessor<RowAction> processor, Observable<List<OrganisationUnitModel>> orgUnits) {
+    OrgUnitHolder(FragmentManager fm, ViewDataBinding binding, FlowableProcessor<RowAction> processor) {
         super(binding);
         compositeDisposable = new CompositeDisposable();
         this.editText = binding.getRoot().findViewById(R.id.input_editText);
         this.inputLayout = binding.getRoot().findViewById(R.id.input_layout);
         this.description = binding.getRoot().findViewById(R.id.descriptionLabel);
-        this.orgUnitsObservable = orgUnits;
 
         this.editText.setOnClickListener(view -> {
             editText.setEnabled(false);
             orgUnitDialog = new OrgUnitDialog()
                     .setTitle(model.label())
                     .setMultiSelection(false)
-                    .setOrgUnits(this.orgUnits)
                     .setPossitiveListener(data -> {
                         processor.onNext(RowAction.create(model.uid(), orgUnitDialog.getSelectedOrgUnit(), model.dataElement(), model.categoryOptionCombo(),model.catCombo(), model.row(), model.column()));
                         this.editText.setText(orgUnitDialog.getSelectedOrgUnitName());
@@ -63,9 +59,6 @@ public class OrgUnitHolder extends FormViewHolder {
             if (!orgUnitDialog.isAdded())
                 orgUnitDialog.show(fm, model.label());
         });
-
-
-        //getOrgUnits();
     }
 
     @Override
@@ -103,32 +96,6 @@ public class OrgUnitHolder extends FormViewHolder {
     }
 
     private String getOrgUnitName(String value) {
-        String orgUnitName = null;
-        if (orgUnits != null) {
-            for (OrganisationUnitModel orgUnit : orgUnits) {
-                if (orgUnit.uid().equals(value))
-                    orgUnitName = orgUnit.displayName();
-            }
-        }
-        return orgUnitName;
-    }
-
-    private void getOrgUnits() {
-        compositeDisposable.add(orgUnitsObservable
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
-                .subscribe(
-                        orgUnitViewModels ->
-                        {
-                            this.orgUnits = orgUnitViewModels;
-                            if (model.value() != null) {
-                                this.inputLayout.setHintAnimationEnabled(false);
-                                this.editText.setText(getOrgUnitName(model.value()));
-                                this.inputLayout.setHintAnimationEnabled(true);
-                            }
-                        },
-                        Timber::d
-                )
-        );
+      return value;
     }
 }
