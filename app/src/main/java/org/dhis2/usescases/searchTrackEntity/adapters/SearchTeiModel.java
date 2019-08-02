@@ -59,7 +59,7 @@ public class SearchTeiModel {
         return attributeValues;
     }
 
-    public void addAttributeValuesModels(TrackedEntityAttributeValue attributeValues) {
+    public void addAttributeValue(TrackedEntityAttributeValue attributeValues) {
         this.attributeValues.add(attributeValues);
     }
 
