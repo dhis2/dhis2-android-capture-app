@@ -2,23 +2,23 @@ package org.dhis2.usescases.teiDashboard.eventDetail;
 
 import android.content.ContentValues;
 
+import androidx.annotation.NonNull;
+
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.android.core.category.CategoryCombo;
-import org.hisp.dhis.android.core.category.CategoryComboModel;
+import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
-import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
-import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.program.ProgramStageSection;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
@@ -28,10 +28,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import timber.log.Timber;
 
 /**
  * QUADRAM. Created by ppajuelo on 02/11/2017.
@@ -66,31 +65,6 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
 
     }
 
-    /*@NonNull
-    @Override
-    public Observable<List<ProgramStageDataElementModel>> programStageDataElement(String eventUid) {
-        String SELECT_PROGRAM_STAGE_DE = String.format(
-                "SELECT %s.* FROM %s " +
-                        "JOIN %s ON %s.%s =%s.%s " +
-                        "WHERE %s.%s = ? " +
-                        "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'",
-                ProgramStageDataElementModel.TABLE, ProgramStageDataElementModel.TABLE,
-                EventModel.TABLE, EventModel.TABLE, EventModel.Columns.PROGRAM_STAGE, ProgramStageDataElementModel.TABLE, ProgramStageDataElementModel.Columns.PROGRAM_STAGE,
-                EventModel.TABLE, EventModel.Columns.UID
-        );
-        return briteDatabase.createQuery(EventModel.TABLE, SELECT_PROGRAM_STAGE_DE, eventUid == null ? "" : eventUid)
-                .mapToList(ProgramStageDataElementModel::create);
-    }*/
-
-    /*@NonNull
-    @Override
-    public Observable<List<TrackedEntityDataValueModel>> dataValueModelList(String eventUid) {
-        String SELECT_TRACKED_ENTITY_DATA_VALUE_WITH_EVENT_UID = "SELECT * FROM " + TrackedEntityDataValueModel.TABLE + " WHERE " + TrackedEntityDataValueModel.Columns.EVENT + "=";
-        String uid = eventUid == null ? "" : eventUid;
-        return briteDatabase.createQuery(TrackedEntityDataValueModel.TABLE, SELECT_TRACKED_ENTITY_DATA_VALUE_WITH_EVENT_UID + "'" + uid + "'")
-                .mapToList(TrackedEntityDataValueModel::create);
-    }*/
-
     @NonNull
     @Override
     public Observable<ProgramStage> programStage(String eventUid) {
@@ -100,39 +74,20 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
 
     @Override
     public void deleteNotPostedEvent(String eventUid) {
-        String DELETE_WHERE = String.format(
-                "%s.%s = ",
-                EventModel.TABLE, EventModel.Columns.UID
-        );
-        String id = eventUid == null ? "" : eventUid;
-        briteDatabase.delete(EventModel.TABLE, DELETE_WHERE + "'" + id + "'");
+        try {
+            d2.eventModule().events.uid(eventUid).delete();
+        } catch (D2Error d2Error) {
+            Timber.e(d2Error);
+        }
     }
 
     @Override
     public void deletePostedEvent(Event eventModel) {
-        Date currentDate = Calendar.getInstance().getTime();
-        EventModel event = EventModel.builder()
-                .id(eventModel.id())
-                .uid(eventModel.uid())
-                .created(eventModel.created())
-                .lastUpdated(currentDate)
-                .eventDate(eventModel.eventDate())
-                .dueDate(eventModel.dueDate())
-                .enrollment(eventModel.enrollment())
-                .program(eventModel.program())
-                .programStage(eventModel.programStage())
-                .organisationUnit(eventModel.organisationUnit())
-                .status(eventModel.status())
-                .state(State.TO_DELETE)
-                .build();
-
-        if (event != null) {
-            briteDatabase.update(EventModel.TABLE, event.toContentValues(), EventModel.Columns.UID + " = ?", event.uid());
-            updateTEi();
+        try {
+            d2.eventModule().events.uid(eventModel.uid()).delete();
+        } catch (D2Error d2Error) {
+            Timber.e(d2Error);
         }
-
-
-        updateProgramTable(currentDate, eventModel.program());
     }
 
     @NonNull
@@ -155,7 +110,7 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
                 .map(organisationUnits -> {
                     List<OrganisationUnit> programOrganisationUnits = new ArrayList<>();
                     String programId = d2.eventModule().events.uid(eventUid).get().program();
-                    for(OrganisationUnit organisationUnit : organisationUnits){
+                    for (OrganisationUnit organisationUnit : organisationUnits) {
                         for (Program program : organisationUnit.programs()) {
                             if (program.uid().equals(programId))
                                 programOrganisationUnits.add(organisationUnit);
@@ -166,31 +121,15 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
     }
 
     @Override
-    public Observable<Pair<String, List<CategoryOptionComboModel>>> getCategoryOptionCombos() {
-        String GET_CAT_COMBO_FROM_EVENT = "SELECT CategoryCombo.* FROM CategoryCombo " +
-                "WHERE CategoryCombo.uid IN (" +
-                "SELECT Program.categoryCombo FROM Program " +
-                "JOIN Event ON Event.program = Program.uid " +
-                "WHERE Event.uid = ? LIMIT 1)";
-        String SELECT_CATEGORY_COMBO = String.format("SELECT * FROM %s WHERE %s.%s = ?",
-                CategoryOptionComboModel.TABLE, CategoryOptionComboModel.TABLE, CategoryOptionComboModel.Columns.CATEGORY_COMBO);
-        return briteDatabase.createQuery(CategoryComboModel.TABLE, GET_CAT_COMBO_FROM_EVENT, eventUid == null ? "" : eventUid)
-                .mapToOne(CategoryComboModel::create)
-                .flatMap(catCombo -> {
-                    if (catCombo != null && !catCombo.isDefault())
-                        return briteDatabase.createQuery(CategoryOptionComboModel.TABLE, SELECT_CATEGORY_COMBO, catCombo.uid()).mapToList(CategoryOptionComboModel::create)
-                                .map(list -> Pair.create(catCombo.name(), list));
-                    else
-                        return Observable.just(Pair.create("", new ArrayList<>()));
-                });
-        /*return getProgram(eventUid)
-                .map(program -> {
-                    CategoryCombo catCombo = program.categoryCombo();
-                    if (catCombo != null && !catCombo.isDefault())
-                        return Pair.create(catCombo.name(), d2.categoryModule().categoryOptionCombos.byCategoryComboUid().eq(catCombo.uid()).get());
-                    else
-                        return Pair.create("", new ArrayList<>());
-                });*/
+    public Observable<Pair<String, List<CategoryOptionCombo>>> getCategoryOptionCombos() {
+        return d2.eventModule().events.uid(eventUid).getAsync()
+                .flatMap(event -> d2.programModule().programs.uid(event.program()).getAsync())
+                .map(Program::categoryComboUid)
+                .flatMap(catCombo -> d2.categoryModule().categoryCombos.uid(catCombo).withAllChildren().getAsync()
+                        .map(categoryCombo -> Pair.create(
+                                categoryCombo.name(),
+                                d2.categoryModule().categoryOptionCombos.byCategoryComboUid().eq(categoryCombo.uid()).orderByDisplayName(RepositoryScope.OrderByDirection.ASC).get()))
+                ).toObservable();
     }
 
     @NonNull
@@ -206,14 +145,12 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
     }
 
     @Override
-    public void saveCatOption(CategoryOptionComboModel selectedOption) {
-        ContentValues event = new ContentValues();
-        event.put(EventModel.Columns.ATTRIBUTE_OPTION_COMBO, selectedOption.uid());
-        event.put(EventModel.Columns.STATE, State.TO_UPDATE.name()); // TODO: Check if state is TO_POST
-        // TODO: and if so, keep the TO_POST state
-
-        briteDatabase.update(EventModel.TABLE, event, EventModel.Columns.UID + " = ?", eventUid == null ? "" : eventUid);
-        updateTEi();
+    public void saveCatOption(CategoryOptionCombo selectedOption) {
+        try {
+            d2.eventModule().events.uid(eventUid).setAttributeOptionComboUid(selectedOption.uid());
+        } catch (D2Error d2Error) {
+            Timber.e(d2Error);
+        }
     }
 
     @Override
@@ -222,33 +159,10 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
         return Observable.fromCallable(() -> event == null || event.enrollment() == null || d2.enrollmentModule().enrollments.uid(event.enrollment()).get().status() == EnrollmentStatus.ACTIVE);
     }
 
-    private void updateProgramTable(Date lastUpdated, String programUid) {
-       /* ContentValues program = new ContentValues();  TODO: Crash if active
-        program.put(EnrollmentModel.Columns.LAST_UPDATED, BaseIdentifiableObject.DATE_FORMAT.format(lastUpdated));
-        briteDatabase.update(ProgramModel.TABLE, program, ProgramModel.Columns.UID + " = ?", programUid);*/
-    }
-
-    private void updateTEi() {
-
-        ContentValues tei = new ContentValues();
-        tei.put(TrackedEntityInstanceModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
-        tei.put(TrackedEntityInstanceModel.Columns.STATE, State.TO_UPDATE.name());// TODO: Check if state is TO_POST
-        // TODO: and if so, keep the TO_POST state
-        briteDatabase.update(TrackedEntityInstanceModel.TABLE, tei, "uid = ?", teiUid);
-    }
-
     @Override
-    public Observable<ProgramModel> getExpiryDateFromEvent(String eventUid) {
-        String EXPIRY_DATE_PERIOD_QUERY = String.format(
-                "SELECT program.* FROM program " +
-                        "JOIN event ON program.uid = event.program " +
-                        "WHERE event.uid = ? " +
-                        "LIMIT 1",
-                ProgramModel.TABLE,
-                EventModel.TABLE, ProgramModel.TABLE, ProgramModel.Columns.UID, EventModel.TABLE, EventModel.Columns.PROGRAM,
-                EventModel.TABLE, EventModel.Columns.UID);
-        return briteDatabase
-                .createQuery(ProgramModel.TABLE, EXPIRY_DATE_PERIOD_QUERY, eventUid == null ? "" : eventUid)
-                .mapToOne(ProgramModel::create);
+    public Observable<Program> getExpiryDateFromEvent(String eventUid) {
+        return d2.eventModule().events.uid(eventUid).getAsync()
+                .flatMap(event -> d2.programModule().programs.uid(event.program()).getAsync())
+                .toObservable();
     }
 }

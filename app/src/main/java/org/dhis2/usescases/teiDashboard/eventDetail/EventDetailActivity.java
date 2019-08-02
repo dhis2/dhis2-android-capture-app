@@ -29,6 +29,7 @@ import org.dhis2.utils.custom_views.CustomDialog;
 import org.dhis2.utils.custom_views.OrgUnitDialog_2;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
+import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramModel;
 
 import java.lang.reflect.Field;
@@ -124,7 +125,7 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
     }
 
     @Override
-    public void isEventExpired(ProgramModel program) {
+    public void isEventExpired(Program program) {
         if (eventDetailModel.hasExpired()) {
             // TODO implement event expiration logic
         }
