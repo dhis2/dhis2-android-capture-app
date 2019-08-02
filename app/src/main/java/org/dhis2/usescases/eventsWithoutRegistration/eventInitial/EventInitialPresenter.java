@@ -285,9 +285,9 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
                             categoryOptionComboUid, categoryOptionsUid,
                             latitude, longitude)
                             .subscribeOn(Schedulers.io())
-                            .switchMap(
+                            /*.switchMap( //TODO: CHECK THAT SDK ALREADY UPDATES ENROLLMENT AND TEI
                                     eventId -> eventInitialRepository.updateTrackedEntityInstance(eventId, trackedEntityInstanceUid, orgUnitUid)
-                            )
+                            )*/
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(view::onEventCreated, t -> view.renderError(t.getMessage()))
             );
