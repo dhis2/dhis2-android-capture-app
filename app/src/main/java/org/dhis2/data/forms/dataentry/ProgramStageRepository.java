@@ -15,15 +15,16 @@ import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
-import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
-import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
-import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitTableInfo;
+import org.hisp.dhis.android.core.program.Program;
+import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueTableInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -145,7 +146,7 @@ final class ProgramStageRepository implements DataEntryRepository {
         }
 
         return briteDatabase
-                .createQuery(TrackedEntityDataValueModel.TABLE, prepareStatement())
+                .createQuery(TrackedEntityDataValueTableInfo.TABLE_INFO.name(), prepareStatement())
                 .mapToList(this::transform)
                 .map(this::checkRenderType)
                 .toFlowable(BackpressureStrategy.BUFFER);
@@ -211,19 +212,19 @@ final class ProgramStageRepository implements DataEntryRepository {
     }
 
     @Override
-    public Observable<List<OrganisationUnitModel>> getOrgUnits() {
-        return briteDatabase.createQuery(OrganisationUnitModel.TABLE, "SELECT * FROM " + OrganisationUnitModel.TABLE)
-                .mapToList(OrganisationUnitModel::create);
+    public Observable<List<OrganisationUnit>> getOrgUnits() {
+        return briteDatabase.createQuery(OrganisationUnitTableInfo.TABLE_INFO.name(), "SELECT * FROM " + OrganisationUnitTableInfo.TABLE_INFO.name())
+                .mapToList(OrganisationUnit::create);
     }
 
     @Override
     public void assign(String field, String content) {
         try (Cursor dataValueCursor = briteDatabase.query("SELECT * FROM TrackedEntityDataValue WHERE dataElement = ?", field == null ? "" : field)) {
             if (dataValueCursor != null && dataValueCursor.moveToFirst()) {
-                TrackedEntityDataValueModel dataValue = TrackedEntityDataValueModel.create(dataValueCursor);
+                TrackedEntityDataValue dataValue = TrackedEntityDataValue.create(dataValueCursor);
                 ContentValues contentValues = dataValue.toContentValues();
-                contentValues.put(TrackedEntityDataValueModel.Columns.VALUE, content);
-                int row = briteDatabase.update(TrackedEntityDataValueModel.TABLE, contentValues, "dataElement = ?", field == null ? "" : field);
+                contentValues.put("value", content);
+                int row = briteDatabase.update(TrackedEntityDataValueTableInfo.TABLE_INFO.name(), contentValues, "dataElement = ?", field == null ? "" : field);
                 if (row == -1)
                     Timber.d("Error updating field %s", field == null ? "" : field);
             }
@@ -265,25 +266,25 @@ final class ProgramStageRepository implements DataEntryRepository {
             }
         }
 
-        EventModel eventModel;
-        ProgramStageModel programStageModel;
-        ProgramModel programModel;
+        Event event;
+        ProgramStage programStage;
+        Program program;
         try (Cursor eventCursor = briteDatabase.query("SELECT * FROM Event WHERE uid = ?", eventUid)) {
             eventCursor.moveToFirst();
-            eventModel = EventModel.create(eventCursor);
+            event = Event.create(eventCursor);
         }
 
-        try (Cursor programStageCursor = briteDatabase.query("SELECT * FROM ProgramStage WHERE uid = ?", eventModel.programStage())) {
+        try (Cursor programStageCursor = briteDatabase.query("SELECT * FROM ProgramStage WHERE uid = ?", event.programStage())) {
             programStageCursor.moveToFirst();
-            programStageModel = ProgramStageModel.create(programStageCursor);
+            programStage = ProgramStage.create(programStageCursor);
         }
 
-        try (Cursor programCursor = briteDatabase.query("SELECT * FROM Program WHERE uid = ?", eventModel.program())) {
+        try (Cursor programCursor = briteDatabase.query("SELECT * FROM Program WHERE uid = ?", event.program())) {
             programCursor.moveToFirst();
-            programModel = ProgramModel.create(programCursor);
+            program = Program.create(programCursor);
         }
 
-        boolean hasExpired = DateUtils.getInstance().hasExpired(eventModel, programModel.expiryDays(), programModel.completeEventsExpiryDays(), programStageModel.periodType() != null ? programStageModel.periodType() : programModel.expiryPeriodType());
+        boolean hasExpired = DateUtils.getInstance().hasExpired(event, program.expiryDays(), program.completeEventsExpiryDays(), programStage.periodType() != null ? programStage.periodType() : program.expiryPeriodType());
 
         ObjectStyle objectStyle = ObjectStyle.builder().build();
         try (Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", uid)) {

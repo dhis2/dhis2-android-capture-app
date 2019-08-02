@@ -11,11 +11,11 @@ import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
-import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
+import org.hisp.dhis.android.core.enrollment.EnrollmentTableInfo;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramStage;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueTableInfo;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue;
 import org.hisp.dhis.rules.RuleEngine;
 import org.hisp.dhis.rules.RuleEngineContext;
@@ -137,8 +137,8 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
     }
 
     private Flowable<RuleEnrollment> ruleEnrollment(String enrollmentUid) {
-        return briteDatabase.createQuery(Arrays.asList(EnrollmentModel.TABLE,
-                TrackedEntityAttributeValueModel.TABLE), QUERY_ATTRIBUTE_VALUES, enrollmentUid == null ? "" : enrollmentUid)
+        return briteDatabase.createQuery(Arrays.asList(EnrollmentTableInfo.TABLE_INFO.name(),
+                TrackedEntityAttributeValueTableInfo.TABLE_INFO.name()), QUERY_ATTRIBUTE_VALUES, enrollmentUid == null ? "" : enrollmentUid)
                 .mapToList(cursor -> RuleAttributeValue.create(
                         cursor.getString(0), cursor.getString(1))
                 ).toFlowable(BackpressureStrategy.LATEST)
