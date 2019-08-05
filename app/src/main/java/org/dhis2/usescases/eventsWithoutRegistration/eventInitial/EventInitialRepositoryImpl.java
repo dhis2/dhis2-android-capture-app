@@ -212,10 +212,22 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
         ).map(uid -> {
             EventObjectRepository eventRepository = d2.eventModule().events.uid(uid);
             eventRepository.setEventDate(cal.getTime());
-            eventRepository.setGeometry(Geometry.builder()
-                    .type(FeatureType.POINT)
-                    .coordinates(Coordinates.create(Double.valueOf(latitude), Double.valueOf(longitude)).toString())
-                    .build()); //TODO: CHANGE TO SUPPORT ALL FEATURE TYPES
+            switch (d2.programModule().programs.byUid().eq(programUid).one().blockingGet().featureType()){
+                case NONE:
+                    break;
+                case POINT:
+                    eventRepository.setGeometry(Geometry.builder()
+                            .type(FeatureType.POINT)
+                            .coordinates(Coordinates.create(Double.valueOf(latitude), Double.valueOf(longitude)).toString())
+                            .build());
+                    break;
+                case POLYGON:
+                case MULTI_POLYGON:
+                    //TODO: IMPLEMENT CASES
+                    break;
+                default:
+                    break;
+            }
             return uid;
         });
     }
@@ -246,10 +258,22 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
             EventObjectRepository eventRepository = d2.eventModule().events.uid(uid);
             eventRepository.setDueDate(cal.getTime());
             eventRepository.setStatus(EventStatus.SCHEDULE);
-            eventRepository.setGeometry(Geometry.builder()
-                    .type(FeatureType.POINT)
-                    .coordinates(Coordinates.create(Double.valueOf(latitude), Double.valueOf(longitude)).toString())
-                    .build()); //TODO: CHANGE TO SUPPORT ALL FEATURE TYPES
+            switch (d2.programModule().programs.byUid().eq(programUid).one().blockingGet().featureType()) {
+                case NONE:
+                    break;
+                case POINT:
+                    eventRepository.setGeometry(Geometry.builder()
+                            .type(FeatureType.POINT)
+                            .coordinates(Coordinates.create(Double.valueOf(latitude), Double.valueOf(longitude)).toString())
+                            .build());
+                    break;
+                case POLYGON:
+                case MULTI_POLYGON:
+                    //TODO: IMPLEMENT CASES
+                    break;
+                default:
+                    break;
+            }
             return uid;
         });
     }
