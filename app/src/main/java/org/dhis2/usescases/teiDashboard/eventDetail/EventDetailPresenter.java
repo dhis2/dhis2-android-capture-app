@@ -21,6 +21,7 @@ import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.OnDialogClickListener;
 import org.dhis2.utils.custom_views.OrgUnitDialog_2;
 import org.dhis2.utils.custom_views.PeriodDialog;
+import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.event.Event;
@@ -111,18 +112,6 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
     }
 
     @Override
-    public void saveData(String uid, String value) {
-        disposable.add(dataEntryStore.save(uid, value)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        data -> {
-                        },
-                        Timber::d
-                ));
-    }
-
-    @Override
     public void back() {
         if (view != null &&
                 view.getAbstractActivity() != null &&
@@ -188,11 +177,6 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
     private void updateEventStatus(Event eventModel) {
         dataEntryStore.updateEventStatus(eventModel);
         changedEventStatus = true;
-    }
-
-    @Override
-    public void editData() {
-        view.setDataEditable();
     }
 
     @Override
@@ -268,7 +252,7 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
     }
 
     @Override
-    public void changeCatOption(CategoryOptionComboModel selectedOption) {
+    public void changeCatOption(CategoryOptionCombo selectedOption) {
         eventDetailRepository.saveCatOption(selectedOption);
     }
 
@@ -306,12 +290,11 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
         if (futureOnly)
             dateDialog.getDatePicker().setMinDate(c.getTimeInMillis());
 
-        if (eventDetailModel.getProgram().expiryPeriodType() != null) {// eventDetailModel.orgUnitOpeningDate() != null) {
+        if (eventDetailModel.getProgram().expiryPeriodType() != null) {
             Date minDate = DateUtils.getInstance().expDate(null,
                     eventDetailModel.getProgram().expiryDays() != null ? eventDetailModel.getProgram().expiryDays() : 0,
                     eventDetailModel.getProgram().expiryPeriodType());
             dateDialog.getDatePicker().setMinDate(minDate.getTime());
-            //dateDialog.getDatePicker().setMinDate(eventDetailModel.orgUnitOpeningDate().getTime());
         }
 
         if (eventDetailModel.orgUnitClosingDate() != null)
@@ -333,7 +316,6 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
 
     private void openDailySelector(boolean futureOnly) {
         LayoutInflater layoutInflater = LayoutInflater.from(view.getContext());
-        //        View datePickerView = layoutInflater.inflate(R.layout.widget_datepicker, null);
         WidgetDatepickerBinding widgetBinding = WidgetDatepickerBinding.inflate(layoutInflater);
         final DatePicker datePicker = widgetBinding.widgetDatepicker;
 
@@ -356,7 +338,7 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
         if (futureOnly)
             datePicker.setMinDate(c.getTimeInMillis());
 
-        if (eventDetailModel.getProgram().expiryPeriodType() != null) {// eventDetailModel.orgUnitOpeningDate() != null) {
+        if (eventDetailModel.getProgram().expiryPeriodType() != null) {
             Date minDate = DateUtils.getInstance().expDate(null,
                     eventDetailModel.getProgram().expiryDays() != null ? eventDetailModel.getProgram().expiryDays() : 0,
                     eventDetailModel.getProgram().expiryPeriodType());

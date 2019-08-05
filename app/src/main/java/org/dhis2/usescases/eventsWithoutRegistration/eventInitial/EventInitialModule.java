@@ -73,7 +73,7 @@ public class EventInitialModule {
 
     @Provides
     @PerActivity
-    EventInitialRepository eventDetailRepository(@NonNull CodeGenerator codeGenerator, BriteDatabase briteDatabase, D2 d2) {
-        return new EventInitialRepositoryImpl(codeGenerator, briteDatabase, eventUid, d2);
+    EventInitialRepository eventDetailRepository(D2 d2) {
+        return new EventInitialRepositoryImpl(eventUid, d2);
     }
 }

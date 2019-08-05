@@ -2,6 +2,7 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.notes;
 
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.general.AbstractActivityContracts;
+import org.hisp.dhis.android.core.enrollment.note.Note;
 import org.hisp.dhis.android.core.enrollment.note.NoteModel;
 
 import java.util.List;
@@ -16,7 +17,7 @@ public class NotesContracts {
 
     public interface View extends AbstractActivityContracts.View {
 
-        Consumer<List<NoteModel>> swapNotes();
+        Consumer<List<Note>> swapNotes();
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {

@@ -44,39 +44,39 @@ public abstract class DataTableModel {
     }
 
     @Nullable
-    @ColumnName(DataTableModel.Columns.SECTION)
+    @ColumnName(Columns.SECTION)
     public abstract Section section();
 
     @Nullable
-    @ColumnName(DataTableModel.Columns.HEADERS)
+    @ColumnName(Columns.HEADERS)
     public abstract Map<String, List<List<CategoryOption>>> headers();
 
     @Nullable
-    @ColumnName(DataTableModel.Columns.ROWS)
+    @ColumnName(Columns.ROWS)
     public abstract List<DataElement> rows();
 
     @Nullable
-    @ColumnName(DataTableModel.Columns.DATA_VALUES)
+    @ColumnName(Columns.DATA_VALUES)
     public abstract List<DataSetTableModel> dataValues();
 
     @Nullable
-    @ColumnName(DataTableModel.Columns.DATA_ELEMENTS_DISABLED)
+    @ColumnName(Columns.DATA_ELEMENTS_DISABLED)
     public abstract List<Pair<String, List<String>>> dataElementDisabled();
 
     @Nullable
-    @ColumnName(DataTableModel.Columns.COMPULSORY_CELLS)
+    @ColumnName(Columns.COMPULSORY_CELLS)
     public abstract Map<String, List<String>> compulsoryCells();
 
     @Nullable
-    @ColumnName(DataTableModel.Columns.CAT_OPTION_COMBO_CAT_OPTION)
+    @ColumnName(Columns.CAT_OPTION_COMBO_CAT_OPTION)
     public abstract Map<String, List<String>> catOptionComboCatOption();
 
     @Nullable
-    @ColumnName(DataTableModel.Columns.LIST_CAT_OPTIONS_CAT_COMBO_OPTIONS)
+    @ColumnName(Columns.LIST_CAT_OPTIONS_CAT_COMBO_OPTIONS)
     public abstract Map<String, List<List<Pair<CategoryOption, Category>>>> listCatOptionsCatComboOptions();
 
     @Nullable
-    @ColumnName(DataTableModel.Columns.DATA_SET)
+    @ColumnName(Columns.DATA_SET)
     public abstract DataSet dataSet();
 
     @Nullable

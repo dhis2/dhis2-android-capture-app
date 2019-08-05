@@ -1,5 +1,7 @@
 package org.dhis2.data.user;
 
+import androidx.annotation.NonNull;
+
 import org.dhis2.data.dagger.PerUser;
 import org.dhis2.data.forms.FormComponent;
 import org.dhis2.data.forms.FormModule;
@@ -21,8 +23,6 @@ import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailComponent;
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailModule;
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialComponent;
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialModule;
-import org.dhis2.usescases.enrollment.EnrollmentComponent;
-import org.dhis2.usescases.enrollment.EnrollmentModule;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureComponent;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureModule;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialComponent;
@@ -63,8 +63,6 @@ import org.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailComponent;
 import org.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailModule;
 import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListComponent;
 import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListModule;
-
-import androidx.annotation.NonNull;
 
 import dagger.Subcomponent;
 
@@ -153,10 +151,8 @@ public interface UserComponent {
     EventCaptureComponent plus(EventCaptureModule eventCaptureModule);
 
     @NonNull
-    EnrollmentComponent plus(EnrollmentModule enrollmentModule);
-
-    @NonNull
     SmsComponent plus(SmsModule smsModule);
+
     NfcDataWriteComponent plus(NfcDataWriteModule nfcModule);
 
     @NonNull

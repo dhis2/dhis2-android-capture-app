@@ -5,12 +5,10 @@ import androidx.annotation.Nullable;
 
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
-import org.hisp.dhis.android.core.common.ObjectStyleModel;
+import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ValueType;
-import org.hisp.dhis.rules.models.RuleActionDisplayKeyValuePair;
 import org.hisp.dhis.rules.models.RuleActionDisplayText;
 import org.hisp.dhis.rules.models.RuleActionHideField;
-import org.hisp.dhis.rules.models.RuleActionHideSection;
 import org.hisp.dhis.rules.models.RuleActionShowError;
 import org.hisp.dhis.rules.models.RuleActionShowWarning;
 import org.hisp.dhis.rules.models.RuleEffect;
@@ -95,7 +93,7 @@ public class RulesUtilsProviderImplTest {
         }
 
         @Override
-        public void setOptionGroupToHide(String optionGroupUid,boolean toHide) {
+        public void setOptionGroupToHide(@NotNull String optionGroupUid, boolean toHide, @NotNull String field) {
 
         }
     };
@@ -103,7 +101,7 @@ public class RulesUtilsProviderImplTest {
     private  void putFieldViewModel(){
         testFieldViewModels.put(testUid, fieldFactory.create(testUid, "label",
                 ValueType.TEXT, false, "optionSet", "test", "section",
-                null, true, null, null, null,1, ObjectStyleModel.builder().build()));
+                null, true, null, null, null,1, ObjectStyle.builder().build()));
     }
 
     @Test

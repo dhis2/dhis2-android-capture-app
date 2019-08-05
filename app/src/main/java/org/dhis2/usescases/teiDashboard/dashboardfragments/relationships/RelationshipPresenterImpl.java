@@ -20,7 +20,6 @@ import org.hisp.dhis.android.core.relationship.RelationshipHelper;
 import org.hisp.dhis.android.core.relationship.RelationshipItem;
 import org.hisp.dhis.android.core.relationship.RelationshipItemTrackedEntityInstance;
 import org.hisp.dhis.android.core.relationship.RelationshipType;
-import org.hisp.dhis.android.core.relationship.RelationshipTypeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
@@ -144,8 +143,8 @@ public class RelationshipPresenterImpl implements RelationshipContracts.Presente
         compositeDisposable.add(
                 dashboardRepository.relationshipsForTeiType(teiType)
                         .map(list -> {
-                            List<Trio<RelationshipTypeModel, String, Integer>> finalList = new ArrayList<>();
-                            for (Pair<RelationshipTypeModel, String> rType : list) {
+                            List<Trio<RelationshipType, String, Integer>> finalList = new ArrayList<>();
+                            for (Pair<RelationshipType, String> rType : list) {
                                 int iconResId = dashboardRepository.getObjectStyle(view.getAbstracContext(), rType.val1());
                                 finalList.add(Trio.create(rType.val0(), rType.val1(), iconResId));
                             }
@@ -244,7 +243,7 @@ public class RelationshipPresenterImpl implements RelationshipContracts.Presente
     }
 
     @Override
-    public Observable<List<TrackedEntityAttributeValueModel>> getTEIMainAttributes(String teiUid) {
+    public Observable<List<TrackedEntityAttributeValue>> getTEIMainAttributes(String teiUid) {
         return dashboardRepository.mainTrackedEntityAttributes(teiUid)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());

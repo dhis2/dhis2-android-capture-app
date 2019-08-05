@@ -7,10 +7,6 @@
         <import type="android.view.View" />
 
         <variable
-            name="attribute"
-            type="org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel" />
-
-        <variable
             name="label"
             type="java.lang.String" />
 

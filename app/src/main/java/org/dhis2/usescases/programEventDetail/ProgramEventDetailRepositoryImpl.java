@@ -14,12 +14,15 @@ import org.dhis2.data.tuples.Pair;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.ValueUtils;
 import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.arch.helpers.CoordinateHelper;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
 import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
+import org.hisp.dhis.android.core.common.Coordinates;
+import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.dataelement.DataElement;
@@ -35,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import io.ona.kujaku.utils.helpers.converters.GeoJSONHelper;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
@@ -91,15 +95,17 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
                 .flatMap(list -> Flowable.fromCallable(() -> {
                     List<SymbolOptions> options = new ArrayList<>();
                     for (Event event : list)
-                        if (event.coordinate() != null && event.coordinate().latitude() != null && event.coordinate().longitude() != null)
+                        if(event.geometry()!= null && event.geometry().type() == FeatureType.POINT) {
+                            Coordinates coordinates = CoordinateHelper.getCoordinatesFromGeometry(event.geometry());
                             options.add(
                                     new SymbolOptions()
-                                            .withLatLng(new LatLng(event.coordinate().latitude(), event.coordinate().longitude()))
+                                            .withLatLng(new LatLng(coordinates.latitude(), coordinates.longitude()))
                                             .withIconImage("ICON_ID")
                                             .withTextField(event.uid())
                                             .withTextSize(0f)
                                             .withDraggable(false)
                             );
+                        }
                     return options;
                 }));
     }

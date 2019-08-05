@@ -22,7 +22,8 @@ import org.hisp.dhis.android.core.dataset.DataSet;
 import org.hisp.dhis.android.core.dataset.DataSetCompleteRegistration;
 import org.hisp.dhis.android.core.dataset.DataSetElement;
 import org.hisp.dhis.android.core.dataset.Section;
-import org.hisp.dhis.android.core.datavalue.DataValueModel;
+import org.hisp.dhis.android.core.datavalue.DataValue;
+import org.hisp.dhis.android.core.datavalue.DataValueTableInfo;
 import org.hisp.dhis.android.core.period.Period;
 
 import java.util.ArrayList;
@@ -153,25 +154,25 @@ public class DataValueRepositoryImpl implements DataValueRepository {
     }
 
     @Override
-    public Flowable<Long> insertDataValue(DataValueModel dataValue) {
-        return Flowable.just(briteDatabase.insert(DataValueModel.TABLE, dataValue.toContentValues()));
+    public Flowable<Long> insertDataValue(DataValue dataValue) {
+        return Flowable.just(briteDatabase.insert(DataValueTableInfo.TABLE_INFO.name(), dataValue.toContentValues()));
     }
 
-    public Flowable<Integer> updateValue(DataValueModel dataValue) {
-        String where = DataValueModel.Columns.DATA_ELEMENT + " = '" + dataValue.dataElement() + "' AND " + DataValueModel.Columns.PERIOD + " = '" + dataValue.period() +
-                "' AND " + DataValueModel.Columns.ORGANISATION_UNIT + " = '" + dataValue.organisationUnit() +
-                "' AND " + DataValueModel.Columns.ATTRIBUTE_OPTION_COMBO + " = '" + dataValue.attributeOptionCombo() +
-                "' AND " + DataValueModel.Columns.CATEGORY_OPTION_COMBO + " = '" + dataValue.categoryOptionCombo() + "'";
+    public Flowable<Integer> updateValue(DataValue dataValue) {
+        String where = "dataElement = '" + dataValue.dataElement() + "' AND period = '" + dataValue.period() +
+                "' AND organisationUnit = '" + dataValue.organisationUnit() +
+                "' AND attributeOptionCombo = '" + dataValue.attributeOptionCombo() +
+                "' AND categoryOptionCombo = '" + dataValue.categoryOptionCombo() + "'";
 
         if (dataValue.value() != null && !dataValue.value().isEmpty()) {
             ContentValues contentValues = new ContentValues();
-            contentValues.put(DataValueModel.Columns.VALUE, dataValue.value());
-            contentValues.put(DataValueModel.Columns.STATE, dataValue.state().name());
-            contentValues.put(DataValueModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(dataValue.lastUpdated()));
+            contentValues.put("value", dataValue.value());
+            contentValues.put(DataValue.Columns.STATE, dataValue.state().name());
+            contentValues.put("lastUpdated", DateUtils.databaseDateFormat().format(dataValue.lastUpdated()));
 
-            return Flowable.just(briteDatabase.update(DataValueModel.TABLE, contentValues, where));
+            return Flowable.just(briteDatabase.update(DataValueTableInfo.TABLE_INFO.name(), contentValues, where));
         } else
-            return Flowable.just(briteDatabase.delete(DataValueModel.TABLE, where));
+            return Flowable.just(briteDatabase.delete(DataValueTableInfo.TABLE_INFO.name(), where));
 
     }
 

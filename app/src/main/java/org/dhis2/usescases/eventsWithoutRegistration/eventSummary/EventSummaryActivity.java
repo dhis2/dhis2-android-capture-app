@@ -23,8 +23,7 @@ import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.custom_views.CustomDialog;
-import org.dhis2.utils.custom_views.ProgressBarAnimation;
-import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.program.Program;
 
 import java.util.ArrayList;
@@ -42,7 +41,7 @@ import static android.text.TextUtils.isEmpty;
  * QUADRAM. Created by Cristian on 01/03/2018.
  */
 
-public class EventSummaryActivity extends ActivityGlobalAbstract implements EventSummaryContract.View, ProgressBarAnimation.OnUpdate {
+public class EventSummaryActivity extends ActivityGlobalAbstract implements EventSummaryContract.View {
 
     private static final int PROGRESS_TIME = 2000;
 
@@ -54,7 +53,6 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
     @Inject
     EventSummaryContract.Presenter presenter;
     private ActivityEventSummaryBinding binding;
-    private int completionPercent;
     private int totalFields;
     private int totalCompletedFields;
     private int unsupportedFields;
@@ -65,7 +63,7 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
     private boolean canComplete = true;
     private CustomDialog dialog;
     private boolean fieldsWithErrors;
-    private EventModel eventModel;
+    private Event eventModel;
     private Program program;
     private ArrayList<String> sectionsToHide;
 
@@ -107,12 +105,6 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
     }
 
     @Override
-    public void onUpdate(boolean lost, float value) {
-        /*String text = String.valueOf((int) value) + "%";
-        binding.progress.setText(text);*/
-    }
-
-    @Override
     public void onEventSections(List<FormSectionViewModel> formSectionViewModels) {
         LayoutInflater inflater = LayoutInflater.from(getActivity());
         for (FormSectionViewModel formSectionViewModel : formSectionViewModels) {
@@ -141,13 +133,13 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
     }
 
     @Override
-    public void onStatusChanged(EventModel event) {
+    public void onStatusChanged(Event event) {
         Toast.makeText(this, getString(R.string.event_updated), Toast.LENGTH_SHORT).show();
         new Handler().postDelayed(this::finish, 1000);
     }
 
     @Override
-    public void setActionButton(EventModel eventModel) {
+    public void setActionButton(Event eventModel) {
         this.eventModel = eventModel;
 
     }
