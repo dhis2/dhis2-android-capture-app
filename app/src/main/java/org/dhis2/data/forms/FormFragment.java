@@ -505,7 +505,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     public void onMapPositionClick(CoordinatesView coordinatesView) {
         this.coordinatesView = coordinatesView;
         if (getActivity() != null && isAdded()) {
-            startActivityForResult(MapSelectorActivity.create(getActivity(), null), Constants.RQ_MAP_LOCATION_VIEW);
+            startActivityForResult(MapSelectorActivity.Companion.create(getActivity(), null), Constants.RQ_MAP_LOCATION_VIEW);
         }
     }
 
@@ -518,9 +518,9 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case Constants.RQ_MAP_LOCATION_VIEW:
-                if (data != null && data.getStringExtra(MapSelectorActivity.LATITUDE) != null && data.getStringExtra(MapSelectorActivity.LONGITUDE) != null) {
-                    coordinatesView.updateLocation(Double.valueOf(data.getStringExtra(MapSelectorActivity.LATITUDE)), Double.valueOf(data.getStringExtra(MapSelectorActivity.LONGITUDE)));
-                    publishCoordinatesChanged(Double.valueOf(data.getStringExtra(MapSelectorActivity.LATITUDE)), Double.valueOf(data.getStringExtra(MapSelectorActivity.LONGITUDE)));
+                if (data != null && data.getStringExtra(MapSelectorActivity.Companion.getLATITUDE()) != null && data.getStringExtra(MapSelectorActivity.Companion.getLONGITUDE()) != null) {
+                    coordinatesView.updateLocation(Double.valueOf(data.getStringExtra(MapSelectorActivity.Companion.getLATITUDE())), Double.valueOf(data.getStringExtra(MapSelectorActivity.Companion.getLONGITUDE())));
+                    publishCoordinatesChanged(Double.valueOf(data.getStringExtra(MapSelectorActivity.Companion.getLATITUDE())), Double.valueOf(data.getStringExtra(MapSelectorActivity.Companion.getLONGITUDE())));
                     this.coordinatesView = null;
                 }
                 break;

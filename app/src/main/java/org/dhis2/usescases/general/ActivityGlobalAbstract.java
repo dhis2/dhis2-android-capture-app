@@ -357,7 +357,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
     @Override
     public void onMapPositionClick(CoordinatesView coordinatesView) {
         this.coordinatesView = coordinatesView;
-        startActivityForResult(MapSelectorActivity.create(this, FeatureType.POINT), Constants.RQ_MAP_LOCATION_VIEW);
+        startActivityForResult(MapSelectorActivity.Companion.create(this, FeatureType.POINT), Constants.RQ_MAP_LOCATION_VIEW);
     }
 
     @Override
@@ -367,7 +367,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
             switch (requestCode) {
                 case Constants.RQ_MAP_LOCATION_VIEW:
                     if (coordinatesView != null && data.getExtras() != null) {
-                        coordinatesView.updateLocation(Double.valueOf(data.getStringExtra(MapSelectorActivity.LATITUDE)), Double.valueOf(data.getStringExtra(MapSelectorActivity.LONGITUDE)));
+                        coordinatesView.updateLocation(Double.valueOf(data.getStringExtra(MapSelectorActivity.Companion.getLATITUDE())), Double.valueOf(data.getStringExtra(MapSelectorActivity.Companion.getLONGITUDE())));
                     }
                     this.coordinatesView = null;
                     break;

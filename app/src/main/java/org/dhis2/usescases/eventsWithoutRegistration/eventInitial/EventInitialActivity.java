@@ -798,17 +798,17 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == Constants.RQ_MAP_LOCATION && resultCode == RESULT_OK) {
-            if (data.hasExtra(MapSelectorActivity.POLYGON_DATA)) {
-                savedLat = data.getStringExtra(MapSelectorActivity.LATITUDE);
-                savedLon = data.getStringExtra(MapSelectorActivity.LONGITUDE);
+            if (data.hasExtra(MapSelectorActivity.Companion.getPOLYGON_DATA())) {
+                savedLat = data.getStringExtra(MapSelectorActivity.Companion.getLATITUDE());
+                savedLon = data.getStringExtra(MapSelectorActivity.Companion.getLONGITUDE());
                 setLocation(Double.valueOf(savedLat), Double.valueOf(savedLon));
-            } else if (data.hasExtra(MapSelectorActivity.MULTI_POLYGON_DATA)) {
-                savedLat = data.getStringExtra(MapSelectorActivity.LATITUDE);
-                savedLon = data.getStringExtra(MapSelectorActivity.LONGITUDE);
+            } else if (data.hasExtra(MapSelectorActivity.Companion.getMULTI_POLYGON_DATA())) {
+                savedLat = data.getStringExtra(MapSelectorActivity.Companion.getLATITUDE());
+                savedLon = data.getStringExtra(MapSelectorActivity.Companion.getLONGITUDE());
                 setLocation(Double.valueOf(savedLat), Double.valueOf(savedLon));
-            } else if (data.hasExtra(MapSelectorActivity.LATITUDE)) {
-                savedLat = data.getStringExtra(MapSelectorActivity.LATITUDE);
-                savedLon = data.getStringExtra(MapSelectorActivity.LONGITUDE);
+            } else if (data.hasExtra(MapSelectorActivity.Companion.getLATITUDE())) {
+                savedLat = data.getStringExtra(MapSelectorActivity.Companion.getLATITUDE());
+                savedLon = data.getStringExtra(MapSelectorActivity.Companion.getLONGITUDE());
                 setLocation(Double.valueOf(savedLat), Double.valueOf(savedLon));
             }
         }

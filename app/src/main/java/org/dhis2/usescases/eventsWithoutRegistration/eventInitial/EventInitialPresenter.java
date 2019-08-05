@@ -362,7 +362,7 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     @Override
     public void onLocation2Click(FeatureType featureType) {
         view.getAbstractActivity().startActivityForResult(
-                MapSelectorActivity.create((Activity) view.getContext(),
+                MapSelectorActivity.Companion.create((Activity) view.getContext(),
                         featureType)
                 , Constants.RQ_MAP_LOCATION);
     }

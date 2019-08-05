@@ -202,8 +202,8 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == Constants.RQ_MAP_LOCATION && resultCode == RESULT_OK) {
-            String savedLat = data.getStringExtra(MapSelectorActivity.LATITUDE);
-            String savedLon = data.getStringExtra(MapSelectorActivity.LONGITUDE);
+            String savedLat = data.getStringExtra(MapSelectorActivity.Companion.getLATITUDE());
+            String savedLon = data.getStringExtra(MapSelectorActivity.Companion.getLONGITUDE());
             setLocation(Double.valueOf(savedLat), Double.valueOf(savedLon));
             presenter.saveLocation(Double.valueOf(savedLat), Double.valueOf(savedLon));
         }
