@@ -7,7 +7,6 @@ import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ItemNotesBinding;
 import org.hisp.dhis.android.core.enrollment.note.Note;
-import org.hisp.dhis.android.core.enrollment.note.NoteModel;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;

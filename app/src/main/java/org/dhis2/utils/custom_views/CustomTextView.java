@@ -27,7 +27,6 @@ import org.dhis2.BR;
 import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
 import org.hisp.dhis.android.core.common.ObjectStyle;
-import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 

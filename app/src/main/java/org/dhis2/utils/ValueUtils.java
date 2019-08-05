@@ -6,9 +6,7 @@ import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.option.Option;
-import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 
 /**
  * QUADRAM. Created by ppajuelo on 25/09/2018.
@@ -68,8 +66,8 @@ public class ValueUtils {
         String displayName = optionSetCode;
         try (Cursor optionsCursor = briteDatabase.query("SELECT * FROM Option WHERE optionSet = ? AND code = ? LIMIT 1", optionSet, optionSetCode)) {
             if (optionsCursor != null && optionsCursor.moveToFirst()) {
-                OptionModel optionModel = OptionModel.create(optionsCursor);
-                displayName = optionModel.displayName();
+                Option option = Option.create(optionsCursor);
+                displayName = option.displayName();
             }
         }
         return displayName;

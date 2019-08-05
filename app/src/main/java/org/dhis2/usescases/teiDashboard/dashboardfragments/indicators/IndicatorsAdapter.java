@@ -10,7 +10,6 @@ import org.dhis2.R;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.ItemIndicatorBinding;
 import org.hisp.dhis.android.core.program.ProgramIndicator;
-import org.hisp.dhis.android.core.program.ProgramIndicatorModel;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
