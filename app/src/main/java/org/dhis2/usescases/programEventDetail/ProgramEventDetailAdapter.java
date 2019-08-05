@@ -3,16 +3,15 @@ package org.dhis2.usescases.programEventDetail;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import org.dhis2.R;
-import org.dhis2.databinding.ItemProgramEventBinding;
-import org.hisp.dhis.android.core.event.EventModel;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
+
+import org.dhis2.R;
+import org.dhis2.databinding.ItemProgramEventBinding;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * QUADRAM. Created by Cristian on 13/02/2018.

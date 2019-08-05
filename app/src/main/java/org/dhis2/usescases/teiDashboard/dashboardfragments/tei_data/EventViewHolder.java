@@ -7,12 +7,9 @@ import org.dhis2.databinding.ItemEventBinding;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.event.Event;
-import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
-
 import java.util.Locale;
 
 /**

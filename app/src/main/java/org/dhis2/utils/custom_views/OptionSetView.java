@@ -26,9 +26,7 @@ import org.dhis2.databinding.FormSpinnerBinding;
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetTableAdapter;
 import org.dhis2.utils.Constants;
 import org.hisp.dhis.android.core.common.ObjectStyle;
-import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.option.Option;
-import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
 import static android.text.TextUtils.isEmpty;

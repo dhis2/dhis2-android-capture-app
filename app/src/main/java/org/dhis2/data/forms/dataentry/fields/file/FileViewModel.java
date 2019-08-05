@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.hisp.dhis.android.core.common.ObjectStyle;
-import org.hisp.dhis.android.core.common.ObjectStyleModel;
 
 import com.google.auto.value.AutoValue;
 

@@ -15,8 +15,6 @@ import org.dhis2.R;
 import org.dhis2.databinding.SpinnerLayoutBinding;
 
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
-import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
-
 import java.util.List;
 
 /**

@@ -21,7 +21,6 @@ import org.hisp.dhis.android.core.relationship.RelationshipItem;
 import org.hisp.dhis.android.core.relationship.RelationshipItemTrackedEntityInstance;
 import org.hisp.dhis.android.core.relationship.RelationshipType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeAttribute;
 

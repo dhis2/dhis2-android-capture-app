@@ -1,21 +1,18 @@
 package org.dhis2.data.forms.dataentry.tablefields.orgUnit;
 
-import androidx.databinding.DataBindingUtil;
-import androidx.databinding.ViewDataBinding;
-import androidx.annotation.NonNull;
-import androidx.fragment.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ViewDataBinding;
+import androidx.fragment.app.FragmentManager;
 
 import org.dhis2.BR;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.Row;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 
-import java.util.List;
-
-import io.reactivex.Observable;
 import io.reactivex.processors.FlowableProcessor;
 
 /**

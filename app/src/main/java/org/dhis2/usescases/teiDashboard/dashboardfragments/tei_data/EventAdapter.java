@@ -11,10 +11,8 @@ import org.dhis2.R;
 import org.dhis2.databinding.ItemEventBinding;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.event.Event;
-import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
 
 import java.util.List;
 import java.util.Objects;

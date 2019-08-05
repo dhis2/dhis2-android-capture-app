@@ -13,7 +13,6 @@ import org.dhis2.databinding.FragmentIndicatorsBinding;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
 import org.hisp.dhis.android.core.program.ProgramIndicator;
-import org.hisp.dhis.android.core.program.ProgramIndicatorModel;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;

@@ -8,7 +8,6 @@ import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.enrollment.EnrollmentCollectionRepository;
 import org.hisp.dhis.android.core.program.ProgramIndicator;
-import org.hisp.dhis.android.core.program.ProgramIndicatorModel;
 import org.hisp.dhis.rules.models.RuleAction;
 import org.hisp.dhis.rules.models.RuleActionDisplayKeyValuePair;
 import org.hisp.dhis.rules.models.RuleActionDisplayText;

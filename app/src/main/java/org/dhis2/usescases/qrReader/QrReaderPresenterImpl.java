@@ -18,7 +18,7 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentTableInfo;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.event.EventTableInfo;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeTableInfo;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueTableInfo;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue;
@@ -235,10 +235,10 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                 JSONObject attrValue = jsonArray.getJSONObject(i);
                 if (attrValue.has("trackedEntityAttribute") && attrValue.getString("trackedEntityAttribute") != null) {
                     try (Cursor cursor = briteDatabase.query("SELECT " +
-                                    TrackedEntityAttributeModel.Columns.UID + ", " +
-                                    TrackedEntityAttributeModel.Columns.DISPLAY_NAME +
-                                    " FROM " + TrackedEntityAttributeModel.TABLE +
-                                    " WHERE " + TrackedEntityAttributeModel.Columns.UID + " = ?",
+                                    "uid, " +
+                                    "displayName" +
+                                    " FROM " + TrackedEntityAttributeTableInfo.TABLE_INFO.name() +
+                                    " WHERE uid = ?",
                             attrValue.getString("trackedEntityAttribute"))) {
                         // TRACKED ENTITY ATTRIBUTE FOUND, TRACKED ENTITY ATTRIBUTE VALUE CAN BE SAVED.
                         if (cursor != null && cursor.moveToFirst() && cursor.getCount() > 0) {

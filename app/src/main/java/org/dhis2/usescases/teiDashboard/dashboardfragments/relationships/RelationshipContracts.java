@@ -2,14 +2,11 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.relationships;
 
 import android.content.Intent;
 
-import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.hisp.dhis.android.core.relationship.Relationship;
 import org.hisp.dhis.android.core.relationship.RelationshipType;
-import org.hisp.dhis.android.core.relationship.RelationshipTypeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 
 import java.util.List;
 
