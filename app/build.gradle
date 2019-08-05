@@ -111,6 +111,7 @@ android {
             signingConfig signingConfigs.debug
         }
         alpha {
+            applicationIdSuffix = ".alpha"
             matchingFallbacks = ['debug']
             signingConfig signingConfigs.debug
         }
