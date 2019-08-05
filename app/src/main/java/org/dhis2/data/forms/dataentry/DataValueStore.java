@@ -12,11 +12,11 @@ import org.dhis2.data.user.UserRepository;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.State;
-import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
-import org.hisp.dhis.android.core.event.EventModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
+import org.hisp.dhis.android.core.enrollment.Enrollment;
+import org.hisp.dhis.android.core.event.Event;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 import org.hisp.dhis.android.core.user.UserCredentials;
 
 import java.util.Calendar;
@@ -34,8 +34,6 @@ import static org.dhis2.data.forms.dataentry.DataEntryStore.valueType.ATTR;
 import static org.dhis2.data.forms.dataentry.DataEntryStore.valueType.DATA_ELEMENT;
 
 public final class DataValueStore implements DataEntryStore {
-    private static final String SELECT_EVENT = "SELECT * FROM " + EventModel.TABLE +
-            " WHERE " + EventModel.Columns.UID + " = ? AND " + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "' LIMIT 1";
 
     @NonNull
     private final BriteDatabase briteDatabase;
@@ -87,25 +85,24 @@ public final class DataValueStore implements DataEntryStore {
         ContentValues dataValue = new ContentValues();
         if (valueType == DATA_ELEMENT) {
             // renderSearchResults time stamp
-            dataValue.put(TrackedEntityDataValueModel.Columns.LAST_UPDATED,
+            dataValue.put("lastUpdated",
                     BaseIdentifiableObject.DATE_FORMAT.format(Calendar.getInstance().getTime()));
             if (value == null) {
-                dataValue.putNull(TrackedEntityDataValueModel.Columns.VALUE);
+                dataValue.putNull("value");
             } else {
-                dataValue.put(TrackedEntityDataValueModel.Columns.VALUE, value);
+                dataValue.put("value", value);
             }
 
             // ToDo: write test cases for different events
-            return (long) briteDatabase.update(TrackedEntityDataValueModel.TABLE, dataValue,
-                    TrackedEntityDataValueModel.Columns.DATA_ELEMENT + " = ? AND " +
-                            TrackedEntityDataValueModel.Columns.EVENT + " = ?", uid, eventUid);
+            return (long) briteDatabase.update("TrackedEntityDataValue", dataValue,
+                    "dataElement = ? AND " + "event = ?", uid, eventUid);
         } else {
-            dataValue.put(TrackedEntityAttributeValueModel.Columns.LAST_UPDATED,
+            dataValue.put("lastUpdated",
                     BaseIdentifiableObject.DATE_FORMAT.format(Calendar.getInstance().getTime()));
             if (value == null) {
-                dataValue.putNull(TrackedEntityAttributeValueModel.Columns.VALUE);
+                dataValue.putNull("value");
             } else {
-                dataValue.put(TrackedEntityAttributeValueModel.Columns.VALUE, value);
+                dataValue.put("value", value);
             }
 
             String teiUid = "";
@@ -118,9 +115,9 @@ public final class DataValueStore implements DataEntryStore {
                 }
             }
 
-            return (long) briteDatabase.update(TrackedEntityAttributeValueModel.TABLE, dataValue,
-                    TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_ATTRIBUTE + " = ? AND " +
-                            TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_INSTANCE + " = ? ",
+            return (long) briteDatabase.update("TrackedEntityAttributeValue", dataValue,
+                    "trackedEntityAttribute = ? AND " +
+                            "trackedEntityInstance = ? ",
                     uid, teiUid);
         }
     }
@@ -164,8 +161,8 @@ public final class DataValueStore implements DataEntryStore {
     private long insert(@NonNull String uid, @Nullable String value, @NonNull String storedBy, valueType valueType) {
         Date created = Calendar.getInstance().getTime();
         if (valueType == DATA_ELEMENT) {
-            TrackedEntityDataValueModel dataValueModel =
-                    TrackedEntityDataValueModel.builder()
+            TrackedEntityDataValue dataValueModel =
+                    TrackedEntityDataValue.builder()
                             .created(created)
                             .lastUpdated(created)
                             .dataElement(uid)
@@ -173,7 +170,7 @@ public final class DataValueStore implements DataEntryStore {
                             .value(value)
                             .storedBy(storedBy)
                             .build();
-            return briteDatabase.insert(TrackedEntityDataValueModel.TABLE,
+            return briteDatabase.insert("TrackedEntityDataValue",
                     dataValueModel.toContentValues());
         } else {
             String teiUid = null;
@@ -186,23 +183,23 @@ public final class DataValueStore implements DataEntryStore {
                 }
             }
 
-            TrackedEntityAttributeValueModel attributeValueModel =
-                    TrackedEntityAttributeValueModel.builder()
+            TrackedEntityAttributeValue attributeValueModel =
+                    TrackedEntityAttributeValue.builder()
                             .created(created)
                             .lastUpdated(created)
                             .trackedEntityAttribute(uid)
                             .trackedEntityInstance(teiUid)
                             .build();
-            return briteDatabase.insert(TrackedEntityAttributeValueModel.TABLE,
+            return briteDatabase.insert("TrackedEntityAttributeValue",
                     attributeValueModel.toContentValues());
         }
     }
 
     private long delete(@NonNull String uid, valueType valueType) {
         if (valueType == DATA_ELEMENT)
-            return (long) briteDatabase.delete(TrackedEntityDataValueModel.TABLE,
-                    TrackedEntityDataValueModel.Columns.DATA_ELEMENT + " = ? AND " +
-                            TrackedEntityDataValueModel.Columns.EVENT + " = ?",
+            return (long) briteDatabase.delete("TrackedEntityDataValue",
+                    "dataElement = ? AND " +
+                            "event = ?",
                     uid, eventUid);
         else {
             String teiUid = "";
@@ -215,25 +212,27 @@ public final class DataValueStore implements DataEntryStore {
                 }
             }
 
-            return (long) briteDatabase.delete(TrackedEntityAttributeValueModel.TABLE,
-                    TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_ATTRIBUTE + " = ? AND " +
-                            TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_INSTANCE + " = ? ",
+            return (long) briteDatabase.delete("TrackedEntityAttributeValue",
+                    "trackedEntityAttribute = ? AND " +
+                            "trackedEntityInstance = ? ",
                     uid, teiUid);
         }
     }
 
     private Flowable<Long> updateEvent(long status) {
-        return briteDatabase.createQuery(EventModel.TABLE, SELECT_EVENT, eventUid)
-                .mapToOne(EventModel::create).take(1).toFlowable(BackpressureStrategy.LATEST)
+        String SELECT_EVENT = "SELECT * FROM Event " +
+                "WHERE uid = ? AND state != '" + State.TO_DELETE + "' LIMIT 1";
+
+        return briteDatabase.createQuery("Event", SELECT_EVENT, eventUid)
+                .mapToOne(Event::create).take(1).toFlowable(BackpressureStrategy.LATEST)
                 .switchMap(eventModel -> {
                     if (State.SYNCED.equals(eventModel.state()) || State.TO_DELETE.equals(eventModel.state()) ||
                             State.ERROR.equals(eventModel.state())) {
 
                         ContentValues values = eventModel.toContentValues();
-                        values.put(EventModel.Columns.STATE, State.TO_UPDATE.toString());
+                        values.put(Event.Columns.STATE, State.TO_UPDATE.toString());
 
-                        if (briteDatabase.update(EventModel.TABLE, values,
-                                EventModel.Columns.UID + " = ?", eventUid) <= 0) {
+                        if (briteDatabase.update("Event", values, "uid = ?", eventUid) <= 0) {
 
                             throw new IllegalStateException(String.format(Locale.US, "Event=[%s] " +
                                     "has not been successfully updated", eventUid));
@@ -241,31 +240,31 @@ public final class DataValueStore implements DataEntryStore {
                     }
 
                     if (eventModel.enrollment() != null) {
-                        EnrollmentModel enrollment = null;
+                        Enrollment enrollment = null;
 
                         try (Cursor enrollmentCursor = briteDatabase.query("SELECT Enrollment.* FROM Enrollment " +
                                 "WHERE Enrollment.uid = ?", eventModel.enrollment())) {
                             if (enrollmentCursor.moveToFirst())
-                                enrollment = EnrollmentModel.create(enrollmentCursor);
+                                enrollment = Enrollment.create(enrollmentCursor);
                         } finally {
                             if (enrollment != null) {
                                 ContentValues cv = enrollment.toContentValues();
-                                cv.put(TrackedEntityInstanceModel.Columns.STATE, enrollment.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
-                                cv.put(TrackedEntityInstanceModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
-                                briteDatabase.update(EnrollmentModel.TABLE, cv, "uid = ?", eventModel.enrollment());
+                                cv.put("state", enrollment.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
+                                cv.put("lastUpdated", DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
+                                briteDatabase.update("Enrollment", cv, "uid = ?", eventModel.enrollment());
                             }
                         }
-                        TrackedEntityInstanceModel tei = null;
+                        TrackedEntityInstance tei = null;
                         try (Cursor teiCursor = briteDatabase.query("SELECT TrackedEntityInstance .* FROM TrackedEntityInstance " +
                                 "JOIN Enrollment ON Enrollment.trackedEntityInstance = TrackedEntityInstance.uid WHERE Enrollment.uid = ?", eventModel.enrollment())) {
                             if (teiCursor.moveToFirst())
-                                tei = TrackedEntityInstanceModel.create(teiCursor);
+                                tei = TrackedEntityInstance.create(teiCursor);
                         } finally {
                             if (tei != null) {
                                 ContentValues cv = tei.toContentValues();
-                                cv.put(TrackedEntityInstanceModel.Columns.STATE, tei.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
-                                cv.put(TrackedEntityInstanceModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
-                                briteDatabase.update(TrackedEntityInstanceModel.TABLE, cv, "uid = ?", tei.uid());
+                                cv.put(TrackedEntityInstance.Columns.STATE, tei.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
+                                cv.put("lastUpdated", DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
+                                briteDatabase.update("TrackedEntityInstance", cv, "uid = ?", tei.uid());
                             }
                         }
                     }

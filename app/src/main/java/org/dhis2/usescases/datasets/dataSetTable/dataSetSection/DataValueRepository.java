@@ -10,7 +10,7 @@ import org.hisp.dhis.android.core.dataelement.DataElement;
 import org.hisp.dhis.android.core.dataset.DataInputPeriod;
 import org.hisp.dhis.android.core.dataset.DataSet;
 import org.hisp.dhis.android.core.dataset.Section;
-import org.hisp.dhis.android.core.datavalue.DataValueModel;
+import org.hisp.dhis.android.core.datavalue.DataValue;
 import org.hisp.dhis.android.core.period.Period;
 
 import java.util.List;
@@ -19,9 +19,9 @@ import java.util.Map;
 import io.reactivex.Flowable;
 
 public interface DataValueRepository {
-    Flowable<Long> insertDataValue(DataValueModel dataValues);
+    Flowable<Long> insertDataValue(DataValue dataValues);
 
-    Flowable<Integer> updateValue(DataValueModel dataValue);
+    Flowable<Integer> updateValue(DataValue dataValue);
 
     Flowable<DataSet> getDataSet();
 
