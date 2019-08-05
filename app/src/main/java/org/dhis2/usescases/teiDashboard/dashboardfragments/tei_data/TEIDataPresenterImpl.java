@@ -10,7 +10,6 @@ import androidx.appcompat.widget.PopupMenu;
 import androidx.core.app.ActivityOptionsCompat;
 
 import org.dhis2.R;
-import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.qrCodes.QrActivity;
@@ -29,7 +28,7 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
-import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 
@@ -53,15 +52,13 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
     private final DashboardRepository dashboardRepository;
     private String programUid;
     private final String teiUid;
-    private final MetadataRepository metadataRepository;
     private TEIDataContracts.View view;
     private CompositeDisposable compositeDisposable;
     private DashboardProgramModel dashboardModel;
 
-    public TEIDataPresenterImpl(D2 d2, DashboardRepository dashboardRepository, MetadataRepository metadataRepository,
+    public TEIDataPresenterImpl(D2 d2, DashboardRepository dashboardRepository,
                                 String programUid, String teiUid) {
         this.d2 = d2;
-        this.metadataRepository = metadataRepository;
         this.dashboardRepository = dashboardRepository;
         this.programUid = programUid;
         this.teiUid = teiUid;
@@ -138,7 +135,7 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
 
     @Override
     public void changeCatOption(String eventUid, String catOptionComboUid) {
-        metadataRepository.saveCatOption(eventUid, catOptionComboUid);
+        dashboardRepository.saveCatOption(eventUid, catOptionComboUid);
     }
 
     @Override
@@ -294,7 +291,7 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
     }
 
     @Override
-    public void setProgram(ProgramModel program) {
+    public void setProgram(Program program) {
         this.programUid = program.uid();
         view.restoreAdapter(programUid);
     }

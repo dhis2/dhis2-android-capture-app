@@ -16,6 +16,7 @@ import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
+import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.program.ProgramStageSection;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
@@ -232,5 +233,20 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
         tei.put(TrackedEntityInstanceModel.Columns.STATE, State.TO_UPDATE.name());// TODO: Check if state is TO_POST
         // TODO: and if so, keep the TO_POST state
         briteDatabase.update(TrackedEntityInstanceModel.TABLE, tei, "uid = ?", teiUid);
+    }
+
+    @Override
+    public Observable<ProgramModel> getExpiryDateFromEvent(String eventUid) {
+        String EXPIRY_DATE_PERIOD_QUERY = String.format(
+                "SELECT program.* FROM program " +
+                        "JOIN event ON program.uid = event.program " +
+                        "WHERE event.uid = ? " +
+                        "LIMIT 1",
+                ProgramModel.TABLE,
+                EventModel.TABLE, ProgramModel.TABLE, ProgramModel.Columns.UID, EventModel.TABLE, EventModel.Columns.PROGRAM,
+                EventModel.TABLE, EventModel.Columns.UID);
+        return briteDatabase
+                .createQuery(ProgramModel.TABLE, EXPIRY_DATE_PERIOD_QUERY, eventUid == null ? "" : eventUid)
+                .mapToOne(ProgramModel::create);
     }
 }

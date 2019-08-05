@@ -41,6 +41,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeAttribute;
 import org.hisp.dhis.android.core.trackedentity.search.QueryFilter;
 import org.hisp.dhis.android.core.trackedentity.search.QueryItem;
@@ -400,6 +401,16 @@ public class SearchRepositoryImpl implements SearchRepository {
                     }
                     return Observable.just(d2.trackedEntityModule().trackedEntityAttributes.byUid().in(uids).blockingGet());
                 });
+    }
+
+    @Override
+    public Observable<TrackedEntityType> getTrackedEntityType(String trackedEntityUid) {
+        return d2.trackedEntityModule().trackedEntityTypes.byUid().eq(trackedEntityUid).one().getAsync().toObservable();
+    }
+
+    @Override
+    public Observable<List<OrganisationUnit>> getOrganisationUnits() {
+        return d2.organisationUnitModule().organisationUnits.getAsync().toObservable();
     }
 
     // Private Region Start //

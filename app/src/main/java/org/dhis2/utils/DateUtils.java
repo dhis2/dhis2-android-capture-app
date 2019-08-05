@@ -1,11 +1,12 @@
 package org.dhis2.utils;
 
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.dhis2.data.forms.section.viewmodels.date.DatePickerDialogFragment;
+import org.dhis2.usescases.general.ActivityGlobalAbstract;
+import org.dhis2.utils.custom_views.RxDateDialog;
 import org.hisp.dhis.android.core.dataset.DataInputPeriod;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
@@ -16,12 +17,16 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nonnull;
+
+import io.reactivex.disposables.Disposable;
+import timber.log.Timber;
 
 /**
  * QUADRAM. Created by ppajuelo on 16/01/2018.
@@ -1239,15 +1244,64 @@ public class DateUtils {
         return datePeriods;
     }
 
-    public void showFromToSelector(Context context, OnFromToSelector fromToListener) {
-        //TODO: SHOW FROM dialog then TO dialog
+    public void showFromToSelector(ActivityGlobalAbstract activity, OnFromToSelector fromToListener) {
+        DatePickerDialogFragment fromCalendar = DatePickerDialogFragment.create(true);
+        fromCalendar.setFormattedOnDateSetListener(new DatePickerDialogFragment.FormattedOnDateSetListener() {
+            @Override
+            public void onDateSet(@NonNull Date fromDate) {
+                DatePickerDialogFragment toCalendar = DatePickerDialogFragment.create(true);
+                toCalendar.setOpeningClosingDates(fromDate, null);
+                toCalendar.setFormattedOnDateSetListener(new DatePickerDialogFragment.FormattedOnDateSetListener() {
+                    @Override
+                    public void onDateSet(@NonNull Date toDate) {
+                        List<DatePeriod> list = new ArrayList<>();
+                        list.add(DatePeriod.builder().startDate(fromDate).endDate(toDate).build());
+                        fromToListener.onFromToSelected(list);
+                    }
+
+                    @Override
+                    public void onClearDate() {
+
+                    }
+                });
+                toCalendar.show(activity.getSupportFragmentManager(), "TO");
+
+            }
+
+            @Override
+            public void onClearDate() {
+
+            }
+        });
+
+        fromCalendar.show(activity.getSupportFragmentManager(), "FROM");
     }
 
-    public void showPeriodDialog(Context context, OnFromToSelector fromToListener) {
-        //TODO: SHOW Period dialog
+    public void showPeriodDialog(ActivityGlobalAbstract activity, OnFromToSelector fromToListener, boolean fromOtherPeriod) {
+        DatePickerDialogFragment fromCalendar = DatePickerDialogFragment.create(true, "Daily", fromOtherPeriod);
+//        fromCalendar.setOpeningClosingDates(null, null); TODO: MAX 1 year in the future?
+        fromCalendar.setFormattedOnDateSetListener(new DatePickerDialogFragment.FormattedOnDateSetListener() {
+            @Override
+            public void onDateSet(@NonNull Date date) {
+                fromToListener.onFromToSelected(getDatePeriodListFor(Collections.singletonList(date), Period.DAILY));
+            }
+
+            @Override
+            public void onClearDate() {
+                Disposable disposable = new RxDateDialog(activity, Period.WEEKLY)
+                        .createForFilter().show()
+                        .subscribe(
+                                selectedDates -> fromToListener.onFromToSelected(getDatePeriodListFor(selectedDates.val1(),
+                                        selectedDates.val0())),
+                                Timber::e
+                        );
+            }
+        });
+        fromCalendar.show(activity.getSupportFragmentManager(), "DAILY");
+
     }
 
     public interface OnFromToSelector {
-        void onFromToSelected(Date from, Date to);
+        void onFromToSelected(List<DatePeriod> datePeriods);
     }
 }

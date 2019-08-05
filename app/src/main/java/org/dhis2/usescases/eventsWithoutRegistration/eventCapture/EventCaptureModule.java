@@ -12,7 +12,6 @@ import org.dhis2.data.forms.FormRepository;
 import org.dhis2.data.forms.RulesRepository;
 import org.dhis2.data.forms.dataentry.DataEntryStore;
 import org.dhis2.data.forms.dataentry.DataValueStore;
-import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.user.UserRepository;
 import org.dhis2.utils.RulesUtilsProvider;
 import org.hisp.dhis.android.core.D2;
@@ -41,10 +40,9 @@ public class EventCaptureModule {
     @Provides
     @PerActivity
     EventCaptureContract.Presenter providePresenter(@NonNull EventCaptureContract.EventCaptureRepository eventCaptureRepository,
-                                                    @NonNull MetadataRepository metadataRepository,
                                                     @NonNull RulesUtilsProvider ruleUtils,
                                                     @NonNull DataEntryStore dataEntryStore) {
-        return new EventCapturePresenterImpl(eventUid, eventCaptureRepository, metadataRepository, ruleUtils, dataEntryStore);
+        return new EventCapturePresenterImpl(eventUid, eventCaptureRepository, ruleUtils, dataEntryStore);
     }
 
     @Provides

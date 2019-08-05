@@ -5,6 +5,7 @@ import androidx.databinding.ObservableField;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.State;
+import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.period.DatePeriod;
 
@@ -26,7 +27,7 @@ public class FilterManager {
 
     private List<OrganisationUnit> ouFilters;
     private List<State> stateFilters;
-    private DatePeriod periodFilters;
+    private List<DatePeriod> periodFilters;
     private List<CategoryOptionCombo> catOptComboFilters;
 
     private ObservableField<Integer> ouFiltersApplied;
@@ -85,7 +86,7 @@ public class FilterManager {
 
 //    endregion
 
-    public void addPeriod(DatePeriod datePeriod) {
+    public void addPeriod(List<DatePeriod> datePeriod) {
         this.periodFilters = datePeriod;
 
         periodFiltersApplied.set(datePeriod != null ? 1 : 0);
@@ -153,7 +154,7 @@ public class FilterManager {
     }
 
     public List<DatePeriod> getPeriodFilters() {
-        return periodFilters != null ? Collections.singletonList(periodFilters) : new ArrayList<>();
+        return periodFilters != null ? periodFilters : new ArrayList<>();
     }
 
     public List<OrganisationUnit> getOrgUnitFilters() {

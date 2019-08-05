@@ -3,6 +3,7 @@ package org.dhis2.usescases.teiDashboard;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
@@ -12,8 +13,11 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.enrollment.note.NoteModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
+import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramIndicatorModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
+import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute;
 import org.hisp.dhis.android.core.relationship.RelationshipTypeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
@@ -75,4 +79,14 @@ public interface DashboardRepository {
 
     // FROM METADATA REPOSITORY
     Observable<TrackedEntityInstance> getTrackedEntityInstance(String teiUid);
+
+    Observable<List<ProgramTrackedEntityAttribute>> getProgramTrackedEntityAttributes(String programUid);
+
+    Observable<List<OrganisationUnit>> getTeiOrgUnits(@NonNull String teiUid, @Nullable String programUid);
+
+    Observable<List<Program>> getTeiActivePrograms(String teiUid, boolean showOnlyActive);
+
+    Observable<List<Enrollment>> getTEIEnrollments(String teiUid);
+
+    void saveCatOption(String eventUid, String catOptionComboUid);
 }

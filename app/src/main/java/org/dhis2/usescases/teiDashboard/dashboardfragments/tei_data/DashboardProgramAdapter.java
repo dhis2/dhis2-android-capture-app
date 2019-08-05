@@ -1,10 +1,11 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data;
 
-import androidx.databinding.DataBindingUtil;
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
+import androidx.databinding.DataBindingUtil;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.dhis2.R;
 import org.dhis2.databinding.ItemDashboardProgramBinding;
@@ -39,6 +40,6 @@ public class DashboardProgramAdapter extends RecyclerView.Adapter<DashboardProgr
 
     @Override
     public int getItemCount() {
-        return dashboardProgramModel.getEnrollmentProgramModels().size();
+        return dashboardProgramModel.getEnrollmentPrograms().size();
     }
 }

@@ -3,6 +3,7 @@ package org.dhis2.utils.custom_views;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 
+import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.Period;
 import org.hisp.dhis.android.core.period.PeriodType;
@@ -82,7 +83,11 @@ public class RxDateDialog {
         return DateDialog.newInstace(actionTrigger, period);
     }
 
-    private void notifyClick(SingleEmitter<List<Date>> callback, List<Date> button) {
+    public DateDialog createForFilter(){
+        return DateDialog.newInstace(actionTrigger, activity);
+    }
+
+    private void notifyClick(SingleEmitter<Pair<Period, List<Date>>> callback, Pair<Period, List<Date>> button) {
         callback.onSuccess(button);
     }
 

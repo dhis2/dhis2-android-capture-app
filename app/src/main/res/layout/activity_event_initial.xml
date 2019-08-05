@@ -15,7 +15,7 @@
 
         <variable
             name="programStage"
-            type="org.hisp.dhis.android.core.program.ProgramStageModel" />
+            type="org.hisp.dhis.android.core.program.ProgramStage" />
 
         <variable
             name="presenter"

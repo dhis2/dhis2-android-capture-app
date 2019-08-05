@@ -1,6 +1,5 @@
 package org.dhis2.usescases.sync;
 
-import org.dhis2.databinding.ActivitySynchronizationBinding;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 
 public class SyncContracts {

@@ -18,6 +18,7 @@ import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
+import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
@@ -27,7 +28,7 @@ import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
+import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
@@ -337,20 +338,14 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     @NonNull
     @Override
-    public Observable<ProgramStageModel> programStage(String programUid) {
-        String id = programUid == null ? "" : programUid;
-        String SELECT_PROGRAM_STAGE = "SELECT * FROM " + ProgramStageModel.TABLE + " WHERE " + ProgramStageModel.Columns.PROGRAM + " = '" + id + "' LIMIT 1";
-        return briteDatabase.createQuery(ProgramStageModel.TABLE, SELECT_PROGRAM_STAGE)
-                .mapToOne(ProgramStageModel::create);
+    public Observable<ProgramStage> programStage(String programUid) {
+        return d2.programModule().programStages.byProgramUid().eq(programUid).one().getAsync().toObservable();
     }
 
     @NonNull
     @Override
-    public Observable<ProgramStageModel> programStageWithId(String programStageUid) {
-        String id = programStageUid == null ? "" : programStageUid;
-        String SELECT_PROGRAM_STAGE_WITH_ID = "SELECT * FROM " + ProgramStageModel.TABLE + " WHERE " + ProgramStageModel.Columns.UID + " = '" + id + "' LIMIT 1";
-        return briteDatabase.createQuery(ProgramStageModel.TABLE, SELECT_PROGRAM_STAGE_WITH_ID)
-                .mapToOne(ProgramStageModel::create);
+    public Observable<ProgramStage> programStageWithId(String programStageUid) {
+        return d2.programModule().programStages.byUid().eq(programStageUid).one().getAsync().toObservable();
     }
 
 
@@ -479,5 +474,27 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
         int teiUpdated = briteDatabase.update(TrackedEntityInstanceModel.TABLE, cv, "uid = ?", teiUid);
         Timber.d("TEI %s UPDATED (%s)", teiUid, teiUpdated);
 
+    }
+
+    @Override
+    public Observable<Program> getProgramWithId(String programUid) {
+        return d2.programModule().programs.withAllChildren().byUid().eq(programUid).one().getAsync().toObservable();
+    }
+
+    @Override
+    public Flowable<ProgramStage> programStageForEvent(String eventId) {
+        return d2.eventModule().events.byUid().eq(eventId).one().getAsync().toFlowable()
+                .map(event -> d2.programModule().programStages.byUid().eq(event.programStage()).one().get());
+    }
+
+    @Override
+    public Observable<OrganisationUnit> getOrganisationUnit(String orgUnitUid) {
+        return d2.organisationUnitModule().organisationUnits.byUid().eq(orgUnitUid).one().getAsync().toObservable();
+    }
+
+    @Override
+    public Observable<ObjectStyle> getObjectStyle(String uid) {
+        return d2.programModule().programStages.byUid().eq(uid).withStyle().one().getAsync().toObservable()
+                .map(programStage -> (programStage.style() != null) ? programStage.style() : ObjectStyle.builder().build());
     }
 }

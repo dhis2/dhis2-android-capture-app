@@ -9,10 +9,9 @@ import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
-import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
-import java.io.File;
 import java.util.List;
 
 import io.reactivex.Single;
@@ -84,7 +83,7 @@ public class TEIDataContracts {
 
         void setDashboardProgram(DashboardProgramModel dashboardModel);
 
-        void setProgram(ProgramModel program);
+        void setProgram(Program program);
 
         void showDescription(String description);
     }

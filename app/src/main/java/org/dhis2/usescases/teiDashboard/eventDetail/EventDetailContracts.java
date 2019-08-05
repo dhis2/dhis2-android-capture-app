@@ -2,21 +2,14 @@ package org.dhis2.usescases.teiDashboard.eventDetail;
 
 import androidx.annotation.NonNull;
 
-import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.usescases.general.AbstractActivityContracts;
-import org.dhis2.utils.custom_views.OrgUnitDialog;
-
 import org.dhis2.utils.custom_views.OrgUnitDialog_2;
-import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.event.Event;
-import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStage;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
 
 import io.reactivex.functions.Consumer;
 
@@ -28,7 +21,7 @@ public class EventDetailContracts {
 
     interface View extends AbstractActivityContracts.View {
 
-        void setData(EventDetailModel eventDetailModel, MetadataRepository metadataRepository);
+        void setData(EventDetailModel eventDetailModel);
 
         void setDataEditable();
 
