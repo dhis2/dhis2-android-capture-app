@@ -3,20 +3,20 @@ package org.dhis2.usescases.teiDashboard.teiDataDetail;
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteStatement;
 
+import androidx.annotation.NonNull;
+
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.tuples.Pair;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.State;
-import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
+import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 
 import java.util.Calendar;
 import java.util.Locale;
 
-import androidx.annotation.NonNull;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 
@@ -79,29 +79,32 @@ public final class EnrollmentStatusStore implements EnrollmentStatusEntryStore {
     @Override
     public Flowable<EnrollmentStatus> enrollmentStatus(@NonNull String enrollmentUid) {
         String query = "SELECT Enrollment.* FROM Enrollment WHERE Enrollment.uid = ? LIMIT 1";
-        return briteDatabase.createQuery(EnrollmentModel.TABLE, query, enrollmentUid)
-                .mapToOne(EnrollmentModel::create)
-                .map(EnrollmentModel::enrollmentStatus).toFlowable(BackpressureStrategy.LATEST);
+        return briteDatabase.createQuery("Enrollment", query, enrollmentUid)
+                .mapToOne(Enrollment::create)
+                .map(Enrollment::status).toFlowable(BackpressureStrategy.LATEST);
     }
 
     @Override
     public Flowable<Pair<Double, Double>> enrollmentCoordinates() {
-        return briteDatabase.createQuery(EnrollmentModel.TABLE, "SELECT * FROM Enrollment WHERE uid = ? LIMIT 1", enrollment)
-                .mapToOne(EnrollmentModel::create)
-                .filter(enrollmentModel -> enrollmentModel.latitude() != null && enrollmentModel.longitude() != null)
-                .map(enrollmentModel ->
-                        Pair.create(Double.valueOf(enrollmentModel.latitude()),
-                                Double.valueOf(enrollmentModel.longitude())))
-                .toFlowable(BackpressureStrategy.LATEST);
+        return null;
+        // TODO: Needs to change to Geometry
+        /*return briteDatabase.createQuery("Enrollment", "SELECT * FROM Enrollment WHERE uid = ? LIMIT 1", enrollment)
+                .mapToOne(Enrollment::create)
+                .filter(enrollment -> enrollment.latitude() != null && enrollment.longitude() != null)
+                .map(enrollment ->
+                        Pair.create(Double.valueOf(enrollment.latitude()),
+                                Double.valueOf(enrollment.longitude())))
+                .toFlowable(BackpressureStrategy.LATEST);*/
     }
 
     @Override
     public Flowable<Long> saveCoordinates(double latitude, double longitude) {
         return Flowable.defer(() -> {
             ContentValues cv = new ContentValues();
-            cv.put(EnrollmentModel.Columns.LATITUDE, latitude);
-            cv.put(EnrollmentModel.Columns.LONGITUDE, longitude);
-            long updated = briteDatabase.update(EnrollmentModel.TABLE, cv, "uid = ?", enrollment);
+            // TODO: Change to Geometry
+            /*cv.put(Enrollment.Columns.LATITUDE, latitude);
+            cv.put(Enrollment.Columns.LONGITUDE, longitude);*/
+            long updated = briteDatabase.update("Enrollment", cv, "uid = ?", enrollment);
             return Flowable.just(updated);
         })
                 .switchMap(this::updateEnrollment);
@@ -115,7 +118,7 @@ public final class EnrollmentStatusStore implements EnrollmentStatusEntryStore {
         sqLiteBind(updateStatement, 3, enrollment == null ? "" : enrollment);
 
         long updated = briteDatabase.executeUpdateDelete(
-                TrackedEntityAttributeValueModel.TABLE, updateStatement);
+                "TrackedEntityAttributeValue", updateStatement);
         updateStatement.clearBindings();
 
         return updated;
@@ -124,23 +127,23 @@ public final class EnrollmentStatusStore implements EnrollmentStatusEntryStore {
 
     @NonNull
     private Flowable<Long> updateEnrollment(long status) {
-        return briteDatabase.createQuery(TrackedEntityInstanceModel.TABLE, SELECT_TEI, enrollment == null ? "" : enrollment)
-                .mapToOne(TrackedEntityInstanceModel::create).take(1).toFlowable(BackpressureStrategy.LATEST)
+        return briteDatabase.createQuery("TrackedEntityInstance", SELECT_TEI, enrollment == null ? "" : enrollment)
+                .mapToOne(TrackedEntityInstance::create).take(1).toFlowable(BackpressureStrategy.LATEST)
                 .switchMap(tei -> {
                     if (State.SYNCED.equals(tei.state()) || State.TO_DELETE.equals(tei.state()) ||
                             State.ERROR.equals(tei.state())) {
                         ContentValues values = new ContentValues();
-                        values.put(TrackedEntityInstanceModel.Columns.STATE, tei.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
+                        values.put(TrackedEntityInstance.Columns.STATE, tei.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
 
-                        if (briteDatabase.update(TrackedEntityInstanceModel.TABLE, values,
-                                TrackedEntityInstanceModel.Columns.UID + " = ?", tei.uid()) <= 0) {
+                        if (briteDatabase.update("TrackedEntityInstance", values,
+                                "uid = ?", tei.uid()) <= 0) {
 
                             throw new IllegalStateException(String.format(Locale.US, "Tei=[%s] " +
                                     "has not been successfully updated", tei.uid()));
                         }
 
-                        if(briteDatabase.update(EnrollmentModel.TABLE, values,
-                                EnrollmentModel.Columns.UID + " = ?", enrollment == null ? "" : enrollment) <= 0){
+                        if(briteDatabase.update("Enrollment", values,
+                                "uid = ?", enrollment == null ? "" : enrollment) <= 0){
 
                             throw new IllegalStateException(String.format(Locale.US, "Enrollment=[%s] " +
                                     "has not been successfully updated", enrollment));
@@ -156,8 +159,8 @@ public final class EnrollmentStatusStore implements EnrollmentStatusEntryStore {
     public Flowable<Long> saveIncidentDate(String date) {
         return Flowable.defer(() -> {
             ContentValues cv = new ContentValues();
-            cv.put(EnrollmentModel.Columns.INCIDENT_DATE, date);
-            long updated = briteDatabase.update(EnrollmentModel.TABLE, cv, "uid = ?", enrollment);
+            cv.put("incidentDate", date);
+            long updated = briteDatabase.update("Enrollment", cv, "uid = ?", enrollment);
             return Flowable.just(updated);
         }).switchMap(this::updateEnrollment);
 
@@ -167,8 +170,8 @@ public final class EnrollmentStatusStore implements EnrollmentStatusEntryStore {
     public Flowable<Long> saveEnrollmentDate(String date) {
         return Flowable.defer(() -> {
             ContentValues cv = new ContentValues();
-            cv.put(EnrollmentModel.Columns.ENROLLMENT_DATE, date);
-            long updated = briteDatabase.update(EnrollmentModel.TABLE, cv, "uid = ?", enrollment);
+            cv.put("enrollmentDate", date);
+            long updated = briteDatabase.update("Enrollment", cv, "uid = ?", enrollment);
             return Flowable.just(updated);
         }).switchMap(this::updateEnrollment);
 

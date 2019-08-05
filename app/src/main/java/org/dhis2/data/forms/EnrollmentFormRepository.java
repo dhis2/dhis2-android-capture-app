@@ -16,23 +16,21 @@ import org.dhis2.utils.CodeGenerator;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.android.core.category.CategoryComboModel;
-import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
-import org.hisp.dhis.android.core.common.ObjectStyleModel;
+import org.hisp.dhis.android.core.category.CategoryCombo;
+import org.hisp.dhis.android.core.category.CategoryOptionCombo;
+import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
-import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
-import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
+import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
-import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.period.PeriodType;
-import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueTableInfo;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceTableInfo;
 import org.hisp.dhis.rules.RuleEngine;
 import org.hisp.dhis.rules.RuleEngineContext;
 import org.hisp.dhis.rules.RuleExpressionEvaluator;
@@ -59,7 +57,7 @@ import static android.text.TextUtils.isEmpty;
 })
 public class EnrollmentFormRepository implements FormRepository {
     private static final List<String> TITLE_TABLES = Arrays.asList(
-            EnrollmentModel.TABLE, ProgramModel.TABLE);
+            "Enrollment", "Program");
 
     private static final String SELECT_TITLE = "SELECT Program.displayName\n" +
             "FROM Enrollment\n" +
@@ -287,34 +285,34 @@ public class EnrollmentFormRepository implements FormRepository {
 
     @NonNull
     @Override
-    public Flowable<Pair<ProgramModel, String>> reportDate() {
-        return briteDatabase.createQuery(ProgramModel.TABLE, SELECT_ENROLLMENT_PROGRAM, enrollmentUid == null ? "" : enrollmentUid)
-                .mapToOne(ProgramModel::create)
-                .flatMap(programModel -> briteDatabase.createQuery(EnrollmentModel.TABLE, SELECT_ENROLLMENT_DATE, enrollmentUid == null ? "" : enrollmentUid)
-                        .mapToOne(EnrollmentModel::create)
-                        .map(enrollmentModel -> Pair.create(programModel, enrollmentModel.enrollmentDate() != null ?
-                                DateUtils.uiDateFormat().format(enrollmentModel.enrollmentDate()) : "")))
+    public Flowable<Pair<Program, String>> reportDate() {
+        return briteDatabase.createQuery("Program", SELECT_ENROLLMENT_PROGRAM, enrollmentUid == null ? "" : enrollmentUid)
+                .mapToOne(Program::create)
+                .flatMap(program -> briteDatabase.createQuery("Enrollment", SELECT_ENROLLMENT_DATE, enrollmentUid == null ? "" : enrollmentUid)
+                        .mapToOne(Enrollment::create)
+                        .map(enrollment -> Pair.create(program, enrollment.enrollmentDate() != null ?
+                                DateUtils.uiDateFormat().format(enrollment.enrollmentDate()) : "")))
                 .toFlowable(BackpressureStrategy.LATEST)
                 .distinctUntilChanged();
     }
 
     @NonNull
     @Override
-    public Flowable<Pair<ProgramModel, String>> incidentDate() {
-        return briteDatabase.createQuery(ProgramModel.TABLE, SELECT_ENROLLMENT_PROGRAM, enrollmentUid == null ? "" : enrollmentUid)
-                .mapToOne(ProgramModel::create)
-                .flatMap(programModel -> briteDatabase.createQuery(EnrollmentModel.TABLE, SELECT_INCIDENT_DATE, enrollmentUid == null ? "" : enrollmentUid)
-                        .mapToOne(EnrollmentModel::create)
-                        .map(enrollmentModel -> Pair.create(programModel, enrollmentModel.incidentDate() != null ?
-                                DateUtils.uiDateFormat().format(enrollmentModel.incidentDate()) : "")))
+    public Flowable<Pair<Program, String>> incidentDate() {
+        return briteDatabase.createQuery("Program", SELECT_ENROLLMENT_PROGRAM, enrollmentUid == null ? "" : enrollmentUid)
+                .mapToOne(Program::create)
+                .flatMap(program -> briteDatabase.createQuery("Enrollment", SELECT_INCIDENT_DATE, enrollmentUid == null ? "" : enrollmentUid)
+                        .mapToOne(Enrollment::create)
+                        .map(enrollment -> Pair.create(program, enrollment.incidentDate() != null ?
+                                DateUtils.uiDateFormat().format(enrollment.incidentDate()) : "")))
                 .toFlowable(BackpressureStrategy.LATEST)
                 .distinctUntilChanged();
     }
 
     @Override
-    public Flowable<ProgramModel> getAllowDatesInFuture() {
-        return briteDatabase.createQuery(ProgramModel.TABLE, SELECT_ENROLLMENT_PROGRAM, enrollmentUid == null ? "" : enrollmentUid)
-                .mapToOne(ProgramModel::create)
+    public Flowable<Program> getAllowDatesInFuture() {
+        return briteDatabase.createQuery("Program", SELECT_ENROLLMENT_PROGRAM, enrollmentUid == null ? "" : enrollmentUid)
+                .mapToOne(Program::create)
                 .toFlowable(BackpressureStrategy.LATEST);
     }
 
@@ -322,7 +320,7 @@ public class EnrollmentFormRepository implements FormRepository {
     @Override
     public Flowable<ReportStatus> reportStatus() {
         return briteDatabase
-                .createQuery(EnrollmentModel.TABLE, SELECT_ENROLLMENT_STATUS, enrollmentUid == null ? "" : enrollmentUid)
+                .createQuery("Enrollment", SELECT_ENROLLMENT_STATUS, enrollmentUid == null ? "" : enrollmentUid)
                 .mapToOne(cursor ->
                         ReportStatus.fromEnrollmentStatus(EnrollmentStatus.valueOf(cursor.getString(0)))).toFlowable(BackpressureStrategy.LATEST)
                 .distinctUntilChanged();
@@ -332,7 +330,7 @@ public class EnrollmentFormRepository implements FormRepository {
     @Override
     public Flowable<List<FormSectionViewModel>> sections() {
         return briteDatabase
-                .createQuery(EnrollmentModel.TABLE, SELECT_ENROLLMENT_UID, enrollmentUid == null ? "" : enrollmentUid)
+                .createQuery("Enrollment", SELECT_ENROLLMENT_UID, enrollmentUid == null ? "" : enrollmentUid)
                 .mapToList(cursor -> FormSectionViewModel
                         .createForEnrollment(cursor.getString(0))).toFlowable(BackpressureStrategy.LATEST);
     }
@@ -350,12 +348,12 @@ public class EnrollmentFormRepository implements FormRepository {
             cal.set(Calendar.MILLISECOND, 0);
 
             ContentValues enrollment = new ContentValues();
-            enrollment.put(EnrollmentModel.Columns.ENROLLMENT_DATE, DateUtils.databaseDateFormat().format(cal.getTime()));
-            enrollment.put(EnrollmentModel.Columns.STATE, State.TO_UPDATE.name()); // TODO: Check if state is TO_POST
+            enrollment.put("enrollmentDate", DateUtils.databaseDateFormat().format(cal.getTime()));
+            enrollment.put(Enrollment.Columns.STATE, State.TO_UPDATE.name()); // TODO: Check if state is TO_POST
             // TODO: and if so, keep the TO_POST state
 
-            briteDatabase.update(EnrollmentModel.TABLE, enrollment,
-                    EnrollmentModel.Columns.UID + " = ?", enrollmentUid == null ? "" : enrollmentUid);
+            briteDatabase.update("Enrollment", enrollment,
+                    " uid = ?", enrollmentUid == null ? "" : enrollmentUid);
         };
     }
 
@@ -378,12 +376,12 @@ public class EnrollmentFormRepository implements FormRepository {
             }
 
             ContentValues enrollment = new ContentValues();
-            enrollment.put(EnrollmentModel.Columns.ENROLLMENT_DATE, reportDateToStore);
-            enrollment.put(EnrollmentModel.Columns.STATE, State.TO_UPDATE.name()); // TODO: Check if state is TO_POST
+            enrollment.put("enrollmentDate", reportDateToStore);
+            enrollment.put(Enrollment.Columns.STATE, State.TO_UPDATE.name()); // TODO: Check if state is TO_POST
             // TODO: and if so, keep the TO_POST state
 
-            long updated = briteDatabase.update(EnrollmentModel.TABLE, enrollment,
-                    EnrollmentModel.Columns.UID + " = ?", enrollmentUid == null ? "" : enrollmentUid);
+            long updated = briteDatabase.update("Enrollment", enrollment,
+                    " uid = ?", enrollmentUid == null ? "" : enrollmentUid);
 
             return Observable.just(updated);
         } catch (ParseException e) {
@@ -408,12 +406,12 @@ public class EnrollmentFormRepository implements FormRepository {
                 incidentDateToStore = DateUtils.databaseDateFormat().format(cal.getTime());
             }
             ContentValues enrollment = new ContentValues();
-            enrollment.put(EnrollmentModel.Columns.INCIDENT_DATE, incidentDateToStore);
-            enrollment.put(EnrollmentModel.Columns.STATE, State.TO_UPDATE.name()); // TODO: Check if state is TO_POST
+            enrollment.put("incidentDate", incidentDateToStore);
+            enrollment.put(Enrollment.Columns.STATE, State.TO_UPDATE.name()); // TODO: Check if state is TO_POST
             // TODO: and if so, keep the TO_POST state
 
-            long updated = briteDatabase.update(EnrollmentModel.TABLE, enrollment,
-                    EnrollmentModel.Columns.UID + " = ?", enrollmentUid == null ? "" : enrollmentUid);
+            long updated = briteDatabase.update("Enrollment", enrollment,
+                    " uid = ?", enrollmentUid == null ? "" : enrollmentUid);
 
             return Observable.just(updated);
         } catch (ParseException e) {
@@ -426,12 +424,12 @@ public class EnrollmentFormRepository implements FormRepository {
     public Consumer<LatLng> storeCoordinates() {
         return latLng -> {
             ContentValues enrollment = new ContentValues();
-            enrollment.put(EnrollmentModel.Columns.LATITUDE, latLng.getLatitude());
-            enrollment.put(EnrollmentModel.Columns.LONGITUDE, latLng.getLongitude()); // TODO: Check if state is TO_POST
+            enrollment.put("latitude", latLng.getLatitude());
+            enrollment.put("longitude", latLng.getLongitude()); // TODO: Check if state is TO_POST
             // TODO: and if so, keep the TO_POST state
 
-            briteDatabase.update(EnrollmentModel.TABLE, enrollment,
-                    EnrollmentModel.Columns.UID + " = ?", enrollmentUid == null ? "" : enrollmentUid);
+            briteDatabase.update("Enrollment", enrollment,
+                    " uid = ?", enrollmentUid == null ? "" : enrollmentUid);
         };
     }
 
@@ -448,12 +446,12 @@ public class EnrollmentFormRepository implements FormRepository {
             cal.set(Calendar.MILLISECOND, 0);
 
             ContentValues enrollment = new ContentValues();
-            enrollment.put(EnrollmentModel.Columns.INCIDENT_DATE, DateUtils.databaseDateFormat().format(cal.getTime()));
-            enrollment.put(EnrollmentModel.Columns.STATE, State.TO_UPDATE.name()); // TODO: Check if state is TO_POST
+            enrollment.put("incidentDate", DateUtils.databaseDateFormat().format(cal.getTime()));
+            enrollment.put(Enrollment.Columns.STATE, State.TO_UPDATE.name()); // TODO: Check if state is TO_POST
             // TODO: and if so, keep the TO_POST state
 
-            briteDatabase.update(EnrollmentModel.TABLE, enrollment,
-                    EnrollmentModel.Columns.UID + " = ?", enrollmentUid == null ? "" : enrollmentUid);
+            briteDatabase.update("Enrollment", enrollment,
+                    " uid = ?", enrollmentUid == null ? "" : enrollmentUid);
         };
     }
 
@@ -462,13 +460,13 @@ public class EnrollmentFormRepository implements FormRepository {
     public Consumer<ReportStatus> storeReportStatus() {
         return reportStatus -> {
             ContentValues enrollment = new ContentValues();
-            enrollment.put(EnrollmentModel.Columns.ENROLLMENT_STATUS,
+            enrollment.put("status",
                     ReportStatus.toEnrollmentStatus(reportStatus).name());
-            enrollment.put(EnrollmentModel.Columns.STATE, State.TO_UPDATE.name()); // TODO: Check if state is TO_POST
+            enrollment.put(Enrollment.Columns.STATE, State.TO_UPDATE.name()); // TODO: Check if state is TO_POST
             // TODO: and if so, keep the TO_POST state
 
-            briteDatabase.update(EnrollmentModel.TABLE, enrollment,
-                    EnrollmentModel.Columns.UID + " = ?", enrollmentUid == null ? "" : enrollmentUid);
+            briteDatabase.update("Enrollment", enrollment,
+                    " uid = ?", enrollmentUid == null ? "" : enrollmentUid);
         };
     }
 
@@ -554,7 +552,7 @@ public class EnrollmentFormRepository implements FormRepository {
 
                         if (!eventCursor.moveToFirst()) {
 
-                            EventModel.Builder eventBuilder = EventModel.builder()
+                            Event.Builder eventBuilder = Event.builder()
                                     .uid(codeGenerator.generate())
                                     .created(Calendar.getInstance().getTime())
                                     .lastUpdated(Calendar.getInstance().getTime())
@@ -569,10 +567,10 @@ public class EnrollmentFormRepository implements FormRepository {
                             else
                                 eventBuilder.eventDate(eventDate);
 
-                            EventModel event = eventBuilder.build();
+                            Event event = eventBuilder.build();
 
 
-                            if (briteDatabase.insert(EventModel.TABLE, event.toContentValues()) < 0) {
+                            if (briteDatabase.insert("Event", event.toContentValues()) < 0) {
                                 throw new OnErrorNotImplementedException(new Throwable("Unable to store event:" + event));
                             }
                         }
@@ -590,7 +588,7 @@ public class EnrollmentFormRepository implements FormRepository {
     @Override
     public Observable<List<FieldViewModel>> fieldValues() {
         return briteDatabase
-                .createQuery(TrackedEntityAttributeValueModel.TABLE, QUERY, enrollmentUid == null ? "" : enrollmentUid)
+                .createQuery(TrackedEntityAttributeValueTableInfo.TABLE_INFO.name(), QUERY, enrollmentUid == null ? "" : enrollmentUid)
                 .mapToList(this::transform);
     }
 
@@ -599,16 +597,16 @@ public class EnrollmentFormRepository implements FormRepository {
     public void deleteTrackedEntityAttributeValues(@NonNull String trackedEntityInstanceId) {
         String DELETE_WHERE_RELATIONSHIP = String.format(
                 "%s.%s = ",
-                TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_INSTANCE);
-        briteDatabase.delete(TrackedEntityAttributeValueModel.TABLE, DELETE_WHERE_RELATIONSHIP + "'" + trackedEntityInstanceId + "'");
+                TrackedEntityAttributeValueTableInfo.TABLE_INFO.name(), TrackedEntityAttributeValueTableInfo.Columns.TRACKED_ENTITY_INSTANCE);
+        briteDatabase.delete(TrackedEntityAttributeValueTableInfo.TABLE_INFO.name(), DELETE_WHERE_RELATIONSHIP + "'" + trackedEntityInstanceId + "'");
     }
 
     @Override
     public void deleteEnrollment(@NonNull String trackedEntityInstanceId) {
         String DELETE_WHERE_RELATIONSHIP = String.format(
                 "%s.%s = ",
-                EnrollmentModel.TABLE, EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE);
-        briteDatabase.delete(EnrollmentModel.TABLE, DELETE_WHERE_RELATIONSHIP + "'" + trackedEntityInstanceId + "'");
+                "Enrollment", "trackedEntityInstance");
+        briteDatabase.delete("Enrollment", DELETE_WHERE_RELATIONSHIP + "'" + trackedEntityInstanceId + "'");
     }
 
     @Override
@@ -620,46 +618,46 @@ public class EnrollmentFormRepository implements FormRepository {
     public void deleteTrackedEntityInstance(@NonNull String trackedEntityInstanceId) {
         String DELETE_WHERE_RELATIONSHIP = String.format(
                 "%s.%s = ",
-                TrackedEntityInstanceModel.TABLE, TrackedEntityInstanceModel.Columns.UID);
-        briteDatabase.delete(TrackedEntityInstanceModel.TABLE, DELETE_WHERE_RELATIONSHIP + "'" + trackedEntityInstanceId + "'");
+                TrackedEntityInstanceTableInfo.TABLE_INFO.name(), "uid");
+        briteDatabase.delete(TrackedEntityInstanceTableInfo.TABLE_INFO.name(), DELETE_WHERE_RELATIONSHIP + "'" + trackedEntityInstanceId + "'");
     }
 
     @NonNull
     @Override
     public Observable<String> getTrackedEntityInstanceUid() {
-        String SELECT_TE = "SELECT " + EnrollmentModel.TABLE + "." + EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE +
-                " FROM " + EnrollmentModel.TABLE +
-                " WHERE " + EnrollmentModel.Columns.UID + " = ?" +
+        String SELECT_TE = "SELECT " + "Enrollment.trackedEntityInstance " +
+                " FROM " + "Enrollment" +
+                " WHERE uid = ?" +
                 " LIMIT 1";
 
-        return briteDatabase.createQuery(EnrollmentModel.TABLE, SELECT_TE, enrollmentUid == null ? "" : enrollmentUid).mapToOne(cursor -> cursor.getString(0));
+        return briteDatabase.createQuery("Enrollment", SELECT_TE, enrollmentUid == null ? "" : enrollmentUid).mapToOne(cursor -> cursor.getString(0));
     }
 
     @Override
-    public Observable<Trio<Boolean, CategoryComboModel, List<CategoryOptionComboModel>>> getProgramCategoryCombo(String eventUid) {
-        return briteDatabase.createQuery(EventModel.TABLE, "SELECT * FROM Event WHERE Event.uid = ?", eventUid)
-                .mapToOne(EventModel::create)
-                .flatMap(eventModel -> briteDatabase.createQuery(CategoryComboModel.TABLE, "SELECT CategoryCombo.* FROM CategoryCombo " +
-                        "JOIN Program ON Program.categoryCombo = CategoryCombo.uid WHERE Program.uid = ?", eventModel.program())
-                        .mapToOne(CategoryComboModel::create)
-                        .flatMap(categoryComboModel ->
-                                briteDatabase.createQuery(CategoryOptionComboModel.TABLE, "SELECT * FROM CategoryOptionCombo " +
-                                        "WHERE categoryCombo = ?", categoryComboModel.uid())
-                                        .mapToList(CategoryOptionComboModel::create)
-                                        .map(categoryOptionComboModels -> {
+    public Observable<Trio<Boolean, CategoryCombo, List<CategoryOptionCombo>>> getProgramCategoryCombo(String eventUid) {
+        return briteDatabase.createQuery("Event", "SELECT * FROM Event WHERE Event.uid = ?", eventUid)
+                .mapToOne(Event::create)
+                .flatMap(event -> briteDatabase.createQuery("CategoryCombo", "SELECT CategoryCombo.* FROM CategoryCombo " +
+                        "JOIN Program ON Program.categoryCombo = CategoryCombo.uid WHERE Program.uid = ?", event.program())
+                        .mapToOne(CategoryCombo::create)
+                        .flatMap(categoryCombo ->
+                                briteDatabase.createQuery("CategoryOptionCombo", "SELECT * FROM CategoryOptionCombo " +
+                                        "WHERE categoryCombo = ?", categoryCombo.uid())
+                                        .mapToList(CategoryOptionCombo::create)
+                                        .map(categoryOptionCombos -> {
                                             boolean eventHastOptionSelected = false;
-                                            for (CategoryOptionComboModel options : categoryOptionComboModels) {
-                                                if (eventModel.attributeOptionCombo() != null && eventModel.attributeOptionCombo().equals(options.uid()))
+                                            for (CategoryOptionCombo options : categoryOptionCombos) {
+                                                if (event.attributeOptionCombo() != null && event.attributeOptionCombo().equals(options.uid()))
                                                     eventHastOptionSelected = true;
                                             }
-                                            return Trio.create(eventHastOptionSelected, categoryComboModel, categoryOptionComboModels);
+                                            return Trio.create(eventHastOptionSelected, categoryCombo, categoryOptionCombos);
                                         })
                         )
                 );
     }
 
     @Override
-    public void saveCategoryOption(CategoryOptionComboModel selectedOption) {
+    public void saveCategoryOption(CategoryOptionCombo selectedOption) {
 
     }
 
@@ -714,10 +712,10 @@ public class EnrollmentFormRepository implements FormRepository {
                 "",
                 "");
 
-        ObjectStyleModel objectStyle = ObjectStyleModel.builder().build();
+        ObjectStyle objectStyle = ObjectStyle.builder().build();
         try (Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", uid)) {
             if (objStyleCursor != null && objStyleCursor.moveToFirst())
-                objectStyle = ObjectStyleModel.create(objStyleCursor);
+                objectStyle = ObjectStyle.create(objStyleCursor);
         }
 
         if (valueType == ValueType.ORGANISATION_UNIT && !isEmpty(dataValue)) {
@@ -732,17 +730,17 @@ public class EnrollmentFormRepository implements FormRepository {
     @Override
     public Observable<Trio<String, String, String>> useFirstStageDuringRegistration() { //enrollment uid, trackedEntityType, event uid
 
-        return briteDatabase.createQuery(ProgramModel.TABLE, "SELECT * FROM Program WHERE uid = ?", programUid)
-                .mapToOne(ProgramModel::create)
-                .flatMap(programModel ->
-                        briteDatabase.createQuery(ProgramStageModel.TABLE, "SELECT * FROM ProgramStage WHERE program = ? ORDER BY ProgramStage.sortOrder", programModel.uid())
-                                .mapToList(ProgramStageModel::create).map(programstages -> Trio.create(programModel.useFirstStageDuringRegistration(), programstages, programModel.trackedEntityType())))
+        return briteDatabase.createQuery("Program", "SELECT * FROM Program WHERE uid = ?", programUid)
+                .mapToOne(Program::create)
+                .flatMap(program ->
+                        briteDatabase.createQuery("Program", "SELECT * FROM ProgramStage WHERE program = ? ORDER BY ProgramStage.sortOrder", program.uid())
+                                .mapToList(ProgramStage::create).map(programstages -> Trio.create(program.useFirstStageDuringRegistration(), programstages, program.trackedEntityType())))
                 .map(data -> {
-                    ProgramStageModel stageToOpen = null;
+                    ProgramStage stageToOpen = null;
                     if (data.val0() && !data.val1().isEmpty()) {
                         stageToOpen = data.val1().get(0);
                     } else if (!data.val1().isEmpty()) {
-                        for (ProgramStageModel programStage : data.val1()) {
+                        for (ProgramStage programStage : data.val1()) {
                             if (programStage.openAfterEnrollment() && stageToOpen == null)
                                 stageToOpen = programStage;
                         }
@@ -757,20 +755,20 @@ public class EnrollmentFormRepository implements FormRepository {
                                 try (Cursor enrollmentOrgUnitCursor = briteDatabase.query("SELECT Enrollment.organisationUnit FROM Enrollment WHERE Enrollment.uid = ?", enrollmentUid)) {
                                     if (enrollmentOrgUnitCursor != null && enrollmentOrgUnitCursor.moveToFirst()) {
                                         Date createdDate = DateUtils.getInstance().getCalendar().getTime();
-                                        EventModel eventToCreate = EventModel.builder()
+                                        Event eventToCreate = Event.builder()
                                                 .uid(codeGenerator.generate())
                                                 .created(createdDate)
                                                 .lastUpdated(createdDate)
                                                 .eventDate(createdDate)
                                                 .enrollment(enrollmentUid)
-                                                .program(stageToOpen.program())
+                                                .program(stageToOpen.program().uid())
                                                 .programStage(stageToOpen.uid())
                                                 .organisationUnit(enrollmentOrgUnitCursor.getString(0))
                                                 .status(EventStatus.ACTIVE)
                                                 .state(State.TO_POST)
                                                 .build();
 
-                                        if (briteDatabase.insert(EventModel.TABLE, eventToCreate.toContentValues()) < 0) {
+                                        if (briteDatabase.insert("Event", eventToCreate.toContentValues()) < 0) {
                                             throw new OnErrorNotImplementedException(new Throwable("Unable to store event:" + eventToCreate));
                                         }
 
@@ -809,7 +807,7 @@ public class EnrollmentFormRepository implements FormRepository {
     @NonNull
     private Flowable<String> enrollmentProgram() {
         return briteDatabase
-                .createQuery(EnrollmentModel.TABLE, SELECT_PROGRAM, enrollmentUid)
+                .createQuery("Enrollment", SELECT_PROGRAM, enrollmentUid)
                 .mapToOne(cursor -> {
                     programUid = cursor.getString(0);
                     return programUid;

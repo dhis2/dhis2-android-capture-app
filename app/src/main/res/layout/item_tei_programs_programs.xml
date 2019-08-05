@@ -10,10 +10,6 @@
             type="org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListContract.Presenter" />
 
         <variable
-            name="enrollment"
-            type="org.hisp.dhis.android.core.enrollment.EnrollmentModel" />
-
-        <variable
             name="program"
             type="org.dhis2.usescases.main.program.ProgramViewModel" />
     </data>

@@ -9,11 +9,11 @@
 
         <variable
             name="event"
-            type="org.hisp.dhis.android.core.event.EventModel" />
+            type="org.hisp.dhis.android.core.event.Event" />
 
         <variable
             name="stage"
-            type="org.hisp.dhis.android.core.program.ProgramStageModel" />
+            type="org.hisp.dhis.android.core.program.ProgramStage" />
 
         <variable
             name="enrollment"
@@ -64,7 +64,7 @@
                 android:ellipsize="end"
                 android:gravity="start|center"
                 android:maxLines="1"
-                android:text='@{stage.displayName,default="Stage Name"}'
+                android:text='@{stage.displayName(),default="Stage Name"}'
                 android:textColor="@color/text_black_333"
                 android:textSize="14sp"
                 app:layout_constraintBottom_toBottomOf="parent"

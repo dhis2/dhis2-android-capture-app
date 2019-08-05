@@ -7,10 +7,10 @@ import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
-import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.Program;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
+import org.hisp.dhis.android.core.program.ProgramStage;
 
 import java.util.List;
 
@@ -24,9 +24,9 @@ public class TEIDataContracts {
 
     public interface View extends AbstractActivityContracts.View {
 
-        Consumer<List<EventModel>> setEvents();
+        Consumer<List<Event>> setEvents();
 
-        Consumer<ProgramStageModel> displayGenerateEvent();
+        Consumer<ProgramStage> displayGenerateEvent();
 
         Consumer<Single<Boolean>> areEventsCompleted();
 
@@ -59,7 +59,7 @@ public class TEIDataContracts {
 
         void getTEIEvents();
 
-        void getCatComboOptions(EventModel event);
+        void getCatComboOptions(Event event);
 
         void setDefaultCatOptCombToEvent(String eventUid);
 

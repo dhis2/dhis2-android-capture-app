@@ -285,11 +285,6 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         startActivityForResult(intent, Constants.RQ_ENROLLMENTS);
     }
 
-    @Override
-    public String getToolbarTitle() {
-        return binding.toolbarTitle.getText().toString();
-    }
-
     public TeiDashboardContracts.Presenter getPresenter() {
         return presenter;
     }
@@ -432,7 +427,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                     showTutorial(true);
                     break;
                 case R.id.deleteTei:
-                    presenter.deteleteTei();
+                    presenter.deleteTei();
                     break;
                 case R.id.deleteEnrollment:
                     presenter.deleteEnrollment();

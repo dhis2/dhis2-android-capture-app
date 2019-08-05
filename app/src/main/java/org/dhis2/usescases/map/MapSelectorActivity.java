@@ -38,7 +38,7 @@ import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 import org.dhis2.BuildConfig;
 import org.dhis2.R;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
-import org.hisp.dhis.android.core.period.FeatureType;
+import org.hisp.dhis.android.core.common.FeatureType;
 import org.jetbrains.annotations.NotNull;
 import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.style.sources.Source;

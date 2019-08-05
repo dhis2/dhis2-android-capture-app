@@ -6,9 +6,11 @@ import org.dhis2.BR;
 import org.dhis2.databinding.ItemEventBinding;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
+import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.Program;
+import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
 import java.util.Locale;
@@ -25,7 +27,7 @@ class EventViewHolder extends RecyclerView.ViewHolder {
         this.binding = binding;
     }
 
-    public void bind(TEIDataContracts.Presenter presenter, EventModel eventModel, ProgramStageModel programStage, Enrollment enrollment, Program program) {
+    public void bind(TEIDataContracts.Presenter presenter, Event eventModel, ProgramStage programStage, Enrollment enrollment, Program program) {
         binding.setVariable(BR.event, eventModel);
         binding.setVariable(BR.stage, programStage);
         binding.setVariable(BR.enrollment, enrollment);

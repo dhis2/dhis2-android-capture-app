@@ -3,7 +3,6 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventInitial;
 import android.Manifest;
 import android.app.Activity;
 import android.app.DatePickerDialog;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -32,8 +31,7 @@ import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
-import org.hisp.dhis.android.core.period.FeatureType;
+import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.rules.models.RuleAction;
@@ -287,9 +285,9 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
                             categoryOptionComboUid, categoryOptionsUid,
                             latitude, longitude)
                             .subscribeOn(Schedulers.io())
-                            .switchMap(
+                            /*.switchMap( //TODO: CHECK THAT SDK ALREADY UPDATES ENROLLMENT AND TEI
                                     eventId -> eventInitialRepository.updateTrackedEntityInstance(eventId, trackedEntityInstanceUid, orgUnitUid)
-                            )
+                            )*/
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(view::onEventCreated, t -> view.renderError(t.getMessage()))
             );

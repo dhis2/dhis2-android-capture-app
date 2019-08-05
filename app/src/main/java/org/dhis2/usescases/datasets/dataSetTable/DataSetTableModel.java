@@ -1,13 +1,13 @@
 package org.dhis2.usescases.datasets.dataSetTable;
 
+import android.database.Cursor;
+
+import androidx.annotation.Nullable;
+
 import com.gabrielittner.auto.value.cursor.ColumnName;
 import com.google.auto.value.AutoValue;
 
-import android.database.Cursor;
-import androidx.annotation.Nullable;
-
-import org.hisp.dhis.android.core.dataset.DataSetModel;
-import org.hisp.dhis.android.core.datavalue.DataValueModel;
+import org.hisp.dhis.android.core.common.BaseModel;
 
 import java.util.List;
 
@@ -16,11 +16,17 @@ import static org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel.Column
 
 @AutoValue
 public abstract class DataSetTableModel{
-    public static class Columns extends DataSetModel.Columns {
-        public static final String CATEGORY_OPTION = "catOption";
-        public static final String LIST_CATEGORY_OPTION = "listCategory";
-        public static final String CATEGORY_COMBO = "catComboDataElement";
-        public static final String CATEGORY_COMBO_LINK = "catComboLink";
+    public static class Columns extends BaseModel.Columns {
+        static final String DATA_ELEMENT = "dataElement";
+        static final String PERIOD = "period";
+        static final String ORGANISATION_UNIT = "organisationUnit";
+        static final String CATEGORY_OPTION_COMBO = "categoryOptionCombo";
+        static final String ATTRIBUTE_OPTION_COMBO = "attributeOptionCombo";
+        static final String VALUE = "value";
+        static final String STORED_BY = "storedBy";
+        static final String CATEGORY_OPTION = "catOption";
+        static final String LIST_CATEGORY_OPTION = "listCategory";
+        static final String CATEGORY_COMBO = "catComboDataElement";
     }
 
     public static DataSetTableModel fromCursor(Cursor cursor){
@@ -39,35 +45,35 @@ public abstract class DataSetTableModel{
 
     public static final String TABLE = "DataValue";
 
-    @ColumnName(DataValueModel.Columns.ID)
+    @ColumnName(Columns.ID)
     public abstract Long id();
 
     @Nullable
-    @ColumnName(DataValueModel.Columns.DATA_ELEMENT)
+    @ColumnName(Columns.DATA_ELEMENT)
     public abstract String dataElement();
 
     @Nullable
-    @ColumnName(DataValueModel.Columns.PERIOD)
+    @ColumnName(Columns.PERIOD)
     public abstract String period();
 
     @Nullable
-    @ColumnName(DataValueModel.Columns.ORGANISATION_UNIT)
+    @ColumnName(Columns.ORGANISATION_UNIT)
     public abstract String organisationUnit();
 
     @Nullable
-    @ColumnName(DataValueModel.Columns.CATEGORY_OPTION_COMBO)
+    @ColumnName(Columns.CATEGORY_OPTION_COMBO)
     public abstract String categoryOptionCombo();
 
     @Nullable
-    @ColumnName(DataValueModel.Columns.ATTRIBUTE_OPTION_COMBO)
+    @ColumnName(Columns.ATTRIBUTE_OPTION_COMBO)
     public abstract String attributeOptionCombo();
 
     @Nullable
-    @ColumnName(DataValueModel.Columns.VALUE)
+    @ColumnName(Columns.VALUE)
     public abstract String value();
 
     @Nullable
-    @ColumnName(DataValueModel.Columns.STORED_BY)
+    @ColumnName(Columns.STORED_BY)
     public abstract String storedBy();
 
     @Nullable

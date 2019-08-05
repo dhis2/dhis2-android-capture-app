@@ -6,6 +6,7 @@
     <data>
 
         <import type="android.view.View" />
+        <import type="org.hisp.dhis.android.core.common.FeatureType" />
 
         <import type="org.hisp.dhis.android.core.enrollment.EnrollmentStatus" />
 
@@ -295,7 +296,7 @@
                     android:orientation="horizontal"
                     android:paddingStart="12dp"
                     android:paddingEnd="12dp"
-                    android:visibility="@{program!=null &amp;&amp; program.captureCoordinates()?View.VISIBLE:View.GONE}">
+                    android:visibility="@{program!=null &amp;&amp; program.featureType()!=null &amp;&amp; program.featureType()!=FeatureType.NONE?View.VISIBLE:View.GONE}">
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="0dp"
@@ -311,7 +312,6 @@
                             android:layout_height="wrap_content"
                             android:enabled="@{dashboardModel.currentEnrollment.status()==EnrollmentStatus.ACTIVE}"
                             android:inputType="numberDecimal|numberSigned"
-                            android:text='@{dashboardModel.currentEnrollment!=null?dashboardModel.currentEnrollment.coordinate().latitude():""}'
                             android:textSize="15sp" />
 
                     </com.google.android.material.textfield.TextInputLayout>
@@ -330,7 +330,6 @@
                             android:layout_height="wrap_content"
                             android:enabled="@{dashboardModel.currentEnrollment.status()==EnrollmentStatus.ACTIVE}"
                             android:inputType="numberDecimal|numberSigned"
-                            android:text='@{dashboardModel.currentEnrollment!=null?dashboardModel.currentEnrollment.coordinate().longitude():""}'
                             android:textSize="15sp" />
 
                     </com.google.android.material.textfield.TextInputLayout>
