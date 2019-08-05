@@ -52,7 +52,7 @@ public class IndicatorsPresenterImpl implements IndicatorsContracts.Presenter {
         if (!isEmpty(programUid))
             enrollmentRepository = enrollmentRepository.byProgram().eq(programUid);
 
-        enrollmentUid = enrollmentRepository.one().get() == null ? "" : enrollmentRepository.one().get().uid();
+        enrollmentUid = enrollmentRepository.one().blockingGet() == null ? "" : enrollmentRepository.one().blockingGet().uid();
     }
 
     @Override

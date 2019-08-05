@@ -63,10 +63,10 @@ public final class AttributeValueStore implements DataEntryStore {
     @Override
     public Flowable<Boolean> checkUnique(@NonNull String uid, @Nullable String value) {
         if (value != null && getValueType(uid) == ATTR) {
-            boolean isUnique = Boolean.TRUE.equals(d2.trackedEntityModule().trackedEntityAttributes.uid(uid).get().unique());
+            boolean isUnique = Boolean.TRUE.equals(d2.trackedEntityModule().trackedEntityAttributes.uid(uid).blockingGet().unique());
             if (isUnique && !d2.trackedEntityModule().trackedEntityAttributeValues
                     .byTrackedEntityAttribute().eq(uid)
-                    .byValue().eq(value).get().isEmpty()) {
+                    .byValue().eq(value).blockingGet().isEmpty()) {
                 delete(uid, ATTR);
                 return Flowable.just(false);
             } else
@@ -79,7 +79,8 @@ public final class AttributeValueStore implements DataEntryStore {
     private long update(@NonNull String attribute, @Nullable String value, valueType valueType) {
         if (valueType == ATTR) {
             try {
-                d2.trackedEntityModule().trackedEntityAttributeValues.value(attribute, enrollmentRepository.get().trackedEntityInstance()).set(value);
+                d2.trackedEntityModule().trackedEntityAttributeValues.value(attribute,
+                        enrollmentRepository.blockingGet().trackedEntityInstance()).blockingSet(value);
                 return 1;
             } catch (D2Error d2Error) {
                 Timber.e(d2Error);
@@ -89,7 +90,7 @@ public final class AttributeValueStore implements DataEntryStore {
         } else {
             String eventUid = eventUid(attribute);
             try {
-                d2.trackedEntityModule().trackedEntityDataValues.value(eventUid, attribute).set(value);
+                d2.trackedEntityModule().trackedEntityDataValues.value(eventUid, attribute).blockingSet(value);
                 return 1;
             } catch (D2Error d2Error) {
                 Timber.e(d2Error);
@@ -99,7 +100,7 @@ public final class AttributeValueStore implements DataEntryStore {
     }
 
     private valueType getValueType(@Nonnull String uid) {
-        return d2.trackedEntityModule().trackedEntityAttributes.uid(uid).exists() ? ATTR : DATA_ELEMENT;
+        return d2.trackedEntityModule().trackedEntityAttributes.uid(uid).blockingExists() ? ATTR : DATA_ELEMENT;
     }
 
     private boolean currentValue(@NonNull String uid, valueType valueType, String currentValue) {
@@ -109,13 +110,14 @@ public final class AttributeValueStore implements DataEntryStore {
 
         if (valueType == ATTR) {
             TrackedEntityAttributeValueObjectRepository attrValueRepository =
-                    d2.trackedEntityModule().trackedEntityAttributeValues.value(uid, enrollmentRepository.get().trackedEntityInstance());
-            value = attrValueRepository.exists() ? attrValueRepository.get().value() : null;
+                    d2.trackedEntityModule().trackedEntityAttributeValues.value(uid,
+                            enrollmentRepository.blockingGet().trackedEntityInstance());
+            value = attrValueRepository.blockingExists() ? attrValueRepository.blockingGet().value() : null;
 
         } else {
             TrackedEntityDataValueObjectRepository dataValueRepository =
                     d2.trackedEntityModule().trackedEntityDataValues.value(eventUid(uid), uid);
-            value = dataValueRepository.exists() ? dataValueRepository.get().value() : null;
+            value = dataValueRepository.blockingExists() ? dataValueRepository.blockingGet().value() : null;
         }
 
         return !Objects.equals(value, currentValue);
@@ -123,10 +125,10 @@ public final class AttributeValueStore implements DataEntryStore {
 
     private long insert(@NonNull String attribute, @NonNull String value, valueType valueType) {
         if (valueType == ATTR) {
-            String teiUid = enrollmentRepository.get().trackedEntityInstance();
+            String teiUid = enrollmentRepository.blockingGet().trackedEntityInstance();
             try {
                 d2.trackedEntityModule().trackedEntityAttributeValues.value(attribute, teiUid)
-                        .set(value);
+                        .blockingSet(value);
                 return 1;
             } catch (D2Error d2Error) {
                 Timber.e(d2Error);
@@ -136,7 +138,7 @@ public final class AttributeValueStore implements DataEntryStore {
             String eventUid = eventUid(attribute);
             try {
                 d2.trackedEntityModule().trackedEntityDataValues.value(eventUid, attribute)
-                        .set(value);
+                        .blockingSet(value);
                 return 1;
             } catch (D2Error d2Error) {
                 Timber.e(d2Error);
@@ -148,8 +150,10 @@ public final class AttributeValueStore implements DataEntryStore {
     private long delete(@NonNull String attribute, valueType valueType) {
         if (valueType == ATTR) {
             try {
-                d2.trackedEntityModule().trackedEntityAttributeValues.value(attribute, enrollmentRepository.get().trackedEntityInstance()).set(null);
-                d2.trackedEntityModule().trackedEntityAttributeValues.value(attribute, enrollmentRepository.get().trackedEntityInstance()).delete();
+                d2.trackedEntityModule().trackedEntityAttributeValues.value(attribute,
+                        enrollmentRepository.blockingGet().trackedEntityInstance()).blockingSet(null);
+                d2.trackedEntityModule().trackedEntityAttributeValues.value(attribute,
+                        enrollmentRepository.blockingGet().trackedEntityInstance()).blockingDelete();
                 return 1;
             } catch (D2Error d2Error) {
                 d2Error.printStackTrace();
@@ -158,8 +162,8 @@ public final class AttributeValueStore implements DataEntryStore {
         } else {
             String eventUid = eventUid(attribute);
             try {
-                d2.trackedEntityModule().trackedEntityDataValues.value(eventUid, attribute).set(null);
-                d2.trackedEntityModule().trackedEntityDataValues.value(eventUid, attribute).delete();
+                d2.trackedEntityModule().trackedEntityDataValues.value(eventUid, attribute).blockingSet(null);
+                d2.trackedEntityModule().trackedEntityDataValues.value(eventUid, attribute).blockingDelete();
                 return 1;
             } catch (D2Error d2Error) {
                 d2Error.printStackTrace();
@@ -172,12 +176,12 @@ public final class AttributeValueStore implements DataEntryStore {
         String eventUid = "";
         List<Event> events = d2.eventModule().events.byEnrollmentUid().eq(enrollment)
                 .byStatus().eq(EventStatus.ACTIVE)
-                .orderByEventDate(RepositoryScope.OrderByDirection.DESC).get();
+                .orderByEventDate(RepositoryScope.OrderByDirection.DESC).blockingGet();
 
         List<TrackedEntityDataValue> dataValues = d2.trackedEntityModule().trackedEntityDataValues
                 .byDataElement().eq(attribute)
                 .byEvent().in(UidsHelper.getUidsList(events))
-                .get();
+                .blockingGet();
 
         if (dataValues != null && !dataValues.isEmpty())
             eventUid = dataValues.get(0).event();

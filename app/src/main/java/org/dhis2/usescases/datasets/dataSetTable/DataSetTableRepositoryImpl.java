@@ -30,13 +30,13 @@ public class DataSetTableRepositoryImpl implements DataSetTableRepository {
 
     @Override
     public Flowable<DataSet> getDataSet() {
-        return Flowable.fromCallable(() -> d2.dataSetModule().dataSets.byUid().eq(dataSetUid).one().get());
+        return Flowable.fromCallable(() -> d2.dataSetModule().dataSets.byUid().eq(dataSetUid).one().blockingGet());
     }
 
     @Override
     public Flowable<List<String>> getSections() {
 
-        return Flowable.fromCallable(() -> d2.dataSetModule().sections.byDataSetUid().eq(dataSetUid).get())
+        return Flowable.fromCallable(() -> d2.dataSetModule().sections.byDataSetUid().eq(dataSetUid).blockingGet())
                 .switchMap(sections -> {
                     List<String> sectionUids = new ArrayList<>();
                     if (sections.isEmpty()) {
@@ -57,21 +57,21 @@ public class DataSetTableRepositoryImpl implements DataSetTableRepository {
                 .byDataSetUid().eq(dataSetUid)
                 .byAttributeOptionComboUid().eq(catOptCombo)
                 .byOrganisationUnitUid().eq(orgUnitUid)
-                .byPeriod().eq(periodId).one().get();
+                .byPeriod().eq(periodId).one().blockingGet();
         return Flowable.defer(() -> dscr != null ? Flowable.just(dscr.state()) : Flowable.empty());
     }
 
     @Override
     public Flowable<String> getCatComboName(String catcomboUid) {
-        return Flowable.fromCallable(() -> d2.categoryModule().categoryOptionCombos.uid(catcomboUid).get().displayName());
+        return Flowable.fromCallable(() -> d2.categoryModule().categoryOptionCombos.uid(catcomboUid).blockingGet().displayName());
     }
 
     @Override
     public String getCatOptComboFromOptionList(List<String> catOpts) {
         if(catOpts.isEmpty())
-            return d2.categoryModule().categoryOptionCombos.byDisplayName().like("default").one().get().uid();
+            return d2.categoryModule().categoryOptionCombos.byDisplayName().like("default").one().blockingGet().uid();
         else
-            return d2.categoryModule().categoryOptionCombos.byCategoryOptions(catOpts).one().get().uid();
+            return d2.categoryModule().categoryOptionCombos.byCategoryOptions(catOpts).one().blockingGet().uid();
     }
 
 

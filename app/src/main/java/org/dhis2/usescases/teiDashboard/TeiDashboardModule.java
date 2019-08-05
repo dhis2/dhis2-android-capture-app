@@ -71,7 +71,7 @@ public class TeiDashboardModule {
         if (!isEmpty(programUid))
             enrollmentRepository = enrollmentRepository.byProgram().eq(programUid);
 
-        String uid = enrollmentRepository.one().get().uid();
+        String uid = enrollmentRepository.one().blockingGet().uid();
 
         return new EnrollmentFormRepository(briteDatabase, evaluator, rulesRepository, codeGenerator, uid, d2);
     }
@@ -86,7 +86,7 @@ public class TeiDashboardModule {
         if (!isEmpty(programUid))
             enrollmentRepository = enrollmentRepository.byProgram().eq(programUid);
 
-        String uid = enrollmentRepository.one().get().uid();
+        String uid = enrollmentRepository.one().blockingGet().uid();
         return new EnrollmentRuleEngineRepository(briteDatabase, formRepository, uid, d2);
 
     }

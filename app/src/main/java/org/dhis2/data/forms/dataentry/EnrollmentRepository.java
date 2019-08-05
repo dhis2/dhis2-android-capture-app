@@ -114,7 +114,7 @@ final class EnrollmentRepository implements DataEntryRepository {
 
     @Override
     public Observable<List<OrganisationUnitLevel>> getOrgUnitLevels() {
-        return Observable.just(d2.organisationUnitModule().organisationUnitLevels.get());
+        return Observable.just(d2.organisationUnitModule().organisationUnitLevels.blockingGet());
     }
 
     public List<FieldViewModel> fieldList() {
@@ -161,7 +161,7 @@ final class EnrollmentRepository implements DataEntryRepository {
         }
 
         if (valueType == ValueType.IMAGE)
-            uid = d2.enrollmentModule().enrollments.uid(enrollment).get().trackedEntityInstance() + "_" + uid;
+            uid = d2.enrollmentModule().enrollments.uid(enrollment).blockingGet().trackedEntityInstance() + "_" + uid;
 
         int optionCount = 0;
         if (!isEmpty(optionSet))
@@ -244,7 +244,7 @@ final class EnrollmentRepository implements DataEntryRepository {
         }
 
         if (valueType == ValueType.ORGANISATION_UNIT && !isEmpty(dataValue)) {
-            dataValue = dataValue + "_ou_" + d2.organisationUnitModule().organisationUnits.uid(dataValue).get().displayName();
+            dataValue = dataValue + "_ou_" + d2.organisationUnitModule().organisationUnits.uid(dataValue).blockingGet().displayName();
         }
 
         if (warning != null) {
