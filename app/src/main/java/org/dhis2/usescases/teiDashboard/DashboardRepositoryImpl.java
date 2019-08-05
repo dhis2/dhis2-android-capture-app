@@ -196,7 +196,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     public Observable<List<TrackedEntityAttributeValue>> mainTrackedEntityAttributes(String teiUid) {
         return d2.trackedEntityModule().trackedEntityAttributeValues
                 .byTrackedEntityInstance().eq(teiUid)
-                .getAsync().toObservable();
+                .get().toObservable();
     }
 
     @Override
@@ -208,12 +208,12 @@ public class DashboardRepositoryImpl implements DashboardRepository {
             Timber.e(d2Error);
         }
 
-        return d2.eventModule().events.uid(eventModel.uid()).get();
+        return d2.eventModule().events.uid(eventModel.uid()).blockingGet();
     }
 
     @Override
     public Observable<List<ProgramStage>> getProgramStages(String programUid) {
-        return d2.programModule().programStages.byProgramUid().eq(programUid).getAsync().toObservable();
+        return d2.programModule().programStages.byProgramUid().eq(programUid).get().toObservable();
     }
 
     @Override
@@ -231,7 +231,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
         return briteDatabase.createQuery(EVENTS_TABLE, EVENTS_QUERY, progId, teiId, progId)
                 .mapToList(cursor -> {
                     Event eventModel = Event.create(cursor);
-                    if (Boolean.FALSE.equals(d2.programModule().programs.uid(programUid).get().ignoreOverdueEvents()))
+                    if (Boolean.FALSE.equals(d2.programModule().programs.uid(programUid).blockingGet().ignoreOverdueEvents()))
                         if (eventModel.status() == EventStatus.SCHEDULE && eventModel.dueDate().before(DateUtils.getInstance().getToday()))
                             eventModel = updateState(eventModel, EventStatus.OVERDUE);
 
@@ -299,7 +299,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                 .mapToOne(cursor -> cursor.getString(0))
                 .flatMap(version -> {
                     if (version.equals("2.29"))
-                        return d2.relationshipModule().relationshipTypes.getAsync().toObservable()
+                        return d2.relationshipModule().relationshipTypes.get().toObservable()
                                 .flatMapIterable(list -> list)
                                 .map(relationshipType -> Pair.create(relationshipType, teType))
                                 .toList().toObservable();
@@ -366,7 +366,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
     @Override
     public Flowable<List<ProgramIndicator>> getIndicators(String programUid) {
-        return d2.programModule().programIndicators.byProgramUid().eq(programUid).withLegendSets().getAsync().toFlowable();
+        return d2.programModule().programIndicators.byProgramUid().eq(programUid).withLegendSets().get().toFlowable();
     }
 
     @Override
@@ -511,7 +511,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     }
 
     private void updateEnrollmentState(String enrollmentUid) {
-        Enrollment enrollment = d2.enrollmentModule().enrollments.uid(enrollmentUid).get();
+        Enrollment enrollment = d2.enrollmentModule().enrollments.uid(enrollmentUid).blockingGet();
         ContentValues cv = enrollment.toContentValues();
         cv.put("lastUpdated", DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
         cv.put("state", enrollment.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
@@ -520,7 +520,8 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
     @Override
     public void updateTeiState() {
-        TrackedEntityInstance tei = d2.trackedEntityModule().trackedEntityInstances.uid(teiUid).get();
+        TrackedEntityInstance tei =
+                d2.trackedEntityModule().trackedEntityInstances.uid(teiUid).blockingGet();
         ContentValues cv = tei.toContentValues();
         cv.put(TrackedEntityInstance.Columns.STATE, tei.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
         cv.put("lastUpdated", DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));

@@ -52,7 +52,7 @@ final class MainPresenter implements MainContracts.Presenter {
 
 
         compositeDisposable.add(
-                d2.categoryModule().categoryCombos.byIsDefault().eq(true).one().getAsync().toObservable()
+                d2.categoryModule().categoryCombos.byIsDefault().eq(true).one().get().toObservable()
                         .subscribeOn(Schedulers.io())
                         .subscribe(
                                 categoryCombo -> {
@@ -66,7 +66,7 @@ final class MainPresenter implements MainContracts.Presenter {
 
 
         compositeDisposable.add(
-                d2.categoryModule().categoryOptionCombos.byCode().eq(DEFAULT).one().getAsync().toObservable()
+                d2.categoryModule().categoryOptionCombos.byCode().eq(DEFAULT).one().get().toObservable()
                         .subscribeOn(Schedulers.io())
                         .subscribe(
                                 categoryOptionCombo -> {
@@ -135,7 +135,7 @@ final class MainPresenter implements MainContracts.Presenter {
 
     @Override
     public void getErrors() {
-        view.showSyncErrors(d2.importModule().trackerImportConflicts.get());
+        view.showSyncErrors(d2.importModule().trackerImportConflicts.blockingGet());
     }
 
     @Override

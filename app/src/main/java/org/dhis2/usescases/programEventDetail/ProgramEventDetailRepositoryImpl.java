@@ -90,7 +90,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
             eventRepo = eventRepo.byOrganisationUnitUid().in(orgUnitFilter);
         if (!catOptCombList.isEmpty())
             eventRepo = eventRepo.byAttributeOptionComboUid().in(UidsHelper.getUids(catOptCombList));
-        return eventRepo.byState().notIn(State.TO_DELETE).orderByEventDate(RepositoryScope.OrderByDirection.DESC).withAllChildren().getAsync()
+        return eventRepo.byState().notIn(State.TO_DELETE).orderByEventDate(RepositoryScope.OrderByDirection.DESC).withAllChildren().get()
                 .toFlowable()
                 .flatMap(list -> Flowable.fromCallable(() -> {
                     List<SymbolOptions> options = new ArrayList<>();
@@ -113,7 +113,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
 
     @Override
     public Flowable<ProgramEventViewModel> getInfoForEvent(String eventUid) {
-        return d2.eventModule().events.uid(eventUid).withAllChildren().getAsync()
+        return d2.eventModule().events.uid(eventUid).withAllChildren().get()
                 .map(this::transformToProgramEventModel)
                 .toFlowable();
     }

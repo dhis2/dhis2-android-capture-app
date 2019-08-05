@@ -69,8 +69,9 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
                 checkData
                         .startWith(true)
                         .map(start -> {
-                            int teiCount = d2.trackedEntityModule().trackedEntityInstances.byState().neq(State.RELATIONSHIP).count();
-                            int eventCount = d2.eventModule().events.getAsync().toObservable()
+                            int teiCount =
+                                    d2.trackedEntityModule().trackedEntityInstances.byState().neq(State.RELATIONSHIP).blockingCount();
+                            int eventCount = d2.eventModule().events.get().toObservable()
                                     .map(events -> {
                                         List<Event> eventsToCount = new ArrayList<>();
                                         for (Event event : events) {
@@ -347,7 +348,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
 
     @Override
     public void checkSyncErrors() {
-        view.showSyncErrors(d2.importModule().trackerImportConflicts.get());
+        view.showSyncErrors(d2.importModule().trackerImportConflicts.blockingGet());
     }
 
     @Override

@@ -402,12 +402,12 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     @Override
     public Observable<TrackedEntityType> getTrackedEntityType(String trackedEntityUid) {
-        return d2.trackedEntityModule().trackedEntityTypes.byUid().eq(trackedEntityUid).one().getAsync().toObservable();
+        return d2.trackedEntityModule().trackedEntityTypes.byUid().eq(trackedEntityUid).one().get().toObservable();
     }
 
     @Override
     public Observable<List<OrganisationUnit>> getOrganisationUnits() {
-        return d2.organisationUnitModule().organisationUnits.getAsync().toObservable();
+        return d2.organisationUnitModule().organisationUnits.get().toObservable();
     }
 
     // Private Region Start //

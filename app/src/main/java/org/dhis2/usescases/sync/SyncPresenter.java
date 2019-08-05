@@ -88,7 +88,7 @@ public class SyncPresenter implements SyncContracts.Presenter {
     }
 
     public void getTheme() {
-        disposable.add(d2.systemSettingModule().systemSetting.getAsync().toObservable()
+        disposable.add(d2.systemSettingModule().systemSetting.get().toObservable()
                 .map(systemSettings -> {
                     String flag = "";
                     String style = "";

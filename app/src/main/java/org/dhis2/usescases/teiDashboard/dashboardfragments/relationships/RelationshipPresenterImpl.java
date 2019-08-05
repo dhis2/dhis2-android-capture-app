@@ -189,7 +189,7 @@ public class RelationshipPresenterImpl implements RelationshipContracts.Presente
     public void addRelationship(String trackEntityInstance_A, String relationshipType) {
         try {
             Relationship relationship = RelationshipHelper.teiToTeiRelationship(teiUid, trackEntityInstance_A, relationshipType);
-            d2.relationshipModule().relationships.add(relationship);
+            d2.relationshipModule().relationships.blockingAdd(relationship);
         } catch (D2Error e) {
             view.displayMessage(e.errorDescription());
         } finally {
