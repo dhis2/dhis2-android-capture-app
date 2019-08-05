@@ -46,6 +46,7 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
     private boolean isBgTransparent;
     private TextInputAutoCompleteTextView editText;
     private ImageView icon;
+    private ImageView descIcon;
     private String label;
     private ValueType valueType;
     private ViewDataBinding binding;
@@ -90,7 +91,7 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
         editText = findViewById(R.id.input_editText);
         icon = findViewById(R.id.renderImage);
         descriptionLabel = binding.getRoot().findViewById(R.id.descriptionLabel);
-
+        descIcon = findViewById(R.id.descIcon);
         editText.setOnFocusChangeListener(this);
     }
 
@@ -112,20 +113,21 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
             switch (valueType) {
                 case PHONE_NUMBER:
                     editText.setInputType(InputType.TYPE_CLASS_PHONE);
-                    editText.setCompoundDrawablesWithIntrinsicBounds(null, null,
-                            getContext().getResources().getDrawable(R.drawable.ic_form_number), null);
+                    descIcon.setVisibility(VISIBLE);
+                    descIcon.setImageResource(R.drawable.ic_form_number);
                     break;
                 case EMAIL:
                     editText.setInputType(InputType.TYPE_CLASS_TEXT |
                             InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+                    descIcon.setVisibility(GONE);
                     break;
                 case TEXT:
                     editText.setInputType(InputType.TYPE_CLASS_TEXT);
                     editText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(50000)});
                     editText.setLines(1);
                     editText.setEllipsize(TextUtils.TruncateAt.END);
-                    editText.setCompoundDrawablesWithIntrinsicBounds(null, null,
-                            getContext().getResources().getDrawable(R.drawable.ic_form_text), null);
+                    descIcon.setVisibility(VISIBLE);
+                    descIcon.setImageResource(R.drawable.ic_form_text);
                     break;
                 case LONG_TEXT:
                     editText.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
@@ -137,6 +139,7 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
                     editText.setOverScrollMode(View.OVER_SCROLL_ALWAYS);
                     editText.setSingleLine(false);
                     editText.setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
+                    descIcon.setVisibility(GONE);
                     break;
                 case LETTER:
                     editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
@@ -149,26 +152,26 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
                                     return source;
                                 return "";
                             }});
-                    editText.setCompoundDrawablesWithIntrinsicBounds(getContext().getResources().getDrawable(R.drawable.ic_form_letter), null,
-                            null, null);
+                    descIcon.setVisibility(VISIBLE);
+                    descIcon.setImageResource(R.drawable.ic_form_letter);
                     break;
                 case NUMBER:
                     editText.setInputType(InputType.TYPE_CLASS_NUMBER |
                             InputType.TYPE_NUMBER_FLAG_DECIMAL |
                             InputType.TYPE_NUMBER_FLAG_SIGNED);
-                    editText.setCompoundDrawablesWithIntrinsicBounds(getContext().getResources().getDrawable(R.drawable.ic_form_number), null,
-                            null, null);
+                    descIcon.setVisibility(VISIBLE);
+                    descIcon.setImageResource(R.drawable.ic_form_number);
                     break;
                 case INTEGER_NEGATIVE:
                 case INTEGER:
-                    editText.setCompoundDrawablesWithIntrinsicBounds(getContext().getResources().getDrawable(R.drawable.ic_form_number), null,
-                            null, null);
+                    descIcon.setVisibility(VISIBLE);
+                    descIcon.setImageResource(R.drawable.ic_form_number);
                     editText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_SIGNED);
                     break;
                 case INTEGER_ZERO_OR_POSITIVE:
                 case INTEGER_POSITIVE:
-                    editText.setCompoundDrawablesWithIntrinsicBounds(getContext().getResources().getDrawable(R.drawable.ic_form_number), null,
-                            null, null);
+                    descIcon.setVisibility(VISIBLE);
+                    descIcon.setImageResource(R.drawable.ic_form_number);
                     editText.setInputType(InputType.TYPE_CLASS_NUMBER);
                     editText.setKeyListener(DigitsKeyListener.getInstance(false, false));
                     break;
@@ -176,13 +179,13 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
                     editText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
                     break;
                 case PERCENTAGE:
-                    editText.setCompoundDrawablesWithIntrinsicBounds(getContext().getResources().getDrawable(R.drawable.ic_form_decimal), null,
-                            null, null);
+                    descIcon.setVisibility(VISIBLE);
+                    descIcon.setImageResource(R.drawable.ic_form_decimal);
                     editText.setInputType(InputType.TYPE_CLASS_NUMBER);
                     break;
                 case URL:
-                    editText.setCompoundDrawablesWithIntrinsicBounds(getContext().getResources().getDrawable(R.drawable.ic_i_url), null,
-                            null, null);
+                    descIcon.setVisibility(VISIBLE);
+                    descIcon.setImageResource(R.drawable.ic_i_url);
                     editText.setInputType(InputType.TYPE_TEXT_VARIATION_WEB_EDIT_TEXT);
                     break;
                 default:
