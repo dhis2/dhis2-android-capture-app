@@ -110,6 +110,10 @@ android {
             matchingFallbacks = ['debug']
             signingConfig signingConfigs.debug
         }
+        alpha {
+            matchingFallbacks = ['debug']
+            signingConfig signingConfigs.debug
+        }
     }
 
     flavorDimensions "default"
