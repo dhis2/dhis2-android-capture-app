@@ -30,7 +30,6 @@ import org.dhis2.utils.custom_views.OrgUnitDialog_2;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
-import org.hisp.dhis.android.core.program.ProgramModel;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;

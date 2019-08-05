@@ -14,10 +14,8 @@ import org.dhis2.databinding.CategorySelectorBinding;
 import org.dhis2.utils.CatComboAdapter2;
 import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryCombo;
-import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
-import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -58,24 +56,6 @@ public class CategoryComboDialog extends AlertDialog {
         this.options = options;
         this.requestCode = requestCode;
         this.listener = listener;
-        this.listenerNew = null;
-
-        setCancelable(false);
-    }
-
-    @Deprecated
-    public CategoryComboDialog(@NonNull Context context,
-                               @NonNull CategoryComboModel categoryComboModel,
-                               List<CategoryOptionComboModel> options,
-                               int requestCode,
-                               @Nullable OnCatOptionSelectedOld listener) {
-        super(context);
-        this.context = context;
-        this.categoryCombo = null;
-        this.catComboName = categoryComboModel.displayName();
-        this.options = new ArrayList<>();
-        this.requestCode = requestCode;
-//        this.listener = listener;
         this.listenerNew = null;
 
         setCancelable(false);
@@ -210,11 +190,6 @@ public class CategoryComboDialog extends AlertDialog {
 
     public interface OnCatOptionSelected {
         void onCatOptionSelected(CategoryOptionCombo selectedOption);
-    }
-
-    @Deprecated
-    public interface OnCatOptionSelectedOld {
-        void onCatOptionSelected(CategoryOptionComboModel selectedOption);
     }
 
     public interface OnCatOptionComboSelected{
