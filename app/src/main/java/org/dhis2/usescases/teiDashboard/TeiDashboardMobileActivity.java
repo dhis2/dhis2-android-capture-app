@@ -427,7 +427,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                     showTutorial(true);
                     break;
                 case R.id.deleteTei:
-                    presenter.deteleteTei();
+                    presenter.deleteTei();
                     break;
                 case R.id.deleteEnrollment:
                     presenter.deleteEnrollment();
