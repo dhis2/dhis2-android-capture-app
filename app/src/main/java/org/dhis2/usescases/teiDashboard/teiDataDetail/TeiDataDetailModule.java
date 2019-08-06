@@ -46,7 +46,7 @@ public class TeiDataDetailModule {
 
     @Provides
     @PerActivity
-    EnrollmentStatusStore enrollmentStatusStore(@NonNull BriteDatabase briteDatabase) {
-        return new EnrollmentStatusStore(briteDatabase, enrollmentUid);
+    EnrollmentStatusStore enrollmentStatusStore(@NonNull BriteDatabase briteDatabase, D2 d2) {
+        return new EnrollmentStatusStore(briteDatabase, enrollmentUid, d2);
     }
 }

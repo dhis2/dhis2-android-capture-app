@@ -4,11 +4,14 @@ import android.content.ContentValues;
 import android.database.sqlite.SQLiteStatement;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.tuples.Pair;
+import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
+import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
@@ -54,9 +57,13 @@ public final class EnrollmentStatusStore implements EnrollmentStatusEntryStore {
     @NonNull
     private final String enrollment;
 
-    public EnrollmentStatusStore(@NonNull BriteDatabase briteDatabase, @NonNull String enrollment) {
+    @NonNull
+    private final D2 d2;
+
+    public EnrollmentStatusStore(@NonNull BriteDatabase briteDatabase, @NonNull String enrollment, @NonNull D2 d2) {
         this.enrollment = enrollment;
         this.briteDatabase = briteDatabase;
+        this.d2 = d2;
 
         updateStatement = briteDatabase.getWritableDatabase()
                 .compileStatement(UPDATE);
@@ -85,16 +92,10 @@ public final class EnrollmentStatusStore implements EnrollmentStatusEntryStore {
     }
 
     @Override
-    public Flowable<Pair<Double, Double>> enrollmentCoordinates() {
-        return null;
-        // TODO: Needs to change to Geometry
-        /*return briteDatabase.createQuery("Enrollment", "SELECT * FROM Enrollment WHERE uid = ? LIMIT 1", enrollment)
-                .mapToOne(Enrollment::create)
-                .filter(enrollment -> enrollment.latitude() != null && enrollment.longitude() != null)
-                .map(enrollment ->
-                        Pair.create(Double.valueOf(enrollment.latitude()),
-                                Double.valueOf(enrollment.longitude())))
-                .toFlowable(BackpressureStrategy.LATEST);*/
+    public Flowable<Geometry> enrollmentGeometry() {
+        return d2.enrollmentModule().enrollments.one().get().toFlowable()
+                .filter(enrollment1 -> enrollment1.geometry() != null)
+                .map(Enrollment::geometry);
     }
 
     @Override

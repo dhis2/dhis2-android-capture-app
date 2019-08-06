@@ -17,6 +17,7 @@ import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
+import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
@@ -442,9 +443,9 @@ public class EventRepository implements FormRepository {
 
     @Override
     public Observable<Boolean> captureCoodinates() {
-        return briteDatabase.createQuery("ProgramStage", "SELECT ProgramStage.captureCoordinates FROM ProgramStage " +
-                "JOIN Event ON Event.programStage = ProgramStage.uid WHERE Event.uid = ?", eventUid)
-                .mapToOne(cursor -> cursor.getInt(0) == 1);
+        return d2.eventModule().events.byUid().eq(eventUid).one().get().toObservable()
+                .map(event -> d2.programModule().programStages.byUid().eq(event.programStage()).one().blockingGet())
+                .map(programStage -> programStage.featureType() != FeatureType.NONE);
     }
 
     @Override
