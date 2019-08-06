@@ -28,6 +28,7 @@ import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.dataelement.DataElement;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventCollectionRepository;
+import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.period.DatePeriod;
 import org.hisp.dhis.android.core.program.Program;
@@ -63,7 +64,8 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
 
     @NonNull
     @Override
-    public LiveData<PagedList<ProgramEventViewModel>> filteredProgramEvents(List<DatePeriod> dateFilter, List<String> orgUnitFilter, List<CategoryOptionCombo> catOptCombList) {
+    public LiveData<PagedList<ProgramEventViewModel>> filteredProgramEvents(List<DatePeriod> dateFilter, List<String> orgUnitFilter, List<CategoryOptionCombo> catOptCombList,
+                                                                            List<EventStatus> eventStatus) {
         EventCollectionRepository eventRepo = d2.eventModule().events.byProgramUid().eq(programUid);
         if (!dateFilter.isEmpty())
             eventRepo = eventRepo.byEventDate().inDatePeriods(dateFilter);
@@ -71,6 +73,8 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
             eventRepo = eventRepo.byOrganisationUnitUid().in(orgUnitFilter);
         if (!catOptCombList.isEmpty())
             eventRepo = eventRepo.byAttributeOptionComboUid().in(UidsHelper.getUids(catOptCombList));
+        if(!eventStatus.isEmpty())
+            eventRepo = eventRepo.byStatus().in(eventStatus);
         DataSource dataSource = eventRepo.byState().notIn(State.TO_DELETE).orderByEventDate(RepositoryScope.OrderByDirection.DESC).withAllChildren().getDataSource().map(event -> transformToProgramEventModel(event));
         return new LivePagedListBuilder(new DataSource.Factory() {
             @Override
@@ -82,7 +86,8 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
 
     @NonNull
     @Override
-    public Flowable<List<SymbolOptions>> filteredEventsForMap(List<DatePeriod> dateFilter, List<String> orgUnitFilter, List<CategoryOptionCombo> catOptCombList) {
+    public Flowable<List<SymbolOptions>> filteredEventsForMap(List<DatePeriod> dateFilter, List<String> orgUnitFilter, List<CategoryOptionCombo> catOptCombList,
+                                                              List<EventStatus> eventStatus) {
         EventCollectionRepository eventRepo = d2.eventModule().events.byProgramUid().eq(programUid);
         if (!dateFilter.isEmpty())
             eventRepo = eventRepo.byEventDate().inDatePeriods(dateFilter);
@@ -90,6 +95,9 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
             eventRepo = eventRepo.byOrganisationUnitUid().in(orgUnitFilter);
         if (!catOptCombList.isEmpty())
             eventRepo = eventRepo.byAttributeOptionComboUid().in(UidsHelper.getUids(catOptCombList));
+        if(!eventStatus.isEmpty())
+            eventRepo = eventRepo.byStatus().in(eventStatus);
+
         return eventRepo.byState().notIn(State.TO_DELETE).orderByEventDate(RepositoryScope.OrderByDirection.DESC).withAllChildren().getAsync()
                 .toFlowable()
                 .flatMap(list -> Flowable.fromCallable(() -> {

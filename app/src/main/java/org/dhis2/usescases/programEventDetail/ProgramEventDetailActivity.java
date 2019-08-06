@@ -106,6 +106,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         super.onCreate(savedInstanceState);
 
         FilterManager.getInstance().clearCatOptCombo();
+        FilterManager.getInstance().clearEventStatus();
 
         this.programUid = getIntent().getStringExtra("PROGRAM_UID");
         binding = DataBindingUtil.setContentView(this, activity_program_event_detail);
@@ -118,6 +119,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         binding.recycler.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
         filtersAdapter = new FiltersAdapter();
+        filtersAdapter.addEventStatus();
         try {
             binding.filterLayout.setAdapter(filtersAdapter);
 
@@ -187,6 +189,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                 binding.addEventButton.setVisibility(View.GONE);
                 break;
         }
+
     }
 
     @Override
@@ -207,10 +210,19 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         backDropActive = !backDropActive;
         ConstraintSet initSet = new ConstraintSet();
         initSet.clone(binding.backdropLayout);
-        if (backDropActive)
-            initSet.connect(R.id.recycler, ConstraintSet.TOP, R.id.backdropGuide, ConstraintSet.BOTTOM, 0);
-        else
-            initSet.connect(R.id.recycler, ConstraintSet.TOP, R.id.toolbar, ConstraintSet.BOTTOM, 0);
+        if(binding.emptyTeis.getVisibility() != View.VISIBLE){
+            if (backDropActive)
+                initSet.connect(R.id.recycler, ConstraintSet.TOP, R.id.backdropGuide, ConstraintSet.BOTTOM, 0);
+            else
+                initSet.connect(R.id.recycler, ConstraintSet.TOP, R.id.toolbar, ConstraintSet.BOTTOM, 0);
+        }
+        else {
+            if (backDropActive)
+                initSet.connect(R.id.empty_teis, ConstraintSet.TOP, R.id.backdropGuide, ConstraintSet.BOTTOM, 0);
+            else
+                initSet.connect(R.id.empty_teis, ConstraintSet.TOP, R.id.toolbar, ConstraintSet.BOTTOM, 0);
+        }
+
         initSet.applyTo(binding.backdropLayout);
     }
 

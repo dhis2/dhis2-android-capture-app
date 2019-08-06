@@ -149,7 +149,7 @@
                 android:id="@+id/empty_teis"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:background="@color/white"
+                android:background="@drawable/ic_front_backdrop_bg"
                 android:gravity="center"
                 android:padding="42dp"
                 android:text="@string/empty_tei_add"
