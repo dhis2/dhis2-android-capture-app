@@ -18,10 +18,14 @@ import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
+import org.hisp.dhis.android.core.common.Coordinates;
+import org.hisp.dhis.android.core.common.FeatureType;
+import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
+import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
@@ -423,13 +427,12 @@ public class EnrollmentFormRepository implements FormRepository {
     @Override
     public Consumer<LatLng> storeCoordinates() {
         return latLng -> {
-            ContentValues enrollment = new ContentValues();
-            enrollment.put("latitude", latLng.getLatitude());
-            enrollment.put("longitude", latLng.getLongitude()); // TODO: Check if state is TO_POST
-            // TODO: and if so, keep the TO_POST state
-
-            briteDatabase.update("Enrollment", enrollment,
-                    " uid = ?", enrollmentUid == null ? "" : enrollmentUid);
+            // TODO: Implement all cases of FEATURE TYPE
+            EnrollmentObjectRepository repo = d2.enrollmentModule().enrollments.uid(enrollmentUid);
+            repo.setGeometry(Geometry.builder()
+                    .type(FeatureType.POINT)
+                    .coordinates(Coordinates.create(latLng.getLatitude(), latLng.getLongitude()).toString()
+                    ).build());
         };
     }
 

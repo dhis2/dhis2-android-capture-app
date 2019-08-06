@@ -1,6 +1,7 @@
 package org.dhis2.usescases.teiDashboard.teiDataDetail;
 
 import org.dhis2.data.tuples.Pair;
+import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 
 import androidx.annotation.NonNull;
@@ -15,7 +16,7 @@ public interface EnrollmentStatusEntryStore {
     @NonNull
     Flowable<EnrollmentStatus> enrollmentStatus(@NonNull String enrollmentUid);
 
-    Flowable<Pair<Double, Double>> enrollmentCoordinates();
+    Flowable<Geometry> enrollmentGeometry();
 
     Flowable<Long> saveCoordinates(double latitude, double longitude);
 

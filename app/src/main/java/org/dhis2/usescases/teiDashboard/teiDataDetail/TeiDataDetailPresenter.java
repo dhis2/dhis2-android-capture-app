@@ -78,11 +78,15 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
             );
 
             disposable.add(
-                    enrollmentStore.enrollmentCoordinates()
+                    enrollmentStore.enrollmentGeometry()
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(
-                                    data -> view.setLocation(data.val0(), data.val1()),
+                                    geometry -> {
+                                        //TODO Implement all cases for FeatureType
+                                        String[] coords = geometry.coordinates().replace("[", "").replace("]", "").trim().split(",");
+                                        view.setLocation(Double.valueOf(coords[0]), Double.valueOf(coords[1]));
+                                    },
                                     Timber::e
                             )
             );

@@ -26,6 +26,7 @@ import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -212,6 +213,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
         ).map(uid -> {
             EventObjectRepository eventRepository = d2.eventModule().events.uid(uid);
             eventRepository.setEventDate(cal.getTime());
+            // TODO: Should we use program or programStage featureType
             switch (d2.programModule().programs.byUid().eq(programUid).one().blockingGet().featureType()){
                 case NONE:
                     break;
@@ -223,7 +225,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                     break;
                 case POLYGON:
                 case MULTI_POLYGON:
-                    //TODO: IMPLEMENT CASES
+                    //TODO: IMPLEMENT FEATURETYPE CASES
                     break;
                 default:
                     break;
@@ -258,6 +260,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
             EventObjectRepository eventRepository = d2.eventModule().events.uid(uid);
             eventRepository.setDueDate(cal.getTime());
             eventRepository.setStatus(EventStatus.SCHEDULE);
+            // TODO: Should we use program or programStage featureType
             switch (d2.programModule().programs.byUid().eq(programUid).one().blockingGet().featureType()) {
                 case NONE:
                     break;
@@ -269,7 +272,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                     break;
                 case POLYGON:
                 case MULTI_POLYGON:
-                    //TODO: IMPLEMENT CASES
+                    //TODO: IMPLEMENT FEATURETYPE CASES
                     break;
                 default:
                     break;
@@ -306,10 +309,23 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                     eventRepository.setEventDate(DateUtils.databaseDateFormat().parse(date));
                     eventRepository.setOrganisationUnitUid(orgUnitUid);
                     eventRepository.setAttributeOptionComboUid(catOptionCombo);
-                    eventRepository.setGeometry(Geometry.builder() //TODO: CHANGE TO SUPPORT ALL FEATURE TYPES
-                            .type(FeatureType.POINT)
-                            .coordinates(Coordinates.create(Double.valueOf(latitude), Double.valueOf(longitude)).toString())
-                            .build());
+                    TrackedEntityInstance tei = d2.trackedEntityModule().trackedEntityInstances.byUid().eq(trackedEntityInstance).one().blockingGet();
+                    switch (d2.trackedEntityModule().trackedEntityTypes.byUid().eq(tei.trackedEntityType()).one().blockingGet().featureType()){
+                        case NONE:
+                            break;
+                        case POINT:
+                            eventRepository.setGeometry(Geometry.builder()
+                                    .type(FeatureType.POINT)
+                                    .coordinates(Coordinates.create(Double.valueOf(latitude), Double.valueOf(longitude)).toString())
+                                    .build());
+                            break;
+                        case POLYGON:
+                        case MULTI_POLYGON:
+                            //TODO: IMPLEMENT FEATURETYPE CASES
+                            break;
+                        default:
+                            break;
+                    }
                     return eventRepository.blockingGet();
                 });
     }
