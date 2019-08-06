@@ -6,22 +6,19 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
 import android.graphics.Color
+import android.graphics.ImageDecoder.createSource
 import android.os.Bundle
-import android.view.View
-import android.widget.TextView
 import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProviders
-
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.gson.Gson
 import com.mapbox.geojson.Feature
+import com.mapbox.geojson.Point
 import com.mapbox.geojson.Polygon
 import com.mapbox.mapboxsdk.Mapbox
-import com.mapbox.mapboxsdk.annotations.MarkerOptions
-import com.mapbox.mapboxsdk.annotations.PolygonOptions
 import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
 import com.mapbox.mapboxsdk.geometry.LatLng
@@ -31,23 +28,20 @@ import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.style.layers.FillLayer
 import com.mapbox.mapboxsdk.style.layers.Layer
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory
+import com.mapbox.mapboxsdk.style.layers.PropertyFactory.fillColor
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
-
+import com.mapbox.mapboxsdk.style.sources.Source
 import org.dhis2.BuildConfig
 import org.dhis2.R
 import org.dhis2.databinding.ActivityMapSelectorBinding
 import org.dhis2.usescases.general.ActivityGlobalAbstract
+import org.dhis2.usescases.map.multipolygon.MultiPolygonViewModel
+import org.dhis2.usescases.map.point.PointAdapter
+import org.dhis2.usescases.map.point.PointViewModel
+import org.dhis2.usescases.map.polygon.PolygonViewModel
 import org.hisp.dhis.android.core.period.FeatureType
-import com.mapbox.geojson.Point
-import com.mapbox.mapboxsdk.style.sources.Source
-
-import java.util.ArrayList
-import java.util.Locale
-import java.util.Random
-import java.util.UUID
-
-import com.mapbox.mapboxsdk.style.layers.PropertyFactory.fillColor
+import java.util.*
 
 
 /**
@@ -64,23 +58,14 @@ class MapSelectorActivity : ActivityGlobalAbstract() {
     private val layers = ArrayList<Layer>()
     lateinit var location_type: FeatureType
     lateinit var binding: ActivityMapSelectorBinding
-    lateinit var viewModel: MapSelectorViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Mapbox.getInstance(this, BuildConfig.MAPBOX_ACCESS_TOKEN)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_map_selector)
-        viewModel =  ViewModelProviders.of(this).get(MapSelectorViewModel::class.java)
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         binding.back.setOnClickListener { v -> finish() }
         location_type = FeatureType.valueOf(intent.getStringExtra(LOCATION_TYPE_EXTRA))
-        when (location_type) {
-            FeatureType.MULTI_POLYGON -> bindMultiPolygon()
-            FeatureType.POINT -> bindPoint()
-            FeatureType.POLYGON -> bindPolygon()
-            else -> finish()
-        }
-
             /*
             fab.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -144,10 +129,11 @@ class MapSelectorActivity : ActivityGlobalAbstract() {
                 this.style = style
                 centerMapOnCurrentLocation()
             }
-            map.addOnCameraIdleListener {
-                if (map.cameraPosition.target != null) {
-                    val latLonText = map.cameraPosition.target.latitude.toString() + " : " + map.cameraPosition.target.longitude
-                }
+            when (location_type) {
+                FeatureType.MULTI_POLYGON -> bindMultiPolygon()
+                FeatureType.POINT -> bindPoint()
+                FeatureType.POLYGON -> bindPolygon()
+                else -> finish()
             }
         }
     }
@@ -185,35 +171,60 @@ class MapSelectorActivity : ActivityGlobalAbstract() {
     }
 
     private fun bindPoint() {
+        val viewModel =  ViewModelProviders.of(this).get(PointViewModel::class.java)
+        binding.recycler.layoutManager = LinearLayoutManager(this)
+        binding.recycler.adapter = PointAdapter(viewModel)
+        map.addOnMapClickListener { it ->
+            val point = Point.fromLngLat(it.longitude, it.latitude)
+            setPointToViewModel(point, viewModel)
+            true
+        }
+    }
 
+    private fun setPointToViewModel(point: Point, viewModel: PointViewModel) {
+        viewModel.setPoint(point)
+        viewModel.source?.let { geoSon ->
+            val geoJson = (style.getSource(geoSon.id) as GeoJsonSource)
+            geoJson.setGeoJson(
+                    Feature.fromGeometry(
+                            point)
+            )
+            viewModel.source = geoJson
+            return
+        }
+        style.addImage(viewModel.getId(),
+                BitmapFactory.decodeResource(
+                        this.resources, R.drawable.mapbox_marker_icon_default))
+        viewModel.source = createSource(viewModel.getId(), point)
+        viewModel.layer = createLayer(viewModel.getId())
+    }
+
+    private fun createLayer(id: String): SymbolLayer {
+        val symbolLayer = SymbolLayer(id, id)
+        symbolLayer.withProperties(
+                PropertyFactory.iconImage(id)
+        )
+        style.addLayer(symbolLayer)
+        return symbolLayer
+    }
+
+    private fun createSource(id: String, point: Point): GeoJsonSource {
+        val geoJsonSource = GeoJsonSource(id, Feature.fromGeometry(
+                point))
+        style.addSource(geoJsonSource)
+        return geoJsonSource
     }
 
     private fun bindPolygon() {
+        val viewModel =  ViewModelProviders.of(this).get(PolygonViewModel::class.java)
 
     }
 
     private fun bindMultiPolygon() {
+        val viewModel =  ViewModelProviders.of(this).get(MultiPolygonViewModel::class.java)
 
     }
 
-    fun addPoint(point: Point) {
-        val uuid = UUID.randomUUID().toString()
-        style.addImage(uuid,
-                BitmapFactory.decodeResource(
-                        this.resources, R.drawable.mapbox_marker_icon_default))
-
-        val geoJsonSource = GeoJsonSource(uuid, Feature.fromGeometry(
-                point))
-        markers.add(geoJsonSource)
-        style.addSource(geoJsonSource)
-
-        val symbolLayer = SymbolLayer(uuid, uuid)
-        symbolLayer.withProperties(
-                PropertyFactory.iconImage(uuid)
-        )
-        layers.add(symbolLayer)
-        style.addLayer(symbolLayer)
-    }
 
     fun updateVector() {
         for (s in markers) {
