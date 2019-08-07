@@ -4,11 +4,11 @@ import androidx.annotation.NonNull;
 
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.utils.custom_views.OrgUnitDialog_2;
-import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
+import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
-import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
 
 import io.reactivex.functions.Consumer;
@@ -25,7 +25,7 @@ public class EventDetailContracts {
 
         void setDataEditable();
 
-        void isEventExpired(ProgramModel programModel);
+        void isEventExpired(Program programModel);
 
         void showConfirmDeleteEvent();
 
@@ -52,13 +52,9 @@ public class EventDetailContracts {
 
         void getEventData(String eventUid);
 
-        void saveData(String uid, String value);
-
         void back();
 
         void eventStatus(android.view.View view, Event eventModel, ProgramStage stageModel);
-
-        void editData();
 
         void getExpiryDate(String eventUid);
 
@@ -74,7 +70,7 @@ public class EventDetailContracts {
 
         void selectCatOption();
 
-        void changeCatOption(CategoryOptionComboModel selectedOption);
+        void changeCatOption(CategoryOptionCombo selectedOption);
     }
 
 

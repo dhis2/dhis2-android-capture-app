@@ -1,6 +1,5 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventSummary;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 
@@ -18,30 +17,21 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
-import org.hisp.dhis.android.core.common.ObjectStyleModel;
+import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
-import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
+import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
-import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.Program;
-import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
-import org.hisp.dhis.android.core.program.ProgramStageSectionModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 import org.hisp.dhis.rules.models.RuleDataValue;
 import org.hisp.dhis.rules.models.RuleEffect;
 import org.hisp.dhis.rules.models.RuleEvent;
 
-import java.text.ParseException;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-
-import javax.annotation.Nonnull;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.reactivex.BackpressureStrategy;
@@ -71,7 +61,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
 
 
     private static final List<String> SECTION_TABLES = Arrays.asList(
-            EventModel.TABLE, ProgramModel.TABLE, ProgramStageModel.TABLE, ProgramStageSectionModel.TABLE);
+            "Event", "Program", "ProgramStage", "ProgramStageSection");
     private static final String SELECT_SECTIONS = "SELECT\n" +
             "  Program.uid AS programUid,\n" +
             "  ProgramStage.uid AS programStageUid,\n" +
@@ -84,7 +74,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
             "  JOIN ProgramStage ON Event.programStage = ProgramStage.uid\n" +
             "  LEFT OUTER JOIN ProgramStageSection ON ProgramStageSection.programStage = Event.programStage\n" +
             "WHERE Event.uid = ?\n" +
-            "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "' ORDER BY ProgramStageSection.sortOrder";
+            "AND Event.state != '" + State.TO_DELETE.name() + "' ORDER BY ProgramStageSection.sortOrder";
 
     private static final String QUERY = "SELECT\n" +
             "  Field.id,\n" +
@@ -133,49 +123,6 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
             " END ASC;";
 
 
-    private static final String QUERY_EVENT = "SELECT Event.uid,\n" +
-            "  Event.programStage,\n" +
-            "  Event.status,\n" +
-            "  Event.eventDate,\n" +
-            "  Event.dueDate,\n" +
-            "  Event.organisationUnit,\n" +
-            "  ProgramStage.displayName\n" +
-            "FROM Event\n" +
-            "JOIN ProgramStage ON ProgramStage.uid = Event.programStage\n" +
-            "WHERE Event.uid = ?\n" +
-            "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'\n" +
-            "LIMIT 1;";
-
-   /* private static final String QUERY_VALUES = "SELECT " +
-            "  eventDate," +
-            "  programStage," +
-            "  dataElement," +
-            "  value" +
-            " FROM TrackedEntityDataValue " +
-            "  INNER JOIN Event ON TrackedEntityDataValue.event = Event.uid " +
-            " WHERE event = ? AND value IS NOT NULL AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "';";*/
-
-    private static final String QUERY_VALUES = "SELECT " +
-            "  Event.eventDate," +
-            "  Event.programStage," +
-            "  TrackedEntityDataValue.dataElement," +
-            "  TrackedEntityDataValue.value," +
-            "  ProgramRuleVariable.useCodeForOptionSet," +
-            "  Option.code," +
-            "  Option.name" +
-            " FROM TrackedEntityDataValue " +
-            "  INNER JOIN Event ON TrackedEntityDataValue.event = Event.uid " +
-            "  INNER JOIN DataElement ON DataElement.uid = TrackedEntityDataValue.dataElement " +
-            "  LEFT JOIN ProgramRuleVariable ON ProgramRuleVariable.dataElement = DataElement.uid " +
-            "  LEFT JOIN Option ON (Option.optionSet = DataElement.optionSet AND Option.code = TrackedEntityDataValue.value) " +
-            " WHERE Event.uid = ? AND value IS NOT NULL AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "';";
-
-    private static final String EVENT_QUERY = "SELECT * FROM Event WHERE Event.uid = ? LIMIT 1";
-    private static final String PROGRAM_QUERY = "SELECT * FROM Program JOIN ProgramStage ON " +
-            "ProgramStage.program = Program.uid JOIN Event On Event.programStage = ProgramStage.uid WHERE Event.uid = ?";
-
-    private static final String ACCESS_QUERY = "SELECT ProgramStage.accessDataWrite FROM ProgramStage JOIN Event ON Event.programStage = ProgramStage.uid WHERE Event.uid = ? LIMIT 1";
-    private static final String PROGRAM_ACCESS_QUERY = "SELECT Program.accessDataWrite FROM Program JOIN Event ON Event.program = Program.uid WHERE Event.uid = ? LIMIT 1";
     private final D2 d2;
 
 
@@ -212,10 +159,10 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
     @Override
     public boolean isEnrollmentOpen() {
         boolean isEnrollmentOpen = true;
-        if(d2.eventModule().events.byUid().eq(eventUid).one().exists()) {
+        if (d2.eventModule().events.byUid().eq(eventUid).one().blockingExists()) {
             isEnrollmentOpen = d2.enrollmentModule().enrollments.byUid()
-                    .eq(d2.eventModule().events.byUid().eq(eventUid).one().get().enrollment())
-                    .one().get().status() == EnrollmentStatus.ACTIVE;
+                    .eq(d2.eventModule().events.byUid().eq(eventUid).one().blockingGet().enrollment())
+                    .one().blockingGet().status() == EnrollmentStatus.ACTIVE;
         }
         return isEnrollmentOpen;
     }
@@ -236,7 +183,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
     @Override
     public Flowable<List<FieldViewModel>> list(String sectionUid, String eventUid) {
         return briteDatabase
-                .createQuery(TrackedEntityDataValueModel.TABLE, prepareStatement(sectionUid, eventUid))
+                .createQuery("TrackedEntityDataValue", prepareStatement(sectionUid, eventUid))
                 .mapToList(this::transform)
                 .toFlowable(BackpressureStrategy.LATEST);
     }
@@ -278,22 +225,22 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
                 Timber.e(e);
             }
 
-        ValueTypeDeviceRenderingModel fieldRendering = null;
+        ValueTypeDeviceRendering fieldRendering = null;
         try (Cursor rendering = briteDatabase.query("SELECT * FROM ValueTypeDeviceRendering WHERE uid = ?", uid)) {
             if (rendering != null && rendering.moveToFirst()) {
-                fieldRendering = ValueTypeDeviceRenderingModel.create(rendering);
+                fieldRendering = ValueTypeDeviceRendering.create(rendering);
             }
         }
 
-        ObjectStyleModel objectStyle = ObjectStyleModel.builder().build();
+        ObjectStyle objectStyle = ObjectStyle.builder().build();
         try (Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", uid)) {
             if (objStyleCursor != null && objStyleCursor.moveToFirst())
-                objectStyle = ObjectStyleModel.create(objStyleCursor);
+                objectStyle = ObjectStyle.create(objStyleCursor);
         }
 
 
         if (valueType == ValueType.ORGANISATION_UNIT && !isEmpty(dataValue)) {
-            dataValue = dataValue + "_ou_" + d2.organisationUnitModule().organisationUnits.uid(dataValue).get().displayName();
+            dataValue = dataValue + "_ou_" + d2.organisationUnitModule().organisationUnits.uid(dataValue).blockingGet().displayName();
         }
 
         return fieldFactory.create(uid, formName == null ? cursor.getString(1) : formName,
@@ -317,149 +264,75 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
     }
 
     @Override
-    public Observable<EventModel> changeStatus(String eventUid) {
-        String lastUpdated = DateUtils.databaseDateFormat().format(DateUtils.getInstance().getToday());
-        try (Cursor cursor = briteDatabase.query(EVENT_QUERY, eventUid)) {
-            if (cursor != null && cursor.moveToNext()) {
-
-                EventModel event = EventModel.create(cursor);
-                cursor.close();
-
-                ContentValues values = event.toContentValues();
-                switch (event.status()) {
-                    case ACTIVE:
-                        values.put(EventModel.Columns.STATUS, EventStatus.COMPLETED.name());
-                        values.put(EventModel.Columns.COMPLETE_DATE, lastUpdated);
-                        break;
-                    case SKIPPED:
-                        values.put(EventModel.Columns.STATUS, EventStatus.COMPLETED.name()); //TODO: Can this happen?
-                        values.put(EventModel.Columns.COMPLETE_DATE, lastUpdated);
-                        break;
-                    case VISITED:
-                        values.put(EventModel.Columns.STATUS, EventStatus.COMPLETED.name()); //TODO: Can this happen?
-                        values.put(EventModel.Columns.COMPLETE_DATE, lastUpdated);
-                        break;
-                    case SCHEDULE:
-                        values.put(EventModel.Columns.STATUS, EventStatus.COMPLETED.name()); //TODO: Can this happen?
-                        values.put(EventModel.Columns.COMPLETE_DATE, lastUpdated);
-                        break;
-                    case COMPLETED:
-                        values.put(EventModel.Columns.STATUS, EventStatus.ACTIVE.name()); //TODO: This should check dates?
-                        break;
-                }
-
-
-                values.put(EventModel.Columns.STATE, State.TO_UPDATE.toString());
-                values.put(EventModel.Columns.LAST_UPDATED, lastUpdated);
-
-                if (briteDatabase.update(EventModel.TABLE, values,
-                        EventModel.Columns.UID + " = ?", eventUid == null ? "" : eventUid) <= 0) {
-
-                    throw new IllegalStateException(String.format(Locale.US, "Event=[%s] " +
-                            "has not been successfully updated", event.uid()));
-                }
-
-                try (Cursor programCursor = briteDatabase.query(PROGRAM_QUERY, eventUid == null ? "" : eventUid)) {
-                    if (programCursor != null && cursor.moveToNext()) {
-                        ProgramModel program = ProgramModel.create(programCursor);
-                        ContentValues programValues = program.toContentValues();
-                        values.put(ProgramModel.Columns.LAST_UPDATED, lastUpdated);
-                        if (briteDatabase.update(ProgramModel.TABLE, programValues,
-                                ProgramModel.Columns.UID + " = ?", program.uid() == null ? "" : program.uid()) <= 0) {
-
-                            throw new IllegalStateException(String.format(Locale.US, "Program=[%s] " +
-                                    "has not been successfully updated", event.uid()));
-                        }
+    public Observable<Event> changeStatus(String eventUid) {
+        return d2.eventModule().events.uid(eventUid).get()
+                .map(event -> {
+                    switch (event.status()) {
+                        case ACTIVE:
+                        case SKIPPED:
+                        case VISITED:
+                        case SCHEDULE:
+                        case OVERDUE:
+                            d2.eventModule().events.uid(event.uid()).setStatus(EventStatus.COMPLETED);
+                            d2.eventModule().events.uid(event.uid()).setCompletedDate(DateUtils.getInstance().getToday());
+                            break;
+                        case COMPLETED:
+                            d2.eventModule().events.uid(event.uid()).setStatus(EventStatus.ACTIVE);
+                            break;
                     }
-                }
-                return Observable.just(event);
-            } else
-                return null;
-        }
+                    return event;
+                }).toObservable();
     }
 
     @Override
-    public Flowable<EventModel> getEvent(String eventId) {
-        return briteDatabase.createQuery(EventModel.TABLE, EVENT_QUERY, eventId == null ? "" : eventId)
-                .mapToOne(EventModel::create).toFlowable(BackpressureStrategy.LATEST);
+    public Flowable<Event> getEvent(String eventId) {
+        return d2.eventModule().events.uid(eventId).get().toFlowable();
     }
 
     @Override
     public Observable<Boolean> accessDataWrite(String eventId) {
-        return briteDatabase.createQuery(ProgramStageModel.TABLE, ACCESS_QUERY, eventId == null ? "" : eventId)
-                .mapToOne(cursor -> cursor.getInt(0) == 1)
-                .flatMap(programStageAccessDataWrite -> briteDatabase.createQuery(ProgramModel.TABLE, PROGRAM_ACCESS_QUERY, eventId == null ? "" : eventId)
-                        .mapToOne(cursor -> (cursor.getInt(0) == 1) && programStageAccessDataWrite));
+        return d2.eventModule().events.uid(eventId).get()
+                .map(Event::programStage)
+                .flatMap(programStageUid -> d2.programModule().programStages.uid(programStageUid).get())
+                .flatMap(programStage -> d2.programModule().programs.uid(programStage.program().uid()).get()
+                        .map(program -> program.access().data().write() && programStage.access().data().write()))
+                .toObservable();
     }
 
     @NonNull
     private Flowable<RuleEvent> queryEvent(@NonNull List<RuleDataValue> dataValues) {
-        return briteDatabase.createQuery(EventModel.TABLE, QUERY_EVENT, eventUid == null ? "" : eventUid)
-                .mapToOne(cursor -> {
-                    String eventUid = cursor.getString(0);
-                    String programStageUid = cursor.getString(1);
-                    Date eventDate = parseDate(cursor.getString(3));
-                    Date dueDate = cursor.isNull(4) ? eventDate : parseDate(cursor.getString(4));
-                    String orgUnit = cursor.getString(5);
-                    String orgUnitCode = getOrgUnitCode(orgUnit);
-                    String programStageName = cursor.getString(6);
-                    RuleEvent.Status status = RuleEvent.Status.valueOf(cursor.getString(2));
-
-                    return RuleEvent.builder()
-                            .event(eventUid)
-                            .programStage(programStageUid)
-                            .programStageName(programStageName)
-                            .status(status)
-                            .eventDate(eventDate)
-                            .dueDate(dueDate)
-                            .organisationUnit(orgUnit)
-                            .organisationUnitCode(orgUnitCode)
-                            .dataValues(dataValues)
-                            .build();
-
-                }).toFlowable(BackpressureStrategy.LATEST);
-    }
-
-    @Nonnull
-    private String getOrgUnitCode(String orgUnitUid) {
-        String ouCode = "";
-        try (Cursor cursor = briteDatabase.query("SELECT code FROM OrganisationUnit WHERE uid = ? LIMIT 1", orgUnitUid)) {
-            if (cursor != null && cursor.moveToFirst() && cursor.getString(0) != null) {
-                ouCode = cursor.getString(0);
-            }
-        }
-        return ouCode;
+        return d2.eventModule().events.uid(eventUid)
+                .get()
+                .map(event ->
+                        RuleEvent.builder()
+                                .event(eventUid)
+                                .programStage(event.programStage())
+                                .programStageName(d2.programModule().programStages.uid(event.programStage()).blockingGet().displayName())
+                                .status(RuleEvent.Status.valueOf(event.status().name()))
+                                .eventDate(event.eventDate())
+                                .dueDate(event.dueDate())
+                                .organisationUnit(event.organisationUnit())
+                                .organisationUnitCode(d2.organisationUnitModule().organisationUnits.uid(event.organisationUnit()).blockingGet().code())
+                                .dataValues(dataValues)
+                                .build()
+                ).toFlowable();
     }
 
     @NonNull
     private Flowable<List<RuleDataValue>> queryDataValues(String eventUid) {
-        return briteDatabase.createQuery(Arrays.asList(EventModel.TABLE,
-                TrackedEntityDataValueModel.TABLE), QUERY_VALUES, eventUid == null ? "" : eventUid)
-                .mapToList(cursor -> {
-                    Date eventDate = DateUtils.databaseDateFormat().parse(cursor.getString(0));
-                    String programStage = cursor.getString(1);
-                    String dataElement = cursor.getString(2);
-                    String value = cursor.getString(3) != null ? cursor.getString(3) : "";
-                    boolean useCode = cursor.getInt(4) == 1;
-                    String optionCode = cursor.getString(5);
-                    String optionName = cursor.getString(6);
-                    if (!isEmpty(optionCode) && !isEmpty(optionName))
-                        value = useCode ? optionCode : optionName; //If de has optionSet then check if value should be code or name for program rules
-                    return RuleDataValue.create(eventDate, programStage, dataElement, value);
-                }).toFlowable(BackpressureStrategy.LATEST);
-    }
-
-    @NonNull
-    private static Date parseDate(@NonNull String date) {
-        try {
-            return BaseIdentifiableObject.DATE_FORMAT.parse(date);
-        } catch (ParseException parseException) {
-            throw new RuntimeException(parseException);
-        }
+        return d2.eventModule().events.uid(eventUid).get()
+                .flatMap(event -> d2.trackedEntityModule().trackedEntityDataValues
+                        .byEvent().eq(eventUid)
+                        .get()
+                        .toFlowable()
+                        .flatMapIterable(list -> list)
+                        .map(dataValue ->
+                                RuleDataValue.create(event.eventDate(), event.programStage(), dataValue.dataElement(), dataValue.value())
+                        ).toList()).toFlowable();
     }
 
     @Override
     public Observable<Program> getProgramWithId(String programUid) {
-        return d2.programModule().programs.withAllChildren().byUid().eq(programUid).one().getAsync().toObservable();
+        return d2.programModule().programs.withAllChildren().byUid().eq(programUid).one().get().toObservable();
     }
 }

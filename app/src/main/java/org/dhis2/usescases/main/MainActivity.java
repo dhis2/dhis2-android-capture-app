@@ -285,21 +285,12 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
     @Override
     public void showPeriodRequest(FilterManager.PeriodRequest periodRequest) {
         if (periodRequest == FilterManager.PeriodRequest.FROM_TO) {
-            DateUtils.getInstance().showFromToSelector(this, (from, to) ->
-                    FilterManager.getInstance().addPeriod(
-                            DatePeriod.builder()
-                                    .startDate(from)
-                                    .endDate(to)
-                                    .build()
-                    ));
+            DateUtils.getInstance().showFromToSelector(this, FilterManager.getInstance()::addPeriod);
         } else {
-            DateUtils.getInstance().showPeriodDialog(this, (from, to) ->
-                    FilterManager.getInstance().addPeriod(
-                            DatePeriod.builder()
-                                    .startDate(from)
-                                    .endDate(to)
-                                    .build()
-                    ));
+            DateUtils.getInstance().showPeriodDialog(this, datePeriods -> {
+                FilterManager.getInstance().addPeriod(datePeriods);
+                    },
+                    true);
         }
     }
 

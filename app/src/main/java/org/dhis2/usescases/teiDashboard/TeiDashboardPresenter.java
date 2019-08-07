@@ -11,7 +11,7 @@ import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
-import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.program.Program;
 
 import io.reactivex.Observable;
 import io.reactivex.Single;
@@ -110,7 +110,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     }
 
     @Override
-    public void setProgram(ProgramModel program) {
+    public void setProgram(Program program) {
         this.programUid = program.uid();
         view.restoreAdapter(programUid);
         getData();
@@ -132,14 +132,14 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     }
 
     @Override
-    public void deteleteTei() {
+    public void deleteTei() {
         compositeDisposable.add(
                 canDeleteTEI()
                         .flatMap(canDelete -> {
                             if (canDelete)
                                 return Single.fromCallable(() -> {
                                     d2.trackedEntityModule().trackedEntityInstances.uid(teUid)
-                                            .delete();
+                                            .blockingDelete();
                                     return true;
                                 });
                             else
@@ -168,11 +168,11 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                             if (canDelete)
                                 return Single.fromCallable(() -> {
                                     EnrollmentObjectRepository enrollmentObjectRepository = d2.enrollmentModule().enrollments.uid(dashboardProgramModel.getCurrentEnrollment().uid());
-                                    enrollmentObjectRepository.setStatus(enrollmentObjectRepository.get().status());
-                                    enrollmentObjectRepository.delete();
+                                    enrollmentObjectRepository.setStatus(enrollmentObjectRepository.blockingGet().status());
+                                    enrollmentObjectRepository.blockingDelete();
                                     return !d2.enrollmentModule().enrollments.byTrackedEntityInstance().eq(teUid)
                                             .byState().notIn(State.TO_DELETE)
-                                            .byStatus().eq(EnrollmentStatus.ACTIVE).get().isEmpty();
+                                            .byStatus().eq(EnrollmentStatus.ACTIVE).blockingGet().isEmpty();
                                 });
                             else
                                 return Single.error(new AuthorityException(view.getContext().getString(R.string.delete_authority_error)));
@@ -194,9 +194,9 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     private Single<Boolean> canDeleteTEI() {
         return Single.defer(() -> Single.fromCallable(() -> {
                     boolean local = d2.trackedEntityModule().trackedEntityInstances.uid(
-                            teUid).get().state() == State.TO_POST;
+                            teUid).blockingGet().state() == State.TO_POST;
                     boolean hasAuthority = d2.userModule().authorities
-                            .byName().eq("F_TEI_CASCADE_DELETE").one().exists();
+                            .byName().eq("F_TEI_CASCADE_DELETE").one().blockingExists();
                     return local || hasAuthority;
                 }
         ));
@@ -205,9 +205,9 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     private Single<Boolean> canDeleteEnrollment() {
         return Single.defer(() -> Single.fromCallable(() -> {
                     boolean local = d2.enrollmentModule().enrollments.uid(
-                            dashboardProgramModel.getCurrentEnrollment().uid()).get().state() == State.TO_POST;
+                            dashboardProgramModel.getCurrentEnrollment().uid()).blockingGet().state() == State.TO_POST;
                     boolean hasAuthority = d2.userModule().authorities
-                            .byName().eq("F_ENROLLMENT_CASCADE_DELETE").one().exists();
+                            .byName().eq("F_ENROLLMENT_CASCADE_DELETE").one().blockingExists();
                     return local || hasAuthority;
                 }
         ));

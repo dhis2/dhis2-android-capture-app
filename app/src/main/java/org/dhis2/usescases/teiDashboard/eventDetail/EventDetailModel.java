@@ -4,7 +4,7 @@ import androidx.databinding.BaseObservable;
 
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.utils.DateUtils;
-import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
+import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
@@ -20,7 +20,7 @@ import java.util.List;
 public class EventDetailModel extends BaseObservable {
 
     private final ProgramStage programStage;
-    private final List<CategoryOptionComboModel> optionComboList;
+    private final List<CategoryOptionCombo> optionComboList;
     private final Program program;
     private final String catComboName;
     private final boolean isEnrollmentActive;
@@ -30,7 +30,7 @@ public class EventDetailModel extends BaseObservable {
     EventDetailModel(Event event,
                      ProgramStage programStage,
                      OrganisationUnit orgUnit,
-                     Pair<String, List<CategoryOptionComboModel>> optionComboList,
+                     Pair<String, List<CategoryOptionCombo>> optionComboList,
                      Program program,
                      boolean isEnrollmentActive) {
         this.event = event;
@@ -67,7 +67,7 @@ public class EventDetailModel extends BaseObservable {
         return orgUnit.displayName();
     }
 
-    public List<CategoryOptionComboModel> getOptionComboList() {
+    public List<CategoryOptionCombo> getOptionComboList() {
         return optionComboList;
     }
 
@@ -79,7 +79,7 @@ public class EventDetailModel extends BaseObservable {
     public String getEventCatComboOptionName() {
         String eventCatComboOptionName = null;
 
-        for (CategoryOptionComboModel option : optionComboList) {
+        for (CategoryOptionCombo option : optionComboList) {
             if (option.uid().equals(event.attributeOptionCombo()))
                 eventCatComboOptionName = option.name();
         }

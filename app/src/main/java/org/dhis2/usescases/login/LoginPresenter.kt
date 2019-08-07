@@ -60,8 +60,8 @@ class LoginPresenter internal constructor(private val configurationRepository: C
                     }, { Timber.e(it) }))
 
             disposable.add(
-                    Observable.just(if (userManager.d2.systemInfoModule().systemInfo.get() != null)
-                        userManager.d2.systemInfoModule().systemInfo.get()
+                    Observable.just(if (userManager.d2.systemInfoModule().systemInfo.blockingGet() != null)
+                        userManager.d2.systemInfoModule().systemInfo.blockingGet()
                     else
                         SystemInfo.builder().build())
                             .subscribeOn(Schedulers.io())

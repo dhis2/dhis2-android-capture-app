@@ -3,7 +3,7 @@ package org.dhis2.data.forms.dataentry.fields.coordinate;
 import androidx.annotation.NonNull;
 
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
-import org.hisp.dhis.android.core.common.ObjectStyleModel;
+import org.hisp.dhis.android.core.common.ObjectStyle;
 
 import com.google.auto.value.AutoValue;
 
@@ -15,7 +15,7 @@ import javax.annotation.Nonnull;
 
 @AutoValue
 public abstract class CoordinateViewModel extends FieldViewModel {
-    public static FieldViewModel create(String id, String label, Boolean mandatory, String value, String section, Boolean editable, String description, ObjectStyleModel objectStyle) {
+    public static FieldViewModel create(String id, String label, Boolean mandatory, String value, String section, Boolean editable, String description, ObjectStyle objectStyle) {
         return new AutoValue_CoordinateViewModel(id, label, mandatory, value, section, null, editable, null, null, null,description,objectStyle);
     }
 

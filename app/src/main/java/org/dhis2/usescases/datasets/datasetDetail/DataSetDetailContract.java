@@ -4,7 +4,6 @@ import com.unnamed.b.atv.model.TreeNode;
 
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 
 import java.util.Date;
 import java.util.List;

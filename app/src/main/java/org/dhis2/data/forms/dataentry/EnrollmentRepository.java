@@ -14,14 +14,14 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
-import org.hisp.dhis.android.core.common.ObjectStyleModel;
+import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ValueType;
-import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
+import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
-import org.hisp.dhis.android.core.maintenance.D2Error;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitTableInfo;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -106,7 +106,7 @@ final class EnrollmentRepository implements DataEntryRepository {
     @Override
     public Flowable<List<FieldViewModel>> list() {
         return briteDatabase
-                .createQuery(TrackedEntityAttributeValueModel.TABLE, QUERY, enrollment)
+                .createQuery("TrackedEntityAttributeValue", QUERY, enrollment)
                 .mapToList(this::transform)
                 .map(list -> list)
                 .toFlowable(BackpressureStrategy.BUFFER);
@@ -114,7 +114,7 @@ final class EnrollmentRepository implements DataEntryRepository {
 
     @Override
     public Observable<List<OrganisationUnitLevel>> getOrgUnitLevels() {
-        return Observable.just(d2.organisationUnitModule().organisationUnitLevels.get());
+        return Observable.just(d2.organisationUnitModule().organisationUnitLevels.blockingGet());
     }
 
     public List<FieldViewModel> fieldList() {
@@ -132,9 +132,9 @@ final class EnrollmentRepository implements DataEntryRepository {
 
 
     @Override
-    public Observable<List<OrganisationUnitModel>> getOrgUnits() {
-        return briteDatabase.createQuery(OrganisationUnitModel.TABLE, "SELECT * FROM " + OrganisationUnitModel.TABLE)
-                .mapToList(OrganisationUnitModel::create);
+    public Observable<List<OrganisationUnit>> getOrgUnits() {
+        return briteDatabase.createQuery(OrganisationUnitTableInfo.TABLE_INFO.name(), "SELECT * FROM " +OrganisationUnitTableInfo.TABLE_INFO.name())
+                .mapToList(OrganisationUnit::create);
     }
 
     @NonNull
@@ -160,8 +160,8 @@ final class EnrollmentRepository implements DataEntryRepository {
             dataValue = optionCodeName;
         }
 
-        if(valueType == ValueType.IMAGE)
-            uid = d2.enrollmentModule().enrollments.uid(enrollment).get().trackedEntityInstance()+"_"+uid;
+        if (valueType == ValueType.IMAGE)
+            uid = d2.enrollmentModule().enrollments.uid(enrollment).blockingGet().trackedEntityInstance() + "_" + uid;
 
         int optionCount = 0;
         if (!isEmpty(optionSet))
@@ -188,9 +188,9 @@ final class EnrollmentRepository implements DataEntryRepository {
 
                 //checks if tei has been deleted
                 if (teiUid != null) {
-                    try{
+                    try {
                         dataValue = d2.trackedEntityModule().reservedValueManager.blockingGetValue(uid, pattern == null || pattern.contains("OU") ? null : orgUnitUid);
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         dataValue = null;
                         warning = context.getString(R.string.no_reserved_values);
                     }
@@ -201,7 +201,7 @@ final class EnrollmentRepository implements DataEntryRepository {
                             dataValue = d2.trackedEntityModule().reservedValueManager.blockingGetValue(uid, pattern == null || pattern.contains("OU") ? null : orgUnitUid);
                         }
 
-                    if(!isEmpty(dataValue)) {
+                    if (!isEmpty(dataValue)) {
                         String INSERT = "INSERT INTO TrackedEntityAttributeValue\n" +
                                 "(lastUpdated, value, trackedEntityAttribute, trackedEntityInstance)\n" +
                                 "VALUES (?,?,?,?)";
@@ -214,9 +214,9 @@ final class EnrollmentRepository implements DataEntryRepository {
                         sqLiteBind(updateStatement, 4, teiUid == null ? "" : teiUid);
 
                         long insert = briteDatabase.executeInsert(
-                                TrackedEntityAttributeValueModel.TABLE, updateStatement);
+                                "TrackedEntityAttributeValue", updateStatement);
                         updateStatement.clearBindings();
-                    }else
+                    } else
                         mandatory = true;
                 }
             } catch (Exception e) {
@@ -226,25 +226,25 @@ final class EnrollmentRepository implements DataEntryRepository {
             }
         }
 
-        ValueTypeDeviceRenderingModel fieldRendering = null;
+        ValueTypeDeviceRendering fieldRendering = null;
         if (uid == null) {
             uid = "";
         }
         try (Cursor rendering = briteDatabase.query("SELECT ValueTypeDeviceRendering.* FROM ValueTypeDeviceRendering " +
                 "JOIN ProgramTrackedEntityAttribute ON ProgramTrackedEntityAttribute.uid = ValueTypeDeviceRendering.uid WHERE ProgramTrackedEntityAttribute.trackedEntityAttribute = ?", uid)) {
             if (rendering != null && rendering.moveToFirst()) {
-                fieldRendering = ValueTypeDeviceRenderingModel.create(rendering);
+                fieldRendering = ValueTypeDeviceRendering.create(rendering);
             }
         }
 
-        ObjectStyleModel objectStyle = ObjectStyleModel.builder().build();
+        ObjectStyle objectStyle = ObjectStyle.builder().build();
         try (Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", uid)) {
             if (objStyleCursor != null && objStyleCursor.moveToFirst())
-                objectStyle = ObjectStyleModel.create(objStyleCursor);
+                objectStyle = ObjectStyle.create(objStyleCursor);
         }
 
         if (valueType == ValueType.ORGANISATION_UNIT && !isEmpty(dataValue)) {
-            dataValue = dataValue + "_ou_" + d2.organisationUnitModule().organisationUnits.uid(dataValue).get().displayName();
+            dataValue = dataValue + "_ou_" + d2.organisationUnitModule().organisationUnits.uid(dataValue).blockingGet().displayName();
         }
 
         if (warning != null) {
@@ -263,10 +263,10 @@ final class EnrollmentRepository implements DataEntryRepository {
     public void assign(String field, String content) {
         try (Cursor dataValueCursor = briteDatabase.query("SELECT * FROM TrackedEntityAttributeValue WHERE trackedEntityAttribute = ?", field == null ? "" : field)) {
             if (dataValueCursor != null && dataValueCursor.moveToFirst()) {
-                TrackedEntityAttributeValueModel dataValue = TrackedEntityAttributeValueModel.create(dataValueCursor);
+                TrackedEntityAttributeValue dataValue = TrackedEntityAttributeValue.create(dataValueCursor);
                 ContentValues contentValues = dataValue.toContentValues();
-                contentValues.put(TrackedEntityAttributeValueModel.Columns.VALUE, content);
-                int row = briteDatabase.update(TrackedEntityAttributeValueModel.TABLE, contentValues, "trackedEntityAttribute = ?", field == null ? "" : field);
+                contentValues.put("value", content);
+                int row = briteDatabase.update("TrackedEntityAttributeValue", contentValues, "trackedEntityAttribute = ?", field == null ? "" : field);
                 if (row == -1) {
                     Timber.d("Error updating field %s", field == null ? "" : field);
                 }

@@ -149,28 +149,28 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
 
             if (currentPeriod != DAILY && currentPeriod != NONE) {
                 new RxDateDialog(getAbstractActivity(), currentPeriod).create().show().subscribe(selectedDates -> {
-                    if (!selectedDates.isEmpty()) {
+                    if (!selectedDates.val1().isEmpty()) {
                         String textToShow;
                         if (currentPeriod == WEEKLY) {
-                            textToShow = weeklyFormat.format(selectedDates.get(0)) + ", " + yearFormat.format(selectedDates.get(0));
-                            chosenDateWeek = (ArrayList<Date>) selectedDates;
-                            if (selectedDates.size() > 1)
+                            textToShow = weeklyFormat.format(selectedDates.val1().get(0)) + ", " + yearFormat.format(selectedDates.val1().get(0));
+                            chosenDateWeek = (ArrayList<Date>) selectedDates.val1();
+                            if (selectedDates.val1().size() > 1)
                                 textToShow += "... " /*+ weeklyFormat.format(selectedDates.get(1))*/;
                         } else if (currentPeriod == MONTHLY) {
-                            String dateFormatted = monthFormat.format(selectedDates.get(0));
+                            String dateFormatted = monthFormat.format(selectedDates.val1().get(0));
                             textToShow = dateFormatted.substring(0, 1).toUpperCase() + dateFormatted.substring(1);
-                            chosenDateMonth = (ArrayList<Date>) selectedDates;
-                            if (selectedDates.size() > 1)
+                            chosenDateMonth = (ArrayList<Date>) selectedDates.val1();
+                            if (selectedDates.val1().size() > 1)
                                 textToShow += "... " /*+ monthFormat.format(selectedDates.get(1))*/;
                         } else {
-                            textToShow = yearFormat.format(selectedDates.get(0));
-                            chosenDateYear = (ArrayList<Date>) selectedDates;
-                            if (selectedDates.size() > 1)
+                            textToShow = yearFormat.format(selectedDates.val1().get(0));
+                            chosenDateYear = (ArrayList<Date>) selectedDates.val1();
+                            if (selectedDates.val1().size() > 1)
                                 textToShow += "... " /*+ yearFormat.format(selectedDates.get(1))*/;
 
                         }
                         binding.buttonPeriodText.setText(textToShow);
-                        presenter.updateDateFilter(DateUtils.getInstance().getDatePeriodListFor(selectedDates, currentPeriod));
+                        presenter.updateDateFilter(DateUtils.getInstance().getDatePeriodListFor(selectedDates.val1(), currentPeriod));
 
                     } else {
                         ArrayList<Date> date = new ArrayList<>();
@@ -194,7 +194,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                                 break;
                         }
                         binding.buttonPeriodText.setText(text);
-                        presenter.updateDateFilter(DateUtils.getInstance().getDatePeriodListFor(selectedDates, currentPeriod));
+                        presenter.updateDateFilter(DateUtils.getInstance().getDatePeriodListFor(selectedDates.val1(), currentPeriod));
                     }
                 }, Timber::d);
             } else if (currentPeriod == DAILY) {
@@ -310,7 +310,6 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
             binding.buttonPeriodText.setText(textToShow);
         }
     }
-
 
     @Override
     public Consumer<List<ProgramViewModel>> swapProgramModelData() {

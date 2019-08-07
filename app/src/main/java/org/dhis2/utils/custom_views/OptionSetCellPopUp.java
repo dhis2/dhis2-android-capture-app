@@ -58,7 +58,7 @@ public class OptionSetCellPopUp extends PopupMenu {
                             if (optionGroupsToHide!=null && !optionGroupsToHide.isEmpty()) {
                                 for (String groupUid : optionGroupsToHide) {
                                     finalOptionsToHide.addAll(
-                                            UidsHelper.getUidsList(d2.optionModule().optionGroups.withOptions().uid(groupUid).get().options())
+                                            UidsHelper.getUidsList(d2.optionModule().optionGroups.withOptions().uid(groupUid).blockingGet().options())
                                     );
                                 }
                             }
@@ -66,7 +66,7 @@ public class OptionSetCellPopUp extends PopupMenu {
                                 optionRepository = optionRepository
                                         .byUid().notIn(finalOptionsToHide);
 
-                            return optionRepository.get();
+                            return optionRepository.blockingGet();
                         })
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())

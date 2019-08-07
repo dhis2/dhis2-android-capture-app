@@ -17,7 +17,7 @@ import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.dataelement.DataElement;
 import org.hisp.dhis.android.core.dataset.DataInputPeriod;
-import org.hisp.dhis.android.core.datavalue.DataValueModel;
+import org.hisp.dhis.android.core.datavalue.DataValue;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -170,9 +170,9 @@ public class DataValuePresenter implements DataValueContract.Presenter{
         return mandatoryOk;
     }
 
-    private DataValueModel tranformDataSetTableModelToDataValueModel(DataSetTableModel dataSetTableModel){
+    private DataValue tranformDataSetTableModelToDataValueModel(DataSetTableModel dataSetTableModel){
         Date currentDate = Calendar.getInstance().getTime();
-        return DataValueModel.builder()
+        return DataValue.builder()
                 .dataElement(dataSetTableModel.dataElement())
                 .period(dataSetTableModel.period())
                 .organisationUnit(dataSetTableModel.organisationUnit())

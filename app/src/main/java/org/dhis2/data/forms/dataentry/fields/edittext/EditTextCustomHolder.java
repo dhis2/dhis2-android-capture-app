@@ -23,7 +23,7 @@ import org.dhis2.utils.Preconditions;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.dhis2.utils.ValidationUtils;
 import org.dhis2.utils.custom_views.TextInputAutoCompleteTextView;
-import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
+import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
 
 import java.lang.reflect.Type;
@@ -138,7 +138,7 @@ final class EditTextCustomHolder extends FormViewHolder {
                 editTextModel.value() == null ? "" : valueOf(editTextModel.value()));
     }
 
-    private void setRenderingType(ValueTypeDeviceRenderingModel renderingType) {
+    private void setRenderingType(ValueTypeDeviceRendering renderingType) {
         if (renderingType != null && renderingType.type() == ValueTypeRenderingType.AUTOCOMPLETE) {
             autoCompleteValues = getListFromPreference(editTextModel.uid());
             ArrayAdapter<String> autoCompleteAdapter = new ArrayAdapter<>(binding.customEdittext.getContext(), android.R.layout.simple_dropdown_item_1line, autoCompleteValues);

@@ -69,6 +69,6 @@ public class NotesPresenterImpl implements NotesContracts.Presenter {
 
     @Override
     public boolean hasProgramWritePermission() {
-        return d2.programModule().programs.uid(programUid).withAllChildren().get().access().data().write();
+        return d2.programModule().programs.uid(programUid).withAllChildren().blockingGet().access().data().write();
     }
 }

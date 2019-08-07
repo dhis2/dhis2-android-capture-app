@@ -17,7 +17,7 @@
 
         <variable
             name="attribute"
-            type="java.util.List&lt;org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel&gt;" />
+            type="java.util.List&lt;org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue&gt;" />
 
         <variable
             name="relationship"

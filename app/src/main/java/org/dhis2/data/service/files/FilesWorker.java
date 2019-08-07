@@ -102,7 +102,7 @@ public class FilesWorker extends Worker {
 
         String fileName = d2.trackedEntityModule().trackedEntityAttributeValues
                 .byTrackedEntityAttribute().eq(attrUid)
-                .byTrackedEntityInstance().eq(teiUid).one().get().value();
+                .byTrackedEntityInstance().eq(teiUid).one().blockingGet().value();
         File file = new File(FileResourcesUtil.getUploadDirectory(getApplicationContext()), fileName);
         upload(file, teiUid, attrUid);
     }
@@ -133,14 +133,14 @@ public class FilesWorker extends Worker {
         triggerNotification("File processor", "Downloading files...", file_download_channel);
 
         List<TrackedEntityAttribute> imageAttr = d2.trackedEntityModule().trackedEntityAttributes
-                .byValueType().eq(ValueType.IMAGE).get();
+                .byValueType().eq(ValueType.IMAGE).blockingGet();
 
         List<String> attrUids = new ArrayList<>();
         for (TrackedEntityAttribute attribute : imageAttr)
             attrUids.add(attribute.uid());
 
         List<TrackedEntityAttributeValue> imageValues = d2.trackedEntityModule().trackedEntityAttributeValues
-                .byTrackedEntityAttribute().in(attrUids).get();
+                .byTrackedEntityAttribute().in(attrUids).blockingGet();
 
         int downloadCount = 1;
         for (TrackedEntityAttributeValue attributeValue : imageValues) {

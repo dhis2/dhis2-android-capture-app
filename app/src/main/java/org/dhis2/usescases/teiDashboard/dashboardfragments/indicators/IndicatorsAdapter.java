@@ -9,7 +9,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.dhis2.R;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.ItemIndicatorBinding;
-import org.hisp.dhis.android.core.program.ProgramIndicatorModel;
+import org.hisp.dhis.android.core.program.ProgramIndicator;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,20 +21,21 @@ import java.util.List;
 
 public class IndicatorsAdapter extends RecyclerView.Adapter<IndicatorViewHolder> {
 
-    private List<Trio<ProgramIndicatorModel, String, String>> programIndicators;
+    private List<Trio<ProgramIndicator, String, String>> programIndicators;
 
     IndicatorsAdapter() {
         programIndicators = new ArrayList<>();
     }
 
+    @NotNull
     @Override
-    public IndicatorViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public IndicatorViewHolder onCreateViewHolder(@NotNull ViewGroup parent, int viewType) {
         ItemIndicatorBinding binding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.item_indicator, parent, false);
         return new IndicatorViewHolder(binding);
     }
 
     @Override
-    public void onBindViewHolder(IndicatorViewHolder holder, int position) {
+    public void onBindViewHolder(@NotNull IndicatorViewHolder holder, int position) {
         holder.bind(programIndicators.get(position));
     }
 
@@ -42,13 +44,13 @@ public class IndicatorsAdapter extends RecyclerView.Adapter<IndicatorViewHolder>
         return programIndicators != null ? programIndicators.size() : 0;
     }
 
-    public void setIndicators(List<Trio<ProgramIndicatorModel, String, String>> indicators) {
+    public void setIndicators(List<Trio<ProgramIndicator, String, String>> indicators) {
         this.programIndicators.clear();
         this.programIndicators.addAll(indicators);
         notifyDataSetChanged();
     }
 
-    public void addIndicator(Trio<ProgramIndicatorModel, String, String> indicator) {
+    public void addIndicator(Trio<ProgramIndicator, String, String> indicator) {
         programIndicators.add(indicator);
         notifyItemInserted(programIndicators.size() - 1);
     }

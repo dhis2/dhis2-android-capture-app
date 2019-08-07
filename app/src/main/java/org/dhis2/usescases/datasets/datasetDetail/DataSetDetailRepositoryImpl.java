@@ -27,7 +27,7 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
     @NonNull
     @Override
     public Observable<List<OrganisationUnit>> orgUnits() {
-        return Observable.just(d2.organisationUnitModule().organisationUnits.get());
+        return Observable.just(d2.organisationUnitModule().organisationUnits.blockingGet());
     }
 
     @Override
@@ -40,15 +40,15 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
             repo = repo.byPeriod().in(periodFilter);
 
         DataSetInstanceCollectionRepository finalRepo = repo;
-        return Flowable.fromIterable(finalRepo.get())
+        return Flowable.fromIterable(finalRepo.blockingGet())
                 .map(dataSetReport -> {
-                    Period period = d2.periodModule().periods.byPeriodId().eq(dataSetReport.period()).one().get();
+                    Period period = d2.periodModule().periods.byPeriodId().eq(dataSetReport.period()).one().blockingGet();
                     String periodName = DateUtils.getInstance().getPeriodUIString(period.periodType(), period.startDate(), Locale.getDefault());
                     DataSetCompleteRegistration dscr = d2.dataSetModule().dataSetCompleteRegistrations
                             .byDataSetUid().eq(dataSetUid)
                             .byAttributeOptionComboUid().eq(dataSetReport.attributeOptionComboUid())
                             .byOrganisationUnitUid().eq(dataSetReport.organisationUnitUid())
-                            .byPeriod().eq(dataSetReport.period()).one().get();
+                            .byPeriod().eq(dataSetReport.period()).one().blockingGet();
                     State state;
                     if(dscr != null && dscr.state() != State.SYNCED) {
                         if (dscr.state() == State.TO_DELETE)

@@ -8,15 +8,19 @@ import com.gabrielittner.auto.value.cursor.ColumnAdapter;
 import com.gabrielittner.auto.value.cursor.ColumnName;
 import com.google.auto.value.AutoValue;
 
+import org.hisp.dhis.android.core.common.BaseModel;
 import org.hisp.dhis.android.core.data.database.DbDateColumnAdapter;
-import org.hisp.dhis.android.core.dataset.DataInputPeriodModel;
 
 import java.util.Date;
 
 @AutoValue
 public abstract class DateRangeInputPeriodModel {
 
-    public static class Columns extends DataInputPeriodModel.Columns {
+    public static class Columns extends BaseModel.Columns {
+        public static final String DATA_SET = "dataSet";
+        public static final String PERIOD = "period";
+        public static final String OPENING_DATE = "openingDate";
+        public static final String CLOSING_DATE = "closingDate";
         public static final String INITIAL_PERIOD = "initialPeriodDate";
         public static final String END_PERIOD = "endPeriodDate";
     }
@@ -31,19 +35,19 @@ public abstract class DateRangeInputPeriodModel {
 
     public final static String TABLE = "DataInputPeriod";
 
-    @ColumnName(DataInputPeriodModel.Columns.DATA_SET)
+    @ColumnName(Columns.DATA_SET)
     public abstract String dataSet();
 
-    @ColumnName(DataInputPeriodModel.Columns.PERIOD)
+    @ColumnName(Columns.PERIOD)
     public abstract String period();
 
     @Nullable
-    @ColumnName(DataInputPeriodModel.Columns.OPENING_DATE)
+    @ColumnName(Columns.OPENING_DATE)
     @ColumnAdapter(DbDateColumnAdapter.class)
     public abstract Date openingDate();
 
     @Nullable
-    @ColumnName(DataInputPeriodModel.Columns.CLOSING_DATE)
+    @ColumnName(Columns.CLOSING_DATE)
     @ColumnAdapter(DbDateColumnAdapter.class)
     public abstract Date closingDate();
 

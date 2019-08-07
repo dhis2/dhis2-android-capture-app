@@ -52,16 +52,15 @@ import org.dhis2.utils.custom_views.CategoryOptionPopUp;
 import org.dhis2.utils.custom_views.CustomDialog;
 import org.dhis2.utils.custom_views.OrgUnitDialog_2;
 import org.dhis2.utils.custom_views.PeriodDialog;
-import org.dhis2.utils.custom_views.ProgressBarAnimation;
 import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
+import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
-import org.hisp.dhis.android.core.period.FeatureType;
 import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
@@ -101,7 +100,7 @@ import static org.dhis2.utils.Constants.TRACKED_ENTITY_INSTANCE;
  * QUADRAM. Created by Cristian on 01/03/2018.
  */
 
-public class EventInitialActivity extends ActivityGlobalAbstract implements EventInitialContract.View, DatePickerDialog.OnDateSetListener, ProgressBarAnimation.OnUpdate {
+public class EventInitialActivity extends ActivityGlobalAbstract implements EventInitialContract.View, DatePickerDialog.OnDateSetListener {
 
     private static final int PROGRESS_TIME = 2000;
     @Inject
@@ -310,12 +309,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     private void initProgressBar() {
         binding.completion.setVisibility(eventUid == null ? View.GONE : View.VISIBLE);
-    }
-
-    @Override
-    public void onUpdate(boolean lost, float value) {
-        String text = String.valueOf((int) value) + "%";
-        binding.progress.setText(text);
     }
 
     @Override
@@ -534,11 +527,11 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             binding.date.setText(DateUtils.uiDateFormat().format(selectedDate));
         }
 
-        if (event.coordinate() != null) {
+        if (event.geometry() != null && event.geometry().type()!= FeatureType.NONE) {
             runOnUiThread(() -> {
                 if (isEmpty(savedLat)) {
-                    binding.lat.setText(String.valueOf(event.coordinate().latitude()));
-                    binding.lon.setText(String.valueOf(event.coordinate().longitude()));
+//                    binding.lat.setText(String.valueOf(event.coordinate().latitude())); //TODO: SUPPORT ALL FEATURE TYPES
+//                    binding.lon.setText(String.valueOf(event.coordinate().longitude()));
                 } else {
                     binding.lat.setText(savedLat);
                     binding.lon.setText(savedLon);
@@ -588,8 +581,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             || programStage.featureType() == FeatureType.POLYGON) {
             binding.location1.setVisibility(View.GONE);
         }
-        if (programStage.captureCoordinates()) {
-            binding.coordinatesLayout.setVisibility(View.VISIBLE);
+        if (programStage.featureType()!=null && programStage.featureType() != FeatureType.NONE) {
+            binding.coordinatesLayout.setVisibility(View.VISIBLE); //TODO: SUPPORT FOR ALL FEATYRE TYPES
             binding.location1.setOnClickListener(v -> {
                 if (v.isClickable()) presenter.onLocationClick();
             });

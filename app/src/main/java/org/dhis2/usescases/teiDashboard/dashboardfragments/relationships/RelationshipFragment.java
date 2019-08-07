@@ -21,7 +21,7 @@ import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
-import org.hisp.dhis.android.core.relationship.RelationshipTypeModel;
+import org.hisp.dhis.android.core.relationship.RelationshipType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -50,7 +50,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
 
     private RelationshipAdapter relationshipAdapter;
     private RapidFloatingActionHelper rfaHelper;
-    private RelationshipTypeModel relationshipType;
+    private RelationshipType relationshipType;
 
     @Override
     public void onAttach(@NotNull Context context) {
@@ -100,7 +100,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
     }
 
     @Override
-    public Consumer<List<Trio<RelationshipTypeModel, String, Integer>>> setRelationshipTypes() {
+    public Consumer<List<Trio<RelationshipType, String, Integer>>> setRelationshipTypes() {
         return this::initFab;
     }
 
@@ -123,27 +123,27 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
         }
     }
 
-    private void initFab(List<Trio<RelationshipTypeModel, String, Integer>> relationshipTypes) {
+    private void initFab(List<Trio<RelationshipType, String, Integer>> relationshipTypes) {
 
         RapidFloatingActionContentLabelList rfaContent = new RapidFloatingActionContentLabelList(getAbstracContext());
         rfaContent.setOnRapidFloatingActionContentLabelListListener(new RapidFloatingActionContentLabelList.OnRapidFloatingActionContentLabelListListener() {
             @Override
             public void onRFACItemLabelClick(int position, RFACLabelItem item) {
-                Pair<RelationshipTypeModel, String> pair = (Pair<RelationshipTypeModel, String>) item.getWrapper();
+                Pair<RelationshipType, String> pair = (Pair<RelationshipType, String>) item.getWrapper();
                 goToRelationShip(pair.val0(), pair.val1());
             }
 
             @Override
             public void onRFACItemIconClick(int position, RFACLabelItem item) {
-                Pair<RelationshipTypeModel, String> pair = (Pair<RelationshipTypeModel, String>) item.getWrapper();
+                Pair<RelationshipType, String> pair = (Pair<RelationshipType, String>) item.getWrapper();
                 goToRelationShip(pair.val0(), pair.val1());
             }
         });
         List<RFACLabelItem> items = new ArrayList<>();
-        for (Trio<RelationshipTypeModel, String, Integer> trio : relationshipTypes) {
-            RelationshipTypeModel relationshipType = trio.val0();
+        for (Trio<RelationshipType, String, Integer> trio : relationshipTypes) {
+            RelationshipType relationshipType = trio.val0();
             int resource = trio.val2();
-            items.add(new RFACLabelItem<Pair<RelationshipTypeModel, String>>()
+            items.add(new RFACLabelItem<Pair<RelationshipType, String>>()
                     .setLabel(relationshipType.displayName())
                     .setResId(resource)
                     .setLabelTextBold(true)
@@ -165,7 +165,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
         }
     }
 
-    private void goToRelationShip(@NonNull RelationshipTypeModel relationshipTypeModel,
+    private void goToRelationShip(@NonNull RelationshipType relationshipTypeModel,
                                   @NonNull String teiTypeUid) {
         rfaHelper.toggleContent();
         relationshipType = relationshipTypeModel;

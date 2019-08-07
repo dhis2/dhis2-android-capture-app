@@ -50,7 +50,7 @@ import org.dhis2.utils.SyncUtils;
 import org.dhis2.utils.custom_views.CoordinatesView;
 import org.dhis2.utils.custom_views.CustomDialog;
 import org.dhis2.utils.custom_views.PictureView;
-import org.hisp.dhis.android.core.period.FeatureType;
+import org.hisp.dhis.android.core.common.FeatureType;
 
 import java.io.File;
 import java.lang.reflect.Field;
