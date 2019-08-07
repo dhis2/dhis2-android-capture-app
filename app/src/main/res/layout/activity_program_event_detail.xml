@@ -126,7 +126,15 @@
             android:id="@+id/backdropLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="?colorPrimary">
+            android:background="?colorPrimary"
+            >
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/backdropGuideTop"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                app:layout_constraintGuide_percent="0.0" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/filterLayout"
@@ -135,7 +143,7 @@
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/backdropGuide"
                 tools:listitem="@layout/item_filter" />
 
             <androidx.constraintlayout.widget.Guideline
@@ -149,7 +157,7 @@
                 android:id="@+id/empty_teis"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:background="@color/white"
+                android:background="@drawable/ic_front_backdrop_bg"
                 android:gravity="center"
                 android:padding="42dp"
                 android:text="@string/empty_tei_add"
