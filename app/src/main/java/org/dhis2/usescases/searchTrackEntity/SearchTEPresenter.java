@@ -643,4 +643,9 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     public void onSyncIconClick(String teiUid) {
         view.showSyncDialog(teiUid, SyncStatusDialog.ConflictType.TEI, processorDismissDialog);
     }
+
+    @Override
+    public void showFilter() {
+        view.showHideFilter();
+    }
 }

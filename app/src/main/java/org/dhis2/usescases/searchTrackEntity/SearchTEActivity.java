@@ -11,9 +11,13 @@ import android.content.res.TypedArray;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.transition.ChangeBounds;
+import android.transition.Transition;
+import android.transition.TransitionManager;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AnimationUtils;
@@ -22,6 +26,7 @@ import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.ViewCompat;
 import androidx.databinding.BindingMethod;
@@ -77,7 +82,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     private boolean fromRelationship = false;
     private String fromRelationshipTeiUid;
-
+    private boolean backDropActive;
     private BroadcastReceiver networkReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -92,6 +97,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     //---------------------------------------------------------------------------------------------
     //region LIFECYCLE
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         tEType = getIntent().getStringExtra("TRACKED_ENTITY_UID");
@@ -124,6 +130,14 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
         binding.formRecycler.setAdapter(new FormAdapter(getSupportFragmentManager(), this));
 
+        View rootView = binding.scrollView;
+
+        ViewGroup.LayoutParams layoutParams = rootView.getLayoutParams();
+        if(binding.formRecycler.getHeight() > binding.backdropGuide.getHeight()){
+            layoutParams.height = binding.backdropGuide.getHeight();
+            rootView.setLayoutParams(layoutParams);
+        }
+
         binding.enrollmentButton.setOnTouchListener((v, event) -> {
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
                 v.requestFocus();
@@ -135,7 +149,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             return true;
         });
 
-        binding.appbatlayout.addOnOffsetChangedListener((appBarLayout, verticalOffset) -> {
+        binding.executePendingBindings();
+        /*binding.appbatlayout.addOnOffsetChangedListener((appBarLayout, verticalOffset) -> {
             float elevationPx = TypedValue.applyDimension(
                     TypedValue.COMPLEX_UNIT_DIP,
                     7,
@@ -144,7 +159,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             boolean isHidden = binding.formRecycler.getHeight() + verticalOffset == 0;
             ViewCompat.setElevation(binding.mainToolbar, isHidden ? elevationPx : 0);
             ViewCompat.setElevation(appBarLayout, isHidden ? 0 : elevationPx);
-        });
+        });*/
     }
 
     @Override
@@ -309,7 +324,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             prefs.edit().putInt(Constants.PROGRAM_THEME, programTheme).apply();
             binding.enrollmentButton.setBackgroundTintList(ColorStateList.valueOf(programColor));
             binding.mainToolbar.setBackgroundColor(programColor);
-            binding.appbatlayout.setBackgroundColor(programColor);
+            binding.backdropLayout.setBackgroundColor(programColor);
         } else {
             prefs.edit().remove(Constants.PROGRAM_THEME).apply();
             int colorPrimary;
@@ -332,7 +347,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             }
             binding.enrollmentButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, colorPrimary)));
             binding.mainToolbar.setBackgroundColor(ContextCompat.getColor(this, colorPrimary));
-            binding.appbatlayout.setBackgroundColor(ContextCompat.getColor(this, colorPrimary));
+            binding.backdropLayout.setBackgroundColor(ContextCompat.getColor(this, colorPrimary));
         }
 
         binding.executePendingBindings();
@@ -368,6 +383,27 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             binding.enrollmentButton.clearAnimation();
             hideKeyboard();
         }
+    }
+
+    @Override
+    public void showHideFilter() {
+        Transition transition = new ChangeBounds();
+        transition.setDuration(200);
+        TransitionManager.beginDelayedTransition(binding.backdropLayout, transition);
+        backDropActive = !backDropActive;
+        ConstraintSet initSet = new ConstraintSet();
+        initSet.clone(binding.backdropLayout);
+
+        if (backDropActive) {
+            initSet.connect(R.id.scrollView, ConstraintSet.TOP, R.id.form_recycler, ConstraintSet.BOTTOM, 0);
+            //initSet.connect(R.id.empty_teis, ConstraintSet.TOP, R.id.backdropGuide, ConstraintSet.BOTTOM, 0);
+        }
+        else {
+            initSet.connect(R.id.scrollView, ConstraintSet.TOP, R.id.backdropGuideTop, ConstraintSet.BOTTOM, 0);
+            //initSet.connect(R.id.empty_teis, ConstraintSet.TOP, R.id.backdropGuideTop, ConstraintSet.BOTTOM, 0);
+        }
+
+        initSet.applyTo(binding.backdropLayout);
     }
 
     @Override

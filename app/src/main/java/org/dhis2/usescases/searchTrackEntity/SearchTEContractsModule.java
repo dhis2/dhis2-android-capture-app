@@ -45,6 +45,8 @@ public class SearchTEContractsModule {
         void setLiveData(LiveData<PagedList<SearchTeiModel>> liveData);
 
         void setFabIcon(boolean needsSearch);
+
+        void showHideFilter();
     }
 
     public interface Presenter {
@@ -90,5 +92,7 @@ public class SearchTEContractsModule {
         void initSearch(SearchTEContractsModule.View view);
 
         void onSyncIconClick(String teiUid);
+
+        void showFilter();
     }
 }
