@@ -26,11 +26,9 @@ import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
-import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 
 import java.util.ArrayList;
@@ -73,7 +71,7 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
         compositeDisposable.add(
                 Observable.fromCallable(() -> {
 
-                    Iterator<TrackedEntityAttribute> iterator = d2.trackedEntityModule().trackedEntityAttributes.byValueType().eq(ValueType.IMAGE).get().iterator();
+                    Iterator<TrackedEntityAttribute> iterator = d2.trackedEntityModule().trackedEntityAttributes.byValueType().eq(ValueType.IMAGE).blockingGet().iterator();
                     List<String> attrUids = new ArrayList<>();
                     while (iterator.hasNext())
                         attrUids.add(iterator.next().uid());
@@ -81,7 +79,7 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
                     return d2.trackedEntityModule().trackedEntityAttributeValues
                             .byTrackedEntityInstance().eq(teiUid)
                             .byTrackedEntityAttribute().in(attrUids)
-                            .one().get();
+                            .one().blockingGet();
                 }).map(attrValue -> teiUid + "_" + attrValue.trackedEntityAttribute() + ".png")
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
@@ -169,7 +167,7 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
 
     @Override
     public void completeEnrollment() {
-        if (d2.programModule().programs.uid(programUid).withAllChildren().get().access().data().write()) {
+        if (d2.programModule().programs.uid(programUid).withAllChildren().blockingGet().access().data().write()) {
             Flowable<Long> flowable;
             EnrollmentStatus newStatus = EnrollmentStatus.COMPLETED;
 
@@ -276,7 +274,7 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
             intent.putExtras(EventCaptureActivity.getActivityBundle(uid, programUid));
             view.openEventCapture(intent);
         } else {
-            Event event = d2.eventModule().events.uid(uid).get();
+            Event event = d2.eventModule().events.uid(uid).blockingGet();
             Intent intent = new Intent(view.getContext(), EventInitialActivity.class);
             intent.putExtras(EventInitialActivity.getBundle(
                     programUid, uid, EventCreationType.DEFAULT.name(), teiUid, null, event.organisationUnit(), event.programStage(), dashboardModel.getCurrentEnrollment().uid(), 0, dashboardModel.getCurrentEnrollment().status()

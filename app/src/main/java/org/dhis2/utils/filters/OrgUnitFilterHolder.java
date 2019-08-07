@@ -7,8 +7,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.databinding.ObservableField;
 
-import com.evrencoskun.tableview.filter.Filter;
-
 import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.databinding.ItemFilterOrgUnitBinding;
@@ -55,7 +53,7 @@ class OrgUnitFilterHolder extends FilterHolder {
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 if (charSequence.length() > 3) {
                     currentOrgUnit = d2.organisationUnitModule().organisationUnits
-                            .byDisplayName().like("%" + charSequence + "%").one().get();
+                            .byDisplayName().like("%" + charSequence + "%").one().blockingGet();
                     if (currentOrgUnit != null)
                         localBinding.filterOrgUnit.orgUnitHint.setText(currentOrgUnit.displayName());
                     else

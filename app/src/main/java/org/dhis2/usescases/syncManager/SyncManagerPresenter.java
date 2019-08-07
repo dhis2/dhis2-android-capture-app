@@ -69,8 +69,9 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
                 checkData
                         .startWith(true)
                         .map(start -> {
-                            int teiCount = d2.trackedEntityModule().trackedEntityInstances.byState().neq(State.RELATIONSHIP).count();
-                            int eventCount = d2.eventModule().events.getAsync().toObservable()
+                            int teiCount =
+                                    d2.trackedEntityModule().trackedEntityInstances.byState().neq(State.RELATIONSHIP).blockingCount();
+                            int eventCount = d2.eventModule().events.get().toObservable()
                                     .map(events -> {
                                         List<Event> eventsToCount = new ArrayList<>();
                                         for (Event event : events) {
@@ -268,12 +269,12 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
 
     @Override
     public boolean dataHasErrors() {
-        return !d2.eventModule().events.byState().in(State.ERROR).get().isEmpty() || !d2.trackedEntityModule().trackedEntityInstances.byState().in(State.ERROR).get().isEmpty();
+        return !d2.eventModule().events.byState().in(State.ERROR).blockingGet().isEmpty() || !d2.trackedEntityModule().trackedEntityInstances.byState().in(State.ERROR).blockingGet().isEmpty();
     }
 
     @Override
     public boolean dataHasWarnings() {
-        return !d2.eventModule().events.byState().in(State.WARNING).get().isEmpty() || !d2.trackedEntityModule().trackedEntityInstances.byState().in(State.WARNING).get().isEmpty();
+        return !d2.eventModule().events.byState().in(State.WARNING).blockingGet().isEmpty() || !d2.trackedEntityModule().trackedEntityInstances.byState().in(State.WARNING).blockingGet().isEmpty();
     }
 
     @Override
@@ -347,7 +348,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
 
     @Override
     public void checkSyncErrors() {
-        view.showSyncErrors(d2.importModule().trackerImportConflicts.get());
+        view.showSyncErrors(d2.importModule().trackerImportConflicts.blockingGet());
     }
 
     @Override

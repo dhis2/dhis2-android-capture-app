@@ -1,26 +1,21 @@
 package org.dhis2.data.forms.dataentry.tablefields.orgUnit;
 
-import androidx.databinding.ViewDataBinding;
-import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
-import androidx.fragment.app.FragmentManager;
 import android.view.View;
 import android.widget.ImageView;
+
+import androidx.databinding.ViewDataBinding;
+import androidx.fragment.app.FragmentManager;
+
+import com.google.android.material.textfield.TextInputLayout;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.utils.custom_views.OrgUnitDialog;
 import org.dhis2.utils.custom_views.TextInputAutoCompleteTextView;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 
-import java.util.List;
-
-import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.processors.FlowableProcessor;
-import io.reactivex.schedulers.Schedulers;
-import timber.log.Timber;
 
 /**
  * QUADRAM. Created by ppajuelo on 19/03/2018.

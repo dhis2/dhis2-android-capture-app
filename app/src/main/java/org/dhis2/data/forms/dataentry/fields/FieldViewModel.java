@@ -1,7 +1,6 @@
 package org.dhis2.data.forms.dataentry.fields;
 
 import org.hisp.dhis.android.core.common.ObjectStyle;
-import org.hisp.dhis.android.core.common.ObjectStyleModel;
 
 import javax.annotation.Nonnull;
 

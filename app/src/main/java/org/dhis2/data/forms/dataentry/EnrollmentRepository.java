@@ -21,7 +21,7 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitTableInfo;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -106,7 +106,7 @@ final class EnrollmentRepository implements DataEntryRepository {
     @Override
     public Flowable<List<FieldViewModel>> list() {
         return briteDatabase
-                .createQuery(TrackedEntityAttributeValueModel.TABLE, QUERY, enrollment)
+                .createQuery("TrackedEntityAttributeValue", QUERY, enrollment)
                 .mapToList(this::transform)
                 .map(list -> list)
                 .toFlowable(BackpressureStrategy.BUFFER);
@@ -114,7 +114,7 @@ final class EnrollmentRepository implements DataEntryRepository {
 
     @Override
     public Observable<List<OrganisationUnitLevel>> getOrgUnitLevels() {
-        return Observable.just(d2.organisationUnitModule().organisationUnitLevels.get());
+        return Observable.just(d2.organisationUnitModule().organisationUnitLevels.blockingGet());
     }
 
     public List<FieldViewModel> fieldList() {
@@ -161,7 +161,7 @@ final class EnrollmentRepository implements DataEntryRepository {
         }
 
         if (valueType == ValueType.IMAGE)
-            uid = d2.enrollmentModule().enrollments.uid(enrollment).get().trackedEntityInstance() + "_" + uid;
+            uid = d2.enrollmentModule().enrollments.uid(enrollment).blockingGet().trackedEntityInstance() + "_" + uid;
 
         int optionCount = 0;
         if (!isEmpty(optionSet))
@@ -214,7 +214,7 @@ final class EnrollmentRepository implements DataEntryRepository {
                         sqLiteBind(updateStatement, 4, teiUid == null ? "" : teiUid);
 
                         long insert = briteDatabase.executeInsert(
-                                TrackedEntityAttributeValueModel.TABLE, updateStatement);
+                                "TrackedEntityAttributeValue", updateStatement);
                         updateStatement.clearBindings();
                     } else
                         mandatory = true;
@@ -244,7 +244,7 @@ final class EnrollmentRepository implements DataEntryRepository {
         }
 
         if (valueType == ValueType.ORGANISATION_UNIT && !isEmpty(dataValue)) {
-            dataValue = dataValue + "_ou_" + d2.organisationUnitModule().organisationUnits.uid(dataValue).get().displayName();
+            dataValue = dataValue + "_ou_" + d2.organisationUnitModule().organisationUnits.uid(dataValue).blockingGet().displayName();
         }
 
         if (warning != null) {
@@ -263,10 +263,10 @@ final class EnrollmentRepository implements DataEntryRepository {
     public void assign(String field, String content) {
         try (Cursor dataValueCursor = briteDatabase.query("SELECT * FROM TrackedEntityAttributeValue WHERE trackedEntityAttribute = ?", field == null ? "" : field)) {
             if (dataValueCursor != null && dataValueCursor.moveToFirst()) {
-                TrackedEntityAttributeValueModel dataValue = TrackedEntityAttributeValueModel.create(dataValueCursor);
+                TrackedEntityAttributeValue dataValue = TrackedEntityAttributeValue.create(dataValueCursor);
                 ContentValues contentValues = dataValue.toContentValues();
-                contentValues.put(TrackedEntityAttributeValueModel.Columns.VALUE, content);
-                int row = briteDatabase.update(TrackedEntityAttributeValueModel.TABLE, contentValues, "trackedEntityAttribute = ?", field == null ? "" : field);
+                contentValues.put("value", content);
+                int row = briteDatabase.update("TrackedEntityAttributeValue", contentValues, "trackedEntityAttribute = ?", field == null ? "" : field);
                 if (row == -1) {
                     Timber.d("Error updating field %s", field == null ? "" : field);
                 }

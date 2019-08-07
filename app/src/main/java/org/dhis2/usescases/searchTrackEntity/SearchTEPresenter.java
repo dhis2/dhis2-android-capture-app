@@ -559,15 +559,9 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     @Override
     public void addRelationship(String TEIuid, String relationshipTypeUid, boolean online) {
         if (!online) {
-            String relationshipType;
-            if (relationshipTypeUid == null)
-                relationshipType = selectedProgram.relationshipType().uid();
-            else
-                relationshipType = relationshipTypeUid;
-
             Intent intent = new Intent();
             intent.putExtra("TEI_A_UID", TEIuid);
-            intent.putExtra("RELATIONSHIP_TYPE_UID", relationshipType);
+            intent.putExtra("RELATIONSHIP_TYPE_UID", relationshipTypeUid);
             view.getAbstractActivity().setResult(RESULT_OK, intent);
             view.getAbstractActivity().finish();
         } else {
