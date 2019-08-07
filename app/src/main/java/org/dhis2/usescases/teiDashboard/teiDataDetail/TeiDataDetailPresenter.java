@@ -14,9 +14,12 @@ import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import org.dhis2.usescases.teiDashboard.DashboardRepository;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
+import org.hisp.dhis.android.core.arch.helpers.GeometryHelper;
+import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 
 import java.util.Date;
+import java.util.List;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -84,8 +87,8 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
                             .subscribe(
                                     geometry -> {
                                         //TODO Implement all cases for FeatureType
-                                        String[] coords = geometry.coordinates().replace("[", "").replace("]", "").trim().split(",");
-                                        view.setLocation(Double.valueOf(coords[0]), Double.valueOf(coords[1]));
+                                        List<Double> point = GeometryHelper.getPoint(geometry);
+                                        view.setLocation(point.get(0), point.get(1));
                                     },
                                     Timber::e
                             )
