@@ -7,15 +7,45 @@ import androidx.lifecycle.MutableLiveData
 import com.mapbox.geojson.Point
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
+import java.util.*
 
 class PolygonViewModel(app: Application): AndroidViewModel(app) {
 
-    private var _response = MutableLiveData<List<PolygonPoint>>()
-    val response: LiveData<List<PolygonPoint>>
+    private var _response = MutableLiveData<MutableList<PolygonPoint>>()
+    val response: LiveData<MutableList<PolygonPoint>>
         get() = _response
 
+    init {
+        _response.value = mutableListOf()
+    }
+
+    fun add(polygonPoint: PolygonPoint) {
+        if (polygonPoint.point != null) {
+            val list = _response.value
+            list?.add(polygonPoint)
+            _response.value = list
+        }
+    }
 
 
+    fun remove(polygonPoint: PolygonPoint) {
+        val list = _response.value
+        list?.remove(polygonPoint)
+        _response.value = list
+    }
 
-    inner class PolygonPoint(val point: Point?, val source: GeoJsonSource?, val layer: SymbolLayer?, val selected: Boolean = true)
+    fun createPolygonPoint(): PolygonPoint
+    {
+        return PolygonPoint()
+    }
+
+    inner class PolygonPoint(var point: Point? = null, var source: GeoJsonSource? = null, var layer: SymbolLayer? = null, var selected: Boolean = true) {
+        val uuid = UUID.randomUUID().toString()
+        override fun toString(): String {
+            point?.let {
+                return "${it.latitude().toString().take(8)}, ${it.longitude().toString().take(8)}"
+            }
+            return ""
+        }
+    }
 }

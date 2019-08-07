@@ -10,7 +10,9 @@ import android.graphics.ImageDecoder.createSource
 import android.os.Bundle
 import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -39,8 +41,9 @@ import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.map.multipolygon.MultiPolygonViewModel
 import org.dhis2.usescases.map.point.PointAdapter
 import org.dhis2.usescases.map.point.PointViewModel
+import org.dhis2.usescases.map.polygon.PolygonAdapter
 import org.dhis2.usescases.map.polygon.PolygonViewModel
-import org.hisp.dhis.android.core.period.FeatureType
+import org.hisp.dhis.android.core.common.FeatureType
 import java.util.*
 
 
@@ -53,11 +56,10 @@ class MapSelectorActivity : ActivityGlobalAbstract() {
     lateinit var mapView: MapView
     lateinit var map: MapboxMap
     lateinit var mFusedLocationClient: FusedLocationProviderClient
-    lateinit var style: Style
-    private val markers = ArrayList<Source>()
-    private val layers = ArrayList<Layer>()
+    var style: Style? = null
     lateinit var location_type: FeatureType
     lateinit var binding: ActivityMapSelectorBinding
+    val arrayOfIds = mutableListOf<String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,61 +68,6 @@ class MapSelectorActivity : ActivityGlobalAbstract() {
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         binding.back.setOnClickListener { v -> finish() }
         location_type = FeatureType.valueOf(intent.getStringExtra(LOCATION_TYPE_EXTRA))
-            /*
-            fab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                    if (points.size() <= index) {
-                        points.add(new CustomMark(new ArrayList<>(), UUID.randomUUID().toString()));
-                        points.get(index).marker.add(new ArrayList<>());
-                    }
-                    Point point = Point.fromLngLat(map.getCameraPosition().target.getLongitude(),
-                            map.getCameraPosition().target.getLatitude());
-                    points.get(index).marker.get(0).add(point);
-                    if (location_type == FeatureType.POINT) {
-                        if (map != null && map.getCameraPosition().target != null) {
-                            setList();
-                        } else {
-                            setResult(RESULT_CANCELED);
-                            finish();
-                        }
-                        return;
-                    }
-                    addPoint(point);
-
-                }
-            });
-
-    */
-
-        /*
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if (points.size() <= index) {
-                    points.add(new CustomMark(new ArrayList<>(), UUID.randomUUID().toString()));
-                    points.get(index).marker.add(new ArrayList<>());
-                }
-                Point point = Point.fromLngLat(map.getCameraPosition().target.getLongitude(),
-                        map.getCameraPosition().target.getLatitude());
-                points.get(index).marker.get(0).add(point);
-                if (location_type == FeatureType.POINT) {
-                    if (map != null && map.getCameraPosition().target != null) {
-                        setList();
-                    } else {
-                        setResult(RESULT_CANCELED);
-                        finish();
-                    }
-                    return;
-                }
-                addPoint(point);
-
-            }
-        });
-
-*/
         mapView = binding.mapView
         mapView.onCreate(savedInstanceState)
         mapView.getMapAsync { mapboxMap ->
@@ -131,44 +78,13 @@ class MapSelectorActivity : ActivityGlobalAbstract() {
             }
             when (location_type) {
                 FeatureType.MULTI_POLYGON -> bindMultiPolygon()
-                FeatureType.POINT -> bindPoint()
+                FeatureType.POINT -> bindPolygon()
                 FeatureType.POLYGON -> bindPolygon()
                 else -> finish()
             }
         }
     }
 
-    private fun setList() {
-        val data = Intent()
-        when (location_type) {
-            FeatureType.POLYGON -> {
-                val returnList = ArrayList<Point>()
-                for (lst in points) {
-                    returnList.addAll(lst.marker[0])
-                }
-                data.putExtra(LATITUDE, returnList[0].latitude().toString())
-                data.putExtra(LONGITUDE, returnList[0].longitude().toString())
-                data.putExtra(POLYGON_DATA, Gson().toJson(returnList))
-            }
-            FeatureType.POINT -> {
-                data.putExtra(LATITUDE, map.cameraPosition.target.latitude.toString())
-                data.putExtra(LONGITUDE, map.cameraPosition.target.longitude.toString())
-            }
-            FeatureType.MULTI_POLYGON -> {
-                val returnList = ArrayList<List<Point>>()
-                for (lst in points) {
-                    returnList.addAll(lst.marker)
-                }
-                data.putExtra(LATITUDE, returnList[0][0].latitude().toString())
-                data.putExtra(LONGITUDE, returnList[0][0].longitude().toString())
-                data.putExtra(MULTI_POLYGON_DATA, Gson().toJson(returnList))
-            }
-            else -> finish()
-        }
-
-        setResult(Activity.RESULT_OK, data)
-        finish()
-    }
 
     private fun bindPoint() {
         val viewModel =  ViewModelProviders.of(this).get(PointViewModel::class.java)
@@ -184,19 +100,37 @@ class MapSelectorActivity : ActivityGlobalAbstract() {
     private fun setPointToViewModel(point: Point, viewModel: PointViewModel) {
         viewModel.setPoint(point)
         viewModel.source?.let { geoSon ->
-            val geoJson = (style.getSource(geoSon.id) as GeoJsonSource)
-            geoJson.setGeoJson(
-                    Feature.fromGeometry(
-                            point)
-            )
-            viewModel.source = geoJson
+            viewModel.source = updateSource(point, geoSon)
             return
         }
-        style.addImage(viewModel.getId(),
-                BitmapFactory.decodeResource(
-                        this.resources, R.drawable.mapbox_marker_icon_default))
         viewModel.source = createSource(viewModel.getId(), point)
         viewModel.layer = createLayer(viewModel.getId())
+        showSource(viewModel.source!!, viewModel.layer!!, viewModel.getId(), R.drawable.mapbox_marker_icon_default)
+    }
+
+    private fun updateSource(point: Point, source: GeoJsonSource): GeoJsonSource {
+        val geoJson = (style?.getSource(source.id) as GeoJsonSource)
+        geoJson.setGeoJson(
+                Feature.fromGeometry(
+                        point)
+        )
+        return geoJson
+    }
+
+    private fun showSource(source: GeoJsonSource, layer: SymbolLayer, id: String, drawable: Int) {
+        style?.addImage(id,
+                BitmapFactory.decodeResource(
+                        this.resources, drawable))
+        style?.addSource(source)
+        style?.addLayer(layer)
+    }
+
+    private fun printPoint(point: Point, source: GeoJsonSource, layer: SymbolLayer, id: String, drawable: Int) {
+        if (style?.getSource(source.id) != null) {
+            updateSource(point, source)
+        } else {
+            showSource(source, layer, id, drawable)
+        }
     }
 
     private fun createLayer(id: String): SymbolLayer {
@@ -204,20 +138,31 @@ class MapSelectorActivity : ActivityGlobalAbstract() {
         symbolLayer.withProperties(
                 PropertyFactory.iconImage(id)
         )
-        style.addLayer(symbolLayer)
         return symbolLayer
     }
 
     private fun createSource(id: String, point: Point): GeoJsonSource {
         val geoJsonSource = GeoJsonSource(id, Feature.fromGeometry(
                 point))
-        style.addSource(geoJsonSource)
         return geoJsonSource
     }
 
     private fun bindPolygon() {
         val viewModel =  ViewModelProviders.of(this).get(PolygonViewModel::class.java)
-
+        binding.recycler.layoutManager = GridLayoutManager(this, 2)
+        viewModel.response.observe(this, Observer<MutableList<PolygonViewModel.PolygonPoint>> {
+            binding.recycler.adapter = PolygonAdapter(it, viewModel)
+            updateVector(it)
+        })
+        map.addOnMapClickListener { it ->
+            val point = Point.fromLngLat(it.longitude, it.latitude)
+            val polygonPoint = viewModel.createPolygonPoint()
+            polygonPoint.point = point
+            polygonPoint.layer = createLayer(polygonPoint.uuid)
+            polygonPoint.source = createSource(polygonPoint.uuid, point)
+            viewModel.add(polygonPoint)
+            true
+        }
     }
 
     private fun bindMultiPolygon() {
@@ -225,39 +170,40 @@ class MapSelectorActivity : ActivityGlobalAbstract() {
 
     }
 
-
-    fun updateVector() {
-        for (s in markers) {
-            style.removeSource(s)
-        }
-        for (l in layers) {
-            style.removeLayer(l)
-        }
-        markers.clear()
-        layers.clear()
-        for (lst in points) {
-            val list = ArrayList<List<Point>>()
-            for (pointsList in lst.marker) {
-                if (pointsList.size == 1) {
-                    pointsList.add(pointsList[0])
+    private fun updateVector(list: MutableList<PolygonViewModel.PolygonPoint>) {
+        style?.let { style ->
+            val sourceName = "polygon_source"
+            style.removeLayer(sourceName)
+            style.removeSource(sourceName)
+            arrayOfIds.forEach {
+                style.getLayer(it)?.let{layer ->
+                    style.removeLayer(layer)
                 }
-                if (pointsList[0].longitude() != pointsList[pointsList.size - 1].longitude() && pointsList[0].latitude() != pointsList[pointsList.size - 1].latitude()) {
-                    pointsList.add(pointsList[0])
+                style.getSource(it)?.let {
+                    style.removeSource(it)
                 }
-                list.add(pointsList)
             }
-            if (style.getSource(lst.uuid) == null) {
-                style.addSource(GeoJsonSource(lst.uuid, Polygon.fromLngLats(list)))
-                val rnd = Random()
-                val color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256))
-                style.addLayer(FillLayer(lst.uuid, lst.uuid).withProperties(
-                        fillColor(color))
-                )
-            } else {
-                (style.getSource(lst.uuid) as GeoJsonSource).setGeoJson(Polygon.fromLngLats(list))
+            arrayOfIds.clear()
+            val points = mutableListOf<MutableList<Point>>()
+            points.add(mutableListOf())
+            list.forEach {point ->
+                point.point?.let {
+                    points[0].add(it)
+                    arrayOfIds.add(point.uuid)
+                    printPoint(it, point.source!!, point.layer!!, point.uuid, R.drawable.ic_oval_green)
+                }
+            }
+            if (points[0].size > 3) {
+                if (style.getSource(sourceName) == null) {
+                    style.addSource(GeoJsonSource(sourceName, Polygon.fromLngLats(points)))
+                    style.addLayerBelow(FillLayer(sourceName, sourceName).withProperties(
+                            fillColor(resources.getColor(R.color.green_transparent))), "settlement-label"
+                    )
+                } else {
+                    (style.getSource(sourceName) as GeoJsonSource).setGeoJson(Polygon.fromLngLats(points))
+                }
             }
         }
-
     }
 
     public override fun onStart() {
