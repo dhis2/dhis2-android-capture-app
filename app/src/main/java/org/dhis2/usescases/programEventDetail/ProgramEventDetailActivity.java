@@ -126,6 +126,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         } catch (Exception e) {
             Timber.e(e);
         }
+
     }
 
     @Override
@@ -170,8 +171,10 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
             liveAdapter.submitList(pagedList, () -> {
                 if (binding.recycler.getAdapter() != null && binding.recycler.getAdapter().getItemCount() == 0) {
                     binding.emptyTeis.setVisibility(View.VISIBLE);
+                    binding.recycler.setVisibility(View.GONE);
                 } else {
                     binding.emptyTeis.setVisibility(View.GONE);
+                    binding.recycler.setVisibility(View.VISIBLE);
                 }
             });
 
@@ -210,17 +213,14 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         backDropActive = !backDropActive;
         ConstraintSet initSet = new ConstraintSet();
         initSet.clone(binding.backdropLayout);
-        if(binding.emptyTeis.getVisibility() != View.VISIBLE){
-            if (backDropActive)
-                initSet.connect(R.id.recycler, ConstraintSet.TOP, R.id.backdropGuide, ConstraintSet.BOTTOM, 0);
-            else
-                initSet.connect(R.id.recycler, ConstraintSet.TOP, R.id.toolbar, ConstraintSet.BOTTOM, 0);
+
+        if (backDropActive) {
+            initSet.connect(R.id.recycler, ConstraintSet.TOP, R.id.backdropGuide, ConstraintSet.BOTTOM, 0);
+            initSet.connect(R.id.empty_teis, ConstraintSet.TOP, R.id.backdropGuide, ConstraintSet.BOTTOM, 0);
         }
         else {
-            if (backDropActive)
-                initSet.connect(R.id.empty_teis, ConstraintSet.TOP, R.id.backdropGuide, ConstraintSet.BOTTOM, 0);
-            else
-                initSet.connect(R.id.empty_teis, ConstraintSet.TOP, R.id.toolbar, ConstraintSet.BOTTOM, 0);
+            initSet.connect(R.id.recycler, ConstraintSet.TOP, R.id.backdropGuideTop, ConstraintSet.BOTTOM, 0);
+            initSet.connect(R.id.empty_teis, ConstraintSet.TOP, R.id.backdropGuideTop, ConstraintSet.BOTTOM, 0);
         }
 
         initSet.applyTo(binding.backdropLayout);
