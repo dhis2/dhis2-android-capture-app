@@ -115,7 +115,8 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                         .map(filterManager -> eventRepository.filteredProgramEvents(
                                 filterManager.getPeriodFilters(),
                                 filterManager.getOrgUnitUidsFilters(),
-                                filterManager.getCatOptComboFilters()
+                                filterManager.getCatOptComboFilters(),
+                                filterManager.getEventStatusFilters()
                         ))
                         .subscribeOn(Schedulers.computation())
                         .observeOn(AndroidSchedulers.mainThread())
@@ -132,7 +133,8 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                                         .flatMap(filterManager -> eventRepository.filteredEventsForMap(
                                                 filterManager.getPeriodFilters(),
                                                 filterManager.getOrgUnitUidsFilters(),
-                                                filterManager.getCatOptComboFilters()
+                                                filterManager.getCatOptComboFilters(),
+                                                filterManager.getEventStatusFilters()
                                         )))
                         .subscribeOn(Schedulers.computation())
                         .observeOn(AndroidSchedulers.mainThread())
@@ -211,6 +213,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
 
     @Override
     public void onBackClick() {
+
         view.back();
     }
 

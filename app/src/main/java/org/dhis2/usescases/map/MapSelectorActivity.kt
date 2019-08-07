@@ -5,8 +5,6 @@ import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
-import android.graphics.Color
-import android.graphics.ImageDecoder.createSource
 import android.os.Bundle
 import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
@@ -16,7 +14,6 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import com.google.gson.Gson
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.Point
 import com.mapbox.geojson.Polygon
@@ -28,12 +25,10 @@ import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.style.layers.FillLayer
-import com.mapbox.mapboxsdk.style.layers.Layer
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory.fillColor
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
-import com.mapbox.mapboxsdk.style.sources.Source
 import org.dhis2.BuildConfig
 import org.dhis2.R
 import org.dhis2.databinding.ActivityMapSelectorBinding
@@ -78,7 +73,7 @@ class MapSelectorActivity : ActivityGlobalAbstract() {
             }
             when (location_type) {
                 FeatureType.MULTI_POLYGON -> bindMultiPolygon()
-                FeatureType.POINT -> bindPolygon()
+                FeatureType.POINT -> bindPoint()
                 FeatureType.POLYGON -> bindPolygon()
                 else -> finish()
             }
@@ -94,6 +89,12 @@ class MapSelectorActivity : ActivityGlobalAbstract() {
             val point = Point.fromLngLat(it.longitude, it.latitude)
             setPointToViewModel(point, viewModel)
             true
+        }
+        binding.saveButton.setOnClickListener {
+            val value = viewModel.getPointAsString()
+            value?.let {
+                finishResult(it)
+            }
         }
     }
 
@@ -162,6 +163,12 @@ class MapSelectorActivity : ActivityGlobalAbstract() {
             polygonPoint.source = createSource(polygonPoint.uuid, point)
             viewModel.add(polygonPoint)
             true
+        }
+        binding.saveButton.setOnClickListener {
+            val value = viewModel.getPointAsString()
+            value?.let {
+                finishResult(it)
+            }
         }
     }
 
@@ -284,12 +291,7 @@ class MapSelectorActivity : ActivityGlobalAbstract() {
 
     companion object {
         private val ACCESS_COARSE_LOCATION_PERMISSION_REQUEST = 102
-        val LATITUDE = "latitude"
-        val POLYGON_DATA = "polygon_data"
-        val MULTI_POLYGON_DATA = "multi_polygon_data"
-        val LONGITUDE = "longitude"
-        private val points = ArrayList<CustomMark>()
-        private val index = 0
+        val DATA_EXTRA = "data_extra"
         private val LOCATION_TYPE_EXTRA = "LOCATION_TYPE_EXTRA"
 
         fun create(activity: Activity, locationType: FeatureType): Intent {
@@ -298,7 +300,13 @@ class MapSelectorActivity : ActivityGlobalAbstract() {
             return intent
         }
     }
+
+    private fun finishResult(value: String) {
+        val intent = Intent()
+        intent.putExtra(DATA_EXTRA, value)
+        intent.putExtra(LOCATION_TYPE_EXTRA, location_type.toString())
+        setResult(RESULT_OK, intent)
+    }
 }
 
-internal class CustomMark(var marker: MutableList<MutableList<Point>>, var uuid: String)
 

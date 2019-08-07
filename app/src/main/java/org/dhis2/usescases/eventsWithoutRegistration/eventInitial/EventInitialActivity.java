@@ -52,14 +52,17 @@ import org.dhis2.utils.custom_views.CategoryOptionPopUp;
 import org.dhis2.utils.custom_views.CustomDialog;
 import org.dhis2.utils.custom_views.OrgUnitDialog_2;
 import org.dhis2.utils.custom_views.PeriodDialog;
+import org.hisp.dhis.android.core.arch.helpers.GeometryHelper;
 import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.common.FeatureType;
+import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.Program;
@@ -530,8 +533,15 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         if (event.geometry() != null && event.geometry().type()!= FeatureType.NONE) {
             runOnUiThread(() -> {
                 if (isEmpty(savedLat)) {
-//                    binding.lat.setText(String.valueOf(event.coordinate().latitude())); //TODO: SUPPORT ALL FEATURE TYPES
-//                    binding.lon.setText(String.valueOf(event.coordinate().longitude()));
+                    if (GeometryHelper.conatainsAPoint(event.geometry())) {
+                        try {
+                            List<Double> points = GeometryHelper.getPoint(event.geometry());
+                            binding.lat.setText(String.valueOf(points.get(0))); //TODO: SUPPORT ALL FEATURE TYPES
+                            binding.lon.setText(String.valueOf(points.get(1)));
+                        } catch (D2Error d2Error) {
+                            d2Error.printStackTrace();
+                        }
+                    }
                 } else {
                     binding.lat.setText(savedLat);
                     binding.lon.setText(savedLon);
@@ -582,7 +592,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             binding.location1.setVisibility(View.GONE);
         }
         if (programStage.featureType()!=null && programStage.featureType() != FeatureType.NONE) {
-            binding.coordinatesLayout.setVisibility(View.VISIBLE); //TODO: SUPPORT FOR ALL FEATYRE TYPES
+            binding.coordinatesLayout.setVisibility(View.VISIBLE); //TODO: SUPPORT FOR ALL FEATURE TYPES
             binding.location1.setOnClickListener(v -> {
                 if (v.isClickable()) presenter.onLocationClick();
             });

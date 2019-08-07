@@ -5,6 +5,7 @@ import android.database.Cursor;
 
 import androidx.annotation.NonNull;
 
+import com.google.common.collect.Lists;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.squareup.sqlbrite2.BriteDatabase;
 
@@ -16,6 +17,7 @@ import org.dhis2.utils.CodeGenerator;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.arch.helpers.GeometryHelper;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.Coordinates;
@@ -429,10 +431,7 @@ public class EnrollmentFormRepository implements FormRepository {
         return latLng -> {
             // TODO: Implement all cases of FEATURE TYPE
             EnrollmentObjectRepository repo = d2.enrollmentModule().enrollments.uid(enrollmentUid);
-            repo.setGeometry(Geometry.builder()
-                    .type(FeatureType.POINT)
-                    .coordinates(Coordinates.create(latLng.getLatitude(), latLng.getLongitude()).toString()
-                    ).build());
+            repo.setGeometry(GeometryHelper.createPointGeometry(latLng.getLatitude(), latLng.getLongitude()));
         };
     }
 

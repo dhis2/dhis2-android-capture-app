@@ -5,8 +5,11 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.google.common.collect.Lists;
+
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.arch.helpers.GeometryHelper;
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
 import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryCombo;
@@ -218,10 +221,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                 case NONE:
                     break;
                 case POINT:
-                    eventRepository.setGeometry(Geometry.builder()
-                            .type(FeatureType.POINT)
-                            .coordinates(Coordinates.create(Double.valueOf(latitude), Double.valueOf(longitude)).toString())
-                            .build());
+                    eventRepository.setGeometry(GeometryHelper.createPointGeometry(Double.valueOf(latitude), Double.valueOf(longitude)));
                     break;
                 case POLYGON:
                 case MULTI_POLYGON:
@@ -265,10 +265,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                 case NONE:
                     break;
                 case POINT:
-                    eventRepository.setGeometry(Geometry.builder()
-                            .type(FeatureType.POINT)
-                            .coordinates(Coordinates.create(Double.valueOf(latitude), Double.valueOf(longitude)).toString())
-                            .build());
+                    eventRepository.setGeometry(GeometryHelper.createPointGeometry(Double.valueOf(latitude), Double.valueOf(longitude)));
                     break;
                 case POLYGON:
                 case MULTI_POLYGON:
@@ -314,10 +311,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                         case NONE:
                             break;
                         case POINT:
-                            eventRepository.setGeometry(Geometry.builder()
-                                    .type(FeatureType.POINT)
-                                    .coordinates(Coordinates.create(Double.valueOf(latitude), Double.valueOf(longitude)).toString())
-                                    .build());
+                            eventRepository.setGeometry(GeometryHelper.createPointGeometry(Double.valueOf(latitude), Double.valueOf(longitude)));
                             break;
                         case POLYGON:
                         case MULTI_POLYGON:
