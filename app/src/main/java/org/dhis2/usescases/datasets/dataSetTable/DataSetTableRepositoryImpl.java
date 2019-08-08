@@ -4,7 +4,10 @@ import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.dataset.DataSet;
 import org.hisp.dhis.android.core.dataset.DataSetCompleteRegistration;
+import org.hisp.dhis.android.core.dataset.DataSetElement;
+import org.hisp.dhis.android.core.dataset.DataSetInstance;
 import org.hisp.dhis.android.core.dataset.Section;
+import org.hisp.dhis.android.core.datavalue.DataValue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,13 +55,41 @@ public class DataSetTableRepositoryImpl implements DataSetTableRepository {
 
 
     @Override
-    public Flowable<State> dataSetStatus() {
+    public Flowable<Boolean> dataSetStatus() {
         DataSetCompleteRegistration dscr = d2.dataSetModule().dataSetCompleteRegistrations
                 .byDataSetUid().eq(dataSetUid)
                 .byAttributeOptionComboUid().eq(catOptCombo)
                 .byOrganisationUnitUid().eq(orgUnitUid)
                 .byPeriod().eq(periodId).one().blockingGet();
-        return Flowable.defer(() -> dscr != null ? Flowable.just(dscr.state()) : Flowable.empty());
+        return Flowable.just(dscr != null && dscr.state() != State.TO_DELETE);
+    }
+
+    public Flowable<State> dataSetState(){
+        return Flowable.defer(() ->{
+            State state = null;
+            DataSetInstance dataSetInstance = d2.dataSetModule().dataSetInstances
+                    .byDataSetUid().eq(dataSetUid)
+                    .byAttributeOptionComboUid().eq(catOptCombo)
+                    .byOrganisationUnitUid().eq(orgUnitUid)
+                    .byPeriod().eq(periodId).one().blockingGet();
+
+            if(dataSetInstance != null ) {
+                state = dataSetInstance.state();
+                List<String> dataElementsUids = new ArrayList<>();
+                for(DataSetElement dataSetElement : d2.dataSetModule().dataSets.withDataSetElements().byUid().eq(dataSetUid).one().blockingGet().dataSetElements()){
+                    dataElementsUids.add(dataSetElement.dataElement().uid());
+                }
+                for (DataValue dataValue : d2.dataValueModule().dataValues
+                        .byDataElementUid().in(dataElementsUids)
+                        .byAttributeOptionComboUid().eq(catOptCombo)
+                        .byOrganisationUnitUid().eq(orgUnitUid)
+                        .byPeriod().eq(periodId).blockingGet()) {
+                    if (dataValue.state() != State.SYNCED)
+                        state = State.TO_UPDATE;
+                }
+            }
+            return state != null ? Flowable.just(state) : Flowable.empty();
+        });
     }
 
     @Override
