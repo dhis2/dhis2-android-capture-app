@@ -12,6 +12,7 @@ import org.dhis2.databinding.ItemFilterCatOptCombBinding;
 import org.dhis2.databinding.ItemFilterOrgUnitBinding;
 import org.dhis2.databinding.ItemFilterPeriodBinding;
 import org.dhis2.databinding.ItemFilterStateBinding;
+import org.dhis2.databinding.ItemFilterStatusBinding;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 
@@ -45,6 +46,8 @@ public class FiltersAdapter extends RecyclerView.Adapter<FilterHolder> {
                 return new SyncStateFilterHolder(ItemFilterStateBinding.inflate(inflater, parent, false), openedFilter);
             case CAT_OPT_COMB:
                 return new CatOptCombFilterHolder(ItemFilterCatOptCombBinding.inflate(inflater, parent, false), openedFilter, catCombData);
+            case EVENT_STATUS:
+                return new StatusEventFilterHolder(ItemFilterStatusBinding.inflate(inflater, parent, false), openedFilter);
             default:
                 throw new IllegalArgumentException("Unsupported filter value");
         }
@@ -72,4 +75,12 @@ public class FiltersAdapter extends RecyclerView.Adapter<FilterHolder> {
             notifyDataSetChanged();
         }
     }
+
+    public void addEventStatus(){
+        if(!filtersList.contains(Filters.EVENT_STATUS)) {
+            filtersList.add(Filters.EVENT_STATUS);
+            notifyDataSetChanged();
+        }
+    }
+
 }

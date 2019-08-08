@@ -29,11 +29,13 @@ public class FilterManager {
     private List<State> stateFilters;
     private List<DatePeriod> periodFilters;
     private List<CategoryOptionCombo> catOptComboFilters;
+    private List<EventStatus> eventStatusFilters;
 
     private ObservableField<Integer> ouFiltersApplied;
     private ObservableField<Integer> stateFiltersApplied;
     private ObservableField<Integer> periodFiltersApplied;
     private ObservableField<Integer> catOptCombFiltersApplied;
+    private ObservableField<Integer> eventStatusFiltersApplied;
 
     private FlowableProcessor<FilterManager> filterProcessor;
     private FlowableProcessor<Boolean> ouTreeProcessor;
@@ -60,11 +62,13 @@ public class FilterManager {
         stateFilters = new ArrayList<>();
         periodFilters = null;
         catOptComboFilters = new ArrayList<>();
+        eventStatusFilters = new ArrayList<>();
 
         ouFiltersApplied = new ObservableField<>(0);
         stateFiltersApplied = new ObservableField<>(0);
         periodFiltersApplied = new ObservableField<>(0);
         catOptCombFiltersApplied = new ObservableField<>(0);
+        eventStatusFiltersApplied = new ObservableField<>(0);
 
         filterProcessor = PublishProcessor.create();
         ouTreeProcessor = PublishProcessor.create();
@@ -85,6 +89,17 @@ public class FilterManager {
     }
 
 //    endregion
+
+    public void addEventStatus(EventStatus... status){
+        for(EventStatus eventStatus: status){
+            if(eventStatusFilters.contains(eventStatus))
+                eventStatusFilters.remove(eventStatus);
+            else
+                eventStatusFilters.add(eventStatus);
+        }
+        eventStatusFiltersApplied.set(eventStatusFilters.size());
+        filterProcessor.onNext(this);
+    }
 
     public void addPeriod(List<DatePeriod> datePeriod) {
         this.periodFilters = datePeriod;
@@ -125,6 +140,8 @@ public class FilterManager {
                 return periodFiltersApplied;
             case CAT_OPT_COMB:
                 return catOptCombFiltersApplied;
+            case EVENT_STATUS:
+                return eventStatusFiltersApplied;
             default:
                 return new ObservableField<>(0);
         }
@@ -173,6 +190,8 @@ public class FilterManager {
         return stateFilters;
     }
 
+    public List<EventStatus> getEventStatusFilters(){ return eventStatusFilters; }
+
     public void addPeriodRequest(PeriodRequest periodRequest) {
         periodRequestProcessor.onNext(periodRequest);
     }
@@ -206,5 +225,10 @@ public class FilterManager {
     public void clearCatOptCombo() {
         catOptComboFilters.clear();
         catOptCombFiltersApplied.set(catOptComboFilters.size());
+    }
+
+    public void clearEventStatus(){
+        eventStatusFilters.clear();
+        eventStatusFiltersApplied.set(eventStatusFilters.size());
     }
 }
