@@ -9,6 +9,7 @@ import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
+import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.rules.models.RuleActionErrorOnCompletion;
@@ -33,7 +34,7 @@ interface FormView {
     Observable<String> incidentDateChanged();
 
     @NonNull
-    Observable<LatLng> reportCoordinatesChanged();
+    Observable<Geometry> reportCoordinatesChanged();
 
     @NonNull
     Consumer<List<FormSectionViewModel>> renderSectionViewModels();

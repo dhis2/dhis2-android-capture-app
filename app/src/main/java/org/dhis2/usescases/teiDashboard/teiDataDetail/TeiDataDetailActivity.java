@@ -14,6 +14,8 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.bumptech.glide.request.RequestOptions;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import org.dhis2.App;
 import org.dhis2.Bindings.Bindings;
@@ -27,13 +29,18 @@ import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DatePickerUtils;
 import org.dhis2.utils.FileResourcesUtil;
+import org.hisp.dhis.android.core.arch.helpers.GeometryHelper;
+import org.hisp.dhis.android.core.common.FeatureType;
+import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.enrollment.internal.EnrollmentFields;
 import org.hisp.dhis.android.core.program.ProgramStage;
 
 import java.io.File;
+import java.lang.reflect.Type;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import javax.inject.Inject;
@@ -183,9 +190,9 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
     }
 
     @Override
-    public void setLocation(double latitude, double longitude) {
-        binding.lat.setText(String.format(Locale.US, "%.5f", latitude));
-        binding.lon.setText(String.format(Locale.US, "%.5f", longitude));
+    public void setLocation(Geometry geometry) {
+        binding.lat.setText(String.format(Locale.US, "%.5f", geometry.coordinates()));
+        binding.lon.setText(String.format(Locale.US, "%.5f", geometry.coordinates()));
     }
 
     @Override
@@ -214,10 +221,21 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == Constants.RQ_MAP_LOCATION && resultCode == RESULT_OK) {
-            String savedLat = data.getStringExtra(MapSelectorActivity.Companion.getLATITUDE());
-            String savedLon = data.getStringExtra(MapSelectorActivity.Companion.getLONGITUDE());
-            setLocation(Double.valueOf(savedLat), Double.valueOf(savedLon));
-            presenter.saveLocation(Double.valueOf(savedLat), Double.valueOf(savedLon));
+            FeatureType locationType = FeatureType.valueOf(data.getStringExtra(MapSelectorActivity.Companion.getLOCATION_TYPE_EXTRA()));
+            String dataExtra = data.getStringExtra(MapSelectorActivity.Companion.getDATA_EXTRA());
+            Geometry geometry;
+            if (locationType == FeatureType.POINT) {
+                Type type = new TypeToken<List<Double>>(){}.getType();
+                geometry = GeometryHelper.createPointGeometry(new Gson().fromJson(dataExtra, type));
+            } else if (locationType == FeatureType.POLYGON) {
+                Type type = new TypeToken<List<List<List<Double>>>>(){}.getType();
+                geometry = GeometryHelper.createPolygonGeometry(new Gson().fromJson(dataExtra, type));
+            } else  {
+                Type type = new TypeToken<List<List<List<List<Double>>>>>(){}.getType();
+                geometry = GeometryHelper.createMultiPolygonGeometry(new Gson().fromJson(dataExtra, type));
+            }
+            setLocation(geometry);
+            presenter.saveLocation(geometry);
         }
         super.onActivityResult(requestCode, resultCode, data);
     }

@@ -28,10 +28,12 @@ import org.dhis2.utils.Constants;
 import org.dhis2.utils.EventCreationType;
 import org.dhis2.utils.OrgUnitUtils;
 import org.dhis2.utils.Result;
+import org.hisp.dhis.android.core.arch.helpers.GeometryHelper;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.FeatureType;
+import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.rules.models.RuleAction;
@@ -261,13 +263,13 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     @Override
     public void createEvent(String enrollmentUid, String programStageModel, Date date, String orgUnitUid,
                             String categoryOptionComboUid, String categoryOptionsUid,
-                            String latitude, String longitude, String trackedEntityInstance) {
+                            Geometry geometry, String trackedEntityInstance) {
         if (program != null)
             compositeDisposable.add(
                     eventInitialRepository.createEvent(enrollmentUid, trackedEntityInstance, view.getContext(), program.uid(),
                             programStageModel, date, orgUnitUid,
                             categoryOptionComboUid, categoryOptionsUid,
-                            latitude, longitude)
+                            geometry)
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(view::onEventCreated, t -> view.renderError(t.getMessage()))
@@ -277,13 +279,13 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     @Override
     public void scheduleEventPermanent(String enrollmentUid, String trackedEntityInstanceUid, String programStageModel, Date dueDate, String orgUnitUid,
                                        String categoryOptionComboUid, String categoryOptionsUid,
-                                       String latitude, String longitude) {
+                                       Geometry geometry) {
         if (program != null)
             compositeDisposable.add(
                     eventInitialRepository.scheduleEvent(enrollmentUid, null, view.getContext(), program.uid(),
                             programStageModel, dueDate, orgUnitUid,
                             categoryOptionComboUid, categoryOptionsUid,
-                            latitude, longitude)
+                            geometry)
                             .subscribeOn(Schedulers.io())
                             /*.switchMap( //TODO: CHECK THAT SDK ALREADY UPDATES ENROLLMENT AND TEI
                                     eventId -> eventInitialRepository.updateTrackedEntityInstance(eventId, trackedEntityInstanceUid, orgUnitUid)
@@ -296,13 +298,13 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     @Override
     public void scheduleEvent(String enrollmentUid, String programStageModel, Date dueDate, String orgUnitUid,
                               String categoryOptionComboUid, String categoryOptionsUid,
-                              String latitude, String longitude) {
+                              Geometry geometry) {
         if (program != null)
             compositeDisposable.add(
                     eventInitialRepository.scheduleEvent(enrollmentUid, null, view.getContext(), program.uid(),
                             programStageModel, dueDate, orgUnitUid,
                             categoryOptionComboUid, categoryOptionsUid,
-                            latitude, longitude)
+                            geometry)
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(view::onEventCreated, t -> view.renderError(t.getMessage()))
@@ -312,9 +314,9 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     @Override
     public void editEvent(String trackedEntityInstance, String programStageModel, String eventUid, String date, String orgUnitUid,
                           String catComboUid, String catOptionCombo,
-                          String latitude, String longitude) {
+                          Geometry geometry) {
 
-        compositeDisposable.add(eventInitialRepository.editEvent(trackedEntityInstance, eventUid, date, orgUnitUid, catComboUid, catOptionCombo, latitude, longitude)
+        compositeDisposable.add(eventInitialRepository.editEvent(trackedEntityInstance, eventUid, date, orgUnitUid, catComboUid, catOptionCombo, geometry)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -353,7 +355,7 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
         }
         mFusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
             if (location != null)
-                view.setLocation(location.getLatitude(), location.getLongitude());
+                view.setLocation(GeometryHelper.createPointGeometry(location.getLatitude(), location.getLongitude()));
         });
     }
 

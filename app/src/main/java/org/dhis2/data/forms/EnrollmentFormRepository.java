@@ -427,11 +427,11 @@ public class EnrollmentFormRepository implements FormRepository {
 
     @NonNull
     @Override
-    public Consumer<LatLng> storeCoordinates() {
-        return latLng -> {
+    public Consumer<Geometry> storeCoordinates() {
+        return geometry -> {
             // TODO: Implement all cases of FEATURE TYPE
             EnrollmentObjectRepository repo = d2.enrollmentModule().enrollments.uid(enrollmentUid);
-            repo.setGeometry(GeometryHelper.createPointGeometry(latLng.getLatitude(), latLng.getLongitude()));
+            repo.setGeometry(geometry);
         };
     }
 

@@ -50,7 +50,9 @@ import org.dhis2.utils.SyncUtils;
 import org.dhis2.utils.custom_views.CoordinatesView;
 import org.dhis2.utils.custom_views.CustomDialog;
 import org.dhis2.utils.custom_views.PictureView;
+import org.hisp.dhis.android.core.arch.helpers.GeometryHelper;
 import org.hisp.dhis.android.core.common.FeatureType;
+import org.hisp.dhis.android.core.common.Geometry;
 
 import java.io.File;
 import java.lang.reflect.Field;
@@ -367,7 +369,20 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
             switch (requestCode) {
                 case Constants.RQ_MAP_LOCATION_VIEW:
                     if (coordinatesView != null && data.getExtras() != null) {
-                        coordinatesView.updateLocation(Double.valueOf(data.getStringExtra(MapSelectorActivity.Companion.getLATITUDE())), Double.valueOf(data.getStringExtra(MapSelectorActivity.Companion.getLONGITUDE())));
+                        FeatureType locationType = FeatureType.valueOf(data.getStringExtra(MapSelectorActivity.Companion.getLOCATION_TYPE_EXTRA()));
+                        String dataExtra = data.getStringExtra(MapSelectorActivity.Companion.getDATA_EXTRA());
+                        Geometry geometry;
+                        if (locationType == FeatureType.POINT) {
+                            Type type = new TypeToken<List<Double>>(){}.getType();
+                            geometry = GeometryHelper.createPointGeometry(new Gson().fromJson(dataExtra, type));
+                        } else if (locationType == FeatureType.POLYGON) {
+                            Type type = new TypeToken<List<List<List<Double>>>>(){}.getType();
+                            geometry = GeometryHelper.createPolygonGeometry(new Gson().fromJson(dataExtra, type));
+                        } else  {
+                            Type type = new TypeToken<List<List<List<List<Double>>>>>(){}.getType();
+                            geometry = GeometryHelper.createMultiPolygonGeometry(new Gson().fromJson(dataExtra, type));
+                        }
+                        coordinatesView.updateLocation(geometry);
                     }
                     this.coordinatesView = null;
                     break;

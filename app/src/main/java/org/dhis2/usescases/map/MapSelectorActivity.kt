@@ -292,7 +292,7 @@ class MapSelectorActivity : ActivityGlobalAbstract() {
     companion object {
         private val ACCESS_COARSE_LOCATION_PERMISSION_REQUEST = 102
         val DATA_EXTRA = "data_extra"
-        private val LOCATION_TYPE_EXTRA = "LOCATION_TYPE_EXTRA"
+        val LOCATION_TYPE_EXTRA = "LOCATION_TYPE_EXTRA"
 
         fun create(activity: Activity, locationType: FeatureType): Intent {
             val intent = Intent(activity, MapSelectorActivity::class.java)
@@ -306,6 +306,7 @@ class MapSelectorActivity : ActivityGlobalAbstract() {
         intent.putExtra(DATA_EXTRA, value)
         intent.putExtra(LOCATION_TYPE_EXTRA, location_type.toString())
         setResult(RESULT_OK, intent)
+        finish()
     }
 }
 

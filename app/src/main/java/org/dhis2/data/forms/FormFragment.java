@@ -23,6 +23,8 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 
@@ -44,9 +46,12 @@ import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.custom_views.CategoryComboDialog;
 import org.dhis2.utils.custom_views.CoordinatesView;
 import org.dhis2.utils.custom_views.CustomDialog;
+import org.hisp.dhis.android.core.arch.helpers.GeometryHelper;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
+import org.hisp.dhis.android.core.common.FeatureType;
+import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.rules.models.RuleActionErrorOnCompletion;
@@ -54,6 +59,7 @@ import org.hisp.dhis.rules.models.RuleActionShowError;
 import org.hisp.dhis.rules.models.RuleActionWarningOnCompletion;
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.Type;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -86,7 +92,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     private FormSectionAdapter formSectionAdapter;
     private PublishSubject<String> onReportDateChanged;
     private PublishSubject<String> onIncidentDateChanged;
-    private PublishSubject<LatLng> onCoordinatesChanged;
+    private PublishSubject<Geometry> onCoordinatesChanged;
     private TextInputLayout reportDateLayout;
     private TextInputEditText reportDate;
     private PublishSubject<ReportStatus> undoObservable;
@@ -247,7 +253,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
 
     @NonNull
     @Override
-    public Observable<LatLng> reportCoordinatesChanged() {
+    public Observable<Geometry> reportCoordinatesChanged() {
         onCoordinatesChanged = PublishSubject.create();
         return onCoordinatesChanged;
     }
@@ -509,17 +515,30 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     }
 
     @Override
-    public void onCurrentLocationClick(Double latitude, Double longitude) {
-        publishCoordinatesChanged(latitude, longitude);
+    public void onCurrentLocationClick(Geometry geometry) {
+        publishCoordinatesChanged(geometry);
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case Constants.RQ_MAP_LOCATION_VIEW:
-                if (data != null && data.getStringExtra(MapSelectorActivity.Companion.getLATITUDE()) != null && data.getStringExtra(MapSelectorActivity.Companion.getLONGITUDE()) != null) {
-                    coordinatesView.updateLocation(Double.valueOf(data.getStringExtra(MapSelectorActivity.Companion.getLATITUDE())), Double.valueOf(data.getStringExtra(MapSelectorActivity.Companion.getLONGITUDE())));
-                    publishCoordinatesChanged(Double.valueOf(data.getStringExtra(MapSelectorActivity.Companion.getLATITUDE())), Double.valueOf(data.getStringExtra(MapSelectorActivity.Companion.getLONGITUDE())));
+                if (data != null) {
+                    FeatureType locationType = FeatureType.valueOf(data.getStringExtra(MapSelectorActivity.Companion.getLOCATION_TYPE_EXTRA()));
+                    String dataExtra = data.getStringExtra(MapSelectorActivity.Companion.getDATA_EXTRA());
+                    Geometry geometry;
+                    if (locationType == FeatureType.POINT) {
+                        Type type = new TypeToken<List<Double>>(){}.getType();
+                        geometry = GeometryHelper.createPointGeometry(new Gson().fromJson(dataExtra, type));
+                    } else if (locationType == FeatureType.POLYGON) {
+                        Type type = new TypeToken<List<List<List<Double>>>>(){}.getType();
+                        geometry = GeometryHelper.createPolygonGeometry(new Gson().fromJson(dataExtra, type));
+                    } else  {
+                        Type type = new TypeToken<List<List<List<List<Double>>>>>(){}.getType();
+                        geometry = GeometryHelper.createMultiPolygonGeometry(new Gson().fromJson(dataExtra, type));
+                    }
+                    coordinatesView.updateLocation(geometry);
+                    publishCoordinatesChanged(geometry);
                     this.coordinatesView = null;
                 }
                 break;
@@ -545,9 +564,9 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
         }
     }
 
-    private void publishCoordinatesChanged(Double lat, Double lon) {
+    private void publishCoordinatesChanged(Geometry geometry) {
         if (onCoordinatesChanged != null) {
-            onCoordinatesChanged.onNext(new LatLng(lat, lon));
+            onCoordinatesChanged.onNext(geometry);
         }
     }
 
