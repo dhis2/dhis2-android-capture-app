@@ -155,7 +155,9 @@ public class DataValueRepositoryImpl implements DataValueRepository {
 
     @Override
     public Flowable<Long> insertDataValue(DataValue dataValue) {
-        return Flowable.just(briteDatabase.insert(DataValueTableInfo.TABLE_INFO.name(), dataValue.toContentValues()));
+        ContentValues contentValues = dataValue.toContentValues();
+        contentValues.remove("deleted");
+        return Flowable.just(briteDatabase.insert(DataValueTableInfo.TABLE_INFO.name(), contentValues));
     }
 
     public Flowable<Integer> updateValue(DataValue dataValue) {
