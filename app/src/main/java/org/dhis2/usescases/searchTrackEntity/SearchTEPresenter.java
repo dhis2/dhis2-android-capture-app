@@ -23,6 +23,7 @@ import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.NetworkUtils;
 import org.dhis2.utils.custom_views.OrgUnitDialog_2;
+import org.dhis2.utils.filters.FilterManager;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
@@ -192,9 +193,12 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         .map(map -> {
                             HashMap<String, String> data = new HashMap<>(map);
                             if (!NetworkUtils.isOnline(view.getContext()))
-                                return searchRepository.searchTrackedEntitiesOffline(selectedProgram, trackedEntityType, orgUnitsUid, data);
+                                return searchRepository.searchTrackedEntitiesOffline(selectedProgram, trackedEntityType,
+                                        FilterManager.getInstance().getOrgUnitUidsFilters(),
+                                        FilterManager.getInstance().getStateFilters(), data);
                             else
-                                return searchRepository.searchTrackedEntitiesAll(selectedProgram, trackedEntityType, orgUnitsUid, data);
+                                return searchRepository.searchTrackedEntitiesAll(selectedProgram, trackedEntityType,
+                                        FilterManager.getInstance().getOrgUnitUidsFilters(),FilterManager.getInstance().getStateFilters(), data);
                         })
                         .doOnError(this::handleError)
                         .subscribeOn(Schedulers.io())
@@ -208,6 +212,54 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         .subscribeOn(AndroidSchedulers.mainThread())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(data -> view.clearData(), Timber::d)
+        );
+
+        compositeDisposable.add(
+                FilterManager.getInstance().asFlowable()
+                        .startWith(FilterManager.getInstance())
+                        .map(filterManager -> {
+                            if (!NetworkUtils.isOnline(view.getContext()))
+                                return searchRepository.searchTrackedEntitiesOffline(selectedProgram, trackedEntityType,
+                                        filterManager.getOrgUnitUidsFilters(),FilterManager.getInstance().getStateFilters(), queryData);
+                            else
+                                return searchRepository.searchTrackedEntitiesAll(selectedProgram, trackedEntityType,
+                                        filterManager.getOrgUnitUidsFilters(),FilterManager.getInstance().getStateFilters(), queryData);
+
+                        })
+                        .subscribeOn(Schedulers.computation())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                view::setLiveData,
+                                Timber::d)
+                        );
+
+        compositeDisposable.add(
+                FilterManager.getInstance().ouTreeFlowable()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                open -> view.openOrgUnitTreeSelector(),
+                                Timber::e
+                        )
+        );
+
+        compositeDisposable.add(
+                FilterManager.getInstance().getPeriodRequest()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                periodRequest -> view.showPeriodRequest(periodRequest),
+                                Timber::e
+                        ));
+
+        compositeDisposable.add(
+                FilterManager.getInstance().asFlowable()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                filterManager -> view.updateFilters(filterManager.getTotalFilters()),
+                                Timber::e
+                        )
         );
 
     }
@@ -647,5 +699,10 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     @Override
     public void showFilter() {
         view.showHideFilter();
+    }
+
+    @Override
+    public void showFilterGeneral() {
+        view.showHideFilterGeneral();
     }
 }

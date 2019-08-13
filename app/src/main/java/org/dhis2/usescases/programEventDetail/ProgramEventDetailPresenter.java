@@ -116,7 +116,8 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                                 filterManager.getPeriodFilters(),
                                 filterManager.getOrgUnitUidsFilters(),
                                 filterManager.getCatOptComboFilters(),
-                                filterManager.getEventStatusFilters()
+                                filterManager.getEventStatusFilters(),
+                                filterManager.getStateFilters()
                         ))
                         .subscribeOn(Schedulers.computation())
                         .observeOn(AndroidSchedulers.mainThread())
@@ -134,7 +135,8 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                                                 filterManager.getPeriodFilters(),
                                                 filterManager.getOrgUnitUidsFilters(),
                                                 filterManager.getCatOptComboFilters(),
-                                                filterManager.getEventStatusFilters()
+                                                filterManager.getEventStatusFilters(),
+                                                filterManager.getStateFilters()
                                         )))
                         .subscribeOn(Schedulers.computation())
                         .observeOn(AndroidSchedulers.mainThread())
@@ -170,6 +172,25 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                 .subscribe(
                         bool -> init(view),
                         Timber::d));
+
+        compositeDisposable.add(
+                FilterManager.getInstance().asFlowable()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                filterManager -> view.updateFilters(filterManager.getTotalFilters()),
+                                Timber::e
+                        )
+        );
+
+        compositeDisposable.add(
+                FilterManager.getInstance().getPeriodRequest()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                periodRequest -> view.showPeriodRequest(periodRequest),
+                                Timber::e
+                        ));
     }
 
     @Override

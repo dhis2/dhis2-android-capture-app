@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData;
 import androidx.paging.PagedList;
 
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
+import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
@@ -14,6 +15,8 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+
+import javax.annotation.Nonnull;
 
 import io.reactivex.Observable;
 
@@ -32,12 +35,14 @@ public interface SearchRepository {
     LiveData<PagedList<SearchTeiModel>> searchTrackedEntitiesOffline(@Nullable Program selectedProgram,
                                                                      @NonNull String trackedEntityType,
                                                                      @NonNull List<String> orgUnits,
+                                                                     @Nonnull List<State> states,
                                                                      @Nullable HashMap<String, String> queryData);
 
     @NonNull
     LiveData<PagedList<SearchTeiModel>> searchTrackedEntitiesAll(@Nullable Program selectedProgram,
                                                                  @NonNull String trackedEntityType,
                                                                  @NonNull List<String> orgUnits,
+                                                                 @Nonnull List<State> states,
                                                                  @Nullable HashMap<String, String> queryData);
 
     @NonNull
