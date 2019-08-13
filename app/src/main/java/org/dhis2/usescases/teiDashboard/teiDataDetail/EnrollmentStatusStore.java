@@ -93,7 +93,7 @@ public final class EnrollmentStatusStore implements EnrollmentStatusEntryStore {
 
     @Override
     public Flowable<Geometry> enrollmentGeometry() {
-        return d2.enrollmentModule().enrollments.one().get().toFlowable()
+        return d2.enrollmentModule().enrollments.byUid().eq(enrollment).one().get().toFlowable()
                 .filter(enrollment1 -> enrollment1.geometry() != null)
                 .map(Enrollment::geometry);
     }
