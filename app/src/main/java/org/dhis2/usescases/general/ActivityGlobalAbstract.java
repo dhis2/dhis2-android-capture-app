@@ -95,7 +95,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
         if (!getResources().getBoolean(R.bool.is_tablet))
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
 
-        if (!BuildConfig.DEBUG && !BuildConfig.BUILD_TYPE.equals("beta"))
+        if (!BuildConfig.DEBUG && !BuildConfig.BUILD_TYPE.equals("beta") && !BuildConfig.BUILD_TYPE.equals("alpha"))
             getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
         SharedPreferences prefs = getSharedPreferences();
         if (this instanceof MainActivity || this instanceof LoginActivity || this instanceof SplashActivity) {
