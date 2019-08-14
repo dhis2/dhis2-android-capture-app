@@ -25,6 +25,8 @@ public class FilterManager {
         FROM_TO, OTHER
     }
 
+    private int periodIdSelected;
+
     private List<OrganisationUnit> ouFilters;
     private List<State> stateFilters;
     private List<DatePeriod> periodFilters;
@@ -75,16 +77,27 @@ public class FilterManager {
         periodRequestProcessor = PublishProcessor.create();
     }
 
+    public void setPeriodIdSelected(int selected){
+        this.periodIdSelected = selected;
+    }
+
+    public int getPeriodIdSelected(){
+        return this.periodIdSelected;
+    }
+
 //    region STATE FILTERS
 
-    public void addState(State... states) {
+    public void addState(boolean remove, State... states) {
         for (State stateToAdd : states) {
-            if (stateFilters.contains(stateToAdd))
+            if (remove)
                 stateFilters.remove(stateToAdd);
-            else
+            else if(!stateFilters.contains(stateToAdd))
                 stateFilters.add(stateToAdd);
         }
-        stateFiltersApplied.set(stateFilters.size());
+        if(stateFilters.contains(State.TO_POST) && stateFilters.contains(State.TO_UPDATE))
+            stateFiltersApplied.set(stateFilters.size()-1);
+        else
+            stateFiltersApplied.set(stateFilters.size());
         filterProcessor.onNext(this);
     }
 
@@ -167,7 +180,9 @@ public class FilterManager {
         int ouIsApplying = ouFilters.isEmpty() ? 0 : 1;
         int stateIsApplying = stateFilters.isEmpty() ? 0 : 1;
         int periodIsApplying = periodFilters == null ? 0 : 1;
-        return ouIsApplying + stateIsApplying + periodIsApplying;
+        int eventStatusApplying = eventStatusFilters.isEmpty() ? 0 : 1;
+        int catComboApplying = catOptComboFilters.isEmpty() ? 0 : 1;
+        return ouIsApplying + stateIsApplying + periodIsApplying + eventStatusApplying + catComboApplying;
     }
 
     public List<DatePeriod> getPeriodFilters() {
@@ -225,10 +240,12 @@ public class FilterManager {
     public void clearCatOptCombo() {
         catOptComboFilters.clear();
         catOptCombFiltersApplied.set(catOptComboFilters.size());
+        filterProcessor.onNext(this);
     }
 
     public void clearEventStatus(){
         eventStatusFilters.clear();
         eventStatusFiltersApplied.set(eventStatusFilters.size());
+        filterProcessor.onNext(this);
     }
 }

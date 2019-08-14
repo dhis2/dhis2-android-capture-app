@@ -44,6 +44,7 @@ import org.dhis2.databinding.ActivityProgramEventDetailBinding;
 import org.dhis2.databinding.InfoWindowEventBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.org_unit_selector.OUTreeActivity;
+import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.FiltersAdapter;
@@ -134,6 +135,8 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         super.onResume();
         presenter.init(this);
         binding.mapView.onResume();
+        binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
+        filtersAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -151,6 +154,9 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         if (markerViewManager != null)
             markerViewManager.onDestroy();
         binding.mapView.onDestroy();
+
+        FilterManager.getInstance().clearEventStatus();
+        FilterManager.getInstance().clearCatOptCombo();
     }
 
     @Override
@@ -257,11 +263,24 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     @Override
     public void updateFilters(int totalFilters) {
         binding.setTotalFilters(totalFilters);
+        binding.executePendingBindings();
     }
 
     @Override
     public void setCatOptionComboFilter(Pair<CategoryCombo, List<CategoryOptionCombo>> categoryOptionCombos) {
         filtersAdapter.addCatOptCombFilter(categoryOptionCombos);
+    }
+
+    @Override
+    public void showPeriodRequest(FilterManager.PeriodRequest periodRequest) {
+        if (periodRequest == FilterManager.PeriodRequest.FROM_TO) {
+            DateUtils.getInstance().showFromToSelector(this, FilterManager.getInstance()::addPeriod);
+        } else {
+            DateUtils.getInstance().showPeriodDialog(this, datePeriods -> {
+                        FilterManager.getInstance().addPeriod(datePeriods);
+                    },
+                    true);
+        }
     }
 
     @Override

@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+        <import type="android.view.View" />
 
         <variable
             name="presenter"
@@ -12,6 +13,10 @@
         <variable
             name="needsSearch"
             type="androidx.databinding.ObservableBoolean" />
+
+        <variable
+            name="totalFilters"
+            type="Integer" />
 
     </data>
 
@@ -47,6 +52,7 @@
                 android:layout_toEndOf="@id/back_button"
                 android:gravity="center_vertical"
                 android:text="@string/search"
+                android:visibility="gone"
                 android:textColor="@color/white_faf"
                 android:textSize="20sp"
                 app:layout_constraintStart_toEndOf="@id/back_button"
@@ -60,6 +66,50 @@
                 app:layout_constraintEnd_toStartOf="@id/moreOptions"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_refresh"
+                android:visibility="gone"
+                tools:ignore="ContentDescription" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/filterCounter"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="24dp"
+                android:padding="2dp"
+                app:layout_constraintStart_toStartOf="@id/search_filter_general"
+                app:layout_constraintTop_toTopOf="@id/search_filter_general">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/ic_oval_shape_white"
+                    android:gravity="center"
+                    android:includeFontPadding="false"
+                    android:text='@{""+totalFilters}'
+                    android:textColor="?colorPrimary"
+                    android:textSize="10sp"
+                    android:visibility="@{totalFilters>0?View.VISIBLE:View.GONE}"
+                    tools:text="1" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+            <ImageView
+                android:id="@+id/search_filter_general"
+                style="@style/ActionIcon"
+                android:onClick="@{()->presenter.showFilterGeneral()}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/moreOptions"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_filter"
+                tools:ignore="ContentDescription" />
+
+            <ImageView
+                android:id="@+id/search_filter"
+                style="@style/ActionIcon"
+                android:onClick="@{()->presenter.showFilter()}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/search_filter_general"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_search"
+                android:tint="@color/white"
                 tools:ignore="ContentDescription" />
 
             <ImageView
@@ -82,7 +132,7 @@
                 android:dropDownHorizontalOffset="10dp"
                 android:dropDownVerticalOffset="?actionBarSize"
                 android:padding="10dp"
-                app:layout_constraintEnd_toStartOf="@id/clear_button"
+                app:layout_constraintEnd_toStartOf="@id/search_filter"
                 app:layout_constraintStart_toEndOf="@id/title"
                 tools:listitem="@layout/spinner_program_layout" />
 
@@ -105,13 +155,125 @@
                 tools:visibility="visible" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <androidx.coordinatorlayout.widget.CoordinatorLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/backdropLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="?colorPrimary"
+            android:layout_below="@+id/mainToolbar">
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/backdropGuideTop"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                app:layout_constraintGuide_percent="0.0" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/filterLayout"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/backdropGuide"
+                app:layout_constraintTop_toBottomOf="@+id/backdropGuideTop"
+                tools:listitem="@layout/item_filter" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/form_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:focusableInTouchMode="true"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintBottom_toTopOf="@+id/backdropGuide"
+                app:layout_constraintHeight_default="wrap"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/backdropGuideTop"
+                app:layout_constraintVertical_bias="0.051" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/backdropGuide"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                app:layout_constraintGuide_percent="0.75" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/scrollView"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:background="@drawable/ic_front_backdrop_bg"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+            <RelativeLayout
+                android:id="@+id/messageContainer"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:background="@drawable/ic_front_backdrop_bg"
+                android:visibility="visible"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
+
+                <TextView
+                    android:id="@+id/message"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="10dp"
+                    android:gravity="center_horizontal"
+                    android:textSize="18sp"
+                    tools:text="You need to enter at least N attributes to do a search" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/progressLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/ic_front_backdrop_bg"
+                android:visibility="visible"
+                app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
+
+                <ProgressBar
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_margin="5dp"
+                    app:progressColor="@{@color/colorPrimary}" />
+            </RelativeLayout>
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/enrollmentButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
+                android:layout_gravity="end|bottom"
+                android:layout_margin="15dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                android:focusableInTouchMode="true"
+                android:onClick="@{(view)->presenter.onFabClick(view, needsSearch)}"
+                android:tint="@color/white"
+                app:backgroundTint="?attr/colorPrimary"
+                app:elevation="12dp"
+                app:fabSize="normal"
+                app:layout_behavior="org.dhis2.utils.FixedBottomViewBehavior"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:searchOrAdd='@{ needsSearch }' />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        <!--<androidx.coordinatorlayout.widget.CoordinatorLayout
             android:id="@+id/coordinatorLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@+id/mainToolbar">
 
-            <!--SCROLLING VIEW-->
+            &lt;!&ndash;SCROLLING VIEW&ndash;&gt;
 
 
             <androidx.recyclerview.widget.RecyclerView
@@ -173,7 +335,7 @@
                 app:layout_behavior="org.dhis2.utils.FixedBottomViewBehavior"
                 app:searchOrAdd='@{ needsSearch }' />
 
-            <!--END OF SCROLLING VIEW-->
+            &lt;!&ndash;END OF SCROLLING VIEW&ndash;&gt;
 
             <com.google.android.material.appbar.AppBarLayout
                 android:id="@+id/appbatlayout"
@@ -209,7 +371,7 @@
 
             </com.google.android.material.appbar.AppBarLayout>
 
-        </androidx.coordinatorlayout.widget.CoordinatorLayout>
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>-->
 
     </RelativeLayout>
 </layout>

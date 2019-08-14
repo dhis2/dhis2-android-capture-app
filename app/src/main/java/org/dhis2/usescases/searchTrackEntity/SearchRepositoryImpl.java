@@ -13,6 +13,7 @@ import androidx.paging.PagedList;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import org.dhis2.data.server.ServerComponent;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.utils.CodeGenerator;
@@ -44,6 +45,8 @@ import org.hisp.dhis.android.core.trackedentity.search.QueryFilter;
 import org.hisp.dhis.android.core.trackedentity.search.QueryItem;
 import org.hisp.dhis.android.core.trackedentity.search.QueryOperator;
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQuery;
+import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQueryCallFactory;
+import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQueryCollectionRepository;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -53,6 +56,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+
+import javax.annotation.Nonnull;
 
 import io.reactivex.Observable;
 import timber.log.Timber;
@@ -135,6 +140,7 @@ public class SearchRepositoryImpl implements SearchRepository {
     public LiveData<PagedList<SearchTeiModel>> searchTrackedEntitiesOffline(@Nullable Program selectedProgram,
                                                                             @NonNull String trackedEntityType,
                                                                             @NonNull List<String> orgUnits,
+                                                                            @Nonnull List<State> states,
                                                                             @Nullable HashMap<String, String> queryData) {
 
         TrackedEntityInstanceQuery.Builder queryBuilder = setQueryBuilder(selectedProgram, trackedEntityType, orgUnits);
@@ -152,7 +158,13 @@ public class SearchRepositoryImpl implements SearchRepository {
         List<QueryItem> filterList = formatQueryData(queryData, queryBuilder);
 
         TrackedEntityInstanceQuery query = queryBuilder.filter(filterList).build();
-        DataSource dataSource = d2.trackedEntityModule().trackedEntityInstanceQuery.offlineOnly().query(query).getDataSource().map(tei -> transform(tei, selectedProgram, true));
+
+        TrackedEntityInstanceQueryCollectionRepository repo = d2.trackedEntityModule().trackedEntityInstanceQuery.offlineOnly().query(query);
+        List<String> teis = repo.get().map(tei -> filterTransform(tei, states)).blockingGet();
+
+        DataSource dataSource = d2.trackedEntityModule().trackedEntityInstances.byUid().in(teis)
+                .getDataSource().map(tei -> transform(tei, selectedProgram, true));
+        //DataSource dataSource = repo.getDataSource().map(tei -> transform(tei, selectedProgram, true));
         return new LivePagedListBuilder(new DataSource.Factory() {
             @NonNull
             @Override
@@ -167,6 +179,7 @@ public class SearchRepositoryImpl implements SearchRepository {
     public LiveData<PagedList<SearchTeiModel>> searchTrackedEntitiesAll(@Nullable Program selectedProgram,
                                                                         @NonNull String trackedEntityType,
                                                                         @NonNull List<String> orgUnits,
+                                                                        @Nonnull List<State> states,
                                                                         @Nullable HashMap<String, String> queryData) {
 
         TrackedEntityInstanceQuery.Builder queryBuilder = setQueryBuilder(selectedProgram, trackedEntityType, orgUnits);
@@ -184,7 +197,13 @@ public class SearchRepositoryImpl implements SearchRepository {
         List<QueryItem> filterList = formatQueryData(queryData, queryBuilder);
 
         TrackedEntityInstanceQuery query = queryBuilder.filter(filterList).build();
-        DataSource dataSource = d2.trackedEntityModule().trackedEntityInstanceQuery.offlineFirst().query(query).getDataSource().map(tei -> transform(tei, selectedProgram, false));
+
+        TrackedEntityInstanceQueryCollectionRepository repo = d2.trackedEntityModule().trackedEntityInstanceQuery.offlineOnly().query(query);
+        List<String> teis = repo.get().map(tei -> filterTransform(tei, states)).blockingGet();
+
+        DataSource dataSource = d2.trackedEntityModule().trackedEntityInstances.byUid().in(teis).getDataSource()
+                .map(tei -> transform(tei, selectedProgram, true));
+        //DataSource dataSource = d2.trackedEntityModule().trackedEntityInstanceQuery.offlineFirst().query(query).getDataSource().map(tei -> transform(tei, selectedProgram, false));
         return new LivePagedListBuilder(new DataSource.Factory() {
             @NonNull
             @Override
@@ -193,7 +212,6 @@ public class SearchRepositoryImpl implements SearchRepository {
             }
         }, 10).build();
     }
-
 
     @NonNull
     @Override
@@ -422,6 +440,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         builder.pageSize(50);
         builder.page(1);
         builder.paging(true);
+        builder.orgUnitMode(OrganisationUnitMode.SELECTED);
         return builder;
     }
 
@@ -442,6 +461,14 @@ public class SearchRepositoryImpl implements SearchRepository {
         return filterItems;
     }
 
+    private List<String> filterTransform(List<TrackedEntityInstance> teis, List<State> states){
+        List<String> filteredTeis = new ArrayList<>();
+        for(TrackedEntityInstance tei: teis)
+            if(states.isEmpty() || states.contains(tei.state()))
+                filteredTeis.add(tei.uid());
+
+        return filteredTeis;
+    }
 
     private SearchTeiModel transform(TrackedEntityInstance tei, @Nullable Program selectedProgram, boolean offlineOnly) {
 

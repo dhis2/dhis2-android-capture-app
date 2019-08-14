@@ -140,7 +140,8 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
                     new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA},
                     PERMISSION_REQUEST);
         }
-
+        binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
+        adapter.notifyDataSetChanged();
     }
 
     @Override

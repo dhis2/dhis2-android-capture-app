@@ -65,7 +65,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     @NonNull
     @Override
     public LiveData<PagedList<ProgramEventViewModel>> filteredProgramEvents(List<DatePeriod> dateFilter, List<String> orgUnitFilter, List<CategoryOptionCombo> catOptCombList,
-                                                                            List<EventStatus> eventStatus) {
+                                                                            List<EventStatus> eventStatus, List<State> states) {
         EventCollectionRepository eventRepo = d2.eventModule().events.byProgramUid().eq(programUid);
         if (!dateFilter.isEmpty())
             eventRepo = eventRepo.byEventDate().inDatePeriods(dateFilter);
@@ -75,6 +75,8 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
             eventRepo = eventRepo.byAttributeOptionComboUid().in(UidsHelper.getUids(catOptCombList));
         if(!eventStatus.isEmpty())
             eventRepo = eventRepo.byStatus().in(eventStatus);
+        if(!states.isEmpty())
+            eventRepo = eventRepo.byState().in(states);
         DataSource dataSource = eventRepo.byState().notIn(State.TO_DELETE).orderByEventDate(RepositoryScope.OrderByDirection.DESC).withAllChildren().getDataSource().map(event -> transformToProgramEventModel(event));
         return new LivePagedListBuilder(new DataSource.Factory() {
             @Override
@@ -87,7 +89,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     @NonNull
     @Override
     public Flowable<List<SymbolOptions>> filteredEventsForMap(List<DatePeriod> dateFilter, List<String> orgUnitFilter, List<CategoryOptionCombo> catOptCombList,
-                                                              List<EventStatus> eventStatus) {
+                                                              List<EventStatus> eventStatus, List<State> states) {
         EventCollectionRepository eventRepo = d2.eventModule().events.byProgramUid().eq(programUid);
         if (!dateFilter.isEmpty())
             eventRepo = eventRepo.byEventDate().inDatePeriods(dateFilter);
@@ -97,6 +99,8 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
             eventRepo = eventRepo.byAttributeOptionComboUid().in(UidsHelper.getUids(catOptCombList));
         if(!eventStatus.isEmpty())
             eventRepo = eventRepo.byStatus().in(eventStatus);
+        if(!states.isEmpty())
+            eventRepo = eventRepo.byState().in(states);
 
         return eventRepo.byState().notIn(State.TO_DELETE).orderByEventDate(RepositoryScope.OrderByDirection.DESC).withAllChildren().get()
                 .toFlowable()

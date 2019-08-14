@@ -8,6 +8,7 @@ import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
+import org.dhis2.utils.filters.FilterManager;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
@@ -45,6 +46,16 @@ public class SearchTEContractsModule {
         void setLiveData(LiveData<PagedList<SearchTeiModel>> liveData);
 
         void setFabIcon(boolean needsSearch);
+
+        void showHideFilter();
+
+        void showHideFilterGeneral();
+
+        void updateFilters(int totalFilters);
+
+        void openOrgUnitTreeSelector();
+
+        void showPeriodRequest(FilterManager.PeriodRequest periodRequest);
     }
 
     public interface Presenter {
@@ -90,5 +101,9 @@ public class SearchTEContractsModule {
         void initSearch(SearchTEContractsModule.View view);
 
         void onSyncIconClick(String teiUid);
+
+        void showFilter();
+
+        void showFilterGeneral();
     }
 }
