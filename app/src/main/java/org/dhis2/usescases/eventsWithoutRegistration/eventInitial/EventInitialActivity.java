@@ -26,13 +26,13 @@ import androidx.core.view.ViewCompat;
 import androidx.databinding.DataBindingUtil;
 
 import com.unnamed.b.atv.model.TreeNode;
-import com.unnamed.b.atv.view.AndroidTreeView;
 
 import org.dhis2.App;
 import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
+import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ActivityEventInitialBinding;
 import org.dhis2.databinding.CategorySelectorBinding;
 import org.dhis2.databinding.WidgetDatepickerBinding;
@@ -50,6 +50,7 @@ import org.dhis2.utils.custom_views.CustomDialog;
 import org.dhis2.utils.custom_views.OrgUnitDialog_2;
 import org.dhis2.utils.custom_views.PeriodDialog;
 import org.dhis2.utils.custom_views.ProgressBarAnimation;
+import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
@@ -462,47 +463,15 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     }
 
     @Override
-    public void addTree(TreeNode treeNode) {
-        binding.treeViewContainer.removeAllViews();
-
-        AndroidTreeView treeView = new AndroidTreeView(getContext(), treeNode);
-
-        treeView.setDefaultContainerStyle(R.style.TreeNodeStyle, false);
-        treeView.setSelectionModeEnabled(true);
-        binding.treeViewContainer.addView(treeView.getView());
-
-        if (presenter.getOrgUnits().size() < 25)
-            treeView.expandAll();
-
-        treeView.setDefaultNodeClickListener((node, value) -> {
-            if (node.isSelectable()) {
-                treeView.selectNode(node, node.isSelected());
-                ArrayList<String> childIds = new ArrayList<>();
-                childIds.add(((OrganisationUnit) value).uid());
-                for (TreeNode childNode : node.getChildren()) {
-                    childIds.add(((OrganisationUnit) childNode.getValue()).uid());
-                    for (TreeNode childNode2 : childNode.getChildren()) {
-                        childIds.add(((OrganisationUnit) childNode2.getValue()).uid());
-                        for (TreeNode childNode3 : childNode2.getChildren()) {
-                            childIds.add(((OrganisationUnit) childNode3.getValue()).uid());
-                        }
-                    }
-                }
-                if (!fixedOrgUnit) {
-                    selectedOrgUnit = ((OrganisationUnit) value).uid();
-                    binding.orgUnit.setText(((OrganisationUnit) value).displayName());
-                }
-                binding.drawerLayout.closeDrawers();
+    public Consumer<Pair<TreeNode, List<TreeNode>>> addNodeToTree() {
+        return node -> {
+            for (TreeNode childNode : node.val1()){
+                if(!UidsHelper.getUids(((OrganisationUnit) childNode.getValue()).programs()).contains(programUid))
+                    childNode.setSelectable(false);
+                orgUnitDialog.getTreeView().addNode(node.val0(), childNode);
             }
-        });
-
-        if (treeView.getSelected() != null && !treeView.getSelected().isEmpty() && !fixedOrgUnit) {
-            binding.orgUnit.setText(((OrganisationUnit) treeView.getSelected().get(0).getValue()).displayName());
-            selectedOrgUnit = ((OrganisationUnit) treeView.getSelected().get(0).getValue()).uid();
-            selectedOrgUnitOpeningDate = ((OrganisationUnit) treeView.getSelected().get(0).getValue()).openingDate();
-            selectedOrgUnitClosedDate = ((OrganisationUnit) treeView.getSelected().get(0).getValue()).closedDate();
-        }
-        checkActionButtonVisibility();
+            orgUnitDialog.getTreeView().expandAll();
+        };
     }
 
     @Override
@@ -928,15 +897,23 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                     iterator.remove();
             }
 
-            orgUnitDialog = new OrgUnitDialog_2()
+            orgUnitDialog = OrgUnitDialog_2.getInstace()
                     .setTitle(getString(R.string.org_unit))
                     .setMultiSelection(false)
                     .setOrgUnits(orgUnits)
+                    .setProgram(programUid)
                     .setPossitiveListener(data -> {
                         setOrgUnit(orgUnitDialog.getSelectedOrgUnit(), orgUnitDialog.getSelectedOrgUnitName());
                         orgUnitDialog.dismiss();
                     })
-                    .setNegativeListener(data -> orgUnitDialog.dismiss());
+                    .setNegativeListener(data -> orgUnitDialog.dismiss())
+                    .setNodeClickListener((node, value) -> {
+                        if (node.getChildren().isEmpty())
+                            presenter.onExpandOrgUnitNode(node, ((OrganisationUnit) node.getValue()).uid());
+                        else
+                            node.setExpanded(node.isExpanded());
+                    });
+
             if (!orgUnitDialog.isAdded())
                 orgUnitDialog.show(getSupportFragmentManager(), "ORG_UNIT_DIALOG");
         } else {

@@ -9,6 +9,7 @@ import com.unnamed.b.atv.model.TreeNode;
 
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
+import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.utils.EventCreationType;
 import org.hisp.dhis.android.core.category.CategoryCombo;
@@ -46,7 +47,7 @@ public class EventInitialContract {
 
         void renderError(String message);
 
-        void addTree(TreeNode treeNode);
+        Consumer<Pair<TreeNode, List<TreeNode>>> addNodeToTree();
 
         void setEvent(Event event);
 
@@ -148,6 +149,8 @@ public class EventInitialContract {
         String getCatOptionCombo(List<CategoryOptionCombo> categoryOptionCombos, List<CategoryOption> values);
 
         Date getStageLastDate(String programStageUid, String enrollmentUid);
+
+        void onExpandOrgUnitNode(TreeNode treeNode, String parentUid);
     }
 
 }

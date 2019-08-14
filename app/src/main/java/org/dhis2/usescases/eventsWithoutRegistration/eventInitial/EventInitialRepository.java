@@ -29,6 +29,8 @@ public interface EventInitialRepository {
     @NonNull
     Observable<List<OrganisationUnit>> orgUnits(String programId);
 
+    Observable<List<OrganisationUnit>> orgUnits(String programId, String parentUid);
+
     @NonNull
     Observable<CategoryCombo> catCombo(String programUid);
 

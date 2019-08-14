@@ -14,6 +14,7 @@ import androidx.core.app.ActivityCompat;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.unnamed.b.atv.model.TreeNode;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
@@ -30,6 +31,7 @@ import org.dhis2.utils.EventCreationType;
 import org.dhis2.utils.OrgUnitUtils;
 import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
@@ -55,6 +57,8 @@ import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.processors.FlowableProcessor;
+import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import rx.exceptions.OnErrorNotImplementedException;
 import timber.log.Timber;
@@ -80,6 +84,8 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     private String programId;
     private String programStageId;
     private List<OrganisationUnit> orgUnits;
+    private FlowableProcessor<Pair<TreeNode, String>> parentOrgUnit;
+
 
     public EventInitialPresenter(@NonNull EventSummaryRepository eventSummaryRepository,
                                  @NonNull EventInitialRepository eventInitialRepository,
@@ -98,6 +104,7 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
         this.eventId = eventId;
         this.programId = programId;
         this.programStageId = programStageId;
+        parentOrgUnit = PublishProcessor.create();
 
         compositeDisposable = new CompositeDisposable();
 
@@ -146,6 +153,18 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
 
         getOrgUnits(programId);
 
+        compositeDisposable.add(
+                parentOrgUnit
+                        .flatMap(orgUnit -> eventInitialRepository.orgUnits(programId, orgUnit.val1()).toFlowable(BackpressureStrategy.LATEST)
+                                .map(orgUnits1 -> OrgUnitUtils.createNode_2(view.getContext(), orgUnits1, false))
+                                .map(nodeList -> Pair.create(orgUnit.val0(), nodeList)))
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                view.addNodeToTree(),
+                                Timber::e
+                        ));
+
         if (eventId != null)
             getEventSections(eventId);
 
@@ -180,7 +199,6 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
                 .subscribe(
                         orgUnits -> {
                             this.orgUnits = orgUnits;
-                            view.addTree(OrgUnitUtils.renderTree_2(view.getContext(), orgUnits, false));
                         },
                         throwable -> view.renderError(throwable.getMessage())
                 ));
@@ -422,7 +440,7 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
                         .subscribe(
                                 orgUnits -> {
                                     this.orgUnits = orgUnits;
-                                    view.addTree(OrgUnitUtils.renderTree_2(view.getContext(), orgUnits, true));
+                                    //view.addTree(OrgUnitUtils.renderTree_2(view.getContext(), orgUnits, true));
                                 },
                                 throwable -> view.showNoOrgUnits()
                         ));
@@ -522,5 +540,11 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     @Override
     public Date getStageLastDate(String programStageUid, String enrollmentUid) {
         return eventInitialRepository.getStageLastDate(programStageUid, enrollmentUid);
+    }
+
+    @Override
+    public void onExpandOrgUnitNode(TreeNode treeNode, String parentUid) {
+        parentOrgUnit.onNext(Pair.create(treeNode, parentUid));
+
     }
 }

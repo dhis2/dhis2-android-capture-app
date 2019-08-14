@@ -12,6 +12,7 @@ import com.squareup.sqlbrite2.BriteDatabase;
 import org.dhis2.utils.CodeGenerator;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
 import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryCombo;
@@ -76,16 +77,35 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     @NonNull
     @Override
     public Observable<List<OrganisationUnit>> orgUnits(String programId) {
-        return Observable.fromCallable(() -> d2.organisationUnitModule().organisationUnits.byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).withPrograms().get())
+
+        return Observable.fromCallable(() -> {
+            int level = 1;
+            while (d2.organisationUnitModule().organisationUnits.byLevel().eq(level)
+                        .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).withPrograms().count() < 1)
+                level++;
+
+            return d2.organisationUnitModule().organisationUnits.byLevel().eq(level)
+                    .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).withPrograms().get();
+
+        });
+    }
+
+
+    @Override
+    public Observable<List<OrganisationUnit>> orgUnits(String programId, String parentUid) {
+        return Observable.fromCallable(() ->
+                d2.organisationUnitModule().organisationUnits
+                        .byParentUid().eq(parentUid)
+                        .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
+                        .withPrograms().get())
+
                 .map(organisationUnits -> {
                     List<OrganisationUnit> programOrganisationUnits = new ArrayList<>();
                     for(OrganisationUnit organisationUnit : organisationUnits){
-                        for (Program program : organisationUnit.programs()) {
-                            if (program.uid().equals(programId))
-                                programOrganisationUnits.add(organisationUnit);
-                        }
+                        if(UidsHelper.getUids(organisationUnit.programs()).contains(programId))
+                           programOrganisationUnits.add(organisationUnit);
                     }
-                    return programOrganisationUnits;
+                    return programOrganisationUnits.isEmpty() ? organisationUnits : programOrganisationUnits;
                 });
     }
 
