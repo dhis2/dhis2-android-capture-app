@@ -467,7 +467,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                     childNode.setSelectable(false);
                 orgUnitDialog.getTreeView().addNode(node.val0(), childNode);
             }
-            orgUnitDialog.getTreeView().expandAll();
+            orgUnitDialog.getTreeView().expandNode(node.val0());
         };
     }
 
@@ -894,7 +894,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             }
 
             orgUnitDialog = OrgUnitDialog_2.getInstace()
-                    .setTitle(binding.orgUnit.getText() != null ? binding.orgUnit.getText().toString() : getString(R.string.org_unit_select_level))
+                    .setTitle(!binding.orgUnit.getText().toString().isEmpty() ? binding.orgUnit.getText().toString() : getString(R.string.org_unit))
                     .setMultiSelection(false)
                     .setOrgUnits(orgUnits)
                     .setProgram(programUid)
