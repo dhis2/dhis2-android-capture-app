@@ -412,13 +412,10 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                             binding.date.clearFocus();
                             if (!fixedOrgUnit)
                                 binding.orgUnit.setText("");
-                            presenter.filterOrgUnits(DateUtils.uiDateFormat().format(selectedDate));
                         })
                         .show(getSupportFragmentManager(), PeriodDialog.class.getSimpleName());
             }
         });
-
-        presenter.filterOrgUnits(DateUtils.uiDateFormat().format(selectedDate));
 
         if (eventModel != null &&
                 (DateUtils.getInstance().isEventExpired(eventModel.eventDate(),
@@ -725,7 +722,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         binding.date.clearFocus();
         if (!fixedOrgUnit)
             binding.orgUnit.setText("");
-        presenter.filterOrgUnits(DateUtils.uiDateFormat().format(selectedDate));
     }
 
     @Override
@@ -898,7 +894,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             }
 
             orgUnitDialog = OrgUnitDialog_2.getInstace()
-                    .setTitle(getString(R.string.org_unit))
+                    .setTitle(binding.orgUnit.getText() != null ? binding.orgUnit.getText().toString() : getString(R.string.org_unit_select_level))
                     .setMultiSelection(false)
                     .setOrgUnits(orgUnits)
                     .setProgram(programUid)
@@ -909,7 +905,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                     .setNegativeListener(data -> orgUnitDialog.dismiss())
                     .setNodeClickListener((node, value) -> {
                         if (node.getChildren().isEmpty())
-                            presenter.onExpandOrgUnitNode(node, ((OrganisationUnit) node.getValue()).uid());
+                            presenter.onExpandOrgUnitNode(node, ((OrganisationUnit) node.getValue()).uid(), DateUtils.databaseDateFormat().format(selectedDate));
                         else
                             node.setExpanded(node.isExpanded());
                     });

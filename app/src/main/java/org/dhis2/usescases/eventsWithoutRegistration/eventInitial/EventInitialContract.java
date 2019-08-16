@@ -126,8 +126,6 @@ public class EventInitialContract {
 
         void onFieldChanged(CharSequence s, int start, int before, int count);
 
-        void filterOrgUnits(String date);
-
         void getSectionCompletion(@Nullable String sectionUid);
 
         void goToSummary();
@@ -150,7 +148,7 @@ public class EventInitialContract {
 
         Date getStageLastDate(String programStageUid, String enrollmentUid);
 
-        void onExpandOrgUnitNode(TreeNode treeNode, String parentUid);
+        void onExpandOrgUnitNode(TreeNode treeNode, String parentUid, String date);
     }
 
 }

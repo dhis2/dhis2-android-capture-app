@@ -23,6 +23,7 @@ import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Quintet;
+import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryActivity;
 import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryRepository;
 import org.dhis2.usescases.map.MapSelectorActivity;
@@ -84,7 +85,7 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     private String programId;
     private String programStageId;
     private List<OrganisationUnit> orgUnits;
-    private FlowableProcessor<Pair<TreeNode, String>> parentOrgUnit;
+    private FlowableProcessor<Trio<TreeNode, String, String>> parentOrgUnit;
 
 
     public EventInitialPresenter(@NonNull EventSummaryRepository eventSummaryRepository,
@@ -155,7 +156,7 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
 
         compositeDisposable.add(
                 parentOrgUnit
-                        .flatMap(orgUnit -> eventInitialRepository.orgUnits(programId, orgUnit.val1()).toFlowable(BackpressureStrategy.LATEST)
+                        .flatMap(orgUnit -> eventInitialRepository.filteredOrgUnits(orgUnit.val2(), programId, orgUnit.val1()).toFlowable(BackpressureStrategy.LATEST)
                                 .map(orgUnits1 -> OrgUnitUtils.createNode_2(view.getContext(), orgUnits1, false))
                                 .map(nodeList -> Pair.create(orgUnit.val0(), nodeList)))
                         .subscribeOn(Schedulers.io())
@@ -193,13 +194,11 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
 
     @Override
     public void getOrgUnits(String programId) {
-        compositeDisposable.add(eventInitialRepository.orgUnits(programId)
+        compositeDisposable.add(eventInitialRepository.filteredOrgUnits(null, programId, null)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        orgUnits -> {
-                            this.orgUnits = orgUnits;
-                        },
+                        orgUnits -> this.orgUnits = orgUnits,
                         throwable -> view.renderError(throwable.getMessage())
                 ));
     }
@@ -427,26 +426,6 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     }
 
     @Override
-    public void filterOrgUnits(String date) {
-
-        Observable<List<OrganisationUnit>> orgUnitObservable =
-                view.eventcreateionType() != EventCreationType.REFERAL ? eventInitialRepository.filteredOrgUnits(date, programId) :
-                        eventInitialRepository.searchOrgUnits(date, programId);
-
-        compositeDisposable.add(
-                orgUnitObservable
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                orgUnits -> {
-                                    this.orgUnits = orgUnits;
-                                    //view.addTree(OrgUnitUtils.renderTree_2(view.getContext(), orgUnits, true));
-                                },
-                                throwable -> view.showNoOrgUnits()
-                        ));
-    }
-
-    @Override
     public void goToSummary() {
         Bundle bundle = new Bundle();
         bundle.putString("event_id", eventId);
@@ -543,8 +522,8 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     }
 
     @Override
-    public void onExpandOrgUnitNode(TreeNode treeNode, String parentUid) {
-        parentOrgUnit.onNext(Pair.create(treeNode, parentUid));
+    public void onExpandOrgUnitNode(TreeNode treeNode, String parentUid, String date) {
+        parentOrgUnit.onNext(Trio.create(treeNode, parentUid, date));
 
     }
 }
