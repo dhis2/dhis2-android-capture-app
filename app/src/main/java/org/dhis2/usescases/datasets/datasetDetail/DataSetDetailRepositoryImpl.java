@@ -6,10 +6,13 @@ import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.dataset.DataSetCompleteRegistration;
+import org.hisp.dhis.android.core.dataset.DataSetElement;
 import org.hisp.dhis.android.core.dataset.DataSetInstanceCollectionRepository;
+import org.hisp.dhis.android.core.datavalue.DataValue;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.period.Period;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -56,8 +59,21 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
                         else
                             state = dscr.state();
                     }
-                    else
+                    else {
                         state = dataSetReport.state();
+                        List<String> dataElementsUids = new ArrayList<>();
+                        for(DataSetElement dataSetElement : d2.dataSetModule().dataSets.withDataSetElements().byUid().eq(dataSetUid).one().blockingGet().dataSetElements()){
+                            dataElementsUids.add(dataSetElement.dataElement().uid());
+                        }
+                        for (DataValue dataValue : d2.dataValueModule().dataValues
+                                .byDataElementUid().in(dataElementsUids)
+                                .byCategoryOptionComboUid().eq(dataSetReport.attributeOptionComboUid())
+                                .byOrganisationUnitUid().eq(dataSetReport.organisationUnitUid())
+                                .byPeriod().eq(dataSetReport.period()).blockingGet()) {
+                            if (dataValue.state() != State.SYNCED)
+                                state = State.TO_UPDATE;
+                        }
+                    }
 
                     return DataSetDetailModel.create(
                             dataSetReport.organisationUnitUid(),

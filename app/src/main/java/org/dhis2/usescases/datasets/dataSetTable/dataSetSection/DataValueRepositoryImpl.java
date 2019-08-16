@@ -155,7 +155,9 @@ public class DataValueRepositoryImpl implements DataValueRepository {
 
     @Override
     public Flowable<Long> insertDataValue(DataValue dataValue) {
-        return Flowable.just(briteDatabase.insert(DataValueTableInfo.TABLE_INFO.name(), dataValue.toContentValues()));
+        ContentValues contentValues = dataValue.toContentValues();
+        contentValues.remove("deleted");
+        return Flowable.just(briteDatabase.insert(DataValueTableInfo.TABLE_INFO.name(), contentValues));
     }
 
     public Flowable<Integer> updateValue(DataValue dataValue) {
@@ -219,8 +221,11 @@ public class DataValueRepositoryImpl implements DataValueRepository {
             return Flowable.fromCallable(() -> {
                 List<String> dataElementUids = new ArrayList<>();
                 List<DataElement> dataElements;
-                for (DataSetElement dataSetElement : d2.dataSetModule().dataSets.withDataSetElements().byUid().eq(dataSetUid).one().blockingGet().dataSetElements())
+                for (DataSetElement dataSetElement : d2.dataSetModule().dataSets.withDataSetElements().byUid().eq(dataSetUid).one().blockingGet().dataSetElements()) {
                     dataElementUids.add(dataSetElement.dataElement().uid());
+                    if(dataSetElement.categoryCombo() != null)
+                        catCombos.add(dataSetElement.categoryCombo().uid());
+                }
                 dataElements = d2.dataElementModule().dataElements.withAllChildren().byUid().in(dataElementUids).orderByName(RepositoryScope.OrderByDirection.ASC).blockingGet();
                 return getMap(catCombos, dataElements);
             });
@@ -240,40 +245,38 @@ public class DataValueRepositoryImpl implements DataValueRepository {
     private Map<String, List<List<Pair<CategoryOption, Category>>>> getMap(List<String> catCombos, List<DataElement> dataElements) {
         Map<String, List<List<Pair<CategoryOption, Category>>>> map = new HashMap<>();
         for (DataElement dataElement : dataElements) {
-            String catCombo = dataElement.categoryCombo().uid();
-            if (!catCombos.contains(dataElement.categoryCombo().uid())) {
-                catCombos.add(dataElement.categoryCombo().uid());
+            catCombos.add(dataElement.categoryCombo().uid());
+        }
+        for (String catCombo : catCombos) {
+            List<Category> categories = d2.categoryModule().categoryCombos.withCategories().withAllChildren().byUid().eq(catCombo).one().blockingGet().categories();
 
-                List<Category> categories = d2.categoryModule().categoryCombos.withCategories().withAllChildren().byUid().eq(catCombo).one().blockingGet().categories();
+            if (map.get(catCombo) == null) {
+                map.put(catCombo, new ArrayList<>());
+            }
 
-                if (map.get(catCombo) == null) {
-                    map.put(catCombo, new ArrayList<>());
-                }
+            for (Category category : categories) {
+                List<CategoryOption> catOptions = d2.categoryModule().categories.withCategoryOptions().byUid().eq(category.uid()).one().blockingGet().categoryOptions();
+                for (CategoryOption catOption : catOptions) {
+                    boolean add = true;
+                    for(List<Pair<CategoryOption, Category>> catComboList : map.get(catCombo)){
+                        if(catComboList.contains(Pair.create(catOption, category)))
+                            add = false;
+                    }
+                    if(add){
 
-                for (Category category : categories) {
-                    List<CategoryOption> catOptions = d2.categoryModule().categories.withCategoryOptions().byUid().eq(category.uid()).one().blockingGet().categoryOptions();
-                    for (CategoryOption catOption : catOptions) {
-                        if (map.get(catCombo).size() == 0) {
+                        if (map.get(catCombo).size() != 0 && map.get(catCombo).get(map.get(catCombo).size() - 1).get(0).val1().uid().equals(category.uid())) {
+                            map.get(catCombo).get(map.get(catCombo).size() - 1).add(Pair.create(catOption, category));
+                        } else {
                             List<Pair<CategoryOption, Category>> list = new ArrayList<>();
                             list.add(Pair.create(catOption, category));
                             map.get(catCombo).add(list);
-                        } else {
-
-                            if (map.get(catCombo).get(map.get(catCombo).size() - 1).get(0).val1().uid().equals(category.uid())) {
-                                map.get(catCombo).get(map.get(catCombo).size() - 1).add(Pair.create(catOption, category));
-                            } else {
-                                List<Pair<CategoryOption, Category>> list = new ArrayList<>();
-                                list.add(Pair.create(catOption, category));
-                                map.get(catCombo).add(list);
-                            }
-
                         }
                     }
                 }
             }
         }
         return map;
-    }
+}
 
 
     private DataElement transformDataElement(DataElement dataElement, List<DataSetElement> override) {

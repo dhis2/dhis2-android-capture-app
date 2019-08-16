@@ -1,6 +1,7 @@
 package org.dhis2.usescases.searchTrackEntity;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -11,9 +12,13 @@ import android.content.res.TypedArray;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.transition.ChangeBounds;
+import android.transition.Transition;
+import android.transition.TransitionManager;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AnimationUtils;
@@ -22,6 +27,7 @@ import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.ViewCompat;
 import androidx.databinding.BindingMethod;
@@ -41,13 +47,17 @@ import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.ActivitySearchBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
+import org.dhis2.usescases.org_unit_selector.OUTreeActivity;
 import org.dhis2.usescases.searchTrackEntity.adapters.FormAdapter;
 import org.dhis2.usescases.searchTrackEntity.adapters.RelationshipLiveAdapter;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiLiveAdapter;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.HelpManager;
+import org.dhis2.utils.filters.FilterManager;
+import org.dhis2.utils.filters.FiltersAdapter;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 
@@ -77,6 +87,14 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     private boolean fromRelationship = false;
     private String fromRelationshipTeiUid;
+    private boolean backDropActive;
+    /**
+     *  0 - it is general filter
+     *  1 - it is search filter
+     *  2 - it was closed
+     * */
+    private int switchOpenClose = 2;
+    private FiltersAdapter filtersAdapter;
 
     private BroadcastReceiver networkReceiver = new BroadcastReceiver() {
         @Override
@@ -92,6 +110,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     //---------------------------------------------------------------------------------------------
     //region LIFECYCLE
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         tEType = getIntent().getStringExtra("TRACKED_ENTITY_UID");
@@ -104,6 +123,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         binding.setPresenter(presenter);
         initialProgram = getIntent().getStringExtra("PROGRAM_UID");
         binding.setNeedsSearch(needsSearch);
+        binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
 
         try {
             fromRelationship = getIntent().getBooleanExtra("FROM_RELATIONSHIP", false);
@@ -124,6 +144,14 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
         binding.formRecycler.setAdapter(new FormAdapter(getSupportFragmentManager(), this));
 
+        View rootView = binding.scrollView;
+
+        ViewGroup.LayoutParams layoutParams = rootView.getLayoutParams();
+        if(binding.formRecycler.getHeight() > binding.backdropGuide.getHeight()){
+            layoutParams.height = binding.backdropGuide.getHeight();
+            rootView.setLayoutParams(layoutParams);
+        }
+
         binding.enrollmentButton.setOnTouchListener((v, event) -> {
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
                 v.requestFocus();
@@ -135,7 +163,16 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             return true;
         });
 
-        binding.appbatlayout.addOnOffsetChangedListener((appBarLayout, verticalOffset) -> {
+        filtersAdapter = new FiltersAdapter();
+        try {
+            binding.filterLayout.setAdapter(filtersAdapter);
+
+        } catch (Exception e) {
+            Timber.e(e);
+        }
+
+        binding.executePendingBindings();
+        /*binding.appbatlayout.addOnOffsetChangedListener((appBarLayout, verticalOffset) -> {
             float elevationPx = TypedValue.applyDimension(
                     TypedValue.COMPLEX_UNIT_DIP,
                     7,
@@ -144,7 +181,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             boolean isHidden = binding.formRecycler.getHeight() + verticalOffset == 0;
             ViewCompat.setElevation(binding.mainToolbar, isHidden ? elevationPx : 0);
             ViewCompat.setElevation(appBarLayout, isHidden ? 0 : elevationPx);
-        });
+        });*/
     }
 
     @Override
@@ -153,6 +190,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         presenter.init(this, tEType, initialProgram);
         presenter.initSearch(this);
         registerReceiver(networkReceiver, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
+        binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
+        filtersAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -160,6 +199,21 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         presenter.onDestroy();
         unregisterReceiver(networkReceiver);
         super.onPause();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == FilterManager.OU_TREE && resultCode == Activity.RESULT_OK) {
+            filtersAdapter.notifyDataSetChanged();
+            updateFilters(FilterManager.getInstance().getTotalFilters());
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void updateFilters(int totalFilters) {
+        binding.setTotalFilters(totalFilters);
+        binding.executePendingBindings();
     }
 
     //endregion
@@ -309,7 +363,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             prefs.edit().putInt(Constants.PROGRAM_THEME, programTheme).apply();
             binding.enrollmentButton.setBackgroundTintList(ColorStateList.valueOf(programColor));
             binding.mainToolbar.setBackgroundColor(programColor);
-            binding.appbatlayout.setBackgroundColor(programColor);
+            binding.backdropLayout.setBackgroundColor(programColor);
         } else {
             prefs.edit().remove(Constants.PROGRAM_THEME).apply();
             int colorPrimary;
@@ -332,7 +386,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             }
             binding.enrollmentButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, colorPrimary)));
             binding.mainToolbar.setBackgroundColor(ContextCompat.getColor(this, colorPrimary));
-            binding.appbatlayout.setBackgroundColor(ContextCompat.getColor(this, colorPrimary));
+            binding.backdropLayout.setBackgroundColor(ContextCompat.getColor(this, colorPrimary));
         }
 
         binding.executePendingBindings();
@@ -371,7 +425,75 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     }
 
     @Override
+    public void showHideFilter() {
+        binding.filterLayout.setVisibility(View.GONE);
+        binding.formRecycler.setVisibility(View.VISIBLE);
+
+        swipeFilters(false);
+    }
+
+    @Override
+    public void showHideFilterGeneral() {
+        binding.filterLayout.setVisibility(View.VISIBLE);
+        binding.formRecycler.setVisibility(View.GONE);
+
+        swipeFilters(true);
+    }
+
+    private void swipeFilters(boolean general){
+        Transition transition = new ChangeBounds();
+        transition.setDuration(200);
+        TransitionManager.beginDelayedTransition(binding.backdropLayout, transition);
+        if(backDropActive && !general && switchOpenClose == 0)
+            switchOpenClose = 1;
+        else if(backDropActive && general && switchOpenClose == 1)
+            switchOpenClose = 0;
+        else {
+            switchOpenClose = general ? 0 : 1;
+            backDropActive = !backDropActive;
+        }
+
+        activeFilter(general);
+    }
+
+    private void activeFilter(boolean general){
+        ConstraintSet initSet = new ConstraintSet();
+        initSet.clone(binding.backdropLayout);
+
+        if (backDropActive) {
+            initSet.connect(R.id.scrollView, ConstraintSet.TOP, general?R.id.filterLayout:R.id.form_recycler, ConstraintSet.BOTTOM, 0);
+            initSet.connect(R.id.messageContainer, ConstraintSet.TOP, general?R.id.filterLayout:R.id.form_recycler, ConstraintSet.BOTTOM, 0);
+        }
+        else {
+            initSet.connect(R.id.scrollView, ConstraintSet.TOP, R.id.backdropGuideTop, ConstraintSet.BOTTOM, 0);
+            initSet.connect(R.id.messageContainer, ConstraintSet.TOP, R.id.backdropGuideTop, ConstraintSet.BOTTOM, 0);
+        }
+
+        initSet.applyTo(binding.backdropLayout);
+    }
+
+    @Override
     public void showTutorial(boolean shaked) {
         setTutorial();
+    }
+
+    @Override
+    public void openOrgUnitTreeSelector() {
+        Intent ouTreeIntent = new Intent(this, OUTreeActivity.class);
+        Bundle bundle = OUTreeActivity.getBundle(initialProgram);
+        ouTreeIntent.putExtras(bundle);
+        startActivityForResult(ouTreeIntent, FilterManager.OU_TREE);
+    }
+
+    @Override
+    public void showPeriodRequest(FilterManager.PeriodRequest periodRequest) {
+        if (periodRequest == FilterManager.PeriodRequest.FROM_TO) {
+            DateUtils.getInstance().showFromToSelector(this, FilterManager.getInstance()::addPeriod);
+        } else {
+            DateUtils.getInstance().showPeriodDialog(this, datePeriods -> {
+                        FilterManager.getInstance().addPeriod(datePeriods);
+                    },
+                    true);
+        }
     }
 }

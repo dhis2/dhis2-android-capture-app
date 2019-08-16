@@ -5,6 +5,7 @@ import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions;
 
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.general.AbstractActivityContracts;
+import org.dhis2.utils.filters.FilterManager;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.period.DatePeriod;
@@ -44,6 +45,8 @@ public class ProgramEventDetailContract {
         void setMap(List<SymbolOptions> options);
 
         void setEventInfo(Pair<ProgramEventViewModel,LatLng> programEventViewModel);
+
+        void showPeriodRequest(FilterManager.PeriodRequest periodRequest);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {

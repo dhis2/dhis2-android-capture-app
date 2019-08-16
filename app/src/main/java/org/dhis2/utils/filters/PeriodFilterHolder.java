@@ -36,6 +36,41 @@ class PeriodFilterHolder extends FilterHolder implements CompoundButton.OnChecke
                 FilterManager.getInstance().getPeriodFilters().isEmpty()?"No filters applied" : "Filters applying"
         );
         setListeners(localBinding.periodLayout);
+
+        switch (FilterManager.getInstance().getPeriodIdSelected()){
+            case R.id.today:
+                localBinding.periodLayout.today.setChecked(true);
+                break;
+            case R.id.yesterday:
+                localBinding.periodLayout.yesterday.setChecked(true);
+                break;
+            case R.id.tomorrow:
+                localBinding.periodLayout.tomorrow.setChecked(true);
+                break;
+            case R.id.this_week:
+                localBinding.periodLayout.thisWeek.setChecked(true);
+                break;
+            case R.id.last_week:
+                localBinding.periodLayout.lastWeek.setChecked(true);
+                break;
+            case R.id.next_week:
+                localBinding.periodLayout.nextWeek.setChecked(true);
+                break;
+            case R.id.this_month:
+                localBinding.periodLayout.thisMonth.setChecked(true);
+                break;
+            case R.id.last_month:
+                localBinding.periodLayout.lastMonth.setChecked(true);
+                break;
+            case R.id.next_month:
+                localBinding.periodLayout.nextMonth.setChecked(true);
+                break;
+            case R.id.fromTo:
+                localBinding.periodLayout.fromTo.setChecked(true);
+                break;
+            case R.id.other:
+                localBinding.periodLayout.other.setChecked(true);
+        }
     }
 
     private void setListeners(FilterPeriodBinding periodLayout) {
@@ -111,13 +146,20 @@ class PeriodFilterHolder extends FilterHolder implements CompoundButton.OnChecke
                         break;
 
                 }
-
                 if (dates != null)
                     FilterManager.getInstance().addPeriod(Collections.singletonList(DatePeriod.builder().startDate(dates[0]).endDate(dates[1]).build()));
                 else
                     FilterManager.getInstance().addPeriod(null);
-            } else {
-                FilterManager.getInstance().addPeriodRequest(id == R.id.fromTo ? FilterManager.PeriodRequest.FROM_TO : FilterManager.PeriodRequest.OTHER);
+
+            } else if(id == R.id.other && FilterManager.getInstance().getPeriodIdSelected() != R.id.other ) {
+                FilterManager.getInstance().addPeriodRequest(FilterManager.PeriodRequest.OTHER);
+
+            }else if(id == R.id.fromTo && FilterManager.getInstance().getPeriodIdSelected() != R.id.fromTo){
+                FilterManager.getInstance().addPeriodRequest(FilterManager.PeriodRequest.FROM_TO);
+            }
+
+            if( id != FilterManager.getInstance().getPeriodIdSelected()){
+                FilterManager.getInstance().setPeriodIdSelected(id);
             }
         }
     }

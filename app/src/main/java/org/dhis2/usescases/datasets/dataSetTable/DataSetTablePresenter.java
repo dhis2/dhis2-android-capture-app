@@ -74,10 +74,16 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
                 tableRepository.dataSetStatus()
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(state -> {
-                                    view.isDataSetOpen(state != null && state != State.TO_DELETE);
-                                    view.isDataSetSynced(state == null || state == State.SYNCED);
-                                },
+                        .subscribe(view::isDataSetOpen,
+                                Timber::d
+                        )
+        );
+
+        compositeDisposable.add(
+                tableRepository.dataSetState()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(state -> view.isDataSetSynced(state == State.SYNCED),
                                 Timber::d
                         )
         );

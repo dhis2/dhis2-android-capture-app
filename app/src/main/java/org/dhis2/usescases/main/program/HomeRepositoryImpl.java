@@ -6,6 +6,7 @@ import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.dataset.DataSetCompleteRegistration;
+import org.hisp.dhis.android.core.dataset.DataSetInstance;
 import org.hisp.dhis.android.core.dataset.DataSetInstanceCollectionRepository;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
@@ -36,7 +37,7 @@ class HomeRepositoryImpl implements HomeRepository {
 
     @NonNull
     @Override
-    public Flowable<List<ProgramViewModel>> aggregatesModels(List<DatePeriod> dateFilter, final List<String> orgUnitFilter) {
+    public Flowable<List<ProgramViewModel>> aggregatesModels(List<DatePeriod> dateFilter, final List<String> orgUnitFilter, List<State> statesFilter) {
 
         return Flowable.just(d2.dataSetModule().dataSets)
                 .flatMap(programRepo -> Flowable.fromIterable(programRepo.withAllChildren().blockingGet()))
@@ -47,10 +48,16 @@ class HomeRepositoryImpl implements HomeRepository {
                             if (!dateFilter.isEmpty())
                                 repo = repo.byPeriodStartDate().inDatePeriods(dateFilter);
 
-                            int count = repo.blockingCount();
-
+                            int count = 0;
+                            if(!statesFilter.isEmpty()) {
+                                for (DataSetInstance instance : repo.blockingGet())
+                                    if (statesFilter.contains(instance.state()))
+                                        count++;
+                            }else
+                                count = repo.blockingCount();
 
                             State state = State.SYNCED;
+
                             for (DataSetElement dataSetElement : dataSet.dataSetElements()) {
                                 for (DataValue dataValue : d2.dataValueModule().dataValues.byDataElementUid().eq(dataSetElement.dataElement().uid()).blockingGet()) {
                                     if (dataValue.state() != State.SYNCED)
@@ -90,7 +97,7 @@ class HomeRepositoryImpl implements HomeRepository {
 
     @NonNull
     @Override
-    public Flowable<List<ProgramViewModel>> programModels(List<DatePeriod> dateFilter, List<String> orgUnitFilter) {
+    public Flowable<List<ProgramViewModel>> programModels(List<DatePeriod> dateFilter, List<String> orgUnitFilter, List<State> statesFilter) {
 
         return Flowable.just(d2.organisationUnitModule().organisationUnits.byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).blockingGet())
                 .map(captureOrgUnits -> {
@@ -126,30 +133,63 @@ class HomeRepositoryImpl implements HomeRepository {
                     if (program.programType() == WITHOUT_REGISTRATION) {
                         if (!dateFilter.isEmpty()) {
                             if (!orgUnitFilter.isEmpty()) {
+                                if(!statesFilter.isEmpty()) {
+                                    count = d2.eventModule().events
+                                            .byProgramUid().eq(program.uid())
+                                            .byEventDate().inDatePeriods(dateFilter)
+                                            .byOrganisationUnitUid().in(orgUnitFilter)
+                                            .byState().notIn(State.TO_DELETE)
+                                            .byState().in(statesFilter)
+                                            .blockingCount();
+                                }
+                                else
+                                    count = d2.eventModule().events
+                                            .byProgramUid().eq(program.uid())
+                                            .byEventDate().inDatePeriods(dateFilter)
+                                            .byOrganisationUnitUid().in(orgUnitFilter)
+                                            .byState().notIn(State.TO_DELETE)
+                                            .blockingCount();
+                            } else {
+                                if(!statesFilter.isEmpty())
+                                    count = d2.eventModule().events
+                                            .byProgramUid().eq(program.uid())
+                                            .byEventDate().inDatePeriods(dateFilter)
+                                            .byState().notIn(State.TO_DELETE)
+                                            .byState().in(statesFilter)
+                                            .blockingCount();
+                                else
+                                    count = d2.eventModule().events
+                                            .byProgramUid().eq(program.uid())
+                                            .byEventDate().inDatePeriods(dateFilter)
+                                            .byState().notIn(State.TO_DELETE)
+                                            .blockingCount();
+                            }
+                        } else if (!orgUnitFilter.isEmpty()) {
+                            if(!statesFilter.isEmpty())
                                 count = d2.eventModule().events
                                         .byProgramUid().eq(program.uid())
-                                        .byEventDate().inDatePeriods(dateFilter)
+                                        .byOrganisationUnitUid().in(orgUnitFilter)
+                                        .byState().notIn(State.TO_DELETE)
+                                        .byState().in(statesFilter)
+                                        .blockingCount();
+                            else
+                                count = d2.eventModule().events
+                                        .byProgramUid().eq(program.uid())
                                         .byOrganisationUnitUid().in(orgUnitFilter)
                                         .byState().notIn(State.TO_DELETE)
                                         .blockingCount();
-                            } else {
+                        } else {
+                            if(!statesFilter.isEmpty())
                                 count = d2.eventModule().events
                                         .byProgramUid().eq(program.uid())
-                                        .byEventDate().inDatePeriods(dateFilter)
+                                        .byState().notIn(State.TO_DELETE)
+                                        .byState().in(statesFilter)
+                                        .blockingCount();
+                            else
+                                count = d2.eventModule().events
+                                        .byProgramUid().eq(program.uid())
                                         .byState().notIn(State.TO_DELETE)
                                         .blockingCount();
-                            }
-                        } else if (!orgUnitFilter.isEmpty()) {
-                            count = d2.eventModule().events
-                                    .byProgramUid().eq(program.uid())
-                                    .byOrganisationUnitUid().in(orgUnitFilter)
-                                    .byState().notIn(State.TO_DELETE)
-                                    .blockingCount();
-                        } else {
-                            count = d2.eventModule().events
-                                    .byProgramUid().eq(program.uid())
-                                    .byState().notIn(State.TO_DELETE)
-                                    .blockingCount();
                         }
 
                         if (!d2.eventModule().events.byProgramUid().eq(program.uid()).byState().in(State.ERROR, State.WARNING).blockingGet().isEmpty())
@@ -165,36 +205,76 @@ class HomeRepositoryImpl implements HomeRepository {
                         if (!dateFilter.isEmpty()) {
                             List<Enrollment> enrollments;
                             if (!orgUnitFilter.isEmpty()) {
+                                if(!statesFilter.isEmpty())
+                                    enrollments = d2.enrollmentModule().enrollments
+                                            .byProgram().in(programUids)
+                                            .byEnrollmentDate().inDatePeriods(dateFilter)
+                                            .byOrganisationUnit().in(orgUnitFilter)
+                                            .byStatus().eq(EnrollmentStatus.ACTIVE)
+                                            .byState().notIn(State.TO_DELETE)
+                                            .byState().in(statesFilter)
+                                            .blockingGet();
+                                else
+                                    enrollments = d2.enrollmentModule().enrollments
+                                            .byProgram().in(programUids)
+                                            .byEnrollmentDate().inDatePeriods(dateFilter)
+                                            .byOrganisationUnit().in(orgUnitFilter)
+                                            .byStatus().eq(EnrollmentStatus.ACTIVE)
+                                            .byState().notIn(State.TO_DELETE)
+                                            .blockingGet();
+                            } else {
+                                if(!statesFilter.isEmpty())
+                                    enrollments = d2.enrollmentModule().enrollments
+                                            .byProgram().in(programUids)
+                                            .byEnrollmentDate().inDatePeriods(dateFilter)
+                                            .byStatus().eq(EnrollmentStatus.ACTIVE)
+                                            .byState().notIn(State.TO_DELETE)
+                                            .byState().in(statesFilter)
+                                            .blockingGet();
+                                else
+                                    enrollments = d2.enrollmentModule().enrollments
+                                            .byProgram().in(programUids)
+                                            .byEnrollmentDate().inDatePeriods(dateFilter)
+                                            .byStatus().eq(EnrollmentStatus.ACTIVE)
+                                            .byState().notIn(State.TO_DELETE)
+                                            .blockingGet();
+                            }
+                            count = countEnrollment(enrollments);
+                        } else if (!orgUnitFilter.isEmpty()) {
+                            List<Enrollment> enrollments;
+                            if(!statesFilter.isEmpty())
                                 enrollments = d2.enrollmentModule().enrollments
                                         .byProgram().in(programUids)
-                                        .byEnrollmentDate().inDatePeriods(dateFilter)
+                                        .byOrganisationUnit().in(orgUnitFilter)
+                                        .byStatus().eq(EnrollmentStatus.ACTIVE)
+                                        .byState().notIn(State.TO_DELETE)
+                                        .byState().in(statesFilter)
+                                        .blockingGet();
+                            else
+                                enrollments = d2.enrollmentModule().enrollments
+                                        .byProgram().in(programUids)
                                         .byOrganisationUnit().in(orgUnitFilter)
                                         .byStatus().eq(EnrollmentStatus.ACTIVE)
                                         .byState().notIn(State.TO_DELETE)
                                         .blockingGet();
-                            } else {
+
+                            count = countEnrollment(enrollments);
+                        } else {
+                            List<Enrollment> enrollments;
+                            if(!statesFilter.isEmpty())
                                 enrollments = d2.enrollmentModule().enrollments
                                         .byProgram().in(programUids)
-                                        .byEnrollmentDate().inDatePeriods(dateFilter)
+                                        .byStatus().eq(EnrollmentStatus.ACTIVE)
+                                        .byState().notIn(State.TO_DELETE)
+                                        .byState().in(statesFilter)
+                                        .blockingGet();
+                            else
+                                enrollments = d2.enrollmentModule().enrollments
+                                        .byProgram().in(programUids)
                                         .byStatus().eq(EnrollmentStatus.ACTIVE)
                                         .byState().notIn(State.TO_DELETE)
                                         .blockingGet();
-                            }
-                            count = countEnrollment(enrollments);
-                        } else if (!orgUnitFilter.isEmpty()) {
-                            List<Enrollment> enrollments = d2.enrollmentModule().enrollments
-                                    .byProgram().in(programUids)
-                                    .byOrganisationUnit().in(orgUnitFilter)
-                                    .byStatus().eq(EnrollmentStatus.ACTIVE)
-                                    .byState().notIn(State.TO_DELETE)
-                                    .blockingGet();
-                            count = countEnrollment(enrollments);
-                        } else {
-                            List<Enrollment> enrollments = d2.enrollmentModule().enrollments
-                                    .byProgram().in(programUids)
-                                    .byStatus().eq(EnrollmentStatus.ACTIVE)
-                                    .byState().notIn(State.TO_DELETE)
-                                    .blockingGet();
+
                             count = countEnrollment(enrollments);
                         }
 
