@@ -19,8 +19,6 @@ import com.unnamed.b.atv.view.AndroidTreeView;
 
 import org.dhis2.R;
 import org.dhis2.databinding.DialogOrgunitBinding;
-import org.dhis2.usescases.main.program.OrgUnitHolder;
-import org.dhis2.usescases.main.program.OrgUnitHolder_2;
 import org.dhis2.utils.OrgUnitUtils;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 
@@ -37,9 +35,12 @@ public class OrgUnitDialog_2 extends DialogFragment {
     static OrgUnitDialog_2 instace;
     private View.OnClickListener possitiveListener;
     private View.OnClickListener negativeListener;
+    private TreeNode.TreeNodeClickListener nodeClickListener;
     private String title;
     private List<OrganisationUnit> myOrgs;
     private Context context;
+    private TreeNode treeNode;
+    private String programUid;
 
     public static OrgUnitDialog_2 getInstace() {
         if (instace == null) {
@@ -69,6 +70,11 @@ public class OrgUnitDialog_2 extends DialogFragment {
         return this;
     }
 
+    public OrgUnitDialog_2 setNodeClickListener(TreeNode.TreeNodeClickListener listener) {
+        this.nodeClickListener = listener;
+        return this;
+    }
+
     public OrgUnitDialog_2 setMultiSelection(boolean multiSelection) {
         isMultiSelection = multiSelection;
         return this;
@@ -81,6 +87,16 @@ public class OrgUnitDialog_2 extends DialogFragment {
 
     public OrgUnitDialog_2 setOrgUnits(List<OrganisationUnit> orgUnits) {
         this.myOrgs = orgUnits;
+        return this;
+    }
+
+    public OrgUnitDialog_2 setTreeNode(TreeNode treeNode) {
+        this.treeNode = treeNode;
+        return this;
+    }
+
+    public OrgUnitDialog_2 setProgram(String programUid) {
+        this.programUid = programUid;
         return this;
     }
 
@@ -107,7 +123,8 @@ public class OrgUnitDialog_2 extends DialogFragment {
         binding.title.setText(title);
         binding.acceptButton.setOnClickListener(possitiveListener);
         binding.clearButton.setOnClickListener(negativeListener);
-        renderTree(myOrgs);
+        if(myOrgs != null)
+            renderTree(myOrgs);
         setRetainInstance(true);
         return binding.getRoot();
     }
@@ -119,19 +136,15 @@ public class OrgUnitDialog_2 extends DialogFragment {
     private void renderTree(@NonNull List<OrganisationUnit> myOrgs) {
 
         binding.treeContainer.removeAllViews();
-        treeView = new AndroidTreeView(getContext(), OrgUnitUtils.renderTree_2(context, myOrgs, isMultiSelection));
+        treeView = new AndroidTreeView(getContext(), OrgUnitUtils.renderTree_2(context, myOrgs, isMultiSelection, programUid));
         treeView.deselectAll();
         treeView.setDefaultContainerStyle(R.style.TreeNodeStyle, false);
         treeView.setSelectionModeEnabled(true);
         binding.treeContainer.addView(treeView.getView());
-        if (myOrgs.size() < 30)
+        if (myOrgs.size() < 25)
             treeView.expandAll();
 
-        treeView.setDefaultNodeClickListener((node, value) -> {
-            for (TreeNode treeNode : node.getViewHolder().getTreeView().getSelected())
-                ((OrgUnitHolder_2) treeNode.getViewHolder()).update();
-            ((OrgUnitHolder_2) node.getViewHolder()).update();
-        });
+        treeView.setDefaultNodeClickListener(nodeClickListener);
     }
 
     public String getSelectedOrgUnit() {
@@ -146,6 +159,10 @@ public class OrgUnitDialog_2 extends DialogFragment {
         if (treeView.getSelected().size() == 0)
             return null;
         return ((OrganisationUnit) treeView.getSelected().get(0).getValue());
+    }
+
+    public AndroidTreeView getTreeView() {
+        return treeView;
     }
 
     @Override
