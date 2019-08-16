@@ -23,8 +23,8 @@ class PointViewModel(app: Application): AndroidViewModel(app) {
     fun getPointAsString(): String? {
         return try {
             val list = mutableListOf<Double>()
-            list.add(lat.get()!!.toDouble())
             list.add(lng.get()!!.toDouble())
+            list.add(lat.get()!!.toDouble())
             Gson().toJson(list)
         } catch (e: Exception) {
             null

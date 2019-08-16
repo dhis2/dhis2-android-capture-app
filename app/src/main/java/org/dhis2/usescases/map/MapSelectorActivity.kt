@@ -204,7 +204,7 @@ class MapSelectorActivity : ActivityGlobalAbstract() {
                 if (style.getSource(sourceName) == null) {
                     style.addSource(GeoJsonSource(sourceName, Polygon.fromLngLats(points)))
                     style.addLayerBelow(FillLayer(sourceName, sourceName).withProperties(
-                            fillColor(resources.getColor(R.color.green_transparent))), "settlement-label"
+                            fillColor(resources.getColor(R.color.green_7ed))), "settlement-label"
                     )
                 } else {
                     (style.getSource(sourceName) as GeoJsonSource).setGeoJson(Polygon.fromLngLats(points))

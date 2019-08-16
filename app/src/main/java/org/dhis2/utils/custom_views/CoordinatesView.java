@@ -281,7 +281,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
                 );
                 nextFocus(this);
             }
-            if (geometry.type() != null) {
+            if (geometry != null && geometry.type() != null) {
                 if (geometry.type() == FeatureType.POINT) {
                     try {
                         List<Double> list =  GeometryHelper.getPoint(geometry);
