@@ -665,9 +665,9 @@ public class EnrollmentFormRepository implements FormRepository {
 
     @Override
     public Observable<Boolean> captureCoodinates() {
-        return briteDatabase.createQuery("Program", "SELECT Program.captureCoordinates FROM Program " +
-                "JOIN Enrollment ON Enrollment.program = Program.uid WHERE Enrollment.uid = ?", enrollmentUid)
-                .mapToOne(cursor -> cursor.getInt(0) == 1);
+        return d2.enrollmentModule().enrollments.byUid().eq(enrollmentUid).one().get().toObservable()
+                .map(enrollment -> d2.programModule().programs.byUid().eq(enrollment.program()).one().blockingGet())
+                .map(program -> program.featureType() != FeatureType.NONE);
     }
 
     @Override
