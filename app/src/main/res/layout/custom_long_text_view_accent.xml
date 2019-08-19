@@ -52,7 +52,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:visibility="gone"
-                app:srcCompat="@drawable/ic_info_outline" />
+                app:srcCompat="@drawable/ic_info_outline"
+                app:tint="?colorAccent"/>
 
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/ValueType_LongText"

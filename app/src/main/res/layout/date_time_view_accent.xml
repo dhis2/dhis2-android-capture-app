@@ -43,7 +43,8 @@
                 android:id="@+id/descIcon"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:visibility="visible" />
+                android:visibility="visible"
+                app:tint="?colorAccent"/>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/inputLayout"
