@@ -121,7 +121,7 @@
     <string name="update">Update</string>
     <string name="date">Date</string>
     <string name="org_unit">Org unit</string>
-    <string name="no_org_units">There aren\'t any open Organization Units for the selected date. Please select another date.</string>
+    <string name="no_org_units">There aren\'t any open Organization Units for the selected date. Please select another date or another Organisation Unit.</string>
     <string name="category_option">Category option</string>
     <string name="latitude">Latitude</string>
     <string name="longitude">Longitude</string>
