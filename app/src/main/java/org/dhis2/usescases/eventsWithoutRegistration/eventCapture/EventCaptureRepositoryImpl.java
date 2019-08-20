@@ -25,12 +25,15 @@ import org.hisp.dhis.android.core.common.ObjectWithUid;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
+import org.hisp.dhis.android.core.dataelement.DataElement;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.enrollment.EnrollmentTableInfo;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.event.EventTableInfo;
+import org.hisp.dhis.android.core.option.Option;
+import org.hisp.dhis.android.core.option.OptionSet;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
 import org.hisp.dhis.android.core.program.Program;
@@ -39,6 +42,7 @@ import org.hisp.dhis.android.core.program.ProgramRuleAction;
 import org.hisp.dhis.android.core.program.ProgramRuleActionType;
 import org.hisp.dhis.android.core.program.ProgramRuleVariable;
 import org.hisp.dhis.android.core.program.ProgramStage;
+import org.hisp.dhis.android.core.program.ProgramStageDataElement;
 import org.hisp.dhis.android.core.program.ProgramStageSection;
 import org.hisp.dhis.android.core.program.ProgramStageSectionDeviceRendering;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
@@ -82,8 +86,6 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     private final FieldViewModelFactory fieldFactory;
 
-    private static final List<String> SECTION_TABLES = Arrays.asList(
-            EventTableInfo.TABLE_INFO.name(), ProgramTableInfo.TABLE_INFO.name(), ProgramStageTableInfo.TABLE_INFO.name(), ProgramStageSectionTableInfo.TABLE_INFO.name());
     private static final String SELECT_SECTIONS = "SELECT\n" +
             "  Program.uid AS programUid,\n" +
             "  ProgramStage.uid AS programStageUid,\n" +
@@ -144,8 +146,6 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
             " WHEN Field.sectionOrder IS NULL THEN Field.formOrder" +
             " WHEN Field.sectionOrder IS NOT NULL THEN Field.sectionOrder" +
             " END ASC;";
-
-    private static final String OPTIONS = "SELECT Option.uid, Option.displayName, Option.code FROM Option WHERE Option.optionSet = ?";
 
     private final BriteDatabase briteDatabase;
     private final String eventUid;
@@ -409,12 +409,22 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 .map(displayName -> displayName.equals("default") ? "" : displayName);
     }
 
+
     @Override
     public Flowable<List<FormSectionViewModel>> eventSections() {
-        return briteDatabase
-                .createQuery(SECTION_TABLES, SELECT_SECTIONS, eventUid)
-                .mapToList(this::mapToFormSectionViewModels)
-                .distinctUntilChanged().toFlowable(BackpressureStrategy.LATEST);
+        return d2.eventModule().events.uid(eventUid).get()
+                .map(eventSingle -> {
+                    List<FormSectionViewModel> formSection = new ArrayList<>();
+                    if(eventSingle.state() != State.TO_DELETE) {
+                        ProgramStage stage = d2.programModule().programStages.uid(eventSingle.programStage()).withAllChildren().blockingGet();
+                        if (stage.programStageSections().size() > 0) {
+                            for (ProgramStageSection section : stage.programStageSections())
+                                formSection.add(FormSectionViewModel.createForSection(eventUid, section.uid(), section.displayName(), section.renderType().mobile().type().name()));
+                        } else
+                            formSection.add(FormSectionViewModel.createForProgramStageWithLabel(eventUid, stage.displayName(), stage.uid()));
+                    }
+                    return formSection;
+                }).toFlowable();
     }
 
     @NonNull
@@ -437,56 +447,119 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         return renderingType;
     }
 
-    private List<FieldViewModel> checkRenderType(List<FieldViewModel> fieldViewModels) {
+    private List<FieldViewModel> checkRenderType(List<FieldViewModel> fieldViewModels){
         ArrayList<FieldViewModel> renderList = new ArrayList<>();
 
         for (FieldViewModel fieldViewModel : fieldViewModels) {
 
             ProgramStageSectionRenderingType renderingType = renderingType(fieldViewModel.programStageSection());
             if (!isEmpty(fieldViewModel.optionSet()) && renderingType != ProgramStageSectionRenderingType.LISTING) {
-                try (Cursor cursor = briteDatabase.query(OPTIONS, fieldViewModel.optionSet() == null ? "" : fieldViewModel.optionSet())) {
-                    if (cursor != null && cursor.moveToFirst()) {
-                        int optionCount = cursor.getCount();
-                        for (int i = 0; i < optionCount; i++) {
-                            String uid = cursor.getString(0);
-                            String displayName = cursor.getString(1);
-                            String optionCode = cursor.getString(2);
-
-                            ValueTypeDeviceRendering fieldRendering = null;
-                            try (Cursor rendering = briteDatabase.query("SELECT ValueTypeDeviceRendering.* FROM ValueTypeDeviceRendering" +
-                                    " JOIN ProgramStageDataElement ON ProgramStageDataElement.uid = ValueTypeDeviceRendering.uid" +
-                                    " WHERE ProgramStageDataElement.uid = ?", uid)) {
-                                if (rendering != null && rendering.moveToFirst())
-                                    fieldRendering = ValueTypeDeviceRendering.create(rendering);
-                            }
-
-                            ObjectStyle objectStyle = ObjectStyle.builder().build();
-                            try (Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", uid)) {
-                                if (objStyleCursor != null && objStyleCursor.moveToFirst())
-                                    objectStyle = ObjectStyle.create(objStyleCursor);
-                            }
-
-                            renderList.add(fieldFactory.create(
-                                    fieldViewModel.uid() + "." + uid, //fist
-                                    displayName + "-" + optionCode, ValueType.TEXT, false,
-                                    fieldViewModel.optionSet(), fieldViewModel.value(), fieldViewModel.programStageSection(),
-                                    fieldViewModel.allowFutureDate(), fieldViewModel.editable() == null ? false : fieldViewModel.editable(), renderingType, fieldViewModel.description(), fieldRendering, optionCount, objectStyle));
-
-                            cursor.moveToNext();
-                        }
+                OptionSet optionSets = d2.optionModule().optionSets.withOptions().byUid().eq(fieldViewModel.optionSet() == null ? "" : fieldViewModel.optionSet()).one().blockingGet();
+                for(Option option: optionSets.options()){
+                    ValueTypeDeviceRendering fieldRendering = null;
+                    try (Cursor rendering = briteDatabase.query("SELECT ValueTypeDeviceRendering.* FROM ValueTypeDeviceRendering" +
+                            " JOIN ProgramStageDataElement ON ProgramStageDataElement.uid = ValueTypeDeviceRendering.uid" +
+                            " WHERE ProgramStageDataElement.uid = ?", option.uid())) {
+                        if (rendering != null && rendering.moveToFirst())
+                            fieldRendering = ValueTypeDeviceRendering.create(rendering);
                     }
+
+                    ObjectStyle objectStyle = ObjectStyle.builder().build();
+                    try (Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", option.uid())) {
+                        if (objStyleCursor != null && objStyleCursor.moveToFirst())
+                            objectStyle = ObjectStyle.create(objStyleCursor);
+                    }
+
+                    renderList.add(fieldFactory.create(
+                            fieldViewModel.uid() + "." + option.uid(), //fist
+                            option.displayName() + "-" + option.code(), ValueType.TEXT, false,
+                            fieldViewModel.optionSet(), fieldViewModel.value(), fieldViewModel.programStageSection(),
+                            fieldViewModel.allowFutureDate(), fieldViewModel.editable() == null ? false : fieldViewModel.editable(), renderingType, fieldViewModel.description(), fieldRendering, optionSets.options().size(), objectStyle));
+
                 }
-            } else
+            }else
                 renderList.add(fieldViewModel);
         }
-
         return renderList;
-
     }
 
+    /**
+     * "SELECT\n" +
+     *             "  Field.id,\n" +
+     *             "  Field.label,\n" +
+     *             "  Field.type,\n" +
+     *             "  Field.mandatory,\n" +
+     *             "  Field.optionSet,\n" +
+     *             "  Value.value,\n" +
+     *             "  Option.displayName,\n" +
+     *             "  Field.section,\n" +
+     *             "  Field.allowFutureDate,\n" +
+     *             "  Event.status,\n" +
+     *             "  Field.formLabel,\n" +
+     *             "  Field.displayDescription,\n" +
+     *             "  Field.formOrder,\n" +
+     *             "  Field.sectionOrder\n" +
+     *             "FROM Event\n" +
+     *             "  LEFT OUTER JOIN (\n" +
+     *             "      SELECT\n" +
+     *             "        DataElement.displayName AS label,\n" +
+     *             "        DataElement.valueType AS type,\n" +
+     *             "        DataElement.uid AS id,\n" +
+     *             "        DataElement.optionSet AS optionSet,\n" +
+     *             "        DataElement.displayFormName AS formLabel,\n" +
+     *             "        ProgramStageDataElement.sortOrder AS formOrder,\n" +
+     *             "        ProgramStageDataElement.programStage AS stage,\n" +
+     *             "        ProgramStageDataElement.compulsory AS mandatory,\n" +
+     *             "        ProgramStageSectionDataElementLink.programStageSection AS section,\n" +
+     *             "        ProgramStageDataElement.allowFutureDate AS allowFutureDate,\n" +
+     *             "        DataElement.displayDescription AS displayDescription,\n" +
+     *             "        ProgramStageSectionDataElementLink.sortOrder AS sectionOrder\n" + //This should override dataElement formOrder
+     *             "      FROM ProgramStageDataElement\n" +
+     *             "        INNER JOIN DataElement ON DataElement.uid = ProgramStageDataElement.dataElement\n" +
+     *             "        LEFT JOIN ProgramStageSection ON ProgramStageSection.programStage = ProgramStageDataElement.programStage\n" +
+     *             "        LEFT JOIN ProgramStageSectionDataElementLink ON ProgramStageSectionDataElementLink.programStageSection = ProgramStageSection.uid AND ProgramStageSectionDataElementLink.dataElement = DataElement.uid\n" +
+     *             "    ) AS Field ON (Field.stage = Event.programStage)\n" +
+     *             "  LEFT OUTER JOIN TrackedEntityDataValue AS Value ON (\n" +
+     *             "    Value.event = Event.uid AND Value.dataElement = Field.id\n" +
+     *             "  )\n" +
+     *             "  LEFT OUTER JOIN Option ON (\n" +
+     *             "    Field.optionSet = Option.optionSet AND Value.value = Option.code\n" +
+     *             "  )\n" +
+     *             " %s  " +
+     *             "ORDER BY CASE" +
+     *             " WHEN Field.sectionOrder IS NULL THEN Field.formOrder" +
+     *             " WHEN Field.sectionOrder IS NOT NULL THEN Field.sectionOrder" +
+     *             " END ASC;"
+     *
+     *
+     *
+     *             "  Field.id,\n" +
+     *      *             "  Field.label,\n" +
+     *      *             "  Field.type,\n" +
+     *      *             "  Field.mandatory,\n" +
+     *      *             "  Field.optionSet,\n" +
+     *      *             "  Value.value,\n" +
+     *      *             "  Option.displayName,\n" +
+     *      *             "  Field.section,\n" +
+     *      *             "  Field.allowFutureDate,\n" +
+     *      *             "  Event.status,\n" +
+     *      *             "  Field.formLabel,\n" +
+     *      *             "  Field.displayDescription,\n" +
+     *      *             "  Field.formOrder,\n" +
+     *      *             "  Field.sectionOrder\n" +
+     * */
     @NonNull
     @Override
     public Flowable<List<FieldViewModel>> list() {
+    d2.eventModule().events.withAllChildren().uid().blockingGet()
+                d2.programModule().programStages.withAllChildren().byUid().eq().one().blockingGet().programStageSections().get(0).so
+
+         d2.eventModule().events.withAllChildren().uid(eventUid).get()
+            .map(event -> {
+                d2.programModule().programStages.withAllChildren().uid(event.program()).blockingGet()
+
+            });
+
         return briteDatabase
                 .createQuery(TrackedEntityDataValueTableInfo.TABLE_INFO.name(), prepareStatement(eventUid))
                 .mapToList(this::transform)
@@ -508,6 +581,23 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
         return String.format(Locale.US, QUERY, where);
     }
+
+    /**
+     *
+     * "SELECT\n" +
+     *             "  Program.uid AS programUid,\n" +
+     *             "  ProgramStage.uid AS programStageUid,\n" +
+     *             "  ProgramStageSection.uid AS programStageSectionUid,\n" +
+     *             "  ProgramStageSection.displayName AS programStageSectionDisplayName,\n" +
+     *             "  ProgramStage.displayName AS programStageDisplayName,\n" +
+     *             "  ProgramStageSection.mobileRenderType AS renderType\n" +
+     *             "FROM Event\n" +
+     *             "  JOIN Program ON Event.program = Program.uid\n" +
+     *             "  JOIN ProgramStage ON Event.programStage = ProgramStage.uid\n" +
+     *             "  LEFT OUTER JOIN ProgramStageSection ON ProgramStageSection.programStage = Event.programStage\n" +
+     *             "WHERE Event.uid = ?\n" +
+     *             "AND " + EventTableInfo.TABLE_INFO.name() + "." + EventTableInfo.Columns.STATE + " != '" + State.TO_DELETE + "' ORDER BY ProgramStageSection.sortOrder";
+     * */
 
     @NonNull
     @SuppressFBWarnings("VA_FORMAT_STRING_USES_NEWLINE")
@@ -538,31 +628,25 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         return String.format(Locale.US, QUERY, where);
     }
 
-    @NonNull
-    private FieldViewModel transform(@NonNull Cursor cursor) {
-        String uid = cursor.getString(0);
-        String displayName = cursor.getString(1);
-        String valueTypeName = cursor.getString(2);
-        boolean mandatory = cursor.getInt(3) == 1;
-        String optionSet = cursor.getString(4);
-        String dataValue = cursor.getString(5);
-        String optionCodeName = cursor.getString(6);
-        String programStageSection = cursor.getString(7);
-        boolean allowFurureDates = cursor.getInt(8) == 1;
-        EventStatus eventStatus = EventStatus.valueOf(cursor.getString(9));
-        String formName = cursor.getString(10);
-        String description = cursor.getString(11);
+    private FieldViewModel transform(@NonNull Cursor cursor){ return null;}
 
-        if (!isEmpty(optionCodeName)) {
-            dataValue = optionCodeName;
-        }
+    @NonNull
+    private FieldViewModel transform(@NonNull ProgramStageDataElement stage, DataElement dataElement, String value, String programStageSection ) {
+        String uid = dataElement.uid();
+        String displayName = dataElement.displayName();
+        String valueTypeName = dataElement.valueType().name();
+        boolean mandatory = stage.compulsory();
+        String optionSet = dataElement.optionSetUid();
+        String dataValue = value;
+        List<Option> option = d2.optionModule().options.byOptionSetUid().eq(optionSet).byCode().eq(dataValue).blockingGet();
+        boolean allowFurureDates = stage.allowFutureDate();
+        String formName = dataElement.displayFormName();
+        String description = dataElement.displayDescription();
 
         int optionCount = 0;
-        if (!isEmpty(optionSet)) {
-            try (Cursor countCursor = briteDatabase.query("SELECT COUNT (uid) FROM Option WHERE optionSet = ?", optionSet)) {
-                if (countCursor != null && countCursor.moveToFirst())
-                    optionCount = countCursor.getInt(0);
-            }
+        if (!option.isEmpty()) {
+            dataValue = option.get(0).displayName();
+            option.size();
         }
 
         ValueTypeDeviceRendering fieldRendering = null;
