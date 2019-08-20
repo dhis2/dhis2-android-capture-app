@@ -533,7 +533,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         if (event.geometry() != null && event.geometry().type()!= FeatureType.NONE) {
             runOnUiThread(() -> {
                 if (isEmpty(savedLat)) {
-                    if (GeometryHelper.conatainsAPoint(event.geometry())) {
+                    if (GeometryHelper.containsAPoint(event.geometry())) {
                         try {
                             List<Double> points = GeometryHelper.getPoint(event.geometry());
                             binding.lat.setText(String.valueOf(points.get(0))); //TODO: SUPPORT ALL FEATURE TYPES

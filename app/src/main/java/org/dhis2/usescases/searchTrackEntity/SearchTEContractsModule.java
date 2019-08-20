@@ -56,6 +56,8 @@ public class SearchTEContractsModule {
         void openOrgUnitTreeSelector();
 
         void showPeriodRequest(FilterManager.PeriodRequest periodRequest);
+
+        void updateFiltersSearch(int totalFilters);
     }
 
     public interface Presenter {

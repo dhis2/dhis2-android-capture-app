@@ -26,6 +26,7 @@ public class FilterManager {
     }
 
     private int periodIdSelected;
+    private int totalSearchTeiFilter = 0;
 
     private List<OrganisationUnit> ouFilters;
     private List<State> stateFilters;
@@ -247,5 +248,13 @@ public class FilterManager {
         eventStatusFilters.clear();
         eventStatusFiltersApplied.set(eventStatusFilters.size());
         filterProcessor.onNext(this);
+    }
+
+    public int getTotalSearchTeiFilter() {
+        return totalSearchTeiFilter;
+    }
+
+    public void setTotalSearchTeiFilter(int totalSearchTeiFilter) {
+        this.totalSearchTeiFilter = totalSearchTeiFilter;
     }
 }
