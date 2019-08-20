@@ -30,21 +30,19 @@ import org.dhis2.data.user.UserComponent;
 import org.dhis2.data.user.UserModule;
 import org.dhis2.usescases.login.LoginComponent;
 import org.dhis2.usescases.login.LoginModule;
-import org.dhis2.usescases.sync.SyncComponent;
 import org.dhis2.usescases.teiDashboard.TeiDashboardComponent;
 import org.dhis2.usescases.teiDashboard.TeiDashboardModule;
 import org.dhis2.utils.UtilsModule;
 import org.dhis2.utils.timber.DebugTree;
 import org.dhis2.utils.timber.ReleaseTree;
-import org.hisp.dhis.android.core.configuration.Configuration;
-import org.hisp.dhis.android.core.configuration.ConfigurationManager;
+import org.hisp.dhis.android.core.d2manager.D2Manager;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import io.fabric.sdk.android.Fabric;
 import io.ona.kujaku.KujakuLibrary;
 import io.reactivex.Scheduler;
+import io.reactivex.Single;
 import io.reactivex.android.plugins.RxAndroidPlugins;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import timber.log.Timber;
@@ -61,9 +59,6 @@ public class App extends MultiDexApplication implements Components {
     private static final String DATABASE_NAME = "dhis.db";
 
     private static App instance;
-
-    @Inject
-    ConfigurationManager configurationManager;
 
     @NonNull
     @Singleton
@@ -84,10 +79,6 @@ public class App extends MultiDexApplication implements Components {
     @Nullable
     @PerActivity
     LoginComponent loginComponent;
-
-    @Nullable
-    @PerActivity
-    SyncComponent syncComponent;
 
     @Nullable
     @PerActivity
@@ -114,7 +105,7 @@ public class App extends MultiDexApplication implements Components {
 
         setUpAppComponent();
         setUpServerComponent();
-        setUpUserComponent();
+//        setUpUserComponent();
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             upgradeSecurityProvider();
@@ -162,10 +153,20 @@ public class App extends MultiDexApplication implements Components {
     }
 
     private void setUpServerComponent() {
-        Configuration configuration = configurationManager.get();
-        if (configuration != null) {
-            serverComponent = appComponent.plus(new ServerModule(configuration));
-        }
+        boolean isLogged = D2Manager.setUp(ServerModule.getD2Configuration(this))
+                .andThen(
+                        Single.defer(() -> {
+                            if (D2Manager.isServerUrlSet())
+                                return D2Manager.instantiateD2().flatMap(d2 -> d2.userModule().isLogged());
+                            else
+                                return Single.just(false);
+
+                        })
+                ).blockingGet();
+        serverComponent = appComponent.plus(new ServerModule());
+
+        if(isLogged)
+            setUpUserComponent();
     }
 
 
@@ -224,9 +225,10 @@ public class App extends MultiDexApplication implements Components {
     ////////////////////////////////////////////////////////////////////////
     // Server component
     ////////////////////////////////////////////////////////////////////////
+
     @Override
-    public ServerComponent createServerComponent(@NonNull Configuration configuration) {
-        serverComponent = appComponent.plus(new ServerModule(configuration));
+    public ServerComponent createServerComponent() {
+        serverComponent = appComponent.plus(new ServerModule());
         return serverComponent;
 
     }

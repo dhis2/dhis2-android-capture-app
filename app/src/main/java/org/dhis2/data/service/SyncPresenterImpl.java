@@ -71,9 +71,9 @@ final class SyncPresenterImpl implements SyncPresenter {
     }
 
     @Override
-    public void syncMetadata(Context context) {
+    public void syncMetadata(Context context, SyncMetadataWorker.OnProgressUpdate progressUpdate) {
         Completable.fromObservable(d2.metadataModule().download()
-                .doOnNext(data -> Timber.d(data.percentage() + "% " + data.doneCalls().size() + "/" + data.totalCalls())))
+                .doOnNext(data -> progressUpdate.onProgressUpdate((int) Math.ceil(data.percentage()))))
                 .blockingAwait();
     }
 
