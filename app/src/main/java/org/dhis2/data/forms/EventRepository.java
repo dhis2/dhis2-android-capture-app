@@ -187,14 +187,15 @@ public class EventRepository implements FormRepository {
                         rulesRepository.otherEvents(eventUid),
                         rulesRepository.enrollment(eventUid),
                         rulesRepository.queryConstants(),
-                        (rules, variables, events, enrollment, constants) -> {
+                        rulesRepository.getSuplementaryData(d2),
+                        (rules, variables, events, enrollment, constants,supplementaryData) -> {
 
                             RuleEngine.Builder builder = RuleEngineContext.builder(evaluator)
                                     .rules(rules)
                                     .ruleVariables(variables)
                                     .constantsValue(constants)
                                     .calculatedValueMap(new HashMap<>())
-                                    .supplementaryData(new HashMap<>())
+                                    .supplementaryData(supplementaryData)
                                     .build().toEngineBuilder();
                             builder.triggerEnvironment(TriggerEnvironment.ANDROIDCLIENT);
                             builder.events(events);
@@ -215,14 +216,15 @@ public class EventRepository implements FormRepository {
                         rulesRepository.otherEvents(eventUid),
                         rulesRepository.enrollment(eventUid),
                         rulesRepository.queryConstants(),
-                        (rules, variables, events, enrollment, constants) -> {
+                        rulesRepository.getSuplementaryData(d2),
+                        (rules, variables, events, enrollment, constants,supplementaryData) -> {
 
                             RuleEngine.Builder builder = RuleEngineContext.builder(evaluator)
                                     .rules(rules)
                                     .ruleVariables(variables)
                                     .constantsValue(constants)
                                     .calculatedValueMap(new HashMap<>())
-                                    .supplementaryData(new HashMap<>())
+                                    .supplementaryData(supplementaryData)
                                     .build().toEngineBuilder();
                             builder.triggerEnvironment(TriggerEnvironment.ANDROIDCLIENT);
                             builder.events(events);

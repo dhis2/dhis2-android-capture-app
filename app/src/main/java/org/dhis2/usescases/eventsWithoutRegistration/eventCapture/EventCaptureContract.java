@@ -61,6 +61,8 @@ public class EventCaptureContract {
         void attemptToReschedule();
 
         void setProgramStage(String programStageUid);
+
+        void showRuleCalculation(Boolean shouldShow);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {

@@ -27,6 +27,7 @@ import org.dhis2.databinding.ActivityEventCaptureBinding;
 import org.dhis2.databinding.WidgetDatepickerBinding;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
+import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
@@ -81,6 +82,8 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         binding = DataBindingUtil.setContentView(this, R.layout.activity_event_capture);
         binding.setPresenter(presenter);
         gestureScanner = new GestureDetector(this, this);
+
+        binding.calculationIndicator.text.setTextColor(ColorUtils.getContrastColor(ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY_LIGHT)));
 
         presenter.init(this);
 
@@ -182,6 +185,11 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     @Override
     public void setProgramStage(String programStageUid) {
         this.programStageUid = programStageUid;
+    }
+
+    @Override
+    public void showRuleCalculation(Boolean shouldShow) {
+        binding.calculationIndicator.getRoot().setVisibility(shouldShow ? View.VISIBLE : View.GONE);
     }
 
     private void setAction(FormBottomDialog.ActionType actionType) {

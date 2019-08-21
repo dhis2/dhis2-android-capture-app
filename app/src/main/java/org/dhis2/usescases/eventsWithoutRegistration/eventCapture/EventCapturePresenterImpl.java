@@ -36,6 +36,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -64,6 +65,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private int currentPosition;
     private ObservableField<String> currentSection;
     private FlowableProcessor<Integer> currentSectionPosition;
+    private FlowableProcessor<Boolean> showCalculationProcessor;
     private List<FormSectionViewModel> sectionList;
     private Map<String, FieldViewModel> emptyMandatoryFields;
     //Rules data
@@ -104,6 +106,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         this.sectionList = new ArrayList<>();
         currentSectionPosition = PublishProcessor.create();
         sectionProcessor = PublishProcessor.create();
+        showCalculationProcessor = PublishProcessor.create();
 
     }
 
@@ -111,6 +114,18 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     public void init(EventCaptureContract.View view) {
         this.compositeDisposable = new CompositeDisposable();
         this.view = view;
+
+        compositeDisposable.add(
+                showCalculationProcessor
+                        .startWith(true)
+                        .switchMap(shouldShow -> Flowable.just(shouldShow).delay(1, TimeUnit.SECONDS, Schedulers.io()))
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                view::showRuleCalculation,
+                                Timber::e
+                        )
+        );
 
         compositeDisposable.add(
                 Flowable.zip(
@@ -253,6 +268,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 updates -> {
+                                    showCalculationProcessor.onNext(false);
                                     EventCaptureFormFragment.getInstance().showFields(updates, lastFocusItem);
                                     checkProgress();
                                 },
@@ -390,7 +406,10 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                     emptyMandatoryFields.remove(action.id());
                                 return dataEntryStore.save(action.id(), action.value());
                             }
-                    ).subscribe(result -> Timber.d("SAVED VALUE AT %s", System.currentTimeMillis()),
+                    ).subscribe(result -> {
+                                Timber.d("SAVED VALUE AT %s", System.currentTimeMillis());
+                                showCalculationProcessor.onNext(true);
+                            },
                             Timber::d)
             );
         }
