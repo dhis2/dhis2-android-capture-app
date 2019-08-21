@@ -19,6 +19,7 @@ import org.dhis2.data.server.UserManager
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.qrScanner.QRActivity
 import org.dhis2.utils.Constants
+import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.d2manager.D2Manager
 import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.maintenance.D2ErrorCode
@@ -105,10 +106,10 @@ class LoginPresenter : LoginContracts.Presenter {
 
     override fun logIn(serverUrl: String, userName: String, pass: String) {
         disposable.add(
-                D2Manager.setServerUrl(serverUrl).toObservable<Unit>()
-                        .flatMap { D2Manager.instantiateD2().toObservable() }
+                D2Manager.setServerUrl(serverUrl)
+                        .andThen(D2Manager.instantiateD2())
                         .map { (view.abstracContext.applicationContext as App).createServerComponent().userManager() }
-                        .switchMap { userManager ->
+                        .flatMapObservable { userManager ->
                             val prefs = view.abstractActivity.getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE)
                             prefs.edit().putString(Constants.SERVER, "$serverUrl/api").apply()
                             this.userManager = userManager

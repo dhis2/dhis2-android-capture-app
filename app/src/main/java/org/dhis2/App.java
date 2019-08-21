@@ -163,9 +163,10 @@ public class App extends MultiDexApplication implements Components {
 
                         })
                 ).blockingGet();
-        serverComponent = appComponent.plus(new ServerModule());
+        if (D2Manager.isServerUrlSet())
+            serverComponent = appComponent.plus(new ServerModule(),new DbModule(DATABASE_NAME));
 
-        if(isLogged)
+        if (isLogged)
             setUpUserComponent();
     }
 
@@ -184,7 +185,7 @@ public class App extends MultiDexApplication implements Components {
     @NonNull
     protected AppComponent.Builder prepareAppComponent() {
         return DaggerAppComponent.builder()
-                .dbModule(new DbModule(DATABASE_NAME))
+//                .dbModule(new DbModule(DATABASE_NAME))
                 .appModule(new AppModule(this))
                 .schedulerModule(new SchedulerModule(new SchedulersProviderImpl()))
                 .utilModule(new UtilsModule());
@@ -228,7 +229,7 @@ public class App extends MultiDexApplication implements Components {
 
     @Override
     public ServerComponent createServerComponent() {
-        serverComponent = appComponent.plus(new ServerModule());
+        serverComponent = appComponent.plus(new ServerModule(),new DbModule(DATABASE_NAME));
         return serverComponent;
 
     }

@@ -6,6 +6,7 @@ import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.user.User;
 
 import io.reactivex.Observable;
+import io.reactivex.Single;
 
 public class UserManagerImpl implements UserManager {
     private final D2 d2;
@@ -24,6 +25,31 @@ public class UserManagerImpl implements UserManager {
     @Override
     public Observable<Boolean> isUserLoggedIn() {
         return Observable.defer(() -> d2.userModule().isLogged().toObservable());
+    }
+
+    @NonNull
+    @Override
+    public Single<String> userInitials() {
+        return Single.defer(() -> d2.userModule().user.get())
+                .map(user -> {
+                    String fn = user.firstName() != null ? user.firstName() : "";
+                    String sn = user.surname() != null ? user.surname() : "";
+                    return String.format("%s%s", fn.charAt(0), sn.charAt(0));
+                });
+    }
+
+    @Override
+    @NonNull
+    public Single<String> userFullName() {
+        return Single.defer(() -> d2.userModule().user.get())
+                .map(user -> String.format("%s %s", user.firstName(), user.surname()));
+    }
+
+    @NonNull
+    @Override
+    public Single<String> userName(){
+        return Single.defer(()->d2.userModule().user.withUserCredentials().get())
+                .map(user->user.userCredentials().username());
     }
 
     @Override
