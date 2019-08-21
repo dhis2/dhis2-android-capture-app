@@ -124,6 +124,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         initialProgram = getIntent().getStringExtra("PROGRAM_UID");
         binding.setNeedsSearch(needsSearch);
         binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
+        binding.setTotalFiltersSearch(0);
 
         try {
             fromRelationship = getIntent().getBooleanExtra("FROM_RELATIONSHIP", false);
@@ -184,6 +185,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         presenter.initSearch(this);
         registerReceiver(networkReceiver, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
         binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
+        binding.setTotalFiltersSearch(FilterManager.getInstance().getTotalSearchTeiFilter());
         filtersAdapter.notifyDataSetChanged();
     }
 
@@ -207,6 +209,12 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     public void updateFilters(int totalFilters) {
         binding.setTotalFilters(totalFilters);
         binding.executePendingBindings();
+    }
+
+    @Override
+    public void updateFiltersSearch(int totalFilters){
+        FilterManager.getInstance().setTotalSearchTeiFilter(totalFilters);
+        binding.setTotalFiltersSearch(totalFilters);
     }
 
     //endregion

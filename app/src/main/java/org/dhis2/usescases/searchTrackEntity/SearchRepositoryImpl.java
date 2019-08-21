@@ -20,6 +20,7 @@ import org.dhis2.utils.CodeGenerator;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.ValueUtils;
+import org.dhis2.utils.filters.FilterManager;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
@@ -33,6 +34,7 @@ import org.hisp.dhis.android.core.event.EventCollectionRepository;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitMode;
+import org.hisp.dhis.android.core.period.DatePeriod;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
@@ -144,6 +146,13 @@ public class SearchRepositoryImpl implements SearchRepository {
                                                                             @Nullable HashMap<String, String> queryData) {
 
         TrackedEntityInstanceQuery.Builder queryBuilder = setQueryBuilder(selectedProgram, trackedEntityType, orgUnits);
+
+        List<DatePeriod> periods = FilterManager.getInstance().getPeriodFilters();
+        if(periods.size() > 0){
+            queryBuilder.programStartDate(periods.get(0).startDate());
+            queryBuilder.programEndDate(periods.get(0).endDate());
+        }
+
         if (queryData != null && !isEmpty(queryData.get(Constants.ENROLLMENT_DATE_UID))) {
             try {
                 Date enrollmentDate = DateUtils.uiDateFormat().parse(queryData.get(Constants.ENROLLMENT_DATE_UID));
@@ -183,6 +192,13 @@ public class SearchRepositoryImpl implements SearchRepository {
                                                                         @Nullable HashMap<String, String> queryData) {
 
         TrackedEntityInstanceQuery.Builder queryBuilder = setQueryBuilder(selectedProgram, trackedEntityType, orgUnits);
+
+        List<DatePeriod> periods = FilterManager.getInstance().getPeriodFilters();
+        if(periods.size() > 0){
+            queryBuilder.programStartDate(periods.get(0).startDate());
+            queryBuilder.programEndDate(periods.get(0).endDate());
+        }
+
         if (queryData != null && !isEmpty(queryData.get(Constants.ENROLLMENT_DATE_UID))) {
             try {
                 Date enrollmentDate = DateUtils.uiDateFormat().parse(queryData.get(Constants.ENROLLMENT_DATE_UID));
@@ -198,7 +214,7 @@ public class SearchRepositoryImpl implements SearchRepository {
 
         TrackedEntityInstanceQuery query = queryBuilder.filter(filterList).build();
 
-        TrackedEntityInstanceQueryCollectionRepository repo = d2.trackedEntityModule().trackedEntityInstanceQuery.offlineOnly().query(query);
+        TrackedEntityInstanceQueryCollectionRepository repo = d2.trackedEntityModule().trackedEntityInstanceQuery.offlineFirst().query(query);
         List<String> teis = repo.get().map(tei -> filterTransform(tei, states)).blockingGet();
 
         DataSource dataSource = d2.trackedEntityModule().trackedEntityInstances.byUid().in(teis).getDataSource()

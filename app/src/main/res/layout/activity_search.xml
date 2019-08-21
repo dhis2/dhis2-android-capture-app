@@ -18,6 +18,10 @@
             name="totalFilters"
             type="Integer" />
 
+        <variable
+            name="totalFiltersSearch"
+            type="Integer" />
+
     </data>
 
     <RelativeLayout
@@ -89,6 +93,28 @@
                     android:textColor="?colorPrimary"
                     android:textSize="10sp"
                     android:visibility="@{totalFilters>0?View.VISIBLE:View.GONE}"
+                    tools:text="1" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/filterCounterSearch"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="24dp"
+                android:padding="2dp"
+                app:layout_constraintStart_toStartOf="@id/search_filter"
+                app:layout_constraintTop_toTopOf="@id/search_filter">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/ic_oval_shape_white"
+                    android:gravity="center"
+                    android:includeFontPadding="false"
+                    android:text='@{""+totalFiltersSearch}'
+                    android:textColor="?colorPrimary"
+                    android:textSize="10sp"
+                    android:visibility="@{totalFiltersSearch>0?View.VISIBLE:View.GONE}"
                     tools:text="1" />
             </androidx.constraintlayout.widget.ConstraintLayout>
             <ImageView
@@ -310,111 +336,6 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:searchOrAdd='@{ needsSearch }' />
         </androidx.constraintlayout.widget.ConstraintLayout>
-        <!--<androidx.coordinatorlayout.widget.CoordinatorLayout
-            android:id="@+id/coordinatorLayout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_below="@+id/mainToolbar">
-
-            &lt;!&ndash;SCROLLING VIEW&ndash;&gt;
-
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/scrollView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior" />
-
-            <RelativeLayout
-                android:id="@+id/messageContainer"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/white"
-                android:visibility="visible"
-                app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
-
-                <TextView
-                    android:id="@+id/message"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_margin="10dp"
-                    android:gravity="center_horizontal"
-                    android:textSize="18sp"
-                    tools:text="You need to enter at least N attributes to do a search" />
-
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/progressLayout"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/colorAccent"
-                android:visibility="visible"
-                app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
-
-                <ProgressBar
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentTop="true"
-                    android:layout_margin="5dp"
-                    app:progressColor="@{@color/colorPrimary}" />
-            </RelativeLayout>
-
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/enrollmentButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentBottom="true"
-                android:layout_gravity="end|bottom"
-                android:layout_margin="15dp"
-                android:focusableInTouchMode="true"
-                android:onClick="@{(view)->presenter.onFabClick(view, needsSearch)}"
-                android:tint="@color/white"
-                app:backgroundTint="?attr/colorPrimary"
-                app:elevation="12dp"
-                app:fabSize="normal"
-                app:layout_behavior="org.dhis2.utils.FixedBottomViewBehavior"
-                app:searchOrAdd='@{ needsSearch }' />
-
-            &lt;!&ndash;END OF SCROLLING VIEW&ndash;&gt;
-
-            <com.google.android.material.appbar.AppBarLayout
-                android:id="@+id/appbatlayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="?colorPrimary">
-
-
-                <com.google.android.material.appbar.CollapsingToolbarLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:layout_scrollFlags="scroll|exitUntilCollapsed">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:focusableInTouchMode="true"
-                        android:orientation="vertical">
-
-                        <androidx.recyclerview.widget.RecyclerView
-                            android:id="@+id/form_recycler"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:focusableInTouchMode="true"
-                            app:initGrid="@{false}"
-                            app:spanCount="@{2}"
-                            app:spanSize="@{true}"
-                            tools:layout_height="100dp" />
-
-                    </LinearLayout>
-
-                </com.google.android.material.appbar.CollapsingToolbarLayout>
-
-            </com.google.android.material.appbar.AppBarLayout>
-
-        </androidx.coordinatorlayout.widget.CoordinatorLayout>-->
 
     </RelativeLayout>
 </layout>

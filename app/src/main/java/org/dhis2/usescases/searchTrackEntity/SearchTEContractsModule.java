@@ -60,6 +60,8 @@ public class SearchTEContractsModule {
         void showPeriodRequest(FilterManager.PeriodRequest periodRequest);
 
         void clearFilters();
+
+        void updateFiltersSearch(int totalFilters);
     }
 
     public interface Presenter {
