@@ -47,6 +47,8 @@ public class ProgramEventDetailContract {
         void setEventInfo(Pair<ProgramEventViewModel,LatLng> programEventViewModel);
 
         void showPeriodRequest(FilterManager.PeriodRequest periodRequest);
+
+        void clearFilters();
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
@@ -67,5 +69,7 @@ public class ProgramEventDetailContract {
         void getEventInfo(String eventUid, LatLng latLng);
 
         void getMapData();
+
+        void clearFilterClick();
     }
 }

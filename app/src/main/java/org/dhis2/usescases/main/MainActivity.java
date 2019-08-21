@@ -183,10 +183,11 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
         ConstraintSet initSet = new ConstraintSet();
         initSet.clone(binding.backdropLayout);
         if (backDropActive)
-            initSet.connect(R.id.fragment_container, ConstraintSet.TOP, R.id.backdropGuide, ConstraintSet.BOTTOM, 0);
+            initSet.connect(R.id.fragment_container, ConstraintSet.TOP, R.id.filterLayout, ConstraintSet.BOTTOM, 50);
         else
             initSet.connect(R.id.fragment_container, ConstraintSet.TOP, R.id.toolbar, ConstraintSet.BOTTOM, 0);
         initSet.applyTo(binding.backdropLayout);
+        programFragment.openFilter(backDropActive);
     }
 
     private void checkFilterEnabled() {
@@ -271,6 +272,9 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
         }
         binding.drawerLayout.closeDrawers();
 
+        if(backDropActive && !(activeFragment instanceof ProgramFragment))
+            showHideFilter();
+
     }
 
     @Override
@@ -299,6 +303,9 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
         binding.title.setText(title);
     }
 
+    public FiltersAdapter getAdapter() {
+        return adapter;
+    }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         return super.onOptionsItemSelected(item);

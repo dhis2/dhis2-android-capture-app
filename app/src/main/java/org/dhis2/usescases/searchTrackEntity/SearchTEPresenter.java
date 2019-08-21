@@ -705,4 +705,14 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     public void showFilterGeneral() {
         view.showHideFilterGeneral();
     }
+
+    @Override
+    public void clearFilterClick() {
+        view.clearFilters();
+    }
+
+    @Override
+    public void closeFilterClick() {
+        view.closeFilters();
+    }
 }
