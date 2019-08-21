@@ -5,8 +5,6 @@ import android.database.Cursor;
 
 import androidx.annotation.NonNull;
 
-import com.google.common.collect.Lists;
-import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
@@ -17,10 +15,8 @@ import org.dhis2.utils.CodeGenerator;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.android.core.arch.helpers.GeometryHelper;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
-import org.hisp.dhis.android.core.common.Coordinates;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.common.ObjectStyle;
@@ -52,6 +48,7 @@ import java.util.List;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.reactivex.Single;
 import io.reactivex.exceptions.OnErrorNotImplementedException;
 import io.reactivex.functions.Consumer;
 import timber.log.Timber;
@@ -236,7 +233,7 @@ public class EnrollmentFormRepository implements FormRepository {
                         rulesRepository.enrollmentEvents(enrollmentUid),
                         rulesRepository.queryConstants(),
                         rulesRepository.getSuplementaryData(d2),
-                        (rules, variables, events, constants,supplData) -> {
+                        (rules, variables, events, constants, supplData) -> {
                             RuleEngine.Builder builder = RuleEngineContext.builder(expressionEvaluator)
                                     .rules(rules)
                                     .ruleVariables(variables)
@@ -429,9 +426,17 @@ public class EnrollmentFormRepository implements FormRepository {
     @Override
     public Consumer<Geometry> storeCoordinates() {
         return geometry -> {
-            // TODO: Implement all cases of FEATURE TYPE
             EnrollmentObjectRepository repo = d2.enrollmentModule().enrollments.uid(enrollmentUid);
             repo.setGeometry(geometry);
+        };
+    }
+
+    @NonNull
+    @Override
+    public Consumer<Geometry> storeTeiCoordinates() {
+        return geometry -> {
+            String teiUid = d2.enrollmentModule().enrollments.uid(enrollmentUid).blockingGet().trackedEntityInstance();
+            d2.trackedEntityModule().trackedEntityInstances.uid(teiUid).setGeometry(geometry);
         };
     }
 
@@ -493,7 +498,7 @@ public class EnrollmentFormRepository implements FormRepository {
 
                     String programStage = cursor.getString(0);
                     ProgramStage stage = d2.programModule().programStages.uid(programStage).blockingGet();
-                    boolean hideDueDate = stage.hideDueDate()!=null ? stage.hideDueDate() : false;
+                    boolean hideDueDate = stage.hideDueDate() != null ? stage.hideDueDate() : false;
 
                     String program = cursor.getString(1);
                     String orgUnit = cursor.getString(2);
@@ -670,6 +675,20 @@ public class EnrollmentFormRepository implements FormRepository {
                 .map(program -> program.featureType() != FeatureType.NONE);
     }
 
+
+    @Override
+    public Single<FeatureType> captureTeiCoordinates() {
+        return d2.enrollmentModule().enrollments.uid(enrollmentUid).get()
+                .flatMap(enrollment -> d2.programModule().programs.uid(enrollment.program()).withAllChildren().get())
+                .flatMap(program -> d2.trackedEntityModule().trackedEntityTypes.uid(program.trackedEntityType().uid()).get())
+                .map(trackedEntityType -> {
+                    if (trackedEntityType.featureType() == null)
+                        return FeatureType.NONE;
+                    else
+                        return trackedEntityType.featureType();
+                });
+    }
+
     @Override
     public Observable<OrganisationUnit> getOrgUnitDates() {
         return Observable.defer(() -> Observable.just(d2.enrollmentModule().enrollments.uid(enrollmentUid).blockingGet()))
@@ -691,7 +710,7 @@ public class EnrollmentFormRepository implements FormRepository {
         EnrollmentStatus status = EnrollmentStatus.valueOf(cursor.getString(10));
         String description = cursor.getString(11);
 
-        if(generated && isEmpty(dataValue))
+        if (generated && isEmpty(dataValue))
             mandatory = true;
 
         int optionCount = 0;
@@ -821,5 +840,6 @@ public class EnrollmentFormRepository implements FormRepository {
         return Flowable.fromCallable(() -> d2.eventModule().events.byUid().eq(eventUid).one().blockingGet())
                 .map(event -> d2.programModule().programStages.byUid().eq(event.programStage()).one().blockingGet());
     }
+
 
 }

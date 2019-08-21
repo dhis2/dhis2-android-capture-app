@@ -45,6 +45,7 @@ import java.util.Locale;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.reactivex.Single;
 import io.reactivex.functions.Consumer;
 import timber.log.Timber;
 
@@ -458,6 +459,18 @@ public class EventRepository implements FormRepository {
     @Override
     public Flowable<ProgramStage> getProgramStage(String eventUid) {
         return null;
+    }
+
+    @Override
+    public Single<FeatureType> captureTeiCoordinates() {
+        return Single.just(FeatureType.NONE);
+    }
+
+    @Override
+    public Consumer<Geometry> storeTeiCoordinates() {
+        return geometry -> {
+
+        };
     }
 
     @NonNull

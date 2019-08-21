@@ -9,6 +9,7 @@ import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
+import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.program.Program;
@@ -29,6 +30,9 @@ interface FormView {
 
     @NonNull
     Observable<String> reportDateChanged();
+
+    @NonNull
+    Observable<Geometry> teiCoordinatesChanged();
 
     @NonNull
     Observable<String> incidentDateChanged();
@@ -87,4 +91,6 @@ interface FormView {
     Observable<EnrollmentStatus> onObservableBackPressed();
 
     void setNeedInitial(boolean need, String programStage);
+
+    Consumer<FeatureType> renderTeiCoordinates();
 }

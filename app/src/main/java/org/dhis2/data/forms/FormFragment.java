@@ -26,7 +26,6 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.jakewharton.rxbinding2.view.RxView;
-import com.mapbox.mapboxsdk.geometry.LatLng;
 
 import org.dhis2.App;
 import org.dhis2.Bindings.Bindings;
@@ -93,6 +92,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     private PublishSubject<String> onReportDateChanged;
     private PublishSubject<String> onIncidentDateChanged;
     private PublishSubject<Geometry> onCoordinatesChanged;
+    private PublishSubject<Geometry> onTeiCoordinatesChanged;
     private TextInputLayout reportDateLayout;
     private TextInputEditText reportDate;
     private PublishSubject<ReportStatus> undoObservable;
@@ -100,12 +100,15 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     private CoordinatorLayout coordinatorLayout;
     private TextInputLayout incidentDateLayout;
     private TextInputEditText incidentDate;
+
+    private CoordinatesView coordinatesViewToUpdate;
     private CoordinatesView coordinatesView;
+    private CoordinatesView teiCoordinatesView;
+
     private boolean isEnrollment;
     private Trio<String, String, String> enrollmentTrio;
 
     private String messageOnComplete = "";
-    private boolean canComplete = true;
     private LinearLayout dateLayout;
     private View datesLayout;
     private static final int RQ_EVENT = 9876;
@@ -116,13 +119,14 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     private Date openingDate;
     private Date closingDate;
     private boolean mandatoryDelete = true;
-    private Context context;
+
     private ProgressBar progressBar;
     private View saveButton;
     private DataEntryFragment enrollmentFragment;
     private boolean needInitial;
     private String programStageUid;
     private String enrollmentUid;
+    private FeatureType teFeatureType;
 
     public View getDatesLayout() {
         return datesLayout;
@@ -200,12 +204,16 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
             nextButton.setVisibility(View.GONE);
         }
         coordinatesView = view.findViewById(R.id.coordinates_view);
-        if (!isEnrollment) {
-            coordinatesView.setVisibility(View.GONE);
-        } else {
+        teiCoordinatesView = view.findViewById(R.id.tei_coordinates_view);
+
+        if (isEnrollment) {
             coordinatesView.setIsBgTransparent(false);
             coordinatesView.setMapListener(this);
             coordinatesView.setCurrentLocationListener(this);
+
+            teiCoordinatesView.setIsBgTransparent(false);
+            teiCoordinatesView.setMapListener(this);
+            teiCoordinatesView.setCurrentLocationListener(this);
         }
         setupActionBar();
     }
@@ -260,6 +268,13 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
 
     @NonNull
     @Override
+    public Observable<Geometry> teiCoordinatesChanged() {
+        onTeiCoordinatesChanged = PublishSubject.create();
+        return onTeiCoordinatesChanged;
+    }
+
+    @NonNull
+    @Override
     public Observable<String> incidentDateChanged() {
         onIncidentDateChanged = PublishSubject.create();
         return onIncidentDateChanged;
@@ -268,7 +283,6 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     @Override
     public void onAttach(@NotNull Context context) {
         super.onAttach(context);
-        this.context = context;
         if (getArguments() != null && getActivity() != null) {
             FormViewArguments arguments = getArguments().getParcelable(FORM_VIEW_ARGUMENTS);
             if (arguments != null) {
@@ -285,7 +299,6 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
 
     @Override
     public void onDetach() {
-        context = null;
         super.onDetach();
     }
 
@@ -361,6 +374,18 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
         return captureCoordinates -> coordinatesView.setVisibility(captureCoordinates ? View.VISIBLE : View.GONE);
     }
 
+
+    @Override
+    public Consumer<FeatureType> renderTeiCoordinates() {
+        return featureType -> {
+            teiCoordinatesView.setVisibility(featureType != FeatureType.NONE ? View.VISIBLE : View.GONE);
+            teFeatureType = featureType;
+            if (featureType != FeatureType.NONE) {
+                teiCoordinatesView.setFeatureType(featureType);
+            }
+        };
+    }
+
     @Override
     public void setMinMaxDates(Date openingDate, Date closingDate) {
         this.openingDate = openingDate;
@@ -401,6 +426,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
         this.needInitial = needInitial;
         this.programStageUid = programStageUid;
     }
+
 
     @Override
     public void renderStatusChangeSnackBar(@NonNull ReportStatus reportStatus) {
@@ -508,9 +534,10 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
 
     @Override
     public void onMapPositionClick(CoordinatesView coordinatesView) {
-        this.coordinatesView = coordinatesView;
         if (getActivity() != null && isAdded()) {
-            startActivityForResult(MapSelectorActivity.Companion.create(getActivity(), FeatureType.POINT), Constants.RQ_MAP_LOCATION_VIEW);
+            this.coordinatesViewToUpdate = coordinatesView;
+            FeatureType featureType = coordinatesView.getId() == R.id.tei_coordinates_view ? teFeatureType : FeatureType.POINT;
+            startActivityForResult(MapSelectorActivity.Companion.create(getActivity(), featureType), Constants.RQ_MAP_LOCATION_VIEW);
         }
     }
 
@@ -528,18 +555,24 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
                     String dataExtra = data.getStringExtra(MapSelectorActivity.Companion.getDATA_EXTRA());
                     Geometry geometry;
                     if (locationType == FeatureType.POINT) {
-                        Type type = new TypeToken<List<Double>>(){}.getType();
+                        Type type = new TypeToken<List<Double>>() {
+                        }.getType();
                         geometry = GeometryHelper.createPointGeometry(new Gson().fromJson(dataExtra, type));
                     } else if (locationType == FeatureType.POLYGON) {
-                        Type type = new TypeToken<List<List<List<Double>>>>(){}.getType();
+                        Type type = new TypeToken<List<List<List<Double>>>>() {
+                        }.getType();
                         geometry = GeometryHelper.createPolygonGeometry(new Gson().fromJson(dataExtra, type));
-                    } else  {
-                        Type type = new TypeToken<List<List<List<List<Double>>>>>(){}.getType();
+                    } else {
+                        Type type = new TypeToken<List<List<List<List<Double>>>>>() {
+                        }.getType();
                         geometry = GeometryHelper.createMultiPolygonGeometry(new Gson().fromJson(dataExtra, type));
                     }
-                    coordinatesView.updateLocation(geometry);
-                    publishCoordinatesChanged(geometry);
-                    this.coordinatesView = null;
+                    coordinatesViewToUpdate.updateLocation(geometry);
+                    if (coordinatesViewToUpdate.getId() == R.id.coordinates_view)
+                        publishCoordinatesChanged(geometry);
+                    else
+                        publishTeiCoodinatesChanged(geometry);
+                    this.coordinatesViewToUpdate = null;
                 }
                 break;
             case RQ_EVENT:
@@ -565,15 +598,20 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     }
 
     private void publishCoordinatesChanged(Geometry geometry) {
-        if (onCoordinatesChanged != null) {
+        if (onCoordinatesChanged != null && geometry != null) {
             onCoordinatesChanged.onNext(geometry);
+        }
+    }
+
+    private void publishTeiCoodinatesChanged(Geometry geometry) {
+        if (onTeiCoordinatesChanged != null && geometry != null) {
+            onTeiCoordinatesChanged.onNext(geometry);
         }
     }
 
     @Override
     public void messageOnComplete(String content, boolean canComplete) {
         this.messageOnComplete = content;
-        this.canComplete = canComplete;
     }
 
     @Override
