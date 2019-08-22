@@ -215,25 +215,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         );
 
         compositeDisposable.add(
-                FilterManager.getInstance().asFlowable()
-                        .startWith(FilterManager.getInstance())
-                        .map(filterManager -> {
-                            if (!NetworkUtils.isOnline(view.getContext()))
-                                return searchRepository.searchTrackedEntitiesOffline(selectedProgram, trackedEntityType,
-                                        filterManager.getOrgUnitUidsFilters(),FilterManager.getInstance().getStateFilters(), queryData);
-                            else
-                                return searchRepository.searchTrackedEntitiesAll(selectedProgram, trackedEntityType,
-                                        filterManager.getOrgUnitUidsFilters(),FilterManager.getInstance().getStateFilters(), queryData);
-
-                        })
-                        .subscribeOn(Schedulers.computation())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                view::setLiveData,
-                                Timber::d)
-                        );
-
-        compositeDisposable.add(
                 FilterManager.getInstance().ouTreeFlowable()
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
@@ -362,6 +343,27 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         );
     }
 
+    private void startFilterManager(){
+        compositeDisposable.add(
+                FilterManager.getInstance().asFlowable()
+                        .startWith(FilterManager.getInstance())
+                        .map(filterManager -> {
+                            if (!NetworkUtils.isOnline(view.getContext()))
+                                return searchRepository.searchTrackedEntitiesOffline(selectedProgram, trackedEntityType,
+                                        filterManager.getOrgUnitUidsFilters(),FilterManager.getInstance().getStateFilters(), queryData);
+                            else
+                                return searchRepository.searchTrackedEntitiesAll(selectedProgram, trackedEntityType,
+                                        filterManager.getOrgUnitUidsFilters(),FilterManager.getInstance().getStateFilters(), queryData);
+
+                        })
+                        .subscribeOn(Schedulers.computation())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                view::setLiveData,
+                                Timber::d)
+        );
+    }
+
     @Override
     public TrackedEntityType getTrackedEntityName() {
         return trackedEntity;
@@ -395,6 +397,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         else
             queryProcessor.onNext(queryData);
 
+        startFilterManager();
     }
 
     @Override
