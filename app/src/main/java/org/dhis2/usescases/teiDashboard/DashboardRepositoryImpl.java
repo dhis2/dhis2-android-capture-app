@@ -373,20 +373,10 @@ public class DashboardRepositoryImpl implements DashboardRepository {
         }
     }
 
-    private static final String SELECT_NOTES = "SELECT " +
-            "Note.* FROM Note\n" +
-            "JOIN Enrollment ON Enrollment.uid = Note.enrollment\n" +
-            "WHERE Enrollment.trackedEntityInstance = ? AND Enrollment.program = ?\n" +
-            "ORDER BY Note.storedDate DESC";
-
     @Override
     public Flowable<List<Note>> getNotes(String programUid, String teUid) {
-        // notes() llega a null aunque existe en la base de datos
-
-        return briteDatabase.createQuery("Note", SELECT_NOTES, teUid == null ? "" : teUid, programUid == null ? "" : programUid)
-                .mapToList(Note::create).toFlowable(BackpressureStrategy.LATEST);
-        /*
-        return d2.enrollmentModule().enrollments
+        //TODO set order by note.storeDate DESC. Does not have the order into the module
+        return d2.enrollmentModule().enrollments.withNotes()
                 .byProgram().eq(programUid)
                 .byTrackedEntityInstance().eq(teUid)
                 .get()
@@ -398,7 +388,6 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                     }
                     return notes;
                 }).toFlowable();
-         */
     }
 
     @Override
