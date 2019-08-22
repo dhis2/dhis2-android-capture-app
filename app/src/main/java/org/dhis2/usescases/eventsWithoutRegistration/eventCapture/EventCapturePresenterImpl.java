@@ -16,12 +16,14 @@ import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel;
 import org.dhis2.data.forms.dataentry.fields.image.ImageViewModel;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.data.metadata.MetadataRepository;
+import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Quartet;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureFragment.EventCaptureFormFragment;
 import org.dhis2.utils.AuthorityException;
 import org.dhis2.utils.Result;
 import org.dhis2.utils.RulesActionCallbacks;
 import org.dhis2.utils.RulesUtilsProvider;
+import org.hisp.dhis.android.core.common.Unit;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
@@ -60,6 +62,9 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private final DataEntryStore dataEntryStore;
     private final MetadataRepository metadataRepository;
     private final String eventUid;
+    private final PublishProcessor<Unit> progressProcessor;
+    private final PublishProcessor<Unit> sectionAdjustProcessor;
+    private final PublishProcessor<Unit> formAdjustProcessor;
     private CompositeDisposable compositeDisposable;
     private EventCaptureContract.View view;
     private int currentPosition;
@@ -107,6 +112,9 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         currentSectionPosition = PublishProcessor.create();
         sectionProcessor = PublishProcessor.create();
         showCalculationProcessor = PublishProcessor.create();
+        progressProcessor = PublishProcessor.create();
+        sectionAdjustProcessor = PublishProcessor.create();
+        formAdjustProcessor = PublishProcessor.create();
 
     }
 
@@ -181,6 +189,47 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         );
 
         compositeDisposable.add(
+                Flowable.zip(
+                        sectionAdjustProcessor,
+                        formAdjustProcessor,
+                        (a, b) -> new Unit())
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(Schedulers.io())
+                        .subscribe(
+                                unit -> {
+                                    showCalculationProcessor.onNext(false);
+                                    progressProcessor.onNext(new Unit());
+                                },
+                                Timber::e
+                        )
+        );
+
+        compositeDisposable.add(
+                progressProcessor
+                        .debounce(500, TimeUnit.MILLISECONDS, Schedulers.io())
+                        .filter(unit -> getFinalSections().size() > 1)
+                        .map(unit -> {
+                            Iterator<FormSectionViewModel> it = getFinalSections().iterator();
+                            FormSectionViewModel formSectionViewModel;
+                            do {
+                                formSectionViewModel = it.next();
+                            } while (it.hasNext() && !formSectionViewModel.sectionUid().equals(currentSection.get()));
+
+                            return Pair.create(
+                                    getFinalSections().indexOf(formSectionViewModel),
+                                    getFinalSections().size());
+                        })
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                sectionPositionAndTotal -> EventCaptureFormFragment.getInstance().setSectionProgress(
+                                        sectionPositionAndTotal.val0(),
+                                        sectionPositionAndTotal.val1()),
+                                Timber::e
+                        )
+        );
+
+        compositeDisposable.add(
                 eventCaptureRepository.eventSections()
                         .flatMap(sectionList -> getFieldFlowable(null)
                                 .map(fields -> {
@@ -231,7 +280,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                         .subscribe(data -> {
                                     subscribeToSection();
                                     EventCaptureFormFragment.getInstance().setSectionSelector(data);
-                                    checkProgress();
+                                    sectionAdjustProcessor.onNext(new Unit());
                                 }
                                 ,
                                 Timber::e
@@ -268,9 +317,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 updates -> {
-                                    showCalculationProcessor.onNext(false);
                                     EventCaptureFormFragment.getInstance().showFields(updates, lastFocusItem);
-                                    checkProgress();
+                                    formAdjustProcessor.onNext(new Unit());
                                 },
                                 Timber::e
                         ));
@@ -280,7 +328,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         if (sectionUid == null || sectionUid.equals("NO_SECTION")) {
             return Flowable.zip(
                     eventCaptureRepository.list().subscribeOn(Schedulers.computation()),
-                    eventCaptureRepository.calculate().subscribeOn(Schedulers.computation()),
+                    eventCaptureRepository.fullCalculate().subscribeOn(Schedulers.computation()),
                     this::applyEffects)
                     .map(fields -> {
                         emptyMandatoryFields = new HashMap<>();
@@ -479,6 +527,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                     EventCaptureFormFragment.getInstance().setSectionProgress(
                             getFinalSections().indexOf(formSectionViewModel),
                             getFinalSections().size());
+
     }
 
     @NonNull

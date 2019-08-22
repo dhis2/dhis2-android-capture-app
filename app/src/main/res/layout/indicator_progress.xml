@@ -3,9 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/indicator_progress_bg"
+        android:layout_marginStart="16dp"
         android:padding="2dp">
 
         <com.airbnb.lottie.LottieAnimationView
@@ -14,9 +15,9 @@
             android:layout_height="24dp"
             android:layout_marginEnd="20dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/text"
             app:layout_constraintTop_toTopOf="parent"
             app:lottie_autoPlay="true"
+            app:layout_constraintStart_toStartOf="parent"
             app:lottie_loop="true"
             app:lottie_rawRes="@raw/calculation_progress" />
 
@@ -24,8 +25,9 @@
             android:id="@+id/text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Calculating result..."
+            android:text="Adjusting form..."
             android:textColor="?colorAccent"
+            app:layout_constraintStart_toEndOf="@id/lottieView"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

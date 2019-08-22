@@ -132,6 +132,9 @@ public class EventCaptureContract {
         @NonNull
         Flowable<Result<RuleEffect>> calculate();
 
+        @NonNull
+        Flowable<Result<RuleEffect>> fullCalculate();
+
         Observable<Boolean> completeEvent();
 
         Flowable<EventStatus> eventStatus();
