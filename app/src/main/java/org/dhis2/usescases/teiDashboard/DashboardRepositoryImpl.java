@@ -33,6 +33,8 @@ import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.event.EventTableInfo;
 import org.hisp.dhis.android.core.event.internal.EventFields;
+import org.hisp.dhis.android.core.legendset.Legend;
+import org.hisp.dhis.android.core.legendset.LegendSet;
 import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
@@ -57,6 +59,7 @@ import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Predicate;
 import timber.log.Timber;
 
 import static org.hisp.dhis.android.core.arch.db.stores.internal.StoreUtils.sqLiteBind;
@@ -149,24 +152,11 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     private String teiUid;
     private String programUid;
 
-    private static final String SELECT_USERNAME = "SELECT " +
-            "UserCredentials.displayName FROM UserCredentials";
+
     private static final String SELECT_ENROLLMENT = "SELECT " +
             "Enrollment.uid FROM Enrollment JOIN Program ON Program.uid = Enrollment.program\n" +
             "WHERE Program.uid = ? AND Enrollment.status = ? AND Enrollment.trackedEntityInstance = ?";
 
-    private static final String SELECT_LEGEND = String.format("SELECT %s.%s FROM %s\n" +
-                    "JOIN %s ON %s.%s = %s.%s\n" +
-                    "JOIN %s ON %s.%s = %s.%s\n" +
-                    "WHERE %s.%s = ?\n" +
-                    "AND %s.%s <= ?\n" +
-                    "AND %s.%s > ?",
-            "Legend", "color", "Legend",
-            "ProgramIndicatorLegendSetLink", "ProgramIndicatorLegendSetLink", "legendSet", "Legend", "LegendSet",
-            "ProgramIndicator", "ProgramIndicator", "uid", "ProgramIndicatorLegendSetLink", "programIndicator",
-            "ProgramIndicator", "uid",
-            "Legend", "startValue",
-            "Legend", "endValue");
 
     public DashboardRepositoryImpl(CodeGenerator codeGenerator, BriteDatabase briteDatabase, D2 d2) {
         this.briteDatabase = briteDatabase;
@@ -246,16 +236,27 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     }
 
 
+    // TODO @var value must be double
     @Override
     public Observable<Trio<ProgramIndicator, String, String>> getLegendColorForIndicator(ProgramIndicator indicator, String value) {
         String piId = indicator != null && indicator.uid() != null ? indicator.uid() : "";
-        String color = "";
-        try (Cursor cursor = briteDatabase.query(SELECT_LEGEND, piId, value == null ? "" : value, value == null ? "" : value)) {
-            if (cursor != null && cursor.moveToFirst() && cursor.getCount() > 0) {
-                color = cursor.getString(0);
-            }
-        }
-        return Observable.just(Trio.create(indicator, value, color));
+        return d2.programModule().programIndicators.withLegendSets().uid(piId).get().toObservable()
+                .map(programIndicator -> {
+                    String color = "";
+                    if (programIndicator != null && programIndicator.legendSets() != null)
+                    for(LegendSet legendSet: programIndicator.legendSets()){
+                        if (legendSet != null && legendSet.legends() != null)
+                        for(Legend legend :legendSet.legends()){
+                            Double valueDouble = 0.0;
+                            try {
+                                valueDouble = Double.parseDouble(value);
+                            } catch (Exception e) { }
+                            if(legend.startValue() > valueDouble && legend.endValue() < valueDouble)
+                            color = legend.color();
+                        }
+                    }
+                    return Trio.create(indicator, value, color);
+                });
     }
 
     @Override
@@ -400,6 +401,9 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                 }).toFlowable();
          */
     }
+
+    private static final String SELECT_USERNAME = "SELECT " +
+            "UserCredentials.displayName FROM UserCredentials";
 
     @Override
     public Consumer<Pair<String, Boolean>> handleNote() {
