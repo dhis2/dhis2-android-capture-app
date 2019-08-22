@@ -46,12 +46,8 @@ import org.hisp.dhis.android.core.program.ProgramStageDataElement;
 import org.hisp.dhis.android.core.program.ProgramStageSection;
 import org.hisp.dhis.android.core.program.ProgramStageSectionDeviceRendering;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
-import org.hisp.dhis.android.core.program.ProgramStageSectionTableInfo;
-import org.hisp.dhis.android.core.program.ProgramStageTableInfo;
-import org.hisp.dhis.android.core.program.ProgramTableInfo;
 import org.hisp.dhis.android.core.program.ProgramType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueTableInfo;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceTableInfo;
 import org.hisp.dhis.rules.models.Rule;
@@ -60,19 +56,14 @@ import org.hisp.dhis.rules.models.RuleDataValue;
 import org.hisp.dhis.rules.models.RuleEffect;
 import org.hisp.dhis.rules.models.RuleEvent;
 
-import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
@@ -86,54 +77,6 @@ import static android.text.TextUtils.isEmpty;
 public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCaptureRepository {
 
     private final FieldViewModelFactory fieldFactory;
-
-    private static final String QUERY = "SELECT\n" +
-            "  Field.id,\n" +
-            "  Field.label,\n" +
-            "  Field.type,\n" +
-            "  Field.mandatory,\n" +
-            "  Field.optionSet,\n" +
-            "  Value.value,\n" +
-            "  Option.displayName,\n" +
-            "  Field.section,\n" +
-            "  Field.allowFutureDate,\n" +
-            "  Event.status,\n" +
-            "  Field.formLabel,\n" +
-            "  Field.displayDescription,\n" +
-            "  Field.formOrder,\n" +
-            "  Field.sectionOrder\n" +
-            "FROM Event\n" +
-            "  LEFT OUTER JOIN (\n" +
-            "      SELECT\n" +
-            "        DataElement.displayName AS label,\n" +
-            "        DataElement.valueType AS type,\n" +
-            "        DataElement.uid AS id,\n" +
-            "        DataElement.optionSet AS optionSet,\n" +
-            "        DataElement.displayFormName AS formLabel,\n" +
-            "        ProgramStageDataElement.sortOrder AS formOrder,\n" +
-            "        ProgramStageDataElement.programStage AS stage,\n" +
-            "        ProgramStageDataElement.compulsory AS mandatory,\n" +
-            "        ProgramStageSectionDataElementLink.programStageSection AS section,\n" +
-            "        ProgramStageDataElement.allowFutureDate AS allowFutureDate,\n" +
-            "        DataElement.displayDescription AS displayDescription,\n" +
-            "        ProgramStageSectionDataElementLink.sortOrder AS sectionOrder\n" + //This should override dataElement formOrder
-            "      FROM ProgramStageDataElement\n" +
-            "        INNER JOIN DataElement ON DataElement.uid = ProgramStageDataElement.dataElement\n" +
-            "        LEFT JOIN ProgramStageSection ON ProgramStageSection.programStage = ProgramStageDataElement.programStage\n" +
-            "        LEFT JOIN ProgramStageSectionDataElementLink ON ProgramStageSectionDataElementLink.programStageSection = ProgramStageSection.uid AND ProgramStageSectionDataElementLink.dataElement = DataElement.uid\n" +
-            "    ) AS Field ON (Field.stage = Event.programStage)\n" +
-            "  LEFT OUTER JOIN TrackedEntityDataValue AS Value ON (\n" +
-            "    Value.event = Event.uid AND Value.dataElement = Field.id\n" +
-            "  )\n" +
-            "  LEFT OUTER JOIN Option ON (\n" +
-            "    Field.optionSet = Option.optionSet AND Value.value = Option.code\n" +
-            "  )\n" +
-            " %s  " +
-            "ORDER BY CASE" +
-            " WHEN Field.sectionOrder IS NULL THEN Field.formOrder" +
-            " WHEN Field.sectionOrder IS NOT NULL THEN Field.sectionOrder" +
-            " END ASC;";
-
     private final BriteDatabase briteDatabase;
     private final String eventUid;
     private final Event currentEvent;
@@ -789,23 +732,14 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     }
 
     private Observable<Program> getExpiryDateFromEvent(String eventUid) {
-        String EXPIRY_DATE_PERIOD_QUERY = String.format(
-                "SELECT program.* FROM %s " +
-                        "JOIN %s ON %s.%s = %s.%s " +
-                        "WHERE %s.%s = ? " +
-                        "LIMIT 1",
-                ProgramTableInfo.TABLE_INFO.name(),
-                EventTableInfo.TABLE_INFO.name(), ProgramTableInfo.TABLE_INFO.name(), "uid", EventTableInfo.TABLE_INFO.name(), EventTableInfo.Columns.PROGRAM,
-                EventTableInfo.TABLE_INFO.name(), EventTableInfo.Columns.UID);
-        return briteDatabase
-                .createQuery(ProgramTableInfo.TABLE_INFO.name(), EXPIRY_DATE_PERIOD_QUERY, eventUid == null ? "" : eventUid)
-                .mapToOne(Program::create);
+        return d2.eventModule().events.uid(eventUid).get().
+                flatMap(event -> d2.programModule().programs.uid(event.program()).get())
+                .toObservable();
     }
 
     @Override
     public Observable<Boolean> isCompletedEventExpired(String eventUid) {
-        return Observable.zip(briteDatabase.createQuery(EventTableInfo.TABLE_INFO.name(), "SELECT * FROM Event WHERE uid = ?", eventUid)
-                        .mapToOne(Event::create),
+        return Observable.zip(d2.eventModule().events.uid(eventUid).get().toObservable(),
                 getExpiryDateFromEvent(eventUid),
                 ((event, program) -> DateUtils.getInstance().isEventExpired(null, event.completedDate(), program.completeEventsExpiryDays())));
     }
