@@ -4,11 +4,9 @@ import android.content.ContentValues;
 import android.database.sqlite.SQLiteStatement;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
-import org.dhis2.data.tuples.Pair;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.Geometry;
@@ -22,6 +20,9 @@ import java.util.Locale;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
+import io.reactivex.Single;
+import io.reactivex.SingleSource;
+import io.reactivex.functions.Function;
 
 import static org.hisp.dhis.android.core.arch.db.stores.internal.StoreUtils.sqLiteBind;
 
@@ -37,13 +38,7 @@ public final class EnrollmentStatusStore implements EnrollmentStatusEntryStore {
             "  SELECT trackedEntityInstance FROM Enrollment WHERE uid = ? LIMIT 1\n" +
             "));";
 
-    private static final String SELECT_TEI = "SELECT *\n" +
-            "FROM TrackedEntityInstance\n" +
-            "WHERE uid IN (\n" +
-            "  SELECT trackedEntityInstance\n" +
-            "  FROM Enrollment\n" +
-            "  WHERE Enrollment.uid = ?\n" +
-            ") LIMIT 1;";
+
 
     @NonNull
     private final BriteDatabase briteDatabase;
@@ -126,34 +121,45 @@ public final class EnrollmentStatusStore implements EnrollmentStatusEntryStore {
     }
 
 
+    private static final String SELECT_TEI = "SELECT *\n" +
+            "FROM TrackedEntityInstance\n" +
+            "WHERE uid IN (\n" +
+            "  SELECT trackedEntityInstance\n" +
+            "  FROM Enrollment\n" +
+            "  WHERE Enrollment.uid = ?\n" +
+            ") LIMIT 1;";
+
     @NonNull
     private Flowable<Long> updateEnrollment(long status) {
-        return briteDatabase.createQuery("TrackedEntityInstance", SELECT_TEI, enrollment == null ? "" : enrollment)
-                .mapToOne(TrackedEntityInstance::create).take(1).toFlowable(BackpressureStrategy.LATEST)
-                .switchMap(tei -> {
-                    if (State.SYNCED.equals(tei.state()) || State.TO_DELETE.equals(tei.state()) ||
-                            State.ERROR.equals(tei.state())) {
-                        ContentValues values = new ContentValues();
-                        values.put(TrackedEntityInstance.Columns.STATE, tei.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
+        return d2.enrollmentModule().enrollments.uid(enrollment == null ? "" : enrollment)
+                .get()
+                .flatMap(e ->
+                        d2.trackedEntityModule().trackedEntityInstances
+                                .uid(e.trackedEntityInstance()).get()
+                                .flatMap((Function<TrackedEntityInstance, SingleSource<Long>>) tei -> {
+                                    if (State.SYNCED.equals(tei.state()) || State.TO_DELETE.equals(tei.state()) ||
+                                            State.ERROR.equals(tei.state())) {
+                                        ContentValues values = new ContentValues();
+                                        values.put(TrackedEntityInstance.Columns.STATE, tei.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
 
-                        if (briteDatabase.update("TrackedEntityInstance", values,
-                                "uid = ?", tei.uid()) <= 0) {
+                                        if (briteDatabase.update("TrackedEntityInstance", values,
+                                                "uid = ?", tei.uid()) <= 0) {
 
-                            throw new IllegalStateException(String.format(Locale.US, "Tei=[%s] " +
-                                    "has not been successfully updated", tei.uid()));
-                        }
+                                            throw new IllegalStateException(String.format(Locale.US, "Tei=[%s] " +
+                                                    "has not been successfully updated", tei.uid()));
+                                        }
 
-                        if(briteDatabase.update("Enrollment", values,
-                                "uid = ?", enrollment == null ? "" : enrollment) <= 0){
+                                        if(briteDatabase.update("Enrollment", values,
+                                                "uid = ?", enrollment == null ? "" : enrollment) <= 0){
 
-                            throw new IllegalStateException(String.format(Locale.US, "Enrollment=[%s] " +
-                                    "has not been successfully updated", enrollment));
-                        }
+                                            throw new IllegalStateException(String.format(Locale.US, "Enrollment=[%s] " +
+                                                    "has not been successfully updated", enrollment));
+                                        }
+                                    }
+                                    return Single.just(status);
+                                })
+                ).toFlowable();
 
-                    }
-
-                    return Flowable.just(status);
-                });
     }
 
     @Override
