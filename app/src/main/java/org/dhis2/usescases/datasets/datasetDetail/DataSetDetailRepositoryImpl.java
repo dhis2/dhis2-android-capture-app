@@ -1,15 +1,18 @@
 package org.dhis2.usescases.datasets.datasetDetail;
 
-import androidx.annotation.NonNull;
 
+import org.dhis2.data.tuples.Pair;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
+import org.hisp.dhis.android.core.category.CategoryCombo;
+import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.dataset.DataSetCompleteRegistration;
 import org.hisp.dhis.android.core.dataset.DataSetElement;
 import org.hisp.dhis.android.core.dataset.DataSetInstanceCollectionRepository;
 import org.hisp.dhis.android.core.datavalue.DataValue;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
+import org.hisp.dhis.android.core.period.DatePeriod;
 import org.hisp.dhis.android.core.period.Period;
 
 import java.util.ArrayList;
@@ -17,30 +20,43 @@ import java.util.List;
 import java.util.Locale;
 
 import io.reactivex.Flowable;
-import io.reactivex.Observable;
+import io.reactivex.Single;
 
 public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
 
     private final D2 d2;
+    private final String dataSetUid;
 
-    public DataSetDetailRepositoryImpl(D2 d2) {
+    public DataSetDetailRepositoryImpl(String dataSetUid, D2 d2) {
         this.d2 = d2;
-    }
-
-    @NonNull
-    @Override
-    public Observable<List<OrganisationUnit>> orgUnits() {
-        return Observable.just(d2.organisationUnitModule().organisationUnits.blockingGet());
+        this.dataSetUid = dataSetUid;
     }
 
     @Override
-    public Flowable<List<DataSetDetailModel>> dataSetGroups(String dataSetUid, List<String> orgUnits, List<String> periodFilter, int page) {
+    public Single<Pair<CategoryCombo, List<CategoryOptionCombo>>> catOptionCombos() {
+        return d2.dataSetModule().dataSets.uid(dataSetUid).get()
+                .filter(program -> program.categoryCombo() != null)
+                .flatMapSingle(program -> d2.categoryModule().categoryCombos.uid(program.categoryCombo().uid()).get())
+                .filter(categoryCombo -> !categoryCombo.isDefault())
+                .flatMapSingle(categoryCombo -> Single.zip(
+                        d2.categoryModule().categoryCombos
+                                .uid(categoryCombo.uid()).get(),
+                        d2.categoryModule().categoryOptionCombos
+                                .byCategoryComboUid().eq(categoryCombo.uid()).get(),
+                        Pair::create
+                ));
+    }
+
+    @Override
+    public Flowable<List<DataSetDetailModel>> dataSetGroups(List<String> orgUnits, List<DatePeriod> periodFilter, List<State> stateFilters, List<CategoryOptionCombo> catOptComboFilters) {
         DataSetInstanceCollectionRepository repo;
         repo = d2.dataSetModule().dataSetInstances.byDataSetUid().eq(dataSetUid);
         if (!orgUnits.isEmpty())
             repo = repo.byOrganisationUnitUid().in(orgUnits);
         if (!periodFilter.isEmpty())
-            repo = repo.byPeriod().in(periodFilter);
+            repo = repo.byPeriodStartDate().after(periodFilter.get(0).startDate()).byPeriodEndDate().before(periodFilter.get(0).endDate());
+        if (!catOptComboFilters.isEmpty())
+            repo = repo.byAttributeOptionComboUid().in(UidsHelper.getUids(catOptComboFilters));
 
         DataSetInstanceCollectionRepository finalRepo = repo;
         return Flowable.fromIterable(finalRepo.blockingGet())
@@ -85,6 +101,7 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
                             state,
                             dataSetReport.periodType().name());
                 })
+                .filter(dataSetDetailModel -> stateFilters.isEmpty() || stateFilters.contains(dataSetDetailModel.state()))
                 .toList()
                 .toFlowable();
     }
