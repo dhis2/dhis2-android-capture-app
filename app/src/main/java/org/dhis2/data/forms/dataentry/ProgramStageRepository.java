@@ -1,5 +1,6 @@
 package org.dhis2.data.forms.dataentry;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.database.Cursor;
 
@@ -17,11 +18,13 @@ import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.option.Option;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitTableInfo;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
+import org.hisp.dhis.android.core.program.ProgramStageSectionRendering;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueTableInfo;
@@ -34,6 +37,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.reactivex.functions.Consumer;
 import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
@@ -88,10 +92,6 @@ final class ProgramStageRepository implements DataEntryRepository {
             " WHEN Field.sectionOrder IS NOT NULL THEN Field.sectionOrder" +
             " END ASC;";
 
-    private static final String SECTION_RENDERING_TYPE = "SELECT ProgramStageSection.mobileRenderType FROM ProgramStageSection WHERE ProgramStageSection.uid = ?";
-    private static final String ACCESS_QUERY = "SELECT ProgramStage.accessDataWrite FROM ProgramStage JOIN Event ON Event.programStage = ProgramStage.uid WHERE Event.uid = ?";
-    private static final String PROGRAM_ACCESS_QUERY = "SELECT Program.accessDataWrite FROM Program JOIN Event ON Event.program = Program.uid WHERE Event.uid = ?";
-    private static final String OPTIONS = "SELECT Option.uid, Option.displayName, Option.code FROM Option WHERE Option.optionSet = ?";
 
     @NonNull
     private final BriteDatabase briteDatabase;
@@ -121,29 +121,28 @@ final class ProgramStageRepository implements DataEntryRepository {
         this.d2 = d2;
     }
 
+
+
+    @SuppressLint("RxLeakedSubscription")
     @NonNull
     @Override
     public Flowable<List<FieldViewModel>> list() {
-
-        try (Cursor cursor = briteDatabase.query(SECTION_RENDERING_TYPE, sectionUid == null ? "" : sectionUid)) {
-            if (cursor != null && cursor.moveToFirst()) {
-                renderingType = cursor.getString(0) != null ?
-                        ProgramStageSectionRenderingType.valueOf(cursor.getString(0)) :
-                        ProgramStageSectionRenderingType.LISTING;
-            }
+        ProgramStageSectionRendering rendering = d2.programModule().programStageSections.uid(sectionUid).blockingGet().renderType();
+        try {
+            renderingType = rendering.mobile().type();
+        } catch (Exception e) {
+            renderingType = null;
         }
 
-        try (Cursor accessCursor = briteDatabase.query(ACCESS_QUERY, eventUid)) {
-            if (accessCursor != null && accessCursor.moveToFirst()) {
-                accessDataWrite = accessCursor.getInt(0) == 1;
-            }
+        try {
+            Event value = d2.eventModule().events.uid(eventUid).blockingGet();
+            ProgramStage programStage = d2.programModule().programStages.uid(value.programStage()).blockingGet();
+            Program program = d2.programModule().programs.uid(value.program()).blockingGet();
+            accessDataWrite = programStage.access().write() && program.access().write();
+        } catch (Exception e) {
+            accessDataWrite = false;
         }
 
-        try (Cursor programAccessCursor = briteDatabase.query(PROGRAM_ACCESS_QUERY, eventUid)) {
-            if (programAccessCursor != null && programAccessCursor.moveToFirst()) {
-                accessDataWrite = accessDataWrite && programAccessCursor.getInt(0) == 1;
-            }
-        }
 
         return briteDatabase
                 .createQuery(TrackedEntityDataValueTableInfo.TABLE_INFO.name(), prepareStatement())
@@ -174,30 +173,24 @@ final class ProgramStageRepository implements DataEntryRepository {
 
             for (FieldViewModel fieldViewModel : fieldViewModels) {
                 if (!isEmpty(fieldViewModel.optionSet())) {
-                    try (Cursor cursor = briteDatabase.query(OPTIONS, fieldViewModel.optionSet() == null ? "" : fieldViewModel.optionSet())) {
-                        if (cursor != null && cursor.moveToFirst()) {
-                            int optionCount = cursor.getCount();
-                            for (int i = 0; i < optionCount; i++) {
-                                String uid = cursor.getString(0);
-                                String displayName = cursor.getString(1);
-                                String optionCode = cursor.getString(2);
-
-                                ObjectStyle objectStyle = ObjectStyle.builder().build();
-                                try (Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", fieldViewModel.uid())) {
-                                    if (objStyleCursor.moveToFirst())
-                                        objectStyle = ObjectStyle.create(objStyleCursor);
-                                }
-
-                                renderList.add(fieldFactory.create(
-                                        fieldViewModel.uid() + "." + uid, //fist
-                                        displayName + "-" + optionCode, ValueType.TEXT, false,
-                                        fieldViewModel.optionSet(), fieldViewModel.value(), fieldViewModel.programStageSection(),
-                                        fieldViewModel.allowFutureDate(), fieldViewModel.editable() == null ? false : fieldViewModel.editable(), renderingType, fieldViewModel.description(), null, optionCount, objectStyle));
-
-                                cursor.moveToNext();
-                            }
+                    try {
+                        List<Option> options = d2.optionModule().options.byOptionSetUid().eq(fieldViewModel.optionSet()).blockingGet();
+                        Option option = options.get(0);
+                        ObjectStyle objectStyle = ObjectStyle.builder().build();
+                        try (Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", fieldViewModel.uid())) {
+                            if (objStyleCursor.moveToFirst())
+                                objectStyle = ObjectStyle.create(objStyleCursor);
                         }
-                    }
+                        // TODO (change optionCode and optionCount)
+                        String optionCode = "";
+                        int optionCount = 0;
+                        renderList.add(fieldFactory.create(
+                                fieldViewModel.uid() + "." + option.uid(), //fist
+                                option.displayName() + "-" + optionCode, ValueType.TEXT, false,
+                                fieldViewModel.optionSet(), fieldViewModel.value(), fieldViewModel.programStageSection(),
+                                fieldViewModel.allowFutureDate(), fieldViewModel.editable() == null ? false : fieldViewModel.editable(), renderingType, fieldViewModel.description(), null, optionCount, objectStyle));
+
+                    }catch (Exception e){}
 
                 } else
                     renderList.add(fieldViewModel);
