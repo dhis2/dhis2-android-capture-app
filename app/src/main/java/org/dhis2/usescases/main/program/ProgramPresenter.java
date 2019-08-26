@@ -1,11 +1,10 @@
 package org.dhis2.usescases.main.program;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import com.unnamed.b.atv.model.TreeNode;
 
+import org.dhis2.data.sharedPreferences.SharePreferencesProvider;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity;
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity;
@@ -54,9 +53,11 @@ public class ProgramPresenter implements ProgramContract.Presenter {
     private List<DatePeriod> currentDateFilter;
     private List<String> currentOrgUnitFilter;
     private FlowableProcessor<Boolean> processorDismissDialog;
+    private SharePreferencesProvider provider;
 
-    ProgramPresenter(HomeRepository homeRepository) {
+    ProgramPresenter(SharePreferencesProvider provider, HomeRepository homeRepository) {
         this.homeRepository = homeRepository;
+        this.provider = provider;
     }
 
     @Override
@@ -69,7 +70,7 @@ public class ProgramPresenter implements ProgramContract.Presenter {
         programQueries = PublishProcessor.create();
         parentOrgUnit = PublishProcessor.create();
         this.processorDismissDialog = PublishProcessor.create();
-
+        view.setPreferences(provider);
         compositeDisposable.add(
                 programQueries
                         .startWith(Pair.create(currentDateFilter, currentOrgUnitFilter))
@@ -215,12 +216,10 @@ public class ProgramPresenter implements ProgramContract.Presenter {
         bundle.putString(Constants.DATA_SET_NAME, programModel.title());
         bundle.putString(Constants.ACCESS_DATA, programModel.accessDataWrite().toString());
         int programTheme = ColorUtils.getThemeFromColor(programModel.color());
-        SharedPreferences prefs = view.getAbstracContext().getSharedPreferences(
-                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
         if (programTheme != -1) {
-            prefs.edit().putInt(Constants.PROGRAM_THEME, programTheme).apply();
+            provider.sharedPreferences().putInt(Constants.PROGRAM_THEME, programTheme);
         } else
-            prefs.edit().remove(Constants.PROGRAM_THEME).apply();
+            provider.sharedPreferences().remove(Constants.PROGRAM_THEME);
 
         if (programModel.programType().equals(ProgramType.WITH_REGISTRATION.name())) {
             view.startActivity(SearchTEActivity.class, bundle, false, false, null);

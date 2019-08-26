@@ -5,6 +5,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 
 import org.dhis2.data.dagger.PerService;
+import org.dhis2.data.sharedPreferences.SharePreferencesProvider;
 import org.hisp.dhis.android.core.D2;
 
 import dagger.Module;
@@ -22,7 +23,7 @@ public class ReservedValuesWorkerModule {
 
     @Provides
     @PerService
-    SyncPresenter syncPresenter(@NonNull D2 d2) {
-        return new SyncPresenterImpl(d2);
+    SyncPresenter syncPresenter(@NonNull D2 d2, SharePreferencesProvider provider) {
+        return new SyncPresenterImpl(d2, provider);
     }
 }

@@ -13,6 +13,7 @@ import org.dhis2.data.forms.FormRepository;
 import org.dhis2.data.forms.RulesRepository;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.schedulers.SchedulerProvider;
+import org.dhis2.data.sharedPreferences.SharePreferencesProvider;
 import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryRepository;
 import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryRepositoryImpl;
 import org.dhis2.utils.CodeGenerator;
@@ -48,8 +49,10 @@ public class EventInitialModule {
                                                      @NonNull EventInitialRepository eventInitialRepository,
                                                      @NonNull MetadataRepository metadataRepository,
                                                      @NonNull SchedulerProvider schedulerProvider,
-                                                     @NonNull D2 d2) {
-        return new EventInitialPresenter(eventSummaryRepository, eventInitialRepository, metadataRepository, schedulerProvider, d2);
+                                                     @NonNull D2 d2,
+                                                     SharePreferencesProvider provider) {
+        return new EventInitialPresenter(eventSummaryRepository, eventInitialRepository,
+                metadataRepository, schedulerProvider, d2, provider);
     }
 
 

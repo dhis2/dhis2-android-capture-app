@@ -1,5 +1,6 @@
 package org.dhis2.usescases.syncManager;
 
+import org.dhis2.data.sharedPreferences.SharePreferencesProvider;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.hisp.dhis.android.core.imports.TrackerImportConflict;
@@ -36,6 +37,8 @@ public class SyncManagerContracts {
         void syncMeta();
 
         void openItem(int settingsItem);
+
+        void setPreferences(SharePreferencesProvider provider);
     }
 
     public interface Presenter {

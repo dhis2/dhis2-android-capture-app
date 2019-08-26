@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
+import org.dhis2.data.sharedPreferences.SharePreferencesProvider;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 
 import org.hisp.dhis.android.core.event.EventModel;
@@ -41,6 +42,8 @@ public class EventSummaryContract {
 
         void fieldWithError(boolean b);
         void setHideSection(String sectionUid);
+
+        void setPreferences(SharePreferencesProvider provider);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {

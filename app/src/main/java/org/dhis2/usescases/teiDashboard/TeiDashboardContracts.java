@@ -2,6 +2,7 @@ package org.dhis2.usescases.teiDashboard;
 
 import android.os.Bundle;
 
+import org.dhis2.data.sharedPreferences.SharePreferencesProvider;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.hisp.dhis.android.core.program.ProgramModel;
 
@@ -28,9 +29,12 @@ public class TeiDashboardContracts {
         void handleTEIdeletion();
 
         void handleEnrollmentDeletion(Boolean hasMoreEnrollments);
+
+        void setPreference(SharePreferencesProvider provider);
     }
 
     public interface Presenter {
+        SharePreferencesProvider callPreference();
 
         void init(View view, String uid, String programUid);
 

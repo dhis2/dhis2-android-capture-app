@@ -1,6 +1,7 @@
 package org.dhis2.usescases.teiDashboard.teiProgramList;
 
 import org.dhis2.R;
+import org.dhis2.data.sharedPreferences.SharePreferencesProvider;
 import org.dhis2.usescases.main.program.ProgramViewModel;
 
 /**
@@ -12,17 +13,19 @@ public class TeiProgramListPresenter implements TeiProgramListContract.Presenter
     private TeiProgramListContract.View view;
     private final TeiProgramListContract.Interactor interactor;
     private String teiUid;
+    private SharePreferencesProvider provider;
 
-    TeiProgramListPresenter(TeiProgramListContract.Interactor interactor, String trackedEntityId) {
+    TeiProgramListPresenter(TeiProgramListContract.Interactor interactor, String trackedEntityId, SharePreferencesProvider provider) {
         this.interactor = interactor;
         this.teiUid = trackedEntityId;
-
+        this.provider = provider;
     }
 
     @Override
     public void init(TeiProgramListContract.View view) {
         this.view = view;
         interactor.init(view, teiUid);
+        view.setPreference(provider);
     }
 
     @Override

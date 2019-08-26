@@ -1,5 +1,6 @@
 package org.dhis2.usescases.teiDashboard.teiProgramList;
 
+import org.dhis2.data.sharedPreferences.SharePreferencesProvider;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.usescases.main.program.ProgramViewModel;
 
@@ -23,6 +24,8 @@ public class TeiProgramListContract {
         void goToEnrollmentScreen(String enrollmentUid, String programUid);
 
         void changeCurrentProgram(String program);
+
+        void setPreference(SharePreferencesProvider provider);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {

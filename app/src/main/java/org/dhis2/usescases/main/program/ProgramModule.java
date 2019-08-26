@@ -1,6 +1,7 @@
 package org.dhis2.usescases.main.program;
 
 import org.dhis2.data.dagger.PerFragment;
+import org.dhis2.data.sharedPreferences.SharePreferencesProvider;
 import org.hisp.dhis.android.core.D2;
 
 import dagger.Module;
@@ -15,8 +16,8 @@ public class ProgramModule {
 
     @Provides
     @PerFragment
-    ProgramContract.Presenter programPresenter(HomeRepository homeRepository) {
-        return new ProgramPresenter(homeRepository);
+    ProgramContract.Presenter programPresenter(SharePreferencesProvider provider, HomeRepository homeRepository) {
+        return new ProgramPresenter(provider, homeRepository);
     }
 
     @Provides

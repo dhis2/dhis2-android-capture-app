@@ -23,6 +23,7 @@ import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 
 import org.dhis2.App;
 import org.dhis2.R;
+import org.dhis2.data.sharedPreferences.SharePreferencesProvider;
 import org.dhis2.databinding.FragmentTeiDataBinding;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionActivity;
@@ -90,6 +91,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     private DashboardViewModel dashboardViewModel;
     private DashboardProgramModel dashboardModel;
     private TeiDashboardMobileActivity activity;
+    private SharePreferencesProvider provider;
 
     @Override
     public void onAttach(@NotNull Context context) {
@@ -156,8 +158,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
         if (nprogram != null && nprogram.getCurrentEnrollment() != null) {
             presenter.setDashboardProgram(this.dashboardModel);
-            SharedPreferences prefs = context.getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE);
-            hasCatComb = nprogram.getCurrentProgram() != null && !nprogram.getCurrentProgram().categoryCombo().equals(prefs.getString(Constants.DEFAULT_CAT_COMBO, ""));
+            hasCatComb = nprogram.getCurrentProgram() != null && !nprogram.getCurrentProgram().categoryCombo().equals(provider.sharedPreferences().getString(Constants.DEFAULT_CAT_COMBO, ""));
             List<EventModel> events = new ArrayList<>();
             adapter = new EventAdapter(presenter, nprogram.getProgramStages(), events, nprogram.getCurrentEnrollment(), nprogram.getCurrentProgram());
             binding.teiRecycler.setLayoutManager(new LinearLayoutManager(getAbstracContext()));
@@ -184,9 +185,9 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
         binding.executePendingBindings();
 
-        if (getSharedPreferences().getString("COMPLETED_EVENT", null) != null) {
-            presenter.displayGenerateEvent(getSharedPreferences().getString("COMPLETED_EVENT", null));
-            getSharedPreferences().edit().remove("COMPLETED_EVENT").apply();
+        if (provider.sharedPreferences().getString("COMPLETED_EVENT", null) != null) {
+            presenter.displayGenerateEvent(provider.sharedPreferences().getString("COMPLETED_EVENT", null));
+            provider.sharedPreferences().remove("COMPLETED_EVENT");
         }
 
 
@@ -214,7 +215,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
             if (data != null) {
                 lastModifiedEventUid = data.getStringExtra(Constants.EVENT_UID);
                 if (((TeiDashboardMobileActivity) context).getOrientation() != Configuration.ORIENTATION_LANDSCAPE)
-                    getSharedPreferences().edit().putString("COMPLETED_EVENT", lastModifiedEventUid).apply();
+                    provider.sharedPreferences().putString("COMPLETED_EVENT", lastModifiedEventUid);
                 else {
                     if (lastModifiedEventUid != null)
                         presenter.displayGenerateEvent(lastModifiedEventUid);
@@ -417,5 +418,10 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
                 .transition(withCrossFade())
                 .transform(new CircleCrop())
                 .into(binding.cardFront.teiImage);
+    }
+
+    @Override
+    public void setPreference(SharePreferencesProvider provider) {
+        this.provider = provider;
     }
 }

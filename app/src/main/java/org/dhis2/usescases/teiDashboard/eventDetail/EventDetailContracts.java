@@ -3,6 +3,7 @@ package org.dhis2.usescases.teiDashboard.eventDetail;
 import androidx.annotation.NonNull;
 
 import org.dhis2.data.metadata.MetadataRepository;
+import org.dhis2.data.sharedPreferences.SharePreferencesProvider;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.utils.custom_views.OrgUnitDialog;
 
@@ -52,6 +53,8 @@ public class EventDetailContracts {
         void setDate(String result);
 
         void showCatOptionDialog();
+
+        void setPreference(SharePreferencesProvider provider);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {

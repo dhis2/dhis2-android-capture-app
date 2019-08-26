@@ -16,6 +16,7 @@ import androidx.databinding.DataBindingUtil;
 
 import org.dhis2.App;
 import org.dhis2.R;
+import org.dhis2.data.sharedPreferences.SharePreferencesProvider;
 import org.dhis2.databinding.ActivityTeiProgramListBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.main.program.ProgramViewModel;
@@ -38,6 +39,7 @@ public class TeiProgramListActivity extends ActivityGlobalAbstract implements Te
     TeiProgramListContract.Presenter presenter;
     @Inject
     TeiProgramListAdapter adapter;
+    private SharePreferencesProvider provider;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -101,20 +103,23 @@ public class TeiProgramListActivity extends ActivityGlobalAbstract implements Te
         finish();
     }
 
+    @Override
+    public void setPreference(SharePreferencesProvider provider) {
+        this.provider = provider;
+    }
+
     private void SetProgramTheme(String color) {
         int programTheme = ColorUtils.getThemeFromColor(color);
         int programColor = ColorUtils.getColorFrom(color,
                 ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY));
 
-        SharedPreferences prefs = getAbstracContext().getSharedPreferences(
-                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
         if (programTheme != -1) {
-            prefs.edit().putInt(Constants.PROGRAM_THEME, programTheme).apply();
+            provider.sharedPreferences().putInt(Constants.PROGRAM_THEME, programTheme);
             binding.toolbar.setBackgroundColor(programColor);
         } else {
-            prefs.edit().remove(Constants.PROGRAM_THEME).apply();
+            provider.sharedPreferences().remove(Constants.PROGRAM_THEME);
             int colorPrimary;
-            switch (prefs.getInt(Constants.THEME, R.style.AppTheme)) {
+            switch (provider.sharedPreferences().getInt(Constants.THEME, R.style.AppTheme)) {
                 case R.style.AppTheme:
                     colorPrimary = R.color.colorPrimary;
                     break;
@@ -135,7 +140,7 @@ public class TeiProgramListActivity extends ActivityGlobalAbstract implements Te
         }
 
         binding.executePendingBindings();
-        setTheme(prefs.getInt(Constants.PROGRAM_THEME, prefs.getInt(Constants.THEME, R.style.AppTheme)));
+        setTheme(provider.sharedPreferences().getInt(Constants.PROGRAM_THEME, provider.sharedPreferences().getInt(Constants.THEME, R.style.AppTheme)));
 
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();

@@ -35,6 +35,7 @@ import com.jakewharton.rxbinding2.widget.RxTextView;
 import org.dhis2.BuildConfig;
 import org.dhis2.Components;
 import org.dhis2.R;
+import org.dhis2.data.sharedPreferences.SharePreferencesProvider;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.FragmentSettingsBinding;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
@@ -76,9 +77,9 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     SyncManagerContracts.Presenter presenter;
 
     private FragmentSettingsBinding binding;
-    private SharedPreferences prefs;
     private CompositeDisposable listenerDisposable;
     private Context context;
+    private SharePreferencesProvider provider;
 
     public SyncManagerFragment() {
         // Required empty public constructor
@@ -98,14 +99,8 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_settings, container, false);
 
         binding.setPresenter(presenter);
-        prefs = getAbstracContext().getSharedPreferences(
-                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
-
-        initRadioGroups();
-
         binding.dataRadioGroup.setOnCheckedChangeListener((group, checkedId) -> saveTimeData(checkedId));
         binding.metaRadioGroup.setOnCheckedChangeListener((group, checkedId) -> saveTimeMeta(checkedId));
-
         return binding.getRoot();
     }
 
@@ -137,7 +132,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
             }
         });
         presenter.init(this);
-
+        initRadioGroups();
         if (SyncUtils.isSyncRunning()) {
             binding.buttonSyncData.setEnabled(false);
             binding.buttonSyncMeta.setEnabled(false);
@@ -150,14 +145,14 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         listenerDisposable.add(RxTextView.textChanges(binding.eventMaxData).debounce(1000, TimeUnit.MILLISECONDS, Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        data -> prefs.edit().putInt(Constants.EVENT_MAX, Integer.valueOf(data.toString())).apply(),
+                        data -> provider.sharedPreferences().putInt(Constants.EVENT_MAX, Integer.valueOf(data.toString())),
                         Timber::d
                 ));
 
         listenerDisposable.add(RxTextView.textChanges(binding.teiMaxData).debounce(1000, TimeUnit.MILLISECONDS, Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        data -> prefs.edit().putInt(Constants.TEI_MAX, Integer.valueOf(data.toString())).apply(),
+                        data -> provider.sharedPreferences().putInt(Constants.TEI_MAX, Integer.valueOf(data.toString())),
                         Timber::d
                 ));
 
@@ -204,8 +199,8 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
             binding.settingsSms.setVisibility(View.GONE);
         }
 
-        binding.limitByOrgUnit.setOnCheckedChangeListener((buttonView, isChecked) -> prefs.edit().putBoolean(Constants.LIMIT_BY_ORG_UNIT, isChecked).apply());
-        binding.limitByProgram.setOnCheckedChangeListener((buttonView, isChecked) -> prefs.edit().putBoolean(Constants.LIMIT_BY_PROGRAM, isChecked).apply());
+        binding.limitByOrgUnit.setOnCheckedChangeListener((buttonView, isChecked) -> provider.sharedPreferences().putBoolean(Constants.LIMIT_BY_ORG_UNIT, isChecked));
+        binding.limitByProgram.setOnCheckedChangeListener((buttonView, isChecked) -> provider.sharedPreferences().putBoolean(Constants.LIMIT_BY_PROGRAM, isChecked));
 
         setLastSyncDate();
     }
@@ -227,16 +222,16 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     @Override
     public Consumer<Pair<Integer, Integer>> setSyncData() {
         return syncParameters -> {
-            String eventMax = String.valueOf(prefs.getInt(Constants.EVENT_MAX, Constants.EVENT_MAX_DEFAULT));
-            String teiMax = String.valueOf(prefs.getInt(Constants.TEI_MAX, Constants.TEI_MAX_DEFAULT));
+            String eventMax = String.valueOf(provider.sharedPreferences().getInt(Constants.EVENT_MAX, Constants.EVENT_MAX_DEFAULT));
+            String teiMax = String.valueOf(provider.sharedPreferences().getInt(Constants.TEI_MAX, Constants.TEI_MAX_DEFAULT));
             String eventCurrent = String.valueOf(syncParameters.val0());
             String teiCurrent = String.valueOf(syncParameters.val1());
             binding.eventMaxData.setText(eventMax);
             binding.teiMaxData.setText(teiMax);
             binding.eventCurrentData.setText(eventCurrent);
             binding.teiCurrentData.setText(teiCurrent);
-            binding.limitByOrgUnit.setChecked(prefs.getBoolean(Constants.LIMIT_BY_ORG_UNIT, false));
-            binding.limitByProgram.setChecked(prefs.getBoolean(Constants.LIMIT_BY_PROGRAM, false));
+            binding.limitByOrgUnit.setChecked(provider.sharedPreferences().getBoolean(Constants.LIMIT_BY_ORG_UNIT, false));
+            binding.limitByProgram.setChecked(provider.sharedPreferences().getBoolean(Constants.LIMIT_BY_PROGRAM, false));
             binding.parameterLayout.message.setText(
                     String.format("Events:%smax:%s%scurrent:%s\nTEI:%smax:%s%scurrent:%s",
                             getString(R.string.tab), eventMax, getString(R.string.tab), eventCurrent,
@@ -259,11 +254,11 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     }
 
     private void setLastSyncDate() {
-        boolean dataStatus = prefs.getBoolean(Constants.LAST_DATA_SYNC_STATUS, true);
-        boolean metaStatus = prefs.getBoolean(Constants.LAST_META_SYNC_STATUS, true);
+        boolean dataStatus = provider.sharedPreferences().getBoolean(Constants.LAST_DATA_SYNC_STATUS, true);
+        boolean metaStatus = provider.sharedPreferences().getBoolean(Constants.LAST_META_SYNC_STATUS, true);
 
         if (dataStatus) {
-            String dataText = dataSyncSetting().concat("\n").concat(String.format(getString(R.string.last_data_sync_date), prefs.getString(Constants.LAST_DATA_SYNC, "-")));
+            String dataText = dataSyncSetting().concat("\n").concat(String.format(getString(R.string.last_data_sync_date), provider.sharedPreferences().getString(Constants.LAST_DATA_SYNC, "-")));
             binding.syncDataLayout.message.setText(dataText);
             binding.syncDataLayout.message.setTextColor(ContextCompat.getColor(context, R.color.text_black_333));
         } else {
@@ -291,7 +286,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         }
 
         if (metaStatus) {
-            String metaText = metaSyncSettings().concat("\n").concat(String.format(getString(R.string.last_data_sync_date), prefs.getString(Constants.LAST_META_SYNC, "-")));
+            String metaText = metaSyncSettings().concat("\n").concat(String.format(getString(R.string.last_data_sync_date), provider.sharedPreferences().getString(Constants.LAST_META_SYNC, "-")));
             binding.syncMetaLayout.message.setText(metaText);
             binding.syncMetaLayout.message.setTextColor(ContextCompat.getColor(context, R.color.text_black_333));
         } else {
@@ -303,8 +298,8 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     }
 
     private void initRadioGroups() {
-        int timeData = prefs.getInt("timeData", TIME_DAILY);
-        int timeMeta = prefs.getInt("timeMeta", TIME_DAILY);
+        int timeData = provider.sharedPreferences().getInt("timeData", TIME_DAILY);
+        int timeMeta = provider.sharedPreferences().getInt("timeMeta", TIME_DAILY);
 
         switch (timeData) {
             case TIME_15M:
@@ -356,7 +351,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 time = TIME_MANUAL;
                 break;
         }
-        prefs.edit().putInt(Constants.TIME_DATA, time).apply();
+        provider.sharedPreferences().putInt(Constants.TIME_DATA, time);
         if (time != TIME_MANUAL) {
             binding.buttonSyncData.setVisibility(View.GONE);
             presenter.syncData(time, Constants.DATA);
@@ -382,7 +377,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 break;
         }
 
-        prefs.edit().putInt(Constants.TIME_META, time).apply();
+        provider.sharedPreferences().putInt(Constants.TIME_META, time);
         if (time != TIME_MANUAL) {
             binding.buttonSyncMeta.setVisibility(View.GONE);
             presenter.syncMeta(time, Constants.META);
@@ -522,9 +517,9 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                     HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
                     HelpManager.getInstance().setScroll(scrollView);
 
-                    if (prefs != null && !prefs.getBoolean("TUTO_SETTINGS_SHOWN", false) && !BuildConfig.DEBUG) {
+                    if (provider.sharedPreferences() != null && !provider.sharedPreferences().getBoolean("TUTO_SETTINGS_SHOWN", false) && !BuildConfig.DEBUG) {
                         HelpManager.getInstance().showHelp();
-                        prefs.edit().putBoolean("TUTO_SETTINGS_SHOWN", true).apply();
+                        provider.sharedPreferences().putBoolean("TUTO_SETTINGS_SHOWN", true);
                     }
                 }
 
@@ -590,8 +585,13 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         }
     }
 
+    @Override
+    public void setPreferences(SharePreferencesProvider provider) {
+        this.provider = provider;
+    }
+
     private String dataSyncSetting() {
-        int timeData = prefs.getInt("timeData", TIME_DAILY);
+        int timeData = provider.sharedPreferences().getInt("timeData", TIME_DAILY);
         String setting;
         switch (timeData) {
             case TIME_15M:
@@ -613,7 +613,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     }
 
     private String metaSyncSettings() {
-        int timeMeta = prefs.getInt("timeMeta", TIME_DAILY);
+        int timeMeta = provider.sharedPreferences().getInt("timeMeta", TIME_DAILY);
         String setting;
         switch (timeMeta) {
             case TIME_MANUAL:

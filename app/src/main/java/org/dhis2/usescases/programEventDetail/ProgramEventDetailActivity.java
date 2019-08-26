@@ -5,7 +5,6 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -37,6 +36,7 @@ import com.unnamed.b.atv.view.AndroidTreeView;
 import org.dhis2.App;
 import org.dhis2.BuildConfig;
 import org.dhis2.R;
+import org.dhis2.data.sharedPreferences.SharePreferencesProvider;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ActivityProgramEventDetailBinding;
 import org.dhis2.databinding.CatCombFilterBinding;
@@ -101,6 +101,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     private boolean isFilteredByCatCombo = false;
     private ProgramEventDetailLiveAdapter liveAdapter;
     private Map<String, CategoryOption> catCombFilter;
+    private SharePreferencesProvider provider;
 
     public static Bundle getBundle(String programUid, String period, List<Date> dates) {
         Bundle bundle = new Bundle();
@@ -471,6 +472,11 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     }
 
     @Override
+    public void setPreference(SharePreferencesProvider provider) {
+        this.provider = provider;
+    }
+
+    @Override
     public void renderError(String message) {
         if (getActivity() != null)
             new AlertDialog.Builder(getActivity())
@@ -594,11 +600,6 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     @Override
     public void setTutorial() {
         super.setTutorial();
-
-
-        SharedPreferences prefs = getAbstracContext().getSharedPreferences(
-                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
-
         new Handler().postDelayed(() -> {
             FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
                     .title(getString(R.string.tuto_program_event_1))
@@ -619,9 +620,9 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
             HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
 
-            if (!prefs.getBoolean("TUTO_PROGRAM_EVENT", false) && !BuildConfig.DEBUG) {
+            if (!provider.sharedPreferences().getBoolean("TUTO_PROGRAM_EVENT", false) && !BuildConfig.DEBUG) {
                 HelpManager.getInstance().showHelp();/* getAbstractActivity().fancyShowCaseQueue.show();*/
-                prefs.edit().putBoolean("TUTO_PROGRAM_EVENT", true).apply();
+                provider.sharedPreferences().putBoolean("TUTO_PROGRAM_EVENT", true);
             }
 
         }, 500);

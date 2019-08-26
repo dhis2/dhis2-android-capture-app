@@ -40,6 +40,7 @@ import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.ProgramAdapter;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.metadata.MetadataRepository;
+import org.dhis2.data.sharedPreferences.SharePreferencesProvider;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.ActivitySearchBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
@@ -81,6 +82,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     SearchTEContractsModule.Presenter presenter;
     @Inject
     MetadataRepository metadataRepository;
+    SharePreferencesProvider sharePreferencesProvider;
 
     private String initialProgram;
     private String tEType;
@@ -208,9 +210,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     public void setTutorial() {
-        SharedPreferences prefs = getAbstracContext().getSharedPreferences(
-                "org.dhis2", Context.MODE_PRIVATE);
-
         new Handler().postDelayed(() -> {
             FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
                     .title(getString(R.string.tuto_search_1_v2))
@@ -245,9 +244,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
             HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
 
-            if (!prefs.getBoolean(Constants.TUTORIAL_SEARCH, false) && !BuildConfig.DEBUG) {
+            if (!sharePreferencesProvider.sharedPreferences().getBoolean(Constants.TUTORIAL_SEARCH, false) && !BuildConfig.DEBUG) {
                 HelpManager.getInstance().showHelp();/* getAbstractActivity().fancyShowCaseQueue.show();*/
-                prefs.edit().putBoolean(Constants.TUTORIAL_SEARCH, true).apply();
+                sharePreferencesProvider.sharedPreferences().putBoolean(Constants.TUTORIAL_SEARCH, true);
             }
 
         }, 500);
@@ -359,17 +358,15 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         int programColor = ColorUtils.getColorFrom(color, ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY));
 
 
-        SharedPreferences prefs = getAbstracContext().getSharedPreferences(
-                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
         if (programTheme != -1) {
-            prefs.edit().putInt(Constants.PROGRAM_THEME, programTheme).apply();
+            sharePreferencesProvider.sharedPreferences().putInt(Constants.PROGRAM_THEME, programTheme);
             binding.enrollmentButton.setBackgroundTintList(ColorStateList.valueOf(programColor));
             binding.mainToolbar.setBackgroundColor(programColor);
             binding.appbatlayout.setBackgroundColor(programColor);
         } else {
-            prefs.edit().remove(Constants.PROGRAM_THEME).apply();
+            sharePreferencesProvider.sharedPreferences().remove(Constants.PROGRAM_THEME);
             int colorPrimary;
-            switch (prefs.getInt(Constants.THEME, R.style.AppTheme)) {
+            switch (sharePreferencesProvider.sharedPreferences().getInt(Constants.THEME, R.style.AppTheme)) {
                 case R.style.AppTheme:
                     colorPrimary = R.color.colorPrimary;
                     break;
@@ -392,7 +389,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         }
 
         binding.executePendingBindings();
-        setTheme(prefs.getInt(Constants.PROGRAM_THEME, prefs.getInt(Constants.THEME, R.style.AppTheme)));
+        setTheme(sharePreferencesProvider.sharedPreferences().getInt(Constants.PROGRAM_THEME,
+                sharePreferencesProvider.sharedPreferences().getInt(Constants.THEME, R.style.AppTheme)));
 
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
@@ -418,6 +416,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     public void setFabIcon(boolean needsSearch) {
         this.needsSearch.set(needsSearch);
         animSearchFab(needsSearch);
+    }
+
+    @Override
+    public void setShared(SharePreferencesProvider provider) {
+        this.sharePreferencesProvider = provider;
     }
 
     private void animSearchFab(boolean hasQuery) {

@@ -20,6 +20,8 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
+import org.dhis2.data.sharedPreferences.SharePreferencesProvider;
+import org.dhis2.data.sharedPreferences.SharePreferencesProviderImpl;
 import org.dhis2.databinding.CustomCellViewBinding;
 import org.dhis2.databinding.FormSpinnerAccentBinding;
 import org.dhis2.databinding.FormSpinnerBinding;
@@ -42,20 +44,24 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
     private View delete;
     private OnSelectedOption listener;
     private int numberOfOptions = 0;
+    private SharePreferencesProvider provider;
 
     public OptionSetView(Context context) {
         super(context);
         init(context);
+        this.provider = new SharePreferencesProviderImpl(context);
     }
 
     public OptionSetView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context);
+        this.provider = new SharePreferencesProviderImpl(context);
     }
 
     public OptionSetView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context);
+        this.provider = new SharePreferencesProviderImpl(context);
     }
 
     public void setLayoutData(boolean isBgTransparent, String renderType) {
@@ -187,7 +193,7 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
     }
 
     public boolean openOptionDialog() {
-        return numberOfOptions > getContext().getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE).getInt(Constants.OPTION_SET_DIALOG_THRESHOLD, 15);
+        return numberOfOptions > provider.sharedPreferences().getInt(Constants.OPTION_SET_DIALOG_THRESHOLD, 15);
     }
 
     public interface OnSelectedOption {

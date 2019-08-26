@@ -2,6 +2,7 @@ package org.dhis2.usescases.programEventDetail;
 
 import com.unnamed.b.atv.model.TreeNode;
 
+import org.dhis2.data.sharedPreferences.SharePreferencesProvider;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.utils.Period;
@@ -58,6 +59,8 @@ public class ProgramEventDetailContract {
         Period getCurrentPeriod();
 
         void setOptionComboAccess(Boolean canCreateEvent);
+
+        void setPreference(SharePreferencesProvider provider);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {

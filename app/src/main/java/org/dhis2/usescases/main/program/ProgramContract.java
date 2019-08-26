@@ -2,6 +2,7 @@ package org.dhis2.usescases.main.program;
 
 import com.unnamed.b.atv.model.TreeNode;
 
+import org.dhis2.data.sharedPreferences.SharePreferencesProvider;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.utils.Period;
@@ -49,6 +50,8 @@ public class ProgramContract {
         Consumer<Pair<TreeNode, List<TreeNode>>> addNodeToTree();
 
         void openOrgUnitTreeSelector();
+
+        void setPreferences(SharePreferencesProvider preferences);
     }
 
     public interface Presenter {

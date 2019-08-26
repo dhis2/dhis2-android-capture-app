@@ -16,6 +16,7 @@ import org.dhis2.R;
 import org.dhis2.data.forms.FormActivity;
 import org.dhis2.data.forms.FormViewArguments;
 import org.dhis2.data.metadata.MetadataRepository;
+import org.dhis2.data.sharedPreferences.SharePreferencesProvider;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.WidgetDatepickerBinding;
 import org.dhis2.usescases.main.program.SyncStatusDialog;
@@ -80,11 +81,13 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private FlowableProcessor<Boolean> processorDismissDialog;
     private String trackedEntityType;
     private String initialProgram;
+    private SharePreferencesProvider provider;
 
-    public SearchTEPresenter(SearchRepository searchRepository, MetadataRepository metadataRepository, D2 d2) {
+    public SearchTEPresenter(SharePreferencesProvider provider, SearchRepository searchRepository, MetadataRepository metadataRepository, D2 d2) {
         this.metadataRepository = metadataRepository;
         this.searchRepository = searchRepository;
         this.d2 = d2;
+        this.provider = provider;
         queryData = new HashMap<>();
         queryDataEQ = new HashMap<>();
         queryProcessor = PublishProcessor.create();
@@ -100,7 +103,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         compositeDisposable = new CompositeDisposable();
         this.trackedEntityType = trackedEntityType;
         this.initialProgram = initialProgram;
-
+        view.setShared(provider);
         compositeDisposable.add(
                 metadataRepository.getTrackedEntity(trackedEntityType)
                         .subscribeOn(Schedulers.io())

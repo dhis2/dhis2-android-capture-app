@@ -36,6 +36,8 @@ import com.google.gson.reflect.TypeToken;
 
 import org.dhis2.BuildConfig;
 import org.dhis2.R;
+import org.dhis2.data.sharedPreferences.SharePreferencesProvider;
+import org.dhis2.data.sharedPreferences.SharePreferencesProviderImpl;
 import org.dhis2.usescases.login.LoginActivity;
 import org.dhis2.usescases.main.MainActivity;
 import org.dhis2.usescases.main.program.SyncStatusDialog;
@@ -73,6 +75,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
     private PictureView.OnPictureSelected onPictureSelected;
     private String uuid;
     private ContentLoadingProgressBar progressBar;
+    private SharePreferencesProvider provider;
 
     public ContentLoadingProgressBar getProgressBar() {
         return progressBar;
@@ -104,25 +107,24 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         FirebaseAnalytics mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
-
+        provider = new SharePreferencesProviderImpl(this);
         if (!getResources().getBoolean(R.bool.is_tablet))
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
 
         if (!BuildConfig.DEBUG && !BuildConfig.BUILD_TYPE.equals("beta"))
             getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
-        SharedPreferences prefs = getSharedPreferences();
         if (this instanceof MainActivity || this instanceof LoginActivity || this instanceof SplashActivity) {
-            prefs.edit().remove(Constants.PROGRAM_THEME).apply();
+            provider.sharedPreferences().remove(Constants.PROGRAM_THEME);
         }
 
         if (!(this instanceof SplashActivity))
-            setTheme(prefs.getInt(Constants.PROGRAM_THEME, prefs.getInt(Constants.THEME, R.style.AppTheme)));
+            setTheme(provider.sharedPreferences().getInt(Constants.PROGRAM_THEME, provider.sharedPreferences().getInt(Constants.THEME, R.style.AppTheme)));
 
-        Crashlytics.setString(Constants.SERVER, prefs.getString(Constants.SERVER, null));
-        String userName = prefs.getString(Constants.USER, null);
+        Crashlytics.setString(Constants.SERVER, provider.sharedPreferences().getString(Constants.SERVER, null));
+        String userName = provider.sharedPreferences().getString(Constants.USER, null);
         if (userName != null)
             Crashlytics.setString(Constants.USER, userName);
-        mFirebaseAnalytics.setUserId(prefs.getString(Constants.SERVER, null));
+        mFirebaseAnalytics.setUserId(provider.sharedPreferences().getString(Constants.SERVER, null));
 
         super.onCreate(savedInstanceState);
 //        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
@@ -234,24 +236,20 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
     public <T> void saveListToPreference(String key, List<T> list) {
         Gson gson = new Gson();
         String json = gson.toJson(list);
-
-        getSharedPreferences(Constants.SHARE_PREFS, MODE_PRIVATE).edit().putString(key, json).apply();
+        provider.sharedPreferences().putString(key, json);
     }
 
     @Override
     public <T> List<T> getListFromPreference(String key) {
         Gson gson = new Gson();
-        String json = getSharedPreferences().getString(key, "[]");
+        String json = provider.sharedPreferences().getString(key, "[]");
         Type type = new TypeToken<List<T>>() {
         }.getType();
 
         return gson.fromJson(json, type);
     }
 
-    @Override
-    public SharedPreferences getSharedPreferences() {
-        return getSharedPreferences(Constants.SHARE_PREFS, MODE_PRIVATE);
-    }
+   
 
     public Observable<Status> observableLifeCycle() {
         return lifeCycleObservable;

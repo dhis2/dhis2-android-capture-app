@@ -20,6 +20,7 @@ import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.data.server.ConfigurationRepository
 import org.dhis2.data.server.UserManager
+import org.dhis2.data.sharedPreferences.SharePreferencesProvider
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.qrScanner.QRActivity
 import org.dhis2.utils.Constants
@@ -29,7 +30,7 @@ import org.hisp.dhis.android.core.systeminfo.SystemInfo
 import retrofit2.Response
 import timber.log.Timber
 
-class LoginPresenter internal constructor(private val configurationRepository: ConfigurationRepository) : LoginContracts.Presenter {
+class LoginPresenter internal constructor(private val configurationRepository: ConfigurationRepository, val sharePreferencesProvider: SharePreferencesProvider) : LoginContracts.Presenter {
 
     private lateinit var view: LoginContracts.View
     private var userManager: UserManager? = null
@@ -39,6 +40,7 @@ class LoginPresenter internal constructor(private val configurationRepository: C
 
     override fun init(view: LoginContracts.View) {
         this.view = view
+        view.setPreference(sharePreferencesProvider)
         this.disposable = CompositeDisposable()
 
         if ((view.context.applicationContext as App).serverComponent != null)
@@ -49,11 +51,9 @@ class LoginPresenter internal constructor(private val configurationRepository: C
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe({ isUserLoggedIn ->
-                        val prefs = view.abstracContext.getSharedPreferences(
-                                Constants.SHARE_PREFS, Context.MODE_PRIVATE)
-                        if (isUserLoggedIn && !prefs.getBoolean("SessionLocked", false)) {
+                        if (isUserLoggedIn && !sharePreferencesProvider.sharedPreferences().getBoolean("SessionLocked", false)!!) {
                             view.startActivity(MainActivity::class.java, null, true, true, null)
-                        } else if (prefs.getBoolean("SessionLocked", false)) {
+                        } else if (sharePreferencesProvider.sharedPreferences().getBoolean("SessionLocked", false)!!) {
                             view.showUnlockButton()
                         }
 
@@ -69,9 +69,8 @@ class LoginPresenter internal constructor(private val configurationRepository: C
                             .subscribe(
                                     { systemInfo ->
                                         if (systemInfo.contextPath() != null) {
-                                            val prefs = view.abstractActivity.getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE)
                                             view.setUrl(systemInfo.contextPath() ?: "")
-                                            view.setUser(prefs.getString(Constants.USER, "")!!)
+                                            view.setUser(sharePreferencesProvider.sharedPreferences().getString(Constants.USER, "")!!)
                                         } else
                                             view.setUrl(view.context.getString(R.string.login_https))
                                     },
@@ -98,9 +97,7 @@ class LoginPresenter internal constructor(private val configurationRepository: C
 
     override fun onButtonClick() {
         view.hideKeyboard()
-        val prefs = view.abstracContext.getSharedPreferences(
-                Constants.SHARE_PREFS, Context.MODE_PRIVATE)
-        if (!prefs.getBoolean(Constants.USER_ASKED_CRASHLYTICS, false))
+        if (!sharePreferencesProvider.sharedPreferences().getBoolean(Constants.USER_ASKED_CRASHLYTICS, false)!!)
             view.showCrashlyticsDialog()
         else
             view.showLoginProgress(true)
@@ -112,16 +109,15 @@ class LoginPresenter internal constructor(private val configurationRepository: C
                 configurationRepository.configure(baseUrl)
                         .map { config -> (view.abstractActivity.applicationContext as App).createServerComponent(config).userManager() }
                         .switchMap { userManager ->
-                            val prefs = view.abstractActivity.getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE)
-                            prefs.edit().putString(Constants.SERVER, serverUrl+"/api").apply()
+                            sharePreferencesProvider.sharedPreferences().putString(Constants.SERVER, serverUrl+"/api")
                             this.userManager = userManager
                             userManager.logIn(userName.trim { it <= ' ' }, pass).map<Response<Any>> { user ->
                                 if (user == null)
                                     Response.error<Any>(404, ResponseBody.create(MediaType.parse("text"), "NOT FOUND"))
                                 else {
-                                    prefs.edit().putString(Constants.USER, user.userCredentials()?.username()).apply()
-                                    prefs.edit().putBoolean("SessionLocked", false).apply()
-                                    prefs.edit().putString("pin", null).apply()
+                                    sharePreferencesProvider.sharedPreferences().putString(Constants.USER, user.userCredentials()?.username())
+                                    sharePreferencesProvider.sharedPreferences().putBoolean("SessionLocked", false)
+                                    sharePreferencesProvider.sharedPreferences().putString("pin", null)
                                     Response.success<Any>(null)
                                 }
                             }
@@ -145,10 +141,8 @@ class LoginPresenter internal constructor(private val configurationRepository: C
     }
 
     override fun unlockSession(pin: String) {
-        val prefs = view.abstracContext.getSharedPreferences(
-                Constants.SHARE_PREFS, Context.MODE_PRIVATE)
-        if (prefs.getString("pin", "") == pin) {
-            prefs.edit().putBoolean("SessionLocked", false).apply()
+        if (sharePreferencesProvider.sharedPreferences().getString("pin", "") == pin) {
+            sharePreferencesProvider.sharedPreferences().putBoolean("SessionLocked", false)
             view.startActivity(MainActivity::class.java, null, true, true, null)
         }
     }
@@ -165,8 +159,7 @@ class LoginPresenter internal constructor(private val configurationRepository: C
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
                             {
-                                val prefs = view.abstracContext.sharedPreferences
-                                prefs.edit().putBoolean("SessionLocked", false).apply()
+                                sharePreferencesProvider.sharedPreferences().putBoolean("SessionLocked", false)
                                 view.handleLogout()
                             },
                             { view.handleLogout() }
@@ -186,9 +179,8 @@ class LoginPresenter internal constructor(private val configurationRepository: C
     override fun handleError(throwable: Throwable) {
         Timber.e(throwable)
         if (throwable is D2Error && throwable.errorCode() == D2ErrorCode.ALREADY_AUTHENTICATED) {
-            val prefs = view.abstractActivity.getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE)
-            prefs.edit().putBoolean("SessionLocked", false).apply()
-            prefs.edit().putString("pin", null).apply()
+            sharePreferencesProvider.sharedPreferences().putBoolean("SessionLocked", false)
+            sharePreferencesProvider.sharedPreferences().putString("pin", null)
             view.alreadyAuthenticated()
 //            handleResponse(Response.success<Any>(null))
         } else

@@ -12,6 +12,7 @@ import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.service.ReservedValuesWorker;
 import org.dhis2.data.service.SyncDataWorker;
 import org.dhis2.data.service.SyncMetadataWorker;
+import org.dhis2.data.sharedPreferences.SharePreferencesProvider;
 import org.dhis2.utils.Constants;
 
 import java.util.concurrent.TimeUnit;
@@ -27,15 +28,18 @@ public class SyncPresenter implements SyncContracts.Presenter {
     private SyncContracts.View view;
 
     private CompositeDisposable disposable;
+    private SharePreferencesProvider provider;
 
 
-    SyncPresenter(MetadataRepository metadataRepository) {
+    SyncPresenter(MetadataRepository metadataRepository, SharePreferencesProvider provider) {
         this.metadataRepository = metadataRepository;
+        this.provider = provider;
     }
 
     @Override
     public void init(SyncContracts.View view) {
         this.view = view;
+        view.setPreferences(provider);
         this.disposable = new CompositeDisposable();
 
     }

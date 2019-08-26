@@ -15,6 +15,7 @@ import androidx.work.WorkManager;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.service.SyncDataWorker;
 import org.dhis2.data.service.SyncMetadataWorker;
+import org.dhis2.data.sharedPreferences.SharePreferencesProvider;
 import org.dhis2.usescases.login.LoginActivity;
 import org.dhis2.usescases.reservedValue.ReservedValueActivity;
 import org.dhis2.utils.Constants;
@@ -48,10 +49,12 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
     private CompositeDisposable compositeDisposable;
     private SyncManagerContracts.View view;
     private FlowableProcessor<Boolean> checkData;
+    private SharePreferencesProvider provider;
 
-    SyncManagerPresenter(MetadataRepository metadataRepository, D2 d2) {
+    SyncManagerPresenter(MetadataRepository metadataRepository, D2 d2, SharePreferencesProvider provider) {
         this.metadataRepository = metadataRepository;
         this.d2 = d2;
+        this.provider = provider;
         checkData = PublishProcessor.create();
     }
 
@@ -64,7 +67,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
     public void init(SyncManagerContracts.View view) {
         this.view = view;
         this.compositeDisposable = new CompositeDisposable();
-
+        view.setPreferences(provider);
         compositeDisposable.add(
                 checkData
                         .startWith(true)
@@ -272,19 +275,12 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
 
     @Override
     public void resetSyncParameters() {
-        SharedPreferences prefs = view.getAbstracContext().getSharedPreferences(
-                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-
-        editor.putInt(Constants.EVENT_MAX, Constants.EVENT_MAX_DEFAULT);
-        editor.putInt(Constants.TEI_MAX, Constants.TEI_MAX_DEFAULT);
-        editor.putBoolean(Constants.LIMIT_BY_ORG_UNIT, false);
-        editor.putBoolean(Constants.LIMIT_BY_PROGRAM, false);
-
-        editor.apply();
+        provider.sharedPreferences().putInt(Constants.EVENT_MAX, Constants.EVENT_MAX_DEFAULT);
+        provider.sharedPreferences().putInt(Constants.TEI_MAX, Constants.TEI_MAX_DEFAULT);
+        provider.sharedPreferences().putBoolean(Constants.LIMIT_BY_ORG_UNIT, false);
+        provider.sharedPreferences().putBoolean(Constants.LIMIT_BY_PROGRAM, false);
 
         checkData.onNext(true);
-
     }
 
     @Override
@@ -303,7 +299,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
             // clearing cache data
             deleteDir(view.getAbstracContext().getCacheDir());
 
-            view.getAbstracContext().getSharedPreferences().edit().clear().apply();
+            provider.sharedPreferences().clear();
 
             view.startActivity(LoginActivity.class, null, true, true, null);
         } catch (Exception e) {

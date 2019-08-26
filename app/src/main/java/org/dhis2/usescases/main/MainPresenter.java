@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.work.WorkManager;
 
 import org.dhis2.data.metadata.MetadataRepository;
+import org.dhis2.data.sharedPreferences.SharePreferencesProvider;
 import org.dhis2.usescases.login.LoginActivity;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.filters.FilterManager;
@@ -30,9 +31,11 @@ final class MainPresenter implements MainContracts.Presenter {
 
 
     private final D2 d2;
+    private SharePreferencesProvider provider;
 
-    MainPresenter(@NonNull D2 d2, MetadataRepository metadataRepository) {
+    MainPresenter(SharePreferencesProvider provider, @NonNull D2 d2, MetadataRepository metadataRepository) {
         this.d2 = d2;
+        this.provider = provider;
         this.metadataRepository = metadataRepository;
     }
 
@@ -40,7 +43,7 @@ final class MainPresenter implements MainContracts.Presenter {
     public void init(MainContracts.View view) {
         this.view = view;
         this.compositeDisposable = new CompositeDisposable();
-
+        view.setPreferences(provider);
         compositeDisposable.add(Observable.defer(() -> Observable.just(d2.userModule().user.get()))
                 .map(this::username)
                 .subscribeOn(Schedulers.io())
@@ -57,9 +60,7 @@ final class MainPresenter implements MainContracts.Presenter {
                         .subscribeOn(Schedulers.io())
                         .subscribe(
                                 id -> {
-                                    SharedPreferences prefs = view.getAbstracContext().getSharedPreferences(
-                                            Constants.SHARE_PREFS, Context.MODE_PRIVATE);
-                                    prefs.edit().putString(Constants.DEFAULT_CAT_COMBO, id).apply();
+                                    provider.sharedPreferences().putString(Constants.DEFAULT_CAT_COMBO, id);
                                 },
                                 Timber::e
                         )
@@ -71,9 +72,7 @@ final class MainPresenter implements MainContracts.Presenter {
                         .subscribeOn(Schedulers.io())
                         .subscribe(
                                 id -> {
-                                    SharedPreferences prefs = view.getAbstracContext().getSharedPreferences(
-                                            Constants.SHARE_PREFS, Context.MODE_PRIVATE);
-                                    prefs.edit().putString(Constants.PREF_DEFAULT_CAT_OPTION_COMBO, id).apply();
+                                    provider.sharedPreferences().putString(Constants.PREF_DEFAULT_CAT_OPTION_COMBO, id);
                                 },
                                 Timber::e
                         )
@@ -104,11 +103,9 @@ final class MainPresenter implements MainContracts.Presenter {
 
     @Override
     public void blockSession(String pin) {
-        SharedPreferences prefs = view.getAbstracContext().getSharedPreferences(
-                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
-        prefs.edit().putBoolean("SessionLocked", true).apply();
+        provider.sharedPreferences().putBoolean("SessionLocked", true);
         if (pin != null) {
-            prefs.edit().putString("pin", pin).apply();
+            provider.sharedPreferences().putString("pin", pin);
         }
         WorkManager.getInstance().cancelAllWork();
 //        view.startActivity(LoginActivity.class, null, true, true, null);

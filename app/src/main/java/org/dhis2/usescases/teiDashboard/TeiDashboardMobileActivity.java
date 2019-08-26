@@ -32,6 +32,7 @@ import org.dhis2.BuildConfig;
 import org.dhis2.R;
 import org.dhis2.data.forms.FormActivity;
 import org.dhis2.data.forms.FormViewArguments;
+import org.dhis2.data.sharedPreferences.SharePreferencesProvider;
 import org.dhis2.databinding.ActivityDashboardMobileBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.teiDashboard.adapters.DashboardPagerAdapter;
@@ -78,11 +79,11 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     private DashboardViewModel dashboardViewModel;
     private boolean fromRelationship;
     private boolean showTutorial;
+    private SharePreferencesProvider provider;
 
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        setTheme(getSharedPreferences().getInt(Constants.PROGRAM_THEME, getSharedPreferences().getInt(Constants.THEME, R.style.AppTheme)));
         if (savedInstanceState != null && savedInstanceState.containsKey(Constants.TRACKED_ENTITY_INSTANCE)) {
             teiUid = savedInstanceState.getString(Constants.TRACKED_ENTITY_INSTANCE);
             programUid = savedInstanceState.getString(Constants.PROGRAM_UID);
@@ -91,7 +92,9 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             programUid = getIntent().getStringExtra("PROGRAM_UID");
         }
         ((App) getApplicationContext()).createDashboardComponent(new TeiDashboardModule(teiUid, programUid)).inject(this);
-        super.onCreate(savedInstanceState);
+        provider = presenter.callPreference();
+        setTheme(provider.sharedPreferences().getInt(Constants.PROGRAM_THEME, provider.sharedPreferences().getInt(Constants.THEME, R.style.AppTheme)));
+          super.onCreate(savedInstanceState);
         dashboardViewModel = ViewModelProviders.of(this).get(DashboardViewModel.class);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dashboard_mobile);
@@ -102,8 +105,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         binding.toolbarTitle.setLines(1);
         binding.toolbarTitle.setEllipsize(TextUtils.TruncateAt.END);
 
-        getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE)
-                .edit().putString(Constants.PREVIOUS_DASHBOARD_PROGRAM, programUid).apply();
+        provider.sharedPreferences().putString(Constants.PREVIOUS_DASHBOARD_PROGRAM, programUid);
     }
 
 
@@ -116,8 +118,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                     .createDashboardComponent(new TeiDashboardModule(teiUid, programUid))
                     .inject(this);
 
-        String prevDashboardProgram = getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE)
-                .getString(Constants.PREVIOUS_DASHBOARD_PROGRAM, null);
+        String prevDashboardProgram = provider.sharedPreferences().getString(Constants.PREVIOUS_DASHBOARD_PROGRAM, null);
         if (!changingProgram && prevDashboardProgram != null && !prevDashboardProgram.equals(programUid)) {
             finish();
         } else {
@@ -263,6 +264,11 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     }
 
     @Override
+    public void setPreference(SharePreferencesProvider provider) {
+        this.provider = provider;
+    }
+
+    @Override
     public void setDataWithOutProgram(DashboardProgramModel program) {
         dashboardViewModel.updateDashboard(program);
         setProgramColor("");
@@ -326,9 +332,6 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     @Override
     public void setTutorial() {
         super.setTutorial();
-
-        SharedPreferences prefs = getAbstracContext().getSharedPreferences(
-                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
 
         new Handler().postDelayed(() -> {
             if (getAbstractActivity() != null) {
@@ -399,9 +402,9 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
                 HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
 
-                if (!prefs.getBoolean("TUTO_DASHBOARD_SHOWN", false) && !BuildConfig.DEBUG || showTutorial) {
+                if (!provider.sharedPreferences().getBoolean("TUTO_DASHBOARD_SHOWN", false) && !BuildConfig.DEBUG || showTutorial) {
                     HelpManager.getInstance().showHelp();
-                    prefs.edit().putBoolean("TUTO_DASHBOARD_SHOWN", true).apply();
+                    provider.sharedPreferences().putBoolean("TUTO_DASHBOARD_SHOWN", true);
                     showTutorial = true;
                 }
             }
@@ -442,10 +445,8 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         int programColor = ColorUtils.getColorFrom(color, ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY));
 
 
-        SharedPreferences prefs = getAbstracContext().getSharedPreferences(
-                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
         if (programTheme != -1) {
-            prefs.edit().putInt(Constants.PROGRAM_THEME, programTheme).apply();
+            provider.sharedPreferences().putInt(Constants.PROGRAM_THEME, programTheme);
             binding.toolbar.setBackgroundColor(programColor);
             binding.tabLayout.setBackgroundColor(programColor);
             if (getOrientation() == Configuration.ORIENTATION_LANDSCAPE)
@@ -454,9 +455,9 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                     binding.dotsIndicator.setStrokeDotsIndicatorColor(programColor);
                 }
         } else {
-            prefs.edit().remove(Constants.PROGRAM_THEME).apply();
+            provider.sharedPreferences().remove(Constants.PROGRAM_THEME);
             int colorPrimary;
-            switch (prefs.getInt(Constants.THEME, R.style.AppTheme)) {
+            switch (provider.sharedPreferences().getInt(Constants.THEME, R.style.AppTheme)) {
                 case R.style.AppTheme:
                     colorPrimary = R.color.colorPrimary;
                     break;
@@ -483,7 +484,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         }
 
         binding.executePendingBindings();
-        setTheme(prefs.getInt(Constants.PROGRAM_THEME, prefs.getInt(Constants.THEME, R.style.AppTheme)));
+        setTheme(provider.sharedPreferences().getInt(Constants.PROGRAM_THEME, provider.sharedPreferences().getInt(Constants.THEME, R.style.AppTheme)));
 
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();

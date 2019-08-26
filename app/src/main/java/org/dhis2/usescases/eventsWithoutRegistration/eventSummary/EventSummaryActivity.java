@@ -16,6 +16,7 @@ import org.dhis2.R;
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel;
+import org.dhis2.data.sharedPreferences.SharePreferencesProvider;
 import org.dhis2.databinding.ActivityEventSummaryBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.ColorUtils;
@@ -76,6 +77,7 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
     private EventModel eventModel;
     private ProgramModel programModel;
     private ArrayList<String> sectionsToHide;
+    private SharePreferencesProvider provider;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -139,6 +141,11 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
 
         if (sectionUid != null && !sectionsToHide.contains(sectionUid))
             sectionsToHide.add(sectionUid);
+    }
+
+    @Override
+    public void setPreferences(SharePreferencesProvider provider) {
+        this.provider = provider;
     }
 
 
@@ -326,7 +333,6 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
     public void setTutorial() {
         super.setTutorial();
 
-        SharedPreferences prefs = getSharedPreferences();
 
         new Handler().postDelayed(() -> {
             ArrayList<FancyShowCaseView> steps = new ArrayList<>();
@@ -343,9 +349,9 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
 
             HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
 
-            if (!prefs.getBoolean("TUTO_EVENT_SUMMARY", false) && !BuildConfig.DEBUG) {
+            if (!provider.sharedPreferences().getBoolean("TUTO_EVENT_SUMMARY", false) && !BuildConfig.DEBUG) {
                 HelpManager.getInstance().showHelp();
-                prefs.edit().putBoolean("TUTO_EVENT_SUMMARY", true).apply();
+                provider.sharedPreferences().putBoolean("TUTO_EVENT_SUMMARY", true);
             }
 
         }, 500);

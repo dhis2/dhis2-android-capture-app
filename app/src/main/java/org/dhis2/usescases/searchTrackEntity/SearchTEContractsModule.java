@@ -1,6 +1,7 @@
 package org.dhis2.usescases.searchTrackEntity;
 
 import org.dhis2.data.forms.dataentry.fields.RowAction;
+import org.dhis2.data.sharedPreferences.SharePreferencesProvider;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
@@ -53,6 +54,8 @@ public class SearchTEContractsModule {
         void setLiveData(LiveData<PagedList<SearchTeiModel>> liveData);
 
         void setFabIcon(boolean needsSearch);
+
+        void setShared(SharePreferencesProvider provider);
     }
 
     public interface Presenter {

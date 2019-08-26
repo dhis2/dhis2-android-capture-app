@@ -11,6 +11,7 @@ import com.google.firebase.perf.metrics.AddTrace;
 
 import org.dhis2.App;
 import org.dhis2.R;
+import org.dhis2.data.sharedPreferences.SharePreferencesProvider;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 
@@ -35,6 +36,7 @@ public class SyncDataWorker extends Worker {
 
     private final static String data_channel = "sync_data_notification";
     private final static int SYNC_DATA_ID = 8071986;
+    private SharePreferencesProvider provider;
 
     @Inject
     SyncPresenter presenter;
@@ -49,6 +51,7 @@ public class SyncDataWorker extends Worker {
     @Override
     @AddTrace(name = "MetadataSyncTrace")
     public Result doWork() {
+        provider = presenter.getPreferences();
         Objects.requireNonNull(((App) getApplicationContext()).userComponent()).plus(new SyncDataWorkerModule()).inject(this);
 
         triggerNotification(
@@ -82,9 +85,8 @@ public class SyncDataWorker extends Worker {
         String lastDataSyncDate = DateUtils.dateTimeFormat().format(Calendar.getInstance().getTime());
         boolean syncOk = presenter.checkSyncStatus();
 
-        SharedPreferences prefs = getApplicationContext().getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE);
-        prefs.edit().putString(Constants.LAST_DATA_SYNC, lastDataSyncDate).apply();
-        prefs.edit().putBoolean(Constants.LAST_DATA_SYNC_STATUS, isEventOk && isTeiOk && isDataValue && syncOk).apply();
+        provider.sharedPreferences().putString(Constants.LAST_DATA_SYNC, lastDataSyncDate);
+        provider.sharedPreferences().putBoolean(Constants.LAST_DATA_SYNC_STATUS, isEventOk && isTeiOk && isDataValue && syncOk);
 
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(new Intent("action_sync").putExtra("dataSyncInProgress", false));
 

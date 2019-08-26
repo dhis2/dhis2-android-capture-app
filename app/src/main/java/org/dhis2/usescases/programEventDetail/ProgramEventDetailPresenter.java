@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 
 import com.unnamed.b.atv.model.TreeNode;
 
+import org.dhis2.data.sharedPreferences.SharePreferencesProvider;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
@@ -44,6 +45,7 @@ import static org.dhis2.utils.Constants.PROGRAM_UID;
 public class ProgramEventDetailPresenter implements ProgramEventDetailContract.Presenter {
 
     private final ProgramEventDetailRepository eventRepository;
+    private final SharePreferencesProvider provider;
     private ProgramEventDetailContract.View view;
     protected ProgramModel program;
     protected String programId;
@@ -59,15 +61,17 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     private FlowableProcessor<Boolean> processorDismissDialog;
 
     ProgramEventDetailPresenter(
-            @NonNull String programUid, @NonNull ProgramEventDetailRepository programEventDetailRepository) {
+            @NonNull String programUid, @NonNull ProgramEventDetailRepository programEventDetailRepository, SharePreferencesProvider provider) {
         this.eventRepository = programEventDetailRepository;
         this.programId = programUid;
         this.currentCatOptionCombo = new ArrayList<>();
+        this.provider = provider;
     }
 
     @Override
     public void init(ProgramEventDetailContract.View view, Period period) {
         this.view = view;
+        view.setPreference(provider);
         compositeDisposable = new CompositeDisposable();
         this.currentOrgUnitFilter = new ArrayList<>();
         this.currentDateFilter = new ArrayList<>();
