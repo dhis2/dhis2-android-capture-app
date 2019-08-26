@@ -219,17 +219,21 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         backDropActive = !backDropActive;
         ConstraintSet initSet = new ConstraintSet();
         initSet.clone(binding.backdropLayout);
+        binding.filterOpen.setVisibility(backDropActive ? View.VISIBLE : View.GONE);
 
         if (backDropActive) {
-            initSet.connect(R.id.recycler, ConstraintSet.TOP, R.id.backdropGuide, ConstraintSet.BOTTOM, 0);
-            initSet.connect(R.id.empty_teis, ConstraintSet.TOP, R.id.backdropGuide, ConstraintSet.BOTTOM, 0);
+            initSet.connect(R.id.eventsLayout, ConstraintSet.TOP, R.id.filterLayout, ConstraintSet.BOTTOM, 50);
         }
         else {
-            initSet.connect(R.id.recycler, ConstraintSet.TOP, R.id.backdropGuideTop, ConstraintSet.BOTTOM, 0);
-            initSet.connect(R.id.empty_teis, ConstraintSet.TOP, R.id.backdropGuideTop, ConstraintSet.BOTTOM, 0);
+            initSet.connect(R.id.eventsLayout, ConstraintSet.TOP, R.id.backdropGuideTop, ConstraintSet.BOTTOM, 0);
         }
 
         initSet.applyTo(binding.backdropLayout);
+    }
+
+    @Override
+    public void clearFilters() {
+        filtersAdapter.notifyDataSetChanged();
     }
 
     @Override

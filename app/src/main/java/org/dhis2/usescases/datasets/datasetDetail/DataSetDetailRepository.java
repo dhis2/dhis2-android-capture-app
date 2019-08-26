@@ -1,17 +1,19 @@
 package org.dhis2.usescases.datasets.datasetDetail;
 
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
+import org.dhis2.data.tuples.Pair;
+import org.hisp.dhis.android.core.category.CategoryCombo;
+import org.hisp.dhis.android.core.category.CategoryOptionCombo;
+import org.hisp.dhis.android.core.common.State;
+import org.hisp.dhis.android.core.period.DatePeriod;
 
 import java.util.List;
 
-import androidx.annotation.NonNull;
 import io.reactivex.Flowable;
-import io.reactivex.Observable;
+import io.reactivex.Single;
 
 public interface DataSetDetailRepository {
 
-    @NonNull
-    Observable<List<OrganisationUnit>> orgUnits();
+    Single<Pair<CategoryCombo, List<CategoryOptionCombo>>> catOptionCombos();
 
-    Flowable<List<DataSetDetailModel>> dataSetGroups(String dataSetUid, List<String> selectedOrgUnit, List<String> periodFilter, int page);
+    Flowable<List<DataSetDetailModel>> dataSetGroups(List<String> orgUnits, List<DatePeriod> periodFilter, List<State> stateFilters, List<CategoryOptionCombo> catOptComboFilters);
 }
