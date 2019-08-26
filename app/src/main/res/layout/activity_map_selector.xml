@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
+<layout  xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
 
 <LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -14,10 +16,11 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?android:attr/actionBarSize"
-        android:background="?colorPrimary"
+        android:background="@color/white"
         android:gravity="center_vertical">
 
         <ImageView
+            android:tint="@color/blue_4fa"
             android:id="@+id/back"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
@@ -33,7 +36,6 @@
             android:gravity="center_vertical"
             app:layout_constraintStart_toEndOf="@id/back"
             android:text="@string/select_location"
-            android:textColor="@android:color/white"
             android:textSize="20sp" />
 
         <androidx.constraintlayout.widget.Guideline
@@ -61,86 +63,45 @@
 
         <com.mapbox.mapboxsdk.maps.MapView
             android:id="@+id/map_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/save"
-            android:visibility="visible"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="16dp"
-            app:backgroundTint="?colorPrimary"
-            android:tint="@color/white"
-            app:srcCompat="@drawable/ic_save" />
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/add"
-            android:visibility="visible"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/fab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="16dp"
-            app:backgroundTint="?colorPrimary"
-            android:tint="@color/white"
-            app:srcCompat="@drawable/ic_add" />
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/save"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="16dp"
-            app:backgroundTint="?colorPrimary"
-            app:srcCompat="@drawable/ic_place_white" />
-
-        <TextView
             app:layout_constraintTop_toTopOf="parent"
-            android:id="@+id/latlon"
+            app:layout_constraintBottom_toTopOf="@id/guide"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:lines="1"
-            android:textColor="@color/text_black_333"
-            android:textSize="14sp"
-            android:background="#33ffffff"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:gravity="center_horizontal"/>
+            android:layout_height="0dp"/>
 
-        <LinearLayout
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guide"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.65"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_centerInParent="true">
+            android:layout_height="wrap_content" />
 
-            <ImageView
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_gravity="center_horizontal"
-                app:srcCompat="@drawable/ic_place"
-                tools:ignore="ContentDescription" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            app:layout_constraintTop_toBottomOf="@id/guide"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_width="match_parent"
+            android:layout_height="0dp">
 
-            <View
-                android:id="@+id/empty_view"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/saveButton"
                 android:layout_width="match_parent"
-                android:layout_height="20dp"/>
-        </LinearLayout>
+                android:layout_height="0dp" />
+
+            <Button
+                android:textColor="@color/blue_fab"
+                android:background="@color/white"
+                android:id="@+id/saveButton"
+                android:layout_margin="4dp"
+                android:text="@string/action_accept"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </LinearLayout>
+</layout>

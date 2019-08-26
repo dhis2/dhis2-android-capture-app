@@ -15,6 +15,7 @@ import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.FeatureType;
+import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
@@ -50,7 +51,7 @@ public class EventInitialContract {
 
         void setEvent(Event event);
 
-        void setLocation(double latitude, double longitude);
+        void setLocation(Geometry geometry);
 
         void onEventCreated(String eventUid);
 
@@ -99,19 +100,19 @@ public class EventInitialContract {
 
         void createEvent(String enrollmentUid, String programStageModel, Date date, String orgUnitUid,
                          String catOption, String catOptionCombo,
-                         String latitude, String longitude, String trackedEntityInstance);
+                         Geometry geometry, String trackedEntityInstance);
 
         void scheduleEventPermanent(String enrollmentUid, String trackedEntityInstanceUid, String programStageModel, Date dueDate, String orgUnitUid,
                                     String categoryOptionComboUid, String categoryOptionsUid,
-                                    String latitude, String longitude);
+                                    Geometry geometry);
 
         void scheduleEvent(String enrollmentUid, String programStageModel, Date dueDate, String orgUnitUid,
                            String catOption, String catOptionCombo,
-                           String latitude, String longitude);
+                           Geometry geometry);
 
         void editEvent(String trackedEntityInstance, String programStageModel, String eventUid, String date, String orgUnitUid,
                        String catOption, String catOptionCombo,
-                       String latitude, String longitude);
+                       Geometry geometry);
 
         void onDateClick(@Nullable DatePickerDialog.OnDateSetListener listener);
 

@@ -18,7 +18,7 @@ public interface EnrollmentStatusEntryStore {
 
     Flowable<Geometry> enrollmentGeometry();
 
-    Flowable<Long> saveCoordinates(double latitude, double longitude);
+    Flowable<Long> saveCoordinates(Geometry geometry);
 
     Flowable<Long> saveIncidentDate(String date);
 

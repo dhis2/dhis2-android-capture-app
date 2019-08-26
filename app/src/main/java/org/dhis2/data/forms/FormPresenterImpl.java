@@ -131,12 +131,20 @@ class FormPresenterImpl implements FormPresenter {
                     .subscribe(view.renderCaptureCoordinates(), Timber::e)
             );
 
+            compositeDisposable.add(formRepository.captureTeiCoordinates()
+                    .subscribeOn(schedulerProvider.io())
+                    .observeOn(schedulerProvider.ui())
+                    .subscribe(view.renderTeiCoordinates(), Timber::e)
+            );
+
             compositeDisposable.add(formRepository.getAllowDatesInFuture()
                     .subscribeOn(schedulerProvider.io())
                     .observeOn(schedulerProvider.ui())
                     .subscribe(program -> view.initReportDatePicker(program.selectEnrollmentDatesInFuture(), program.selectIncidentDatesInFuture()),
                             Timber::e)
             );
+
+
         } else {
             view.hideDates();
             compositeDisposable.add(formRepository.getProgramCategoryCombo(null)
@@ -185,10 +193,16 @@ class FormPresenterImpl implements FormPresenter {
                 .subscribe(saved -> Timber.d("incidentDate saved"), Timber::e));
 
         compositeDisposable.add(view.reportCoordinatesChanged()
-                .filter(latLng -> latLng != null)
+                .filter(geometry -> geometry != null)
                 .subscribeOn(schedulerProvider.ui())
                 .observeOn(schedulerProvider.io())
                 .subscribe(formRepository.storeCoordinates(), Timber::e));
+
+        compositeDisposable.add(view.teiCoordinatesChanged()
+                .filter(geometry -> geometry != null)
+                .subscribeOn(schedulerProvider.ui())
+                .observeOn(schedulerProvider.io())
+                .subscribe(formRepository.storeTeiCoordinates(), Timber::e));
 
         ConnectableObservable<ReportStatus> statusChangeObservable = view.eventStatusChanged()
                 .publish();

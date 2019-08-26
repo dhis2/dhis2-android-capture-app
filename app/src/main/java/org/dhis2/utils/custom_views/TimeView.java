@@ -66,6 +66,7 @@ public class TimeView extends FieldLayout implements View.OnClickListener {
         binding = DataBindingUtil.inflate(inflater, R.layout.time_view, this, true);
         editText = findViewById(R.id.inputEditText);
         inputLayout = findViewById(R.id.inputLayout);
+        ((ImageView) findViewById(R.id.descIcon)).setImageResource(R.drawable.ic_form_date);
         editText.setFocusable(false); //Makes editText not editable
         editText.setClickable(true);//  but clickable
         editText.setOnFocusChangeListener(this::onFocusChanged);
