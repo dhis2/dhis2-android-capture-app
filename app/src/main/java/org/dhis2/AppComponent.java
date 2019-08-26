@@ -19,7 +19,7 @@ import dagger.Component;
  */
 @Singleton
 @Component(modules = {
-        AppModule.class, DbModule.class, SchedulerModule.class, UtilsModule.class
+        AppModule.class, SchedulerModule.class, UtilsModule.class
 })
 public interface AppComponent {
 
@@ -27,21 +27,18 @@ public interface AppComponent {
     interface Builder {
         Builder appModule(AppModule appModule);
 
-        Builder dbModule(DbModule dbModule);
-
         Builder schedulerModule(SchedulerModule schedulerModule);
 
         Builder utilModule(UtilsModule utilsModule);
 
         AppComponent build();
-        //ter
     }
 
     //injection targets
     void inject(App app);
 
     //sub-components
-    ServerComponent plus(ServerModule serverModule);
+    ServerComponent plus(ServerModule serverModule, DbModule dbModule);
 
     SplashComponent plus(SplashModule module);
 

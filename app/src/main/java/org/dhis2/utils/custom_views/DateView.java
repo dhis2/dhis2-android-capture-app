@@ -75,6 +75,7 @@ public class DateView extends FieldLayout implements View.OnClickListener {
 
         inputLayout = findViewById(R.id.inputLayout);
         editText = findViewById(R.id.inputEditText);
+        ((ImageView) findViewById(R.id.descIcon)).setImageResource(R.drawable.ic_form_date);
         selectedCalendar = Calendar.getInstance();
         editText.setFocusable(false); //Makes editText not editable
         editText.setClickable(true);//  but clickable

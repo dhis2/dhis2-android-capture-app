@@ -5,7 +5,6 @@ import android.database.Cursor;
 
 import androidx.annotation.NonNull;
 
-import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
@@ -16,12 +15,12 @@ import org.dhis2.utils.CodeGenerator;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.android.core.arch.helpers.GeometryHelper;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.State;
+import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository;
@@ -76,6 +75,7 @@ public class EnrollmentFormRepository implements FormRepository {
     private final D2 d2;
     private final RulesRepository rulesRepository;
     private final RuleExpressionEvaluator expressionEvaluator;
+
     private String programUid;
 
     public EnrollmentFormRepository(@NonNull BriteDatabase briteDatabase,
@@ -100,7 +100,7 @@ public class EnrollmentFormRepository implements FormRepository {
                         rulesRepository.enrollmentEvents(enrollmentUid),
                         rulesRepository.queryConstants(),
                         rulesRepository.getSuplementaryData(d2),
-                        (rules, variables, events, constants,supplData) -> {
+                        (rules, variables, events, constants, supplData) -> {
                             RuleEngine.Builder builder = RuleEngineContext.builder(expressionEvaluator)
                                     .rules(rules)
                                     .ruleVariables(variables)
@@ -281,11 +281,19 @@ public class EnrollmentFormRepository implements FormRepository {
 
     @NonNull
     @Override
-    public Consumer<LatLng> storeCoordinates() {
-        return latLng -> {
-            // TODO: Implement all cases of FEATURE TYPE
+    public Consumer<Geometry> storeCoordinates() {
+        return geometry -> {
             EnrollmentObjectRepository repo = d2.enrollmentModule().enrollments.uid(enrollmentUid);
-            repo.setGeometry(GeometryHelper.createPointGeometry(latLng.getLatitude(), latLng.getLongitude()));
+            repo.setGeometry(geometry);
+        };
+    }
+
+    @NonNull
+    @Override
+    public Consumer<Geometry> storeTeiCoordinates() {
+        return geometry -> {
+            String teiUid = d2.enrollmentModule().enrollments.uid(enrollmentUid).blockingGet().trackedEntityInstance();
+            d2.trackedEntityModule().trackedEntityInstances.uid(teiUid).setGeometry(geometry);
         };
     }
 
@@ -503,6 +511,20 @@ public class EnrollmentFormRepository implements FormRepository {
                 .map(program -> program.featureType() != FeatureType.NONE);
     }
 
+
+    @Override
+    public Single<FeatureType> captureTeiCoordinates() {
+        return d2.enrollmentModule().enrollments.uid(enrollmentUid).get()
+                .flatMap(enrollment -> d2.programModule().programs.uid(enrollment.program()).withAllChildren().get())
+                .flatMap(program -> d2.trackedEntityModule().trackedEntityTypes.uid(program.trackedEntityType().uid()).get())
+                .map(trackedEntityType -> {
+                    if (trackedEntityType.featureType() == null)
+                        return FeatureType.NONE;
+                    else
+                        return trackedEntityType.featureType();
+                });
+    }
+
     @Override
     public Observable<OrganisationUnit> getOrgUnitDates() {
         return Observable.defer(() -> Observable.just(d2.enrollmentModule().enrollments.uid(enrollmentUid).blockingGet()))
@@ -522,7 +544,7 @@ public class EnrollmentFormRepository implements FormRepository {
         EnrollmentStatus status = enrollment.status();
         String description = tea.displayDescription();
 
-        if(generated && isEmpty(dataValue))
+        if (generated && isEmpty(dataValue))
             mandatory = true;
 
         int optionCount = 0;

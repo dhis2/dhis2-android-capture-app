@@ -31,10 +31,10 @@ public class StatusEventFilterHolder extends FilterHolder {
         localBinding.filterStatus.stateCompleted.setChecked(FilterManager.getInstance().getEventStatusFilters().contains(EventStatus.COMPLETED));
         localBinding.filterStatus.stateSkipped.setChecked(FilterManager.getInstance().getEventStatusFilters().contains(EventStatus.SKIPPED));
 
-        localBinding.filterStatus.stateScheduled.setOnCheckedChangeListener((compoundButton, b) -> FilterManager.getInstance().addEventStatus(EventStatus.SCHEDULE));
-        localBinding.filterStatus.stateOverdue.setOnCheckedChangeListener((compoundButton, b) -> FilterManager.getInstance().addEventStatus(EventStatus.OVERDUE));
-        localBinding.filterStatus.stateVisited.setOnCheckedChangeListener((compoundButton, b) -> FilterManager.getInstance().addEventStatus(EventStatus.VISITED));
-        localBinding.filterStatus.stateCompleted.setOnCheckedChangeListener((compoundButton, b) -> FilterManager.getInstance().addEventStatus(EventStatus.COMPLETED));
-        localBinding.filterStatus.stateSkipped.setOnCheckedChangeListener((compoundButton, b) -> FilterManager.getInstance().addEventStatus(EventStatus.SKIPPED));
+        localBinding.filterStatus.stateScheduled.setOnCheckedChangeListener((compoundButton, b) -> FilterManager.getInstance().addEventStatus(!b, EventStatus.SCHEDULE));
+        localBinding.filterStatus.stateOverdue.setOnCheckedChangeListener((compoundButton, b) -> FilterManager.getInstance().addEventStatus(!b, EventStatus.OVERDUE));
+        localBinding.filterStatus.stateVisited.setOnCheckedChangeListener((compoundButton, b) -> FilterManager.getInstance().addEventStatus(!b, EventStatus.VISITED));
+        localBinding.filterStatus.stateCompleted.setOnCheckedChangeListener((compoundButton, b) -> FilterManager.getInstance().addEventStatus(!b, EventStatus.COMPLETED));
+        localBinding.filterStatus.stateSkipped.setOnCheckedChangeListener((compoundButton, b) -> FilterManager.getInstance().addEventStatus(!b, EventStatus.SKIPPED));
     }
 }

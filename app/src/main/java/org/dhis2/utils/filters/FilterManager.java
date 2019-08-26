@@ -104,11 +104,11 @@ public class FilterManager {
 
 //    endregion
 
-    public void addEventStatus(EventStatus... status){
+    public void addEventStatus(boolean remove, EventStatus... status){
         for(EventStatus eventStatus: status){
-            if(eventStatusFilters.contains(eventStatus))
+            if(remove)
                 eventStatusFilters.remove(eventStatus);
-            else
+            else if(!eventStatusFilters.contains(eventStatus))
                 eventStatusFilters.add(eventStatus);
         }
         eventStatusFiltersApplied.set(eventStatusFilters.size());
@@ -247,6 +247,23 @@ public class FilterManager {
     public void clearEventStatus(){
         eventStatusFilters.clear();
         eventStatusFiltersApplied.set(eventStatusFilters.size());
+        filterProcessor.onNext(this);
+    }
+
+    public void clearAllFilters(){
+        eventStatusFilters.clear();
+        catOptComboFilters.clear();
+        stateFilters.clear();
+        ouFilters.clear();
+        periodFilters = null;
+        periodIdSelected = 0;
+
+        eventStatusFiltersApplied.set(eventStatusFilters.size());
+        catOptCombFiltersApplied.set(catOptComboFilters.size());
+        stateFiltersApplied.set(stateFilters.size());
+        ouFiltersApplied.set(ouFilters.size());
+        periodFiltersApplied.set(0);
+
         filterProcessor.onNext(this);
     }
 

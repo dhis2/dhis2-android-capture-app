@@ -7,6 +7,7 @@ import androidx.annotation.Nullable;
 
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
+import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
@@ -45,13 +46,13 @@ public interface EventInitialRepository {
                                    @NonNull Context context, @NonNull String program,
                                    @NonNull String programStage, @NonNull Date date,
                                    @NonNull String orgUnitUid, @NonNull String catComboUid,
-                                   @NonNull String catOptionUid, @NonNull String latitude, @NonNull String longitude);
+                                   @NonNull String catOptionUid, @NonNull Geometry coordinates);
 
     Observable<String> scheduleEvent(String enrollmentUid, @Nullable String trackedEntityInstanceUid,
                                      @NonNull Context context, @NonNull String program,
                                      @NonNull String programStage, @NonNull Date dueDate,
                                      @NonNull String orgUnitUid, @NonNull String catComboUid,
-                                     @NonNull String catOptionUid, @NonNull String latitude, @NonNull String longitude);
+                                     @NonNull String catOptionUid, @NonNull Geometry coordinates);
 
     @NonNull
     Observable<ProgramStage> programStage(String programUid);
@@ -60,7 +61,7 @@ public interface EventInitialRepository {
     Observable<ProgramStage> programStageWithId(String programStageUid);
 
     @NonNull
-    Observable<Event> editEvent(String trackedEntityInstance, String eventUid, String date, String orgUnitUid, String catComboUid, String catOptionCombo, String latitude, String longitude);
+    Observable<Event> editEvent(String trackedEntityInstance, String eventUid, String date, String orgUnitUid, String catComboUid, String catOptionCombo, Geometry coordinates);
 
     Observable<Boolean> accessDataWrite(String programId);
 

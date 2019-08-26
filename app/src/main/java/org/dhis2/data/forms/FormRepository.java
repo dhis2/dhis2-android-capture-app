@@ -3,13 +3,13 @@ package org.dhis2.data.forms;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.mapbox.mapboxsdk.geometry.LatLng;
-
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
+import org.hisp.dhis.android.core.common.FeatureType;
+import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
@@ -19,6 +19,7 @@ import java.util.List;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.reactivex.Single;
 import io.reactivex.functions.Consumer;
 
 public interface FormRepository {
@@ -51,7 +52,7 @@ public interface FormRepository {
     Observable<Long> saveIncidentDate(String date);
 
     @NonNull
-    Consumer<LatLng> storeCoordinates();
+    Consumer<Geometry> storeCoordinates();
 
     @NonNull
     Flowable<ReportStatus> reportStatus();
@@ -91,4 +92,8 @@ public interface FormRepository {
     Observable<OrganisationUnit> getOrgUnitDates();
 
     Flowable<ProgramStage> getProgramStage(String eventUid);
+
+    Single<FeatureType> captureTeiCoordinates();
+
+    Consumer<Geometry> storeTeiCoordinates();
 }

@@ -64,6 +64,7 @@
                         style="@style/ActionIcon"
                         android:onClick="@{()->presenter.onMenuClick()}"
                         app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         app:srcCompat="@drawable/ic_menu"
                         tools:ignore="ContentDescription" />
@@ -148,8 +149,7 @@
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/filterLayout"
                     android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:layout_height="wrap_content"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     app:layout_constraintStart_toStartOf="parent"
