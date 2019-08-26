@@ -16,7 +16,7 @@ interface SyncPresenter {
 
     void syncAndDownloadTeis(Context context) throws Exception;
 
-    void syncMetadata(Context context) throws Exception;
+    void syncMetadata(Context context, SyncMetadataWorker.OnProgressUpdate progressUpdate) throws Exception;
 
     void syncAndDownloadDataValues() throws Exception;
 

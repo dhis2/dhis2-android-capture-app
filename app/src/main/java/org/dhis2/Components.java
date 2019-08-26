@@ -37,7 +37,7 @@ public interface Components {
     ////////////////////////////////////////////////////////////////////
 
     @NonNull
-    ServerComponent createServerComponent(@NonNull Configuration configuration);
+    ServerComponent createServerComponent();
 
     @Nullable
     ServerComponent serverComponent();
