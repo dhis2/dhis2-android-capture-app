@@ -54,7 +54,7 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
         if (!orgUnits.isEmpty())
             repo = repo.byOrganisationUnitUid().in(orgUnits);
         if (!periodFilter.isEmpty())
-            repo = repo.byPeriodStartDate().after(periodFilter.get(0).startDate()).byPeriodEndDate().before(periodFilter.get(0).endDate());
+            repo = repo.byPeriodStartDate().inDatePeriods(periodFilter);
         if (!catOptComboFilters.isEmpty())
             repo = repo.byAttributeOptionComboUid().in(UidsHelper.getUids(catOptComboFilters));
 
