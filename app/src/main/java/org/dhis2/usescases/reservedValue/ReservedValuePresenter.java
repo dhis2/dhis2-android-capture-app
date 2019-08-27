@@ -48,7 +48,7 @@ public class ReservedValuePresenter implements ReservedValueContracts.Presenter 
         disposable.add(
                 d2.trackedEntityModule()
                         .reservedValueManager
-                        .downloadReservedValues(reservedValue.uid(), reservedValue.orgUnitUid(), 100)
+                        .downloadReservedValues(reservedValue.uid(), 100)
                         .subscribeOn(Schedulers.io())
                         .observeOn(Schedulers.io())
                         .subscribe(
