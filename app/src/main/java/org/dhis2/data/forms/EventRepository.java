@@ -313,8 +313,6 @@ public class EventRepository implements FormRepository {
             event.put(EventModel.Columns.STATE, State.TO_UPDATE.name()); // TODO: Check if state is TO_POST
             // TODO: and if so, keep the TO_POST state
 
-            updateProgramTable(Calendar.getInstance().getTime(), programUid);
-
             briteDatabase.update(EventModel.TABLE, event, EventModel.Columns.UID + " = ?", eventUid == null ? "" : eventUid);
         };
     }
@@ -355,8 +353,6 @@ public class EventRepository implements FormRepository {
             event.put(EventModel.Columns.STATUS, ReportStatus.toEventStatus(reportStatus).name());
             event.put(EventModel.Columns.STATE, State.TO_UPDATE.name()); // TODO: Check if state is TO_POST
             // TODO: and if so, keep the TO_POST state
-
-            updateProgramTable(Calendar.getInstance().getTime(), programUid);
 
             briteDatabase.update(EventModel.TABLE, event, EventModel.Columns.UID + " = ?", eventUid == null ? "" : eventUid);
         };
@@ -546,11 +542,5 @@ public class EventRepository implements FormRepository {
             return FormSectionViewModel.createForSection(
                     eventUid, cursor.getString(2), cursor.getString(3), cursor.getString(4));
         }
-    }
-
-    private void updateProgramTable(Date lastUpdated, String programUid) {
-        /*ContentValues program = new ContentValues();TODO: Crash if active
-        program.put(EnrollmentModel.Columns.LAST_UPDATED, BaseIdentifiableObject.DATE_FORMAT.format(lastUpdated));
-        briteDatabase.update(ProgramModel.TABLE, program, ProgramModel.Columns.UID + " = ?", programUid);*/
     }
 }

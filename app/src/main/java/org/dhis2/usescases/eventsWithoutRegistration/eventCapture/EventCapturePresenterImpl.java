@@ -86,6 +86,9 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private boolean isSubscribed;
     private String lastFocusItem;
 
+    private int listCont;
+    private int effectCont;
+
     @Override
     public String getLastFocusItem() {
         return lastFocusItem;
@@ -326,9 +329,9 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
     private Flowable<List<FieldViewModel>> getFieldFlowable(@Nullable String sectionUid) {
         if (sectionUid == null || sectionUid.equals("NO_SECTION")) {
-            return Flowable.zip(
-                    eventCaptureRepository.list().subscribeOn(Schedulers.computation()),
-                    eventCaptureRepository.fullCalculate().subscribeOn(Schedulers.computation()),
+            return Flowable.combineLatest(
+                    eventCaptureRepository.list().subscribeOn(Schedulers.computation()).doOnNext(list -> Timber.d("NEW COUNT LIST %s", listCont++)),
+                    eventCaptureRepository.fullCalculate().debounce(500,TimeUnit.MILLISECONDS).subscribeOn(Schedulers.computation()).doOnNext(list -> Timber.d("NEW COUNT EFFECT %s", effectCont++)),
                     this::applyEffects)
                     .map(fields -> {
                         emptyMandatoryFields = new HashMap<>();
@@ -464,7 +467,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     }
 
     @NonNull
-    private List<FieldViewModel> applyEffects(
+    private synchronized List<FieldViewModel> applyEffects(
             @NonNull List<FieldViewModel> viewModels,
             @NonNull Result<RuleEffect> calcResult) {
 

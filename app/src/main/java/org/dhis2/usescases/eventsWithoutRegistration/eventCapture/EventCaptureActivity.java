@@ -89,6 +89,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
     }
 
+
     @Override
     protected void onResume() {
         super.onResume();
