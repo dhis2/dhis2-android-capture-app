@@ -489,5 +489,6 @@
     <string name="record_marked_for_deletion">Este registro ha sido borrado. No puede acceder a el</string>
     <string name="validation_url">La URL no es válida</string>
     <string name="uncomplete_authority_error">No tiene permisos para abrir este evento</string>
+    <string name="adjusting_form">Adjusting form…</string>
 
 </resources>
