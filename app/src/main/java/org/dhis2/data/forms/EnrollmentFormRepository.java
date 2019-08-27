@@ -345,7 +345,7 @@ public class EnrollmentFormRepository implements FormRepository {
         calNow.set(Calendar.MILLISECOND, 0);
         Date now = calNow.getTime();
 
-
+        //TODO testing fine this
         return d2.enrollmentModule().enrollments.uid(enrollmentUid).get()
                 .flatMap(enrollment -> d2.programModule().programStages.byAutoGenerateEvent().isTrue()
                         .byProgramUid().eq(enrollment.program()).get()
@@ -429,6 +429,7 @@ public class EnrollmentFormRepository implements FormRepository {
     @NonNull
     @Override
     public Observable<List<FieldViewModel>> fieldValues() {
+        //TODO testing fine this
         return d2.enrollmentModule().enrollments.uid(enrollmentUid).get()
                 .flatMap(enrollment -> d2.programModule().programs.withProgramTrackedEntityAttributes().uid(enrollment.program()).get()
                     .map(program -> {
@@ -484,6 +485,7 @@ public class EnrollmentFormRepository implements FormRepository {
 
     @Override
     public Observable<Trio<Boolean, CategoryCombo, List<CategoryOptionCombo>>> getProgramCategoryCombo(String eventUid) {
+        //TODO testing fine this
         return d2.eventModule().events.uid(eventUid).get()
                 .flatMap(event -> d2.programModule().programs.withCategoryCombo().uid(event.program()).get()
                         .flatMap(program -> d2.categoryModule().categoryOptionCombos
@@ -579,6 +581,7 @@ public class EnrollmentFormRepository implements FormRepository {
     @NonNull
     @Override
     public Observable<Trio<String, String, String>> useFirstStageDuringRegistration() { //enrollment uid, trackedEntityType, event uid
+        //TODO testing fine this
         return d2.programModule().programs.uid(programUid).get()
                 .flatMap(program -> d2.programModule().programStages.byProgramUid().eq(programUid).get()
                         .map(programStages ->

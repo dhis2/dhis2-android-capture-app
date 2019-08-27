@@ -251,12 +251,14 @@ final class ProgramStageRepository implements DataEntryRepository {
         }
 
         int optionCount = 0;
-        try (Cursor countCursor = briteDatabase.query("SELECT COUNT (uid) FROM Option WHERE optionSet = ?", optionSetUid)) {
-            if (countCursor != null && countCursor.moveToFirst())
-                optionCount = countCursor.getInt(0);
-        } catch (Exception e) {
-            Timber.e(e);
-        }
+        if(optionSetUid != null)
+            try (Cursor countCursor = briteDatabase.query("SELECT COUNT (uid) FROM Option WHERE optionSet = ?", optionSetUid)) {
+                if (countCursor != null && countCursor.moveToFirst())
+                    optionCount = countCursor.getInt(0);
+            } catch (Exception e) {
+                Timber.e(e);
+            }
+
         ValueTypeDeviceRendering fieldRendering = null;
         try (Cursor rendering = briteDatabase.query("SELECT ValueTypeDeviceRendering.* FROM ValueTypeDeviceRendering" +
                 " JOIN ProgramStageDataElement ON ProgramStageDataElement.uid = ValueTypeDeviceRendering.uid" +

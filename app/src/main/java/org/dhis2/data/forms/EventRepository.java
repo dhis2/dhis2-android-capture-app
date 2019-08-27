@@ -23,18 +23,24 @@ import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
+import org.hisp.dhis.android.core.dataelement.DataElement;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.event.EventTableInfo;
+import org.hisp.dhis.android.core.option.Option;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
+import org.hisp.dhis.android.core.program.ProgramStageDataElement;
+import org.hisp.dhis.android.core.program.ProgramStageSection;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue;
 import org.hisp.dhis.rules.RuleEngine;
 import org.hisp.dhis.rules.RuleEngineContext;
 import org.hisp.dhis.rules.RuleExpressionEvaluator;
 import org.hisp.dhis.rules.models.TriggerEnvironment;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -55,53 +61,6 @@ import static android.text.TextUtils.isEmpty;
         "PMD.AvoidDuplicateLiterals"
 })
 public class EventRepository implements FormRepository {
-    private static final List<String> TITLE_TABLES = Arrays.asList(
-            "Program", "ProgramStage");
-
-    private static final List<String> SECTION_TABLES = Arrays.asList(
-            "Event", "Program", "ProgramStage", "ProgramStageSelection");
-
-    private static final String SELECT_PROGRAM = "SELECT Program.*\n" +
-            "FROM Program JOIN Event ON Event.program = Program.uid \n" +
-            "WHERE Event.uid =?\n" +
-            "LIMIT 1;";
-
-    private static final String SELECT_PROGRAM_FROM_EVENT = String.format(
-            "SELECT %s.* from %s JOIN %s " +
-                    "ON %s.%s = %s.%s " +
-                    "WHERE %s.%s = ? LIMIT 1",
-            "Program", "Program", "Event",
-            "Event", "program", "Program", "uid",
-            "Event", "uid");
-
-    private static final String SELECT_TITLE = "SELECT\n" +
-            "  Program.displayName,\n" +
-            "  ProgramStage.displayName\n" +
-            "FROM Event\n" +
-            "  JOIN Program ON Event.program = Program.uid\n" +
-            "  JOIN ProgramStage ON Event.programStage = ProgramStage.uid\n" +
-            "WHERE Event.uid = ? " +
-            "LIMIT 1";
-
-    private static final String SELECT_SECTIONS = "SELECT\n" +
-            "  Program.uid AS programUid,\n" +
-            "  ProgramStage.uid AS programStageUid,\n" +
-            "  ProgramStageSection.uid AS programStageSectionUid,\n" +
-            "  ProgramStageSection.displayName AS programStageDisplayName,\n" +
-            "  ProgramStageSection.mobileRenderType AS renderType,\n" +
-            "  ProgramStageSection.sortOrder AS sectionOrder\n" +
-            "FROM Event\n" +
-            "  JOIN Program ON Event.program = Program.uid\n" +
-            "  JOIN ProgramStage ON Event.programStage = ProgramStage.uid\n" +
-            "  LEFT OUTER JOIN ProgramStageSection ON ProgramStageSection.programStage = Event.programStage\n" +
-            "WHERE Event.uid = ? ORDER BY ProgramStageSection.sortOrder";
-
-
-    private static final String SELECT_EVENT_STATUS = "SELECT\n" +
-            "  Event.status\n" +
-            "FROM Event\n" +
-            "WHERE Event.uid = ? " +
-            "LIMIT 1";
 
     private static final String QUERY = "SELECT\n" +
             "  Field.id,\n" +
@@ -238,56 +197,69 @@ public class EventRepository implements FormRepository {
     @NonNull
     @Override
     public Flowable<String> title() {
-        return briteDatabase
-                .createQuery(TITLE_TABLES, SELECT_TITLE, eventUid == null ? "" : eventUid)
-                .mapToOne(cursor -> cursor.getString(0) + " - " + cursor.getString(1)).toFlowable(BackpressureStrategy.LATEST)
-                .distinctUntilChanged();
+        return d2.eventModule().events.uid(eventUid).get()
+                .flatMap(event -> d2.programModule().programStages.uid(event.programStage()).get()
+                        .flatMap(programStage -> d2.programModule().programs.uid(event.program()).get()
+                                .map(program -> program.displayName() + " - " + programStage.displayName())))
+                .toFlowable();
     }
 
     @NonNull
     @Override
     public Flowable<Pair<Program, String>> reportDate() {
-        return briteDatabase.createQuery("Program", SELECT_PROGRAM, eventUid == null ? "" : eventUid)
-                .mapToOne(Program::create)
-                .map(program -> Pair.create(program, ""))
-                .toFlowable(BackpressureStrategy.LATEST)
-                .distinctUntilChanged();
+        return d2.eventModule().events.uid(eventUid).get()
+                .flatMap(event -> d2.programModule().programs.uid(event.program()).get()
+                        .map(program -> Pair.create(program, "")))
+                .toFlowable();
     }
 
     @NonNull
     @Override
     public Flowable<Pair<Program, String>> incidentDate() {
-        return briteDatabase.createQuery("Program", SELECT_PROGRAM, eventUid == null ? "" : eventUid)
-                .mapToOne(Program::create)
-                .map(program -> Pair.create(program, ""))
-                .toFlowable(BackpressureStrategy.LATEST)
-                .distinctUntilChanged();
+        return d2.eventModule().events.uid(eventUid).get()
+                .flatMap(event -> d2.programModule().programs.uid(event.program()).get()
+                        .map(program -> Pair.create(program, "")))
+                .toFlowable();
     }
+
+
 
     @Override
     public Flowable<Program> getAllowDatesInFuture() {
-        return briteDatabase.createQuery("Program", SELECT_PROGRAM_FROM_EVENT, eventUid == null ? "" : eventUid)
-                .mapToOne(Program::create)
-                .toFlowable(BackpressureStrategy.LATEST);
+        return d2.eventModule().events.uid(eventUid).get()
+                .flatMap(event -> d2.programModule().programs.uid(event.program()).get())
+                .toFlowable();
     }
-
 
     @NonNull
     @Override
     public Flowable<ReportStatus> reportStatus() {
-        return briteDatabase
-                .createQuery("Event", SELECT_EVENT_STATUS, eventUid == null ? "" : eventUid)
-                .mapToOne(cursor -> ReportStatus.fromEventStatus(EventStatus.valueOf(cursor.getString(0)))).toFlowable(BackpressureStrategy.LATEST)
-                .distinctUntilChanged();
+        return d2.eventModule().events.uid(eventUid).get()
+                .map(event -> ReportStatus.fromEventStatus(event.status()))
+                .toFlowable();
     }
 
     @NonNull
     @Override
     public Flowable<List<FormSectionViewModel>> sections() {
-        return briteDatabase
-                .createQuery(SECTION_TABLES, SELECT_SECTIONS, eventUid == null ? "" : eventUid)
-                .mapToList(cursor -> mapToFormSectionViewModels(eventUid == null ? "" : eventUid, cursor))
-                .distinctUntilChanged().toFlowable(BackpressureStrategy.LATEST);
+        return d2.eventModule().events.uid(eventUid).get()
+                .flatMap(event -> d2.programModule().programStageSections.byProgramStageUid().eq(event.programStage()).get()
+                        .map(programStageSections -> {
+                            List<FormSectionViewModel> sections = new ArrayList<>();
+                            if(programStageSections.isEmpty()){
+                                // This programstage has no sections
+                                sections.add(FormSectionViewModel.createForProgramStage(
+                                        eventUid, event.programStage()));
+                            } else {
+                                // This programstage has sections
+                                for(ProgramStageSection stageSection: programStageSections){
+                                    sections.add( FormSectionViewModel.createForSection(
+                                            eventUid, stageSection.uid(), stageSection.displayName(), stageSection.renderType().mobile().type().name()));
+                                }
+                            }
+
+                            return sections;
+                        })).toFlowable();
     }
 
     @NonNull
@@ -368,9 +340,87 @@ public class EventRepository implements FormRepository {
         return null;
     }
 
+    /**
+     * "SELECT\n" +
+     *             "  Field.id,\n" +
+     *             "  Field.label,\n" +
+     *             "  Field.type,\n" +
+     *             "  Field.mandatory,\n" +
+     *             "  Field.optionSet,\n" +
+     *             "  Value.value,\n" +
+     *             "  Option.displayName,\n" +
+     *             "  Field.section,\n" +
+     *             "  Field.allowFutureDate,\n" +
+     *             "  Event.status,\n" +
+     *             "  Field.formLabel,\n" +
+     *             "  Field.displayDescription,\n" +
+     *             "  Field.formOrder,\n" +
+     *             "  Field.sectionOrder\n" +
+     *             "FROM Event\n" +
+     *             "  LEFT OUTER JOIN (\n" +
+     *             "      SELECT\n" +
+     *             "        DataElement.displayName AS label,\n" +
+     *             "        DataElement.displayFormName AS formLabel,\n" +
+     *             "        DataElement.valueType AS type,\n" +
+     *             "        DataElement.uid AS id,\n" +
+     *             "        DataElement.optionSet AS optionSet,\n" +
+     *             "        ProgramStageDataElement.sortOrder AS formOrder,\n" +
+     *             "        ProgramStageDataElement.programStage AS stage,\n" +
+     *             "        ProgramStageDataElement.compulsory AS mandatory,\n" +
+     *             "        ProgramStageSectionDataElementLink.programStageSection AS section,\n" +
+     *             "        ProgramStageDataElement.allowFutureDate AS allowFutureDate,\n" +
+     *             "        DataElement.displayDescription AS displayDescription,\n" +
+     *             "        ProgramStageSectionDataElementLink.sortOrder AS sectionOrder\n" +
+     *             "      FROM ProgramStageDataElement\n" +
+     *             "        INNER JOIN DataElement ON DataElement.uid = ProgramStageDataElement.dataElement\n" +
+     *             "        LEFT JOIN ProgramStageSection ON ProgramStageSection.programStage = ProgramStageDataElement.programStage\n" +
+     *             "        LEFT JOIN ProgramStageSectionDataElementLink ON ProgramStageSectionDataElementLink.programStageSection = ProgramStageSection.uid AND ProgramStageSectionDataElementLink.dataElement = DataElement.uid\n" +
+     *             "    ) AS Field ON (Field.stage = Event.programStage)\n" +
+     *             "  LEFT OUTER JOIN TrackedEntityDataValue AS Value ON (\n" +
+     *             "    Value.event = Event.uid AND Value.dataElement = Field.id\n" +
+     *             "  )\n" +
+     *             "  LEFT OUTER JOIN Option ON (\n" +
+     *             "    Field.optionSet = Option.optionSet AND Value.value = Option.code\n" +
+     *             "  )\n" +
+     *             " %s  " +
+     *             "ORDER BY CASE" +
+     *             " WHEN Field.sectionOrder IS NULL THEN Field.formOrder" +
+     *             " WHEN Field.sectionOrder IS NOT NULL THEN Field.sectionOrder" +
+     *             " END ASC;"
+     * */
+
     @NonNull
     @Override
     public Observable<List<FieldViewModel>> fieldValues() {
+        //transform(DataElement dataElement, ProgramStageDataElement programStageDataElement,
+        //                                 String dataValue, String section, Event event
+        /*return d2.eventModule().events.uid(eventUid).get()
+                .flatMap(event -> d2.programModule().programStages.withProgramStageDataElements()
+                                    .withProgramStageSections().uid(event.programStage()).get()
+                        .map(programStage -> {
+                            List<FieldViewModel> fields = new ArrayList<>();
+                            if(programStage.programStageSections().size() > 0){
+                                for(ProgramStageSection section: programStage.programStageSections()){
+                                    for(DataElement dataElement: section.dataElements()){
+                                        dataElement = d2.dataElementModule().dataElements.uid(dataElement.uid()).blockingGet();
+                                        for(ProgramStageDataElement programStageDataElement: programStage.programStageDataElements()){
+                                            if(programStageDataElement.dataElement().uid().equals(dataElement.uid())){
+                                                TrackedEntityDataValue dataValue = d2.trackedEntityModule().trackedEntityDataValues.byEvent().eq(event.uid()).byDataElement().eq(dataElement.uid()).one().blockingGet();
+                                                fields.add(transform(dataElement, programStageDataElement, dataValue, section.uid(), event));
+                                            }
+                                        }
+                                    }
+                                }
+                            }else{
+                                for(ProgramStageDataElement programStageDataElement: programStage.programStageDataElements()){
+                                    DataElement dataElement = d2.dataElementModule().dataElements.uid(programStageDataElement.dataElement().uid()).blockingGet();
+                                    TrackedEntityDataValue dataValue = d2.trackedEntityModule().trackedEntityDataValues.byEvent().eq(event.uid()).byDataElement().eq(dataElement.uid()).one().blockingGet();
+                                    fields.add(transform(dataElement, programStageDataElement, dataValue, null, event));
+                                }
+                            }
+                            return fields;
+                        })).toObservable();*/
+
         String where = String.format(Locale.US, "WHERE Event.uid = '%s'", eventUid == null ? "" : eventUid);
         return briteDatabase.createQuery("TrackedEntityDataValue", String.format(Locale.US, QUERY, where))
                 .mapToList(this::transform);
@@ -532,27 +582,67 @@ public class EventRepository implements FormRepository {
     }
 
     @NonNull
-    private Flowable<String> eventProgram() {
-        return briteDatabase.createQuery("Event", SELECT_PROGRAM, eventUid == null ? "" : eventUid)
-                .mapToOne(Program::create)
-                .map(program -> {
-                    programUid = program.uid();
-                    return programUid;
-                }).toFlowable(BackpressureStrategy.LATEST);
+    private FieldViewModel transformTemp(DataElement dataElement, ProgramStageDataElement programStageDataElement,
+                                         TrackedEntityDataValue trackedEntityDataValue, String section, Event event) {
+        String uid = dataElement.uid();
+        String label = dataElement.displayName();
+        ValueType valueType = dataElement.valueType();
+        boolean mandatory = programStageDataElement.compulsory();
+        String optionSetUid = dataElement.optionSetUid();
+        Boolean allowFutureDates = programStageDataElement.allowFutureDate();
+        EventStatus status = event.status();
+        String dataValue = trackedEntityDataValue != null ? trackedEntityDataValue.value() : "";
+        String formLabel = dataElement.displayFormName();
+        String description = dataElement.displayDescription();
+
+        List<Option> options = d2.optionModule().options.byOptionSetUid().eq(optionSetUid).byCode().eq(dataValue).blockingGet();
+        if (options.size()> 0) {
+            dataValue = options.get(0).displayName();
+        }
+
+        int optionCount = d2.optionModule().options.byOptionSetUid().eq(optionSetUid).blockingGet().size();
+
+        ValueTypeDeviceRendering fieldRendering = null; //TODO does not exist into modules from dataElement
+        try (Cursor rendering = briteDatabase.query("SELECT * FROM ValueTypeDeviceRendering WHERE uid = ?", uid)) {
+            if (rendering != null && rendering.moveToFirst()) {
+                fieldRendering = ValueTypeDeviceRendering.create(rendering);
+            }
+        }
+
+        FieldViewModelFactoryImpl fieldFactory = new FieldViewModelFactoryImpl(
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "");
+        ObjectStyle objectStyle = ObjectStyle.builder().build();
+        try (Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", uid)) {
+            if (objStyleCursor.moveToFirst())
+                objectStyle = ObjectStyle.create(objStyleCursor);
+        }
+        if (valueType == ValueType.ORGANISATION_UNIT && !isEmpty(dataValue)) {
+            dataValue = dataValue + "_ou_" + d2.organisationUnitModule().organisationUnits.uid(dataValue).blockingGet().displayName();
+        }
+
+        return fieldFactory.create(uid, isEmpty(formLabel) ? label : formLabel, valueType,
+                mandatory, optionSetUid, dataValue, section, allowFutureDates,
+                status == EventStatus.ACTIVE, null, description, fieldRendering, optionCount, objectStyle);
     }
 
     @NonNull
-    private FormSectionViewModel mapToFormSectionViewModels(@NonNull String eventUid, @NonNull Cursor cursor) {
-        if (cursor.getString(2) == null) {
-            // This programstage has no sections
-            return FormSectionViewModel.createForProgramStage(
-                    eventUid, cursor.getString(1));
-        } else {
-            // This programstage has sections
-            return FormSectionViewModel.createForSection(
-                    eventUid, cursor.getString(2), cursor.getString(3), cursor.getString(4));
-        }
+    private Flowable<String> eventProgram() {
+        return d2.eventModule().events.uid(eventUid).get()
+                .flatMap(event -> d2.programModule().programs.uid(event.program()).get()
+                        .map(program -> {
+                            programUid = program.uid();
+                            return programUid;}))
+                .toFlowable();
     }
+
 
     private void updateProgramTable(Date lastUpdated, String programUid) {
         /*ContentValues program = new ContentValues();TODO: Crash if active
