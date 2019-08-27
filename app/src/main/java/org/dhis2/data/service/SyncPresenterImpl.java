@@ -79,7 +79,7 @@ final class SyncPresenterImpl implements SyncPresenter {
 
     @Override
     public void syncReservedValues() {
-        d2.trackedEntityModule().reservedValueManager.blockingDownloadReservedValues(null, null, 100);
+        d2.trackedEntityModule().reservedValueManager.blockingDownloadAllReservedValues(100);
     }
 
     @Override
