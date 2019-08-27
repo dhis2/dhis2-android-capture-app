@@ -636,10 +636,10 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                     eventBuilder.lastUpdated(DateUtils.databaseDateFormat().parse(eventWORegistrationJson.getString("lastUpdated")));
                 }
                 if (eventWORegistrationJson.has("createdAtClient")) {
-                    eventBuilder.createdAtClient(eventWORegistrationJson.getString("createdAtClient"));
+                    eventBuilder.createdAtClient(DateUtils.databaseDateFormat().parse(eventWORegistrationJson.getString("createdAtClient")));
                 }
                 if (eventWORegistrationJson.has("lastUpdatedAtClient")) {
-                    eventBuilder.lastUpdatedAtClient(eventWORegistrationJson.getString("lastUpdatedAtClient"));
+                    eventBuilder.lastUpdatedAtClient(DateUtils.databaseDateFormat().parse(eventWORegistrationJson.getString("lastUpdatedAtClient")));
                 }
                 if (eventWORegistrationJson.has("status")) {
                     eventBuilder.status(EventStatus.valueOf(eventWORegistrationJson.getString("status")));
