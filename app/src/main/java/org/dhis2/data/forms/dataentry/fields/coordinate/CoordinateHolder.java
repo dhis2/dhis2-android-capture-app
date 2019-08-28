@@ -38,7 +38,7 @@ public class CoordinateHolder extends FormViewHolder {
                     } else
                         processor.onNext(
                                 RowAction.create(model.uid(),
-                                        String.format(Locale.US, "[%.5f,%.5f]", latitude, longitude),
+                                        String.format(Locale.US, "[%.5f,%.5f]", longitude, latitude),
                                         getAdapterPosition()));
                     clearBackground(isSearchMode);
                 }

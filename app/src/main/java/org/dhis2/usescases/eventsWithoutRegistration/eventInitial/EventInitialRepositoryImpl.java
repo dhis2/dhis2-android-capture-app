@@ -12,6 +12,7 @@ import com.squareup.sqlbrite2.BriteDatabase;
 import org.dhis2.utils.CodeGenerator;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
 import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryCombo;
@@ -75,17 +76,53 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     @NonNull
     @Override
-    public Observable<List<OrganisationUnit>> orgUnits(String programId) {
-        return Observable.fromCallable(() -> d2.organisationUnitModule().organisationUnits.byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).withPrograms().get())
+    public Observable<List<OrganisationUnit>> filteredOrgUnits(String date, String programId, String parentId) {
+        if (date == null)
+            return  parentId == null ? orgUnits() : orgUnits(programId, parentId);
+        else
+            return (parentId == null ? orgUnits() : orgUnits(programId, parentId))
+                    .map(organisationUnits -> {
+                        Iterator<OrganisationUnit> iterator = organisationUnits.iterator();
+                        while (iterator.hasNext()) {
+                            OrganisationUnit organisationUnit = iterator.next();
+                            if(organisationUnit.openingDate() != null && organisationUnit.openingDate().after(DateUtils.uiDateFormat().parse(date))
+                                    || organisationUnit.closedDate() != null && organisationUnit.closedDate().before(DateUtils.uiDateFormat().parse(date)))
+                                iterator.remove();
+                        }
+                        return organisationUnits;
+                    });
+    }
+
+    @NonNull
+    public Observable<List<OrganisationUnit>> orgUnits() {
+
+        return Observable.fromCallable(() -> {
+            int level = 1;
+            while (d2.organisationUnitModule().organisationUnits.byLevel().eq(level)
+                        .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).withPrograms().count() < 1)
+                level++;
+
+            return d2.organisationUnitModule().organisationUnits.byLevel().eq(level)
+                    .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).withPrograms().get();
+
+        });
+    }
+
+
+    public Observable<List<OrganisationUnit>> orgUnits(String programId, String parentUid) {
+        return Observable.fromCallable(() ->
+                d2.organisationUnitModule().organisationUnits
+                        .byParentUid().eq(parentUid)
+                        .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
+                        .withPrograms().get())
+
                 .map(organisationUnits -> {
                     List<OrganisationUnit> programOrganisationUnits = new ArrayList<>();
                     for(OrganisationUnit organisationUnit : organisationUnits){
-                        for (Program program : organisationUnit.programs()) {
-                            if (program.uid().equals(programId))
-                                programOrganisationUnits.add(organisationUnit);
-                        }
+                        if(UidsHelper.getUids(organisationUnit.programs()).contains(programId))
+                           programOrganisationUnits.add(organisationUnit);
                     }
-                    return programOrganisationUnits;
+                    return programOrganisationUnits.isEmpty() ? organisationUnits : programOrganisationUnits;
                 });
     }
 
@@ -148,53 +185,6 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
         }else{
             return Calendar.getInstance().getTime();
         }
-    }
-
-    @NonNull
-    @Override
-    public Observable<List<OrganisationUnit>> filteredOrgUnits(String date, String programId) {
-        if (date == null)
-            return orgUnits(programId);
-        else
-            return orgUnits(programId)
-                    .map(organisationUnits -> {
-                        Iterator<OrganisationUnit> iterator = organisationUnits.iterator();
-                        while (iterator.hasNext()) {
-                            OrganisationUnit organisationUnit = iterator.next();
-                            if(organisationUnit.openingDate() != null && organisationUnit.openingDate().after(DateUtils.uiDateFormat().parse(date))
-                                    || organisationUnit.closedDate() != null && organisationUnit.closedDate().before(DateUtils.uiDateFormat().parse(date)))
-                                iterator.remove();
-                        }
-                        return organisationUnits;
-                    });
-    }
-
-    @NonNull
-    @Override
-    public Observable<List<OrganisationUnit>> searchOrgUnits(String date, String programId) {
-        return Observable.fromCallable(() -> d2.organisationUnitModule().organisationUnits.withPrograms().get())
-                    .map(organisationUnits -> {
-                        List<OrganisationUnit> programOrganisationUnits = new ArrayList<>();
-                        for(OrganisationUnit organisationUnit : organisationUnits){
-                            for (Program program : organisationUnit.programs()) {
-                                if (program.uid().equals(programId))
-                                    programOrganisationUnits.add(organisationUnit);
-                            }
-                        }
-                        return programOrganisationUnits;
-                    }).map(organisationUnits -> {
-                        if(date!=null) {
-                            Iterator<OrganisationUnit> iterator = organisationUnits.iterator();
-                            while (iterator.hasNext()) {
-                                OrganisationUnit organisationUnit = iterator.next();
-                                if (organisationUnit.openingDate() != null && organisationUnit.openingDate().after(DateUtils.uiDateFormat().parse(date))
-                                        || organisationUnit.closedDate() != null && organisationUnit.closedDate().before(DateUtils.uiDateFormat().parse(date)))
-                                    iterator.remove();
-                            }
-                        }
-                    return organisationUnits;
-                })
-                ;
     }
 
     @Override

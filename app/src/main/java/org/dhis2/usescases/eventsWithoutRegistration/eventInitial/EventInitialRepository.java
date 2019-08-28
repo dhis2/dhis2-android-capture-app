@@ -27,16 +27,10 @@ public interface EventInitialRepository {
     Observable<Event> event(String eventId);
 
     @NonNull
-    Observable<List<OrganisationUnit>> orgUnits(String programId);
-
-    @NonNull
     Observable<CategoryCombo> catCombo(String programUid);
 
     @NonNull
-    Observable<List<OrganisationUnit>> filteredOrgUnits(String date, String programId);
-
-    @NonNull
-    Observable<List<OrganisationUnit>> searchOrgUnits(String date, String programId);
+    Observable<List<OrganisationUnit>> filteredOrgUnits(String date, String programId, String parentId);
 
     Observable<String> createEvent(String enrollmentUid, @Nullable String trackedEntityInstanceUid,
                                    @NonNull Context context, @NonNull String program,

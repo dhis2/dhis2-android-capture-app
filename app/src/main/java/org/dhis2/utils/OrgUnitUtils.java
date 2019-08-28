@@ -6,8 +6,10 @@ import com.unnamed.b.atv.model.TreeNode;
 
 import org.dhis2.usescases.main.program.OrgUnitHolder;
 import org.dhis2.usescases.main.program.OrgUnitHolder_2;
+import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
+import org.hisp.dhis.android.core.program.Program;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -112,7 +114,7 @@ public class OrgUnitUtils {
         return root;
     }
 
-    public static TreeNode renderTree_2(Context context, @NonNull List<OrganisationUnit> myOrgs, Boolean isMultiSelection) {
+    public static TreeNode renderTree_2(Context context, @NonNull List<OrganisationUnit> myOrgs, Boolean isMultiSelection, String programId) {
 
         HashMap<Integer, ArrayList<TreeNode>> subLists = new HashMap<>();
         Map<String,OrganisationUnit> myOrgUnitMap = new HashMap<>();
@@ -123,7 +125,8 @@ public class OrgUnitUtils {
         ArrayList<String> myOrgUnitUids = new ArrayList<>();
 
         for (OrganisationUnit myorg : myOrgs) {
-            myOrgUnitUids.add(myorg.uid());
+            if(UidsHelper.getUids(myorg.programs()).contains(programId))
+                myOrgUnitUids.add(myorg.uid());
             String[] pathName = myorg.displayNamePath().split("/");
             String[] pathUid = myorg.path().split("/");
             int count = 0;
