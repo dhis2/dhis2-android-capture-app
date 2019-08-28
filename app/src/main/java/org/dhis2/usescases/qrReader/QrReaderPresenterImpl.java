@@ -524,7 +524,7 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                         eventBuilder.status(EventStatus.valueOf(eventJson.getString("status")));
                     if (eventJson.has("attributeOptionCombo"))
                         eventBuilder.attributeOptionCombo(eventJson.getString("attributeOptionCombo"));
-                    if (eventJson.has("latitude") && eventJson.has("longitude")){
+                    if (eventJson.has("latitude") && eventJson.has("longitude")) {
                         Coordinates coordinates = Coordinates.create(
                                 Double.parseDouble(eventJson.getString("latitude")),
                                 Double.parseDouble(eventJson.getString("longitude")));
@@ -588,22 +588,24 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
         List<String> uidToDownload = new ArrayList<>();
         uidToDownload.add(teiUid);
         compositeDisposable.add(
-                d2.trackedEntityModule().downloadTrackedEntityInstancesByUid(uidToDownload)
+                d2.trackedEntityModule().trackedEntityInstanceDownloader.byUid().in(uidToDownload).download()
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 data -> {
-                                    view.finishDownload();
-                                    if (!data.isEmpty()) {
-                                        this.teiUid = data.get(0).uid();
-                                        view.goToDashBoard(data.get(0).uid());
-                                    } else {
-                                        view.renderTeiInfo(teiUid);
-                                    }
+
                                 },
                                 error -> {
                                     view.finishDownload();
                                     view.renderTeiInfo(teiUid);
+                                },
+                                () -> {
+                                    view.finishDownload();
+                                    if (d2.trackedEntityModule().trackedEntityInstances.uid(teiUid).blockingExists()) {
+                                        view.goToDashBoard(teiUid);
+                                    } else {
+                                        view.renderTeiInfo(teiUid);
+                                    }
                                 }
                         )
         );
@@ -636,10 +638,10 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                     eventBuilder.lastUpdated(DateUtils.databaseDateFormat().parse(eventWORegistrationJson.getString("lastUpdated")));
                 }
                 if (eventWORegistrationJson.has("createdAtClient")) {
-                    eventBuilder.createdAtClient(eventWORegistrationJson.getString("createdAtClient"));
+                    eventBuilder.createdAtClient(DateUtils.databaseDateFormat().parse(eventWORegistrationJson.getString("createdAtClient")));
                 }
                 if (eventWORegistrationJson.has("lastUpdatedAtClient")) {
-                    eventBuilder.lastUpdatedAtClient(eventWORegistrationJson.getString("lastUpdatedAtClient"));
+                    eventBuilder.lastUpdatedAtClient(DateUtils.databaseDateFormat().parse(eventWORegistrationJson.getString("lastUpdatedAtClient")));
                 }
                 if (eventWORegistrationJson.has("status")) {
                     eventBuilder.status(EventStatus.valueOf(eventWORegistrationJson.getString("status")));
