@@ -5,17 +5,13 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.google.common.collect.Lists;
-
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.android.core.arch.helpers.GeometryHelper;
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
 import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
-import org.hisp.dhis.android.core.common.Coordinates;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.common.ObjectStyle;
@@ -217,17 +213,18 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
             EventObjectRepository eventRepository = d2.eventModule().events.uid(uid);
             eventRepository.setEventDate(cal.getTime());
             // TODO: Should we use program or programStage featureType
-            switch (d2.programModule().programs.byUid().eq(programUid).one().blockingGet().featureType()){
-                case NONE:
-                    break;
-                case POINT:
-                case POLYGON:
-                case MULTI_POLYGON:
-                    eventRepository.setGeometry(geometry);
-                    break;
-                default:
-                    break;
-            }
+            if (d2.programModule().programs.byUid().eq(programUid).one().blockingGet().featureType() != null)
+                switch (d2.programModule().programs.byUid().eq(programUid).one().blockingGet().featureType()) {
+                    case NONE:
+                        break;
+                    case POINT:
+                    case POLYGON:
+                    case MULTI_POLYGON:
+                        eventRepository.setGeometry(geometry);
+                        break;
+                    default:
+                        break;
+                }
             return uid;
         });
     }
@@ -259,7 +256,8 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
             eventRepository.setDueDate(cal.getTime());
             eventRepository.setStatus(EventStatus.SCHEDULE);
             // TODO: Should we use program or programStage featureType
-            switch (d2.programModule().programs.byUid().eq(programUid).one().blockingGet().featureType()) {
+            if (d2.programModule().programs.byUid().eq(programUid).one().blockingGet().featureType() != null)
+                switch (d2.programModule().programs.byUid().eq(programUid).one().blockingGet().featureType()) {
                 case NONE:
                     break;
                 case POINT:
@@ -302,8 +300,9 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                     eventRepository.setEventDate(DateUtils.databaseDateFormat().parse(date));
                     eventRepository.setOrganisationUnitUid(orgUnitUid);
                     eventRepository.setAttributeOptionComboUid(catOptionCombo);
-                    TrackedEntityInstance tei = d2.trackedEntityModule().trackedEntityInstances.byUid().eq(trackedEntityInstance).one().blockingGet();
-                    switch (d2.trackedEntityModule().trackedEntityTypes.byUid().eq(tei.trackedEntityType()).one().blockingGet().featureType()){
+                    FeatureType featureType = d2.programModule().programs.uid(eventRepository.blockingGet().program()).blockingGet().featureType();
+                    if (featureType != null)
+                        switch (featureType) {
                         case NONE:
                             break;
                         case POINT:
