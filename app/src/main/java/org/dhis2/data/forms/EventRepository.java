@@ -62,53 +62,6 @@ import static android.text.TextUtils.isEmpty;
 })
 public class EventRepository implements FormRepository {
 
-    private static final String QUERY = "SELECT\n" +
-            "  Field.id,\n" +
-            "  Field.label,\n" +
-            "  Field.type,\n" +
-            "  Field.mandatory,\n" +
-            "  Field.optionSet,\n" +
-            "  Value.value,\n" +
-            "  Option.displayName,\n" +
-            "  Field.section,\n" +
-            "  Field.allowFutureDate,\n" +
-            "  Event.status,\n" +
-            "  Field.formLabel,\n" +
-            "  Field.displayDescription,\n" +
-            "  Field.formOrder,\n" +
-            "  Field.sectionOrder\n" +
-            "FROM Event\n" +
-            "  LEFT OUTER JOIN (\n" +
-            "      SELECT\n" +
-            "        DataElement.displayName AS label,\n" +
-            "        DataElement.displayFormName AS formLabel,\n" +
-            "        DataElement.valueType AS type,\n" +
-            "        DataElement.uid AS id,\n" +
-            "        DataElement.optionSet AS optionSet,\n" +
-            "        ProgramStageDataElement.sortOrder AS formOrder,\n" +
-            "        ProgramStageDataElement.programStage AS stage,\n" +
-            "        ProgramStageDataElement.compulsory AS mandatory,\n" +
-            "        ProgramStageSectionDataElementLink.programStageSection AS section,\n" +
-            "        ProgramStageDataElement.allowFutureDate AS allowFutureDate,\n" +
-            "        DataElement.displayDescription AS displayDescription,\n" +
-            "        ProgramStageSectionDataElementLink.sortOrder AS sectionOrder\n" +
-            "      FROM ProgramStageDataElement\n" +
-            "        INNER JOIN DataElement ON DataElement.uid = ProgramStageDataElement.dataElement\n" +
-            "        LEFT JOIN ProgramStageSection ON ProgramStageSection.programStage = ProgramStageDataElement.programStage\n" +
-            "        LEFT JOIN ProgramStageSectionDataElementLink ON ProgramStageSectionDataElementLink.programStageSection = ProgramStageSection.uid AND ProgramStageSectionDataElementLink.dataElement = DataElement.uid\n" +
-            "    ) AS Field ON (Field.stage = Event.programStage)\n" +
-            "  LEFT OUTER JOIN TrackedEntityDataValue AS Value ON (\n" +
-            "    Value.event = Event.uid AND Value.dataElement = Field.id\n" +
-            "  )\n" +
-            "  LEFT OUTER JOIN Option ON (\n" +
-            "    Field.optionSet = Option.optionSet AND Value.value = Option.code\n" +
-            "  )\n" +
-            " %s  " +
-            "ORDER BY CASE" +
-            " WHEN Field.sectionOrder IS NULL THEN Field.formOrder" +
-            " WHEN Field.sectionOrder IS NOT NULL THEN Field.sectionOrder" +
-            " END ASC;";
-
     @NonNull
     private final BriteDatabase briteDatabase;
 
@@ -340,61 +293,11 @@ public class EventRepository implements FormRepository {
         return null;
     }
 
-    /**
-     * "SELECT\n" +
-     *             "  Field.id,\n" +
-     *             "  Field.label,\n" +
-     *             "  Field.type,\n" +
-     *             "  Field.mandatory,\n" +
-     *             "  Field.optionSet,\n" +
-     *             "  Value.value,\n" +
-     *             "  Option.displayName,\n" +
-     *             "  Field.section,\n" +
-     *             "  Field.allowFutureDate,\n" +
-     *             "  Event.status,\n" +
-     *             "  Field.formLabel,\n" +
-     *             "  Field.displayDescription,\n" +
-     *             "  Field.formOrder,\n" +
-     *             "  Field.sectionOrder\n" +
-     *             "FROM Event\n" +
-     *             "  LEFT OUTER JOIN (\n" +
-     *             "      SELECT\n" +
-     *             "        DataElement.displayName AS label,\n" +
-     *             "        DataElement.displayFormName AS formLabel,\n" +
-     *             "        DataElement.valueType AS type,\n" +
-     *             "        DataElement.uid AS id,\n" +
-     *             "        DataElement.optionSet AS optionSet,\n" +
-     *             "        ProgramStageDataElement.sortOrder AS formOrder,\n" +
-     *             "        ProgramStageDataElement.programStage AS stage,\n" +
-     *             "        ProgramStageDataElement.compulsory AS mandatory,\n" +
-     *             "        ProgramStageSectionDataElementLink.programStageSection AS section,\n" +
-     *             "        ProgramStageDataElement.allowFutureDate AS allowFutureDate,\n" +
-     *             "        DataElement.displayDescription AS displayDescription,\n" +
-     *             "        ProgramStageSectionDataElementLink.sortOrder AS sectionOrder\n" +
-     *             "      FROM ProgramStageDataElement\n" +
-     *             "        INNER JOIN DataElement ON DataElement.uid = ProgramStageDataElement.dataElement\n" +
-     *             "        LEFT JOIN ProgramStageSection ON ProgramStageSection.programStage = ProgramStageDataElement.programStage\n" +
-     *             "        LEFT JOIN ProgramStageSectionDataElementLink ON ProgramStageSectionDataElementLink.programStageSection = ProgramStageSection.uid AND ProgramStageSectionDataElementLink.dataElement = DataElement.uid\n" +
-     *             "    ) AS Field ON (Field.stage = Event.programStage)\n" +
-     *             "  LEFT OUTER JOIN TrackedEntityDataValue AS Value ON (\n" +
-     *             "    Value.event = Event.uid AND Value.dataElement = Field.id\n" +
-     *             "  )\n" +
-     *             "  LEFT OUTER JOIN Option ON (\n" +
-     *             "    Field.optionSet = Option.optionSet AND Value.value = Option.code\n" +
-     *             "  )\n" +
-     *             " %s  " +
-     *             "ORDER BY CASE" +
-     *             " WHEN Field.sectionOrder IS NULL THEN Field.formOrder" +
-     *             " WHEN Field.sectionOrder IS NOT NULL THEN Field.sectionOrder" +
-     *             " END ASC;"
-     * */
-
     @NonNull
     @Override
     public Observable<List<FieldViewModel>> fieldValues() {
-        //transform(DataElement dataElement, ProgramStageDataElement programStageDataElement,
-        //                                 String dataValue, String section, Event event
-        /*return d2.eventModule().events.uid(eventUid).get()
+        //TODO need testing this method
+        return d2.eventModule().events.uid(eventUid).get()
                 .flatMap(event -> d2.programModule().programStages.withProgramStageDataElements()
                                     .withProgramStageSections().uid(event.programStage()).get()
                         .map(programStage -> {
@@ -419,11 +322,7 @@ public class EventRepository implements FormRepository {
                                 }
                             }
                             return fields;
-                        })).toObservable();*/
-
-        String where = String.format(Locale.US, "WHERE Event.uid = '%s'", eventUid == null ? "" : eventUid);
-        return briteDatabase.createQuery("TrackedEntityDataValue", String.format(Locale.US, QUERY, where))
-                .mapToList(this::transform);
+                        })).toObservable();
     }
 
     @Override
@@ -461,26 +360,19 @@ public class EventRepository implements FormRepository {
 
     @Override
     public Observable<Trio<Boolean, CategoryCombo, List<CategoryOptionCombo>>> getProgramCategoryCombo(String eventId) {
-        return briteDatabase.createQuery("Event", "SELECT * FROM Event WHERE Event.uid = ?", eventUid)
-                .mapToOne(Event::create)
-                .flatMap(event -> briteDatabase.createQuery("CategoryCombo", "SELECT CategoryCombo.* FROM CategoryCombo " +
-                        "JOIN Program ON Program.categoryCombo = CategoryCombo.uid WHERE Program.uid = ?", event.program())
-                        .mapToOne(CategoryCombo::create)
-                        .flatMap(categoryCombo ->
-                                briteDatabase.createQuery("CategoryOptionCombo", "SELECT * FROM CategoryOptionCombo " +
-                                        "WHERE categoryCombo = ?", categoryCombo.uid())
-                                        .mapToList(CategoryOptionCombo::create)
-                                        .map(categoryOptionCombos -> {
-                                            boolean eventHastOptionSelected = false;
-                                            for (CategoryOptionCombo options : categoryOptionCombos) {
-                                                if (event.attributeOptionCombo() != null && event.attributeOptionCombo().equals(options.uid()))
-                                                    eventHastOptionSelected = true;
-                                            }
-                                            return Trio.create(eventHastOptionSelected, categoryCombo, categoryOptionCombos);
-                                        })
-                        )
-                );
-
+        return d2.eventModule().events.uid(eventId).get()
+                .flatMap(event -> d2.programModule().programs.withCategoryCombo().uid(event.program()).get()
+                        .flatMap(program -> d2.categoryModule().categoryOptionCombos
+                                .byCategoryComboUid().eq(program.categoryCombo().uid()).get()
+                                .map(categoryOptionCombos -> {
+                                    boolean eventHastOptionSelected = false;
+                                    for (CategoryOptionCombo options : categoryOptionCombos) {
+                                        if (event.attributeOptionCombo() != null && event.attributeOptionCombo().equals(options.uid()))
+                                            eventHastOptionSelected = true;
+                                    }
+                                    return Trio.create(eventHastOptionSelected, program.categoryCombo(), categoryOptionCombos);
+                                })
+                        )).toObservable();
     }
 
     @Override
@@ -524,65 +416,7 @@ public class EventRepository implements FormRepository {
     }
 
     @NonNull
-    private FieldViewModel transform(@NonNull Cursor cursor) {
-        String uid = cursor.getString(0);
-        String label = cursor.getString(1);
-        ValueType valueType = ValueType.valueOf(cursor.getString(2));
-        boolean mandatory = cursor.getInt(3) == 1;
-        String optionSetUid = cursor.getString(4);
-        String dataValue = cursor.getString(5);
-        String optionCodeName = cursor.getString(6);
-        String section = cursor.getString(7);
-        Boolean allowFutureDates = cursor.getInt(8) == 1;
-        EventStatus status = EventStatus.valueOf(cursor.getString(9));
-        String formLabel = cursor.getString(10);
-        String description = cursor.getString(11);
-        if (!isEmpty(optionCodeName)) {
-            dataValue = optionCodeName;
-        }
-
-        int optionCount = 0;
-        try (Cursor countCursor = briteDatabase.query("SELECT COUNT (uid) FROM Option WHERE optionSet = ?", optionSetUid)) {
-            if (countCursor != null) {
-                if (countCursor.moveToFirst())
-                    optionCount = countCursor.getInt(0);
-            }
-        } catch (Exception e) {
-            Timber.e(e);
-        }
-        ValueTypeDeviceRendering fieldRendering = null;
-        try (Cursor rendering = briteDatabase.query("SELECT * FROM ValueTypeDeviceRendering WHERE uid = ?", uid)) {
-            if (rendering != null && rendering.moveToFirst()) {
-                fieldRendering = ValueTypeDeviceRendering.create(rendering);
-            }
-        }
-
-        FieldViewModelFactoryImpl fieldFactory = new FieldViewModelFactoryImpl(
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "");
-        ObjectStyle objectStyle = ObjectStyle.builder().build();
-        try (Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", uid)) {
-            if (objStyleCursor.moveToFirst())
-                objectStyle = ObjectStyle.create(objStyleCursor);
-        }
-        if (valueType == ValueType.ORGANISATION_UNIT && !isEmpty(dataValue)) {
-            dataValue = dataValue + "_ou_" + d2.organisationUnitModule().organisationUnits.uid(dataValue).blockingGet().displayName();
-        }
-
-        return fieldFactory.create(uid, isEmpty(formLabel) ? label : formLabel, valueType,
-                mandatory, optionSetUid, dataValue, section, allowFutureDates,
-                status == EventStatus.ACTIVE, null, description, fieldRendering, optionCount, objectStyle);
-    }
-
-    @NonNull
-    private FieldViewModel transformTemp(DataElement dataElement, ProgramStageDataElement programStageDataElement,
+    private FieldViewModel transform(DataElement dataElement, ProgramStageDataElement programStageDataElement,
                                          TrackedEntityDataValue trackedEntityDataValue, String section, Event event) {
         String uid = dataElement.uid();
         String label = dataElement.displayName();
