@@ -165,44 +165,52 @@ final class ProgramStageRepository implements DataEntryRepository {
         return list;
     }
 
-    private List<FieldViewModel> checkRenderType(List<FieldViewModel> fieldViewModels) {
+//"SELECT Option.uid, Option.displayName, Option.code FROM Option WHERE Option.optionSet = ?";
+  private List<FieldViewModel> checkRenderType(List<FieldViewModel> fieldViewModels) {
 
-        ArrayList<FieldViewModel> renderList = new ArrayList<>();
+          ArrayList<FieldViewModel> renderList = new ArrayList<>();
 
-        if (renderingType != ProgramStageSectionRenderingType.LISTING) {
+          if (renderingType != ProgramStageSectionRenderingType.LISTING) {
 
-            for (FieldViewModel fieldViewModel : fieldViewModels) {
-                if (!isEmpty(fieldViewModel.optionSet())) {
-                    try {
-                        List<Option> options = d2.optionModule().options.byOptionSetUid().eq(fieldViewModel.optionSet()).blockingGet();
-                        Option option = options.get(0);
-                        ObjectStyle objectStyle = ObjectStyle.builder().build();
-                        try (Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", fieldViewModel.uid())) {
-                            if (objStyleCursor.moveToFirst())
-                                objectStyle = ObjectStyle.create(objStyleCursor);
-                        }
-                        // TODO (change optionCode and optionCount)
-                        String optionCode = "";
-                        int optionCount = 0;
-                        renderList.add(fieldFactory.create(
-                                fieldViewModel.uid() + "." + option.uid(), //fist
-                                option.displayName() + "-" + optionCode, ValueType.TEXT, false,
-                                fieldViewModel.optionSet(), fieldViewModel.value(), fieldViewModel.programStageSection(),
-                                fieldViewModel.allowFutureDate(), fieldViewModel.editable() == null ? false : fieldViewModel.editable(), renderingType, fieldViewModel.description(), null, optionCount, objectStyle));
+              for (FieldViewModel fieldViewModel : fieldViewModels) {
+                  if (!isEmpty(fieldViewModel.optionSet())) {
+                      List<Option> options = d2.optionModule().options.byOptionSetUid().eq(fieldViewModel.optionSet() == null ? "" : fieldViewModel.optionSet()).blockingGet();
+                      if (options != null && options.size() > 0) {
 
-                    }catch (Exception e){}
+                          int optionCount = options.size();
+                          for (Option option: options) {
+                              String uid = option.uid();
+                              String displayName = option.displayName();
+                              String optionCode = option.code();
 
-                } else
-                    renderList.add(fieldViewModel);
-            }
+                              ObjectStyle objectStyle = ObjectStyle.builder().build();
+                              try (Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", fieldViewModel.uid())) {
+                                  if (objStyleCursor.moveToFirst())
+                                      objectStyle = ObjectStyle.create(objStyleCursor);
+                              }
+
+                              renderList.add(fieldFactory.create(
+                                      fieldViewModel.uid() + "." + uid, //fist
+                                      displayName + "-" + optionCode, ValueType.TEXT, false,
+                                      fieldViewModel.optionSet(), fieldViewModel.value(), fieldViewModel.programStageSection(),
+                                      fieldViewModel.allowFutureDate(), fieldViewModel.editable() == null ? false : fieldViewModel.editable(), renderingType, fieldViewModel.description(), null, optionCount, objectStyle));
+
+                          }
 
 
-        } else
-            renderList.addAll(fieldViewModels);
+                      }
 
-        return renderList;
+                  } else
+                      renderList.add(fieldViewModel);
+              }
 
-    }
+
+          } else
+              renderList.addAll(fieldViewModels);
+
+          return renderList;
+
+      }
 
     @Override
     public Observable<List<OrganisationUnit>> getOrgUnits() {
