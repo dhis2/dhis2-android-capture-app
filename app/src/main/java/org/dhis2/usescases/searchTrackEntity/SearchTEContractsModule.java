@@ -53,9 +53,13 @@ public class SearchTEContractsModule {
 
         void updateFilters(int totalFilters);
 
+        void closeFilters();
+
         void openOrgUnitTreeSelector();
 
         void showPeriodRequest(FilterManager.PeriodRequest periodRequest);
+
+        void clearFilters();
 
         void updateFiltersSearch(int totalFilters);
     }
@@ -107,5 +111,9 @@ public class SearchTEContractsModule {
         void showFilter();
 
         void showFilterGeneral();
+
+        void clearFilterClick();
+
+        void closeFilterClick();
     }
 }

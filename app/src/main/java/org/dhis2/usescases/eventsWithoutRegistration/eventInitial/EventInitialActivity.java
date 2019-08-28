@@ -24,6 +24,8 @@ import androidx.core.view.GravityCompat;
 import androidx.core.view.ViewCompat;
 import androidx.databinding.DataBindingUtil;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
@@ -70,6 +72,7 @@ import org.hisp.dhis.android.core.program.ProgramStage;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -218,8 +221,9 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                                                 selectedOrgUnit,
                                                 null,
                                                 catOptionComboUid,
-                                                isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? null : binding.lat.getText().toString(),
-                                                isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? null : binding.lon.getText().toString()
+                                                GeometryHelper.createPointGeometry(
+                                                        Double.parseDouble(isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? "0" : binding.lat.getText().toString()),
+                                                        Double.parseDouble(isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? "0" : binding.lon.getText().toString()))
                                         );
                                     } else if (eventCreationType == EventCreationType.SCHEDULE || eventCreationType == EventCreationType.REFERAL) {
                                         presenter.scheduleEvent(
@@ -229,8 +233,9 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                                                 selectedOrgUnit,
                                                 null,
                                                 catOptionComboUid,
-                                                isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? null : binding.lat.getText().toString(),
-                                                isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? null : binding.lon.getText().toString()
+                                                GeometryHelper.createPointGeometry(
+                                                        Double.parseDouble(isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? "0" : binding.lat.getText().toString()),
+                                                        Double.parseDouble(isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? "0" : binding.lon.getText().toString()))
                                         );
                                     } else {
                                         presenter.createEvent(
@@ -240,8 +245,9 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                                                 selectedOrgUnit,
                                                 null,
                                                 catOptionComboUid,
-                                                isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? null : binding.lat.getText().toString(),
-                                                isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? null : binding.lon.getText().toString(),
+                                                GeometryHelper.createPointGeometry(
+                                                        Double.parseDouble(isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? "0" : binding.lat.getText().toString()),
+                                                        Double.parseDouble(isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? "0" : binding.lon.getText().toString())),
                                                 getTrackedEntityInstance);
                                     }
                                 } else {
@@ -250,8 +256,9 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                                             eventUid,
                                             DateUtils.databaseDateFormat().format(selectedDate), selectedOrgUnit, null,
                                             catOptionComboUid,
-                                            isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? null : binding.lat.getText().toString(),
-                                            isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? null : binding.lon.getText().toString()
+                                            GeometryHelper.createPointGeometry(
+                                            Double.parseDouble(isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? "0" : binding.lat.getText().toString()),
+                                            Double.parseDouble(isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? "0" : binding.lon.getText().toString()))
                                     );
                                 }
                             },
@@ -555,10 +562,16 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     }
 
     @Override
-    public void setLocation(double latitude, double longitude) {
-        binding.lat.setText(String.format(Locale.US, "%.5f", latitude));
-        binding.lon.setText(String.format(Locale.US, "%.5f", longitude));
-        checkActionButtonVisibility();
+    public void setLocation(Geometry geometry) {
+        try {
+            List<Double> points = GeometryHelper.getPoint(geometry);
+            binding.lat.setText(String.format(Locale.US, "%.5f", points.get(0)));
+            binding.lon.setText(String.format(Locale.US, "%.5f", points.get(1)));
+            checkActionButtonVisibility();
+        } catch (D2Error d2Error) {
+            d2Error.printStackTrace();
+        }
+
     }
 
     @Override
@@ -801,19 +814,20 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == Constants.RQ_MAP_LOCATION && resultCode == RESULT_OK) {
-            if (data.hasExtra(MapSelectorActivity.POLYGON_DATA)) {
-                savedLat = data.getStringExtra(MapSelectorActivity.LATITUDE);
-                savedLon = data.getStringExtra(MapSelectorActivity.LONGITUDE);
-                setLocation(Double.valueOf(savedLat), Double.valueOf(savedLon));
-            } else if (data.hasExtra(MapSelectorActivity.MULTI_POLYGON_DATA)) {
-                savedLat = data.getStringExtra(MapSelectorActivity.LATITUDE);
-                savedLon = data.getStringExtra(MapSelectorActivity.LONGITUDE);
-                setLocation(Double.valueOf(savedLat), Double.valueOf(savedLon));
-            } else if (data.hasExtra(MapSelectorActivity.LATITUDE)) {
-                savedLat = data.getStringExtra(MapSelectorActivity.LATITUDE);
-                savedLon = data.getStringExtra(MapSelectorActivity.LONGITUDE);
-                setLocation(Double.valueOf(savedLat), Double.valueOf(savedLon));
+            FeatureType locationType = FeatureType.valueOf(data.getStringExtra(MapSelectorActivity.Companion.getLOCATION_TYPE_EXTRA()));
+            String dataExtra = data.getStringExtra(MapSelectorActivity.Companion.getDATA_EXTRA());
+            Geometry geometry;
+            if (locationType == FeatureType.POINT) {
+                Type type = new TypeToken<List<Double>>(){}.getType();
+                geometry = GeometryHelper.createPointGeometry(new Gson().fromJson(dataExtra, type));
+            } else if (locationType == FeatureType.POLYGON) {
+                Type type = new TypeToken<List<List<List<Double>>>>(){}.getType();
+                geometry = GeometryHelper.createPolygonGeometry(new Gson().fromJson(dataExtra, type));
+            } else  {
+                Type type = new TypeToken<List<List<List<List<Double>>>>>(){}.getType();
+                geometry = GeometryHelper.createMultiPolygonGeometry(new Gson().fromJson(dataExtra, type));
             }
+            setLocation(geometry);
         }
     }
 

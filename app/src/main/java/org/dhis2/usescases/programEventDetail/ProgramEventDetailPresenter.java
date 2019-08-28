@@ -252,4 +252,10 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     public void showFilter() {
         view.showHideFilter();
     }
+
+    @Override
+    public void clearFilterClick() {
+        FilterManager.getInstance().clearAllFilters();
+        view.clearFilters();
+    }
 }

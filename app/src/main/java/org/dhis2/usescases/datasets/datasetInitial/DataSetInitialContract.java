@@ -37,8 +37,6 @@ public class DataSetInitialContract {
         List<String> getSelectedCatOptions();
 
         String getPeriodType();
-
-        Date getPeriodDate();
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {

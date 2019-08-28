@@ -145,14 +145,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
         binding.formRecycler.setAdapter(new FormAdapter(getSupportFragmentManager(), this));
 
-        View rootView = binding.scrollView;
-
-        ViewGroup.LayoutParams layoutParams = rootView.getLayoutParams();
-        if(binding.formRecycler.getHeight() > binding.backdropGuide.getHeight()){
-            layoutParams.height = binding.backdropGuide.getHeight();
-            rootView.setLayoutParams(layoutParams);
-        }
-
         binding.enrollmentButton.setOnTouchListener((v, event) -> {
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
                 v.requestFocus();
@@ -173,6 +165,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         }
 
         binding.executePendingBindings();
+        showHideFilter();
         /*binding.appbatlayout.addOnOffsetChangedListener((appBarLayout, verticalOffset) -> {
             float elevationPx = TypedValue.applyDimension(
                     TypedValue.COMPLEX_UNIT_DIP,
@@ -278,6 +271,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     binding.progressLayout.setVisibility(View.GONE);
                     binding.messageContainer.setVisibility(View.VISIBLE);
                     binding.message.setText(data.val1());
+                    binding.scrollView.setVisibility(View.GONE);
                 }
 
                 if (!presenter.getQueryData().isEmpty() && data.val2())
@@ -460,6 +454,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             switchOpenClose = general ? 0 : 1;
             backDropActive = !backDropActive;
         }
+        binding.filterOpen.setVisibility(backDropActive ? View.VISIBLE : View.GONE);
 
         activeFilter(general);
     }
@@ -469,15 +464,31 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         initSet.clone(binding.backdropLayout);
 
         if (backDropActive) {
-            initSet.connect(R.id.scrollView, ConstraintSet.TOP, general?R.id.filterLayout:R.id.form_recycler, ConstraintSet.BOTTOM, 0);
-            initSet.connect(R.id.messageContainer, ConstraintSet.TOP, general?R.id.filterLayout:R.id.form_recycler, ConstraintSet.BOTTOM, 0);
+            initSet.connect(R.id.mainLayout, ConstraintSet.TOP, general?R.id.filterLayout:R.id.form_recycler, ConstraintSet.BOTTOM, 50);
         }
         else {
-            initSet.connect(R.id.scrollView, ConstraintSet.TOP, R.id.backdropGuideTop, ConstraintSet.BOTTOM, 0);
-            initSet.connect(R.id.messageContainer, ConstraintSet.TOP, R.id.backdropGuideTop, ConstraintSet.BOTTOM, 0);
+            initSet.connect(R.id.mainLayout, ConstraintSet.TOP, R.id.backdropGuideTop, ConstraintSet.BOTTOM, 0);
         }
 
         initSet.applyTo(binding.backdropLayout);
+    }
+
+    @Override
+    public void closeFilters(){
+        if(switchOpenClose == 0)
+            showHideFilterGeneral();
+        else
+            showHideFilter();
+    }
+
+    @Override
+    public void clearFilters() {
+        if(switchOpenClose == 0){
+            FilterManager.getInstance().clearAllFilters();
+            filtersAdapter.notifyDataSetChanged();
+        }else
+            presenter.onClearClick();
+
     }
 
     @Override

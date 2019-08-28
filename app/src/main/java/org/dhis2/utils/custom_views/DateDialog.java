@@ -58,12 +58,9 @@ public class DateDialog extends DialogFragment {
     }
 
     public static DateDialog newInstace(ActionTrigger<DateDialog> mActionTrigger, Map<String, String> mapPeriods) {
-        if (instace == null) {
-            dialogActionTrigger = mActionTrigger;
-            instace = new DateDialog();
-            adapter = new DateAdapter();
-        }
-
+        dialogActionTrigger = mActionTrigger;
+        instace = new DateDialog();
+        adapter = new DateAdapter();
         adapter.swapMapPeriod(mapPeriods);
         return instace;
     }

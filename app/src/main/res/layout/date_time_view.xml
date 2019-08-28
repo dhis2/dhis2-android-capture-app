@@ -35,7 +35,17 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/renderImage"
             android:orientation="horizontal">
-        <com.google.android.material.textfield.TextInputLayout
+
+            <ImageView
+                android:layout_gravity="center"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:id="@+id/descIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:visibility="visible" />
+
+            <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/inputLayout"
             android:layout_width="0dp"
             android:layout_weight="1"

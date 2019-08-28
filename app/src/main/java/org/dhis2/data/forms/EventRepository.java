@@ -18,6 +18,7 @@ import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.FeatureType;
+import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
@@ -44,6 +45,7 @@ import java.util.Locale;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.reactivex.Single;
 import io.reactivex.functions.Consumer;
 import timber.log.Timber;
 
@@ -333,7 +335,7 @@ public class EventRepository implements FormRepository {
 
     @NonNull
     @Override
-    public Consumer<LatLng> storeCoordinates() {
+    public Consumer<Geometry> storeCoordinates() {
         return data -> {
             //coordinates are only for tracker events
         };
@@ -457,6 +459,18 @@ public class EventRepository implements FormRepository {
     @Override
     public Flowable<ProgramStage> getProgramStage(String eventUid) {
         return null;
+    }
+
+    @Override
+    public Single<FeatureType> captureTeiCoordinates() {
+        return Single.just(FeatureType.NONE);
+    }
+
+    @Override
+    public Consumer<Geometry> storeTeiCoordinates() {
+        return geometry -> {
+
+        };
     }
 
     @NonNull

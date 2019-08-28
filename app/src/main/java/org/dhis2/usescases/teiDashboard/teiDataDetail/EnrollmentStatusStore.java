@@ -99,7 +99,7 @@ public final class EnrollmentStatusStore implements EnrollmentStatusEntryStore {
     }
 
     @Override
-    public Flowable<Long> saveCoordinates(double latitude, double longitude) {
+    public Flowable<Long> saveCoordinates(Geometry geometry) {
         return Flowable.defer(() -> {
             ContentValues cv = new ContentValues();
             // TODO: Change to Geometry

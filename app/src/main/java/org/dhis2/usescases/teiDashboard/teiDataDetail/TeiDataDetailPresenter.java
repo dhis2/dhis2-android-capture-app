@@ -85,11 +85,7 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(
-                                    geometry -> {
-                                        //TODO Implement all cases for FeatureType
-                                        List<Double> point = GeometryHelper.getPoint(geometry);
-                                        view.setLocation(point.get(0), point.get(1));
-                                    },
+                                    view::setLocation,
                                     Timber::e
                             )
             );
@@ -205,7 +201,7 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
         }
         mFusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
             if (location != null) {
-                saveLocation(location.getLatitude(), location.getLongitude());
+                saveLocation(GeometryHelper.createPointGeometry(location.getLatitude(), location.getLongitude()));
             }
         });
     }
@@ -222,9 +218,9 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
     }
 
     @Override
-    public void saveLocation(double latitude, double longitude) {
+    public void saveLocation(Geometry geometry) {
         disposable.add(
-                enrollmentStore.saveCoordinates(latitude, longitude)
+                enrollmentStore.saveCoordinates(geometry)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(

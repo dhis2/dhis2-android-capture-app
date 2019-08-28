@@ -53,7 +53,7 @@ class CatOptCombFilterHolder extends FilterHolder {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
                 if (position != 0) {
-                    FilterManager.getInstance().addCatOptCombo(catComboData.val1().get(position));
+                    FilterManager.getInstance().addCatOptCombo(catComboData.val1().get(position - 1));
                     adapter.notifyDataSetChanged();
                 }
             }

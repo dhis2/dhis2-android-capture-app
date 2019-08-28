@@ -13,7 +13,6 @@ import androidx.paging.PagedList;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
-import org.dhis2.data.server.ServerComponent;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.utils.CodeGenerator;
@@ -30,6 +29,7 @@ import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.enrollment.EnrollmentTableInfo;
+import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventCollectionRepository;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
@@ -47,12 +47,11 @@ import org.hisp.dhis.android.core.trackedentity.search.QueryFilter;
 import org.hisp.dhis.android.core.trackedentity.search.QueryItem;
 import org.hisp.dhis.android.core.trackedentity.search.QueryOperator;
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQuery;
-import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQueryCallFactory;
-import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQueryCollectionRepository;
 
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -139,41 +138,54 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     @NonNull
     @Override
-    public LiveData<PagedList<SearchTeiModel>> searchTrackedEntitiesOffline(@Nullable Program selectedProgram,
-                                                                            @NonNull String trackedEntityType,
-                                                                            @NonNull List<String> orgUnits,
-                                                                            @Nonnull List<State> states,
-                                                                            @Nullable HashMap<String, String> queryData) {
+    public LiveData<PagedList<SearchTeiModel>> searchTrackedEntities(@Nullable Program selectedProgram,
+                                                                     @NonNull String trackedEntityType,
+                                                                     @NonNull List<String> orgUnits,
+                                                                     @Nonnull List<State> states,
+                                                                     @Nullable HashMap<String, String> queryData,
+                                                                     boolean isOnline) {
 
         TrackedEntityInstanceQuery.Builder queryBuilder = setQueryBuilder(selectedProgram, trackedEntityType, orgUnits);
 
+        List<String> allTeis = new ArrayList<>();
         List<DatePeriod> periods = FilterManager.getInstance().getPeriodFilters();
+
         if(periods.size() > 0){
+            queryData.remove(Constants.ENROLLMENT_DATE_UID);
+            allTeis = getFilterTeis(queryData, queryBuilder, states, isOnline);
+
             queryBuilder.programStartDate(periods.get(0).startDate());
             queryBuilder.programEndDate(periods.get(0).endDate());
-        }
 
-        if (queryData != null && !isEmpty(queryData.get(Constants.ENROLLMENT_DATE_UID))) {
+        } else if (queryData != null && !isEmpty(queryData.get(Constants.ENROLLMENT_DATE_UID))) {
             try {
                 Date enrollmentDate = DateUtils.uiDateFormat().parse(queryData.get(Constants.ENROLLMENT_DATE_UID));
+                queryData.remove(Constants.ENROLLMENT_DATE_UID);
+                allTeis = getFilterTeis(queryData, queryBuilder, states, isOnline);
+
                 queryBuilder.programStartDate(enrollmentDate);
                 queryBuilder.programEndDate(enrollmentDate);
+                periods.add(DatePeriod.create(enrollmentDate, enrollmentDate));
+
             } catch (ParseException ex) {
                 Timber.d(ex.getMessage());
             }
-            queryData.remove(Constants.ENROLLMENT_DATE_UID);
         }
 
-        List<QueryItem> filterList = formatQueryData(queryData, queryBuilder);
+        List<String> teis = getFilterTeis(queryData, queryBuilder, states, isOnline);
 
-        TrackedEntityInstanceQuery query = queryBuilder.filter(filterList).build();
-
-        TrackedEntityInstanceQueryCollectionRepository repo = d2.trackedEntityModule().trackedEntityInstanceQuery.offlineOnly().query(query);
-        List<String> teis = repo.get().map(tei -> filterTransform(tei, states)).blockingGet();
-
+        if(!allTeis.isEmpty()) {
+            for(String tei : allTeis){
+                List<Event> eventsByEventDate = d2.eventModule().events.byTrackedEntityInstanceUids(Collections.singletonList(tei)).byEventDate().inDatePeriods(periods).blockingGet();
+                List<Event> eventsByDueDate = d2.eventModule().events.byTrackedEntityInstanceUids(Collections.singletonList(tei)).byDueDate().inDatePeriods(periods).blockingGet();
+                if((!eventsByDueDate.isEmpty() || !eventsByEventDate.isEmpty() && !teis.contains(tei))) {
+                    teis.add(tei);
+                }
+            }
+        }
         DataSource dataSource = d2.trackedEntityModule().trackedEntityInstances.byUid().in(teis)
                 .getDataSource().map(tei -> transform(tei, selectedProgram, true));
-        //DataSource dataSource = repo.getDataSource().map(tei -> transform(tei, selectedProgram, true));
+
         return new LivePagedListBuilder(new DataSource.Factory() {
             @NonNull
             @Override
@@ -183,50 +195,17 @@ public class SearchRepositoryImpl implements SearchRepository {
         }, 10).build();
     }
 
-    @NonNull
-    @Override
-    public LiveData<PagedList<SearchTeiModel>> searchTrackedEntitiesAll(@Nullable Program selectedProgram,
-                                                                        @NonNull String trackedEntityType,
-                                                                        @NonNull List<String> orgUnits,
-                                                                        @Nonnull List<State> states,
-                                                                        @Nullable HashMap<String, String> queryData) {
+    private List<String> getFilterTeis(HashMap<String, String> queryData, TrackedEntityInstanceQuery.Builder queryBuilder, @Nonnull List<State> states, boolean online){
 
-        TrackedEntityInstanceQuery.Builder queryBuilder = setQueryBuilder(selectedProgram, trackedEntityType, orgUnits);
-
-        List<DatePeriod> periods = FilterManager.getInstance().getPeriodFilters();
-        if(periods.size() > 0){
-            queryBuilder.programStartDate(periods.get(0).startDate());
-            queryBuilder.programEndDate(periods.get(0).endDate());
-        }
-
-        if (queryData != null && !isEmpty(queryData.get(Constants.ENROLLMENT_DATE_UID))) {
-            try {
-                Date enrollmentDate = DateUtils.uiDateFormat().parse(queryData.get(Constants.ENROLLMENT_DATE_UID));
-                queryBuilder.programStartDate(enrollmentDate);
-                queryBuilder.programEndDate(enrollmentDate);
-            } catch (ParseException ex) {
-                Timber.d(ex.getMessage());
-            }
-            queryData.remove(Constants.ENROLLMENT_DATE_UID);
-        }
-
-        List<QueryItem> filterList = formatQueryData(queryData, queryBuilder);
-
+        List<QueryItem> filterList = formatQueryData(queryData);
         TrackedEntityInstanceQuery query = queryBuilder.filter(filterList).build();
 
-        TrackedEntityInstanceQueryCollectionRepository repo = d2.trackedEntityModule().trackedEntityInstanceQuery.offlineFirst().query(query);
-        List<String> teis = repo.get().map(tei -> filterTransform(tei, states)).blockingGet();
-
-        DataSource dataSource = d2.trackedEntityModule().trackedEntityInstances.byUid().in(teis).getDataSource()
-                .map(tei -> transform(tei, selectedProgram, true));
-        //DataSource dataSource = d2.trackedEntityModule().trackedEntityInstanceQuery.offlineFirst().query(query).getDataSource().map(tei -> transform(tei, selectedProgram, false));
-        return new LivePagedListBuilder(new DataSource.Factory() {
-            @NonNull
-            @Override
-            public DataSource create() {
-                return dataSource;
-            }
-        }, 10).build();
+        if(online)
+            return d2.trackedEntityModule().trackedEntityInstanceQuery.offlineFirst().query(query).get()
+                    .map(tei -> filterTransform(tei, states)).blockingGet();
+        else
+            return d2.trackedEntityModule().trackedEntityInstanceQuery.offlineOnly().query(query).get()
+                    .map(tei -> filterTransform(tei, states)).blockingGet();
     }
 
     @NonNull
@@ -460,7 +439,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         return builder;
     }
 
-    private List<QueryItem> formatQueryData(@Nullable HashMap<String, String> queryData, TrackedEntityInstanceQuery.Builder queryBuilder) {
+    private List<QueryItem> formatQueryData(@Nullable HashMap<String, String> queryData) {
         List<QueryItem> filterItems = new ArrayList<>();
         for (int i = 0; i < queryData.keySet().size(); i++) {
             String dataId = queryData.keySet().toArray()[i].toString();

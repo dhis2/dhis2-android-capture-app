@@ -3,6 +3,7 @@ package org.dhis2.usescases.teiDashboard.teiDataDetail;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 
+import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 
 import java.util.Date;
@@ -18,7 +19,7 @@ public class TeiDataDetailContracts {
 
         Consumer<EnrollmentStatus> handleStatus();
 
-        void setLocation(double latitude, double longitude);
+        void setLocation(Geometry geometry);
 
         void showCustomIncidentCalendar(Date date);
 
@@ -40,7 +41,7 @@ public class TeiDataDetailContracts {
 
         void onActivate(DashboardProgramModel dashboardProgramModel);
 
-        void saveLocation(double latitude, double longitude);
+        void saveLocation(Geometry geometry);
 
         void onLocationClick();
 

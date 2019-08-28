@@ -34,6 +34,7 @@ import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedRow;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.utils.Constants;
+import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.program.Program;
@@ -97,7 +98,7 @@ public class FormAdapter extends RecyclerView.Adapter {
         rows.add(BUTTON, new FileRow(layoutInflater, processor, false));
         rows.add(CHECKBOX, new RadioButtonRow(layoutInflater, processor, false));
         rows.add(SPINNER, new SpinnerRow(layoutInflater, processor, processorOptionSet, false));
-        rows.add(COORDINATES, new CoordinateRow(layoutInflater, processor, false));
+        rows.add(COORDINATES, new CoordinateRow(layoutInflater, processor, false, FeatureType.POINT));
         rows.add(TIME, new DateTimeRow(layoutInflater, processor, TIME, false));
         rows.add(DATE, new DateTimeRow(layoutInflater, processor, DATE, false));
         rows.add(DATETIME, new DateTimeRow(layoutInflater, processor, DATETIME, false));

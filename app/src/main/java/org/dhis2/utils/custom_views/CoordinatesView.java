@@ -21,18 +21,26 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.FormCoordinatesAccentBinding;
 import org.dhis2.databinding.FormCoordinatesBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
+import org.hisp.dhis.android.core.arch.helpers.GeometryHelper;
+import org.hisp.dhis.android.core.common.FeatureType;
+import org.hisp.dhis.android.core.common.Geometry;
+import org.hisp.dhis.android.core.maintenance.D2Error;
 
+import java.util.List;
 import java.util.Locale;
 
 import io.reactivex.processors.FlowableProcessor;
 
 import static android.text.TextUtils.isEmpty;
+import java.lang.reflect.Type;
 import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter.ACCESS_COARSE_LOCATION_PERMISSION_REQUEST;
 
 /**
@@ -49,6 +57,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
     private FusedLocationProviderClient mFusedLocationClient;
     private LocationRequest locationRequest;
     private LocationCallback locationCallback;
+    private ImageButton location1;
     private OnMapPositionClick listener;
     private OnCurrentLocationClick listener2;
     private FlowableProcessor<RowAction> processor;
@@ -86,6 +95,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
         longitudeInputLayout = findViewById(R.id.longInputLayout);
         latitude = findViewById(R.id.latitude);
         longitude = findViewById(R.id.longitude);
+        location1 = findViewById(R.id.location1);
 
         errorView = findViewById(R.id.errorMessage);
         clearButton = findViewById(R.id.clearButton);
@@ -94,7 +104,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
             if (validateCoordinates()) {
                 Double latitudeValue = isEmpty(latitude.getText().toString()) ? null : Double.valueOf(latitude.getText().toString());
                 Double longitudeValue = isEmpty(longitude.getText().toString()) ? null : Double.valueOf(longitude.getText().toString());
-                listener2.onCurrentLocationClick(latitudeValue, longitudeValue);
+                listener2.onCurrentLocationClick(GeometryHelper.createPointGeometry(longitudeValue, latitudeValue));
             } else {
                 longitude.requestFocus();
                 longitude.performClick();
@@ -106,7 +116,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
             if (validateCoordinates()) {
                 Double latitudeValue = isEmpty(latitude.getText().toString()) ? null : Double.valueOf(latitude.getText().toString());
                 Double longitudeValue = isEmpty(longitude.getText().toString()) ? null : Double.valueOf(longitude.getText().toString());
-                listener2.onCurrentLocationClick(latitudeValue, longitudeValue);
+                listener2.onCurrentLocationClick(GeometryHelper.createPointGeometry(longitudeValue, latitudeValue));
             } else {
                 latitude.requestFocus();
                 latitude.performClick();
@@ -158,10 +168,14 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
             ((FormCoordinatesAccentBinding) binding).setDescription(description);
     }
 
+    public void setFeatureType(FeatureType featureType) {
+        location1.setVisibility(featureType == FeatureType.POINT ? View.VISIBLE : View.GONE);
+    }
+
     public void setInitialValue(String initialValue) {
         String[] latLongValue = initialValue.replace("[", "").replace("]", "").replace(" ", "").split(",");
-        this.latitude.setText(String.format(Locale.getDefault(), "%.5f", Double.valueOf(latLongValue[0])));
-        this.longitude.setText(String.format(Locale.getDefault(), "%.5f", Double.valueOf(latLongValue[1])));
+        this.latitude.setText(String.format(Locale.getDefault(), "%.5f", Double.valueOf(latLongValue[1])));
+        this.longitude.setText(String.format(Locale.getDefault(), "%.5f", Double.valueOf(latLongValue[0])));
         this.clearButton.setVisibility(VISIBLE);
 
     }
@@ -200,7 +214,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
                 break;
             case R.id.clearButton:
                 clearValueData();
-                updateLocation(null, null);
+                updateLocation(null);
                 break;
         }
     }
@@ -216,7 +230,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
             mFusedLocationClient.getLastLocation().
                     addOnSuccessListener(location -> {
                         if (location != null)
-                            updateLocation(location.getLatitude(), location.getLongitude());
+                            updateLocation(GeometryHelper.createPointGeometry(location.getLongitude(), location.getLatitude()));
                         else
                             startRequestingLocation();
                     });
@@ -254,27 +268,52 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
     }
 
     public interface OnCurrentLocationClick {
-        void onCurrentLocationClick(Double latitude, Double longitude);
+        void onCurrentLocationClick(Geometry geometry);
     }
 
     @SuppressLint("MissingPermission")
-    public void updateLocation(Double latitude, Double longitude) {
+    public void updateLocation(Geometry geometry) {
         if (latitude != null && longitude != null) {
             if (uid != null) {
                 processor.onNext(
                         RowAction.create(uid,
-                                String.format(Locale.US,
-                                        "[%.5f,%.5f]", latitude, longitude))
+                                geometry.coordinates())
                 );
                 nextFocus(this);
             }
-            String lat = String.format(Locale.getDefault(), "%.5f", latitude);
-            String lon = String.format(Locale.getDefault(), "%.5f", longitude);
-            this.latitude.setText(lat);
-            this.longitude.setText(lon);
+            if (geometry != null && geometry.type() != null) {
+                if (geometry.type() == FeatureType.POINT) {
+                    try {
+                        List<Double> list =  GeometryHelper.getPoint(geometry);
+                        this.latitude.setText(String.valueOf(list.get(1)));
+                        this.longitude.setText(String.valueOf(list.get(0)));
+                    } catch (D2Error d2Error) {
+                        d2Error.printStackTrace();
+                    }
+
+                } else if (geometry.type() == FeatureType.POLYGON) {
+                    try {
+                        List<List<List<Double>>> list =  GeometryHelper.getPolygon(geometry);
+                        this.latitude.setText(String.valueOf(list.get(0).get(0).get(1)));
+                        this.longitude.setText(String.valueOf(list.get(0).get(0).get(0)));
+                    } catch (D2Error d2Error) {
+                        d2Error.printStackTrace();
+                    }
+                } else if (geometry.type() == FeatureType.MULTI_POLYGON) {
+                    try {
+                        List<List<List<List<Double>>>> list =  GeometryHelper.getMultiPolygon(geometry);
+                        this.latitude.setText(String.valueOf(list.get(0).get(0).get(0).get(1)));
+                        this.longitude.setText(String.valueOf(list.get(0).get(0).get(0).get(0)));
+                    } catch (D2Error d2Error) {
+                        d2Error.printStackTrace();
+                    }
+                }
+            }
+
+
             this.clearButton.setVisibility(VISIBLE);
         }
-        listener2.onCurrentLocationClick(latitude, longitude);
+        listener2.onCurrentLocationClick(geometry);
         invalidate();
     }
 
@@ -290,7 +329,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
                 if (locationResult != null) {
                     Double latitude = locationResult.getLocations().get(0).getLatitude();
                     Double longitude = locationResult.getLocations().get(0).getLongitude();
-                    updateLocation(latitude, longitude);
+                    updateLocation(GeometryHelper.createPointGeometry(latitude, longitude));
                     mFusedLocationClient.removeLocationUpdates(locationCallback);
                 }
             }

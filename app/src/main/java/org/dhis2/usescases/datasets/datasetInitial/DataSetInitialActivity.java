@@ -203,9 +203,4 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
         binding.actionButton.setVisibility(visible ? View.VISIBLE : View.GONE);
 
     }
-
-    @Override
-    public Date getPeriodDate() {
-        return selectedPeriod;
-    }
 }

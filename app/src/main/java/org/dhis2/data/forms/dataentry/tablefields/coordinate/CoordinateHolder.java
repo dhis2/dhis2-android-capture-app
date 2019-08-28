@@ -90,8 +90,8 @@ public class CoordinateHolder extends FormViewHolder {
 
         coordinatesView.setLabel(model.label());
 
-        coordinatesView.setCurrentLocationListener((latitude, longitude) -> {
-            processor.onNext(RowAction.create(model.uid(), String.format(Locale.US, "[%.5f,%.5f]", latitude, longitude), model.dataElement(), model.categoryOptionCombo(), model.catCombo(), model.row(), model.column()));
+        coordinatesView.setCurrentLocationListener((geometry) -> {
+            processor.onNext(RowAction.create(model.uid(), geometry.coordinates(), model.dataElement(), model.categoryOptionCombo(), model.catCombo(), model.row(), model.column()));
             alertDialog.dismiss();
         });
 
