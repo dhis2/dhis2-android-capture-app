@@ -18,6 +18,7 @@ import androidx.work.Data;
 import androidx.work.RxWorker;
 import androidx.work.WorkerParameters;
 import io.reactivex.Single;
+import timber.log.Timber;
 
 import static org.dhis2.usescases.main.program.SyncStatusDialog.*;
 import static org.dhis2.utils.Constants.*;
@@ -40,7 +41,7 @@ public class SyncGranularRxWorker extends RxWorker {
         ConflictType conflictType = ConflictType.valueOf(getInputData().getString(CONFLICT_TYPE));
         switch (conflictType){
             case PROGRAM:
-                Single.fromObservable(presenter.syncGranularProgram(uid)).map(d2Progress -> {
+                return Single.fromObservable(presenter.syncGranularProgram(uid)).map(d2Progress -> {
                     if(!presenter.checkSyncProgramStatus(uid))
                         return Result.failure();
                     return Result.success();
@@ -73,6 +74,7 @@ public class SyncGranularRxWorker extends RxWorker {
 
                     return Result.success();
                 })
+                        .doOnError(Timber::e)
                         .onErrorReturn(error -> Result.failure());
             case DATA_SET:
                 return Single.fromObservable(presenter.syncGranularDataSet(uid)).map(d2Progress -> {

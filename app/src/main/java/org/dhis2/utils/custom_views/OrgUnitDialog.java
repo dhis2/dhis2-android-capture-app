@@ -2,6 +2,7 @@ package org.dhis2.utils.custom_views;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,7 +19,6 @@ import com.unnamed.b.atv.view.AndroidTreeView;
 
 import org.dhis2.R;
 import org.dhis2.databinding.DialogOrgunitBinding;
-import org.dhis2.usescases.main.program.OrgUnitHolder;
 import org.dhis2.utils.OrgUnitUtils;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 
@@ -35,9 +35,12 @@ public class OrgUnitDialog extends DialogFragment {
     static OrgUnitDialog instace;
     private View.OnClickListener possitiveListener;
     private View.OnClickListener negativeListener;
+    private TreeNode.TreeNodeClickListener nodeClickListener;
     private String title;
     private List<OrganisationUnit> myOrgs;
     private Context context;
+    private TreeNode treeNode;
+    private String programUid;
 
     public static OrgUnitDialog getInstace() {
         if (instace == null) {
@@ -67,6 +70,11 @@ public class OrgUnitDialog extends DialogFragment {
         return this;
     }
 
+    public OrgUnitDialog setNodeClickListener(TreeNode.TreeNodeClickListener listener) {
+        this.nodeClickListener = listener;
+        return this;
+    }
+
     public OrgUnitDialog setMultiSelection(boolean multiSelection) {
         isMultiSelection = multiSelection;
         return this;
@@ -82,8 +90,18 @@ public class OrgUnitDialog extends DialogFragment {
         return this;
     }
 
+    public OrgUnitDialog setTreeNode(TreeNode treeNode) {
+        this.treeNode = treeNode;
+        return this;
+    }
+
+    public OrgUnitDialog setProgram(String programUid) {
+        this.programUid = programUid;
+        return this;
+    }
+
     @Override
-    public void onAttach(@NonNull Context context) {
+    public void onAttach(Context context) {
         super.onAttach(context);
         this.context = context;
     }
@@ -105,7 +123,8 @@ public class OrgUnitDialog extends DialogFragment {
         binding.title.setText(title);
         binding.acceptButton.setOnClickListener(possitiveListener);
         binding.clearButton.setOnClickListener(negativeListener);
-        renderTree(myOrgs);
+        if(myOrgs != null)
+            renderTree(myOrgs);
         setRetainInstance(true);
         return binding.getRoot();
     }
@@ -117,19 +136,15 @@ public class OrgUnitDialog extends DialogFragment {
     private void renderTree(@NonNull List<OrganisationUnit> myOrgs) {
 
         binding.treeContainer.removeAllViews();
-        treeView = new AndroidTreeView(getContext(), OrgUnitUtils.renderTree_2(context, myOrgs, isMultiSelection));
+        treeView = new AndroidTreeView(getContext(), OrgUnitUtils.renderTree_2(context, myOrgs, isMultiSelection, programUid));
         treeView.deselectAll();
         treeView.setDefaultContainerStyle(R.style.TreeNodeStyle, false);
         treeView.setSelectionModeEnabled(true);
         binding.treeContainer.addView(treeView.getView());
-        if (myOrgs.size() < 30)
+        if (myOrgs.size() < 25)
             treeView.expandAll();
 
-        treeView.setDefaultNodeClickListener((node, value) -> {
-            for (TreeNode treeNode : node.getViewHolder().getTreeView().getSelected())
-                ((OrgUnitHolder) treeNode.getViewHolder()).update();
-            ((OrgUnitHolder) node.getViewHolder()).update();
-        });
+        treeView.setDefaultNodeClickListener(nodeClickListener);
     }
 
     public String getSelectedOrgUnit() {
@@ -146,9 +161,19 @@ public class OrgUnitDialog extends DialogFragment {
         return ((OrganisationUnit) treeView.getSelected().get(0).getValue());
     }
 
+    public AndroidTreeView getTreeView() {
+        return treeView;
+    }
+
     @Override
     public void dismiss() {
         instace = null;
         super.dismiss();
+    }
+
+    @Override
+    public void onCancel(@NonNull DialogInterface dialog) {
+        instace = null;
+        super.onCancel(dialog);
     }
 }

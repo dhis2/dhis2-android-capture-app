@@ -5,17 +5,14 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.google.common.collect.Lists;
-
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.android.core.arch.helpers.GeometryHelper;
+import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
 import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
-import org.hisp.dhis.android.core.common.Coordinates;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.common.ObjectStyle;
@@ -67,8 +64,27 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     @NonNull
     @Override
-    public Observable<List<OrganisationUnit>> orgUnits(String programId) {
-        return Observable.fromCallable(() -> d2.organisationUnitModule().organisationUnits.byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).withPrograms().blockingGet())
+    public Observable<List<OrganisationUnit>> filteredOrgUnits(String date, String programId, String parentId) {
+        if (date == null)
+            return parentId == null ? orgUnits() : orgUnits(programId, parentId);
+        else
+            return (parentId == null ? orgUnits() : orgUnits(programId, parentId))
+                    .map(organisationUnits -> {
+                        Iterator<OrganisationUnit> iterator = organisationUnits.iterator();
+                        while (iterator.hasNext()) {
+                            OrganisationUnit organisationUnit = iterator.next();
+                            if (organisationUnit.openingDate() != null && organisationUnit.openingDate().after(DateUtils.uiDateFormat().parse(date))
+                                    || organisationUnit.closedDate() != null && organisationUnit.closedDate().before(DateUtils.uiDateFormat().parse(date)))
+                                iterator.remove();
+                        }
+                        return organisationUnits;
+                    });
+    }
+
+    /*@NonNull
+    @Override
+    public Observable<List<OrganisationUnit>> searchOrgUnits(String date, String programId) {
+        return Observable.fromCallable(() -> d2.organisationUnitModule().organisationUnits.withPrograms().blockingGet())
                 .map(organisationUnits -> {
                     List<OrganisationUnit> programOrganisationUnits = new ArrayList<>();
                     for (OrganisationUnit organisationUnit : organisationUnits) {
@@ -78,6 +94,49 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                         }
                     }
                     return programOrganisationUnits;
+                }).map(organisationUnits -> {
+                    if (date != null) {
+                        Iterator<OrganisationUnit> iterator = organisationUnits.iterator();
+                        while (iterator.hasNext()) {
+                            OrganisationUnit organisationUnit = iterator.next();
+                            if (organisationUnit.openingDate() != null && organisationUnit.openingDate().after(DateUtils.uiDateFormat().parse(date))
+                                    || organisationUnit.closedDate() != null && organisationUnit.closedDate().before(DateUtils.uiDateFormat().parse(date)))
+                                iterator.remove();
+                        }
+                    }
+                    return organisationUnits;
+                })
+                ;
+    }*/
+
+    @NonNull
+    public Observable<List<OrganisationUnit>> orgUnits() {
+
+        return Observable.fromCallable(() -> {
+            int level = 1;
+            while (d2.organisationUnitModule().organisationUnits.byLevel().eq(level)
+                    .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).withPrograms().blockingCount() < 1)
+                level++;
+
+            return d2.organisationUnitModule().organisationUnits.byLevel().eq(level)
+                    .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).withPrograms().blockingGet();
+
+        });
+    }
+
+
+    public Observable<List<OrganisationUnit>> orgUnits(String programId, String parentUid) {
+        return d2.organisationUnitModule().organisationUnits
+                .byParentUid().eq(parentUid)
+                .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
+                .withPrograms().get().toObservable()
+                .map(organisationUnits -> {
+                    List<OrganisationUnit> programOrganisationUnits = new ArrayList<>();
+                    for (OrganisationUnit organisationUnit : organisationUnits) {
+                        if (UidsHelper.getUids(organisationUnit.programs()).contains(programId))
+                            programOrganisationUnits.add(organisationUnit);
+                    }
+                    return programOrganisationUnits.isEmpty() ? organisationUnits : programOrganisationUnits;
                 });
     }
 
@@ -142,53 +201,6 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
         }
     }
 
-    @NonNull
-    @Override
-    public Observable<List<OrganisationUnit>> filteredOrgUnits(String date, String programId) {
-        if (date == null)
-            return orgUnits(programId);
-        else
-            return orgUnits(programId)
-                    .map(organisationUnits -> {
-                        Iterator<OrganisationUnit> iterator = organisationUnits.iterator();
-                        while (iterator.hasNext()) {
-                            OrganisationUnit organisationUnit = iterator.next();
-                            if (organisationUnit.openingDate() != null && organisationUnit.openingDate().after(DateUtils.uiDateFormat().parse(date))
-                                    || organisationUnit.closedDate() != null && organisationUnit.closedDate().before(DateUtils.uiDateFormat().parse(date)))
-                                iterator.remove();
-                        }
-                        return organisationUnits;
-                    });
-    }
-
-    @NonNull
-    @Override
-    public Observable<List<OrganisationUnit>> searchOrgUnits(String date, String programId) {
-        return Observable.fromCallable(() -> d2.organisationUnitModule().organisationUnits.withPrograms().blockingGet())
-                .map(organisationUnits -> {
-                    List<OrganisationUnit> programOrganisationUnits = new ArrayList<>();
-                    for (OrganisationUnit organisationUnit : organisationUnits) {
-                        for (Program program : organisationUnit.programs()) {
-                            if (program.uid().equals(programId))
-                                programOrganisationUnits.add(organisationUnit);
-                        }
-                    }
-                    return programOrganisationUnits;
-                }).map(organisationUnits -> {
-                    if (date != null) {
-                        Iterator<OrganisationUnit> iterator = organisationUnits.iterator();
-                        while (iterator.hasNext()) {
-                            OrganisationUnit organisationUnit = iterator.next();
-                            if (organisationUnit.openingDate() != null && organisationUnit.openingDate().after(DateUtils.uiDateFormat().parse(date))
-                                    || organisationUnit.closedDate() != null && organisationUnit.closedDate().before(DateUtils.uiDateFormat().parse(date)))
-                                iterator.remove();
-                        }
-                    }
-                    return organisationUnits;
-                })
-                ;
-    }
-
     @Override
     public Observable<String> createEvent(String enrollmentUid, @Nullable String trackedEntityInstanceUid,
                                           @NonNull Context context, @NonNull String programUid,
@@ -217,17 +229,18 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
             EventObjectRepository eventRepository = d2.eventModule().events.uid(uid);
             eventRepository.setEventDate(cal.getTime());
             // TODO: Should we use program or programStage featureType
-            switch (d2.programModule().programs.byUid().eq(programUid).one().blockingGet().featureType()){
-                case NONE:
-                    break;
-                case POINT:
-                case POLYGON:
-                case MULTI_POLYGON:
-                    eventRepository.setGeometry(geometry);
-                    break;
-                default:
-                    break;
-            }
+            if (d2.programModule().programs.byUid().eq(programUid).one().blockingGet().featureType() != null)
+                switch (d2.programModule().programs.byUid().eq(programUid).one().blockingGet().featureType()) {
+                    case NONE:
+                        break;
+                    case POINT:
+                    case POLYGON:
+                    case MULTI_POLYGON:
+                        eventRepository.setGeometry(geometry);
+                        break;
+                    default:
+                        break;
+                }
             return uid;
         });
     }
@@ -259,7 +272,8 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
             eventRepository.setDueDate(cal.getTime());
             eventRepository.setStatus(EventStatus.SCHEDULE);
             // TODO: Should we use program or programStage featureType
-            switch (d2.programModule().programs.byUid().eq(programUid).one().blockingGet().featureType()) {
+            if (d2.programModule().programs.byUid().eq(programUid).one().blockingGet().featureType() != null)
+                switch (d2.programModule().programs.byUid().eq(programUid).one().blockingGet().featureType()) {
                 case NONE:
                     break;
                 case POINT:
@@ -302,8 +316,9 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                     eventRepository.setEventDate(DateUtils.databaseDateFormat().parse(date));
                     eventRepository.setOrganisationUnitUid(orgUnitUid);
                     eventRepository.setAttributeOptionComboUid(catOptionCombo);
-                    TrackedEntityInstance tei = d2.trackedEntityModule().trackedEntityInstances.byUid().eq(trackedEntityInstance).one().blockingGet();
-                    switch (d2.trackedEntityModule().trackedEntityTypes.byUid().eq(tei.trackedEntityType()).one().blockingGet().featureType()){
+                    FeatureType featureType = d2.programModule().programs.uid(eventRepository.blockingGet().program()).blockingGet().featureType();
+                    if (featureType != null)
+                        switch (featureType) {
                         case NONE:
                             break;
                         case POINT:

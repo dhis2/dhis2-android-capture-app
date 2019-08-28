@@ -340,7 +340,6 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 .map(displayName -> displayName.equals("default") ? "" : displayName);
     }
 
-
     @Override
     public Flowable<List<FormSectionViewModel>> eventSections() {
         return d2.eventModule().events.uid(eventUid).get()
@@ -426,7 +425,6 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         return renderList;
     }
 
-
     @NonNull
     @Override
     public Flowable<List<FieldViewModel>> list() {
@@ -473,15 +471,14 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         boolean mandatory = stage.compulsory();
         String optionSet = dataElement.optionSetUid();
         String dataValue = value;
-        List<Option> option = d2.optionModule().options.byOptionSetUid().eq(optionSet).byCode().eq(dataValue).blockingGet();
+        Option option = d2.optionModule().options.byOptionSetUid().eq(optionSet).byCode().eq(dataValue).one().blockingGet();
+        int optionCount = d2.optionModule().options.byOptionSetUid().eq(optionSet).blockingCount();
         boolean allowFurureDates = stage.allowFutureDate();
         String formName = dataElement.displayFormName();
         String description = dataElement.displayDescription();
 
-        int optionCount = 0;
-        if (!option.isEmpty()) {
-            dataValue = option.get(0).displayName();
-            option.size();
+        if (option!=null) {
+            dataValue = option.displayName();
         }
 
         ValueTypeDeviceRendering fieldRendering = stage.renderType() == null ? null : stage.renderType().mobile();
@@ -524,6 +521,28 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                                 .map(Result::success)
                                 .onErrorReturn(error -> Result.failure(new Exception(error)))
 
+                );
+    }
+
+    @NonNull
+    @Override
+    public Flowable<Result<RuleEffect>> fullCalculate() {
+        return loadRules()
+                .switchMap(loadRules -> queryDataValues(eventUid))
+                .map(dataValues -> eventBuilder.dataValues(dataValues).build())
+                .switchMap(
+                        event -> formRepository.ruleEngine()
+                                .switchMap(ruleEngine -> {
+                                    if (isEmpty(lastUpdatedUid))
+                                        return Flowable.fromCallable(ruleEngine.evaluate(event, trasformToRule(rules)));
+                                    else {
+                                        List<Rule> updatedRules = dataElementRules.get(lastUpdatedUid) != null ? dataElementRules.get(lastUpdatedUid) : new ArrayList<Rule>();
+                                        List<Rule> finalRules = updatedRules.isEmpty() ? trasformToRule(rules) : updatedRules;
+                                        return Flowable.fromCallable(ruleEngine.evaluate(event, finalRules));
+                                    }
+                                })
+                                .map(Result::success)
+                                .onErrorReturn(error -> Result.failure(new Exception(error)))
                 );
     }
 

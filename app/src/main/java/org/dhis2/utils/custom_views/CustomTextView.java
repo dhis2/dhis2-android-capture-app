@@ -180,7 +180,7 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
                     break;
                 case PERCENTAGE:
                     descIcon.setVisibility(VISIBLE);
-                    descIcon.setImageResource(R.drawable.ic_form_decimal);
+                    descIcon.setImageResource(R.drawable.ic_form_percentage);
                     editText.setInputType(InputType.TYPE_CLASS_NUMBER);
                     break;
                 case URL:

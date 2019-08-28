@@ -62,6 +62,8 @@ public class EventCaptureContract {
         void attemptToReschedule();
 
         void setProgramStage(String programStageUid);
+
+        void showRuleCalculation(Boolean shouldShow);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
@@ -128,6 +130,9 @@ public class EventCaptureContract {
 
         @NonNull
         Flowable<Result<RuleEffect>> calculate();
+
+        @NonNull
+        Flowable<Result<RuleEffect>> fullCalculate();
 
         Observable<Boolean> completeEvent();
 

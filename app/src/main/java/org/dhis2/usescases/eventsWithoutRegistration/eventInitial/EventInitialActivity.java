@@ -28,7 +28,6 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.unnamed.b.atv.model.TreeNode;
-import com.unnamed.b.atv.view.AndroidTreeView;
 
 import org.dhis2.App;
 import org.dhis2.Bindings.Bindings;
@@ -36,6 +35,7 @@ import org.dhis2.R;
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel;
+import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ActivityEventInitialBinding;
 import org.dhis2.databinding.CategorySelectorBinding;
 import org.dhis2.databinding.WidgetDatepickerBinding;
@@ -52,9 +52,10 @@ import org.dhis2.utils.EventCreationType;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.custom_views.CategoryOptionPopUp;
 import org.dhis2.utils.custom_views.CustomDialog;
-import org.dhis2.utils.custom_views.OrgUnitDialog_2;
+import org.dhis2.utils.custom_views.OrgUnitDialog;
 import org.dhis2.utils.custom_views.PeriodDialog;
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper;
+import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
@@ -142,7 +143,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     private String catOptionComboUid;
     private CategoryCombo catCombo;
     private Map<String, CategoryOption> selectedCatOption;
-    private OrgUnitDialog_2 orgUnitDialog;
+    private OrgUnitDialog orgUnitDialog;
     private Program program;
     private String savedLat;
     private String savedLon;
@@ -257,8 +258,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                                             DateUtils.databaseDateFormat().format(selectedDate), selectedOrgUnit, null,
                                             catOptionComboUid,
                                             GeometryHelper.createPointGeometry(
-                                            Double.parseDouble(isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? "0" : binding.lat.getText().toString()),
-                                            Double.parseDouble(isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? "0" : binding.lon.getText().toString()))
+                                                    Double.parseDouble(isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? "0" : binding.lat.getText().toString()),
+                                                    Double.parseDouble(isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? "0" : binding.lon.getText().toString()))
                                     );
                                 }
                             },
@@ -433,13 +434,10 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                             binding.date.clearFocus();
                             if (!fixedOrgUnit)
                                 binding.orgUnit.setText("");
-                            presenter.filterOrgUnits(DateUtils.uiDateFormat().format(selectedDate));
                         })
                         .show(getSupportFragmentManager(), PeriodDialog.class.getSimpleName());
             }
         });
-
-        presenter.filterOrgUnits(DateUtils.uiDateFormat().format(selectedDate));
 
         if (eventModel != null &&
                 (DateUtils.getInstance().isEventExpired(eventModel.eventDate(),
@@ -484,47 +482,15 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     }
 
     @Override
-    public void addTree(TreeNode treeNode) {
-        binding.treeViewContainer.removeAllViews();
-
-        AndroidTreeView treeView = new AndroidTreeView(getContext(), treeNode);
-
-        treeView.setDefaultContainerStyle(R.style.TreeNodeStyle, false);
-        treeView.setSelectionModeEnabled(true);
-        binding.treeViewContainer.addView(treeView.getView());
-
-        if (presenter.getOrgUnits().size() < 25)
-            treeView.expandAll();
-
-        treeView.setDefaultNodeClickListener((node, value) -> {
-            if (node.isSelectable()) {
-                treeView.selectNode(node, node.isSelected());
-                ArrayList<String> childIds = new ArrayList<>();
-                childIds.add(((OrganisationUnit) value).uid());
-                for (TreeNode childNode : node.getChildren()) {
-                    childIds.add(((OrganisationUnit) childNode.getValue()).uid());
-                    for (TreeNode childNode2 : childNode.getChildren()) {
-                        childIds.add(((OrganisationUnit) childNode2.getValue()).uid());
-                        for (TreeNode childNode3 : childNode2.getChildren()) {
-                            childIds.add(((OrganisationUnit) childNode3.getValue()).uid());
-                        }
-                    }
-                }
-                if (!fixedOrgUnit) {
-                    selectedOrgUnit = ((OrganisationUnit) value).uid();
-                    binding.orgUnit.setText(((OrganisationUnit) value).displayName());
-                }
-                binding.drawerLayout.closeDrawers();
+    public Consumer<Pair<TreeNode, List<TreeNode>>> addNodeToTree() {
+        return node -> {
+            for (TreeNode childNode : node.val1()) {
+                if (!UidsHelper.getUids(((OrganisationUnit) childNode.getValue()).programs()).contains(programUid))
+                    childNode.setSelectable(false);
+                orgUnitDialog.getTreeView().addNode(node.val0(), childNode);
             }
-        });
-
-        if (treeView.getSelected() != null && !treeView.getSelected().isEmpty() && !fixedOrgUnit) {
-            binding.orgUnit.setText(((OrganisationUnit) treeView.getSelected().get(0).getValue()).displayName());
-            selectedOrgUnit = ((OrganisationUnit) treeView.getSelected().get(0).getValue()).uid();
-            selectedOrgUnitOpeningDate = ((OrganisationUnit) treeView.getSelected().get(0).getValue()).openingDate();
-            selectedOrgUnitClosedDate = ((OrganisationUnit) treeView.getSelected().get(0).getValue()).closedDate();
-        }
-        checkActionButtonVisibility();
+            orgUnitDialog.getTreeView().expandNode(node.val0());
+        };
     }
 
     @Override
@@ -537,7 +503,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             binding.date.setText(DateUtils.uiDateFormat().format(selectedDate));
         }
 
-        if (event.geometry() != null && event.geometry().type()!= FeatureType.NONE) {
+        if (event.geometry() != null && event.geometry().type() != FeatureType.NONE) {
             runOnUiThread(() -> {
                 if (isEmpty(savedLat)) {
                     if (GeometryHelper.containsAPoint(event.geometry())) {
@@ -601,10 +567,10 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     public void setProgramStage(ProgramStage programStage) {
         this.programStage = programStage;
         if (programStage.featureType() == FeatureType.MULTI_POLYGON
-            || programStage.featureType() == FeatureType.POLYGON) {
+                || programStage.featureType() == FeatureType.POLYGON) {
             binding.location1.setVisibility(View.GONE);
         }
-        if (programStage.featureType()!=null && programStage.featureType() != FeatureType.NONE) {
+        if (programStage.featureType() != null && programStage.featureType() != FeatureType.NONE) {
             binding.coordinatesLayout.setVisibility(View.VISIBLE); //TODO: SUPPORT FOR ALL FEATURE TYPES
             binding.location1.setOnClickListener(v -> {
                 if (v.isClickable()) presenter.onLocationClick();
@@ -795,7 +761,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         binding.date.clearFocus();
         if (!fixedOrgUnit)
             binding.orgUnit.setText("");
-        presenter.filterOrgUnits(DateUtils.uiDateFormat().format(selectedDate));
     }
 
     @Override
@@ -818,13 +783,16 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             String dataExtra = data.getStringExtra(MapSelectorActivity.Companion.getDATA_EXTRA());
             Geometry geometry;
             if (locationType == FeatureType.POINT) {
-                Type type = new TypeToken<List<Double>>(){}.getType();
+                Type type = new TypeToken<List<Double>>() {
+                }.getType();
                 geometry = GeometryHelper.createPointGeometry(new Gson().fromJson(dataExtra, type));
             } else if (locationType == FeatureType.POLYGON) {
-                Type type = new TypeToken<List<List<List<Double>>>>(){}.getType();
+                Type type = new TypeToken<List<List<List<Double>>>>() {
+                }.getType();
                 geometry = GeometryHelper.createPolygonGeometry(new Gson().fromJson(dataExtra, type));
-            } else  {
-                Type type = new TypeToken<List<List<List<List<Double>>>>>(){}.getType();
+            } else {
+                Type type = new TypeToken<List<List<List<List<Double>>>>>() {
+                }.getType();
                 geometry = GeometryHelper.createMultiPolygonGeometry(new Gson().fromJson(dataExtra, type));
             }
             setLocation(geometry);
@@ -896,7 +864,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void runSmsSubmission() {
-        if(!getResources().getBoolean(R.bool.sms_enabled)) {
+        if (!getResources().getBoolean(R.bool.sms_enabled)) {
             return;
         }
         if (eventModel == null) {
@@ -996,15 +964,23 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                     iterator.remove();
             }
 
-            orgUnitDialog = new OrgUnitDialog_2()
-                    .setTitle(getString(R.string.org_unit))
+            orgUnitDialog = OrgUnitDialog.getInstace()
+                    .setTitle(!binding.orgUnit.getText().toString().isEmpty() ? binding.orgUnit.getText().toString() : getString(R.string.org_unit))
                     .setMultiSelection(false)
                     .setOrgUnits(orgUnits)
+                    .setProgram(programUid)
                     .setPossitiveListener(data -> {
                         setOrgUnit(orgUnitDialog.getSelectedOrgUnit(), orgUnitDialog.getSelectedOrgUnitName());
                         orgUnitDialog.dismiss();
                     })
-                    .setNegativeListener(data -> orgUnitDialog.dismiss());
+                    .setNegativeListener(data -> orgUnitDialog.dismiss())
+                    .setNodeClickListener((node, value) -> {
+                        if (node.getChildren().isEmpty())
+                            presenter.onExpandOrgUnitNode(node, ((OrganisationUnit) node.getValue()).uid(), DateUtils.databaseDateFormat().format(selectedDate));
+                        else
+                            node.setExpanded(node.isExpanded());
+                    });
+
             if (!orgUnitDialog.isAdded())
                 orgUnitDialog.show(getSupportFragmentManager(), "ORG_UNIT_DIALOG");
         } else {

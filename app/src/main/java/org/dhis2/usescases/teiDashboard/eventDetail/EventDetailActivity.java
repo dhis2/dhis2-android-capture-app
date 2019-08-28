@@ -26,7 +26,7 @@ import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.custom_views.CategoryComboDialog;
 import org.dhis2.utils.custom_views.CustomDialog;
-import org.dhis2.utils.custom_views.OrgUnitDialog_2;
+import org.dhis2.utils.custom_views.OrgUnitDialog;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
@@ -179,7 +179,7 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
     }
 
     @Override
-    public void showOrgUnitSelector(OrgUnitDialog_2 orgUnitDialog) {
+    public void showOrgUnitSelector(OrgUnitDialog orgUnitDialog) {
         if (!orgUnitDialog.isAdded())
             orgUnitDialog.show(getSupportFragmentManager(), "EVENT_ORG_UNITS");
     }
