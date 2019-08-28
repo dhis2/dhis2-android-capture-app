@@ -83,7 +83,7 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
                         }
                         for (DataValue dataValue : d2.dataValueModule().dataValues
                                 .byDataElementUid().in(dataElementsUids)
-                                .byCategoryOptionComboUid().eq(dataSetReport.attributeOptionComboUid())
+                                .byAttributeOptionComboUid().eq(dataSetReport.attributeOptionComboUid())
                                 .byOrganisationUnitUid().eq(dataSetReport.organisationUnitUid())
                                 .byPeriod().eq(dataSetReport.period()).blockingGet()) {
                             if (dataValue.state() != State.SYNCED)

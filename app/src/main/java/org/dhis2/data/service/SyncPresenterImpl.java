@@ -147,6 +147,7 @@ final class SyncPresenterImpl implements SyncPresenter {
         return d2.dataValueModule().dataValues.byPeriod().eq(period)
                 .byOrganisationUnitUid().eq(orgUnit)
                 .byAttributeOptionComboUid().eq(attributeOptionCombo)
+                .byState().notIn(State.SYNCED)
                 .blockingGet().isEmpty();
     }
 
