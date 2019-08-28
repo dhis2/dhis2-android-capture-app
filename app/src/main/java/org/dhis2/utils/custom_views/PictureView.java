@@ -49,6 +49,7 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
     private OnIntentSelected onIntentSelected;
     private String primaryUid;
     private OnPictureSelected imageListener;
+    private Boolean isEditable;
 
     public PictureView(Context context) {
         super(context);
@@ -67,7 +68,7 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
 
     @Override
     public void onClick(View v) {
-        if (v == image || v == layout || v == formLabel) {
+        if (isEditable && (v == image || v == layout || v == formLabel)) {
             selectImage();
         }
     }
@@ -211,6 +212,10 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
 
     public void setOnImageListener(OnPictureSelected onImageListener) {
         this.imageListener = onImageListener;
+    }
+
+    public void setEditable(Boolean editable) {
+       isEditable = editable;
     }
 
     public interface OnPictureSelected {

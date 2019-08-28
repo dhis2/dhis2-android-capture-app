@@ -490,5 +490,6 @@ Veuillez les vérifier. </string>
     <string name="record_marked_for_deletion">La donnée est marquée pour être supprimée. Vous ne pouvez pas y accéder</string>
     <string name="validation_url">Ceci n\'est pas un lien URL valide</string>
     <string name="uncomplete_authority_error">Vous n\'avez pas l\'autorité pour rouvrir cet évènement</string>
+    <string name="adjusting_form">Ajustement au formulaire…</string>
 
 </resources>

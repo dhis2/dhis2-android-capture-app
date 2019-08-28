@@ -57,6 +57,8 @@ public class PictureHolder extends FormViewHolder {
         else
             binding.formPictures.setError(null);
 
+        binding.formPictures.setEditable(pictureViewModel.editable());
+
     }
 
     @Override
