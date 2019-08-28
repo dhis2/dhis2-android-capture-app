@@ -117,7 +117,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                             this.selectedProgram = program;
                                     }
                                     Collections.sort(programs, (program1, program2) -> program1.displayName().compareToIgnoreCase(program2.displayName()));
-                                    if(selectedProgram==null && programsWithTEType.size()==1) {
+                                    if (selectedProgram == null && programsWithTEType.size() == 1) {
                                         setProgram(programsWithTEType.get(0));
                                         view.setPrograms(programsWithTEType);
                                     } else if (selectedProgram != null) {
@@ -127,6 +127,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                         setProgram(null);
                                         view.setPrograms(programs);
                                     }
+                                    startFilterManager();
 
                                 }, Timber::d
                         ));
@@ -148,7 +149,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         manageProcessorDismissDialog();
     }
 
-    private void manageProcessorDismissDialog(){
+    private void manageProcessorDismissDialog() {
         compositeDisposable.add(processorDismissDialog
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -192,13 +193,11 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 queryProcessor
                         .map(map -> {
                             HashMap<String, String> data = new HashMap<>(map);
-                            if (!NetworkUtils.isOnline(view.getContext()))
-                                return searchRepository.searchTrackedEntitiesOffline(selectedProgram, trackedEntityType,
-                                        FilterManager.getInstance().getOrgUnitUidsFilters(),
-                                        FilterManager.getInstance().getStateFilters(), data);
-                            else
-                                return searchRepository.searchTrackedEntitiesAll(selectedProgram, trackedEntityType,
-                                        FilterManager.getInstance().getOrgUnitUidsFilters(),FilterManager.getInstance().getStateFilters(), data);
+                            return searchRepository.searchTrackedEntities(
+                                    selectedProgram, trackedEntityType,
+                                    FilterManager.getInstance().getOrgUnitUidsFilters(),
+                                    FilterManager.getInstance().getStateFilters(),
+                                    data, NetworkUtils.isOnline(view.getContext()));
                         })
                         .doOnError(this::handleError)
                         .subscribeOn(Schedulers.io())
@@ -285,7 +284,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 messageId = String.format(view.getContext().getString(R.string.search_max_tei_reached), MAX_NO_SELECTED_PROGRAM_RESULTS);
         } else {
             if (size == 0 && !queryData.isEmpty()) {
-                int realQuerySize = queryData.containsKey(Constants.ENROLLMENT_DATE_UID)? queryData.size()-1 : queryData.size();
+                int realQuerySize = queryData.containsKey(Constants.ENROLLMENT_DATE_UID) ? queryData.size() - 1 : queryData.size();
                 if (selectedProgram.minAttributesRequiredToSearch() > realQuerySize)
                     messageId = String.format(view.getContext().getString(R.string.search_min_num_attr), selectedProgram.minAttributesRequiredToSearch());
                 else
@@ -347,15 +346,11 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         compositeDisposable.add(
                 FilterManager.getInstance().asFlowable()
                         .startWith(FilterManager.getInstance())
-                        .map(filterManager -> {
-                            if (!NetworkUtils.isOnline(view.getContext()))
-                                return searchRepository.searchTrackedEntitiesOffline(selectedProgram, trackedEntityType,
-                                        filterManager.getOrgUnitUidsFilters(),FilterManager.getInstance().getStateFilters(), queryData);
-                            else
-                                return searchRepository.searchTrackedEntitiesAll(selectedProgram, trackedEntityType,
-                                        filterManager.getOrgUnitUidsFilters(),FilterManager.getInstance().getStateFilters(), queryData);
-
-                        })
+                        .map(filterManager -> searchRepository.searchTrackedEntities(
+                                selectedProgram, trackedEntityType,
+                                filterManager.getOrgUnitUidsFilters(),
+                                filterManager.getStateFilters(),
+                                queryData, NetworkUtils.isOnline(view.getContext())))
                         .subscribeOn(Schedulers.computation())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
@@ -396,8 +391,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
             queryProcessor.onNext(new HashMap<>());
         else
             queryProcessor.onNext(queryData);
-
-        startFilterManager();
     }
 
     @Override
@@ -567,8 +560,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
             showNativeCalendar(selectedOrgUnit, programUid, uid);
             dialog.dismiss();
         });
-        binding.clearButton.setOnClickListener(clearButton-> dialog.dismiss());
-        binding.acceptButton.setOnClickListener(acceptButton->{
+        binding.clearButton.setOnClickListener(clearButton -> dialog.dismiss());
+        binding.acceptButton.setOnClickListener(acceptButton -> {
             Calendar selectedCalendar = Calendar.getInstance();
             selectedCalendar.set(Calendar.YEAR, datePicker.getYear());
             selectedCalendar.set(Calendar.MONTH, datePicker.getMonth());
@@ -644,12 +637,13 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         List<String> teiUids = new ArrayList<>();
         teiUids.add(teiUid);
         compositeDisposable.add(
-                d2.trackedEntityModule().downloadTrackedEntityInstancesByUid(teiUids)
+                d2.trackedEntityModule().trackedEntityInstanceDownloader.byUid().in(teiUids).download()
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                data -> openDashboard(data.get(0).uid()),
-                                Timber::d)
+                                progress -> Timber.d("Downloading tei %s : %s %", teiUid, progress.percentage()),
+                                Timber::d,
+                                () -> openDashboard(teiUid))
         );
 
     }
@@ -659,17 +653,18 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         List<String> teiUids = new ArrayList<>();
         teiUids.add(TEIuid);
         compositeDisposable.add(
-                d2.trackedEntityModule().downloadTrackedEntityInstancesByUid(teiUids)
+                d2.trackedEntityModule().trackedEntityInstanceDownloader.byUid().in(teiUids).download()
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                data -> {
+                                data -> Timber.d("DOWNLOADING TEI %s : %s%", TEIuid, data.percentage()),
+                                Timber::d,
+                                () -> {
                                     if (relationshipTypeUid == null)
                                         addRelationship(TEIuid, false);
                                     else
                                         addRelationship(TEIuid, relationshipTypeUid, false);
-                                },
-                                Timber::d)
+                                })
         );
     }
 

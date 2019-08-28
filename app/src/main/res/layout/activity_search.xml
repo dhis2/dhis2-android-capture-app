@@ -209,6 +209,8 @@
                 android:id="@+id/form_recycler"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                app:layout_constraintHeight_max="360dp"
+                app:layout_constrainedHeight="true"
                 android:focusableInTouchMode="true"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constraintStart_toStartOf="parent"
