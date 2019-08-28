@@ -165,7 +165,6 @@ final class ProgramStageRepository implements DataEntryRepository {
         return list;
     }
 
-//"SELECT Option.uid, Option.displayName, Option.code FROM Option WHERE Option.optionSet = ?";
   private List<FieldViewModel> checkRenderType(List<FieldViewModel> fieldViewModels) {
 
           ArrayList<FieldViewModel> renderList = new ArrayList<>();
