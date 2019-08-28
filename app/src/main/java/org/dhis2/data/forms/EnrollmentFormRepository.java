@@ -231,12 +231,13 @@ public class EnrollmentFormRepository implements FormRepository {
                         rulesRepository.ruleVariables(program),
                         rulesRepository.enrollmentEvents(enrollmentUid),
                         rulesRepository.queryConstants(),
-                        (rules, variables, events, constants) -> {
+                        rulesRepository.getSuplementaryData(d2),
+                        (rules, variables, events, constants,supplementaryData) -> {
                             RuleEngine.Builder builder = RuleEngineContext.builder(expressionEvaluator)
                                     .rules(rules)
                                     .ruleVariables(variables)
                                     .calculatedValueMap(new HashMap<>())
-                                    .supplementaryData(new HashMap<>())
+                                    .supplementaryData(supplementaryData)
                                     .constantsValue(constants)
                                     .build().toEngineBuilder();
                             builder.triggerEnvironment(TriggerEnvironment.ANDROIDCLIENT);
@@ -254,12 +255,13 @@ public class EnrollmentFormRepository implements FormRepository {
                         rulesRepository.ruleVariables(program),
                         rulesRepository.enrollmentEvents(enrollmentUid),
                         rulesRepository.queryConstants(),
-                        (rules, variables, events, constants) -> {
+                        rulesRepository.getSuplementaryData(d2),
+                        (rules, variables, events, constants,supplementaryData) -> {
                             RuleEngine.Builder builder = RuleEngineContext.builder(expressionEvaluator)
                                     .rules(rules)
                                     .ruleVariables(variables)
                                     .calculatedValueMap(new HashMap<>())
-                                    .supplementaryData(new HashMap<>())
+                                    .supplementaryData(supplementaryData)
                                     .constantsValue(constants)
                                     .build().toEngineBuilder();
                             builder.triggerEnvironment(TriggerEnvironment.ANDROIDCLIENT);

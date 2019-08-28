@@ -83,9 +83,9 @@ public class ServerModule {
                     Timber.d(originalRequest.url().encodedPath());
                     return chain.proceed(withUserAgent);
                 })
-                .readTimeout(2, TimeUnit.MINUTES)
-                .connectTimeout(2, TimeUnit.MINUTES)
-                .writeTimeout(2, TimeUnit.MINUTES)
+                .readTimeout(10, TimeUnit.MINUTES)
+                .connectTimeout(10, TimeUnit.MINUTES)
+                .writeTimeout(10, TimeUnit.MINUTES)
                 .addNetworkInterceptor(new StethoInterceptor())
                 .dispatcher(dispatcher);
 

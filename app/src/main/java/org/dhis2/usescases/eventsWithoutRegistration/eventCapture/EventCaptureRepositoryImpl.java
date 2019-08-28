@@ -614,6 +614,28 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 );
     }
 
+    @NonNull
+    @Override
+    public Flowable<Result<RuleEffect>> fullCalculate() {
+        return loadRules()
+                .switchMap(loadRules -> queryDataValues(eventUid))
+                .map(dataValues -> eventBuilder.dataValues(dataValues).build())
+                .switchMap(
+                        event -> formRepository.ruleEngine()
+                                .switchMap(ruleEngine -> {
+                                    if (isEmpty(lastUpdatedUid))
+                                        return Flowable.fromCallable(ruleEngine.evaluate(event, trasformToRule(rules)));
+                                    else {
+                                        List<Rule> updatedRules = dataElementRules.get(lastUpdatedUid) != null ? dataElementRules.get(lastUpdatedUid) : new ArrayList<Rule>();
+                                        List<Rule> finalRules = updatedRules.isEmpty() ? trasformToRule(rules) : updatedRules;
+                                        return Flowable.fromCallable(ruleEngine.evaluate(event, finalRules));
+                                    }
+                                })
+                                .map(Result::success)
+                                .onErrorReturn(error -> Result.failure(new Exception(error)))
+                );
+    }
+
     private Flowable<Boolean> loadRules() {
         return Flowable.fromCallable(() -> {
             Timber.d("INIT RULES");
@@ -836,7 +858,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         return Single.defer(() -> Single.fromCallable(() -> {
                     boolean hasAuthority = d2.userModule().authorities
                             .byName().eq("F_UNCOMPLETE_EVENT").one().exists();
-                    return  hasAuthority;
+                    return hasAuthority;
                 }
         ));
     }
