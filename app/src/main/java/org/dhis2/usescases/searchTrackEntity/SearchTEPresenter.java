@@ -127,6 +127,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                         setProgram(null);
                                         view.setPrograms(programs);
                                     }
+                                    startFilterManager();
 
                                 }, Timber::d
                         ));
@@ -192,13 +193,11 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 queryProcessor
                         .map(map -> {
                             HashMap<String, String> data = new HashMap<>(map);
-                            if (!NetworkUtils.isOnline(view.getContext()))
-                                return searchRepository.searchTrackedEntitiesOffline(selectedProgram, trackedEntityType,
-                                        FilterManager.getInstance().getOrgUnitUidsFilters(),
-                                        FilterManager.getInstance().getStateFilters(), data);
-                            else
-                                return searchRepository.searchTrackedEntitiesAll(selectedProgram, trackedEntityType,
-                                        FilterManager.getInstance().getOrgUnitUidsFilters(),FilterManager.getInstance().getStateFilters(), data);
+                            return searchRepository.searchTrackedEntities(
+                                    selectedProgram, trackedEntityType,
+                                    FilterManager.getInstance().getOrgUnitUidsFilters(),
+                                    FilterManager.getInstance().getStateFilters(),
+                                    data, NetworkUtils.isOnline(view.getContext()));
                         })
                         .doOnError(this::handleError)
                         .subscribeOn(Schedulers.io())
@@ -347,15 +346,11 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         compositeDisposable.add(
                 FilterManager.getInstance().asFlowable()
                         .startWith(FilterManager.getInstance())
-                        .map(filterManager -> {
-                            if (!NetworkUtils.isOnline(view.getContext()))
-                                return searchRepository.searchTrackedEntitiesOffline(selectedProgram, trackedEntityType,
-                                        filterManager.getOrgUnitUidsFilters(),FilterManager.getInstance().getStateFilters(), queryData);
-                            else
-                                return searchRepository.searchTrackedEntitiesAll(selectedProgram, trackedEntityType,
-                                        filterManager.getOrgUnitUidsFilters(),FilterManager.getInstance().getStateFilters(), queryData);
-
-                        })
+                        .map(filterManager -> searchRepository.searchTrackedEntities(
+                                selectedProgram, trackedEntityType,
+                                filterManager.getOrgUnitUidsFilters(),
+                                filterManager.getStateFilters(),
+                                queryData, NetworkUtils.isOnline(view.getContext())))
                         .subscribeOn(Schedulers.computation())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
@@ -396,8 +391,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
             queryProcessor.onNext(new HashMap<>());
         else
             queryProcessor.onNext(queryData);
-
-        startFilterManager();
     }
 
     @Override
