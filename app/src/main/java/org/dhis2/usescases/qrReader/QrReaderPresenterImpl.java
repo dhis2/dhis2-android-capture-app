@@ -524,7 +524,7 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                         eventBuilder.status(EventStatus.valueOf(eventJson.getString("status")));
                     if (eventJson.has("attributeOptionCombo"))
                         eventBuilder.attributeOptionCombo(eventJson.getString("attributeOptionCombo"));
-                    if (eventJson.has("latitude") && eventJson.has("longitude")){
+                    if (eventJson.has("latitude") && eventJson.has("longitude")) {
                         Coordinates coordinates = Coordinates.create(
                                 Double.parseDouble(eventJson.getString("latitude")),
                                 Double.parseDouble(eventJson.getString("longitude")));
@@ -588,22 +588,24 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
         List<String> uidToDownload = new ArrayList<>();
         uidToDownload.add(teiUid);
         compositeDisposable.add(
-                d2.trackedEntityModule().downloadTrackedEntityInstancesByUid(uidToDownload)
+                d2.trackedEntityModule().trackedEntityInstanceDownloader.byUid().in(uidToDownload).download()
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 data -> {
-                                    view.finishDownload();
-                                    if (!data.isEmpty()) {
-                                        this.teiUid = data.get(0).uid();
-                                        view.goToDashBoard(data.get(0).uid());
-                                    } else {
-                                        view.renderTeiInfo(teiUid);
-                                    }
+
                                 },
                                 error -> {
                                     view.finishDownload();
                                     view.renderTeiInfo(teiUid);
+                                },
+                                () -> {
+                                    view.finishDownload();
+                                    if (d2.trackedEntityModule().trackedEntityInstances.uid(teiUid).blockingExists()) {
+                                        view.goToDashBoard(teiUid);
+                                    } else {
+                                        view.renderTeiInfo(teiUid);
+                                    }
                                 }
                         )
         );
