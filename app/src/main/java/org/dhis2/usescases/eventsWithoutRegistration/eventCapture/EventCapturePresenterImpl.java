@@ -64,6 +64,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private int currentPosition;
     private ObservableField<String> currentSection;
     private FlowableProcessor<Integer> currentSectionPosition;
+    private FlowableProcessor<Boolean> saveProcessor;
     private List<FormSectionViewModel> sectionList;
     private Map<String, FieldViewModel> emptyMandatoryFields;
     //Rules data
@@ -106,7 +107,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         this.sectionList = new ArrayList<>();
         currentSectionPosition = PublishProcessor.create();
         sectionProcessor = PublishProcessor.create();
-
+        saveProcessor = PublishProcessor.create();
     }
 
     @Override
@@ -268,6 +269,11 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     }
 
     private Flowable<List<FieldViewModel>> getFieldFlowable(@Nullable String sectionUid) {
+        return saveProcessor.flatMap(next -> getListField(sectionUid)
+                ).startWith(getListField(sectionUid));
+    }
+
+    private Flowable<List<FieldViewModel>> getListField(String sectionUid){
         if (sectionUid == null || sectionUid.equals("NO_SECTION")) {
             return Flowable.zip(
                     eventCaptureRepository.list().subscribeOn(Schedulers.computation()),
@@ -298,7 +304,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
                         for (FieldViewModel fieldViewModel : fields) {
                             if (fieldViewModel.mandatory() && isEmpty(fieldViewModel.value()) && !sectionsToHide.contains(fieldViewModel.programStageSection()))
-                            emptyMandatoryFields.put(fieldViewModel.uid(), fieldViewModel);
+                                emptyMandatoryFields.put(fieldViewModel.uid(), fieldViewModel);
                         }
                         return fields;
                     });
@@ -397,8 +403,10 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                     emptyMandatoryFields.remove(action.id());
                                 return dataEntryStore.save(action.id(), action.value());
                             }
-                    ).subscribe(result -> Timber.d("SAVED VALUE AT %s", System.currentTimeMillis()),
-                            Timber::d)
+                    ).subscribe(result -> {
+                            saveProcessor.onNext(true);
+                            Timber.d("SAVED VALUE AT %s", System.currentTimeMillis());
+                        }, Timber::d)
             );
         }
     }

@@ -11,6 +11,12 @@ import dagger.Provides;
 public class DataSetDetailModule {
 
 
+    private final String datasetUid;
+
+    public DataSetDetailModule(String datasetUid) {
+        this.datasetUid = datasetUid;
+    }
+
     @Provides
     @PerActivity
     DataSetDetailContract.View provideView(DataSetDetailActivity activity) {
@@ -26,6 +32,6 @@ public class DataSetDetailModule {
     @Provides
     @PerActivity
     DataSetDetailRepository eventDetailRepository(D2 d2) {
-        return new DataSetDetailRepositoryImpl(d2);
+        return new DataSetDetailRepositoryImpl(datasetUid, d2);
     }
 }

@@ -31,6 +31,7 @@ import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.FragmentProgramBinding;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.usescases.main.MainActivity;
+import org.dhis2.usescases.main.MainContracts;
 import org.dhis2.usescases.org_unit_selector.OUTreeActivity;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DatePickerUtils;
@@ -474,5 +475,19 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
         } catch (Exception e) {
             Timber.e(e);
         }
+    }
+
+    public void openFilter(boolean open) {
+        binding.filter.setVisibility(open ? View.VISIBLE : View.GONE);
+    }
+
+    @Override
+    public void showHideFilter(){
+        ((MainActivity)getActivity()).showHideFilter();
+    }
+
+    @Override
+    public void clearFilters() {
+        ((MainActivity)getActivity()).getAdapter().notifyDataSetChanged();
     }
 }

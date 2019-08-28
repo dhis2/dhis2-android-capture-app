@@ -274,4 +274,14 @@ public class ProgramPresenter implements ProgramContract.Presenter {
             view.showDescription(description);
     }
 
+    @Override
+    public void showHideFilterClick(){
+        view.showHideFilter();
+    }
+
+    @Override
+    public void clearFilterClick() {
+        FilterManager.getInstance().clearAllFilters();
+        view.clearFilters();
+    }
 }

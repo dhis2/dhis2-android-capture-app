@@ -70,6 +70,9 @@ class PeriodFilterHolder extends FilterHolder implements CompoundButton.OnChecke
                 break;
             case R.id.other:
                 localBinding.periodLayout.other.setChecked(true);
+                break;
+            default:
+                localBinding.periodLayout.anytime.setChecked(true);
         }
     }
 

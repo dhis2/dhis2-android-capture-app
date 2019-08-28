@@ -194,7 +194,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                                           @NonNull Context context, @NonNull String programUid,
                                           @NonNull String programStage, @NonNull Date date,
                                           @NonNull String orgUnitUid, @Nullable String categoryOptionsUid,
-                                          @Nullable String categoryOptionComboUid, @NonNull String latitude, @NonNull String longitude) {
+                                          @Nullable String categoryOptionComboUid, @NonNull Geometry geometry) {
 
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
@@ -221,11 +221,9 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                 case NONE:
                     break;
                 case POINT:
-                    eventRepository.setGeometry(GeometryHelper.createPointGeometry(Double.valueOf(latitude), Double.valueOf(longitude)));
-                    break;
                 case POLYGON:
                 case MULTI_POLYGON:
-                    //TODO: IMPLEMENT FEATURETYPE CASES
+                    eventRepository.setGeometry(geometry);
                     break;
                 default:
                     break;
@@ -238,7 +236,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     public Observable<String> scheduleEvent(String enrollmentUid, @Nullable String trackedEntityInstanceUid,
                                             @NonNull Context context, @NonNull String programUid, @NonNull String programStage,
                                             @NonNull Date dueDate, @NonNull String orgUnitUid, @Nullable String categoryOptionsUid,
-                                            @Nullable String categoryOptionComboUid, @NonNull String latitude, @NonNull String longitude) {
+                                            @Nullable String categoryOptionComboUid, @NonNull Geometry geometry) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(dueDate);
         cal.set(Calendar.HOUR_OF_DAY, 0);
@@ -265,11 +263,9 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                 case NONE:
                     break;
                 case POINT:
-                    eventRepository.setGeometry(GeometryHelper.createPointGeometry(Double.valueOf(latitude), Double.valueOf(longitude)));
-                    break;
                 case POLYGON:
                 case MULTI_POLYGON:
-                    //TODO: IMPLEMENT FEATURETYPE CASES
+                    eventRepository.setGeometry(geometry);
                     break;
                 default:
                     break;
@@ -299,7 +295,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                                        String orgUnitUid,
                                        String catComboUid,
                                        String catOptionCombo,
-                                       String latitude, String longitude) {
+                                       Geometry geometry) {
 
         return Observable.fromCallable(() -> d2.eventModule().events.uid(eventUid))
                 .map(eventRepository -> {
@@ -311,11 +307,9 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                         case NONE:
                             break;
                         case POINT:
-                            eventRepository.setGeometry(GeometryHelper.createPointGeometry(Double.valueOf(latitude), Double.valueOf(longitude)));
-                            break;
                         case POLYGON:
                         case MULTI_POLYGON:
-                            //TODO: IMPLEMENT FEATURETYPE CASES
+                            eventRepository.setGeometry(geometry);
                             break;
                         default:
                             break;

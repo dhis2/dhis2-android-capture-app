@@ -1,6 +1,5 @@
 package org.dhis2.usescases.datasets.datasetDetail;
 
-import android.content.DialogInterface;
 import android.os.Bundle;
 
 import androidx.annotation.IntDef;
@@ -9,15 +8,11 @@ import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity;
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialActivity;
 import org.dhis2.usescases.main.program.SyncStatusDialog;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.OrgUnitUtils;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
+import org.dhis2.utils.filters.FilterManager;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -32,9 +27,6 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
     private DataSetDetailRepository dataSetDetailRepository;
     private DataSetDetailContract.View view;
     private CompositeDisposable compositeDisposable;
-    private List<OrganisationUnit> orgUnits;
-    private List<String> selectedOrgUnits = new ArrayList<>();
-    private List<String> selectedPeriods = new ArrayList<>();
     private Map<String, String> mapPeriodAvailable;
     private FlowableProcessor<Boolean> processor;
 
@@ -55,9 +47,37 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
     public void init(DataSetDetailContract.View view) {
         this.view = view;
         this.processor = PublishProcessor.create();
-        getOrgUnits(null);
+        getOrgUnits();
         setDataSet(true);
         manageProcessorDismissDialog();
+
+        compositeDisposable.add(
+                FilterManager.getInstance().asFlowable()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                filterManager -> view.updateFilters(filterManager.getTotalFilters()),
+                                Timber::e
+                        )
+        );
+
+        compositeDisposable.add(
+                FilterManager.getInstance().getPeriodRequest()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                periodRequest -> view.showPeriodRequest(periodRequest),
+                                Timber::e
+                        ));
+
+        compositeDisposable.add(
+                dataSetDetailRepository.catOptionCombos()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(view::setCatOptionComboFilter,
+                                Timber::e
+                        )
+        );
     }
 
     private void manageProcessorDismissDialog(){
@@ -69,9 +89,13 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
 
     private void setDataSet(boolean isInit){
         compositeDisposable.add(
-                view.dataSetPage()
-                        .startWith(0)
-                        .flatMap(page -> dataSetDetailRepository.dataSetGroups(view.dataSetUid(), selectedOrgUnits, selectedPeriods, page))
+                FilterManager.getInstance().asFlowable()
+                        .startWith(FilterManager.getInstance())
+                        .flatMap(filterManager -> dataSetDetailRepository.dataSetGroups(
+                                filterManager.getOrgUnitUidsFilters(),
+                                filterManager.getPeriodFilters(),
+                                filterManager.getStateFilters(),
+                                filterManager.getCatOptComboFilters()))
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
@@ -86,16 +110,6 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
                                 Timber::d
                         )
         );
-    }
-
-    @Override
-    public void onDateRangeButtonClick() {
-        view.showRageDatePicker();
-    }
-
-    @Override
-    public void onOrgUnitButtonClick() {
-        view.openDrawer();
     }
 
 
@@ -129,41 +143,22 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
     }
 
     @Override
-    public List<OrganisationUnit> getOrgUnits() {
-        return orgUnits;
-    }
-
-    @Override
     public void showFilter() {
         view.showHideFilter();
     }
 
-    @Override
-    public void getOrgUnits(Date date) {
-        compositeDisposable.add(dataSetDetailRepository.orgUnits()
-                .map(orgUnits -> {
-                    this.orgUnits = orgUnits;
-                    return OrgUnitUtils.renderTree_2(view.getContext(), orgUnits, true);
-                })
-                .subscribeOn(Schedulers.computation())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        treeNode -> view.addTree(treeNode),
-                        throwable -> view.renderError(throwable.getMessage())
-                ));
+    public void getOrgUnits() {
+        compositeDisposable.add(
+                FilterManager.getInstance().ouTreeFlowable()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                open -> view.openOrgUnitTreeSelector(),
+                                Timber::e
+                        )
+        );
     }
 
-
-    @Override
-    public void getDataSetWithDates(List<String> selected, List<String> orgUnitQuery) {
-        this.selectedOrgUnits = orgUnitQuery;
-        selectedPeriods.clear();
-        for(Map.Entry<String, String> entry : mapPeriodAvailable.entrySet())
-            if(selected.contains(entry.getValue()) && !selectedPeriods.contains(entry.getValue()))
-                selectedPeriods.add(entry.getKey());
-
-        setDataSet(false);
-    }
 
     @Override
     public void onDettach() {
@@ -175,21 +170,15 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
         view.displayMessage(message);
     }
 
-    @Override
-    public Map<String, String> getPeriodAvailableForFilter() {
-        return mapPeriodAvailable;
-    }
-
-    @Override
-    public String getFirstPeriodSelected(){
-        for(Map.Entry<String, String> entry : mapPeriodAvailable.entrySet())
-            if(!selectedPeriods.isEmpty() && selectedPeriods.get(0).equals(entry.getKey()))
-                return entry.getValue();
-        return "";
-    }
 
     @Override
     public void onSyncIconClick(String orgUnit, String attributeCombo, String periodId) {
         view.showSyncDialog(orgUnit, attributeCombo, periodId, SyncStatusDialog.ConflictType.DATA_VALUES, processor);
+    }
+
+    @Override
+    public void clearFilterClick() {
+        FilterManager.getInstance().clearAllFilters();
+        view.clearFilters();
     }
 }
