@@ -507,10 +507,15 @@ public class EnrollmentFormRepository implements FormRepository {
     }
 
     @Override
-    public Observable<Boolean> captureCoodinates() {
+    public Observable<FeatureType> captureCoodinates() {
         return d2.enrollmentModule().enrollments.byUid().eq(enrollmentUid).one().get().toObservable()
                 .map(enrollment -> d2.programModule().programs.byUid().eq(enrollment.program()).one().blockingGet())
-                .map(program -> program.featureType() != FeatureType.NONE);
+                .map(program -> {
+                    if (program.featureType() == null)
+                        return FeatureType.NONE;
+                    else
+                        return program.featureType();
+                });
     }
 
 
@@ -519,12 +524,6 @@ public class EnrollmentFormRepository implements FormRepository {
         return d2.enrollmentModule().enrollments.uid(enrollmentUid).get()
                 .flatMap(enrollment -> d2.programModule().programs.uid(enrollment.program()).withAllChildren().get())
                 .flatMap(program -> d2.trackedEntityModule().trackedEntityTypes.uid(program.trackedEntityType().uid()).get());
-                /*.map(trackedEntityType -> {
-                    if (trackedEntityType.featureType() == null)
-                        return FeatureType.NONE;
-                    else
-                        return trackedEntityType.featureType();
-                });*/
     }
 
     @Override

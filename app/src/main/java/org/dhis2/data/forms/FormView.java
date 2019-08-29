@@ -9,6 +9,7 @@ import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
+import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.program.Program;
@@ -84,7 +85,7 @@ interface FormView {
 
     void showCatComboDialog(CategoryCombo categoryCombo, List<CategoryOptionCombo> categoryOptionCombo);
 
-    Consumer<Boolean> renderCaptureCoordinates();
+    Consumer<FeatureType> renderCaptureCoordinates();
 
     void setMinMaxDates(Date openingDate, Date closingDate);
 

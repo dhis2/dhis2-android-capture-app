@@ -128,6 +128,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     private String programStageUid;
     private String enrollmentUid;
     private FeatureType teFeatureType;
+    private FeatureType enrollmentFeatureType;
 
     public View getDatesLayout() {
         return datesLayout;
@@ -372,8 +373,14 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
 
     @NonNull
     @Override
-    public Consumer<Boolean> renderCaptureCoordinates() {
-        return captureCoordinates -> coordinatesView.setVisibility(captureCoordinates ? View.VISIBLE : View.GONE);
+    public Consumer<FeatureType> renderCaptureCoordinates() {
+        return featureType -> {
+            coordinatesView.setVisibility(featureType != FeatureType.NONE ? View.VISIBLE : View.GONE);
+            enrollmentFeatureType = featureType;
+            if (featureType != FeatureType.NONE) {
+                coordinatesView.setFeatureType(featureType);
+            }
+        };
     }
 
 
@@ -541,7 +548,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     public void onMapPositionClick(CoordinatesView coordinatesView) {
         if (getActivity() != null && isAdded()) {
             this.coordinatesViewToUpdate = coordinatesView;
-            FeatureType featureType = coordinatesView.getId() == R.id.tei_coordinates_view ? teFeatureType : FeatureType.POINT;
+            FeatureType featureType = coordinatesView.getId() == R.id.tei_coordinates_view ? teFeatureType : enrollmentFeatureType;
             startActivityForResult(MapSelectorActivity.Companion.create(getActivity(), featureType), Constants.RQ_MAP_LOCATION_VIEW);
         }
     }

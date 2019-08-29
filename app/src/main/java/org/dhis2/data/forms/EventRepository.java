@@ -442,10 +442,15 @@ public class EventRepository implements FormRepository {
     }
 
     @Override
-    public Observable<Boolean> captureCoodinates() {
+    public Observable<FeatureType> captureCoodinates() {
         return d2.eventModule().events.byUid().eq(eventUid).one().get().toObservable()
                 .map(event -> d2.programModule().programStages.byUid().eq(event.programStage()).one().blockingGet())
-                .map(programStage -> programStage.featureType() != FeatureType.NONE);
+                .map(programStage -> {
+                    if (programStage.featureType() == null)
+                        return FeatureType.NONE;
+                    else
+                        return programStage.featureType();
+                });
     }
 
     @Override

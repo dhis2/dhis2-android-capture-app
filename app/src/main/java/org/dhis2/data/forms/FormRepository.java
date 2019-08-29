@@ -8,6 +8,7 @@ import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
+import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
@@ -87,7 +88,7 @@ public interface FormRepository {
 
     void saveCategoryOption(CategoryOptionCombo selectedOption);
 
-    Observable<Boolean> captureCoodinates();
+    Observable<FeatureType> captureCoodinates();
 
     Observable<OrganisationUnit> getOrgUnitDates();
 
