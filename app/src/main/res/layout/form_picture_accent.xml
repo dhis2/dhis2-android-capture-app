@@ -32,7 +32,6 @@
             android:id="@+id/layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/renderImage"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
@@ -47,10 +46,10 @@
                 android:id="@+id/icImage"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_margin="10dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_add_image"
+                app:srcCompat="@drawable/ic_form_image"
+                android:layout_marginEnd="8dp"
                 android:theme="@style/loginInputTextAccent"
                 app:tint="?colorAccent"/>
 
@@ -77,6 +76,14 @@
                     android:textSize="15sp" />
 
             </com.google.android.material.textfield.TextInputLayout>
+
+            <ImageView
+                android:id="@+id/clear"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:visibility="gone"
+                app:srcCompat="@drawable/ic_clear"
+                app:tint="?colorAccent" />
 
             <ImageView
                 android:id="@+id/descriptionLabel"

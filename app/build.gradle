@@ -360,6 +360,8 @@ dependencies {
 
     implementation 'com.google.firebase:firebase-perf:16.2.3'
 
+    implementation 'com.github.prabhat1707:DbExporterHelper:v1.0'
+
 }
 
 
