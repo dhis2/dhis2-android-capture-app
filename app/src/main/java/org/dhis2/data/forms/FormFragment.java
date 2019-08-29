@@ -53,6 +53,7 @@ import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.program.Program;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
 import org.hisp.dhis.rules.models.RuleActionErrorOnCompletion;
 import org.hisp.dhis.rules.models.RuleActionShowError;
 import org.hisp.dhis.rules.models.RuleActionWarningOnCompletion;
@@ -210,6 +211,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
             coordinatesView.setIsBgTransparent(false);
             coordinatesView.setMapListener(this);
             coordinatesView.setCurrentLocationListener(this);
+            coordinatesView.setLabel(getString(R.string.enrollment_coordinates));
 
             teiCoordinatesView.setIsBgTransparent(false);
             teiCoordinatesView.setMapListener(this);
@@ -376,12 +378,15 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
 
 
     @Override
-    public Consumer<FeatureType> renderTeiCoordinates() {
-        return featureType -> {
-            teiCoordinatesView.setVisibility(featureType != FeatureType.NONE ? View.VISIBLE : View.GONE);
-            teFeatureType = featureType;
-            if (featureType != FeatureType.NONE) {
-                teiCoordinatesView.setFeatureType(featureType);
+    public Consumer<TrackedEntityType> renderTeiCoordinates() {
+        return trackedEntityType -> {
+            if(trackedEntityType.featureType() != null) {
+                teFeatureType = trackedEntityType.featureType();
+                teiCoordinatesView.setVisibility(teFeatureType != FeatureType.NONE ? View.VISIBLE : View.GONE);
+                teiCoordinatesView.setLabel(String.format("%s %s", getString(R.string.tei_coordinates), trackedEntityType.name()));
+                if (teFeatureType != FeatureType.NONE) {
+                    teiCoordinatesView.setFeatureType(teFeatureType);
+                }
             }
         };
     }

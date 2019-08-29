@@ -30,6 +30,7 @@ import org.hisp.dhis.android.core.event.EventTableInfo;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
 import org.hisp.dhis.rules.RuleEngine;
 import org.hisp.dhis.rules.RuleEngineContext;
 import org.hisp.dhis.rules.RuleExpressionEvaluator;
@@ -459,8 +460,8 @@ public class EventRepository implements FormRepository {
     }
 
     @Override
-    public Single<FeatureType> captureTeiCoordinates() {
-        return Single.just(FeatureType.NONE);
+    public Single<TrackedEntityType> captureTeiCoordinates() {
+        return Single.just(TrackedEntityType.builder().build());
     }
 
     @Override

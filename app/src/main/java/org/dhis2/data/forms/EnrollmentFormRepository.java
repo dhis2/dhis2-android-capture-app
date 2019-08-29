@@ -36,6 +36,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueTableInfo;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceTableInfo;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
 import org.hisp.dhis.rules.RuleEngine;
 import org.hisp.dhis.rules.RuleEngineContext;
 import org.hisp.dhis.rules.RuleExpressionEvaluator;
@@ -514,16 +515,16 @@ public class EnrollmentFormRepository implements FormRepository {
 
 
     @Override
-    public Single<FeatureType> captureTeiCoordinates() {
+    public Single<TrackedEntityType> captureTeiCoordinates() {
         return d2.enrollmentModule().enrollments.uid(enrollmentUid).get()
                 .flatMap(enrollment -> d2.programModule().programs.uid(enrollment.program()).withAllChildren().get())
-                .flatMap(program -> d2.trackedEntityModule().trackedEntityTypes.uid(program.trackedEntityType().uid()).get())
-                .map(trackedEntityType -> {
+                .flatMap(program -> d2.trackedEntityModule().trackedEntityTypes.uid(program.trackedEntityType().uid()).get());
+                /*.map(trackedEntityType -> {
                     if (trackedEntityType.featureType() == null)
                         return FeatureType.NONE;
                     else
                         return trackedEntityType.featureType();
-                });
+                });*/
     }
 
     @Override
