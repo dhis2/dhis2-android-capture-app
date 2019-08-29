@@ -13,6 +13,7 @@ import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.program.Program;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
 import org.hisp.dhis.rules.models.RuleActionErrorOnCompletion;
 import org.hisp.dhis.rules.models.RuleActionShowError;
 import org.hisp.dhis.rules.models.RuleActionWarningOnCompletion;
@@ -84,7 +85,7 @@ interface FormView {
 
     void showCatComboDialog(CategoryCombo categoryCombo, List<CategoryOptionCombo> categoryOptionCombo);
 
-    Consumer<Boolean> renderCaptureCoordinates();
+    Consumer<FeatureType> renderCaptureCoordinates();
 
     void setMinMaxDates(Date openingDate, Date closingDate);
 
@@ -92,5 +93,5 @@ interface FormView {
 
     void setNeedInitial(boolean need, String programStage);
 
-    Consumer<FeatureType> renderTeiCoordinates();
+    Consumer<TrackedEntityType> renderTeiCoordinates();
 }

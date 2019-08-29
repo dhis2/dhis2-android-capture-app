@@ -251,6 +251,8 @@
     <string name="missing_mandatory_fields_go_back">Delete and go back</string>
     <string name="error_fields">Some fields have errors:\n%s\nPlease, check them.</string>
     <string name="missing_mandatory_fields_finish">Some mandatory fields are missing. You can finish data entry and exit, but the event cannot be completed.</string>
+    <string name="enrollment_coordinates">Enrollment coordinates</string>
+    <string name="tei_coordinates">Coordinates for the</string>
 
     <!--EVENT SUMMARY-->
     <string name="section_list">Section list</string>
