@@ -29,7 +29,6 @@ import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.enrollment.EnrollmentTableInfo;
-import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventCollectionRepository;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
@@ -54,6 +53,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -147,13 +147,10 @@ public class SearchRepositoryImpl implements SearchRepository {
 
         TrackedEntityInstanceQuery.Builder queryBuilder = setQueryBuilder(selectedProgram, trackedEntityType, orgUnits);
 
-        List<String> allTeis = new ArrayList<>();
         List<DatePeriod> periods = FilterManager.getInstance().getPeriodFilters();
 
-        if(periods.size() > 0){
+        if (periods.size() > 0) {
             queryData.remove(Constants.ENROLLMENT_DATE_UID);
-            allTeis = getFilterTeis(queryData, queryBuilder, states, isOnline);
-
             queryBuilder.programStartDate(periods.get(0).startDate());
             queryBuilder.programEndDate(periods.get(0).endDate());
 
@@ -161,7 +158,6 @@ public class SearchRepositoryImpl implements SearchRepository {
             try {
                 Date enrollmentDate = DateUtils.uiDateFormat().parse(queryData.get(Constants.ENROLLMENT_DATE_UID));
                 queryData.remove(Constants.ENROLLMENT_DATE_UID);
-                allTeis = getFilterTeis(queryData, queryBuilder, states, isOnline);
 
                 queryBuilder.programStartDate(enrollmentDate);
                 queryBuilder.programEndDate(enrollmentDate);
@@ -171,20 +167,21 @@ public class SearchRepositoryImpl implements SearchRepository {
                 Timber.d(ex.getMessage());
             }
         }
-
-        List<String> teis = getFilterTeis(queryData, queryBuilder, states, isOnline);
-
-        if(!allTeis.isEmpty()) {
-            for(String tei : allTeis){
-                List<Event> eventsByEventDate = d2.eventModule().events.byTrackedEntityInstanceUids(Collections.singletonList(tei)).byEventDate().inDatePeriods(periods).blockingGet();
-                List<Event> eventsByDueDate = d2.eventModule().events.byTrackedEntityInstanceUids(Collections.singletonList(tei)).byDueDate().inDatePeriods(periods).blockingGet();
-                if((!eventsByDueDate.isEmpty() || !eventsByEventDate.isEmpty() && !teis.contains(tei))) {
-                    teis.add(tei);
-                }
-            }
+        DataSource dataSource;
+        TrackedEntityInstanceQuery query = queryBuilder
+                .filter(formatQueryData(queryData))
+                .build();
+        if (isOnline && states.isEmpty()) {
+            //TODO: SEARCH OFFLINEFIRST
+            dataSource = d2.trackedEntityModule().trackedEntityInstanceQuery.offlineFirst().query(query).getDataSource()
+                    .map(tei -> transform(tei, selectedProgram, true));
+        } else {
+            //TODO: OFFLINE
+            dataSource = d2.trackedEntityModule().trackedEntityInstanceQuery.offlineOnly().query(query).getDataSource() //TODO: ASK SDK TO FILTER BY BOTH ENROLLMENT DATE AND EVENT DATES
+                    .mapByPage(list -> filterByState(list, states))
+                    .mapByPage(list -> filterByPeriod(list, periods))
+                    .map(tei -> transform(tei, selectedProgram, true));
         }
-        DataSource dataSource = d2.trackedEntityModule().trackedEntityInstances.byUid().in(teis)
-                .getDataSource().map(tei -> transform(tei, selectedProgram, true));
 
         return new LivePagedListBuilder(new DataSource.Factory() {
             @NonNull
@@ -193,19 +190,6 @@ public class SearchRepositoryImpl implements SearchRepository {
                 return dataSource;
             }
         }, 10).build();
-    }
-
-    private List<String> getFilterTeis(HashMap<String, String> queryData, TrackedEntityInstanceQuery.Builder queryBuilder, @Nonnull List<State> states, boolean online){
-
-        List<QueryItem> filterList = formatQueryData(queryData);
-        TrackedEntityInstanceQuery query = queryBuilder.filter(filterList).build();
-
-        if(online)
-            return d2.trackedEntityModule().trackedEntityInstanceQuery.offlineFirst().query(query).get()
-                    .map(tei -> filterTransform(tei, states)).blockingGet();
-        else
-            return d2.trackedEntityModule().trackedEntityInstanceQuery.offlineOnly().query(query).get()
-                    .map(tei -> filterTransform(tei, states)).blockingGet();
     }
 
     @NonNull
@@ -313,7 +297,7 @@ public class SearchRepositoryImpl implements SearchRepository {
 
         if (selectedProgramUid != null) {
             return d2.organisationUnitModule().organisationUnits.byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).withPrograms().get()
-                    .toFlowable().flatMapIterable(orgs->orgs)
+                    .toFlowable().flatMapIterable(orgs -> orgs)
                     .filter(organisationUnit -> UidsHelper.getUidsList(organisationUnit.programs()).contains(selectedProgramUid))
                     .toList().toObservable();
         } else
@@ -334,7 +318,7 @@ public class SearchRepositoryImpl implements SearchRepository {
     private Trio<String, String, String> getProgramInfo(String programUid) {
         Program program = d2.programModule().programs.withStyle().byUid().eq(programUid).one().blockingGet();
         String programColor = program.style() != null && program.style().color() != null ? program.style().color() : "";
-        String programIcon =  program.style() != null && program.style().icon() != null ? program.style().icon() : "";
+        String programIcon = program.style() != null && program.style().icon() != null ? program.style().icon() : "";
         return Trio.create(program.displayName(), programColor, programIcon);
     }
 
@@ -426,16 +410,27 @@ public class SearchRepositoryImpl implements SearchRepository {
     // Private Region Start //
     private TrackedEntityInstanceQuery.Builder setQueryBuilder(@Nullable Program selectedProgram, @NonNull String trackedEntityType, @NonNull List<String> orgUnits) {
         TrackedEntityInstanceQuery.Builder builder = TrackedEntityInstanceQuery.builder();
+
+        OrganisationUnitMode ouMode;
+        if (orgUnits.isEmpty()) {
+            orgUnits.addAll(
+                    UidsHelper.getUidsList(d2.organisationUnitModule().organisationUnits
+                            .byRootOrganisationUnit(true)
+                            .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_TEI_SEARCH)
+                            .blockingGet()));
+            ouMode = OrganisationUnitMode.DESCENDANTS;
+        } else
+            ouMode = OrganisationUnitMode.SELECTED;
+
         if (selectedProgram != null)
             builder.program(selectedProgram.uid());
         else
             builder.trackedEntityType(trackedEntityType);
         builder.orgUnits(orgUnits);
-        builder.orgUnitMode(OrganisationUnitMode.ACCESSIBLE.ACCESSIBLE);
+        builder.orgUnitMode(ouMode);
         builder.pageSize(50);
         builder.page(1);
         builder.paging(true);
-        builder.orgUnitMode(OrganisationUnitMode.SELECTED);
         return builder;
     }
 
@@ -456,13 +451,37 @@ public class SearchRepositoryImpl implements SearchRepository {
         return filterItems;
     }
 
-    private List<String> filterTransform(List<TrackedEntityInstance> teis, List<State> states){
+    private List<String> filterTransform(List<TrackedEntityInstance> teis, List<State> states) {
         List<String> filteredTeis = new ArrayList<>();
-        for(TrackedEntityInstance tei: teis)
-            if(states.isEmpty() || states.contains(tei.state()))
+        for (TrackedEntityInstance tei : teis)
+            if (states.isEmpty() || states.contains(tei.state()))
                 filteredTeis.add(tei.uid());
 
         return filteredTeis;
+    }
+
+    private List<TrackedEntityInstance> filterByState(List<TrackedEntityInstance> teis, List<State> states) {
+        Iterator<TrackedEntityInstance> iterator = teis.iterator();
+        while (iterator.hasNext()) {
+            if (!states.contains(iterator.next().state()))
+                iterator.remove();
+        }
+        return teis;
+    }
+
+    private List<TrackedEntityInstance> filterByPeriod(List<TrackedEntityInstance> teis, List<DatePeriod> periods) {
+        Iterator<TrackedEntityInstance> iterator = teis.iterator();
+        if (!periods.isEmpty())
+            while (iterator.hasNext()) {
+                TrackedEntityInstance tei = iterator.next();
+                boolean hasEventsByEventDate = !d2.eventModule().events.byTrackedEntityInstanceUids(Collections.singletonList(tei.uid())).byEventDate().inDatePeriods(periods).blockingIsEmpty();
+                boolean hasEventsByDueDate = !d2.eventModule().events.byTrackedEntityInstanceUids(Collections.singletonList(tei.uid())).byDueDate().inDatePeriods(periods).blockingIsEmpty();
+                if (!hasEventsByDueDate && !hasEventsByEventDate)
+                    iterator.remove();
+
+            }
+
+        return teis;
     }
 
     private SearchTeiModel transform(TrackedEntityInstance tei, @Nullable Program selectedProgram, boolean offlineOnly) {

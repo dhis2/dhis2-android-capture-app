@@ -14,6 +14,7 @@ import android.transition.TransitionManager;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -25,6 +26,8 @@ import androidx.databinding.ObservableInt;
 import androidx.fragment.app.Fragment;
 
 import com.andrognito.pinlockview.PinLockListener;
+import com.android.dbexporterlibrary.ExportDbUtil;
+import com.android.dbexporterlibrary.ExporterListener;
 
 import org.dhis2.App;
 import org.dhis2.R;
@@ -44,6 +47,7 @@ import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.FiltersAdapter;
 import org.hisp.dhis.android.core.imports.TrackerImportConflict;
 import org.hisp.dhis.android.core.period.DatePeriod;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Objects;
@@ -53,7 +57,7 @@ import javax.inject.Inject;
 import io.reactivex.functions.Consumer;
 
 
-public class MainActivity extends ActivityGlobalAbstract implements MainContracts.View {
+public class MainActivity extends ActivityGlobalAbstract implements MainContracts.View, ExporterListener {
 
     private static final int PERMISSION_REQUEST = 1987;
     public ActivityMainBinding binding;
@@ -119,7 +123,6 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
 
         adapter = new FiltersAdapter();
         binding.filterLayout.setAdapter(adapter);
-
     }
 
     @Override
@@ -334,5 +337,14 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
             updateFilters(FilterManager.getInstance().getTotalFilters());
         }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void fail(@NotNull String message, @NotNull String exception) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();    }
+
+    @Override
+    public void success(@NotNull String s) {
+        Toast.makeText(this, s, Toast.LENGTH_SHORT).show();
     }
 }

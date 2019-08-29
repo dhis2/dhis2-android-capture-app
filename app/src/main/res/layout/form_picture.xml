@@ -44,7 +44,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 android:layout_marginEnd="8dp"
-                app:srcCompat="@drawable/ic_add_image"/>
+                app:srcCompat="@drawable/ic_form_image"/>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/inputLayout"
@@ -69,7 +69,13 @@
                     android:textSize="15sp" />
 
             </com.google.android.material.textfield.TextInputLayout>
-
+            <ImageView
+                android:id="@+id/clear"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:visibility="gone"
+                app:srcCompat="@drawable/ic_clear"
+                app:tint="#5C5C5C" />
             <ImageView
                 android:id="@+id/descriptionLabel"
                 android:layout_width="wrap_content"
