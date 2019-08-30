@@ -213,7 +213,6 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
             coordinatesView.setMapListener(this);
             coordinatesView.setCurrentLocationListener(this);
             coordinatesView.setLabel(getString(R.string.enrollment_coordinates));
-
             teiCoordinatesView.setIsBgTransparent(false);
             teiCoordinatesView.setMapListener(this);
             teiCoordinatesView.setCurrentLocationListener(this);

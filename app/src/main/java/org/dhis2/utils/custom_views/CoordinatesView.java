@@ -21,8 +21,6 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
@@ -40,7 +38,6 @@ import java.util.Locale;
 import io.reactivex.processors.FlowableProcessor;
 
 import static android.text.TextUtils.isEmpty;
-import java.lang.reflect.Type;
 import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter.ACCESS_COARSE_LOCATION_PERMISSION_REQUEST;
 
 /**
@@ -55,7 +52,6 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
     private TextInputLayout latitudeInputLayout;
     private TextInputLayout longitudeInputLayout;
     private FusedLocationProviderClient mFusedLocationClient;
-    private LocationRequest locationRequest;
     private LocationCallback locationCallback;
     private ImageButton location1;
     private OnMapPositionClick listener;
@@ -64,6 +60,8 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
     private String uid;
     private TextView errorView;
     private View clearButton;
+    private View polygonInputLayout;
+    private TextInputEditText polygon;
 
     public CoordinatesView(Context context) {
         super(context);
@@ -91,6 +89,8 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
         else
             binding = DataBindingUtil.inflate(inflater, R.layout.form_coordinates_accent, this, true);
 
+        polygonInputLayout = findViewById(R.id.polygonInputLayuout);
+        polygon = findViewById(R.id.polygonEditText);
         latitudeInputLayout = findViewById(R.id.latitudeInputLayout);
         longitudeInputLayout = findViewById(R.id.longInputLayout);
         latitude = findViewById(R.id.latitude);
@@ -124,6 +124,9 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
             return true;
 
         });
+
+        polygon.setFocusable(false);
+        polygon.setClickable(false);
 
         latitude.setFocusable(true); //Makes editText editable
         latitude.setClickable(true);//  and clickable
@@ -169,6 +172,9 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
     }
 
     public void setFeatureType(FeatureType featureType) {
+        latitudeInputLayout.setVisibility(featureType == FeatureType.POINT ? View.VISIBLE : View.GONE);
+        longitudeInputLayout.setVisibility(featureType == FeatureType.POINT ? View.VISIBLE : View.GONE);
+        polygonInputLayout.setVisibility(featureType != FeatureType.POINT ? View.VISIBLE : View.GONE);
         location1.setVisibility(featureType == FeatureType.POINT ? View.VISIBLE : View.GONE);
     }
 
@@ -284,7 +290,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
             if (geometry != null && geometry.type() != null) {
                 if (geometry.type() == FeatureType.POINT) {
                     try {
-                        List<Double> list =  GeometryHelper.getPoint(geometry);
+                        List<Double> list = GeometryHelper.getPoint(geometry);
                         this.latitude.setText(String.valueOf(list.get(1)));
                         this.longitude.setText(String.valueOf(list.get(0)));
                     } catch (D2Error d2Error) {
@@ -292,24 +298,11 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
                     }
 
                 } else if (geometry.type() == FeatureType.POLYGON) {
-                    try {
-                        List<List<List<Double>>> list =  GeometryHelper.getPolygon(geometry);
-                        this.latitude.setText(String.valueOf(list.get(0).get(0).get(1)));
-                        this.longitude.setText(String.valueOf(list.get(0).get(0).get(0)));
-                    } catch (D2Error d2Error) {
-                        d2Error.printStackTrace();
-                    }
+                    this.polygon.setText(getContext().getString(R.string.polygon_captured));
                 } else if (geometry.type() == FeatureType.MULTI_POLYGON) {
-                    try {
-                        List<List<List<List<Double>>>> list =  GeometryHelper.getMultiPolygon(geometry);
-                        this.latitude.setText(String.valueOf(list.get(0).get(0).get(0).get(1)));
-                        this.longitude.setText(String.valueOf(list.get(0).get(0).get(0).get(0)));
-                    } catch (D2Error d2Error) {
-                        d2Error.printStackTrace();
-                    }
+                    this.polygon.setText(getContext().getString(R.string.polygon_captured));
                 }
             }
-
 
             this.clearButton.setVisibility(VISIBLE);
         }
@@ -318,7 +311,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
     }
 
     private void startRequestingLocation() {
-        locationRequest = new LocationRequest();
+        LocationRequest locationRequest = new LocationRequest();
         locationRequest.setInterval(5000);
         locationRequest.setFastestInterval(1000);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);

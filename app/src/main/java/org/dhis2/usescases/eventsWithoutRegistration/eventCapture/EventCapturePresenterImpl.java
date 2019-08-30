@@ -250,21 +250,22 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
         compositeDisposable.add(
                 sectionProcessor
-                        .switchMap(section -> getFieldFlowable(section)
-                                .map(fields -> {
-                                    HashMap<String, List<FieldViewModel>> fieldMap = new HashMap<>();
-                                    for (FieldViewModel fieldViewModel : fields) {
-                                        if (!fieldMap.containsKey(fieldViewModel.programStageSection()))
-                                            fieldMap.put(fieldViewModel.programStageSection(), new ArrayList<>());
-                                        fieldMap.get(fieldViewModel.programStageSection()).add(fieldViewModel);
-                                    }
-                                    if (fieldMap.containsKey(null) && fieldMap.containsKey(section))
-                                        for (FieldViewModel fieldViewModel : fieldMap.get(null))
-                                            fieldMap.get(section).add(fieldViewModel);
+                        .switchMap(section ->
+                                saveProcessor.startWith(true).flatMap(next -> getFieldFlowable(section))
+                                        .map(fields -> {
+                                            HashMap<String, List<FieldViewModel>> fieldMap = new HashMap<>();
+                                            for (FieldViewModel fieldViewModel : fields) {
+                                                if (!fieldMap.containsKey(fieldViewModel.programStageSection()))
+                                                    fieldMap.put(fieldViewModel.programStageSection(), new ArrayList<>());
+                                                fieldMap.get(fieldViewModel.programStageSection()).add(fieldViewModel);
+                                            }
+                                            if (fieldMap.containsKey(null) && fieldMap.containsKey(section))
+                                                for (FieldViewModel fieldViewModel : fieldMap.get(null))
+                                                    fieldMap.get(section).add(fieldViewModel);
 
-                                    List<FieldViewModel> fieldsToShow = fieldMap.get(section.equals("NO_SECTION") ? null : section);
-                                    return fieldsToShow != null ? fieldsToShow : new ArrayList<FieldViewModel>();
-                                }))
+                                            List<FieldViewModel> fieldsToShow = fieldMap.get(section.equals("NO_SECTION") ? null : section);
+                                            return fieldsToShow != null ? fieldsToShow : new ArrayList<FieldViewModel>();
+                                        }))
                         .subscribeOn(Schedulers.computation())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
