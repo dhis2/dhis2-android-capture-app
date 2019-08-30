@@ -1,5 +1,7 @@
 package org.dhis2.usescases.teiDashboard.teiDataDetail;
 
+import androidx.annotation.NonNull;
+
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 
@@ -8,6 +10,7 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 
 import java.util.Date;
 
+import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
 
 public class TeiDataDetailContracts {
