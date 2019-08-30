@@ -294,16 +294,16 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
                 } else if (geometry.type() == FeatureType.POLYGON) {
                     try {
                         List<List<List<Double>>> list =  GeometryHelper.getPolygon(geometry);
-                        this.latitude.setText(String.valueOf(list.get(0).get(0).get(1)));
-                        this.longitude.setText(String.valueOf(list.get(0).get(0).get(0)));
+                        this.latitude.setText(String.valueOf(list.get(0).get(0).get(0)));
+                        this.longitude.setText(String.valueOf(list.get(0).get(0).get(1)));
                     } catch (D2Error d2Error) {
                         d2Error.printStackTrace();
                     }
                 } else if (geometry.type() == FeatureType.MULTI_POLYGON) {
                     try {
                         List<List<List<List<Double>>>> list =  GeometryHelper.getMultiPolygon(geometry);
-                        this.latitude.setText(String.valueOf(list.get(0).get(0).get(0).get(1)));
-                        this.longitude.setText(String.valueOf(list.get(0).get(0).get(0).get(0)));
+                        this.latitude.setText(String.valueOf(list.get(0).get(0).get(0).get(0)));
+                        this.longitude.setText(String.valueOf(list.get(0).get(0).get(0).get(1)));
                     } catch (D2Error d2Error) {
                         d2Error.printStackTrace();
                     }
@@ -329,7 +329,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
                 if (locationResult != null) {
                     Double latitude = locationResult.getLocations().get(0).getLatitude();
                     Double longitude = locationResult.getLocations().get(0).getLongitude();
-                    updateLocation(GeometryHelper.createPointGeometry(latitude, longitude));
+                    updateLocation(GeometryHelper.createPointGeometry(longitude, latitude));
                     mFusedLocationClient.removeLocationUpdates(locationCallback);
                 }
             }
