@@ -2,9 +2,10 @@ package org.dhis2.utils
 
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel
+import org.hisp.dhis.android.core.arch.helpers.UidsHelper
+import org.hisp.dhis.android.core.d2manager.D2Manager
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.rules.models.*
-import java.util.*
 
 /**
  * QUADRAM. Created by ppajuelo on 13/06/2018.
@@ -172,11 +173,130 @@ class RulesUtilsProviderImpl(private val codeGenerator: CodeGenerator) : RulesUt
 
     private fun hideOptionGroup(hideOptionGroup: RuleActionHideOptionGroup,
                                 rulesActionCallbacks: RulesActionCallbacks) {
-        rulesActionCallbacks.setOptionGroupToHide(hideOptionGroup.optionGroup(),true)
+        rulesActionCallbacks.setOptionGroupToHide(hideOptionGroup.optionGroup(), true)
     }
 
     private fun showOptionGroup(showOptionGroup: RuleActionShowOptionGroup,
                                 rulesActionCallbacks: RulesActionCallbacks) {
-        rulesActionCallbacks.setOptionGroupToHide(showOptionGroup.optionGroup(),false, showOptionGroup.field())
+        rulesActionCallbacks.setOptionGroupToHide(showOptionGroup.optionGroup(), false, showOptionGroup.field())
+    }
+
+    /*NEW METHOD*/
+
+    var eventUid: String? = null
+    var teiUid: String? = null
+
+    /**
+     *
+     * @param fields List of all uids
+     * @param calcResult All rule effects to apply for the given fields
+     * */
+    override fun applyRuleEffects(fields: ArrayList<String>, calcResult: Result<RuleEffect>) {
+        val warnings = HashMap<String, String>()
+        val errors = HashMap<String, String>()
+        val displayTextList = ArrayList<String>()
+        val displayKeyValue = HashMap<String, String>()
+        val sectionsToHide = ArrayList<String>()
+        val mandatoryFields = ArrayList<String>()
+        val warningOnCompletions = HashMap<String, String>()
+        val errorOnCompletions = HashMap<String, String>()
+        val stagesToHide = ArrayList<String>()
+        val optionsToHide = ArrayList<String>()
+        val optionGroupsToHide = ArrayList<String>()
+        val showOptionGroup = ArrayList<String>()
+        val unsupportedRules = ArrayList<String>()
+
+        calcResult.items().forEach {
+            when (it.ruleAction()) {
+                is RuleActionShowWarning -> setShowWarning(it.ruleAction() as RuleActionShowWarning, it.data(), warnings)
+                is RuleActionShowError -> setShowError(it.ruleAction() as RuleActionShowError, it.data(), errors)
+                is RuleActionHideField -> setHideField(it.ruleAction() as RuleActionHideField, fields)
+                is RuleActionDisplayText -> setDisplayText(it.ruleAction() as RuleActionDisplayText, it.data(), displayTextList)
+                is RuleActionDisplayKeyValuePair -> setDisplayKeyValue(it.ruleAction() as RuleActionDisplayKeyValuePair, it.data(), displayKeyValue)
+                is RuleActionHideSection -> setHideSection(it.ruleAction() as RuleActionHideSection, fields, sectionsToHide)
+                is RuleActionAssign -> setAssign(it.ruleAction() as RuleActionAssign)
+                is RuleActionSetMandatoryField -> setMandatoryField(it.ruleAction() as RuleActionSetMandatoryField, mandatoryFields)
+                is RuleActionWarningOnCompletion -> setWarningOnCompletion(it.ruleAction() as RuleActionWarningOnCompletion, it.data(), warningOnCompletions)
+                is RuleActionErrorOnCompletion -> setErrorOnCompletion(it.ruleAction() as RuleActionErrorOnCompletion, it.data(), errorOnCompletions)
+                is RuleActionHideProgramStage -> stagesToHide.add((it.ruleAction() as RuleActionHideProgramStage).programStage())
+                is RuleActionHideOption -> optionsToHide.add((it.ruleAction() as RuleActionHideOption).option())
+                is RuleActionHideOptionGroup -> optionGroupsToHide.add((it.ruleAction() as RuleActionHideOptionGroup).optionGroup())
+                is RuleActionShowOptionGroup -> showOptionGroup.add((it.ruleAction() as RuleActionShowOptionGroup).optionGroup())
+                else -> unsupportedRules.add("unsupported")
+            }
+        }
+
+    }
+
+    private fun setShowWarning(action: RuleActionShowWarning, data: String, warnings: HashMap<String, String>) {
+        warnings[action.field()] = action.content() + " " + data
+    }
+
+    private fun setShowError(action: RuleActionShowError, data: String, errors: HashMap<String, String>) {
+        errors[action.field()] = action.content() + " " + data
+    }
+
+    private fun setHideField(action: RuleActionHideField, fields: ArrayList<String>) { //TODO: CHECK IF ACTION FIELD IS DE OR ATTR
+        fields.remove(action.field())
+
+        if (eventUid != null && D2Manager.getD2().trackedEntityModule().trackedEntityDataValues
+                        .value(eventUid, action.field()).blockingExists())
+            D2Manager.getD2().trackedEntityModule().trackedEntityDataValues
+                    .value(eventUid, action.field()).blockingDelete()
+        else if (teiUid != null && D2Manager.getD2().trackedEntityModule().trackedEntityAttributeValues
+                        .value(action.field(), teiUid).blockingExists())
+            D2Manager.getD2().trackedEntityModule().trackedEntityAttributeValues
+                    .value(action.field(), teiUid).blockingDelete()
+    }
+
+    private fun setDisplayText(action: RuleActionDisplayText, data: String, displayTextList: ArrayList<String>) {
+        displayTextList.add(action.content() + " " + data)
+    }
+
+    private fun setDisplayKeyValue(action: RuleActionDisplayKeyValuePair, data: String, displayKeyValues: HashMap<String, String>) {
+        displayKeyValues[action.content()] = data
+    }
+
+    private fun setHideSection(action: RuleActionHideSection, fields: ArrayList<String>, sectionsToHide: ArrayList<String>) {
+
+        sectionsToHide.add(action.programStageSection())
+        val sectionDataElements = UidsHelper.getUidsList(
+                D2Manager.getD2().programModule().programStageSections.uid(action.programStageSection())
+                        .withAllChildren().blockingGet().dataElements())
+        sectionDataElements.forEach {
+            if (fields.contains(it)) {
+                fields.remove(it)
+                if (eventUid != null && D2Manager.getD2().trackedEntityModule().trackedEntityDataValues
+                                .value(eventUid, it).blockingExists())
+                    D2Manager.getD2().trackedEntityModule().trackedEntityDataValues
+                            .value(eventUid, it).blockingDelete()
+                else if (teiUid != null && D2Manager.getD2().trackedEntityModule().trackedEntityAttributeValues
+                                .value(it, teiUid).blockingExists())
+                    D2Manager.getD2().trackedEntityModule().trackedEntityAttributeValues
+                            .value(it, teiUid).blockingDelete()
+            }
+        }
+
+    }
+
+    private fun setAssign(action: RuleActionAssign) { //TODO: CHECK IF ACTION FIELD IS DE OR ATTR
+        if (eventUid != null)
+            D2Manager.getD2().trackedEntityModule().trackedEntityDataValues
+                    .value(eventUid, action.field()).blockingSet(action.content())
+        else if (teiUid != null)
+            D2Manager.getD2().trackedEntityModule().trackedEntityAttributeValues
+                    .value(action.field(), teiUid).blockingSet(action.content())
+    }
+
+    private fun setMandatoryField(action: RuleActionSetMandatoryField, mandatoryFields: ArrayList<String>) {
+        mandatoryFields.add(action.field())
+    }
+
+    private fun setWarningOnCompletion(action: RuleActionWarningOnCompletion, data: String, warningOnCompletions: HashMap<String, String>) {
+        warningOnCompletions[action.field()] = action.content() + " " + data
+    }
+
+    private fun setErrorOnCompletion(action: RuleActionErrorOnCompletion, data: String, errorOnCompletions: HashMap<String, String>) {
+        errorOnCompletions[action.field()] = action.content() + " " + data
     }
 }
