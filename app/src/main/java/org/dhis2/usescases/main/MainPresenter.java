@@ -50,7 +50,6 @@ final class MainPresenter implements MainContracts.Presenter {
                 )
         );
 
-
         compositeDisposable.add(
                 d2.categoryModule().categoryCombos.byIsDefault().eq(true).one().get().toObservable()
                         .subscribeOn(Schedulers.io())
