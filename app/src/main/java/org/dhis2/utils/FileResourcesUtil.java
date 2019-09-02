@@ -3,8 +3,11 @@ package org.dhis2.utils;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Environment;
 import android.provider.MediaStore;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.work.Constraints;
 import androidx.work.Data;
 import androidx.work.ExistingWorkPolicy;
@@ -15,12 +18,16 @@ import androidx.work.WorkManager;
 
 import org.dhis2.data.service.files.FilesWorker;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 
 import timber.log.Timber;
 
@@ -129,5 +136,59 @@ public class FileResourcesUtil {
 
     public static String generateFileName(String primaryUid, String secundaryUid) {
         return String.format("%s_%s.png", primaryUid, secundaryUid);
+    }
+
+    public static boolean writeToFile(@NonNull String content, @Nullable String secretToEncode) {
+        // Get the directory for the user's public pictures directory.
+        final File path = new File(Environment.getExternalStorageDirectory(), "DHIS2");
+
+        // Make sure the path directory exists.
+        if (!path.exists()) {
+            // Make it, if it doesn't exit
+            path.mkdirs();
+        }
+
+        final File file = new File(path, "dhisDataBuckUp.txt");
+        if (file.exists())
+            file.delete();
+
+        // Save your stream, don't forget to flush() it before closing it.
+
+        try {
+            boolean fileCreated = file.createNewFile();
+            try (FileOutputStream fOut = new FileOutputStream(file)) {
+                OutputStreamWriter myOutWriter = new OutputStreamWriter(fOut);
+                myOutWriter.append(content);
+
+                myOutWriter.close();
+
+                fOut.flush();
+            }
+            return fileCreated;
+        } catch (IOException e) {
+            Timber.e("File write failed: %s", e.toString());
+            return false;
+        }
+    }
+
+    public static String readFromFile() throws IOException {
+        File directory = new File(Environment.getExternalStorageDirectory(), "DHIS2");
+        File file = new File(directory, "dhisDataBuckUp.txt");
+        FileInputStream fin = new FileInputStream(file);
+        String ret = convertStreamToString(fin);
+        //Make sure you close all streams.
+        fin.close();
+        return ret;
+    }
+
+    private static String convertStreamToString(InputStream is) throws IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+        StringBuilder sb = new StringBuilder();
+        String line = null;
+        while ((line = reader.readLine()) != null) {
+            sb.append(line).append("\n");
+        }
+        reader.close();
+        return sb.toString();
     }
 }

@@ -31,7 +31,13 @@ public class ServerModule {
         return new UserManagerImpl(d2);
     }
 
-    public static D2Configuration getD2Configuration(Context context){
+    @Provides
+    @PerServer
+    DataBaseExporter dataBaseExporter(D2 d2) {
+        return new DataBaseExporterImpl(d2);
+    }
+
+    public static D2Configuration getD2Configuration(Context context) {
         return D2Configuration.builder()
                 .appName(BuildConfig.APPLICATION_ID)
                 .appVersion(BuildConfig.VERSION_NAME)
