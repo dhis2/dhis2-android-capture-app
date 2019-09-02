@@ -211,6 +211,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             disposable.add(RxView.clicks(binding.actionButton)
                     .debounce(300, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
                     .subscribe(v -> {
+                                binding.actionButton.setClickable(false);
                                 String programStageModelUid = programStage == null ? "" : programStage.uid();
                                 if (eventUid == null) { // This is a new Event
                                     if (eventCreationType == EventCreationType.REFERAL && tempCreate.equals(PERMANENT)) {
