@@ -1,33 +1,21 @@
 package org.dhis2.usescases.teiDashboard.teiDataDetail;
 
-import android.Manifest;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-
-import androidx.core.app.ActivityCompat;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 
-import org.dhis2.usescases.map.MapSelectorActivity;
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import org.dhis2.usescases.teiDashboard.DashboardRepository;
-import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
-import org.hisp.dhis.android.core.arch.helpers.GeometryHelper;
-import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 
 import java.util.Date;
-import java.util.List;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
-
-import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter.ACCESS_COARSE_LOCATION_PERMISSION_REQUEST;
 
 /**
  * QUADRAM. Created by frodriguez on 12/13/2017.
@@ -100,7 +88,7 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
 
 
         } else {
-            //TODO: NO SE HA SELECCIONADO PROGRAMA
+            //TODO: PROGRAM NOT SELECTED
             disposable.add(Observable.zip(
                     dashboardRepository.getTrackedEntityInstance(uid),
                     dashboardRepository.getProgramTrackedEntityAttributes(null),
