@@ -322,7 +322,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
                 if (locationResult != null) {
                     Double latitude = locationResult.getLocations().get(0).getLatitude();
                     Double longitude = locationResult.getLocations().get(0).getLongitude();
-                    updateLocation(GeometryHelper.createPointGeometry(latitude, longitude));
+                    updateLocation(GeometryHelper.createPointGeometry(longitude, latitude));
                     mFusedLocationClient.removeLocationUpdates(locationCallback);
                 }
             }

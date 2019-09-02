@@ -1,13 +1,17 @@
 package org.dhis2.usescases.teiDashboard.teiDataDetail;
 
+import androidx.annotation.NonNull;
+
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 
 import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
 
 import java.util.Date;
 
+import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
 
 public class TeiDataDetailContracts {
@@ -19,13 +23,17 @@ public class TeiDataDetailContracts {
 
         Consumer<EnrollmentStatus> handleStatus();
 
-        void setLocation(Geometry geometry);
-
         void showCustomIncidentCalendar(Date date);
 
         void showCustomEnrollmentCalendar(Date date);
 
         void showTeiImage(String fileName);
+
+        Observable<Geometry> reportCoordinatesChanged();
+
+        Observable<Geometry> teiCoordinatesChanged();
+
+        Consumer<TrackedEntityType> renderTeiCoordinates();
     }
 
     public interface Presenter {
@@ -40,12 +48,6 @@ public class TeiDataDetailContracts {
         void onComplete(DashboardProgramModel dashboardProgramModel);
 
         void onActivate(DashboardProgramModel dashboardProgramModel);
-
-        void saveLocation(Geometry geometry);
-
-        void onLocationClick();
-
-        void onLocation2Click();
 
         void onDestroy();
 

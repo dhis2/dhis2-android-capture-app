@@ -6,6 +6,7 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.widget.DatePicker;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
@@ -29,12 +30,14 @@ import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DatePickerUtils;
 import org.dhis2.utils.FileResourcesUtil;
+import org.dhis2.utils.custom_views.CoordinatesView;
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.enrollment.internal.EnrollmentFields;
 import org.hisp.dhis.android.core.program.ProgramStage;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
 
 import java.io.File;
 import java.lang.reflect.Type;
@@ -45,11 +48,13 @@ import java.util.Locale;
 
 import javax.inject.Inject;
 
+import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
+import io.reactivex.subjects.PublishSubject;
 
 import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
 
-public class TeiDataDetailActivity extends ActivityGlobalAbstract implements TeiDataDetailContracts.View {
+public class TeiDataDetailActivity extends ActivityGlobalAbstract implements TeiDataDetailContracts.View, CoordinatesView.OnMapPositionClick, CoordinatesView.OnCurrentLocationClick {
     ActivityTeidataDetailBinding binding;
 
     @Inject
@@ -57,6 +62,11 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
 
     private DashboardProgramModel dashboardProgramModel;
     private EnrollmentStatus enrollmentStatus;
+    private PublishSubject<Geometry> onCoordinatesChanged;
+    private PublishSubject<Geometry> onTeiCoordinatesChanged;
+    private CoordinatesView coordinatesViewToUpdate;
+    private FeatureType teFeatureType;
+    private FeatureType enrollmentFeatureType;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,22 +141,23 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
         binding.setIncidentDate(dashboardProgramModel.getCurrentEnrollment().incidentDate());
         binding.executePendingBindings();
 
-        //TODO: Change layout depending on program FEATYRE TYPE AND Enrollment GEOMETRY
-        switch (program.getCurrentProgram().featureType()) {
-            case NONE:
-                binding.coordinatesLayout.setVisibility(View.GONE);
-            case POINT:
-                binding.coordinatesLayout.setVisibility(View.VISIBLE);
-                binding.location1.setOnClickListener(v -> presenter.onLocationClick());
-                binding.location2.setOnClickListener(v -> presenter.onLocation2Click());
-                //TODO: IF program.getCurrentEnrollment()!=null SET LAT AND LONG in editTexts
-                break;
-            case POLYGON:
-                //TODO: MAP FOR POLYGON CAPTURE
-                break;
-            case MULTI_POLYGON:
-                //TODO: MAP FOR MULTIPOLYGON CAPTURE
-                break;
+
+        binding.coordinatesView.setIsBgTransparent(true);
+        binding.coordinatesView.setMapListener(this);
+        binding.coordinatesView.setCurrentLocationListener(this);
+        binding.coordinatesView.setLabel(getString(R.string.enrollment_coordinates));
+
+        enrollmentFeatureType = program.getCurrentProgram().featureType();
+        binding.coordinatesView.setVisibility(enrollmentFeatureType != FeatureType.NONE ? View.VISIBLE : View.GONE);
+        if (enrollmentFeatureType != FeatureType.NONE) {
+            binding.coordinatesView.setFeatureType(enrollmentFeatureType);
+        }
+
+        if(program.getCurrentEnrollment().geometry() != null)
+            binding.coordinatesView.updateLocation(program.getCurrentEnrollment().geometry());
+
+        if(program.getTei().geometry() != null) {
+            binding.teiCoordinatesView.updateLocation(program.getTei().geometry());
         }
 
         for (ProgramStage programStage : program.getProgramStages())
@@ -176,6 +187,38 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
                 .commit();
     }
 
+    @NonNull
+    @Override
+    public Observable<Geometry> reportCoordinatesChanged() {
+        onCoordinatesChanged = PublishSubject.create();
+        return onCoordinatesChanged;
+    }
+
+    @NonNull
+    @Override
+    public Observable<Geometry> teiCoordinatesChanged() {
+        onTeiCoordinatesChanged = PublishSubject.create();
+        return onTeiCoordinatesChanged;
+    }
+
+    @Override
+    public Consumer<TrackedEntityType> renderTeiCoordinates() {
+        return trackedEntityType -> {
+            if(trackedEntityType.featureType() != null) {
+
+                binding.teiCoordinatesView.setIsBgTransparent(true);
+                binding.teiCoordinatesView.setMapListener(this);
+                binding.teiCoordinatesView.setCurrentLocationListener(this);
+
+                teFeatureType = trackedEntityType.featureType();
+                binding.teiCoordinatesView.setVisibility(teFeatureType != FeatureType.NONE ? View.VISIBLE : View.GONE);
+                binding.teiCoordinatesView.setLabel(String.format("%s %s", getString(R.string.tei_coordinates), trackedEntityType.name()));
+                if (teFeatureType != FeatureType.NONE) {
+                    binding.teiCoordinatesView.setFeatureType(teFeatureType);
+                }
+            }
+        };
+    }
 
     @Override
     public Consumer<EnrollmentStatus> handleStatus() {
@@ -187,12 +230,6 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
             binding.executePendingBindings();
             initForm();
         };
-    }
-
-    @Override
-    public void setLocation(Geometry geometry) {
-        binding.lat.setText(String.format(Locale.US, "%.5f", geometry.coordinates()));
-        binding.lon.setText(String.format(Locale.US, "%.5f", geometry.coordinates()));
     }
 
     @Override
@@ -220,7 +257,7 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == Constants.RQ_MAP_LOCATION && resultCode == RESULT_OK) {
+        if (requestCode == Constants.RQ_MAP_LOCATION_VIEW && resultCode == RESULT_OK) {
             FeatureType locationType = FeatureType.valueOf(data.getStringExtra(MapSelectorActivity.Companion.getLOCATION_TYPE_EXTRA()));
             String dataExtra = data.getStringExtra(MapSelectorActivity.Companion.getDATA_EXTRA());
             Geometry geometry;
@@ -234,8 +271,12 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
                 Type type = new TypeToken<List<List<List<List<Double>>>>>(){}.getType();
                 geometry = GeometryHelper.createMultiPolygonGeometry(new Gson().fromJson(dataExtra, type));
             }
-            setLocation(geometry);
-            presenter.saveLocation(geometry);
+            coordinatesViewToUpdate.updateLocation(geometry);
+            if (coordinatesViewToUpdate.getId() == R.id.coordinates_view)
+                publishCoordinatesChanged(geometry);
+            else
+                publishTeiCoodinatesChanged(geometry);
+            this.coordinatesViewToUpdate = null;
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
@@ -290,4 +331,27 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
                 }).show();
     }
 
+    @Override
+    public void onMapPositionClick(CoordinatesView coordinatesView) {
+        this.coordinatesViewToUpdate = coordinatesView;
+        FeatureType featureType = coordinatesView.getId() == R.id.tei_coordinates_view ? teFeatureType : enrollmentFeatureType;
+        startActivityForResult(MapSelectorActivity.Companion.create(getActivity(), featureType), Constants.RQ_MAP_LOCATION_VIEW);
+    }
+
+    private void publishCoordinatesChanged(Geometry geometry) {
+        if (onCoordinatesChanged != null && geometry != null) {
+            onCoordinatesChanged.onNext(geometry);
+        }
+    }
+
+    private void publishTeiCoodinatesChanged(Geometry geometry) {
+        if (onTeiCoordinatesChanged != null && geometry != null) {
+            onTeiCoordinatesChanged.onNext(geometry);
+        }
+    }
+
+    @Override
+    public void onCurrentLocationClick(Geometry geometry) {
+        publishCoordinatesChanged(geometry);
+    }
 }

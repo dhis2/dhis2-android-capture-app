@@ -218,6 +218,10 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
             teiCoordinatesView.setCurrentLocationListener(this);
         }
         setupActionBar();
+
+        formPresenter.onAttach(this);
+        if (saveButton != null)
+            formPresenter.initializeSaveObservable();
     }
 
     private void setupActionBar() {
@@ -301,21 +305,8 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
 
     @Override
     public void onDetach() {
-        super.onDetach();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        formPresenter.onAttach(this);
-        if (saveButton != null)
-            formPresenter.initializeSaveObservable();
-    }
-
-    @Override
-    public void onPause() {
         formPresenter.onDetach();
-        super.onPause();
+        super.onDetach();
     }
 
     @NonNull

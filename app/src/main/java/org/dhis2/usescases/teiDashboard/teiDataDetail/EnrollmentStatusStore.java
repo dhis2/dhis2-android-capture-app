@@ -14,14 +14,18 @@ import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
+import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
 
 import java.util.Calendar;
 import java.util.Locale;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
+import io.reactivex.Single;
+import io.reactivex.functions.Consumer;
 
 import static org.hisp.dhis.android.core.arch.db.stores.internal.StoreUtils.sqLiteBind;
 
@@ -92,24 +96,28 @@ public final class EnrollmentStatusStore implements EnrollmentStatusEntryStore {
     }
 
     @Override
-    public Flowable<Geometry> enrollmentGeometry() {
-        return d2.enrollmentModule().enrollments.byUid().eq(enrollment).one().get().toFlowable()
-                .filter(enrollment1 -> enrollment1.geometry() != null)
-                .map(Enrollment::geometry);
+    public Single<TrackedEntityType> captureTeiCoordinates() {
+        return d2.enrollmentModule().enrollments.uid(enrollment).get()
+                .flatMap(enrollment -> d2.programModule().programs.uid(enrollment.program()).withAllChildren().get())
+                .flatMap(program -> d2.trackedEntityModule().trackedEntityTypes.uid(program.trackedEntityType().uid()).get());
     }
 
+    @NonNull
     @Override
-    public Flowable<Long> saveCoordinates(Geometry geometry) {
-        return Flowable.defer(() -> {
-            ContentValues cv = new ContentValues();
-            // TODO: Change to Geometry
-            /*cv.put(Enrollment.Columns.LATITUDE, latitude);
-            cv.put(Enrollment.Columns.LONGITUDE, longitude);*/
-            long updated = briteDatabase.update("Enrollment", cv, "uid = ?", enrollment);
-            return Flowable.just(updated);
-        })
-                .switchMap(this::updateEnrollment);
+    public Consumer<Geometry> storeCoordinates() {
+        return geometry -> {
+            EnrollmentObjectRepository repo = d2.enrollmentModule().enrollments.uid(enrollment);
+            repo.setGeometry(geometry);
+        };
+    }
 
+    @NonNull
+    @Override
+    public Consumer<Geometry> storeTeiCoordinates() {
+        return geometry -> {
+            String teiUid = d2.enrollmentModule().enrollments.uid(enrollment).blockingGet().trackedEntityInstance();
+            d2.trackedEntityModule().trackedEntityInstances.uid(teiUid).setGeometry(geometry);
+        };
     }
 
     private long update(EnrollmentStatus value) {
