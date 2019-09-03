@@ -24,7 +24,10 @@ import org.dhis2.utils.Constants;
 import org.dhis2.utils.NetworkUtils;
 import org.dhis2.utils.custom_views.OrgUnitDialog;
 import org.dhis2.utils.filters.FilterManager;
+import org.dhis2.utils.maps.GeometryUtils;
 import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.common.FeatureType;
+import org.hisp.dhis.android.core.common.Unit;
 import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
@@ -76,6 +79,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private FlowableProcessor<Boolean> processorDismissDialog;
     private String trackedEntityType;
     private String initialProgram;
+    private FlowableProcessor<Unit> mapProcessor;
 
     public SearchTEPresenter(D2 d2, SearchRepository searchRepository) {
         this.searchRepository = searchRepository;
@@ -84,6 +88,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         queryDataEQ = new HashMap<>();
         queryProcessor = PublishProcessor.create();
         processorDismissDialog = PublishProcessor.create();
+        mapProcessor = PublishProcessor.create();
     }
 
     //-----------------------------------
@@ -133,6 +138,17 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         ));
 
         compositeDisposable.add(
+                searchRepository.getTrackedEntityType(trackedEntityType)
+                        .map(teiType -> teiType.featureType() != null ? teiType.featureType() : FeatureType.NONE)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                view.featureType(),
+                                Timber::d
+                        )
+        );
+
+        compositeDisposable.add(
                 searchRepository.getOrganisationUnits()
                         .subscribeOn(Schedulers.io())
                         .observeOn(Schedulers.io())
@@ -145,6 +161,25 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                 Timber::d
                         )
         );
+        compositeDisposable.add(
+                mapProcessor
+                        .flatMap(unit ->
+                                FilterManager.getInstance().asFlowable()
+                                        .startWith(FilterManager.getInstance())
+                                        .flatMap(filterManager -> searchRepository.searchTeiForMap(
+                                                selectedProgram, trackedEntityType,
+                                                filterManager.getOrgUnitUidsFilters(),
+                                                filterManager.getStateFilters(),
+                                                queryData, NetworkUtils.isOnline(view.getContext()))
+                                        ))
+                        .map(GeometryUtils.INSTANCE::getSourceFromTeis)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                next -> Timber.d("SOURCE IS:\n%s", next.toString()),
+                                Timber::e,
+                                () -> Timber.d("COMPLETED")
+                        ));
 
         manageProcessorDismissDialog();
     }
@@ -342,7 +377,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         );
     }
 
-    private void startFilterManager(){
+    private void startFilterManager() {
         compositeDisposable.add(
                 FilterManager.getInstance().asFlowable()
                         .startWith(FilterManager.getInstance())
@@ -458,6 +493,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         allOrgUnits -> {
                             if (allOrgUnits.size() > 1) {
                                 orgUnitDialog.setOrgUnits(allOrgUnits);
+                                orgUnitDialog.setProgram(programUid);
                                 if (!orgUnitDialog.isAdded())
                                     orgUnitDialog.show(view.getAbstracContext().getSupportFragmentManager(), "OrgUnitEnrollment");
                             } else if (allOrgUnits.size() == 1)
@@ -713,5 +749,10 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     @Override
     public void closeFilterClick() {
         view.closeFilters();
+    }
+
+    @Override
+    public void getMapData() {
+        mapProcessor.onNext(new Unit());
     }
 }

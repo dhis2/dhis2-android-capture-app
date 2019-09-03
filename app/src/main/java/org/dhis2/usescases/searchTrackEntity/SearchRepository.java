@@ -18,6 +18,7 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 
 /**
@@ -38,6 +39,14 @@ public interface SearchRepository {
                                                               @Nonnull List<State> states,
                                                               @Nullable HashMap<String, String> queryData,
                                                               boolean isOnline);
+
+    @NonNull
+    Flowable<List<SearchTeiModel>> searchTeiForMap(@Nullable Program selectedProgram,
+                                                        @NonNull String trackedEntityType,
+                                                        @NonNull List<String> orgUnits,
+                                                        @Nonnull List<State> states,
+                                                        @Nullable HashMap<String, String> queryData,
+                                                        boolean isOnline);
 
     @NonNull
     Observable<String> saveToEnroll(@NonNull String teiType, @NonNull String orgUnitUID, @NonNull String programUid, @Nullable String teiUid, HashMap<String, String> queryDatam,Date enrollmentDate);

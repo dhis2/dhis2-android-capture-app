@@ -9,6 +9,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -16,20 +17,20 @@ import android.transition.ChangeBounds;
 import android.transition.Transition;
 import android.transition.TransitionManager;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
+import android.widget.PopupMenu;
 import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.content.ContextCompat;
-import androidx.core.view.ViewCompat;
 import androidx.databinding.BindingMethod;
 import androidx.databinding.BindingMethods;
 import androidx.databinding.DataBindingUtil;
@@ -39,8 +40,22 @@ import androidx.paging.PagedList;
 import androidx.recyclerview.widget.DividerItemDecoration;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.mapbox.mapboxsdk.Mapbox;
+import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
+import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.geometry.LatLngBounds;
+import com.mapbox.mapboxsdk.maps.MapboxMap;
+import com.mapbox.mapboxsdk.maps.Style;
+import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager;
+import com.mapbox.mapboxsdk.plugins.markerview.MarkerViewManager;
+import com.mapbox.mapboxsdk.style.layers.FillLayer;
+import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
+import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
+import com.mapbox.mapboxsdk.style.sources.GeoJsonOptions;
+import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 
 import org.dhis2.App;
+import org.dhis2.BuildConfig;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.ProgramAdapter;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
@@ -58,17 +73,24 @@ import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.FiltersAdapter;
+import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import io.reactivex.Flowable;
+import io.reactivex.functions.Consumer;
 import timber.log.Timber;
+
+import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.fillColor;
+import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAllowOverlap;
+import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconOffset;
 
 /**
  * QUADRAM. Created by ppajuelo on 02/11/2017 .
@@ -89,10 +111,10 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     private String fromRelationshipTeiUid;
     private boolean backDropActive;
     /**
-     *  0 - it is general filter
-     *  1 - it is search filter
-     *  2 - it was closed
-     * */
+     * 0 - it is general filter
+     * 1 - it is search filter
+     * 2 - it was closed
+     */
     private int switchOpenClose = 2;
     private FiltersAdapter filtersAdapter;
 
@@ -107,12 +129,24 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     private SearchTeiLiveAdapter liveAdapter;
     private RelationshipLiveAdapter relationshipLiveAdapter;
+    private FeatureType featureType;
+    private MapboxMap map;
+    private MarkerViewManager markerViewManager;
+    private SymbolManager symbolManager;
     //---------------------------------------------------------------------------------------------
+
     //region LIFECYCLE
+    @Override
+    protected void onStart() {
+        super.onStart();
+        binding.mapView.onStart();
+    }
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        Mapbox.getInstance(this, BuildConfig.MAPBOX_ACCESS_TOKEN);
+
         tEType = getIntent().getStringExtra("TRACKED_ENTITY_UID");
 
         ((App) getApplicationContext()).userComponent().plus(new SearchTEModule(tEType)).inject(this);
@@ -181,6 +215,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     protected void onResume() {
         super.onResume();
+        binding.mapView.onResume();
         presenter.init(this, tEType, initialProgram);
         presenter.initSearch(this);
         registerReceiver(networkReceiver, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
@@ -191,9 +226,26 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     protected void onPause() {
+        binding.mapView.onPause();
         presenter.onDestroy();
         unregisterReceiver(networkReceiver);
         super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        binding.mapView.onDestroy();
+        if (markerViewManager != null)
+            markerViewManager.onDestroy();
+        if (symbolManager != null)
+            symbolManager.onDestroy();
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        binding.mapView.onSaveInstanceState(outState);
     }
 
     @Override
@@ -212,15 +264,68 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     }
 
     @Override
-    public void updateFiltersSearch(int totalFilters){
+    public void updateFiltersSearch(int totalFilters) {
         FilterManager.getInstance().setTotalSearchTeiFilter(totalFilters);
         binding.setTotalFiltersSearch(totalFilters);
+    }
+
+    @Override
+    public Consumer<FeatureType> featureType() {
+        return featureType -> this.featureType = featureType;
+    }
+
+    @Override
+    public void showMoreOptions(View view) {
+        PopupMenu popupMenu = new PopupMenu(this, view, Gravity.BOTTOM);
+        try {
+            Field[] fields = popupMenu.getClass().getDeclaredFields();
+            for (Field field : fields) {
+                if ("mPopup".equals(field.getName())) {
+                    field.setAccessible(true);
+                    Object menuPopupHelper = field.get(popupMenu);
+                    Class<?> classPopupHelper = Class.forName(menuPopupHelper.getClass().getName());
+                    Method setForceIcons = classPopupHelper.getMethod("setForceShowIcon", boolean.class);
+                    setForceIcons.invoke(menuPopupHelper, true);
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            Timber.e(e);
+        }
+        popupMenu.getMenuInflater().inflate(R.menu.search_menu, popupMenu.getMenu());
+        popupMenu.setOnMenuItemClickListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.showHelp:
+                    showTutorial(false);
+                    break;
+                case R.id.menu_list:
+                    showMap(false);
+                    break;
+                case R.id.menu_map:
+                    showMap(true);
+                    break;
+                default:
+                    break;
+            }
+            return false;
+        });
+        popupMenu.getMenu().getItem(0).setVisible(binding.mapView.getVisibility() == View.GONE && featureType != FeatureType.NONE);
+        popupMenu.getMenu().getItem(1).setVisible(binding.scrollView.getVisibility() == View.GONE && featureType != FeatureType.NONE);
+        popupMenu.show();
     }
 
     //endregion
 
     //-----------------------------------------------------------------------
     //region SearchForm
+
+    private void showMap(boolean showMap) {
+        binding.scrollView.setVisibility(showMap ? View.GONE : View.VISIBLE);
+        binding.mapView.setVisibility(showMap ? View.VISIBLE : View.GONE);
+
+        if (showMap)
+            presenter.getMapData();
+    }
 
     @Override
     public void setForm(List<TrackedEntityAttribute> trackedEntityAttributes, @Nullable Program program, HashMap<String, String> queryData) {
@@ -332,9 +437,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     Program selectedProgram = (Program) adapterView.getItemAtPosition(pos - 1);
                     setProgramColor(presenter.getProgramColor(selectedProgram.uid()));
                     presenter.setProgram((Program) adapterView.getItemAtPosition(pos - 1));
-                } else if (programs.size() == 1 && pos != 0){
+                } else if (programs.size() == 1 && pos != 0) {
                     presenter.setProgram(programs.get(0));
-                }else
+                } else
                     presenter.setProgram(null);
             }
 
@@ -442,13 +547,13 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         swipeFilters(true);
     }
 
-    private void swipeFilters(boolean general){
+    private void swipeFilters(boolean general) {
         Transition transition = new ChangeBounds();
         transition.setDuration(200);
         TransitionManager.beginDelayedTransition(binding.backdropLayout, transition);
-        if(backDropActive && !general && switchOpenClose == 0)
+        if (backDropActive && !general && switchOpenClose == 0)
             switchOpenClose = 1;
-        else if(backDropActive && general && switchOpenClose == 1)
+        else if (backDropActive && general && switchOpenClose == 1)
             switchOpenClose = 0;
         else {
             switchOpenClose = general ? 0 : 1;
@@ -459,14 +564,13 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         activeFilter(general);
     }
 
-    private void activeFilter(boolean general){
+    private void activeFilter(boolean general) {
         ConstraintSet initSet = new ConstraintSet();
         initSet.clone(binding.backdropLayout);
 
         if (backDropActive) {
-            initSet.connect(R.id.mainLayout, ConstraintSet.TOP, general?R.id.filterLayout:R.id.form_recycler, ConstraintSet.BOTTOM, 50);
-        }
-        else {
+            initSet.connect(R.id.mainLayout, ConstraintSet.TOP, general ? R.id.filterLayout : R.id.form_recycler, ConstraintSet.BOTTOM, 50);
+        } else {
             initSet.connect(R.id.mainLayout, ConstraintSet.TOP, R.id.backdropGuideTop, ConstraintSet.BOTTOM, 0);
         }
 
@@ -474,8 +578,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     }
 
     @Override
-    public void closeFilters(){
-        if(switchOpenClose == 0)
+    public void closeFilters() {
+        if (switchOpenClose == 0)
             showHideFilterGeneral();
         else
             showHideFilter();
@@ -483,10 +587,10 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     public void clearFilters() {
-        if(switchOpenClose == 0){
+        if (switchOpenClose == 0) {
             FilterManager.getInstance().clearAllFilters();
             filtersAdapter.notifyDataSetChanged();
-        }else
+        } else
             presenter.onClearClick();
 
     }
@@ -515,4 +619,119 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     true);
         }
     }
+
+    /*region MAP*/
+    @Override
+    public Consumer<LiveData<PagedList<SearchTeiModel>>> setMap() {
+        return data -> {
+            binding.mapView.getMapAsync(mapboxMap -> {
+                map = mapboxMap;
+
+                if (map.getStyle() == null)
+                    map.setStyle(Style.MAPBOX_STREETS, style -> {
+
+                                style.addImage("ICON_ID", BitmapFactory.decodeResource(getResources(), R.drawable.mapbox_marker_icon_default));
+
+                                setSource(style);
+
+                                setLayer(style);
+
+                                LatLngBounds bounds = new LatLngBounds.Builder()
+                                        .include(new LatLng(5, 90))
+                                        .include(new LatLng(-5, 110))
+                                        .build();
+                                map.easeCamera(CameraUpdateFactory.newLatLngBounds(bounds, 50), 1200);
+
+                                markerViewManager = new MarkerViewManager(binding.mapView, map);
+                                symbolManager = new SymbolManager(binding.mapView, map, style, null,
+                                        new GeoJsonOptions().withTolerance(0.4f));
+
+                                symbolManager.setIconAllowOverlap(true);
+                                symbolManager.setTextAllowOverlap(true);
+//                                symbolManager.create(options);
+
+                               /* symbolManager.addClickListener(symbol -> {
+                                    presenter.getEventInfo(symbol.getTextField(), symbol.getLatLng());
+                                });*/
+
+                            }
+                    );
+                else {
+//                    symbolManager.create(options);
+                }
+            });
+        };
+    }
+
+    private void setSource(Style style) {
+        style.addSource(new GeoJsonSource("teis", "{\n" +
+                "  \"type\": \"FeatureCollection\",\n" +
+                "  \"features\": [\n" +
+                "    {\n" +
+                "      \"type\": \"Feature\",\n" +
+                "      \"geometry\": {\n" +
+                "        \"type\": \"Polygon\",\n" +
+                "        \"coordinates\": [\n" +
+                "          [\n" +
+                "            [100.0, -1.0], [101.0, -1.0], [101.0, -2.0],\n" +
+                "            [100.0, -2.0], [100.0, -1.0]\n" +
+                "          ]\n" +
+                "          ]\n" +
+                "      },\n" +
+                "      \"properties\": {\n" +
+                "        \"prop0\": \"value0\"\n" +
+                "      }\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"type\": \"Feature\",\n" +
+                "      \"geometry\": {\n" +
+                "        \"type\": \"Polygon\",\n" +
+                "        \"coordinates\": [\n" +
+                "          [\n" +
+                "            [102.0, 1.0], [103.0, 1.0], [103.0, 2.0],\n" +
+                "            [102.0, 2.0], [102.0, 1.0]\n" +
+                "          ]\n" +
+                "        ]\n" +
+                "      },\n" +
+                "      \"properties\": {\n" +
+                "        \"prop0\": \"value0\",\n" +
+                "        \"prop1\": 0.0\n" +
+                "      }\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"type\": \"Feature\",\n" +
+                "      \"geometry\": {\n" +
+                "        \"type\": \"Polygon\",\n" +
+                "        \"coordinates\": [\n" +
+                "          [\n" +
+                "            [100.0, 0.5], [100.5, 0.0], [101.0, 0.5],\n" +
+                "            [100.5, 1.0], [100.0, 0.5]\n" +
+                "          ]\n" +
+                "        ]\n" +
+                "      },\n" +
+                "      \"properties\": {\n" +
+                "        \"prop0\": \"value0\",\n" +
+                "        \"prop1\": { \"this\": \"that\" }\n" +
+                "      }\n" +
+                "    }\n" +
+                "  ]\n" +
+                "}"));
+    }
+
+    private void setLayer(Style style) {
+        if (featureType == FeatureType.POINT) {
+            SymbolLayer symbolLayer = new SymbolLayer("LAYER_ID", "teis").withProperties(
+                    PropertyFactory.iconImage("ICON_ID"),
+                    iconAllowOverlap(true),
+                    iconOffset(new Float[]{0f, -9f})
+            );
+            style.addLayerBelow(symbolLayer, "settlement-label");
+        } else {
+            style.addLayerBelow(new FillLayer("POLYGON_LAYER", "teis").withProperties(
+                    fillColor(getResources().getColor(R.color.green_7ed))), "settlement-label"
+            );
+        }
+    }
+
+    /*endregion*/
 }

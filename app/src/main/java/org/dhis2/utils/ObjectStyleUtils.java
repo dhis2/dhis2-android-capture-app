@@ -18,6 +18,9 @@ public class ObjectStyleUtils {
 
             Drawable drawable = AppCompatResources.getDrawable(context, iconResource);
 
+            if (drawable != null)
+                drawable.mutate();
+
             return drawable != null ? drawable : defaultDrawable;
         } else
             return defaultDrawable;
