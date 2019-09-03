@@ -54,39 +54,21 @@
                 android:text="@{ name }"
                 android:textColor="@android:color/white"
                 android:textSize="20sp"
-                app:layout_constraintEnd_toStartOf="@+id/percentage"
+                app:layout_constraintEnd_toStartOf="@+id/completion"
                 app:layout_constraintStart_toEndOf="@id/menu"
                 tools:text="TITLE\ntest\n234" />
 
-            <RelativeLayout
-                android:id="@+id/percentage"
+            <org.dhis2.utils.custom_views.CircularCompletionView
+                android:id="@+id/completion"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="6dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/moreOptions">
-
-                <ProgressBar
-                    android:id="@+id/progressGains"
-                    style="?android:attr/progressBarStyleHorizontal"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/circle_shape"
-                    android:indeterminate="false"
-                    android:max="100"
-                    android:onClick="@{()->presenter.goToSummary()}"
-                    android:progress="0"
-                    android:progressDrawable="@drawable/progress_circle" />
-
-                <TextView
-                    android:id="@+id/progress"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:textColor="@color/yellow_fdd"
-                    android:textSize="12sp"
-                    tools:text="100%" />
-            </RelativeLayout>
+                android:layout_height="0dp"
+                android:onClick="@{()->presenter.goToSummary()}"
+                app:layout_constraintBottom_toBottomOf="@id/moreOptions"
+                app:layout_constraintEnd_toStartOf="@id/moreOptions"
+                app:layout_constraintTop_toTopOf="@+id/moreOptions"
+                app:percentageColor="@color/bg_white_f9f"
+                app:percentageSize="13sp"
+                app:strokeSize="3dp" />
 
             <ImageView
                 android:id="@+id/moreOptions"
