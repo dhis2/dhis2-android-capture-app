@@ -10,6 +10,8 @@ import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.BitmapFactory;
+import android.graphics.PointF;
+import android.graphics.RectF;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -40,6 +42,9 @@ import androidx.paging.PagedList;
 import androidx.recyclerview.widget.DividerItemDecoration;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.mapbox.geojson.BoundingBox;
+import com.mapbox.geojson.Feature;
+import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
@@ -86,6 +91,7 @@ import javax.inject.Inject;
 
 import io.reactivex.Flowable;
 import io.reactivex.functions.Consumer;
+import kotlin.Pair;
 import timber.log.Timber;
 
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.fillColor;
@@ -98,7 +104,8 @@ import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconOffset;
 @BindingMethods({
         @BindingMethod(type = FloatingActionButton.class, attribute = "app:srcCompat", method = "setImageDrawable")
 })
-public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTEContractsModule.View {
+public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTEContractsModule.View,
+        MapboxMap.OnMapClickListener {
 
     ActivitySearchBinding binding;
     @Inject
@@ -365,7 +372,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     public void setLiveData(LiveData<PagedList<SearchTeiModel>> liveData) {
         if (!fromRelationship) {
-            liveData.observeForever(searchTeiModels -> {
+            liveData.observe(this, searchTeiModels -> {
                 Trio<PagedList<SearchTeiModel>, String, Boolean> data = presenter.getMessage(searchTeiModels);
                 if (data.val1().isEmpty()) {
                     binding.messageContainer.setVisibility(View.GONE);
@@ -622,115 +629,100 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     /*region MAP*/
     @Override
-    public Consumer<LiveData<PagedList<SearchTeiModel>>> setMap() {
+    public Consumer<Pair<FeatureCollection, BoundingBox>> setMap() {
         return data -> {
-            binding.mapView.getMapAsync(mapboxMap -> {
-                map = mapboxMap;
+            if (map == null)
+                binding.mapView.getMapAsync(mapboxMap -> {
+                    map = mapboxMap;
 
-                if (map.getStyle() == null)
-                    map.setStyle(Style.MAPBOX_STREETS, style -> {
+                    if (map.getStyle() == null)
+                        map.setStyle(Style.MAPBOX_STREETS, style -> {
 
-                                style.addImage("ICON_ID", BitmapFactory.decodeResource(getResources(), R.drawable.mapbox_marker_icon_default));
+                                    map.addOnMapClickListener(this);
 
-                                setSource(style);
+                                    style.addImage("ICON_ID", BitmapFactory.decodeResource(getResources(), R.drawable.mapbox_marker_icon_default));
 
-                                setLayer(style);
+                                    setSource(style, data.component1());
 
-                                LatLngBounds bounds = new LatLngBounds.Builder()
-                                        .include(new LatLng(5, 90))
-                                        .include(new LatLng(-5, 110))
-                                        .build();
-                                map.easeCamera(CameraUpdateFactory.newLatLngBounds(bounds, 50), 1200);
+                                    setLayer(style);
 
-                                markerViewManager = new MarkerViewManager(binding.mapView, map);
-                                symbolManager = new SymbolManager(binding.mapView, map, style, null,
-                                        new GeoJsonOptions().withTolerance(0.4f));
+                                    LatLngBounds bounds = LatLngBounds.from(data.component2().north(),
+                                            data.component2().east(),
+                                            data.component2().south(),
+                                            data.component2().west());
 
-                                symbolManager.setIconAllowOverlap(true);
-                                symbolManager.setTextAllowOverlap(true);
-//                                symbolManager.create(options);
+                                    map.easeCamera(CameraUpdateFactory.newLatLngBounds(bounds, 50), 1200);
 
-                               /* symbolManager.addClickListener(symbol -> {
-                                    presenter.getEventInfo(symbol.getTextField(), symbol.getLatLng());
-                                });*/
+                                    markerViewManager = new MarkerViewManager(binding.mapView, map);
+                                    symbolManager = new SymbolManager(binding.mapView, map, style, null,
+                                            new GeoJsonOptions().withTolerance(0.4f));
 
-                            }
-                    );
-                else {
-//                    symbolManager.create(options);
-                }
-            });
+                                    symbolManager.setIconAllowOverlap(true);
+                                    symbolManager.setTextAllowOverlap(true);
+                                    symbolManager.create(data.component1());
+
+                                }
+                        );
+                    else {
+                        ((GeoJsonSource) mapboxMap.getStyle().getSource("teis")).setGeoJson(data.component1());
+                        LatLngBounds bounds = LatLngBounds.from(data.component2().north(),
+                                data.component2().east(),
+                                data.component2().south(),
+                                data.component2().west());
+
+                        map.easeCamera(CameraUpdateFactory.newLatLngBounds(bounds, 50), 1200);
+                    }
+                });
+            else {
+                ((GeoJsonSource) map.getStyle().getSource("teis")).setGeoJson(data.component1());
+                LatLngBounds bounds = LatLngBounds.from(data.component2().north(),
+                        data.component2().east(),
+                        data.component2().south(),
+                        data.component2().west());
+
+                map.easeCamera(CameraUpdateFactory.newLatLngBounds(bounds, 50), 1200);
+            }
         };
     }
 
-    private void setSource(Style style) {
-        style.addSource(new GeoJsonSource("teis", "{\n" +
-                "  \"type\": \"FeatureCollection\",\n" +
-                "  \"features\": [\n" +
-                "    {\n" +
-                "      \"type\": \"Feature\",\n" +
-                "      \"geometry\": {\n" +
-                "        \"type\": \"Polygon\",\n" +
-                "        \"coordinates\": [\n" +
-                "          [\n" +
-                "            [100.0, -1.0], [101.0, -1.0], [101.0, -2.0],\n" +
-                "            [100.0, -2.0], [100.0, -1.0]\n" +
-                "          ]\n" +
-                "          ]\n" +
-                "      },\n" +
-                "      \"properties\": {\n" +
-                "        \"prop0\": \"value0\"\n" +
-                "      }\n" +
-                "    },\n" +
-                "    {\n" +
-                "      \"type\": \"Feature\",\n" +
-                "      \"geometry\": {\n" +
-                "        \"type\": \"Polygon\",\n" +
-                "        \"coordinates\": [\n" +
-                "          [\n" +
-                "            [102.0, 1.0], [103.0, 1.0], [103.0, 2.0],\n" +
-                "            [102.0, 2.0], [102.0, 1.0]\n" +
-                "          ]\n" +
-                "        ]\n" +
-                "      },\n" +
-                "      \"properties\": {\n" +
-                "        \"prop0\": \"value0\",\n" +
-                "        \"prop1\": 0.0\n" +
-                "      }\n" +
-                "    },\n" +
-                "    {\n" +
-                "      \"type\": \"Feature\",\n" +
-                "      \"geometry\": {\n" +
-                "        \"type\": \"Polygon\",\n" +
-                "        \"coordinates\": [\n" +
-                "          [\n" +
-                "            [100.0, 0.5], [100.5, 0.0], [101.0, 0.5],\n" +
-                "            [100.5, 1.0], [100.0, 0.5]\n" +
-                "          ]\n" +
-                "        ]\n" +
-                "      },\n" +
-                "      \"properties\": {\n" +
-                "        \"prop0\": \"value0\",\n" +
-                "        \"prop1\": { \"this\": \"that\" }\n" +
-                "      }\n" +
-                "    }\n" +
-                "  ]\n" +
-                "}"));
+    private void setSource(Style style, FeatureCollection featureCollection) {
+        style.addSource(new GeoJsonSource("teis", featureCollection));
     }
 
     private void setLayer(Style style) {
-        if (featureType == FeatureType.POINT) {
-            SymbolLayer symbolLayer = new SymbolLayer("LAYER_ID", "teis").withProperties(
-                    PropertyFactory.iconImage("ICON_ID"),
-                    iconAllowOverlap(true),
-                    iconOffset(new Float[]{0f, -9f})
-            );
-            style.addLayerBelow(symbolLayer, "settlement-label");
-        } else {
+
+        SymbolLayer symbolLayer = new SymbolLayer("POINT_LAYER", "teis").withProperties(
+                PropertyFactory.iconImage("ICON_ID"),
+                iconAllowOverlap(true),
+                iconOffset(new Float[]{0f, -9f})
+        );
+        symbolLayer.setMinZoom(0);
+        style.addLayer(symbolLayer);
+
+        if (featureType != FeatureType.POINT)
             style.addLayerBelow(new FillLayer("POLYGON_LAYER", "teis").withProperties(
-                    fillColor(getResources().getColor(R.color.green_7ed))), "settlement-label"
+                    fillColor(
+//                            getResources().getColor(R.color.green_7ed)
+                            ColorUtils.getPrimaryColorWithAlpha(this, ColorUtils.ColorType.PRIMARY_LIGHT, 150f)
+                    )
+                    ), "settlement-label"
             );
+
+    }
+
+    @Override
+    public boolean onMapClick(@NonNull LatLng point) {
+        PointF pointf = map.getProjection().toScreenLocation(point);
+        RectF rectF = new RectF(pointf.x - 10, pointf.y - 10, pointf.x + 10, pointf.y + 10);
+        List<Feature> features = map.queryRenderedFeatures(rectF, featureType == FeatureType.POINT ? "POINT_LAYER" : "POLYGON_LAYER");
+        if (!features.isEmpty()) {
+            for (Feature feature : features) {
+                presenter.onTEIClick(feature.getStringProperty("teiUid"), false);
+            }
+            return true;
         }
+
+        return false;
     }
 
     /*endregion*/

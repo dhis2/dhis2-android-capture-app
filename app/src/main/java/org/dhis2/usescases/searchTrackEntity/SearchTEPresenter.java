@@ -164,19 +164,19 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         compositeDisposable.add(
                 mapProcessor
                         .flatMap(unit ->
-                                FilterManager.getInstance().asFlowable()
-                                        .startWith(FilterManager.getInstance())
-                                        .flatMap(filterManager -> searchRepository.searchTeiForMap(
-                                                selectedProgram, trackedEntityType,
-                                                filterManager.getOrgUnitUidsFilters(),
-                                                filterManager.getStateFilters(),
-                                                queryData, NetworkUtils.isOnline(view.getContext()))
+                                queryProcessor.startWith(queryData)
+                                        .flatMap(query ->
+                                                searchRepository.searchTeiForMap(
+                                                        selectedProgram, trackedEntityType,
+                                                        FilterManager.getInstance().getOrgUnitUidsFilters(),
+                                                        FilterManager.getInstance().getStateFilters(),
+                                                        query, NetworkUtils.isOnline(view.getContext()))
                                         ))
                         .map(GeometryUtils.INSTANCE::getSourceFromTeis)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                next -> Timber.d("SOURCE IS:\n%s", next.toString()),
+                                view.setMap(),
                                 Timber::e,
                                 () -> Timber.d("COMPLETED")
                         ));

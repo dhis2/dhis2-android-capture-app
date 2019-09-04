@@ -150,8 +150,9 @@ public class SearchRepositoryImpl implements SearchRepository {
         TrackedEntityInstanceQuery.Builder queryBuilder = setQueryBuilder(selectedProgram, trackedEntityType, orgUnits);
         if (!states.isEmpty())
             queryBuilder.states(states);
-        else
-            queryBuilder.states(Arrays.asList(State.SYNCED, State.TO_POST, State.TO_UPDATE, State.WARNING, State.ERROR));
+       /* else
+            queryBuilder.states(Arrays.asList(State.SYNCED, State.TO_POST, State.TO_UPDATE, State.WARNING, State.ERROR));*/
+
         List<DatePeriod> periods = FilterManager.getInstance().getPeriodFilters();
 
         if (periods.size() > 0) {

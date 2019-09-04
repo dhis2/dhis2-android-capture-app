@@ -4,6 +4,10 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.paging.PagedList;
 
+import com.mapbox.geojson.BoundingBox;
+import com.mapbox.geojson.FeatureCollection;
+import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
+
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.general.AbstractActivityContracts;
@@ -21,6 +25,7 @@ import java.util.List;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
+import kotlin.Pair;
 
 /**
  * QUADRAM. Created by ppajuelo on 02/11/2017.
@@ -67,7 +72,7 @@ public class SearchTEContractsModule {
 
         Consumer<FeatureType> featureType();
 
-        Consumer<LiveData<PagedList<SearchTeiModel>>> setMap();
+        Consumer<Pair<FeatureCollection, BoundingBox>> setMap();
     }
 
     public interface Presenter {
