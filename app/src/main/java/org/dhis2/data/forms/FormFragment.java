@@ -218,6 +218,10 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
             teiCoordinatesView.setCurrentLocationListener(this);
         }
         setupActionBar();
+
+        formPresenter.onAttach(this);
+        if (saveButton != null)
+            formPresenter.initializeSaveObservable();
     }
 
     private void setupActionBar() {
@@ -307,15 +311,18 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     @Override
     public void onResume() {
         super.onResume();
-        formPresenter.onAttach(this);
-        if (saveButton != null)
-            formPresenter.initializeSaveObservable();
+
     }
 
     @Override
     public void onPause() {
-        formPresenter.onDetach();
         super.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        formPresenter.onDetach();
+        super.onDestroy();
     }
 
     @NonNull
@@ -554,7 +561,10 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
 
     @Override
     public void onCurrentLocationClick(Geometry geometry) {
-        publishCoordinatesChanged(geometry);
+        if (coordinatesViewToUpdate.getId() == R.id.coordinates_view)
+            publishCoordinatesChanged(geometry);
+        else
+            publishTeiCoodinatesChanged(geometry);
     }
 
     @Override
@@ -579,10 +589,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
                         geometry = GeometryHelper.createMultiPolygonGeometry(new Gson().fromJson(dataExtra, type));
                     }
                     coordinatesViewToUpdate.updateLocation(geometry);
-                    if (coordinatesViewToUpdate.getId() == R.id.coordinates_view)
-                        publishCoordinatesChanged(geometry);
-                    else
-                        publishTeiCoodinatesChanged(geometry);
+
                     this.coordinatesViewToUpdate = null;
                 }
                 break;
