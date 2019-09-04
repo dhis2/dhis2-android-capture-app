@@ -50,6 +50,7 @@ import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQuer
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -61,6 +62,7 @@ import java.util.Objects;
 
 import javax.annotation.Nonnull;
 
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import timber.log.Timber;
 
@@ -147,6 +149,10 @@ public class SearchRepositoryImpl implements SearchRepository {
                                                                      boolean isOnline) {
 
         TrackedEntityInstanceQuery.Builder queryBuilder = setQueryBuilder(selectedProgram, trackedEntityType, orgUnits);
+        if (!states.isEmpty())
+            queryBuilder.states(states);
+       /* else
+            queryBuilder.states(Arrays.asList(State.SYNCED, State.TO_POST, State.TO_UPDATE, State.WARNING, State.ERROR));*/
 
         List<DatePeriod> periods = FilterManager.getInstance().getPeriodFilters();
 
@@ -191,6 +197,58 @@ public class SearchRepositoryImpl implements SearchRepository {
                 return dataSource;
             }
         }, 10).build();
+    }
+
+    @NonNull
+    @Override
+    public Flowable<List<SearchTeiModel>> searchTeiForMap(@Nullable Program selectedProgram,
+                                                          @NonNull String trackedEntityType,
+                                                          @NonNull List<String> orgUnits,
+                                                          @Nonnull List<State> states,
+                                                          @Nullable HashMap<String, String> queryData,
+                                                          boolean isOnline) {
+
+        TrackedEntityInstanceQuery.Builder queryBuilder = setQueryBuilder(selectedProgram, trackedEntityType, orgUnits);
+
+        List<DatePeriod> periods = FilterManager.getInstance().getPeriodFilters();
+
+        if (periods.size() > 0) {
+            queryData.remove(Constants.ENROLLMENT_DATE_UID);
+            queryBuilder.programStartDate(periods.get(0).startDate());
+            queryBuilder.programEndDate(periods.get(0).endDate());
+
+        } else if (queryData != null && !isEmpty(queryData.get(Constants.ENROLLMENT_DATE_UID))) {
+            try {
+                Date enrollmentDate = DateUtils.uiDateFormat().parse(queryData.get(Constants.ENROLLMENT_DATE_UID));
+                queryData.remove(Constants.ENROLLMENT_DATE_UID);
+
+                queryBuilder.programStartDate(enrollmentDate);
+                queryBuilder.programEndDate(enrollmentDate);
+                periods.add(DatePeriod.create(enrollmentDate, enrollmentDate));
+
+            } catch (ParseException ex) {
+                Timber.d(ex.getMessage());
+            }
+        }
+
+        TrackedEntityInstanceQuery query = queryBuilder
+                .page(2)
+                .pageSize(50)
+                .filter(formatQueryData(queryData))
+                .build();
+
+        if (isOnline && states.isEmpty())
+            return d2.trackedEntityModule().trackedEntityInstanceQuery.offlineFirst().query(query).get().toFlowable()
+                    .flatMapIterable(list -> list)
+                    .map(tei -> transform(tei, selectedProgram, true))
+                    .toList().toFlowable();
+        else
+            return d2.trackedEntityModule().trackedEntityInstanceQuery.offlineOnly().query(query).get().toFlowable()
+                    .map(list -> filterByState(list, states))
+                    .map(list -> filterByPeriod(list, periods))
+                    .flatMapIterable(list -> list)
+                    .map(tei -> transform(tei, selectedProgram, true))
+                    .toList().toFlowable();
     }
 
     @NonNull

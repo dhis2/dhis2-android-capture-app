@@ -305,8 +305,24 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
 
     @Override
     public void onDetach() {
-        formPresenter.onDetach();
         super.onDetach();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        formPresenter.onDetach();
+        super.onDestroy();
     }
 
     @NonNull
@@ -545,7 +561,10 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
 
     @Override
     public void onCurrentLocationClick(Geometry geometry) {
-        publishCoordinatesChanged(geometry);
+        if (coordinatesViewToUpdate.getId() == R.id.coordinates_view)
+            publishCoordinatesChanged(geometry);
+        else
+            publishTeiCoodinatesChanged(geometry);
     }
 
     @Override
@@ -570,10 +589,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
                         geometry = GeometryHelper.createMultiPolygonGeometry(new Gson().fromJson(dataExtra, type));
                     }
                     coordinatesViewToUpdate.updateLocation(geometry);
-                    if (coordinatesViewToUpdate.getId() == R.id.coordinates_view)
-                        publishCoordinatesChanged(geometry);
-                    else
-                        publishTeiCoodinatesChanged(geometry);
+
                     this.coordinatesViewToUpdate = null;
                 }
                 break;

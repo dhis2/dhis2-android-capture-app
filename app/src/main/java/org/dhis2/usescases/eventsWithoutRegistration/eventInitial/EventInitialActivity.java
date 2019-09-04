@@ -209,9 +209,9 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
         if (binding.actionButton != null) {
             disposable.add(RxView.clicks(binding.actionButton)
-                    .debounce(300, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
+                    .debounce(500, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
                     .subscribe(v -> {
-                                binding.actionButton.setClickable(false);
+                                binding.actionButton.setEnabled(false);
                                 String programStageModelUid = programStage == null ? "" : programStage.uid();
                                 if (eventUid == null) { // This is a new Event
                                     if (eventCreationType == EventCreationType.REFERAL && tempCreate.equals(PERMANENT)) {
@@ -304,6 +304,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     @Override
     protected void onResume() {
         super.onResume();
+        binding.actionButton.setEnabled(true);
         presenter.init(this, programUid, eventUid, selectedOrgUnit, programStageUid);
     }
 

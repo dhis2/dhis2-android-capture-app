@@ -9,12 +9,12 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.RippleDrawable;
 import android.util.TypedValue;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.dhis2.R;
 
 import java.util.ArrayList;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -33,13 +33,18 @@ public class ColorUtils {
     }
 
     public static int parseColor(@NonNull String hexColor) {
-            if (hexColor.length() == 4) {//Color is formatted as #fff
-                char r = hexColor.charAt(1);
-                char g = hexColor.charAt(2);
-                char b = hexColor.charAt(3);
-                hexColor = "#" + r + r + g + g + b + b; //formatted to #ffff
-            }
-            return Color.parseColor(hexColor);
+        if (hexColor.length() == 4) {//Color is formatted as #fff
+            char r = hexColor.charAt(1);
+            char g = hexColor.charAt(2);
+            char b = hexColor.charAt(3);
+            hexColor = "#" + r + r + g + g + b + b; //formatted to #ffff
+        }
+        return Color.parseColor(hexColor);
+    }
+
+    public static int getPrimaryColorWithAlpha(Context context, ColorType primaryLight, float alpha) {
+        int primayColor = getPrimaryColor(context, primaryLight);
+        return androidx.core.graphics.ColorUtils.setAlphaComponent(primayColor, 155);
     }
 
     public enum ColorType {

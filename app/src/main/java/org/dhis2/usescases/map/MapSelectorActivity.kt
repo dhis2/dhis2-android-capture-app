@@ -12,8 +12,8 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
+import com.mapbox.android.core.location.LocationEngineProvider
+import com.mapbox.android.core.permissions.PermissionsManager
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.Point
 import com.mapbox.geojson.Polygon
@@ -21,6 +21,9 @@ import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
 import com.mapbox.mapboxsdk.geometry.LatLng
+import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions
+import com.mapbox.mapboxsdk.location.modes.CameraMode
+import com.mapbox.mapboxsdk.location.modes.RenderMode
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
@@ -39,28 +42,44 @@ import org.dhis2.usescases.map.point.PointViewModel
 import org.dhis2.usescases.map.polygon.PolygonAdapter
 import org.dhis2.usescases.map.polygon.PolygonViewModel
 import org.hisp.dhis.android.core.common.FeatureType
-import java.util.*
+import timber.log.Timber
 
 
 /**
  * Created by Cristian on 15/03/2018.
  */
 
-class MapSelectorActivity : ActivityGlobalAbstract() {
+class MapSelectorActivity : ActivityGlobalAbstract(), MapActivityLocationCallback.OnLocationChanged {
+
+    override fun onLocationChanged(latLng: LatLng) {
+        Timber.d("NEW LOCATION %s, %s", latLng.latitude, latLng.longitude)
+
+        if(!init) {
+            init = true
+            map.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(latLng.latitude, latLng.longitude), 13.0))
+
+            val cameraPosition = CameraPosition.Builder()
+                    .target(LatLng(latLng.latitude, latLng.longitude))      // Sets the center of the map to location user
+                    .zoom(15.0)                   // Sets the zoom
+                    .build()                   // Creates a CameraPosition from the builder
+            map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
+        }
+    }
 
     lateinit var mapView: MapView
     lateinit var map: MapboxMap
-    lateinit var mFusedLocationClient: FusedLocationProviderClient
+    //    lateinit var mFusedLocationClient: FusedLocationProviderClient
     var style: Style? = null
     lateinit var location_type: FeatureType
     lateinit var binding: ActivityMapSelectorBinding
     val arrayOfIds = mutableListOf<String>()
+    var init : Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Mapbox.getInstance(this, BuildConfig.MAPBOX_ACCESS_TOKEN)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_map_selector)
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+//        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         binding.back.setOnClickListener { v -> finish() }
         location_type = FeatureType.valueOf(intent.getStringExtra(LOCATION_TYPE_EXTRA))
         mapView = binding.mapView
@@ -69,6 +88,7 @@ class MapSelectorActivity : ActivityGlobalAbstract() {
             map = mapboxMap
             mapboxMap.setStyle(Style.MAPBOX_STREETS) { style ->
                 this.style = style
+                enableLocationComponent()
                 centerMapOnCurrentLocation()
             }
             when (location_type) {
@@ -80,9 +100,45 @@ class MapSelectorActivity : ActivityGlobalAbstract() {
         }
     }
 
+    @SuppressWarnings("MissingPermission")
+    private fun enableLocationComponent() {
+
+        // Check if permissions are enabled and if not request
+        if (PermissionsManager.areLocationPermissionsGranted(this)) {
+
+            // Get an instance of the component
+            val locationComponent = map?.locationComponent
+
+            // Activate with a built LocationComponentActivationOptions object
+            locationComponent?.activateLocationComponent(LocationComponentActivationOptions.builder(this, style!!).build())
+
+            // Enable to make component visible
+            locationComponent?.isLocationComponentEnabled = true
+
+            // Set the component's camera mode
+            locationComponent?.cameraMode = CameraMode.TRACKING
+
+            // Set the component's render mode
+            locationComponent?.renderMode = RenderMode.COMPASS
+
+            locationComponent.zoomWhileTracking(13.0)
+
+            LocationEngineProvider.getBestLocationEngine(this).getLastLocation(
+                    MapActivityLocationCallback(this)
+            )
+
+        } else {
+
+            /*  permissionsManager = PermissionsManager(this)
+
+              permissionsManager?.requestLocationPermissions(this)*/
+
+        }
+    }
+
 
     private fun bindPoint() {
-        val viewModel =  ViewModelProviders.of(this).get(PointViewModel::class.java)
+        val viewModel = ViewModelProviders.of(this).get(PointViewModel::class.java)
         binding.recycler.layoutManager = LinearLayoutManager(this)
         binding.recycler.adapter = PointAdapter(viewModel)
         map.addOnMapClickListener { it ->
@@ -149,7 +205,7 @@ class MapSelectorActivity : ActivityGlobalAbstract() {
     }
 
     private fun bindPolygon() {
-        val viewModel =  ViewModelProviders.of(this).get(PolygonViewModel::class.java)
+        val viewModel = ViewModelProviders.of(this).get(PolygonViewModel::class.java)
         binding.recycler.layoutManager = GridLayoutManager(this, 2)
         viewModel.response.observe(this, Observer<MutableList<PolygonViewModel.PolygonPoint>> {
             binding.recycler.adapter = PolygonAdapter(it, viewModel)
@@ -173,7 +229,7 @@ class MapSelectorActivity : ActivityGlobalAbstract() {
     }
 
     private fun bindMultiPolygon() {
-        val viewModel =  ViewModelProviders.of(this).get(MultiPolygonViewModel::class.java)
+        val viewModel = ViewModelProviders.of(this).get(MultiPolygonViewModel::class.java)
 
     }
 
@@ -183,7 +239,7 @@ class MapSelectorActivity : ActivityGlobalAbstract() {
             style.removeLayer(sourceName)
             style.removeSource(sourceName)
             arrayOfIds.forEach {
-                style.getLayer(it)?.let{layer ->
+                style.getLayer(it)?.let { layer ->
                     style.removeLayer(layer)
                 }
                 style.getSource(it)?.let {
@@ -193,14 +249,14 @@ class MapSelectorActivity : ActivityGlobalAbstract() {
             arrayOfIds.clear()
             val points = mutableListOf<MutableList<Point>>()
             points.add(mutableListOf())
-            list.forEach {point ->
+            list.forEach { point ->
                 point.point?.let {
                     points[0].add(it)
                     arrayOfIds.add(point.uuid)
                     printPoint(it, point.source!!, point.layer!!, point.uuid, R.drawable.ic_oval_green)
                 }
             }
-            if (points[0].size > 3) {
+            if (points[0].size > 2) {
                 if (style.getSource(sourceName) == null) {
                     style.addSource(GeoJsonSource(sourceName, Polygon.fromLngLats(points)))
                     style.addLayerBelow(FillLayer(sourceName, sourceName).withProperties(
@@ -262,17 +318,18 @@ class MapSelectorActivity : ActivityGlobalAbstract() {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION), ACCESS_COARSE_LOCATION_PERMISSION_REQUEST)
             return
         }
-        mFusedLocationClient.lastLocation.addOnSuccessListener { location ->
-            if (location != null) {
-                map.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(location.latitude, location.longitude), 13.0))
 
-                val cameraPosition = CameraPosition.Builder()
-                        .target(LatLng(location.latitude, location.longitude))      // Sets the center of the map to location user
-                        .zoom(15.0)                   // Sets the zoom
-                        .build()                   // Creates a CameraPosition from the builder
-                map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
-            }
-        }
+        /* mFusedLocationClient.lastLocation.addOnSuccessListener { location ->
+             if (location != null) {
+                 map.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(location.latitude, location.longitude), 13.0))
+
+                 val cameraPosition = CameraPosition.Builder()
+                         .target(LatLng(location.latitude, location.longitude))      // Sets the center of the map to location user
+                         .zoom(15.0)                   // Sets the zoom
+                         .build()                   // Creates a CameraPosition from the builder
+                 map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
+             }
+         }*/
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {

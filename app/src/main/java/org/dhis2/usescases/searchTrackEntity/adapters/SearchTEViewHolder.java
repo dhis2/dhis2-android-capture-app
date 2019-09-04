@@ -87,13 +87,16 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
 
         File file = FileResourcesUtil.getFileForAttribute(itemView.getContext(), searchTeiModel.getTei().uid() + "_" + searchTeiModel.getProfilePictureUid() + ".png");
         Drawable placeHolderId = ObjectStyleUtils.getIconResource(itemView.getContext(), searchTeiModel.getDefaultTypeIcon(), R.drawable.photo_temp_gray);
-        Glide.with(itemView.getContext())
-                .load(file)
-                .placeholder(placeHolderId)
-                .error(placeHolderId)
-                .transition(withCrossFade())
-                .transform(new CircleCrop())
-                .into(binding.trackedEntityImage);
+        if (file.exists())
+            Glide.with(itemView.getContext())
+                    .load(file)
+                    .placeholder(placeHolderId)
+                    .error(placeHolderId)
+                    .transition(withCrossFade())
+                    .transform(new CircleCrop())
+                    .into(binding.trackedEntityImage);
+        else
+            binding.trackedEntityImage.setImageDrawable(placeHolderId);
 
     }
 
