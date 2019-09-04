@@ -100,9 +100,12 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
      */
     @Override
     public void showOrgUnitDialog(List<OrganisationUnit> data) {
-        OrgUnitDialog orgUnitDialog = OrgUnitDialog.getInstace().setMultiSelection(false);
-        orgUnitDialog.setOrgUnits(data);
-        orgUnitDialog.setTitle(getString(R.string.org_unit))
+        OrgUnitDialog orgUnitDialog = OrgUnitDialog.getInstace();
+        orgUnitDialog
+                .setMultiSelection(false)
+                .setOrgUnits(data)
+                .setProgram(dataSetUid)
+                .setTitle(getString(R.string.org_unit))
                 .setPossitiveListener(v -> {
                     if (orgUnitDialog.getSelectedOrgUnit() != null && !orgUnitDialog.getSelectedOrgUnit().isEmpty()) {
                         selectedOrgUnit = orgUnitDialog.getSelectedOrgUnitModel();
@@ -114,8 +117,8 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
                     checkActionVisivbility();
                     orgUnitDialog.dismiss();
                 })
-                .setNegativeListener(v -> orgUnitDialog.dismiss());
-        orgUnitDialog.show(getSupportFragmentManager(), OrgUnitDialog.class.getSimpleName());
+                .setNegativeListener(v -> orgUnitDialog.dismiss())
+                .show(getSupportFragmentManager(), OrgUnitDialog.class.getSimpleName());
     }
 
     @Override
