@@ -205,7 +205,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         return rules;
     }
 
-    private boolean haveDisplayActionIndicator(ProgramRule programRule) {
+    private boolean haveDisplayActionIndicator(@NonNull ProgramRule programRule) {
         for (ProgramRuleAction programRuleAction : programRule.programRuleActions()) {
             if ((programRuleAction.programRuleActionType() == ProgramRuleActionType.DISPLAYTEXT ||
                     programRuleAction.programRuleActionType() == ProgramRuleActionType.DISPLAYKEYVALUEPAIR)
@@ -459,7 +459,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 return dataValue.value();
             }
 
-        return "";
+        return null;
     }
 
     @NonNull
