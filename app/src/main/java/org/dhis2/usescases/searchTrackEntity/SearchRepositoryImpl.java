@@ -13,6 +13,7 @@ import androidx.paging.PagedList;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.utils.CodeGenerator;
@@ -189,7 +190,6 @@ public class SearchRepositoryImpl implements SearchRepository {
                     .map(tei -> transform(tei, selectedProgram, true));
         }
 
-
         return new LivePagedListBuilder(new DataSource.Factory() {
             @NonNull
             @Override
@@ -253,7 +253,7 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     @NonNull
     @Override
-    public Observable<String> saveToEnroll(@NonNull String teiType, @NonNull String orgUnit, @NonNull String programUid, @Nullable String teiUid, HashMap<String, String> queryData, Date enrollmentDate) {
+    public Observable<Pair<String, String>> saveToEnroll(@NonNull String teiType, @NonNull String orgUnit, @NonNull String programUid, @Nullable String teiUid, HashMap<String, String> queryData, Date enrollmentDate) {
         Date currentDate = Calendar.getInstance().getTime();
         return Observable.defer(() -> {
             TrackedEntityInstance trackedEntityInstance = null;
@@ -346,7 +346,7 @@ public class SearchRepositoryImpl implements SearchRepository {
             }
 
 
-            return Observable.just(enrollment.uid());
+            return Observable.just(Pair.create(enrollment.uid(), trackedEntityInstance.uid()));
         });
     }
 

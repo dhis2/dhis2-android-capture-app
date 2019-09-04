@@ -1,33 +1,21 @@
 package org.dhis2.usescases.teiDashboard.teiDataDetail;
 
-import android.Manifest;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-
-import androidx.core.app.ActivityCompat;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 
-import org.dhis2.usescases.map.MapSelectorActivity;
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import org.dhis2.usescases.teiDashboard.DashboardRepository;
-import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
-import org.hisp.dhis.android.core.arch.helpers.GeometryHelper;
-import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 
 import java.util.Date;
-import java.util.List;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
-
-import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter.ACCESS_COARSE_LOCATION_PERMISSION_REQUEST;
 
 /**
  * QUADRAM. Created by frodriguez on 12/13/2017.
@@ -80,17 +68,27 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
 
             );
 
-            disposable.add(
-                    enrollmentStore.enrollmentGeometry()
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(
-                                    view::setLocation,
-                                    Timber::e
-                            )
+            disposable.add(enrollmentStore.captureTeiCoordinates()
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(view.renderTeiCoordinates(), Timber::e)
             );
+
+            disposable.add(view.reportCoordinatesChanged()
+                    .filter(geometry -> geometry != null)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(enrollmentStore.storeCoordinates(), Timber::e));
+
+            disposable.add(view.teiCoordinatesChanged()
+                    .filter(geometry -> geometry != null)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(enrollmentStore.storeTeiCoordinates(), Timber::e));
+
+
         } else {
-            //TODO: NO SE HA SELECCIONADO PROGRAMA
+            //TODO: PROGRAM NOT SELECTED
             disposable.add(Observable.zip(
                     dashboardRepository.getTrackedEntityInstance(uid),
                     dashboardRepository.getProgramTrackedEntityAttributes(null),
@@ -184,52 +182,10 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
     }
 
     @Override
-    public void onLocationClick() {
-        if (ActivityCompat.checkSelfPermission(view.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(view.getAbstractActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)) {
-                // TODO CRIS:  Show an expanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
-
-            } else {
-                ActivityCompat.requestPermissions(view.getAbstractActivity(),
-                        new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
-                        ACCESS_COARSE_LOCATION_PERMISSION_REQUEST);
-            }
-            return;
-        }
-        mFusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
-            if (location != null) {
-                saveLocation(GeometryHelper.createPointGeometry(location.getLatitude(), location.getLongitude()));
-            }
-        });
-    }
-
-    @Override
-    public void onLocation2Click() {
-        Intent intent = new Intent(view.getContext(), MapSelectorActivity.class);
-        view.getAbstractActivity().startActivityForResult(intent, Constants.RQ_MAP_LOCATION);
-    }
-
-    @Override
     public void onDestroy() {
         disposable.clear();
     }
 
-    @Override
-    public void saveLocation(Geometry geometry) {
-        disposable.add(
-                enrollmentStore.saveCoordinates(geometry)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                data -> {
-                                },
-                                Timber::e
-                        )
-        );
-    }
 
     @Override
     public void onIncidentDateClick(Date date) {

@@ -118,7 +118,7 @@ public class HelpManager {
             FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(activity)
                     .title(activity.getString(R.string.tuto_event_initial_1))
                     .enableAutoTextPosition()
-                    .focusOn(activity.findViewById(R.id.percentage))
+                    .focusOn(activity.findViewById(R.id.completion))
                     .closeOnTouch(true)
                     .build();
             steps.add(tuto1);
