@@ -418,7 +418,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
             enrollmentTrio = trio;
             progressBar.setVisibility(View.VISIBLE);
             formPresenter.checkMandatoryFields();
-            if (trio.val2() != null)
+            if (trio.val2() != null && !trio.val2().isEmpty())
                 formPresenter.getNeedInitial(trio.val2());
         };
     }
