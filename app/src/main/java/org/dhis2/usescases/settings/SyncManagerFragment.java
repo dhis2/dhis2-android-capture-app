@@ -1,4 +1,4 @@
-package org.dhis2.usescases.syncManager;
+package org.dhis2.usescases.settings;
 
 
 import android.app.NotificationChannel;
@@ -474,6 +474,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         binding.parameterData.setVisibility(View.GONE);
         binding.deleteDataButton.setVisibility(View.GONE);
         binding.resetButton.setVisibility(View.GONE);
+        binding.smsContent.setVisibility(View.GONE);
 
         switch (settingsItem) {
             case 0:
@@ -490,6 +491,9 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 break;
             case 6:
                 binding.resetButton.setVisibility(View.VISIBLE);
+                break;
+            case 7:
+                binding.smsContent.setVisibility(View.VISIBLE);
                 break;
         }
     }
