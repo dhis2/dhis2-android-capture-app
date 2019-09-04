@@ -1,4 +1,4 @@
-package org.dhis2.usescases.syncManager;
+package org.dhis2.usescases.settings;
 
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
