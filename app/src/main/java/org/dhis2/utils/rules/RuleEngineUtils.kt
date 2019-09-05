@@ -35,7 +35,7 @@ class RuleEngineUtils {
         }
 
         fun translateToRules(programRules: List<ProgramRule>, programStage: String): List<Rule> {
-            val rules = Companion.translateToRules(programRules)
+            val rules = translateToRules(programRules)
             return rules.filter {
                 it.programStage() == null || it.programStage().equals(programStage)
             }
