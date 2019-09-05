@@ -16,6 +16,6 @@ interface RulesUtilsProvider {
 
     fun applyRuleEffects(programStages: MutableMap<String, ProgramStage>, calcResult: Result<RuleEffect>)
 
-    fun applyRuleEffects(fields : ArrayList<String>, calcResult: Result<RuleEffect>)
+    fun applyRuleEffects(fields : List<String>, calcResult: Result<RuleEffect>)
 
 }

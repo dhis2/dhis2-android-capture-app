@@ -20,8 +20,10 @@ import org.dhis2.usescases.teiDashboard.DashboardRepository;
 import org.dhis2.usescases.teiDashboard.eventDetail.EventDetailActivity;
 import org.dhis2.usescases.teiDashboard.nfc_data.NfcDataWriteActivity;
 import org.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity;
+import org.dhis2.utils.CodeGeneratorImpl;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.EventCreationType;
+import org.dhis2.utils.RulesUtilsProviderImpl;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
@@ -100,6 +102,8 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
                                 if (eventModel.status() == EventStatus.SCHEDULE && eventModel.dueDate() != null && eventModel.dueDate().before(DateUtils.getInstance().getToday())) { //If a schedule event dueDate is before today the event is skipped
                                     dashboardRepository.updateState(eventModel, EventStatus.SKIPPED);
                                 }
+                                if (eventModel.eventDate() != null)
+                                    new RulesUtilsProviderImpl(new CodeGeneratorImpl()).evaluateEvent(eventModel.uid());
                             }
                             return eventModels;
                         })
