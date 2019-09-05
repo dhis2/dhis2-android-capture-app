@@ -22,8 +22,7 @@ import org.hisp.dhis.android.core.dataset.DataSet;
 import org.hisp.dhis.android.core.dataset.DataSetCompleteRegistration;
 import org.hisp.dhis.android.core.dataset.DataSetElement;
 import org.hisp.dhis.android.core.dataset.Section;
-import org.hisp.dhis.android.core.datavalue.DataValue;
-import org.hisp.dhis.android.core.datavalue.DataValueTableInfo;
+import org.hisp.dhis.android.core.datavalue.DataValueObjectRepository;
 import org.hisp.dhis.android.core.period.Period;
 
 import java.util.ArrayList;
@@ -32,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 import io.reactivex.BackpressureStrategy;
+import io.reactivex.Completable;
 import io.reactivex.Flowable;
 
 public class DataValueRepositoryImpl implements DataValueRepository {
@@ -153,28 +153,20 @@ public class DataValueRepositoryImpl implements DataValueRepository {
 
     }
 
-    @Override
-    public Flowable<Long> insertDataValue(DataValue dataValue) {
-        ContentValues contentValues = dataValue.toContentValues();
-        contentValues.remove("deleted");
-        return Flowable.just(briteDatabase.insert(DataValueTableInfo.TABLE_INFO.name(), contentValues));
-    }
+    public Completable updateValue(DataSetTableModel dataValue) {
 
-    public Flowable<Integer> updateValue(DataValue dataValue) {
-        String where = "dataElement = '" + dataValue.dataElement() + "' AND period = '" + dataValue.period() +
-                "' AND organisationUnit = '" + dataValue.organisationUnit() +
-                "' AND attributeOptionCombo = '" + dataValue.attributeOptionCombo() +
-                "' AND categoryOptionCombo = '" + dataValue.categoryOptionCombo() + "'";
+        DataValueObjectRepository dataValueObject = d2.dataValueModule().dataValues.value(
+                dataValue.period(),
+                dataValue.organisationUnit(),
+                dataValue.dataElement(),
+                dataValue.categoryOptionCombo(),
+                dataValue.attributeOptionCombo()
+        );
 
-        if (dataValue.value() != null && !dataValue.value().isEmpty()) {
-            ContentValues contentValues = new ContentValues();
-            contentValues.put("value", dataValue.value());
-            contentValues.put(DataValue.Columns.STATE, dataValue.state().name());
-            contentValues.put("lastUpdated", DateUtils.databaseDateFormat().format(dataValue.lastUpdated()));
-
-            return Flowable.just(briteDatabase.update(DataValueTableInfo.TABLE_INFO.name(), contentValues, where));
-        } else
-            return Flowable.just(briteDatabase.delete(DataValueTableInfo.TABLE_INFO.name(), where));
+        if (dataValue.value() != null && !dataValue.value().isEmpty())
+            return dataValueObject.set(dataValue.value());
+        else
+            return dataValueObject.delete();
 
     }
 
