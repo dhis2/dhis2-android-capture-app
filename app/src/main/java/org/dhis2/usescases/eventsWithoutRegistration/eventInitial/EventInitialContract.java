@@ -50,6 +50,8 @@ public class EventInitialContract {
 
         Consumer<Pair<TreeNode, List<TreeNode>>> addNodeToTree();
 
+        Consumer<List<OrganisationUnit>> showSearchTree();
+
         void setEvent(Event event);
 
         void setLocation(Geometry geometry);
@@ -133,7 +135,7 @@ public class EventInitialContract {
 
         void goToSummary();
 
-        void getOrgUnits(String programId);
+        void getOrgUnits(String date, String programId);
 
         void getEventSections(@NonNull String eventId);
 
@@ -152,6 +154,8 @@ public class EventInitialContract {
         Date getStageLastDate(String programStageUid, String enrollmentUid);
 
         void onExpandOrgUnitNode(TreeNode treeNode, String parentUid, String date);
+
+        void onSearch(String date, String search);
     }
 
 }

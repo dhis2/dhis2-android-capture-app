@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +37,7 @@ public class OrgUnitDialog extends DialogFragment {
     private View.OnClickListener possitiveListener;
     private View.OnClickListener negativeListener;
     private TreeNode.TreeNodeClickListener nodeClickListener;
+    private TextWatcher searchTextWatcher;
     private String title;
     private List<OrganisationUnit> myOrgs;
     private Context context;
@@ -72,6 +74,11 @@ public class OrgUnitDialog extends DialogFragment {
 
     public OrgUnitDialog setNodeClickListener(TreeNode.TreeNodeClickListener listener) {
         this.nodeClickListener = listener;
+        return this;
+    }
+
+    public OrgUnitDialog setSearchTextWatcher(TextWatcher textWatcher) {
+        this.searchTextWatcher = textWatcher;
         return this;
     }
 
@@ -123,6 +130,8 @@ public class OrgUnitDialog extends DialogFragment {
         binding.title.setText(title);
         binding.acceptButton.setOnClickListener(possitiveListener);
         binding.clearButton.setOnClickListener(negativeListener);
+        binding.search.addTextChangedListener(searchTextWatcher);
+
         if(myOrgs != null)
             renderTree(myOrgs);
         setRetainInstance(true);
@@ -133,7 +142,7 @@ public class OrgUnitDialog extends DialogFragment {
         return isMultiSelection;
     }
 
-    private void renderTree(@NonNull List<OrganisationUnit> myOrgs) {
+    public void renderTree(@NonNull List<OrganisationUnit> myOrgs) {
 
         binding.treeContainer.removeAllViews();
         treeView = new AndroidTreeView(getContext(), OrgUnitUtils.renderTree_2(context, myOrgs, isMultiSelection, programUid));

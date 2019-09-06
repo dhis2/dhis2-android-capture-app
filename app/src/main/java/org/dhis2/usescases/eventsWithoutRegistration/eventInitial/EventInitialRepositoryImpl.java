@@ -64,11 +64,11 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     @NonNull
     @Override
-    public Observable<List<OrganisationUnit>> filteredOrgUnits(String date, String programId, String parentId) {
+    public Observable<List<OrganisationUnit>> filteredOrgUnits(String date, String programId, String parentId, String search) {
         if (date == null)
-            return parentId == null ? orgUnits() : orgUnits(programId, parentId);
+            return !search.isEmpty() ? searchOrgUnits(search) : parentId == null ? orgUnits(programId) : orgUnits(programId, parentId);
         else
-            return (parentId == null ? orgUnits() : orgUnits(programId, parentId))
+            return (!search.isEmpty() ? searchOrgUnits(search) : parentId == null ? orgUnits(programId) : orgUnits(programId, parentId))
                     .map(organisationUnits -> {
                         Iterator<OrganisationUnit> iterator = organisationUnits.iterator();
                         while (iterator.hasNext()) {
@@ -81,39 +81,23 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                     });
     }
 
-    /*@NonNull
-    @Override
-    public Observable<List<OrganisationUnit>> searchOrgUnits(String date, String programId) {
-        return Observable.fromCallable(() -> d2.organisationUnitModule().organisationUnits.withPrograms().blockingGet())
-                .map(organisationUnits -> {
-                    List<OrganisationUnit> programOrganisationUnits = new ArrayList<>();
-                    for (OrganisationUnit organisationUnit : organisationUnits) {
-                        for (Program program : organisationUnit.programs()) {
-                            if (program.uid().equals(programId))
-                                programOrganisationUnits.add(organisationUnit);
-                        }
-                    }
-                    return programOrganisationUnits;
-                }).map(organisationUnits -> {
-                    if (date != null) {
-                        Iterator<OrganisationUnit> iterator = organisationUnits.iterator();
-                        while (iterator.hasNext()) {
-                            OrganisationUnit organisationUnit = iterator.next();
-                            if (organisationUnit.openingDate() != null && organisationUnit.openingDate().after(DateUtils.uiDateFormat().parse(date))
-                                    || organisationUnit.closedDate() != null && organisationUnit.closedDate().before(DateUtils.uiDateFormat().parse(date)))
-                                iterator.remove();
-                        }
-                    }
-                    return organisationUnits;
-                })
-                ;
-    }*/
+
+    private Observable<List<OrganisationUnit>> searchOrgUnits(String search) {
+        return d2.organisationUnitModule().organisationUnits
+                .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
+                .byDisplayName().like("%" + search + "%")
+                .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
+                .withPrograms()
+                .get().toObservable();
+    }
+
 
     @NonNull
-    public Observable<List<OrganisationUnit>> orgUnits() {
+    public Observable<List<OrganisationUnit>> orgUnits(String programId) {
 
-        return Observable.fromCallable(() -> {
-            int level = 1;
+        return Observable.fromCallable(() -> orgUnitsByLevel(1, programId));
+
+            /*int level = 1;
             while (d2.organisationUnitModule().organisationUnits.byLevel().eq(level)
                     .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).withPrograms().blockingCount() < 1)
                 level++;
@@ -121,7 +105,20 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
             return d2.organisationUnitModule().organisationUnits.byLevel().eq(level)
                     .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).withPrograms().blockingGet();
 
-        });
+        }).map(organisationUnits -> {
+            if(organisationUnits.size()==1 && !d2.organisationUnitModule().organisationUnits.byParentUid().eq(organisationUnits.get(0).uid()).blockingIsEmpty())
+                organisationUnits.addAll(d2.organisationUnitModule().organisationUnits.byLevel().eq(organisationUnits.get(0).level()+1)
+                        .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
+                        .withPrograms().blockingGet());
+
+            return organisationUnits;
+        }).map(organisationUnits -> {
+            List<OrganisationUnit> programOrganisationUnits = new ArrayList<>();
+            for (OrganisationUnit organisationUnit : organisationUnits) {
+                if (UidsHelper.getUids(organisationUnit.programs()).contains(programId))
+                    programOrganisationUnits.add(organisationUnit);
+            }
+            return programOrganisationUnits.isEmpty() ? organisationUnits : programOrganisationUnits;*/
     }
 
 
@@ -138,6 +135,23 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                     }
                     return programOrganisationUnits.isEmpty() ? organisationUnits : programOrganisationUnits;
                 });
+    }
+
+    private List<OrganisationUnit> orgUnitsByLevel(int level, String programId){
+        List<OrganisationUnit> organisationUnits = d2.organisationUnitModule().organisationUnits
+                .byLevel().eq(level)
+                .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
+                .withPrograms().blockingGet();
+
+        Iterator<OrganisationUnit> orgUnitIterator = organisationUnits.iterator();
+        while(orgUnitIterator.hasNext())
+            if(!UidsHelper.getUids(orgUnitIterator.next().programs()).contains(programId))
+                orgUnitIterator.remove();
+
+        if (organisationUnits.size() < 1)
+            return orgUnitsByLevel(level+1, programId);
+        else
+            return organisationUnits;
     }
 
     @NonNull
@@ -274,16 +288,16 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
             // TODO: Should we use program or programStage featureType
             if (d2.programModule().programs.byUid().eq(programUid).one().blockingGet().featureType() != null)
                 switch (d2.programModule().programs.byUid().eq(programUid).one().blockingGet().featureType()) {
-                case NONE:
-                    break;
-                case POINT:
-                case POLYGON:
-                case MULTI_POLYGON:
-                    eventRepository.setGeometry(geometry);
-                    break;
-                default:
-                    break;
-            }
+                    case NONE:
+                        break;
+                    case POINT:
+                    case POLYGON:
+                    case MULTI_POLYGON:
+                        eventRepository.setGeometry(geometry);
+                        break;
+                    default:
+                        break;
+                }
             return uid;
         });
     }
@@ -319,16 +333,16 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                     FeatureType featureType = d2.programModule().programs.uid(eventRepository.blockingGet().program()).blockingGet().featureType();
                     if (featureType != null)
                         switch (featureType) {
-                        case NONE:
-                            break;
-                        case POINT:
-                        case POLYGON:
-                        case MULTI_POLYGON:
-                            eventRepository.setGeometry(geometry);
-                            break;
-                        default:
-                            break;
-                    }
+                            case NONE:
+                                break;
+                            case POINT:
+                            case POLYGON:
+                            case MULTI_POLYGON:
+                                eventRepository.setGeometry(geometry);
+                                break;
+                            default:
+                                break;
+                        }
                     return eventRepository.blockingGet();
                 });
     }

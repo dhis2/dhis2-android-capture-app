@@ -18,6 +18,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import io.reactivex.Completable;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 
@@ -34,7 +35,7 @@ public interface EventInitialRepository {
     Observable<CategoryCombo> catCombo(String programUid);
 
     @NonNull
-    Observable<List<OrganisationUnit>> filteredOrgUnits(String date, String programId, String parentId);
+    Observable<List<OrganisationUnit>> filteredOrgUnits(String date, String programId, String parentId, String search);
 
     Observable<String> createEvent(String enrollmentUid, @Nullable String trackedEntityInstanceUid,
                                    @NonNull Context context, @NonNull String program,

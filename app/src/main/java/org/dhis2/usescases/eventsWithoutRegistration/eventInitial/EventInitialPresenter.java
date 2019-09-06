@@ -83,6 +83,7 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     private String programStageId;
     private List<OrganisationUnit> orgUnits;
     private FlowableProcessor<Trio<TreeNode, String, String>> parentOrgUnit;
+    private FlowableProcessor<Pair<String, String>> onSearchListener;
 
 
     public EventInitialPresenter(@NonNull EventSummaryRepository eventSummaryRepository,
@@ -101,6 +102,7 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
         this.programId = programId;
         this.programStageId = programStageId;
         parentOrgUnit = PublishProcessor.create();
+        onSearchListener = PublishProcessor.create();
 
         compositeDisposable = new CompositeDisposable();
 
@@ -147,17 +149,27 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
             getProgramStages(programId, programStageId);
         }
 
-        getOrgUnits(programId);
+        getOrgUnits(null, programId);
 
         compositeDisposable.add(
                 parentOrgUnit
-                        .flatMap(orgUnit -> eventInitialRepository.filteredOrgUnits(orgUnit.val2(), programId, orgUnit.val1()).toFlowable(BackpressureStrategy.LATEST)
+                        .flatMap(orgUnit -> eventInitialRepository.filteredOrgUnits(orgUnit.val2(), programId, orgUnit.val1(), "").toFlowable(BackpressureStrategy.LATEST)
                                 .map(orgUnits1 -> OrgUnitUtils.createNode_2(view.getContext(), orgUnits1, false))
                                 .map(nodeList -> Pair.create(orgUnit.val0(), nodeList)))
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 view.addNodeToTree(),
+                                Timber::e
+                        ));
+
+        compositeDisposable.add(
+                onSearchListener
+                        .flatMap(search -> eventInitialRepository.filteredOrgUnits(search.val0(), programId, null, search.val1()).toFlowable(BackpressureStrategy.LATEST))
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                view.showSearchTree(),
                                 Timber::e
                         ));
 
@@ -188,8 +200,8 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     }
 
     @Override
-    public void getOrgUnits(String programId) {
-        compositeDisposable.add(eventInitialRepository.filteredOrgUnits(null, programId, null)
+    public void getOrgUnits(String date, String programId) {
+        compositeDisposable.add(eventInitialRepository.filteredOrgUnits(date, programId, null, "")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -521,6 +533,12 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     @Override
     public void onExpandOrgUnitNode(TreeNode treeNode, String parentUid, String date) {
         parentOrgUnit.onNext(Trio.create(treeNode, parentUid, date));
+
+    }
+
+    @Override
+    public void onSearch(String date, String search) {
+        onSearchListener.onNext(Pair.create(date, search));
 
     }
 }

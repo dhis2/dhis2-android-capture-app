@@ -10,6 +10,8 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.SparseBooleanArray;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -473,6 +475,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             binding.coordinatesLayout.setVisibility(View.GONE);*/
 
 
+       presenter.getOrgUnits(DateUtils.databaseDateFormat().format(selectedDate), programUid);
     }
 
     @Override
@@ -492,6 +495,13 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                 orgUnitDialog.getTreeView().addNode(node.val0(), childNode);
             }
             orgUnitDialog.getTreeView().expandNode(node.val0());
+        };
+    }
+
+    @Override
+    public Consumer<List<OrganisationUnit>> showSearchTree() {
+        return orgUnits -> {
+            orgUnitDialog.renderTree(orgUnits);
         };
     }
 
@@ -981,6 +991,22 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                             presenter.onExpandOrgUnitNode(node, ((OrganisationUnit) node.getValue()).uid(), DateUtils.databaseDateFormat().format(selectedDate));
                         else
                             node.setExpanded(node.isExpanded());
+                    })
+                    .setSearchTextWatcher(new TextWatcher() {
+                        @Override
+                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                            //empty
+                        }
+
+                        @Override
+                        public void onTextChanged(CharSequence s, int start, int before, int count) {
+                            presenter.onSearch(DateUtils.databaseDateFormat().format(selectedDate), s.toString());
+                        }
+
+                        @Override
+                        public void afterTextChanged(Editable s) {
+                            //empty
+                        }
                     });
 
             if (!orgUnitDialog.isAdded())

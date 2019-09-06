@@ -38,9 +38,9 @@ public class OrgUnitUtils {
         ArrayList<String> myOrgUnitUids = new ArrayList<>();
 
         for (OrganisationUnit myorg : myOrgs) {
-            if (myorg.programs() != null && UidsHelper.getUids(myorg.programs()).contains(programId))
+            /*if (myorg.programs() != null && UidsHelper.getUids(myorg.programs()).contains(programId))
                 myOrgUnitUids.add(myorg.uid());
-            else if (myorg.dataSets() != null && UidsHelper.getUids(myorg.dataSets()).contains(programId))
+            else if (myorg.dataSets() != null && UidsHelper.getUids(myorg.dataSets()).contains(programId))*/
                 myOrgUnitUids.add(myorg.uid());
             String[] pathName = myorg.displayNamePath().split("/");
             String[] pathUid = myorg.path().split("/");
