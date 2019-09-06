@@ -578,8 +578,8 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
             uid = orgUnitDataValue+"_"+periodIdDataValue+"_"+attributeComboDataValue;
         }
         OneTimeWorkRequest request = syncGranularEventBuilder.build();
-        WorkManager.getInstance().beginUniqueWork(uid, ExistingWorkPolicy.KEEP, request).enqueue();
-        WorkManager.getInstance().getWorkInfosForUniqueWorkLiveData(uid)
+        WorkManager.getInstance(getContext().getApplicationContext()).beginUniqueWork(uid, ExistingWorkPolicy.KEEP, request).enqueue();
+        WorkManager.getInstance(getContext().getApplicationContext()).getWorkInfosForUniqueWorkLiveData(uid)
                 .observe(this, workInfo -> {
                     if(workInfo != null && workInfo.size() > 0)
                         manageWorkInfo(workInfo.get(0));

@@ -117,14 +117,14 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
      */
     @Override
     public void syncData(int seconds, String scheduleTag) {
-        WorkManager.getInstance().cancelUniqueWork(scheduleTag);
+        WorkManager.getInstance(view.getContext().getApplicationContext()).cancelUniqueWork(scheduleTag);
         PeriodicWorkRequest.Builder syncDataBuilder = new PeriodicWorkRequest.Builder(SyncDataWorker.class, seconds, TimeUnit.SECONDS);
         syncDataBuilder.addTag(scheduleTag);
         syncDataBuilder.setConstraints(new Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build());
         PeriodicWorkRequest request = syncDataBuilder.build();
-        WorkManager.getInstance().enqueueUniquePeriodicWork(scheduleTag, ExistingPeriodicWorkPolicy.REPLACE, request);
+        WorkManager.getInstance(view.getContext().getApplicationContext()).enqueueUniquePeriodicWork(scheduleTag, ExistingPeriodicWorkPolicy.REPLACE, request);
     }
 
     /**
@@ -137,14 +137,14 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
      */
     @Override
     public void syncMeta(int seconds, String scheduleTag) {
-        WorkManager.getInstance().cancelUniqueWork(scheduleTag);
+        WorkManager.getInstance(view.getContext().getApplicationContext()).cancelUniqueWork(scheduleTag);
         PeriodicWorkRequest.Builder syncDataBuilder = new PeriodicWorkRequest.Builder(SyncMetadataWorker.class, seconds, TimeUnit.SECONDS);
         syncDataBuilder.addTag(scheduleTag);
         syncDataBuilder.setConstraints(new Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build());
         PeriodicWorkRequest request = syncDataBuilder.build();
-        WorkManager.getInstance().enqueueUniquePeriodicWork(scheduleTag, ExistingPeriodicWorkPolicy.REPLACE, request);
+        WorkManager.getInstance(view.getContext().getApplicationContext()).enqueueUniquePeriodicWork(scheduleTag, ExistingPeriodicWorkPolicy.REPLACE, request);
     }
 
     /**
@@ -178,13 +178,13 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build());
         OneTimeWorkRequest request = syncDataBuilder.build();
-        WorkManager.getInstance().beginUniqueWork(Constants.META_NOW, ExistingWorkPolicy.REPLACE, request).enqueue();
+        WorkManager.getInstance(view.getContext().getApplicationContext()).beginUniqueWork(Constants.META_NOW, ExistingWorkPolicy.REPLACE, request).enqueue();
     }
 
 
     @Override
     public void cancelPendingWork(String tag) {
-        WorkManager.getInstance().cancelUniqueWork(tag);
+        WorkManager.getInstance(view.getContext().getApplicationContext()).cancelUniqueWork(tag);
     }
 
     @Override
@@ -309,8 +309,8 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
     @Override
     public void wipeDb() {
         try {
-            WorkManager.getInstance().cancelAllWork();
-            WorkManager.getInstance().pruneWork();
+            WorkManager.getInstance(view.getContext().getApplicationContext()).cancelAllWork();
+            WorkManager.getInstance(view.getContext().getApplicationContext()).pruneWork();
             d2.wipeModule().wipeEverything();
             // clearing cache data
             deleteDir(view.getAbstracContext().getCacheDir());

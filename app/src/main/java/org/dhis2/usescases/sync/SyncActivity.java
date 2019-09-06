@@ -46,13 +46,13 @@ public class SyncActivity extends ActivityGlobalAbstract implements SyncContract
        ((App) getApplicationContext()).userComponent().plus(new SyncModule()).inject(this);
         super.onCreate(savedInstanceState);
 
-        WorkManager.getInstance().getWorkInfosByTagLiveData(Constants.META).observe(this, workInfoList -> {
+        WorkManager.getInstance(getApplicationContext()).getWorkInfosByTagLiveData(Constants.META).observe(this, workInfoList -> {
             if (workInfoList != null && !workInfoList.isEmpty()) {
                 Timber.d("WORK %s WITH STATUS %s", Constants.META, workInfoList.get(0).getState().name());
                 handleMetaState(workInfoList.get(0).getState());
             }
         });
-        WorkManager.getInstance().getWorkInfosByTagLiveData(Constants.DATA).observe(this, status -> {
+        WorkManager.getInstance(getApplicationContext()).getWorkInfosByTagLiveData(Constants.DATA).observe(this, status -> {
             if (status != null && !status.isEmpty()) {
                 Timber.d("WORK %s WITH STATUS %s", Constants.DATA, status.get(0).getState().name());
                 handleDataState(status.get(0).getState());
