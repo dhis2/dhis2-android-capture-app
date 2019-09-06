@@ -9,7 +9,7 @@ import android.os.Bundle
 import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mapbox.android.core.location.LocationEngineProvider
@@ -138,7 +138,7 @@ class MapSelectorActivity : ActivityGlobalAbstract(), MapActivityLocationCallbac
 
 
     private fun bindPoint() {
-        val viewModel = ViewModelProviders.of(this).get(PointViewModel::class.java)
+        val viewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(application).create(PointViewModel::class.java)
         binding.recycler.layoutManager = LinearLayoutManager(this)
         binding.recycler.adapter = PointAdapter(viewModel)
         map.addOnMapClickListener { it ->
@@ -205,7 +205,7 @@ class MapSelectorActivity : ActivityGlobalAbstract(), MapActivityLocationCallbac
     }
 
     private fun bindPolygon() {
-        val viewModel = ViewModelProviders.of(this).get(PolygonViewModel::class.java)
+        val viewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(application).create(PolygonViewModel::class.java)
         binding.recycler.layoutManager = GridLayoutManager(this, 2)
         viewModel.response.observe(this, Observer<MutableList<PolygonViewModel.PolygonPoint>> {
             binding.recycler.adapter = PolygonAdapter(it, viewModel)
@@ -229,7 +229,7 @@ class MapSelectorActivity : ActivityGlobalAbstract(), MapActivityLocationCallbac
     }
 
     private fun bindMultiPolygon() {
-        val viewModel = ViewModelProviders.of(this).get(MultiPolygonViewModel::class.java)
+        val viewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(application).create(MultiPolygonViewModel::class.java)
 
     }
 

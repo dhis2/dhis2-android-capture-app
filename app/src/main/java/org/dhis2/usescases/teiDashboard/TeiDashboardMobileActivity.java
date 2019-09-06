@@ -22,7 +22,7 @@ import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentStatePagerAdapter;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
@@ -87,7 +87,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         }
         ((App) getApplicationContext()).createDashboardComponent(new TeiDashboardModule(teiUid, programUid)).inject(this);
         super.onCreate(savedInstanceState);
-        dashboardViewModel = ViewModelProviders.of(this).get(DashboardViewModel.class);
+        dashboardViewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()).create(DashboardViewModel.class);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dashboard_mobile);
         binding.setPresenter(presenter);

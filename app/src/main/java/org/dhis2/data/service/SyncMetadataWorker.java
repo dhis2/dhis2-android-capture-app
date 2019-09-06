@@ -9,6 +9,7 @@ import android.os.Build;
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.work.Data;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
@@ -95,10 +96,16 @@ public class SyncMetadataWorker extends Worker {
             if (!isMetaOk)
                 return Result.retry();
 
-            return Result.success();
+            return Result.success(createOutputData(true));
         } else {
-            return Result.failure();
+            return Result.failure(createOutputData(false));
         }
+    }
+
+    private Data createOutputData(boolean state) {
+        return new Data.Builder()
+                .putBoolean("METADATA_STATE", state)
+                .build();
     }
 
 

@@ -9,6 +9,7 @@ import android.os.Build;
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.work.Data;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
@@ -87,7 +88,13 @@ public class SyncDataWorker extends Worker {
 
         cancelNotification();
 
-        return Result.success();
+        return Result.success(createOutputData(true));
+    }
+
+    private Data createOutputData(boolean state) {
+        return new Data.Builder()
+                .putBoolean("DATA_STATE", state)
+                .build();
     }
 
     private void triggerNotification(String title, String content) {

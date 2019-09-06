@@ -9,8 +9,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.DividerItemDecoration;
+
 import com.google.gson.Gson;
 
+import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.databinding.FragmentJiraBinding;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
@@ -22,12 +29,6 @@ import org.dhis2.utils.jira.OnJiraIssueClick;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.databinding.DataBindingUtil;
-import androidx.lifecycle.ViewModelProviders;
-import androidx.recyclerview.widget.DividerItemDecoration;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -51,7 +52,7 @@ public class JiraFragment extends FragmentGlobalAbstract implements OnJiraIssueC
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         FragmentJiraBinding binding = DataBindingUtil.inflate(inflater, R.layout.fragment_jira, container, false);
-        jiraViewModel = ViewModelProviders.of(this).get(JiraViewModel.class);
+        jiraViewModel = ViewModelProvider.AndroidViewModelFactory.getInstance((App) context.getApplicationContext()).create(JiraViewModel.class);
         jiraViewModel.init();
 
         jiraViewModel.issueListResponse().observe(this, response -> {
