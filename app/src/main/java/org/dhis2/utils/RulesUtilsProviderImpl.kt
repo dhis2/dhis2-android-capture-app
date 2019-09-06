@@ -225,29 +225,41 @@ class RulesUtilsProviderImpl(private val codeGenerator: CodeGenerator) : RulesUt
                 .constantsValue(d2.constantModule().constants.blockingGet().associate { Pair(it.uid(), it.value().toString()) })
                 .build()
 
-        val ruleEngine = ruleEngineContext.toEngineBuilder()
-                .enrollment(
-                        RuleEngineUtils.translateToRuleEnrollment(
-                                enrollment,
-                                d2.trackedEntityModule().trackedEntityAttributeValues
-                                        .byTrackedEntityInstance().eq(enrollment.trackedEntityInstance())
-                                        .blockingGet(),
-                                d2
-                        )
-                )
-                .events(
-                        RuleEngineUtils.translateToRuleEvents(
-                                d2.eventModule().events.byEnrollmentUid()
-                                        .eq(event.enrollment())
-                                        .byUid().notIn(event.uid())
-                                        .byStatus().`in`(EventStatus.ACTIVE, EventStatus.COMPLETED, EventStatus.OVERDUE)
-                                        .byEventDate().isNotNull
-                                        .blockingGet(),
-                                d2
-                        )
-                ).build()
-
-        val result = Result.success(ruleEngine.evaluate(
+        val ruleEngineBuilder = ruleEngineContext.toEngineBuilder()
+        if (event.enrollment() != null)
+            ruleEngineBuilder.enrollment(
+                    RuleEngineUtils.translateToRuleEnrollment(
+                            enrollment,
+                            d2.trackedEntityModule().trackedEntityAttributeValues
+                                    .byTrackedEntityInstance().eq(enrollment.trackedEntityInstance())
+                                    .blockingGet(),
+                            d2
+                    )
+            )
+                    .events(
+                            RuleEngineUtils.translateToRuleEvents(
+                                    d2.eventModule().events
+                                            .byEnrollmentUid().eq(event.enrollment())
+                                            .byUid().notIn(event.uid())
+                                            .byStatus().`in`(EventStatus.ACTIVE, EventStatus.COMPLETED, EventStatus.OVERDUE)
+                                            .byEventDate().isNotNull
+                                            .blockingGet(),
+                                    d2
+                            )
+                    )
+        else
+            ruleEngineBuilder.events(
+                    RuleEngineUtils.translateToRuleEvents(
+                            d2.eventModule().events
+                                    .byUid().notIn(event.uid()!!)
+                                    .byStatus().`in`(EventStatus.ACTIVE, EventStatus.COMPLETED, EventStatus.OVERDUE)
+                                    .byEventDate().isNotNull
+                                    .blockingGet(),
+                            d2
+                    )
+            )
+        ruleEngineBuilder.triggerEnvironment(TriggerEnvironment.ANDROIDCLIENT)
+        val result = Result.success(ruleEngineBuilder.build().evaluate(
                 RuleEngineUtils.translateToRuleEvents(
                         arrayOf(event).toList(),
                         d2

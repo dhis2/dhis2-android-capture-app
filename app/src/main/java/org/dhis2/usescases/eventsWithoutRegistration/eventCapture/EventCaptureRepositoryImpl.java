@@ -63,6 +63,7 @@ import org.hisp.dhis.rules.models.RuleEvent;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -390,6 +391,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         return d2.eventModule().events.withAllChildren().uid(eventUid).get()
                 .flatMap(event -> d2.programModule().programStages.uid(event.programStage()).get()
                         .map(stage -> {
+                            Timber.tag("EVENT SECTION").d("INIT CALCULATIONS");
                             RuleEffectResult effectResult = new RulesUtilsProviderImpl(new CodeGeneratorImpl()).evaluateEvent(eventUid, sectionUid);
                             List<FieldViewModel> fields = new ArrayList<>();
                             for (String deUid : effectResult.getFields()) {
@@ -427,11 +429,16 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
                             }
 
-                            //TODO: EFFECT FOR DISPLAY KEY VALUE PAIR AND DISPLAY TEXT
+                            List<ProgramStageSection> sections = d2.programModule().programStageSections.byProgramStageUid().eq(stage.uid()).blockingGet();
+                            Collections.sort(sections, (s1, s2) -> s1.sortOrder().compareTo(s2.sortOrder()));
+                            if(sections.get(sections.size()-1).uid().equals(sectionUid)){
+                                //TODO: EFFECT FOR DISPLAY KEY VALUE PAIR AND DISPLAY TEXT
+                            }
 
                             return checkRenderType(fields, d2.programModule().programStages.uid(event.programStage()).withAllChildren().blockingGet());
 
-                        }))
+                        })).doOnSuccess(data->                            Timber.tag("EVENT SECTION").d("END CALCULATIONS")
+)
                 .toFlowable();
     }
 
