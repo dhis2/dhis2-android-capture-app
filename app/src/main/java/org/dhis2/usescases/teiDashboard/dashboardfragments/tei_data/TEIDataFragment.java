@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ObservableBoolean;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -106,7 +107,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     @Override
     public void onStart() {
         super.onStart();
-        dashboardViewModel = ViewModelProvider.AndroidViewModelFactory.getInstance((App)context.getApplicationContext()).create(DashboardViewModel.class);
+        dashboardViewModel =ViewModelProviders.of(activity).get(DashboardViewModel.class);
 
     }
 

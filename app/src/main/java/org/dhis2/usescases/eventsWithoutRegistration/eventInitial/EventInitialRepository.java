@@ -20,6 +20,7 @@ import java.util.Map;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.reactivex.disposables.Disposable;
 
 /**
  * QUADRAM. Created by Cristian E. on 02/11/2017.

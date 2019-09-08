@@ -68,11 +68,6 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
 
             );
 
-            disposable.add(enrollmentStore.captureTeiCoordinates()
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(view.renderTeiCoordinates(), Timber::e)
-            );
 
             disposable.add(view.reportCoordinatesChanged()
                     .filter(geometry -> geometry != null)
@@ -85,6 +80,16 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(enrollmentStore.storeTeiCoordinates(), Timber::e));
+
+            disposable.add(view.reportCoordinatesCleared()
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(enrollmentStore.clearCoordinates(), Timber::e));
+
+            disposable.add(view.teiCoordinatesCleared()
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(enrollmentStore.clearTeiCoordinates(), Timber::e));
 
 
         } else {
@@ -113,6 +118,15 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
                 )
         );
 
+    }
+
+    @Override
+    public void checkTeiCoordinates() {
+        disposable.add(enrollmentStore.captureTeiCoordinates()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(view.renderTeiCoordinates(), Timber::e)
+        );
     }
 
     @Override
@@ -204,7 +218,8 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                data -> {},
+                                data -> {
+                                },
                                 Timber::e
                         )
         );
@@ -217,7 +232,8 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                data -> {},
+                                data -> {
+                                },
                                 Timber::e
                         )
         );

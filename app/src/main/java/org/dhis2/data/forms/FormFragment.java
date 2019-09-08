@@ -555,7 +555,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
         if (getActivity() != null && isAdded()) {
             this.coordinatesViewToUpdate = coordinatesView;
             FeatureType featureType = coordinatesView.getId() == R.id.tei_coordinates_view ? teFeatureType : enrollmentFeatureType;
-            startActivityForResult(MapSelectorActivity.Companion.create(getActivity(), featureType), Constants.RQ_MAP_LOCATION_VIEW);
+            startActivityForResult(MapSelectorActivity.Companion.create(getActivity(), featureType,coordinatesView.currentCoordinates()), Constants.RQ_MAP_LOCATION_VIEW);
         }
     }
 

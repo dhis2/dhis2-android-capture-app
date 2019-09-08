@@ -4,11 +4,13 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.paging.PagedList;
 
-import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions;
+import com.mapbox.geojson.BoundingBox;
+import com.mapbox.geojson.FeatureCollection;
 
 import org.dhis2.data.tuples.Pair;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
+import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.period.DatePeriod;
@@ -30,7 +32,7 @@ public interface ProgramEventDetailRepository {
     LiveData<PagedList<ProgramEventViewModel>> filteredProgramEvents(List<DatePeriod> dateFilter, List<String> orgUnitFilter, List<CategoryOptionCombo> catOptionComboUid, List<EventStatus> eventStatus, List<State> states);
 
     @NonNull
-    Flowable<List<SymbolOptions>> filteredEventsForMap(List<DatePeriod> dateFilter, List<String> orgUnitFilter, List<CategoryOptionCombo> catOptionComboUid, List<EventStatus> eventStatus, List<State> states);
+    Flowable<kotlin.Pair<FeatureCollection, BoundingBox>> filteredEventsForMap(List<DatePeriod> dateFilter, List<String> orgUnitFilter, List<CategoryOptionCombo> catOptionComboUid, List<EventStatus> eventStatus, List<State> states);
 
     @NonNull
     Observable<Program> program();
@@ -42,4 +44,6 @@ public interface ProgramEventDetailRepository {
     Single<Boolean> hasAccessToAllCatOptions();
 
     Flowable<ProgramEventViewModel> getInfoForEvent(String eventUid);
+
+    Single<FeatureType> featureType();
 }

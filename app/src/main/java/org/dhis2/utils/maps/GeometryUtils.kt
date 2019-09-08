@@ -1,12 +1,12 @@
 package org.dhis2.utils.maps
 
-import androidx.annotation.VisibleForTesting
 import com.mapbox.geojson.*
-import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
+import org.hisp.dhis.android.core.event.Event
+import timber.log.Timber
 
 object GeometryUtils {
 
@@ -30,7 +30,11 @@ object GeometryUtils {
                 val geometry = it.tei.geometry()!!
 
                 if (geometry.type() == FeatureType.POINT) {
-
+                    val point = getPointFeature(geometry)
+                    if (point != null) {
+                        point.addStringProperty("teiUid", it.tei.uid())
+                        features.add(point)
+                    }
                 } else if (geometry.type() == FeatureType.POLYGON) {
                     val polygon = getPolygonFeature(geometry)
                     polygon.addStringProperty("teiUid", it.tei.uid())
@@ -45,34 +49,46 @@ object GeometryUtils {
 
     }
 
-    @VisibleForTesting
+    fun getSourceFromEvent(eventList: List<Event>): Pair<FeatureCollection, BoundingBox> {
+        boundsInt = false
+        northBound = 0.0
+        southBound = 0.0
+        eastBound = 0.0
+        westBound = 0.0
+
+        val features = eventList
+                .filter { it.geometry() != null }
+                .map {
+                    handleGeometry(it.geometry()!!, "eventUid", it.uid()!!)
+                }
+                .filter { it != null }
+        return Pair<FeatureCollection, BoundingBox>(FeatureCollection.fromFeatures(features),
+                BoundingBox.fromLngLats(westBound, southBound, eastBound, northBound))
+    }
+
+    private fun handleGeometry(geometry: Geometry, property: String, propertyValue: String): Feature? {
+
+        if (geometry.type() == FeatureType.POINT) {
+            val point = getPointFeature(geometry)
+            point?.addStringProperty(property, propertyValue)
+            return point
+        } else if (geometry.type() == FeatureType.POLYGON) {
+            val polygon = getPolygonFeature(geometry)
+            polygon.addStringProperty(property, propertyValue)
+            return polygon
+        } else
+            return null
+    }
+
     private fun getPolygonFeature(geometry: Geometry): Feature {
-
-
         val sdkPolygon = GeometryHelper.getPolygon(geometry)
         val pointList = ArrayList<Point>()
         sdkPolygon.forEach {
             it.forEach { coordinates ->
-                val lat = coordinates[0]
-                val lon = coordinates[1]
+                val lat = coordinates[1]
+                val lon = coordinates[0]
 
-                if (!boundsInt) {
-                    northBound = lat
-                    southBound = lat
-                    eastBound = lon
-                    westBound = lon
-                    boundsInt = true
-                } else {
-
-                    if (northBound < lat)
-                        northBound = lat
-                    if (southBound > lat)
-                        southBound = lat
-                    if (eastBound < lon)
-                        eastBound = lon
-                    if (westBound > lon)
-                        westBound = lon
-                }
+                checkBounds(lat, lon)
 
                 pointList.add(Point.fromLngLat(lon, lat))
             }
@@ -83,59 +99,38 @@ object GeometryUtils {
         return Feature.fromGeometry(polygon)
     }
 
-    fun getTestingGeoJsonSource(): GeoJsonSource {
-        return GeoJsonSource("teis", "{\n" +
-                "  \"type\": \"FeatureCollection\",\n" +
-                "  \"features\": [\n" +
-                "    {\n" +
-                "      \"type\": \"Feature\",\n" +
-                "      \"geometry\": {\n" +
-                "        \"type\": \"Polygon\",\n" +
-                "        \"coordinates\": [\n" +
-                "          [\n" +
-                "            [100.0, -1.0], [101.0, -1.0], [101.0, -2.0],\n" +
-                "            [100.0, -2.0], [100.0, -1.0]\n" +
-                "          ]\n" +
-                "          ]\n" +
-                "      },\n" +
-                "      \"properties\": {\n" +
-                "        \"prop0\": \"value0\"\n" +
-                "      }\n" +
-                "    },\n" +
-                "    {\n" +
-                "      \"type\": \"Feature\",\n" +
-                "      \"geometry\": {\n" +
-                "        \"type\": \"Polygon\",\n" +
-                "        \"coordinates\": [\n" +
-                "          [\n" +
-                "            [102.0, 1.0], [103.0, 1.0], [103.0, 2.0],\n" +
-                "            [102.0, 2.0], [102.0, 1.0]\n" +
-                "          ]\n" +
-                "        ]\n" +
-                "      },\n" +
-                "      \"properties\": {\n" +
-                "        \"prop0\": \"value0\",\n" +
-                "        \"prop1\": 0.0\n" +
-                "      }\n" +
-                "    },\n" +
-                "    {\n" +
-                "      \"type\": \"Feature\",\n" +
-                "      \"geometry\": {\n" +
-                "        \"type\": \"Polygon\",\n" +
-                "        \"coordinates\": [\n" +
-                "          [\n" +
-                "            [100.0, 0.5], [100.5, 0.0], [101.0, 0.5],\n" +
-                "            [100.5, 1.0], [100.0, 0.5]\n" +
-                "          ]\n" +
-                "        ]\n" +
-                "      },\n" +
-                "      \"properties\": {\n" +
-                "        \"prop0\": \"value0\",\n" +
-                "        \"prop1\": { \"this\": \"that\" }\n" +
-                "      }\n" +
-                "    }\n" +
-                "  ]\n" +
-                "}")
+    private fun getPointFeature(geometry: Geometry): Feature? {
+        val sdkPoint = GeometryHelper.getPoint(geometry)
+        val lat = sdkPoint[1]
+        val lon = sdkPoint[0]
+
+        return if (lat >= -90 && lat <= 90 && lon >= -180 && lon <= 180) {
+            checkBounds(lat, lon)
+            val point = Point.fromLngLat(lon, lat)
+            Feature.fromGeometry(point)
+        } else {
+            Timber.tag(javaClass.simpleName).d("INVALID COORDINATES lat :%s. lon: %s", lat, lon)
+            null
+        }
     }
 
+    private fun checkBounds(lat: Double, lon: Double) {
+        if (!boundsInt) {
+            northBound = lat
+            southBound = lat
+            eastBound = lon
+            westBound = lon
+            boundsInt = true
+        } else {
+
+            if (northBound < lat)
+                northBound = lat
+            if (southBound > lat)
+                southBound = lat
+            if (eastBound < lon)
+                eastBound = lon
+            if (westBound > lon)
+                westBound = lon
+        }
+    }
 }

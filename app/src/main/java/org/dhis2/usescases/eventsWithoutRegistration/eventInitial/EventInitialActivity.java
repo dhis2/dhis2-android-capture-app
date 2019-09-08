@@ -51,6 +51,7 @@ import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.EventCreationType;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.custom_views.CategoryOptionPopUp;
+import org.dhis2.utils.custom_views.CoordinatesView;
 import org.dhis2.utils.custom_views.CustomDialog;
 import org.dhis2.utils.custom_views.OrgUnitDialog;
 import org.dhis2.utils.custom_views.PeriodDialog;
@@ -151,6 +152,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     private Boolean accessData;
 
     private CompositeDisposable disposable;
+    private Geometry newGeometry;
 
     public static Bundle getBundle(String programUid, String eventUid, String eventCreationType,
                                    String teiUid, PeriodType eventPeriodType, String orgUnit, String stageUid,
@@ -223,9 +225,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                                                 selectedOrgUnit,
                                                 null,
                                                 catOptionComboUid,
-                                                GeometryHelper.createPointGeometry(
-                                                        Double.parseDouble(isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? "0" : binding.lat.getText().toString()),
-                                                        Double.parseDouble(isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? "0" : binding.lon.getText().toString()))
+                                                newGeometry
                                         );
                                     } else if (eventCreationType == EventCreationType.SCHEDULE || eventCreationType == EventCreationType.REFERAL) {
                                         presenter.scheduleEvent(
@@ -235,9 +235,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                                                 selectedOrgUnit,
                                                 null,
                                                 catOptionComboUid,
-                                                GeometryHelper.createPointGeometry(
-                                                        Double.parseDouble(isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? "0" : binding.lat.getText().toString()),
-                                                        Double.parseDouble(isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? "0" : binding.lon.getText().toString()))
+                                                newGeometry
                                         );
                                     } else {
                                         presenter.createEvent(
@@ -247,9 +245,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                                                 selectedOrgUnit,
                                                 null,
                                                 catOptionComboUid,
-                                                GeometryHelper.createPointGeometry(
-                                                        Double.parseDouble(isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? "0" : binding.lat.getText().toString()),
-                                                        Double.parseDouble(isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? "0" : binding.lon.getText().toString())),
+                                                newGeometry,
                                                 getTrackedEntityInstance);
                                     }
                                 } else {
@@ -258,14 +254,15 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                                             eventUid,
                                             DateUtils.databaseDateFormat().format(selectedDate), selectedOrgUnit, null,
                                             catOptionComboUid,
-                                            GeometryHelper.createPointGeometry(
-                                                    Double.parseDouble(isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? "0" : binding.lat.getText().toString()),
-                                                    Double.parseDouble(isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? "0" : binding.lon.getText().toString()))
+                                            newGeometry
                                     );
                                 }
                             },
                             Timber::e));
         }
+
+        binding.actionButton.setEnabled(true);
+        presenter.init(this, programUid, eventUid, selectedOrgUnit, programStageUid);
     }
 
     private void setUpScrenByCreatinType(EventCreationType eventCreationType) {
@@ -299,23 +296,23 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                     presenter.onOrgUnitButtonClick();
             });
         }
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        binding.actionButton.setEnabled(true);
-        presenter.init(this, programUid, eventUid, selectedOrgUnit, programStageUid);
+
     }
 
     @Override
     protected void onPause() {
-        presenter.onDettach();
         super.onPause();
     }
 
     @Override
     protected void onDestroy() {
+        presenter.onDettach();
         disposable.dispose();
         super.onDestroy();
     }
@@ -450,38 +447,16 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             binding.date.setEnabled(false);
             for (int i = 0; i < binding.catComboLayout.getChildCount(); i++)
                 binding.catComboLayout.getChildAt(i).findViewById(R.id.cat_combo).setEnabled(false);
-            binding.lat.setEnabled(false);
-            binding.lon.setEnabled(false);
             binding.orgUnit.setEnabled(false);
-            binding.location1.setClickable(false);
-            binding.location2.setClickable(false);
-            binding.location1.setEnabled(false);
-            binding.location2.setEnabled(false);
+            binding.geometry.setEditable(false);
             binding.temp.setEnabled(false);
             binding.actionButton.setText(getString(R.string.check_event));
             binding.executePendingBindings();
 
         }
 
-       /* if (program.captureCoordinates()) { //TODO: CHECK IF CAPTURE COORDINATES IN PROGRAM HAS ANY IMPACT IN STAGES
-            binding.coordinatesLayout.setVisibility(View.VISIBLE);
-            if (binding.location1.isClickable())
-                binding.location1.setOnClickListener(v -> presenter.onLocationClick());
-            if (binding.location2.isClickable())
-                binding.location2.setOnClickListener(v -> presenter.onLocation2Click());
-        } else
-            binding.coordinatesLayout.setVisibility(View.GONE);*/
-
-
     }
 
-    @Override
-    public void openDrawer() {
-        if (!binding.drawerLayout.isDrawerOpen(GravityCompat.END))
-            binding.drawerLayout.openDrawer(GravityCompat.END);
-        else
-            binding.drawerLayout.closeDrawer(GravityCompat.END);
-    }
 
     @Override
     public Consumer<Pair<TreeNode, List<TreeNode>>> addNodeToTree() {
@@ -506,40 +481,12 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         }
 
         if (event.geometry() != null && event.geometry().type() != FeatureType.NONE) {
-            runOnUiThread(() -> {
-                if (isEmpty(savedLat)) {
-                    if (GeometryHelper.containsAPoint(event.geometry())) {
-                        try {
-                            List<Double> points = GeometryHelper.getPoint(event.geometry());
-                            binding.lat.setText(String.valueOf(points.get(0))); //TODO: SUPPORT ALL FEATURE TYPES
-                            binding.lon.setText(String.valueOf(points.get(1)));
-                        } catch (D2Error d2Error) {
-                            d2Error.printStackTrace();
-                        }
-                    }
-                } else {
-                    binding.lat.setText(savedLat);
-                    binding.lon.setText(savedLon);
-                    savedLon = null;
-                    savedLat = null;
-                }
-            });
+            binding.geometry.updateLocation(event.geometry());
         }
 
         eventModel = event;
-    }
 
-    @Override
-    public void setLocation(Geometry geometry) {
-        try {
-            List<Double> points = GeometryHelper.getPoint(geometry);
-            binding.lat.setText(String.format(Locale.US, "%.5f", points.get(0)));
-            binding.lon.setText(String.format(Locale.US, "%.5f", points.get(1)));
-            checkActionButtonVisibility();
-        } catch (D2Error d2Error) {
-            d2Error.printStackTrace();
-        }
-
+        presenter.getEventOrgUnit(event.organisationUnit());
     }
 
     @Override
@@ -568,22 +515,19 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     @Override
     public void setProgramStage(ProgramStage programStage) {
         this.programStage = programStage;
-        if (programStage.featureType() == FeatureType.MULTI_POLYGON
-                || programStage.featureType() == FeatureType.POLYGON) {
-            binding.location1.setVisibility(View.GONE);
-        }
-        if (programStage.featureType() != null && programStage.featureType() != FeatureType.NONE) {
-            binding.coordinatesLayout.setVisibility(View.VISIBLE); //TODO: SUPPORT FOR ALL FEATURE TYPES
-            binding.location1.setOnClickListener(v -> {
-                if (v.isClickable()) presenter.onLocationClick();
-            });
-            binding.location2.setOnClickListener(v -> {
-                if (v.isClickable()) presenter.onLocation2Click(programStage.featureType());
-            });
-        } else {
-            binding.coordinatesLayout.setVisibility(View.GONE);
-        }
         binding.setProgramStage(programStage);
+
+        binding.geometry.setIsBgTransparent(true);
+        binding.geometry.setEditable(true);
+        binding.geometry.setFeatureType(programStage.featureType());
+        binding.geometry.setCurrentLocationListener(geometry -> {
+            Timber.tag("EVENTINITIAL").d("NEW GEOMETRY");
+            this.newGeometry = geometry;
+        });
+        binding.geometry.setMapListener(
+                (CoordinatesView.OnMapPositionClick) binding.geometry.getContext()
+        );
+
         if (periodType == null)
             periodType = programStage.periodType();
 
@@ -797,7 +741,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                 }.getType();
                 geometry = GeometryHelper.createMultiPolygonGeometry(new Gson().fromJson(dataExtra, type));
             }
-            setLocation(geometry);
+//            setLocation(geometry);
         }
     }
 
@@ -892,12 +836,12 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void latitudeWarning(boolean showWarning) {
-        binding.lat.setError(showWarning ? getString(R.string.formatting_error) : null);
+//        binding.lat.setError(showWarning ? getString(R.string.formatting_error) : null);
     }
 
     @Override
     public void longitudeWarning(boolean showWarning) {
-        binding.lon.setError(showWarning ? getString(R.string.formatting_error) : null);
+//        binding.lon.setError(showWarning ? getString(R.string.formatting_error) : null);
 
     }
 
@@ -945,12 +889,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             for (int i = 0; i < binding.catComboLayout.getChildCount(); i++)
                 binding.catComboLayout.getChildAt(i).findViewById(R.id.cat_combo).setEnabled(false);
             binding.actionButton.setText(getString(R.string.check_event));
-            binding.location1.setClickable(false);
-            binding.location2.setClickable(false);
-            binding.location1.setEnabled(false);
-            binding.location2.setEnabled(false);
-            binding.lat.setEnabled(false);
-            binding.lon.setEnabled(false);
+            binding.geometry.setEditable(false);
             binding.executePendingBindings();
         }
     }

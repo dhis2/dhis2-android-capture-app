@@ -13,6 +13,7 @@ import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.common.State;
+import org.hisp.dhis.android.core.common.Unit;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
@@ -113,12 +114,31 @@ public final class EnrollmentStatusStore implements EnrollmentStatusEntryStore {
 
     @NonNull
     @Override
+    public Consumer<Unit> clearCoordinates() {
+        return geometry -> {
+            EnrollmentObjectRepository repo = d2.enrollmentModule().enrollments.uid(enrollment);
+            repo.setGeometry(null);
+        };
+    }
+
+    @NonNull
+    @Override
     public Consumer<Geometry> storeTeiCoordinates() {
         return geometry -> {
             String teiUid = d2.enrollmentModule().enrollments.uid(enrollment).blockingGet().trackedEntityInstance();
             d2.trackedEntityModule().trackedEntityInstances.uid(teiUid).setGeometry(geometry);
         };
     }
+
+    @NonNull
+    @Override
+    public Consumer<Unit> clearTeiCoordinates() {
+        return geometry -> {
+            String teiUid = d2.enrollmentModule().enrollments.uid(enrollment).blockingGet().trackedEntityInstance();
+            d2.trackedEntityModule().trackedEntityInstances.uid(teiUid).setGeometry(null);
+        };
+    }
+
 
     private long update(EnrollmentStatus value) {
         sqLiteBind(updateStatement, 1, BaseIdentifiableObject.DATE_FORMAT

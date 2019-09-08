@@ -6,22 +6,21 @@ import androidx.paging.DataSource;
 import androidx.paging.LivePagedListBuilder;
 import androidx.paging.PagedList;
 
-import com.mapbox.mapboxsdk.geometry.LatLng;
-import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions;
+import com.mapbox.geojson.BoundingBox;
+import com.mapbox.geojson.FeatureCollection;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.ValueUtils;
+import org.dhis2.utils.maps.GeometryUtils;
 import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.android.core.arch.helpers.CoordinateHelper;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
 import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
-import org.hisp.dhis.android.core.common.Coordinates;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
@@ -39,7 +38,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import io.ona.kujaku.utils.helpers.converters.GeoJSONHelper;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
@@ -73,9 +71,9 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
             eventRepo = eventRepo.byOrganisationUnitUid().in(orgUnitFilter);
         if (!catOptCombList.isEmpty())
             eventRepo = eventRepo.byAttributeOptionComboUid().in(UidsHelper.getUids(catOptCombList));
-        if(!eventStatus.isEmpty())
+        if (!eventStatus.isEmpty())
             eventRepo = eventRepo.byStatus().in(eventStatus);
-        if(!states.isEmpty())
+        if (!states.isEmpty())
             eventRepo = eventRepo.byState().in(states);
         DataSource dataSource = eventRepo.byState().notIn(State.TO_DELETE).orderByEventDate(RepositoryScope.OrderByDirection.DESC).withAllChildren().getDataSource().map(event -> transformToProgramEventModel(event));
         return new LivePagedListBuilder(new DataSource.Factory() {
@@ -88,8 +86,8 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
 
     @NonNull
     @Override
-    public Flowable<List<SymbolOptions>> filteredEventsForMap(List<DatePeriod> dateFilter, List<String> orgUnitFilter, List<CategoryOptionCombo> catOptCombList,
-                                                              List<EventStatus> eventStatus, List<State> states) {
+    public Flowable<kotlin.Pair<FeatureCollection, BoundingBox>> filteredEventsForMap(List<DatePeriod> dateFilter, List<String> orgUnitFilter, List<CategoryOptionCombo> catOptCombList,
+                                                                                      List<EventStatus> eventStatus, List<State> states) {
         EventCollectionRepository eventRepo = d2.eventModule().events.byProgramUid().eq(programUid);
         if (!dateFilter.isEmpty())
             eventRepo = eventRepo.byEventDate().inDatePeriods(dateFilter);
@@ -97,29 +95,14 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
             eventRepo = eventRepo.byOrganisationUnitUid().in(orgUnitFilter);
         if (!catOptCombList.isEmpty())
             eventRepo = eventRepo.byAttributeOptionComboUid().in(UidsHelper.getUids(catOptCombList));
-        if(!eventStatus.isEmpty())
+        if (!eventStatus.isEmpty())
             eventRepo = eventRepo.byStatus().in(eventStatus);
-        if(!states.isEmpty())
+        if (!states.isEmpty())
             eventRepo = eventRepo.byState().in(states);
 
         return eventRepo.byState().notIn(State.TO_DELETE).orderByEventDate(RepositoryScope.OrderByDirection.DESC).withAllChildren().get()
-                .toFlowable()
-                .flatMap(list -> Flowable.fromCallable(() -> {
-                    List<SymbolOptions> options = new ArrayList<>();
-                    for (Event event : list)
-                        if(event.geometry()!= null && event.geometry().type() == FeatureType.POINT) {
-                            Coordinates coordinates = CoordinateHelper.getCoordinatesFromGeometry(event.geometry());
-                            options.add(
-                                    new SymbolOptions()
-                                            .withLatLng(new LatLng(coordinates.latitude(), coordinates.longitude()))
-                                            .withIconImage("ICON_ID")
-                                            .withTextField(event.uid())
-                                            .withTextSize(0f)
-                                            .withDraggable(false)
-                            );
-                        }
-                    return options;
-                }));
+                .map(GeometryUtils.INSTANCE::getSourceFromEvent)
+                .toFlowable();
     }
 
 
@@ -128,6 +111,18 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
         return d2.eventModule().events.uid(eventUid).withAllChildren().get()
                 .map(this::transformToProgramEventModel)
                 .toFlowable();
+    }
+
+    @Override
+    public Single<FeatureType> featureType() {
+        return d2.programModule().programStages
+                .byProgramUid().eq(programUid).one().get()
+                .map(stage -> {
+                    if (stage.featureType() != null)
+                        return stage.featureType();
+                    else
+                        return FeatureType.NONE;
+                });
     }
 
     private ProgramEventViewModel transformToProgramEventModel(Event event) {

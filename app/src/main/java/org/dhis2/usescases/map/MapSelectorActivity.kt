@@ -9,7 +9,7 @@ import android.os.Bundle
 import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mapbox.android.core.location.LocationEngineProvider
@@ -41,7 +41,9 @@ import org.dhis2.usescases.map.point.PointAdapter
 import org.dhis2.usescases.map.point.PointViewModel
 import org.dhis2.usescases.map.polygon.PolygonAdapter
 import org.dhis2.usescases.map.polygon.PolygonViewModel
+import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
+import org.hisp.dhis.android.core.common.Geometry
 import timber.log.Timber
 
 
@@ -54,7 +56,7 @@ class MapSelectorActivity : ActivityGlobalAbstract(), MapActivityLocationCallbac
     override fun onLocationChanged(latLng: LatLng) {
         Timber.d("NEW LOCATION %s, %s", latLng.latitude, latLng.longitude)
 
-        if(!init) {
+        if (!init) {
             init = true
             map.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(latLng.latitude, latLng.longitude), 13.0))
 
@@ -68,20 +70,21 @@ class MapSelectorActivity : ActivityGlobalAbstract(), MapActivityLocationCallbac
 
     lateinit var mapView: MapView
     lateinit var map: MapboxMap
-    //    lateinit var mFusedLocationClient: FusedLocationProviderClient
     var style: Style? = null
     lateinit var location_type: FeatureType
     lateinit var binding: ActivityMapSelectorBinding
     val arrayOfIds = mutableListOf<String>()
-    var init : Boolean = false
+    var init: Boolean = false
+
+    var initial_coordinates: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Mapbox.getInstance(this, BuildConfig.MAPBOX_ACCESS_TOKEN)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_map_selector)
-//        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         binding.back.setOnClickListener { v -> finish() }
         location_type = FeatureType.valueOf(intent.getStringExtra(LOCATION_TYPE_EXTRA))
+        initial_coordinates = intent.getStringExtra(INITIAL_GEOMETRY_COORDINATES)
         mapView = binding.mapView
         mapView.onCreate(savedInstanceState)
         mapView.getMapAsync { mapboxMap ->
@@ -90,12 +93,12 @@ class MapSelectorActivity : ActivityGlobalAbstract(), MapActivityLocationCallbac
                 this.style = style
                 enableLocationComponent()
                 centerMapOnCurrentLocation()
-            }
-            when (location_type) {
-                FeatureType.MULTI_POLYGON -> bindMultiPolygon()
-                FeatureType.POINT -> bindPoint()
-                FeatureType.POLYGON -> bindPolygon()
-                else -> finish()
+                when (location_type) {
+                    FeatureType.MULTI_POLYGON -> bindMultiPolygon(initial_coordinates)
+                    FeatureType.POINT -> bindPoint(initial_coordinates)
+                    FeatureType.POLYGON -> bindPolygon(initial_coordinates)
+                    else -> finish()
+                }
             }
         }
     }
@@ -137,11 +140,11 @@ class MapSelectorActivity : ActivityGlobalAbstract(), MapActivityLocationCallbac
     }
 
 
-    private fun bindPoint() {
-        val viewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(application).create(PointViewModel::class.java)
+    private fun bindPoint(initial_coordinates: String?) {
+        val viewModel = ViewModelProviders.of(this).get(PointViewModel::class.java)
         binding.recycler.layoutManager = LinearLayoutManager(this)
         binding.recycler.adapter = PointAdapter(viewModel)
-        map.addOnMapClickListener { it ->
+        map.addOnMapClickListener {
             val point = Point.fromLngLat(it.longitude, it.latitude)
             setPointToViewModel(point, viewModel)
             true
@@ -150,6 +153,14 @@ class MapSelectorActivity : ActivityGlobalAbstract(), MapActivityLocationCallbac
             val value = viewModel.getPointAsString()
             value?.let {
                 finishResult(it)
+            }
+        }
+
+        if (initial_coordinates != null) {
+            val initGeometry = Geometry.builder().coordinates(initial_coordinates).type(location_type).build()
+            GeometryHelper.getPoint(initGeometry).let { sdkPoint ->
+                val point = Point.fromLngLat(sdkPoint[0], sdkPoint[1])
+                setPointToViewModel(point, viewModel)
             }
         }
     }
@@ -204,14 +215,14 @@ class MapSelectorActivity : ActivityGlobalAbstract(), MapActivityLocationCallbac
         return geoJsonSource
     }
 
-    private fun bindPolygon() {
-        val viewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(application).create(PolygonViewModel::class.java)
+    private fun bindPolygon(initial_coordinates: String?) {
+        val viewModel = ViewModelProviders.of(this).get(PolygonViewModel::class.java)
         binding.recycler.layoutManager = GridLayoutManager(this, 2)
         viewModel.response.observe(this, Observer<MutableList<PolygonViewModel.PolygonPoint>> {
             binding.recycler.adapter = PolygonAdapter(it, viewModel)
             updateVector(it)
         })
-        map.addOnMapClickListener { it ->
+        map.addOnMapClickListener {
             val point = Point.fromLngLat(it.longitude, it.latitude)
             val polygonPoint = viewModel.createPolygonPoint()
             polygonPoint.point = point
@@ -226,10 +237,23 @@ class MapSelectorActivity : ActivityGlobalAbstract(), MapActivityLocationCallbac
                 finishResult(it)
             }
         }
+        if (initial_coordinates != null) {
+            val initGeometry = Geometry.builder().coordinates(initial_coordinates).type(location_type).build()
+            GeometryHelper.getPolygon(initGeometry).forEach {
+                it.forEach { sdkPoint ->
+                    val point = Point.fromLngLat(sdkPoint[0], sdkPoint[1])
+                    val polygonPoint = viewModel.createPolygonPoint()
+                    polygonPoint.point = point
+                    polygonPoint.layer = createLayer(polygonPoint.uuid)
+                    polygonPoint.source = createSource(polygonPoint.uuid, point)
+                    viewModel.add(polygonPoint)
+                }
+            }
+        }
     }
 
-    private fun bindMultiPolygon() {
-        val viewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(application).create(MultiPolygonViewModel::class.java)
+    private fun bindMultiPolygon(initial_coordinates: String?) {
+        val viewModel = ViewModelProviders.of(this).get(MultiPolygonViewModel::class.java)
 
     }
 
@@ -350,10 +374,19 @@ class MapSelectorActivity : ActivityGlobalAbstract(), MapActivityLocationCallbac
         private val ACCESS_COARSE_LOCATION_PERMISSION_REQUEST = 102
         val DATA_EXTRA = "data_extra"
         val LOCATION_TYPE_EXTRA = "LOCATION_TYPE_EXTRA"
+        val INITIAL_GEOMETRY_COORDINATES = "INITIAL_DATA"
 
         fun create(activity: Activity, locationType: FeatureType): Intent {
             val intent = Intent(activity, MapSelectorActivity::class.java)
             intent.putExtra(LOCATION_TYPE_EXTRA, locationType.toString())
+            return intent
+        }
+
+        fun create(activity: Activity, locationType: FeatureType, initialData: String?): Intent {
+            val intent = Intent(activity, MapSelectorActivity::class.java)
+            intent.putExtra(LOCATION_TYPE_EXTRA, locationType.toString())
+            if (initialData != null)
+                intent.putExtra(INITIAL_GEOMETRY_COORDINATES, initialData)
             return intent
         }
     }

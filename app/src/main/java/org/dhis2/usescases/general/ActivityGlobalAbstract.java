@@ -342,7 +342,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
     @Override
     public void onMapPositionClick(CoordinatesView coordinatesView) {
         this.coordinatesView = coordinatesView;
-        startActivityForResult(MapSelectorActivity.Companion.create(this, FeatureType.POINT), Constants.RQ_MAP_LOCATION_VIEW);
+        startActivityForResult(MapSelectorActivity.Companion.create(this,coordinatesView.getFeatureType(), coordinatesView.currentCoordinates()), Constants.RQ_MAP_LOCATION_VIEW);
     }
 
     @Override

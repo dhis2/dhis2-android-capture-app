@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DividerItemDecoration;
 
 import com.google.gson.Gson;
@@ -52,7 +53,7 @@ public class JiraFragment extends FragmentGlobalAbstract implements OnJiraIssueC
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         FragmentJiraBinding binding = DataBindingUtil.inflate(inflater, R.layout.fragment_jira, container, false);
-        jiraViewModel = ViewModelProvider.AndroidViewModelFactory.getInstance((App) context.getApplicationContext()).create(JiraViewModel.class);
+        jiraViewModel = ViewModelProviders.of(this).get(JiraViewModel.class);
         jiraViewModel.init();
 
         jiraViewModel.issueListResponse().observe(this, response -> {
