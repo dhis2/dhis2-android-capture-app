@@ -52,6 +52,7 @@ ext {
             butterknife      : "8.5.1",
             okhttp           : "3.5.0",
             findbugs         : "3.0.1",
+            lifecycle        : "2.1.0",
             // test dependencies
             equalsverifier   : "2.2.1",
             espresso         : "2.2.2",
