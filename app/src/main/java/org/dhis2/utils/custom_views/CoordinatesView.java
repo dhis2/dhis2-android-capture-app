@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.util.AttributeSet;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -33,7 +34,6 @@ import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.maintenance.D2Error;
 
 import java.util.List;
-import java.util.Locale;
 
 import io.reactivex.processors.FlowableProcessor;
 
@@ -62,20 +62,35 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
     private View clearButton;
     private View polygonInputLayout;
     private TextInputEditText polygon;
+    private FeatureType featureType;
+    private Geometry currentGeometry;
 
     public CoordinatesView(Context context) {
         super(context);
-        init(context);
+        if (!isInEditMode())
+            init(context);
+        else
+            initEditor();
     }
 
     public CoordinatesView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init(context);
+        if (!isInEditMode())
+            init(context);
+        else
+            initEditor();
     }
 
     public CoordinatesView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init(context);
+        if (!isInEditMode())
+            init(context);
+        else
+            initEditor();
+    }
+
+    public void initEditor() {
+        LayoutInflater.from(getContext()).inflate(R.layout.form_coordinates, this, true);
     }
 
     public void init(Context context) {
@@ -172,19 +187,29 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
     }
 
     public void setFeatureType(FeatureType featureType) {
+        this.featureType = featureType;
         latitudeInputLayout.setVisibility(featureType == FeatureType.POINT ? View.VISIBLE : View.GONE);
         longitudeInputLayout.setVisibility(featureType == FeatureType.POINT ? View.VISIBLE : View.GONE);
         polygonInputLayout.setVisibility(featureType != FeatureType.POINT ? View.VISIBLE : View.GONE);
         location1.setVisibility(featureType == FeatureType.POINT ? View.VISIBLE : View.GONE);
     }
 
+    public FeatureType getFeatureType(){
+        return featureType;
+    }
+
     public void setInitialValue(String initialValue) {
-        String[] latLongValue = initialValue.replace("[", "").replace("]", "").replace(" ", "").split(",");
-        this.latitude.setText(String.format(Locale.getDefault(), "%.5f", Double.valueOf(latLongValue[1])));
-        this.longitude.setText(String.format(Locale.getDefault(), "%.5f", Double.valueOf(latLongValue[0])));
+        if (featureType == null)
+            throw new NullPointerException("use setFeatureType before setting an initial value");
+        updateLocation(
+                Geometry.builder()
+                        .coordinates(initialValue)
+                        .type(featureType)
+                        .build());
         this.clearButton.setVisibility(VISIBLE);
 
     }
+
 
     public void setWarning(String msg) {
         if (!isEmpty(msg)) {
@@ -306,6 +331,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
 
             this.clearButton.setVisibility(VISIBLE);
         }
+        this.currentGeometry = geometry;
         listener2.onCurrentLocationClick(geometry);
         invalidate();
     }
@@ -361,6 +387,10 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
 
     public Double getLongitude() {
         return Double.valueOf(longitude.getText().toString());
+    }
+
+    public String currentCoordinates() {
+        return currentGeometry != null ? currentGeometry.coordinates() : null;
     }
 }
 

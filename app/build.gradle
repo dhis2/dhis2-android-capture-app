@@ -202,13 +202,13 @@ dependencies {
     implementation project(':tableview')
 
     //region SUPPORT LIBRARIES
-    implementation 'androidx.appcompat:appcompat:1.1.0-beta01'
+    implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.annotation:annotation:1.1.0'
     implementation 'androidx.cardview:cardview:1.0.0'
-    implementation 'com.google.android.material:material:1.1.0-alpha06'
+    implementation 'com.google.android.material:material:1.1.0-alpha10'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.multidex:multidex:2.0.1'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-beta1'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
 
     //endregion
 
@@ -239,6 +239,10 @@ dependencies {
     implementation "io.reactivex.rxjava2:rxjava:${libraries.rxjava}"
     implementation "com.github.akarnokd:rxjava2-interop:${libraries.rxjavainteroperop}"
     implementation 'io.reactivex.rxjava2:rxkotlin:2.3.0'
+
+
+    //region ViewModel
+    implementation "androidx.lifecycle:lifecycle-extensions:${libraries.lifecycle}"
 
     //rxbinding
     implementation "com.jakewharton.rxbinding2:rxbinding:${libraries.rxbindings}"
@@ -289,8 +293,8 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.2'
 
     //JOB SCHEDULER
-    implementation "androidx.work:work-runtime:2.0.1"
-    implementation "androidx.work:work-rxjava2:2.0.1"
+    implementation "androidx.work:work-runtime:2.2.0"
+    implementation "androidx.work:work-rxjava2:2.2.0"
 /*
     implementation("android.arch.work:work-runtime:1.0.0-alpha10") {
         exclude group: 'com.google.guava', module: 'listenablefuture'

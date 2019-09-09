@@ -24,6 +24,7 @@ import org.dhis2.utils.RulesUtilsProviderImpl;
 import org.dhis2.utils.rules.RuleEffectResult;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
+import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ObjectWithUid;
 import org.hisp.dhis.android.core.common.State;
@@ -63,6 +64,7 @@ import org.hisp.dhis.rules.models.RuleEvent;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -306,11 +308,28 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         boolean isInCaptureOrgUnit = d2.organisationUnitModule().organisationUnits
                 .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
                 .byUid().eq(event.organisationUnit()).one().blockingExists();
+        boolean hasCatComboAccess = event.attributeOptionCombo() == null || getCatComboAccess(event);
 
         boolean editable = isEnrollmentOpen() && !blockAfterComplete && !isExpired &&
-                getAccessDataWrite() && inOrgUnitRange(eventUid) && isInCaptureOrgUnit;
+                getAccessDataWrite() && inOrgUnitRange(eventUid) && isInCaptureOrgUnit && hasCatComboAccess;
 
         return !editable;
+    }
+
+    private boolean getCatComboAccess(Event event) {
+        if (event.attributeOptionCombo() != null) {
+            List<String> optionUid = UidsHelper.getUidsList(d2.categoryModule()
+                    .categoryOptionCombos.uid(event.attributeOptionCombo())
+                    .withAllChildren().blockingGet().categoryOptions());
+            List<CategoryOption> options = d2.categoryModule().categoryOptions.byUid().in(optionUid).blockingGet();
+            boolean access = true;
+            for (CategoryOption option : options)
+                if (!option.access().data().write())
+                    access = false;
+
+            return access;
+        }else
+            return true;
     }
 
     @Override
@@ -390,6 +409,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         return d2.eventModule().events.withAllChildren().uid(eventUid).get()
                 .flatMap(event -> d2.programModule().programStages.uid(event.programStage()).get()
                         .map(stage -> {
+                            Timber.tag("EVENT SECTION").d("INIT CALCULATIONS");
                             RuleEffectResult effectResult = new RulesUtilsProviderImpl(new CodeGeneratorImpl()).evaluateEvent(eventUid, sectionUid);
                             List<FieldViewModel> fields = new ArrayList<>();
                             for (String deUid : effectResult.getFields()) {
@@ -427,11 +447,16 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
                             }
 
-                            //TODO: EFFECT FOR DISPLAY KEY VALUE PAIR AND DISPLAY TEXT
+                            List<ProgramStageSection> sections = d2.programModule().programStageSections.byProgramStageUid().eq(stage.uid()).blockingGet();
+                            Collections.sort(sections, (s1, s2) -> s1.sortOrder().compareTo(s2.sortOrder()));
+                            if (sections.get(sections.size() - 1).uid().equals(sectionUid)) {
+                                //TODO: EFFECT FOR DISPLAY KEY VALUE PAIR AND DISPLAY TEXT
+                            }
 
                             return checkRenderType(fields, d2.programModule().programStages.uid(event.programStage()).withAllChildren().blockingGet());
 
-                        }))
+                        })).doOnSuccess(data -> Timber.tag("EVENT SECTION").d("END CALCULATIONS")
+                )
                 .toFlowable();
     }
 

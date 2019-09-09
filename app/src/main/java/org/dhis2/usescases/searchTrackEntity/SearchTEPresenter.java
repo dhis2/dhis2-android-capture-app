@@ -12,6 +12,8 @@ import android.widget.DatePicker;
 import androidx.appcompat.app.AlertDialog;
 import androidx.paging.PagedList;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import org.dhis2.R;
 import org.dhis2.data.forms.FormActivity;
 import org.dhis2.data.forms.FormViewArguments;
@@ -681,7 +683,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                progress -> Timber.d("Downloading tei %s : %s %", teiUid, progress.percentage()),
+                                view.downloadProgress(),
                                 Timber::d,
                                 () -> openDashboard(teiUid))
         );

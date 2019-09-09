@@ -46,9 +46,14 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
 
     private final D2 d2;
 
+    private enum SettingType {
+        EVENT_MAX, TEI_MAX, LIMIT_BY_ORG_UNIT, LIMIT_BY_PROGRAM, TIME_DATA, TIME_META
+    }
+
     private CompositeDisposable compositeDisposable;
     private SyncManagerContracts.View view;
     private FlowableProcessor<Boolean> checkData;
+    private SharedPreferences prefs;
 
     SyncManagerPresenter(D2 d2) {
         this.d2 = d2;
@@ -64,6 +69,8 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
     public void init(SyncManagerContracts.View view) {
         this.view = view;
         this.compositeDisposable = new CompositeDisposable();
+        this.prefs = view.getAbstracContext().getSharedPreferences(
+                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
 
         compositeDisposable.add(
                 checkData
@@ -75,7 +82,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
                                     .map(events -> {
                                         List<Event> eventsToCount = new ArrayList<>();
                                         for (Event event : events) {
-                                            if(event.enrollment() == null)
+                                            if (event.enrollment() == null)
                                                 eventsToCount.add(event);
                                         }
                                         return eventsToCount.size();
@@ -117,14 +124,14 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
      */
     @Override
     public void syncData(int seconds, String scheduleTag) {
-        WorkManager.getInstance().cancelUniqueWork(scheduleTag);
+        WorkManager.getInstance(view.getContext().getApplicationContext()).cancelUniqueWork(scheduleTag);
         PeriodicWorkRequest.Builder syncDataBuilder = new PeriodicWorkRequest.Builder(SyncDataWorker.class, seconds, TimeUnit.SECONDS);
         syncDataBuilder.addTag(scheduleTag);
         syncDataBuilder.setConstraints(new Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build());
         PeriodicWorkRequest request = syncDataBuilder.build();
-        WorkManager.getInstance().enqueueUniquePeriodicWork(scheduleTag, ExistingPeriodicWorkPolicy.REPLACE, request);
+        WorkManager.getInstance(view.getContext().getApplicationContext()).enqueueUniquePeriodicWork(scheduleTag, ExistingPeriodicWorkPolicy.REPLACE, request);
     }
 
     /**
@@ -137,14 +144,14 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
      */
     @Override
     public void syncMeta(int seconds, String scheduleTag) {
-        WorkManager.getInstance().cancelUniqueWork(scheduleTag);
+        WorkManager.getInstance(view.getContext().getApplicationContext()).cancelUniqueWork(scheduleTag);
         PeriodicWorkRequest.Builder syncDataBuilder = new PeriodicWorkRequest.Builder(SyncMetadataWorker.class, seconds, TimeUnit.SECONDS);
         syncDataBuilder.addTag(scheduleTag);
         syncDataBuilder.setConstraints(new Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build());
         PeriodicWorkRequest request = syncDataBuilder.build();
-        WorkManager.getInstance().enqueueUniquePeriodicWork(scheduleTag, ExistingPeriodicWorkPolicy.REPLACE, request);
+        WorkManager.getInstance(view.getContext().getApplicationContext()).enqueueUniquePeriodicWork(scheduleTag, ExistingPeriodicWorkPolicy.REPLACE, request);
     }
 
     /**
@@ -178,13 +185,13 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build());
         OneTimeWorkRequest request = syncDataBuilder.build();
-        WorkManager.getInstance().beginUniqueWork(Constants.META_NOW, ExistingWorkPolicy.REPLACE, request).enqueue();
+        WorkManager.getInstance(view.getContext().getApplicationContext()).beginUniqueWork(Constants.META_NOW, ExistingWorkPolicy.REPLACE, request).enqueue();
     }
 
 
     @Override
     public void cancelPendingWork(String tag) {
-        WorkManager.getInstance().cancelUniqueWork(tag);
+        WorkManager.getInstance(view.getContext().getApplicationContext()).cancelUniqueWork(tag);
     }
 
     @Override
@@ -284,8 +291,6 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
 
     @Override
     public void resetSyncParameters() {
-        SharedPreferences prefs = view.getAbstracContext().getSharedPreferences(
-                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
 
         editor.putInt(Constants.EVENT_MAX, Constants.EVENT_MAX_DEFAULT);
@@ -309,8 +314,8 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
     @Override
     public void wipeDb() {
         try {
-            WorkManager.getInstance().cancelAllWork();
-            WorkManager.getInstance().pruneWork();
+            WorkManager.getInstance(view.getContext().getApplicationContext()).cancelAllWork();
+            WorkManager.getInstance(view.getContext().getApplicationContext()).pruneWork();
             d2.wipeModule().wipeEverything();
             // clearing cache data
             deleteDir(view.getAbstracContext().getCacheDir());

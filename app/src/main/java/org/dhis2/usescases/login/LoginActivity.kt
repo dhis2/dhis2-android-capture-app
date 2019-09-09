@@ -15,6 +15,7 @@ import android.widget.ArrayAdapter
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import com.andrognito.pinlockview.PinLockListener
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -213,7 +214,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         }
     }
 
-    override fun alreadyAuthenticated(){
+    override fun alreadyAuthenticated() {
         startActivity(MainActivity::class.java, null, true, true, null)
     }
 
