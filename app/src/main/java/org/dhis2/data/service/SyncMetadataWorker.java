@@ -7,6 +7,13 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 
+import androidx.annotation.NonNull;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.work.Worker;
+import androidx.work.WorkerParameters;
+
 import com.google.firebase.perf.metrics.AddTrace;
 
 import org.dhis2.App;
@@ -14,17 +21,12 @@ import org.dhis2.R;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.NetworkUtils;
+import org.hisp.dhis.android.core.d2manager.D2Manager;
 
 import java.util.Calendar;
 
 import javax.inject.Inject;
 
-import androidx.annotation.NonNull;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.work.Worker;
-import androidx.work.WorkerParameters;
 import timber.log.Timber;
 
 /**
@@ -105,6 +107,7 @@ public class SyncMetadataWorker extends Worker {
                 new NotificationCompat.Builder(getApplicationContext(), metadata_channel)
                         .setSmallIcon(R.drawable.ic_sync)
                         .setContentTitle(title)
+                        .setOngoing(true)
                         .setContentText(content)
                         .setAutoCancel(false)
                         .setPriority(NotificationCompat.PRIORITY_DEFAULT);

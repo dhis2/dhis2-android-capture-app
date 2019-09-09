@@ -1,4 +1,4 @@
-package org.dhis2.usescases.syncManager;
+package org.dhis2.usescases.settings;
 
 import org.dhis2.data.dagger.PerFragment;
 import org.dhis2.data.metadata.MetadataRepository;
