@@ -69,9 +69,9 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction() != null && intent.getAction().equals("action_sync") && intent.getExtras() != null && progressBar != null)
-                if (SyncUtils.isSyncRunning() && progressBar.getVisibility() == View.GONE)
+                if (SyncUtils.isSyncRunning(context) && progressBar.getVisibility() == View.GONE)
                     progressBar.setVisibility(View.VISIBLE);
-                else if (!SyncUtils.isSyncRunning())
+                else if (!SyncUtils.isSyncRunning(context))
                     progressBar.setVisibility(View.GONE);
         }
     };
@@ -386,7 +386,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
     public void setProgressBar(ContentLoadingProgressBar progressBar) {
         if (progressBar != null) {
             this.progressBar = progressBar;
-            if (SyncUtils.isSyncRunning())
+            if (SyncUtils.isSyncRunning(this))
                 progressBar.setVisibility(View.VISIBLE);
             else progressBar.setVisibility(View.GONE);
         }
