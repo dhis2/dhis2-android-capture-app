@@ -56,6 +56,7 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
     private TextInputLayout inputLayout;
     private boolean isLongText;
     private View descriptionLabel;
+    private View dummy;
 
     public CustomTextView(Context context) {
         super(context);
@@ -90,7 +91,11 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
         editText = findViewById(R.id.input_editText);
         icon = findViewById(R.id.renderImage);
         descriptionLabel = binding.getRoot().findViewById(R.id.descriptionLabel);
+        dummy = findViewById(R.id.dummyFocusView);
 
+        editText.setOnClickListener(v -> {
+            activate();
+        });
         editText.setOnFocusChangeListener(this);
     }
 
@@ -187,8 +192,9 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
     }
 
     public void setEditable(Boolean editable) {
-        editText.setFocusable(editable);
-        editText.setFocusableInTouchMode(editable);
+        editText.setFocusable(false);
+        editText.setFocusableInTouchMode(false);
+        editText.setClickable(editable);
         editText.setEnabled(editable);
     }
 
@@ -238,8 +244,11 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
 
     @Override
     public void onFocusChange(View v, boolean hasFocus) {
-        if (listener != null && validate())
+        if (listener != null && validate()) {
+            if(!hasFocus)
+                dummy.requestFocus();
             listener.onFocusChange(v, hasFocus);
+        }
     }
 
     private boolean validate() {
