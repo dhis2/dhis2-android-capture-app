@@ -367,6 +367,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                         return fields;
                     });
         } else {
+//            return eventCaptureRepository.evaluateForSection(sectionUid);
+
             return Flowable.zip(
                     eventCaptureRepository.list(sectionUid).subscribeOn(Schedulers.computation()),
                     eventCaptureRepository.calculate().subscribeOn(Schedulers.computation()),
