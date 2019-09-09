@@ -1,4 +1,4 @@
-package org.dhis2.usescases.syncManager;
+package org.dhis2.usescases.settings;
 
 import androidx.annotation.NonNull;
 import androidx.databinding.ObservableBoolean;

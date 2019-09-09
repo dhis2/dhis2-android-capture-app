@@ -12,7 +12,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ObservableInt;
-import androidx.fragment.app.Fragment;
 
 import com.andrognito.pinlockview.PinLockListener;
 
@@ -25,8 +24,8 @@ import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.usescases.jira.JiraFragment;
 import org.dhis2.usescases.main.program.ProgramFragment;
 import org.dhis2.usescases.qrReader.QrReaderFragment;
-import org.dhis2.usescases.syncManager.ErrorDialog;
-import org.dhis2.usescases.syncManager.SyncManagerFragment;
+import org.dhis2.usescases.settings.ErrorDialog;
+import org.dhis2.usescases.settings.SyncManagerFragment;
 import org.dhis2.usescases.teiDashboard.nfc_data.NfcDataWriteActivity;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.SharedPreferenceBooleanLiveData;
