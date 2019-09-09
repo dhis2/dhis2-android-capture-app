@@ -205,7 +205,7 @@ public class RulesUtilsProviderImpl_backup implements RulesUtilsProvider_backup 
 
     private void hideOption(RuleActionHideOption hideOption,
                             RulesActionCallbacks rulesActionCallbacks) {
-        rulesActionCallbacks.setOptionToHide(hideOption.option());
+        rulesActionCallbacks.setOptionToHide(hideOption.field());
     }
 
     private void hideOptionGroup(RuleActionHideOptionGroup hideOptionGroup,

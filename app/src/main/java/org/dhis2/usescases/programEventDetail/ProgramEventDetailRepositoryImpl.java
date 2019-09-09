@@ -172,12 +172,10 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     @NonNull
     @Override
     public Observable<List<OrganisationUnitModel>> orgUnits() {
-        String SELECT_ORG_UNITS = "SELECT OrganisationUnit.* FROM " + OrganisationUnitModel.TABLE + " " +
-                "JOIN OrganisationUnitProgramLink ON OrganisationUnit.uid = OrganisationUnitProgramLink.organisationUnit "+
-                "WHERE OrganisationUnitProgramLink.program = ? AND " +
-                "OrganisationUnit.uid IN (SELECT UserOrganisationUnit.organisationUnit FROM UserOrganisationUnit " +
+        String SELECT_ORG_UNITS = "SELECT * FROM " + OrganisationUnitModel.TABLE + " " +
+                "WHERE uid IN (SELECT UserOrganisationUnit.organisationUnit FROM UserOrganisationUnit " +
                 "WHERE UserOrganisationUnit.organisationUnitScope = 'SCOPE_DATA_CAPTURE')";
-        return briteDatabase.createQuery(OrganisationUnitModel.TABLE, SELECT_ORG_UNITS,programUid)
+        return briteDatabase.createQuery(OrganisationUnitModel.TABLE, SELECT_ORG_UNITS)
                 .mapToList(OrganisationUnitModel::create);
     }
 

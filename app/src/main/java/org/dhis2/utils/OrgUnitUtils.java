@@ -23,8 +23,6 @@ import java.util.TreeSet;
 import androidx.annotation.NonNull;
 import timber.log.Timber;
 
-import static android.text.TextUtils.isEmpty;
-
 /**
  * QUADRAM. Created by ppajuelo on 24/05/2018.
  */
@@ -127,7 +125,7 @@ public class OrgUnitUtils {
         ArrayList<String> myOrgUnitUids = new ArrayList<>();
 
         for (OrganisationUnit myorg : myOrgs) {
-            if(isEmpty(programId) || UidsHelper.getUids(myorg.programs()).contains(programId))
+            if(UidsHelper.getUids(myorg.programs()).contains(programId))
                 myOrgUnitUids.add(myorg.uid());
             String[] pathName = myorg.displayNamePath().split("/");
             String[] pathUid = myorg.path().split("/");
