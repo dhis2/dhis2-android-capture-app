@@ -546,9 +546,13 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 searchRepository.saveToEnroll(trackedEntity.uid(), orgUnitUid, programUid, uid, queryData, enrollmentDate)
                         .subscribeOn(Schedulers.computation())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(enrollmentUid -> {
-                                    FormViewArguments formViewArguments = FormViewArguments.createForEnrollment(enrollmentUid);
-                                    this.view.getContext().startActivity(FormActivity.create(this.view.getContext(), formViewArguments, true));
+                        .subscribe(enrollmentAndTEI -> {
+                                    if(view.fromRelationshipTEI() == null) {
+                                        FormViewArguments formViewArguments = FormViewArguments.createForEnrollment(enrollmentAndTEI.val0());
+                                        this.view.getContext().startActivity(FormActivity.create(this.view.getContext(), formViewArguments, true));
+                                    }else{
+                                        addRelationship(enrollmentAndTEI.val1(), false);
+                                    }
                                 },
                                 Timber::d)
         );
