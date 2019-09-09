@@ -552,7 +552,7 @@ public final class RulesRepository {
             case SETMANDATORYFIELD:
                 return RuleActionSetMandatoryField.create(isEmpty(attribute) ? field : attribute);
             case HIDEOPTION:
-                return RuleActionHideOption.create(content, isEmpty(attribute) ? field : attribute, option);
+                return RuleActionHideOption.create(content, option, isEmpty(attribute) ? field : attribute);
             case HIDEOPTIONGROUP:
                 return RuleActionHideOptionGroup.create(content, optionGroup);
             default:

@@ -166,7 +166,7 @@ class RulesUtilsProviderImpl(private val codeGenerator: CodeGenerator) : RulesUt
 
     private fun hideOption(hideOption: RuleActionHideOption,
                            rulesActionCallbacks: RulesActionCallbacks) {
-        rulesActionCallbacks.setOptionToHide(hideOption.field())
+        rulesActionCallbacks.setOptionToHide(hideOption.option())
     }
 
     private fun hideOptionGroup(hideOptionGroup: RuleActionHideOptionGroup,
