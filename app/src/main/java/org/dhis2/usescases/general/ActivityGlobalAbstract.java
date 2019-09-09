@@ -386,7 +386,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
     public void setProgressBar(ContentLoadingProgressBar progressBar) {
         if (progressBar != null) {
             this.progressBar = progressBar;
-            if (SyncUtils.isSyncRunning(getContext()))
+            if (SyncUtils.isSyncRunning(this))
                 progressBar.setVisibility(View.VISIBLE);
             else progressBar.setVisibility(View.GONE);
         }
