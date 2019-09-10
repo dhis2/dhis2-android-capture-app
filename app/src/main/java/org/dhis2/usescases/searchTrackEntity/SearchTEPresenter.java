@@ -4,15 +4,15 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.DatePicker;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.paging.PagedList;
-
-import com.google.android.material.snackbar.Snackbar;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.FormActivity;
@@ -24,6 +24,7 @@ import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.NetworkUtils;
+import org.dhis2.utils.ObjectStyleUtils;
 import org.dhis2.utils.custom_views.OrgUnitDialog;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.maps.GeometryUtils;
@@ -627,10 +628,10 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         .subscribeOn(Schedulers.computation())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(enrollmentAndTEI -> {
-                                    if(view.fromRelationshipTEI() == null) {
+                                    if (view.fromRelationshipTEI() == null) {
                                         FormViewArguments formViewArguments = FormViewArguments.createForEnrollment(enrollmentAndTEI.val0());
                                         this.view.getContext().startActivity(FormActivity.create(this.view.getContext(), formViewArguments, true));
-                                    }else{
+                                    } else {
                                         addRelationship(enrollmentAndTEI.val1(), false);
                                     }
                                 },
@@ -760,5 +761,16 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     @Override
     public void getMapData() {
         mapProcessor.onNext(new Unit());
+    }
+
+    @Override
+    public Drawable getSymbolIcon() {
+        TrackedEntityType teiType = d2.trackedEntityModule().trackedEntityTypes.uid(trackedEntityType).withAllChildren().blockingGet();
+
+        if (teiType.style() != null && teiType.style().icon() != null) {
+            return
+                    ObjectStyleUtils.getIconResource(view.getContext(), teiType.style().icon(), R.drawable.mapbox_marker_icon_default);
+        } else
+            return AppCompatResources.getDrawable(view.getContext(), R.drawable.mapbox_marker_icon_default);
     }
 }

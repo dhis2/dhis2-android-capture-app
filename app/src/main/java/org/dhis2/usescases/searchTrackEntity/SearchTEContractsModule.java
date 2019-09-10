@@ -1,12 +1,13 @@
 package org.dhis2.usescases.searchTrackEntity;
 
+import android.graphics.drawable.Drawable;
+
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.paging.PagedList;
 
 import com.mapbox.geojson.BoundingBox;
 import com.mapbox.geojson.FeatureCollection;
-import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.tuples.Trio;
@@ -131,5 +132,7 @@ public class SearchTEContractsModule {
         void closeFilterClick();
 
         void getMapData();
+
+        Drawable getSymbolIcon();
     }
 }
