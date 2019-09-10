@@ -3,6 +3,8 @@ package org.dhis2.usescases.programEventDetail;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.graphics.PointF;
+import android.graphics.RectF;
 import android.os.Bundle;
 import android.os.Handler;
 import android.transition.ChangeBounds;
@@ -24,17 +26,23 @@ import androidx.lifecycle.LiveData;
 import androidx.paging.PagedList;
 import androidx.recyclerview.widget.DividerItemDecoration;
 
+import com.mapbox.geojson.BoundingBox;
+import com.mapbox.geojson.Feature;
+import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.mapboxsdk.Mapbox;
+import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.geometry.LatLngBounds;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.Style;
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager;
-import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions;
 import com.mapbox.mapboxsdk.plugins.markerview.MarkerView;
 import com.mapbox.mapboxsdk.plugins.markerview.MarkerViewManager;
+import com.mapbox.mapboxsdk.style.layers.FillLayer;
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonOptions;
+import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 
 import org.dhis2.App;
 import org.dhis2.BuildConfig;
@@ -44,12 +52,14 @@ import org.dhis2.databinding.ActivityProgramEventDetailBinding;
 import org.dhis2.databinding.InfoWindowEventBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.org_unit_selector.OUTreeActivity;
+import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.FiltersAdapter;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
+import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.program.Program;
 
 import java.lang.reflect.Field;
@@ -60,8 +70,10 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import io.reactivex.functions.Consumer;
 import timber.log.Timber;
 
+import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.fillColor;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAllowOverlap;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconOffset;
 import static org.dhis2.R.layout.activity_program_event_detail;
@@ -70,7 +82,8 @@ import static org.dhis2.R.layout.activity_program_event_detail;
  * QUADRAM. Created by Cristian on 13/02/2018.
  */
 
-public class ProgramEventDetailActivity extends ActivityGlobalAbstract implements ProgramEventDetailContract.View {
+public class ProgramEventDetailActivity extends ActivityGlobalAbstract implements ProgramEventDetailContract.View,
+        MapboxMap.OnMapClickListener {
 
     private ActivityProgramEventDetailBinding binding;
 
@@ -85,6 +98,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     private SymbolManager symbolManager;
     private MarkerViewManager markerViewManager;
     private MarkerView currentMarker;
+    private FeatureType featureType;
 
     public static Bundle getBundle(String programUid, String period, List<Date> dates) {
         Bundle bundle = new Bundle();
@@ -223,8 +237,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
         if (backDropActive) {
             initSet.connect(R.id.eventsLayout, ConstraintSet.TOP, R.id.filterLayout, ConstraintSet.BOTTOM, 50);
-        }
-        else {
+        } else {
             initSet.connect(R.id.eventsLayout, ConstraintSet.TOP, R.id.backdropGuideTop, ConstraintSet.BOTTOM, 0);
         }
 
@@ -234,6 +247,11 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     @Override
     public void clearFilters() {
         filtersAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public Consumer<FeatureType> setFeatureType() {
+        return type -> this.featureType = type;
     }
 
     @Override
@@ -310,55 +328,92 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     }
 
     @Override
-    public void setMap(List<SymbolOptions> options) {
-        binding.mapView.getMapAsync(mapboxMap -> {
-            map = mapboxMap;
-            if (map.getStyle() == null)
-                map.setStyle(Style.MAPBOX_STREETS, style -> {
+    public Consumer<kotlin.Pair<FeatureCollection, BoundingBox>> setMap() {
+        return data -> {
+            if (map == null) {
+                binding.mapView.getMapAsync(mapboxMap -> {
+                    map = mapboxMap;
+                    if (map.getStyle() == null)
+                        map.setStyle(Style.MAPBOX_STREETS, style -> {
 
-                            style.addImage("ICON_ID", BitmapFactory.decodeResource(getResources(), R.drawable.mapbox_marker_icon_default));
+                                    map.addOnMapClickListener(this);
+                                    //TODO: GET STAGE ICON
+                                    style.addImage("ICON_ID", BitmapFactory.decodeResource(getResources(), R.drawable.mapbox_marker_icon_default));
+                                    setSource(style, data.component1());
+                                    setLayer(style);
 
-                            setLayer(style);
+                                    initCameraPosition(data.component2());
 
-                            markerViewManager = new MarkerViewManager(binding.mapView, map);
-                            symbolManager = new SymbolManager(binding.mapView, map, style, null,
-                                    new GeoJsonOptions().withTolerance(0.4f));
+                                    markerViewManager = new MarkerViewManager(binding.mapView, map);
+                                    symbolManager = new SymbolManager(binding.mapView, map, style, null,
+                                            new GeoJsonOptions().withTolerance(0.4f));
 
-                            symbolManager.setIconAllowOverlap(true);
-                            symbolManager.setTextAllowOverlap(true);
-                            symbolManager.create(options);
+                                    symbolManager.setIconAllowOverlap(true);
+                                    symbolManager.setTextAllowOverlap(true);
+                                    symbolManager.create(data.component1());
 
-                            symbolManager.addClickListener(symbol -> {
-                                presenter.getEventInfo(symbol.getTextField(), symbol.getLatLng());
-                            });
+                                }
+                        );
+                    else {
+                        ((GeoJsonSource) mapboxMap.getStyle().getSource("events")).setGeoJson(data.component1());
+                        initCameraPosition(data.component2());
+                    }
+                });
+            } else {
+                ((GeoJsonSource) map.getStyle().getSource("events")).setGeoJson(data.component1());
+                initCameraPosition(data.component2());
+            }
+        };
+    }
 
-                        }
-                );
-            else
-                symbolManager.create(options);
-        });
+    private void initCameraPosition(BoundingBox bbox) {
+        LatLngBounds bounds = LatLngBounds.from(bbox.north(), bbox.east(), bbox.south(), bbox.west());
+        map.easeCamera(CameraUpdateFactory.newLatLngBounds(bounds, 50), 1200);
+    }
+
+    private void setSource(Style style, FeatureCollection featureCollection) {
+        style.addSource(new GeoJsonSource("events", featureCollection));
     }
 
     @Override
     public void setEventInfo(Pair<ProgramEventViewModel, LatLng> eventInfo) {
-        if (currentMarker != null)
+        if (currentMarker != null) {
             markerViewManager.removeMarker(currentMarker);
+            markerViewManager = null;
+        }
         InfoWindowEventBinding binding = InfoWindowEventBinding.inflate(LayoutInflater.from(this));
         binding.setEvent(eventInfo.val0());
         binding.setPresenter(presenter);
         View view = binding.getRoot();
+        view.setOnClickListener(viewClicked -> {
+            markerViewManager.removeMarker(currentMarker);
+            markerViewManager = null;
+        });
+        view.setOnLongClickListener(view1 -> {
+            presenter.onEventClick(eventInfo.val0().uid(), eventInfo.val0().orgUnitUid());
+            return true;
+        });
         view.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         currentMarker = new MarkerView(eventInfo.val1(), view);
         markerViewManager.addMarker(currentMarker);
     }
 
     private void setLayer(Style style) {
-        SymbolLayer symbolLayer = new SymbolLayer("LAYER_ID", "events").withProperties(
+        SymbolLayer symbolLayer = new SymbolLayer("POINT_LAYER", "events").withProperties(
                 PropertyFactory.iconImage("ICON_ID"),
                 iconAllowOverlap(true),
                 iconOffset(new Float[]{0f, -9f})
         );
+        symbolLayer.setMinZoom(0);
         style.addLayer(symbolLayer);
+
+        if (featureType != FeatureType.POINT)
+            style.addLayerBelow(new FillLayer("POLYGON_LAYER", "events").withProperties(
+                    fillColor(
+                            ColorUtils.getPrimaryColorWithAlpha(this, ColorUtils.ColorType.PRIMARY_LIGHT, 150f)
+                    )
+                    ), "settlement-label"
+            );
     }
 
     @Override
@@ -396,8 +451,8 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
             }
             return false;
         });
-        popupMenu.getMenu().getItem(0).setVisible(binding.mapView.getVisibility() == View.GONE);
-        popupMenu.getMenu().getItem(1).setVisible(binding.recycler.getVisibility() == View.GONE);
+        popupMenu.getMenu().getItem(0).setVisible(binding.mapView.getVisibility() == View.GONE && featureType != FeatureType.NONE);
+        popupMenu.getMenu().getItem(1).setVisible(binding.recycler.getVisibility() == View.GONE && featureType != FeatureType.NONE);
         popupMenu.show();
     }
 
@@ -407,5 +462,20 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
         if (showMap)
             presenter.getMapData();
+    }
+
+    @Override
+    public boolean onMapClick(@NonNull LatLng point) {
+        PointF pointf = map.getProjection().toScreenLocation(point);
+        RectF rectF = new RectF(pointf.x - 10, pointf.y - 10, pointf.x + 10, pointf.y + 10);
+        List<Feature> features = map.queryRenderedFeatures(rectF, featureType == FeatureType.POINT ? "POINT_LAYER" : "POLYGON_LAYER");
+        if (!features.isEmpty()) {
+            for (Feature feature : features) {
+                presenter.getEventInfo(feature.getStringProperty("eventUid"), point);
+            }
+            return true;
+        }
+
+        return false;
     }
 }

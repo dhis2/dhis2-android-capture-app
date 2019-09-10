@@ -40,7 +40,7 @@ public final class EventsRuleEngineRepository implements RuleEngineRepository {
             "FROM Event\n" +
             "JOIN ProgramStage ON ProgramStage.uid = Event.programStage\n" +
             "WHERE Event.uid = ?\n" +
-            " AND Event." + EventTableInfo.Columns.STATE + " != '" + State.TO_DELETE + "'" +
+            " AND Event.deleted == false'" +
             "LIMIT 1;";
 
     /*private static final String QUERY_VALUES = "SELECT " +
@@ -65,7 +65,7 @@ public final class EventsRuleEngineRepository implements RuleEngineRepository {
             "  INNER JOIN DataElement ON DataElement.uid = TrackedEntityDataValue.dataElement " +
             "  LEFT JOIN ProgramRuleVariable ON ProgramRuleVariable.dataElement = DataElement.uid " +
             "  LEFT JOIN Option ON (Option.optionSet = DataElement.optionSet AND Option.code = TrackedEntityDataValue.value) " +
-            " WHERE Event.uid = ? AND value IS NOT NULL AND " + "Event" + "." + EventTableInfo.Columns.STATE + " != '" + State.TO_DELETE + "';";
+            " WHERE Event.uid = ? AND value IS NOT NULL AND Event.deleted == false;";
 
     @NonNull
     private final BriteDatabase briteDatabase;

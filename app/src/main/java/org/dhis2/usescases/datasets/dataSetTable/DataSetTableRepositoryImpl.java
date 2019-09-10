@@ -61,7 +61,7 @@ public class DataSetTableRepositoryImpl implements DataSetTableRepository {
                 .byAttributeOptionComboUid().eq(catOptCombo)
                 .byOrganisationUnitUid().eq(orgUnitUid)
                 .byPeriod().eq(periodId).one().blockingGet();
-        return Flowable.just(dscr != null && dscr.state() != State.TO_DELETE);
+        return Flowable.just(dscr != null && !dscr.deleted());
     }
 
     public Flowable<State> dataSetState(){

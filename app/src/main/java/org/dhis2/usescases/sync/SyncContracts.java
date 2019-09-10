@@ -15,12 +15,12 @@ public class SyncContracts {
 
         void init(View view);
 
-        void syncMeta(int seconds, String scheduleTag);
+        void sync();
 
         void syncReservedValues();
 
-        void syncData(int seconds, String scheduleTag);
-
         void getTheme();
+
+        void scheduleSync(int metaTime, int dataTime);
     }
 }

@@ -6,6 +6,7 @@ import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 
 import org.hisp.dhis.android.core.common.Geometry;
+import org.hisp.dhis.android.core.common.Unit;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
 
@@ -33,11 +34,19 @@ public class TeiDataDetailContracts {
 
         Observable<Geometry> teiCoordinatesChanged();
 
+        @NonNull
+        Observable<Unit> reportCoordinatesCleared();
+
+        @NonNull
+        Observable<Unit> teiCoordinatesCleared();
+
         Consumer<TrackedEntityType> renderTeiCoordinates();
     }
 
     public interface Presenter {
         void init(View view, String uid, String programUid, String enrollmentUid);
+
+        void checkTeiCoordinates();
 
         void onBackPressed();
 

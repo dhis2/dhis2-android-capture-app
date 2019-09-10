@@ -10,8 +10,7 @@ import timber.log.Timber;
 public class SyncUtils {
 
 
-
-    public static boolean isSyncRunning(String syncTag) {
+    private static boolean isSyncRunning(String syncTag) {
         List<WorkInfo> statuses;
         boolean running = false;
         try {
@@ -30,5 +29,4 @@ public class SyncUtils {
     public static boolean isSyncRunning() {
         return isSyncRunning(Constants.META) || isSyncRunning(Constants.DATA);
     }
-
 }

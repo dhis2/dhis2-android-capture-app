@@ -15,11 +15,11 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import org.dhis2.App
 import org.dhis2.R
+import org.dhis2.data.prefs.Preference
 import org.dhis2.data.server.UserManager
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.qrScanner.QRActivity
 import org.dhis2.utils.Constants
-import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.d2manager.D2Manager
 import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.maintenance.D2ErrorCode
@@ -168,6 +168,7 @@ class LoginPresenter : LoginContracts.Presenter {
     override fun handleResponse(userResponse: Response<*>) {
         view.showLoginProgress(false)
         if (userResponse.isSuccessful) {
+            view.sharedPreferences.edit().putBoolean(Preference.INITIAL_SYNC_DONE.name, false).apply()
             (view.context.applicationContext as App).createUserComponent()
             view.saveUsersData()
         }
@@ -180,7 +181,6 @@ class LoginPresenter : LoginContracts.Presenter {
             prefs.edit().putBoolean("SessionLocked", false).apply()
             prefs.edit().putString("pin", null).apply()
             view.alreadyAuthenticated()
-//            handleResponse(Response.success<Any>(null))
         } else
             view.renderError(throwable)
         view.showLoginProgress(false)

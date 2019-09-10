@@ -46,13 +46,14 @@ class PolygonViewModel(val app: Application): AndroidViewModel(app) {
         list.add(mutableListOf())
         _response.value?.forEach {
             it.point?.let {point ->
-                list[0].add(mutableListOf(point.latitude(), point.longitude()))
+                list[0].add(mutableListOf(point.longitude(), point.latitude()))
             }
         }
-        return if (list[0].size > 3) {
+        return if (list[0].size > 2) {
+            list[0].add(list[0][0]) //set last point same as first
             Gson().toJson(list)
         } else {
-            Toast.makeText(app, "Polygon must contains at least 4 points.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(app, "Polygon must contains at least 4 points.", Toast.LENGTH_SHORT).show() //TODO: CHANGE TO SET STRING
             null
         }
     }
@@ -61,7 +62,7 @@ class PolygonViewModel(val app: Application): AndroidViewModel(app) {
         val uuid = UUID.randomUUID().toString()
         override fun toString(): String {
             point?.let {
-                return "${it.latitude().toString().take(8)}, ${it.longitude().toString().take(8)}"
+                return "${it.longitude().toString().take(8)}, ${it.latitude().toString().take(8)}"
             }
             return ""
         }

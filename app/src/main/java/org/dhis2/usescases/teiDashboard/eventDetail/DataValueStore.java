@@ -179,12 +179,11 @@ final class DataValueStore implements DataEntryStore {
     private Flowable<Long> updateEvent(long status) {
         String SELECT_EVENT = "SELECT * FROM Event " +
                 "WHERE uid = ? " +
-                "AND Event.state != '" + State.TO_DELETE + "' LIMIT 1";
+                "AND Event.deleted == false LIMIT 1";
         return briteDatabase.createQuery("Event", SELECT_EVENT, eventUid)
                 .mapToOne(Event::create).take(1).toFlowable(BackpressureStrategy.LATEST)
                 .switchMap(eventModel -> {
-                    if (State.SYNCED.equals(eventModel.state()) || State.TO_DELETE.equals(eventModel.state()) ||
-                            State.ERROR.equals(eventModel.state())) {
+                    if (State.SYNCED.equals(eventModel.state()) || State.ERROR.equals(eventModel.state())) {
 
                         ContentValues values = eventModel.toContentValues();
                         values.put("state", State.TO_UPDATE.toString());

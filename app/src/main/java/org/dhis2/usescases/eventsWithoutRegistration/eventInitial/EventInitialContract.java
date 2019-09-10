@@ -44,8 +44,6 @@ public class EventInitialContract {
 
         void showDateDialog(DatePickerDialog.OnDateSetListener listener);
 
-        void openDrawer();
-
         void renderError(String message);
 
         Consumer<Pair<TreeNode, List<TreeNode>>> addNodeToTree();
@@ -54,7 +52,7 @@ public class EventInitialContract {
 
         void setEvent(Event event);
 
-        void setLocation(Geometry geometry);
+//        void setLocation(Geometry geometry);
 
         void onEventCreated(String eventUid);
 
@@ -154,6 +152,8 @@ public class EventInitialContract {
         Date getStageLastDate(String programStageUid, String enrollmentUid);
 
         void onExpandOrgUnitNode(TreeNode treeNode, String parentUid, String date);
+
+        void getEventOrgUnit(String ouUid);
 
         void onSearch(String date, String search);
     }

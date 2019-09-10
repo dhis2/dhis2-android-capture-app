@@ -42,6 +42,7 @@ import androidx.paging.PagedList;
 import androidx.recyclerview.widget.DividerItemDecoration;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.mapbox.geojson.BoundingBox;
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
@@ -78,6 +79,7 @@ import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.FiltersAdapter;
+import org.hisp.dhis.android.core.arch.call.D2Progress;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
@@ -634,12 +636,12 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             if (map == null)
                 binding.mapView.getMapAsync(mapboxMap -> {
                     map = mapboxMap;
-
                     if (map.getStyle() == null)
                         map.setStyle(Style.MAPBOX_STREETS, style -> {
 
                                     map.addOnMapClickListener(this);
 
+                                    //TODO: GET TE TYPE ICON
                                     style.addImage("ICON_ID", BitmapFactory.decodeResource(getResources(), R.drawable.mapbox_marker_icon_default));
 
                                     setSource(style, data.component1());
@@ -683,6 +685,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 map.easeCamera(CameraUpdateFactory.newLatLngBounds(bounds, 50), 1200);
             }
         };
+    }
+
+    @Override
+    public Consumer<D2Progress> downloadProgress() {
+        return progress -> Snackbar.make(binding.getRoot(), String.format("Downloading %s", String.valueOf(progress.percentage()))+"%", Snackbar.LENGTH_SHORT);
     }
 
     private void setSource(Style style, FeatureCollection featureCollection) {

@@ -103,7 +103,7 @@ final class MainPresenter implements MainContracts.Presenter {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> {
-                    WorkManager.getInstance().cancelAllWork();
+                    WorkManager.getInstance(view.getContext().getApplicationContext()).cancelAllWork();
                     view.startActivity(LoginActivity.class, null, true, true, null);
                 }, Timber::e)
         );
@@ -117,7 +117,7 @@ final class MainPresenter implements MainContracts.Presenter {
         if (pin != null) {
             prefs.edit().putString("pin", pin).apply();
         }
-        WorkManager.getInstance().cancelAllWork();
+        WorkManager.getInstance(view.getContext().getApplicationContext()).cancelAllWork();
 //        view.startActivity(LoginActivity.class, null, true, true, null);
         view.back();
     }

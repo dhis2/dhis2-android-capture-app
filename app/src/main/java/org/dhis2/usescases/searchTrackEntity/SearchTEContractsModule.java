@@ -13,6 +13,7 @@ import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.utils.filters.FilterManager;
+import org.hisp.dhis.android.core.arch.call.D2Progress;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
@@ -73,6 +74,8 @@ public class SearchTEContractsModule {
         Consumer<FeatureType> featureType();
 
         Consumer<Pair<FeatureCollection, BoundingBox>> setMap();
+
+        Consumer<D2Progress> downloadProgress();
     }
 
     public interface Presenter {

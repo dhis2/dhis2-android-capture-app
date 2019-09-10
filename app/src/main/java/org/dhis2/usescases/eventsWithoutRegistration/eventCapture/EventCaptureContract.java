@@ -126,6 +126,9 @@ public class EventCaptureContract {
         Flowable<List<FieldViewModel>> list(String sectionUid);
 
         @NonNull
+        Flowable<List<FieldViewModel>> evaluateForSection(String sectionUid);
+
+        @NonNull
         Flowable<List<FieldViewModel>> list();
 
         @NonNull
