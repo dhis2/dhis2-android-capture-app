@@ -523,4 +523,17 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
         parentOrgUnit.onNext(Trio.create(treeNode, parentUid, date));
 
     }
+
+    @Override
+    public void getEventOrgUnit(String ouUid) {
+        compositeDisposable.add(
+                eventInitialRepository.getOrganisationUnit(ouUid)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                orgUnit -> view.setOrgUnit(orgUnit.uid(), orgUnit.displayName()),
+                                Timber::e
+                        )
+        );
+    }
 }

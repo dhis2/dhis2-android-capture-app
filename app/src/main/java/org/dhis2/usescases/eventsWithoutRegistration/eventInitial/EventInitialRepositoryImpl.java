@@ -2,6 +2,7 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventInitial;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
 
 import androidx.annotation.NonNull;
@@ -27,7 +28,6 @@ import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
-import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
@@ -78,14 +78,14 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     @Override
     public Observable<List<OrganisationUnit>> filteredOrgUnits(String date, String programId, String parentId) {
         if (date == null)
-            return  parentId == null ? orgUnits() : orgUnits(programId, parentId);
+            return parentId == null ? orgUnits(programId) : orgUnits(programId, parentId);
         else
-            return (parentId == null ? orgUnits() : orgUnits(programId, parentId))
+            return (parentId == null ? orgUnits(programId) : orgUnits(programId, parentId))
                     .map(organisationUnits -> {
                         Iterator<OrganisationUnit> iterator = organisationUnits.iterator();
                         while (iterator.hasNext()) {
                             OrganisationUnit organisationUnit = iterator.next();
-                            if(organisationUnit.openingDate() != null && organisationUnit.openingDate().after(DateUtils.uiDateFormat().parse(date))
+                            if (organisationUnit.openingDate() != null && organisationUnit.openingDate().after(DateUtils.uiDateFormat().parse(date))
                                     || organisationUnit.closedDate() != null && organisationUnit.closedDate().before(DateUtils.uiDateFormat().parse(date)))
                                 iterator.remove();
                         }
@@ -94,18 +94,34 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     }
 
     @NonNull
-    public Observable<List<OrganisationUnit>> orgUnits() {
+    public Observable<List<OrganisationUnit>> orgUnits(String programUid) {
 
-        return Observable.fromCallable(() -> {
+        List<String> ouUids = new ArrayList<>();
+
+        try (Cursor orgUnitCursor = d2.databaseAdapter().query("SELECT organisationUnit FROM OrganisationUnitProgramLink WHERE program = ?", programUid)) {
+            orgUnitCursor.moveToFirst();
+            for(int i = 0; i<orgUnitCursor.getCount();i++){
+                ouUids.add(orgUnitCursor.getString(0));
+                orgUnitCursor.moveToNext();
+            }
+        }
+
+        return d2.organisationUnitModule().organisationUnits
+                .byUid().in(ouUids)
+                .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
+                .withPrograms()
+                .getAsync().toObservable();
+
+     /*   return Observable.fromCallable(() -> {
             int level = 1;
             while (d2.organisationUnitModule().organisationUnits.byLevel().eq(level)
-                        .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).withPrograms().count() < 1)
+                    .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).withPrograms().count() < 1)
                 level++;
 
             return d2.organisationUnitModule().organisationUnits.byLevel().eq(level)
                     .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).withPrograms().get();
 
-        });
+        });*/
     }
 
 
@@ -118,9 +134,9 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
                 .map(organisationUnits -> {
                     List<OrganisationUnit> programOrganisationUnits = new ArrayList<>();
-                    for(OrganisationUnit organisationUnit : organisationUnits){
-                        if(UidsHelper.getUids(organisationUnit.programs()).contains(programId))
-                           programOrganisationUnits.add(organisationUnit);
+                    for (OrganisationUnit organisationUnit : organisationUnits) {
+                        if (UidsHelper.getUids(organisationUnit.programs()).contains(programId))
+                            programOrganisationUnits.add(organisationUnit);
                     }
                     return programOrganisationUnits.isEmpty() ? organisationUnits : programOrganisationUnits;
                 });
@@ -180,9 +196,9 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
             return activeDate.before(scheduleDate) ? scheduleDate : activeDate;
         } else if (activeDate != null) {
             return activeDate;
-        } else if (scheduleDate != null){
+        } else if (scheduleDate != null) {
             return scheduleDate;
-        }else{
+        } else {
             return Calendar.getInstance().getTime();
         }
     }
@@ -307,7 +323,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     @Override
     public Observable<String> updateTrackedEntityInstance(String eventId, String trackedEntityInstanceUid, String orgUnitUid) {
-        return  Observable.just(d2.trackedEntityModule().trackedEntityInstances.uid(trackedEntityInstanceUid).get())
+        return Observable.just(d2.trackedEntityModule().trackedEntityInstances.uid(trackedEntityInstanceUid).get())
                 .map(trackedEntityInstanceModel -> {
                     ContentValues contentValues = trackedEntityInstanceModel.toContentValues();
                     contentValues.put(TrackedEntityInstanceModel.Columns.ORGANISATION_UNIT, orgUnitUid);
@@ -418,31 +434,31 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     public Observable<Boolean> accessDataWrite(String programId) {
         return Observable.fromCallable(() ->
                 d2.programModule().programStages.byProgramUid().eq(programId).one().get().access().data().write()
-                && d2.programModule().programs.uid(programId).get().access().data().write());
+                        && d2.programModule().programs.uid(programId).get().access().data().write());
     }
 
     @Override
     public void deleteEvent(String eventId, String trackedEntityInstance) {
         Event event = d2.eventModule().events.uid(eventId).get();
-            if (event != null ) {
-                if (event.state() == State.TO_POST) {
-                    String DELETE_WHERE = String.format(
-                            "%s.%s = ?",
-                            EventModel.TABLE, EventModel.Columns.UID
-                    );
-                    briteDatabase.delete(EventModel.TABLE, DELETE_WHERE, eventId);
-                } else {
-                    ContentValues contentValues = event.toContentValues();
-                    contentValues.put(EventModel.Columns.STATE, State.TO_DELETE.name());
-                    briteDatabase.update(EventModel.TABLE, contentValues, EventModel.Columns.UID + " = ?", eventId);
-                }
-
-                if (!isEmpty(event.enrollment()))
-                    updateEnrollment(event.enrollment());
-
-                if (trackedEntityInstance != null)
-                    updateTei(trackedEntityInstance);
+        if (event != null) {
+            if (event.state() == State.TO_POST) {
+                String DELETE_WHERE = String.format(
+                        "%s.%s = ?",
+                        EventModel.TABLE, EventModel.Columns.UID
+                );
+                briteDatabase.delete(EventModel.TABLE, DELETE_WHERE, eventId);
+            } else {
+                ContentValues contentValues = event.toContentValues();
+                contentValues.put(EventModel.Columns.STATE, State.TO_DELETE.name());
+                briteDatabase.update(EventModel.TABLE, contentValues, EventModel.Columns.UID + " = ?", eventId);
             }
+
+            if (!isEmpty(event.enrollment()))
+                updateEnrollment(event.enrollment());
+
+            if (trackedEntityInstance != null)
+                updateTei(trackedEntityInstance);
+        }
     }
 
     @Override
@@ -469,5 +485,10 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
         int teiUpdated = briteDatabase.update(TrackedEntityInstanceModel.TABLE, cv, "uid = ?", teiUid);
         Timber.d("TEI %s UPDATED (%s)", teiUid, teiUpdated);
 
+    }
+
+    @Override
+    public Observable<OrganisationUnit> getOrganisationUnit(String orgUnitUid) {
+        return d2.organisationUnitModule().organisationUnits.byUid().eq(orgUnitUid).one().getAsync().toObservable();
     }
 }

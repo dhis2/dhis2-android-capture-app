@@ -64,4 +64,7 @@ public interface EventInitialRepository {
     Flowable<Map<String,CategoryOption>> getOptionsFromCatOptionCombo(String eventId);
 
     Date getStageLastDate(String programStageUid,String enrollmentUid);
+
+    Observable<OrganisationUnit> getOrganisationUnit(String orgUnitUid);
+
 }

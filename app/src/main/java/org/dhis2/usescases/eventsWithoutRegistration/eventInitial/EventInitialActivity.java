@@ -496,6 +496,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         }
 
         eventModel = event;
+
+        presenter.getEventOrgUnit(event.organisationUnit());
     }
 
     @Override
