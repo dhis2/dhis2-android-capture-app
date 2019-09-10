@@ -369,7 +369,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         return d2.eventModule().events.uid(eventUid).get()
                 .map(eventSingle -> {
                     List<FormSectionViewModel> formSection = new ArrayList<>();
-                    if (eventSingle.state() != State.TO_DELETE) {
+                    if (!eventSingle.deleted()) {
                         ProgramStage stage = d2.programModule().programStages.uid(eventSingle.programStage()).withAllChildren().blockingGet();
                         if (stage.programStageSections().size() > 0) {
                             for (ProgramStageSection section : stage.programStageSections())
@@ -677,7 +677,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
             status = briteDatabase.delete(EventTableInfo.TABLE_INFO.name(), DELETE_WHERE, eventUid);
         } else {
             ContentValues contentValues = event.toContentValues();
-            contentValues.put(EventTableInfo.Columns.STATE, State.TO_DELETE.name());
+            contentValues.put(EventTableInfo.Columns.DELETED, true);
             status = briteDatabase.update(EventTableInfo.TABLE_INFO.name(), contentValues, EventTableInfo.Columns.UID + " = ?", eventUid);
         }
         if (status == 1 && event.enrollment() != null)

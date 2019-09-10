@@ -159,8 +159,7 @@ public final class EnrollmentStatusStore implements EnrollmentStatusEntryStore {
         return briteDatabase.createQuery("TrackedEntityInstance", SELECT_TEI, enrollment == null ? "" : enrollment)
                 .mapToOne(TrackedEntityInstance::create).take(1).toFlowable(BackpressureStrategy.LATEST)
                 .switchMap(tei -> {
-                    if (State.SYNCED.equals(tei.state()) || State.TO_DELETE.equals(tei.state()) ||
-                            State.ERROR.equals(tei.state())) {
+                    if (State.SYNCED.equals(tei.state()) || tei.deleted() || State.ERROR.equals(tei.state())) {
                         ContentValues values = new ContentValues();
                         values.put(TrackedEntityInstance.Columns.STATE, tei.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
 

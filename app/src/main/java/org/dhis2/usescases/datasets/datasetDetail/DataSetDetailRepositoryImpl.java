@@ -70,7 +70,7 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
                             .byPeriod().eq(dataSetReport.period()).one().blockingGet();
                     State state;
                     if(dscr != null && dscr.state() != State.SYNCED) {
-                        if (dscr.state() == State.TO_DELETE)
+                        if (dscr.deleted())
                             state = State.TO_UPDATE;
                         else
                             state = dscr.state();
