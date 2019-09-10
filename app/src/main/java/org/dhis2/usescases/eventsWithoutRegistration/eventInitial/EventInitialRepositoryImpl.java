@@ -1,6 +1,7 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventInitial;
 
 import android.content.Context;
+import android.database.Cursor;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -16,7 +17,6 @@ import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.common.ObjectStyle;
-import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventCreateProjection;
@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -63,70 +62,18 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     @NonNull
     @Override
-    public Observable<List<OrganisationUnit>> filteredOrgUnits(String date, String programId, String parentId, String search) {
-        if (date == null)
-            return !search.isEmpty() ? searchOrgUnits(search) : parentId == null ? orgUnits(programId) : orgUnitsByParent(programId, parentId);
-        else
-            return (!search.isEmpty() ? searchOrgUnits(search) : parentId == null ? orgUnits(programId) : orgUnitsByParent(programId, parentId))
-                    .map(organisationUnits -> {
-                        Iterator<OrganisationUnit> iterator = organisationUnits.iterator();
-                        while (iterator.hasNext()) {
-                            OrganisationUnit organisationUnit = iterator.next();
-                            if (organisationUnit.openingDate() != null && organisationUnit.openingDate().after(DateUtils.uiDateFormat().parse(date))
-                                    || organisationUnit.closedDate() != null && organisationUnit.closedDate().before(DateUtils.uiDateFormat().parse(date)))
-                                iterator.remove();
-                        }
-                        return organisationUnits;
-                    });
-    }
-
-
-    private Observable<List<OrganisationUnit>> searchOrgUnits(String search) {
-        return d2.organisationUnitModule().organisationUnits
-                .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
-                .byDisplayName().like("%" + search + "%")
-                .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
-                .withPrograms()
-                .get().toObservable();
-    }
-
-
-    @NonNull
     public Observable<List<OrganisationUnit>> orgUnits(String programId) {
-        return Observable.fromCallable(() -> orgUnitsByLevel(1, programId));
-    }
+        return Observable.fromCallable(() -> {
+            List<String> ouUids = new ArrayList<>();
+            try (Cursor ouCursor = d2.databaseAdapter().query("SELECT organisationUnit FROM OrganisationUnitProgramLink WHERE program = ?", programId)) {
+                ouCursor.moveToFirst();
+                do {
+                    ouUids.add(ouCursor.getString(0));
+                } while (ouCursor.moveToNext());
+            }
+            return ouUids;
+        }).flatMap(ouUids -> d2.organisationUnitModule().organisationUnits.byUid().in(ouUids).get().toObservable());
 
-
-    private Observable<List<OrganisationUnit>> orgUnitsByParent(String programId, String parentUid) {
-        return d2.organisationUnitModule().organisationUnits
-                .byParentUid().eq(parentUid)
-                .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
-                .withPrograms().get().toObservable()
-                .map(organisationUnits -> {
-                    List<OrganisationUnit> programOrganisationUnits = new ArrayList<>();
-                    for (OrganisationUnit organisationUnit : organisationUnits) {
-                        if (UidsHelper.getUids(organisationUnit.programs()).contains(programId))
-                            programOrganisationUnits.add(organisationUnit);
-                    }
-                    return programOrganisationUnits.isEmpty() ? organisationUnits : programOrganisationUnits;
-                });
-    }
-
-    private List<OrganisationUnit> orgUnitsByLevel(int level, String programId){
-        List<OrganisationUnit> organisationUnits = d2.organisationUnitModule().organisationUnits
-                .byLevel().eq(level)
-                .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
-                .withPrograms().blockingGet();
-
-        Iterator<OrganisationUnit> orgUnitIterator = organisationUnits.iterator();
-        while(orgUnitIterator.hasNext())
-            if(!UidsHelper.getUids(orgUnitIterator.next().programs()).contains(programId))
-                orgUnitIterator.remove();
-
-        if (organisationUnits.size() < 1)
-            return orgUnitsByLevel(level+1, programId);
-        else
-            return organisationUnits;
     }
 
     @NonNull

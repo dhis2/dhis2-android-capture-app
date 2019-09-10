@@ -104,7 +104,6 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
         orgUnitDialog
                 .setMultiSelection(false)
                 .setOrgUnits(data)
-                .setProgram(dataSetUid)
                 .setTitle(getString(R.string.org_unit))
                 .setPossitiveListener(v -> {
                     if (orgUnitDialog.getSelectedOrgUnit() != null && !orgUnitDialog.getSelectedOrgUnit().isEmpty()) {

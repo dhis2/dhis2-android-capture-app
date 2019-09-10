@@ -43,6 +43,7 @@
                 android:drawablePadding="8dp"
                 android:hint="Search"
                 android:maxLines="1"
+                android:singleLine="true"
                 android:padding="8dp"
                 android:layout_marginTop="20dp"
                 app:layout_constraintBottom_toTopOf="@+id/tree_container"
