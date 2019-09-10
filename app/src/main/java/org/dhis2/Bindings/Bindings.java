@@ -354,9 +354,6 @@ public class Bindings {
             case TO_UPDATE:
                 textView.setText(textView.getContext().getString(R.string.state_to_update));
                 break;
-            case TO_DELETE:
-                textView.setText(textView.getContext().getString(R.string.state_to_delete));
-                break;
             case ERROR:
                 textView.setText(textView.getContext().getString(R.string.state_error));
                 break;
@@ -388,9 +385,6 @@ public class Bindings {
                 case SENT_VIA_SMS:
                 case SYNCED_VIA_SMS:
                     imageView.setImageResource(R.drawable.ic_sync_sms);
-                    break;
-                case TO_DELETE:
-                    imageView.setImageResource(R.drawable.ic_delete);
                     break;
                 default:
                     break;

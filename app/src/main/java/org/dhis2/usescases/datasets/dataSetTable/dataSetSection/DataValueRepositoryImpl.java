@@ -14,6 +14,7 @@ import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
+import org.hisp.dhis.android.core.common.BaseDataModel;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.dataelement.DataElement;
 import org.hisp.dhis.android.core.dataelement.DataElementOperand;
@@ -451,7 +452,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
         String[] values = {periodInitialDate, dataSetUid, catCombo, orgUnitUid};
 
         ContentValues contentValues = new ContentValues();
-        contentValues.put(DataSetCompleteRegistration.Columns.STATE, State.TO_DELETE.name());
+        contentValues.put(DataSetCompleteRegistration.Columns.DELETED, true);
         String completeDate = DateUtils.databaseDateFormat().format(DateUtils.getInstance().getToday());
         contentValues.put("date", completeDate);
 
@@ -468,7 +469,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
                     .byPeriod().eq(periodInitialDate)
                     .byOrganisationUnitUid().eq(orgUnitUid)
                     .one().blockingGet();
-            return completeRegistration != null && completeRegistration.state() != State.TO_DELETE;
+            return completeRegistration != null && !completeRegistration.deleted();
         });
     }
 

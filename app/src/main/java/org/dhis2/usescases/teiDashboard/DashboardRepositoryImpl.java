@@ -104,7 +104,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
             "Enrollment", "uid", "Enrollment",
             "Enrollment", "program",
             "Enrollment", "trackedEntityInstance", "created",
-            "Event", "state", State.TO_DELETE,
+            "Event", "deleted", true,
             "ProgramStage", "uid", "uid", "ProgramStage", "program",
             "Event", "dueDate",
             "Event", "eventDate", "ProgramStage", "sortOrder");

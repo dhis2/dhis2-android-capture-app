@@ -7,8 +7,8 @@ import androidx.annotation.NonNull;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
-import org.hisp.dhis.android.core.data.database.DatabaseAdapter;
-import org.hisp.dhis.android.core.data.database.Transaction;
+import org.hisp.dhis.android.core.arch.db.access.DatabaseAdapter;
+import org.hisp.dhis.android.core.arch.db.access.Transaction;
 
 import static org.dhis2.utils.Preconditions.isNull;
 

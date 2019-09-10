@@ -171,7 +171,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                                     enrollmentObjectRepository.setStatus(enrollmentObjectRepository.blockingGet().status());
                                     enrollmentObjectRepository.blockingDelete();
                                     return !d2.enrollmentModule().enrollments.byTrackedEntityInstance().eq(teUid)
-                                            .byState().notIn(State.TO_DELETE)
+                                            .byDeleted().isFalse()
                                             .byStatus().eq(EnrollmentStatus.ACTIVE).blockingGet().isEmpty();
                                 });
                             else

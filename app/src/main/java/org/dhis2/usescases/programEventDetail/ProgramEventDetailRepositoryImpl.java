@@ -75,7 +75,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
             eventRepo = eventRepo.byStatus().in(eventStatus);
         if (!states.isEmpty())
             eventRepo = eventRepo.byState().in(states);
-        DataSource dataSource = eventRepo.byState().notIn(State.TO_DELETE).orderByEventDate(RepositoryScope.OrderByDirection.DESC).withAllChildren().getDataSource().map(event -> transformToProgramEventModel(event));
+        DataSource dataSource = eventRepo.byDeleted().isFalse().orderByEventDate(RepositoryScope.OrderByDirection.DESC).withAllChildren().getDataSource().map(event -> transformToProgramEventModel(event));
         return new LivePagedListBuilder(new DataSource.Factory() {
             @Override
             public DataSource create() {
@@ -100,7 +100,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
         if (!states.isEmpty())
             eventRepo = eventRepo.byState().in(states);
 
-        return eventRepo.byState().notIn(State.TO_DELETE).orderByEventDate(RepositoryScope.OrderByDirection.DESC).withAllChildren().get()
+        return eventRepo.byDeleted().isFalse().orderByEventDate(RepositoryScope.OrderByDirection.DESC).withAllChildren().get()
                 .map(GeometryUtils.INSTANCE::getSourceFromEvent)
                 .toFlowable();
     }

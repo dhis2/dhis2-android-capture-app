@@ -70,7 +70,7 @@ class HomeRepositoryImpl implements HomeRepository {
 
                             for(DataSetCompleteRegistration completeRegistration: dscr){
                                 if(completeRegistration.state() != State.SYNCED) {
-                                    if (completeRegistration.state() == State.TO_DELETE)
+                                    if (completeRegistration.deleted())
                                         state = State.TO_UPDATE;
                                     else
                                         state = completeRegistration.state();
@@ -138,7 +138,7 @@ class HomeRepositoryImpl implements HomeRepository {
                                             .byProgramUid().eq(program.uid())
                                             .byEventDate().inDatePeriods(dateFilter)
                                             .byOrganisationUnitUid().in(orgUnitFilter)
-                                            .byState().notIn(State.TO_DELETE)
+                                            .byDeleted().isFalse()
                                             .byState().in(statesFilter)
                                             .blockingCount();
                                 }
@@ -147,21 +147,21 @@ class HomeRepositoryImpl implements HomeRepository {
                                             .byProgramUid().eq(program.uid())
                                             .byEventDate().inDatePeriods(dateFilter)
                                             .byOrganisationUnitUid().in(orgUnitFilter)
-                                            .byState().notIn(State.TO_DELETE)
+                                            .byDeleted().isFalse()
                                             .blockingCount();
                             } else {
                                 if(!statesFilter.isEmpty())
                                     count = d2.eventModule().events
                                             .byProgramUid().eq(program.uid())
                                             .byEventDate().inDatePeriods(dateFilter)
-                                            .byState().notIn(State.TO_DELETE)
+                                            .byDeleted().isFalse()
                                             .byState().in(statesFilter)
                                             .blockingCount();
                                 else
                                     count = d2.eventModule().events
                                             .byProgramUid().eq(program.uid())
                                             .byEventDate().inDatePeriods(dateFilter)
-                                            .byState().notIn(State.TO_DELETE)
+                                            .byDeleted().isFalse()
                                             .blockingCount();
                             }
                         } else if (!orgUnitFilter.isEmpty()) {
@@ -169,26 +169,26 @@ class HomeRepositoryImpl implements HomeRepository {
                                 count = d2.eventModule().events
                                         .byProgramUid().eq(program.uid())
                                         .byOrganisationUnitUid().in(orgUnitFilter)
-                                        .byState().notIn(State.TO_DELETE)
+                                        .byDeleted().isFalse()
                                         .byState().in(statesFilter)
                                         .blockingCount();
                             else
                                 count = d2.eventModule().events
                                         .byProgramUid().eq(program.uid())
                                         .byOrganisationUnitUid().in(orgUnitFilter)
-                                        .byState().notIn(State.TO_DELETE)
+                                        .byDeleted().isFalse()
                                         .blockingCount();
                         } else {
                             if(!statesFilter.isEmpty())
                                 count = d2.eventModule().events
                                         .byProgramUid().eq(program.uid())
-                                        .byState().notIn(State.TO_DELETE)
+                                        .byDeleted().isFalse()
                                         .byState().in(statesFilter)
                                         .blockingCount();
                             else
                                 count = d2.eventModule().events
                                         .byProgramUid().eq(program.uid())
-                                        .byState().notIn(State.TO_DELETE)
+                                        .byDeleted().isFalse()
                                         .blockingCount();
                         }
 
@@ -196,7 +196,8 @@ class HomeRepositoryImpl implements HomeRepository {
                             state = State.WARNING;
                         else if (!d2.eventModule().events.byProgramUid().eq(program.uid()).byState().in(State.SENT_VIA_SMS, State.SYNCED_VIA_SMS).blockingGet().isEmpty())
                             state = State.SENT_VIA_SMS;
-                        else if (!d2.eventModule().events.byProgramUid().eq(program.uid()).byState().in(State.TO_UPDATE, State.TO_POST, State.TO_DELETE).blockingGet().isEmpty())
+                        else if (!d2.eventModule().events.byProgramUid().eq(program.uid()).byState().in(State.TO_UPDATE, State.TO_POST).blockingGet().isEmpty() ||
+                                !d2.eventModule().events.byProgramUid().eq(program.uid()).byDeleted().isTrue().blockingGet().isEmpty())
                             state = State.TO_UPDATE;
 
                     } else {
@@ -211,7 +212,7 @@ class HomeRepositoryImpl implements HomeRepository {
                                             .byEnrollmentDate().inDatePeriods(dateFilter)
                                             .byOrganisationUnit().in(orgUnitFilter)
                                             .byStatus().eq(EnrollmentStatus.ACTIVE)
-                                            .byState().notIn(State.TO_DELETE)
+                                            .byDeleted().isFalse()
                                             .byState().in(statesFilter)
                                             .blockingGet();
                                 else
@@ -220,7 +221,7 @@ class HomeRepositoryImpl implements HomeRepository {
                                             .byEnrollmentDate().inDatePeriods(dateFilter)
                                             .byOrganisationUnit().in(orgUnitFilter)
                                             .byStatus().eq(EnrollmentStatus.ACTIVE)
-                                            .byState().notIn(State.TO_DELETE)
+                                            .byDeleted().isFalse()
                                             .blockingGet();
                             } else {
                                 if(!statesFilter.isEmpty())
@@ -228,7 +229,7 @@ class HomeRepositoryImpl implements HomeRepository {
                                             .byProgram().in(programUids)
                                             .byEnrollmentDate().inDatePeriods(dateFilter)
                                             .byStatus().eq(EnrollmentStatus.ACTIVE)
-                                            .byState().notIn(State.TO_DELETE)
+                                            .byDeleted().isFalse()
                                             .byState().in(statesFilter)
                                             .blockingGet();
                                 else
@@ -236,7 +237,7 @@ class HomeRepositoryImpl implements HomeRepository {
                                             .byProgram().in(programUids)
                                             .byEnrollmentDate().inDatePeriods(dateFilter)
                                             .byStatus().eq(EnrollmentStatus.ACTIVE)
-                                            .byState().notIn(State.TO_DELETE)
+                                            .byDeleted().isFalse()
                                             .blockingGet();
                             }
                             count = countEnrollment(enrollments);
@@ -247,7 +248,7 @@ class HomeRepositoryImpl implements HomeRepository {
                                         .byProgram().in(programUids)
                                         .byOrganisationUnit().in(orgUnitFilter)
                                         .byStatus().eq(EnrollmentStatus.ACTIVE)
-                                        .byState().notIn(State.TO_DELETE)
+                                        .byDeleted().isFalse()
                                         .byState().in(statesFilter)
                                         .blockingGet();
                             else
@@ -255,7 +256,7 @@ class HomeRepositoryImpl implements HomeRepository {
                                         .byProgram().in(programUids)
                                         .byOrganisationUnit().in(orgUnitFilter)
                                         .byStatus().eq(EnrollmentStatus.ACTIVE)
-                                        .byState().notIn(State.TO_DELETE)
+                                        .byDeleted().isFalse()
                                         .blockingGet();
 
                             count = countEnrollment(enrollments);
@@ -265,14 +266,14 @@ class HomeRepositoryImpl implements HomeRepository {
                                 enrollments = d2.enrollmentModule().enrollments
                                         .byProgram().in(programUids)
                                         .byStatus().eq(EnrollmentStatus.ACTIVE)
-                                        .byState().notIn(State.TO_DELETE)
+                                        .byDeleted().isFalse()
                                         .byState().in(statesFilter)
                                         .blockingGet();
                             else
                                 enrollments = d2.enrollmentModule().enrollments
                                         .byProgram().in(programUids)
                                         .byStatus().eq(EnrollmentStatus.ACTIVE)
-                                        .byState().notIn(State.TO_DELETE)
+                                        .byDeleted().isFalse()
                                         .blockingGet();
 
                             count = countEnrollment(enrollments);
@@ -282,7 +283,8 @@ class HomeRepositoryImpl implements HomeRepository {
                             state = State.WARNING;
                         else if (!d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().in(State.SENT_VIA_SMS, State.SYNCED_VIA_SMS).blockingGet().isEmpty())
                             state = State.SENT_VIA_SMS;
-                        else if (!d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().in(State.TO_UPDATE, State.TO_POST, State.TO_DELETE).blockingGet().isEmpty())
+                        else if (!d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().in(State.TO_UPDATE, State.TO_POST).blockingGet().isEmpty() ||
+                                !d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byDeleted().isTrue().blockingGet().isEmpty())
                             state = State.TO_UPDATE;
                     }
 

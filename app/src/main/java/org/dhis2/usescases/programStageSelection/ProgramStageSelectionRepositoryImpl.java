@@ -174,7 +174,7 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
     public Flowable<List<ProgramStage>> enrollmentProgramStages(String programId, String enrollmentUid) {
         List<String> currentProgramStages = new ArrayList<>();
         List<ProgramStage> selectableStages = new ArrayList<>();
-        List<Event> events = d2.eventModule().events.byEnrollmentUid().eq(enrollmentUid == null ? "" : enrollmentUid).byState().neq(State.TO_DELETE).blockingGet();
+        List<Event> events = d2.eventModule().events.byEnrollmentUid().eq(enrollmentUid == null ? "" : enrollmentUid).byDeleted().isFalse().blockingGet();
         for (Event event : events)
             currentProgramStages.add(event.programStage());
 
