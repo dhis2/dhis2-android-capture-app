@@ -149,6 +149,8 @@ public class EventInitialContract {
         Date getStageLastDate(String programStageUid, String enrollmentUid);
 
         void onExpandOrgUnitNode(TreeNode treeNode, String parentUid, String date);
+
+        void getEventOrgUnit(String ouUid);
     }
 
 }
