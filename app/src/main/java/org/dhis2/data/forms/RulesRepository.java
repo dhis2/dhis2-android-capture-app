@@ -123,7 +123,7 @@ public final class RulesRepository {
             "JOIN ProgramStage ON ProgramStage.uid = Event.programStage\n" +
             "WHERE Event.program = ? AND Event.uid != ? AND (Event.eventDate < ? OR (Event.eventDate = ? AND Event.lastUpdated < ?))\n" +
             " AND Event.Status NOT IN ('SCHEDULE', 'SKIPPED', 'OVERDUE')" +
-            " AND Event.deleted == false ORDER BY Event.eventDate DESC,Event.lastUpdated DESC LIMIT 10";
+            " AND Event.deleted != 1 ORDER BY Event.eventDate DESC,Event.lastUpdated DESC LIMIT 10";
 
     /**
      * Query all events except current one from an enrollment
@@ -139,7 +139,7 @@ public final class RulesRepository {
             "JOIN ProgramStage ON ProgramStage.uid = Event.programStage\n" +
             "WHERE Event.enrollment = ? AND Event.uid != ? AND (Event.eventDate < ? OR (Event.eventDate = ? AND Event.lastUpdated < ?))\n" +
             " AND Event.Status NOT IN ('SCHEDULE', 'SKIPPED', 'OVERDUE')" +
-            " AND Event.deleted == false ORDER BY Event.eventDate DESC,Event.lastUpdated DESC";/*LIMIT 10*/
+            " AND Event.deleted != 1 ORDER BY Event.eventDate DESC,Event.lastUpdated DESC";/*LIMIT 10*/
 
     /**
      * Query all events from an enrollment
@@ -155,7 +155,7 @@ public final class RulesRepository {
             "JOIN ProgramStage ON ProgramStage.uid = Event.programStage\n" +
             "WHERE Event.enrollment = ?\n" +
             " AND Event.Status NOT IN ('SCHEDULE', 'SKIPPED', 'OVERDUE')" +
-            " AND Event.deleted == false ORDER BY Event.eventDate,Event.lastUpdated DESC ";/*LIMIT 10*/
+            " AND Event.deleted != 1 ORDER BY Event.eventDate,Event.lastUpdated DESC ";/*LIMIT 10*/
 
     private static final String QUERY_VALUES = "SELECT " +
             "  Event.eventDate," +
@@ -170,7 +170,7 @@ public final class RulesRepository {
             "  INNER JOIN DataElement ON DataElement.uid = TrackedEntityDataValue.dataElement " +
             "  LEFT JOIN ProgramRuleVariable ON ProgramRuleVariable.dataElement = DataElement.uid " +
             "  LEFT JOIN Option ON (Option.optionSet = DataElement.optionSet AND Option.code = TrackedEntityDataValue.value) " +
-            " WHERE Event.uid = ? AND value IS NOT NULL AND Event.deleted == false;";
+            " WHERE Event.uid = ? AND value IS NOT NULL AND Event.deleted != 1;";
 
     private static final String QUERY_ENROLLMENT = "SELECT\n" +
             "  Enrollment.uid,\n" +

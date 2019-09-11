@@ -47,7 +47,7 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
     @NonNull
     @Override
     public Observable<Event> eventModelDetail(String uid) {
-        return Observable.fromCallable(() -> d2.eventModule().events.uid(uid).blockingGet()).filter(event -> !event.deleted());
+        return Observable.fromCallable(() -> d2.eventModule().events.uid(uid).blockingGet()).filter(event -> event.deleted() == null || !event.deleted());
     }
 
     @NonNull
