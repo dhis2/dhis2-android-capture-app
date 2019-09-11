@@ -176,9 +176,9 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                                         selectedProgram, trackedEntityType,
                                                         FilterManager.getInstance().getOrgUnitUidsFilters(),
                                                         FilterManager.getInstance().getStateFilters(),
-                                                        query, NetworkUtils.isOnline(view.getContext()))
-                                        ))
-                        .map(GeometryUtils.INSTANCE::getSourceFromTeis)
+                                                        query, NetworkUtils.isOnline(view.getContext())))
+                                        .map(GeometryUtils.INSTANCE::getSourceFromTeis)
+                        )
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
@@ -784,7 +784,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public Drawable getEnrollmentSymbolIcon() {
-        if(selectedProgram!=null){
+        if (selectedProgram != null) {
             if (selectedProgram.style() != null && selectedProgram.style().icon() != null) {
                 return
                         ObjectStyleUtils.getIconResource(view.getContext(), selectedProgram.style().icon(), R.drawable.ic_program_default);

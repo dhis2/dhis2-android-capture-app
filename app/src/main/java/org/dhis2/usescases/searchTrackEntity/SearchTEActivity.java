@@ -9,6 +9,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.graphics.PointF;
 import android.graphics.RectF;
 import android.os.Build;
@@ -52,6 +53,7 @@ import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.Style;
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager;
 import com.mapbox.mapboxsdk.plugins.markerview.MarkerViewManager;
+import com.mapbox.mapboxsdk.style.expressions.Expression;
 import com.mapbox.mapboxsdk.style.layers.FillLayer;
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
@@ -90,14 +92,25 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import io.ona.kujaku.utils.helpers.MapBoxStyleHelper;
 import io.reactivex.Flowable;
 import io.reactivex.functions.Consumer;
 import kotlin.Pair;
 import timber.log.Timber;
 
+import static com.mapbox.mapboxsdk.style.expressions.Expression.all;
+import static com.mapbox.mapboxsdk.style.expressions.Expression.get;
+import static com.mapbox.mapboxsdk.style.expressions.Expression.gte;
+import static com.mapbox.mapboxsdk.style.expressions.Expression.has;
+import static com.mapbox.mapboxsdk.style.expressions.Expression.literal;
+import static com.mapbox.mapboxsdk.style.expressions.Expression.toNumber;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.fillColor;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAllowOverlap;
+import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.textAllowOverlap;
+import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.textColor;
+import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.textField;
+import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.textIgnorePlacement;
+import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.textOffset;
+import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.textSize;
 
 /**
  * QUADRAM. Created by ppajuelo on 02/11/2017 .
@@ -652,7 +665,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                                     });
                                     map.addOnMapClickListener(this);
 
-                                    //TODO: GET TE TYPE ICON
                                     style.addImage("ICON_ID", presenter.getSymbolIcon());
                                     style.addImage("ICON_ENROLLMENT_ID", presenter.getEnrollmentSymbolIcon());
 
@@ -707,7 +719,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     }
 
     private void setSource(Style style, HashMap<String, FeatureCollection> featCollectionMap) {
-        style.addSource(new GeoJsonSource("teis", featCollectionMap.get("TEI")));
+        style.addSource(new GeoJsonSource("teis", featCollectionMap.get("TEI"),new GeoJsonOptions().withCluster(true).withClusterMaxZoom(14).withClusterRadius(30)));
         style.addSource(new GeoJsonSource("enrollments", featCollectionMap.get("ENROLLMENT")));
     }
 
@@ -717,6 +729,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 PropertyFactory.iconImage("ICON_ID"),
                 iconAllowOverlap(true)
         );
+
         style.addLayer(symbolLayer);
 
         if (featureType != FeatureType.POINT)
@@ -726,6 +739,16 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     )
                     ), "POINT_LAYER"
             );
+
+        SymbolLayer countLayer = new SymbolLayer("count", "teis").withProperties(
+                textField(Expression.toString(get("point_count"))),
+                textSize(12f),
+                textColor(Color.BLACK),
+                textIgnorePlacement(true),
+                textOffset(new Float[]{-1.5f,0f}),
+                textAllowOverlap(true)
+        );
+        style.addLayer(countLayer);
     }
 
     @Override
@@ -734,9 +757,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         RectF rectF = new RectF(pointf.x - 10, pointf.y - 10, pointf.x + 10, pointf.y + 10);
         List<Feature> features = map.queryRenderedFeatures(rectF, featureType == FeatureType.POINT ? "POINT_LAYER" : "POLYGON_LAYER");
         if (!features.isEmpty()) {
-            for (Feature feature : features) {
-                presenter.onTEIClick(feature.getStringProperty("teiUid"), false);
-            }
+            presenter.onTEIClick(features.get(0).getStringProperty("teiUid"), false);
             return true;
         }
 

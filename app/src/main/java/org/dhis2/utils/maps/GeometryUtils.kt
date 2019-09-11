@@ -1,6 +1,7 @@
 package org.dhis2.utils.maps
 
 import com.mapbox.geojson.*
+import io.ona.kujaku.utils.CoordinateUtils
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
@@ -39,6 +40,7 @@ object GeometryUtils {
                     }
                 } else if (geometry.type() == FeatureType.POLYGON) {
                     val polygon = getPolygonFeature(geometry)
+                    (polygon.geometry() as Polygon).coordinates()[0]
                     polygon.addStringProperty("teiUid", it.tei.uid())
                     featureMap["TEI"]!!.add(polygon)
                 }

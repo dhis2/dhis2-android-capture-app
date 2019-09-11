@@ -6,7 +6,12 @@ import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.style.expressions.Expression.*
 import com.mapbox.mapboxsdk.style.layers.*
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory.*
+import io.reactivex.disposables.CompositeDisposable
+import org.dhis2.utils.ColorUtils
 import org.hisp.dhis.android.core.common.FeatureType
+import org.hisp.dhis.android.core.d2manager.D2Manager
+import org.hisp.dhis.android.core.relationship.RelationshipConstraintType
+import org.hisp.dhis.android.core.relationship.RelationshipItem
 
 class MapLayerManager private constructor(
         val style: Style,
@@ -18,8 +23,16 @@ class MapLayerManager private constructor(
     private var showHeatMap: MutableLiveData<Boolean> = MutableLiveData(false)
     private var enrollmentColor: Int = -1
     private var enrollmentFeatureType: FeatureType? = FeatureType.NONE
+    private var disposable : CompositeDisposable = CompositeDisposable()
 
     companion object {
+
+        const val ENROLLMENT_POINT_LAYER_ID: String = "ENROLLMENT_POINT_LAYER"
+        const val ENROLLMENT_POLYGON_LAYER_ID: String = "ENROLLMENT_POLYGON_LAYER"
+        const val HEATMAP_LAYER_ID: String = "HEATMAP_LAYER"
+        const val POLYGON_LAYER_ID: String = "POLYGON_LAYER"
+        const val POINT_LAYER_ID: String = "POINT_LAYER"
+
         private var instance: MapLayerManager? = null
 
         /**
@@ -41,14 +54,14 @@ class MapLayerManager private constructor(
          * Call it when activity ends
          * */
         fun onDestroy() {
+            instance?.clearDisposable()
             instance = null
         }
 
-        const val ENROLLMENT_POINT_LAYER_ID: String = "ENROLLMENT_POINT_LAYER"
-        const val ENROLLMENT_POLYGON_LAYER_ID: String = "ENROLLMENT_POLYGON_LAYER"
-        const val HEATMAP_LAYER_ID: String = "HEATMAP_LAYER"
-        const val POLYGON_LAYER_ID: String = "POLYGON_LAYER"
-        const val POINT_LAYER_ID: String = "POINT_LAYER"
+    }
+
+    private fun clearDisposable() {
+        disposable.clear()
     }
 
     fun setEnrollmentLayerData(color: Int, enrollmentFeatureType: FeatureType) {
@@ -152,8 +165,8 @@ class MapLayerManager private constructor(
                 style.addLayerBelow(symbolLayer, "POINT_LAYER")
 
                 if (enrollmentFeatureType != FeatureType.POINT)
-                    style.addLayerBelow(FillLayer(ENROLLMENT_POLYGON_LAYER_ID, "teis").withProperties(
-                            fillColor(enrollmentColor)
+                    style.addLayerBelow(FillLayer(ENROLLMENT_POLYGON_LAYER_ID, "enrollments").withProperties(
+                            fillColor(ColorUtils.withAlpha(enrollmentColor))
                     ), ENROLLMENT_POINT_LAYER_ID
                     )
             }
