@@ -70,7 +70,7 @@ class HomeRepositoryImpl implements HomeRepository {
 
                             for(DataSetCompleteRegistration completeRegistration: dscr){
                                 if(completeRegistration.state() != State.SYNCED) {
-                                    if (completeRegistration.deleted())
+                                    if (completeRegistration.deleted() != null && completeRegistration.deleted())
                                         state = State.TO_UPDATE;
                                     else
                                         state = completeRegistration.state();
