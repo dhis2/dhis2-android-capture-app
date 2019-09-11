@@ -9,10 +9,15 @@ import android.transition.Transition;
 import android.transition.TransitionManager;
 import android.view.View;
 
+import androidx.constraintlayout.widget.ConstraintSet;
+import androidx.databinding.DataBindingUtil;
+import androidx.recyclerview.widget.DividerItemDecoration;
+
 import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ActivityDatasetDetailBinding;
+import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.org_unit_selector.OUTreeActivity;
 import org.dhis2.utils.Constants;
@@ -28,10 +33,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import androidx.constraintlayout.widget.ConstraintSet;
-import androidx.databinding.DataBindingUtil;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import io.reactivex.Flowable;
 import io.reactivex.processors.PublishProcessor;
 
 
@@ -80,6 +81,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
     protected void onResume() {
         super.onResume();
         presenter.init(this);
+        binding.addDatasetButton.setEnabled(true);
         binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
         filtersAdapter.notifyDataSetChanged();
 
@@ -184,5 +186,13 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
     @Override
     public Boolean accessDataWrite() {
         return accessWriteData;
+    }
+
+    @Override
+    public void startNewDataSet() {
+        binding.addDatasetButton.setEnabled(false);
+        Bundle bundle = new Bundle();
+        bundle.putString(Constants.DATA_SET_UID, dataSetUid);
+        startActivity(DataSetInitialActivity.class,bundle,false,false,null);
     }
 }

@@ -5,7 +5,6 @@ import android.os.Bundle;
 import androidx.annotation.IntDef;
 
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity;
-import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialActivity;
 import org.dhis2.usescases.main.program.SyncStatusDialog;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.filters.FilterManager;
@@ -115,10 +114,7 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
 
     @Override
     public void addDataSet() {
-        Bundle bundle = new Bundle();
-        bundle.putString(Constants.DATA_SET_UID, view.dataSetUid());
-
-        view.startActivity(DataSetInitialActivity.class,bundle,false,false,null);
+        view.startNewDataSet();
     }
 
     @Override
