@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <import type="android.view.View" />
 
         <variable
@@ -56,9 +57,9 @@
                 android:layout_toEndOf="@id/back_button"
                 android:gravity="center_vertical"
                 android:text="@string/search"
-                android:visibility="gone"
                 android:textColor="@color/white_faf"
                 android:textSize="20sp"
+                android:visibility="gone"
                 app:layout_constraintStart_toEndOf="@id/back_button"
                 tools:ignore="RelativeOverlap" />
 
@@ -66,11 +67,11 @@
                 android:id="@+id/clear_button"
                 style="@style/ActionIcon"
                 android:onClick="@{()->presenter.onClearClick()}"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/moreOptions"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_refresh"
-                android:visibility="gone"
                 tools:ignore="ContentDescription" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -95,6 +96,7 @@
                     android:visibility="@{totalFilters>0?View.VISIBLE:View.GONE}"
                     tools:text="1" />
             </androidx.constraintlayout.widget.ConstraintLayout>
+
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/filterCounterSearch"
                 android:layout_width="24dp"
@@ -117,6 +119,7 @@
                     android:visibility="@{totalFiltersSearch>0?View.VISIBLE:View.GONE}"
                     tools:text="1" />
             </androidx.constraintlayout.widget.ConstraintLayout>
+
             <ImageView
                 android:id="@+id/search_filter_general"
                 style="@style/ActionIcon"
@@ -131,11 +134,11 @@
                 android:id="@+id/search_filter"
                 style="@style/ActionIcon"
                 android:onClick="@{()->presenter.showFilter()}"
+                android:tint="@color/white"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/search_filter_general"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_search"
-                android:tint="@color/white"
                 tools:ignore="ContentDescription" />
 
             <ImageView
@@ -185,8 +188,8 @@
             android:id="@+id/backdropLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="?colorPrimary"
-            android:layout_below="@+id/mainToolbar">
+            android:layout_below="@+id/mainToolbar"
+            android:background="?colorPrimary">
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/backdropGuideTop"
@@ -209,10 +212,10 @@
                 android:id="@+id/form_recycler"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_constraintHeight_max="360dp"
-                app:layout_constrainedHeight="true"
                 android:focusableInTouchMode="true"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constrainedHeight="true"
+                app:layout_constraintHeight_max="360dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/backdropGuideTop" />
 
@@ -228,11 +231,11 @@
                     android:id="@+id/filterOpen"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:visibility="gone"
                     android:paddingTop="8dp"
-                    app:layout_constraintTop_toTopOf="parent"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent">
+                    app:layout_constraintTop_toTopOf="parent">
 
 
                     <ImageView
@@ -277,8 +280,8 @@
                     android:layout_height="0dp"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
-                    app:layout_constraintTop_toBottomOf="@id/filterOpen"
-                    app:layout_constraintBottom_toBottomOf="parent"/>
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/filterOpen" />
 
                 <io.ona.kujaku.views.KujakuMapView
                     android:id="@+id/mapView"
@@ -287,17 +290,26 @@
                     android:background="@drawable/ic_front_backdrop_bg"
                     android:visibility="gone"
                     app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
-                    app:layout_constraintTop_toBottomOf="@id/filterOpen"
-                    app:layout_constraintBottom_toBottomOf="parent" />
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/filterOpen" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/mapLayerButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    android:text="Map layers"
+                    app:layout_constraintStart_toStartOf="@id/mapView"
+                    app:layout_constraintTop_toTopOf="@id/mapView" />
 
                 <RelativeLayout
                     android:id="@+id/messageContainer"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:visibility="visible"
-                    app:layout_constraintTop_toBottomOf="@id/filterOpen"
+                    app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
+                    app:layout_constraintTop_toBottomOf="@id/filterOpen">
 
                     <TextView
                         android:id="@+id/message"

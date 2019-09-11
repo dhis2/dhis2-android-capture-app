@@ -1,5 +1,6 @@
 package org.dhis2.usescases.searchTrackEntity;
 
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 
 import androidx.annotation.Nullable;
@@ -74,7 +75,7 @@ public class SearchTEContractsModule {
 
         Consumer<FeatureType> featureType();
 
-        Consumer<Pair<FeatureCollection, BoundingBox>> setMap();
+        Consumer<Pair<HashMap<String,FeatureCollection>, BoundingBox>> setMap();
 
         Consumer<D2Progress> downloadProgress();
     }
@@ -134,5 +135,9 @@ public class SearchTEContractsModule {
         void getMapData();
 
         Drawable getSymbolIcon();
+
+        void getEnrollmentMapData();
+
+        Drawable getEnrollmentSymbolIcon();
     }
 }

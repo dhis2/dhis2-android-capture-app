@@ -83,6 +83,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private String trackedEntityType;
     private String initialProgram;
     private FlowableProcessor<Unit> mapProcessor;
+    private FlowableProcessor<Unit> enrollmentMapProcessor;
 
     public SearchTEPresenter(D2 d2, SearchRepository searchRepository) {
         this.searchRepository = searchRepository;
@@ -92,6 +93,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         queryProcessor = PublishProcessor.create();
         processorDismissDialog = PublishProcessor.create();
         mapProcessor = PublishProcessor.create();
+        enrollmentMapProcessor = PublishProcessor.create();
     }
 
     //-----------------------------------
@@ -164,6 +166,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                 Timber::d
                         )
         );
+
         compositeDisposable.add(
                 mapProcessor
                         .flatMap(unit ->
@@ -772,5 +775,23 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                     ObjectStyleUtils.getIconResource(view.getContext(), teiType.style().icon(), R.drawable.mapbox_marker_icon_default);
         } else
             return AppCompatResources.getDrawable(view.getContext(), R.drawable.mapbox_marker_icon_default);
+    }
+
+    @Override
+    public void getEnrollmentMapData() {
+        enrollmentMapProcessor.onNext(new Unit());
+    }
+
+    @Override
+    public Drawable getEnrollmentSymbolIcon() {
+        if(selectedProgram!=null){
+            if (selectedProgram.style() != null && selectedProgram.style().icon() != null) {
+                return
+                        ObjectStyleUtils.getIconResource(view.getContext(), selectedProgram.style().icon(), R.drawable.ic_program_default);
+            } else
+                return AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_program_default);
+        }
+
+        return null;
     }
 }
