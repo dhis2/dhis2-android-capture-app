@@ -1,9 +1,11 @@
 package org.dhis2.usescases.programEventDetail;
 
+import androidx.lifecycle.LiveData;
+import androidx.paging.PagedList;
+
 import com.mapbox.geojson.BoundingBox;
 import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.mapboxsdk.geometry.LatLng;
-import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions;
 
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.general.AbstractActivityContracts;
@@ -15,9 +17,6 @@ import org.hisp.dhis.android.core.period.DatePeriod;
 import org.hisp.dhis.android.core.program.Program;
 
 import java.util.List;
-
-import androidx.lifecycle.LiveData;
-import androidx.paging.PagedList;
 
 import io.reactivex.functions.Consumer;
 
@@ -56,6 +55,8 @@ public class ProgramEventDetailContract {
         void clearFilters();
 
         Consumer<FeatureType> setFeatureType();
+
+        void startNewEvent();
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
