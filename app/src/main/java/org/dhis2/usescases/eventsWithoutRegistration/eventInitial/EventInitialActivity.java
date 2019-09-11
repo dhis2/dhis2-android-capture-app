@@ -20,14 +20,12 @@ import android.widget.PopupMenu;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.view.GravityCompat;
 import androidx.core.view.ViewCompat;
 import androidx.databinding.DataBindingUtil;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.jakewharton.rxbinding2.view.RxView;
-import com.unnamed.b.atv.model.TreeNode;
 
 import org.dhis2.App;
 import org.dhis2.Bindings.Bindings;
@@ -35,7 +33,6 @@ import org.dhis2.R;
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel;
-import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ActivityEventInitialBinding;
 import org.dhis2.databinding.CategorySelectorBinding;
 import org.dhis2.databinding.WidgetDatepickerBinding;
@@ -56,7 +53,6 @@ import org.dhis2.utils.custom_views.CustomDialog;
 import org.dhis2.utils.custom_views.OrgUnitDialog;
 import org.dhis2.utils.custom_views.PeriodDialog;
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper;
-import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
@@ -66,7 +62,6 @@ import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
-import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.Program;
@@ -455,19 +450,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
         }
 
-    }
-
-
-    @Override
-    public Consumer<Pair<TreeNode, List<TreeNode>>> addNodeToTree() {
-        return node -> {
-            for (TreeNode childNode : node.val1()) {
-                if (!UidsHelper.getUids(((OrganisationUnit) childNode.getValue()).programs()).contains(programUid))
-                    childNode.setSelectable(false);
-                orgUnitDialog.getTreeView().addNode(node.val0(), childNode);
-            }
-            orgUnitDialog.getTreeView().expandNode(node.val0());
-        };
     }
 
     @Override
@@ -900,8 +882,9 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
             Iterator<OrganisationUnit> iterator = orgUnits.iterator();
             while (iterator.hasNext()) {
-                OrganisationUnit orgUnit = iterator.next();
-                if (orgUnit.closedDate() != null && selectedDate.after(orgUnit.closedDate()))
+                OrganisationUnit organisationUnit = iterator.next();
+                if (organisationUnit.openingDate() != null && organisationUnit.openingDate().after(selectedDate)
+                        || organisationUnit.closedDate() != null && organisationUnit.closedDate().before(selectedDate))
                     iterator.remove();
             }
 
@@ -909,16 +892,13 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                     .setTitle(!binding.orgUnit.getText().toString().isEmpty() ? binding.orgUnit.getText().toString() : getString(R.string.org_unit))
                     .setMultiSelection(false)
                     .setOrgUnits(orgUnits)
-                    .setProgram(programUid)
                     .setPossitiveListener(data -> {
                         setOrgUnit(orgUnitDialog.getSelectedOrgUnit(), orgUnitDialog.getSelectedOrgUnitName());
                         orgUnitDialog.dismiss();
                     })
                     .setNegativeListener(data -> orgUnitDialog.dismiss())
                     .setNodeClickListener((node, value) -> {
-                        if (node.getChildren().isEmpty())
-                            presenter.onExpandOrgUnitNode(node, ((OrganisationUnit) node.getValue()).uid(), DateUtils.databaseDateFormat().format(selectedDate));
-                        else
+                        if (!node.getChildren().isEmpty())
                             node.setExpanded(node.isExpanded());
                     });
 

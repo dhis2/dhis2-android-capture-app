@@ -4,6 +4,8 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +24,7 @@ import org.dhis2.databinding.DialogOrgunitBinding;
 import org.dhis2.utils.OrgUnitUtils;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -39,8 +42,6 @@ public class OrgUnitDialog extends DialogFragment {
     private String title;
     private List<OrganisationUnit> myOrgs;
     private Context context;
-    private TreeNode treeNode;
-    private String programUid;
 
     public static OrgUnitDialog getInstace() {
         if (instace == null) {
@@ -90,16 +91,6 @@ public class OrgUnitDialog extends DialogFragment {
         return this;
     }
 
-    public OrgUnitDialog setTreeNode(TreeNode treeNode) {
-        this.treeNode = treeNode;
-        return this;
-    }
-
-    public OrgUnitDialog setProgram(String programUid) {
-        this.programUid = programUid;
-        return this;
-    }
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -123,7 +114,29 @@ public class OrgUnitDialog extends DialogFragment {
         binding.title.setText(title);
         binding.acceptButton.setOnClickListener(possitiveListener);
         binding.clearButton.setOnClickListener(negativeListener);
-        if(myOrgs != null)
+        binding.search.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                //empty
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                List<OrganisationUnit> searchOrgUnits = new ArrayList<>();
+                for (OrganisationUnit orgUnit : myOrgs)
+                    if (orgUnit.name().toLowerCase().contains(s.toString().toLowerCase()))
+                        searchOrgUnits.add(orgUnit);
+
+                renderTree(searchOrgUnits);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                //empty
+            }
+        });
+
+        if (myOrgs != null)
             renderTree(myOrgs);
         setRetainInstance(true);
         return binding.getRoot();
@@ -136,7 +149,7 @@ public class OrgUnitDialog extends DialogFragment {
     private void renderTree(@NonNull List<OrganisationUnit> myOrgs) {
 
         binding.treeContainer.removeAllViews();
-        treeView = new AndroidTreeView(getContext(), OrgUnitUtils.renderTree_2(context, myOrgs, isMultiSelection, programUid));
+        treeView = new AndroidTreeView(getContext(), OrgUnitUtils.renderTree_2(context, myOrgs, isMultiSelection));
         treeView.deselectAll();
         treeView.setDefaultContainerStyle(R.style.TreeNodeStyle, false);
         treeView.setSelectionModeEnabled(true);
@@ -159,10 +172,6 @@ public class OrgUnitDialog extends DialogFragment {
         if (treeView.getSelected().size() == 0)
             return null;
         return ((OrganisationUnit) treeView.getSelected().get(0).getValue());
-    }
-
-    public AndroidTreeView getTreeView() {
-        return treeView;
     }
 
     @Override

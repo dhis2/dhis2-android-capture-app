@@ -1,6 +1,7 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventInitial;
 
 import android.content.Context;
+import android.database.Cursor;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -16,7 +17,6 @@ import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.common.ObjectStyle;
-import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventCreateProjection;
@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -63,52 +62,18 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     @NonNull
     @Override
-    public Observable<List<OrganisationUnit>> filteredOrgUnits(String date, String programId, String parentId) {
-        if (date == null)
-            return parentId == null ? orgUnits() : orgUnits(programId, parentId);
-        else
-            return (parentId == null ? orgUnits() : orgUnits(programId, parentId))
-                    .map(organisationUnits -> {
-                        Iterator<OrganisationUnit> iterator = organisationUnits.iterator();
-                        while (iterator.hasNext()) {
-                            OrganisationUnit organisationUnit = iterator.next();
-                            if (organisationUnit.openingDate() != null && organisationUnit.openingDate().after(DateUtils.uiDateFormat().parse(date))
-                                    || organisationUnit.closedDate() != null && organisationUnit.closedDate().before(DateUtils.uiDateFormat().parse(date)))
-                                iterator.remove();
-                        }
-                        return organisationUnits;
-                    });
-    }
-
-    @NonNull
-    public Observable<List<OrganisationUnit>> orgUnits() {
-
+    public Observable<List<OrganisationUnit>> orgUnits(String programId) {
         return Observable.fromCallable(() -> {
-            int level = 1;
-            while (d2.organisationUnitModule().organisationUnits.byLevel().eq(level)
-                    .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).withPrograms().blockingCount() < 1)
-                level++;
+            List<String> ouUids = new ArrayList<>();
+            try (Cursor ouCursor = d2.databaseAdapter().query("SELECT organisationUnit FROM OrganisationUnitProgramLink WHERE program = ?", programId)) {
+                ouCursor.moveToFirst();
+                do {
+                    ouUids.add(ouCursor.getString(0));
+                } while (ouCursor.moveToNext());
+            }
+            return ouUids;
+        }).flatMap(ouUids -> d2.organisationUnitModule().organisationUnits.byUid().in(ouUids).get().toObservable());
 
-            return d2.organisationUnitModule().organisationUnits.byLevel().eq(level)
-                    .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).withPrograms().blockingGet();
-
-        });
-    }
-
-
-    public Observable<List<OrganisationUnit>> orgUnits(String programId, String parentUid) {
-        return d2.organisationUnitModule().organisationUnits
-                .byParentUid().eq(parentUid)
-                .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
-                .withPrograms().get().toObservable()
-                .map(organisationUnits -> {
-                    List<OrganisationUnit> programOrganisationUnits = new ArrayList<>();
-                    for (OrganisationUnit organisationUnit : organisationUnits) {
-                        if (UidsHelper.getUids(organisationUnit.programs()).contains(programId))
-                            programOrganisationUnits.add(organisationUnit);
-                    }
-                    return programOrganisationUnits.isEmpty() ? organisationUnits : programOrganisationUnits;
-                });
     }
 
     @NonNull

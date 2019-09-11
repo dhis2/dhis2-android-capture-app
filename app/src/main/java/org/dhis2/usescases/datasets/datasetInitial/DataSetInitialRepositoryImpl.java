@@ -1,5 +1,7 @@
 package org.dhis2.usescases.datasets.datasetInitial;
 
+import android.database.Cursor;
+
 import androidx.annotation.NonNull;
 
 import org.hisp.dhis.android.core.D2;
@@ -11,6 +13,7 @@ import org.hisp.dhis.android.core.dataset.DataSet;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.period.PeriodType;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -69,17 +72,16 @@ public class DataSetInitialRepositoryImpl implements DataSetInitialRepository {
     @NonNull
     @Override
     public Observable<List<OrganisationUnit>> orgUnits() {
-        return Observable.just(d2.organisationUnitModule().organisationUnits.withDataSets().blockingGet())
-                .flatMapIterable(organisationUnits -> organisationUnits)
-                .filter(organisationUnit -> {
-                    boolean result = false;
-                    for (DataSet dataSet : organisationUnit.dataSets())
-                        if (dataSet.uid().equals(dataSetUid))
-                            result = true;
-                    return result;
-                })
-                .toList()
-                .toObservable();
+        return Observable.fromCallable(() -> {
+            List<String> ouUids = new ArrayList<>();
+            try (Cursor ouCursor = d2.databaseAdapter().query("SELECT organisationUnit FROM DataSetOrganisationUnitLink WHERE dataSet = ?", dataSetUid)){
+                ouCursor.moveToFirst();
+                do {
+                    ouUids.add(ouCursor.getString(0));
+                } while (ouCursor.moveToNext());
+            }
+            return ouUids;
+        }).flatMap(ouUids -> d2.organisationUnitModule().organisationUnits.byUid().in(ouUids).get().toObservable());
 
     }
 
