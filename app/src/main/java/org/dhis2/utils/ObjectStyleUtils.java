@@ -26,4 +26,13 @@ public class ObjectStyleUtils {
             return defaultDrawable;
     }
 
+    public static int getIconResourceId(Context context, String resourceName, int defaultResource) {
+        if (resourceName != null) {
+            Resources resources = context.getResources();
+            String iconName = resourceName.startsWith("ic_") ? resourceName : "ic_" + resourceName;
+            return resources.getIdentifier(iconName, "drawable", context.getPackageName());
+        } else
+            return defaultResource;
+    }
+
 }

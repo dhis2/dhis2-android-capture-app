@@ -46,10 +46,10 @@ import com.google.android.material.snackbar.Snackbar;
 import com.mapbox.geojson.BoundingBox;
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
-import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.geometry.LatLngBounds;
+import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.Style;
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager;
@@ -61,7 +61,6 @@ import com.mapbox.mapboxsdk.style.sources.GeoJsonOptions;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 
 import org.dhis2.App;
-import org.dhis2.BuildConfig;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.ProgramAdapter;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
@@ -98,7 +97,6 @@ import timber.log.Timber;
 
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.fillColor;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAllowOverlap;
-import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconOffset;
 
 /**
  * QUADRAM. Created by ppajuelo on 02/11/2017 .
@@ -154,7 +152,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        Mapbox.getInstance(this, BuildConfig.MAPBOX_ACCESS_TOKEN);
 
         tEType = getIntent().getStringExtra("TRACKED_ENTITY_UID");
 
@@ -642,7 +639,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                                     map.addOnMapClickListener(this);
 
                                     //TODO: GET TE TYPE ICON
-                                    style.addImage("ICON_ID", BitmapFactory.decodeResource(getResources(), R.drawable.mapbox_marker_icon_default));
+                                    style.addImage("ICON_ID", presenter.getSymbolIcon());
 
                                     setSource(style, data.component1());
 
@@ -689,7 +686,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     public Consumer<D2Progress> downloadProgress() {
-        return progress -> Snackbar.make(binding.getRoot(), String.format("Downloading %s", String.valueOf(progress.percentage()))+"%", Snackbar.LENGTH_SHORT);
+        return progress -> Snackbar.make(binding.getRoot(), String.format("Downloading %s", String.valueOf(progress.percentage())) + "%", Snackbar.LENGTH_SHORT);
     }
 
     private void setSource(Style style, FeatureCollection featureCollection) {
@@ -700,19 +697,16 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
         SymbolLayer symbolLayer = new SymbolLayer("POINT_LAYER", "teis").withProperties(
                 PropertyFactory.iconImage("ICON_ID"),
-                iconAllowOverlap(true),
-                iconOffset(new Float[]{0f, -9f})
+                iconAllowOverlap(true)
         );
-        symbolLayer.setMinZoom(0);
         style.addLayer(symbolLayer);
 
         if (featureType != FeatureType.POINT)
             style.addLayerBelow(new FillLayer("POLYGON_LAYER", "teis").withProperties(
                     fillColor(
-//                            getResources().getColor(R.color.green_7ed)
                             ColorUtils.getPrimaryColorWithAlpha(this, ColorUtils.ColorType.PRIMARY_LIGHT, 150f)
                     )
-                    ), "settlement-label"
+                    ), "POINT_LAYER"
             );
 
     }

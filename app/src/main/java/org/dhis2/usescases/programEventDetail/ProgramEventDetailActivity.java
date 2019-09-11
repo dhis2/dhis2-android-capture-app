@@ -118,7 +118,6 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        Mapbox.getInstance(this, BuildConfig.MAPBOX_ACCESS_TOKEN);
         ((App) getApplicationContext()).userComponent().plus(new ProgramEventDetailModule(getIntent().getStringExtra("PROGRAM_UID"))).inject(this);
         super.onCreate(savedInstanceState);
 
