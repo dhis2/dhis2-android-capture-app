@@ -555,6 +555,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                             view ->
                                     CategoryOptionPopUp.getInstance()
                                             .setCategory(category)
+                                            .setDate(selectedDate)
                                             .setOnClick(item -> {
                                                 if (item != null)
                                                     selectedCatOption.put(category.uid(), item);
