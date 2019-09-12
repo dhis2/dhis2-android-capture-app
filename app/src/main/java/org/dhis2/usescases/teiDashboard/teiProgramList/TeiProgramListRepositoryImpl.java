@@ -1,6 +1,7 @@
 package org.dhis2.usescases.teiDashboard.teiProgramList;
 
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
 
 import androidx.annotation.NonNull;
@@ -182,18 +183,16 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
     @Override
     public Observable<List<OrganisationUnit>> getOrgUnits(String programUid) {
         if (programUid != null) {
-            return Observable.just(d2.organisationUnitModule().organisationUnits.byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).withPrograms().blockingGet())
-                    .flatMapIterable(organisationUnits -> organisationUnits)
-                    .filter(organisationUnit -> {
-                        boolean result = false;
-                        for (Program program : organisationUnit.programs()) {
-                            if (program.uid().equals(programUid))
-                                result = true;
-                        }
-                        return result;
-                    })
-                    .toList()
-                    .toObservable();
+            return Observable.fromCallable(() -> {
+                List<String> ouUids = new ArrayList<>();
+                try (Cursor ouCursor = d2.databaseAdapter().query("SELECT organisationUnit FROM OrganisationUnitProgramLink WHERE program = ?", programUid)){
+                    ouCursor.moveToFirst();
+                    do {
+                        ouUids.add(ouCursor.getString(0));
+                    } while (ouCursor.moveToNext());
+                }
+                return ouUids;
+            }).flatMap(ouUids -> d2.organisationUnitModule().organisationUnits.byUid().in(ouUids).get().toObservable());
         } else
             return Observable.just(d2.organisationUnitModule().organisationUnits.byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).blockingGet());
     }

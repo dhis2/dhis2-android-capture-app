@@ -33,6 +33,8 @@ public class DataSetDetailContract {
         String dataSetUid();
 
         Boolean accessDataWrite();
+
+        void startNewDataSet();
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {

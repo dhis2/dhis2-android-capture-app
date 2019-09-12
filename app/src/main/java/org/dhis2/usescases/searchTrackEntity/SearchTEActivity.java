@@ -223,16 +223,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
         binding.executePendingBindings();
         showHideFilter();
-        /*binding.appbatlayout.addOnOffsetChangedListener((appBarLayout, verticalOffset) -> {
-            float elevationPx = TypedValue.applyDimension(
-                    TypedValue.COMPLEX_UNIT_DIP,
-                    7,
-                    getResources().getDisplayMetrics()
-            );
-            boolean isHidden = binding.formRecycler.getHeight() + verticalOffset == 0;
-            ViewCompat.setElevation(binding.mainToolbar, isHidden ? elevationPx : 0);
-            ViewCompat.setElevation(appBarLayout, isHidden ? 0 : elevationPx);
-        });*/
     }
 
     @Override
@@ -719,7 +709,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     }
 
     private void setSource(Style style, HashMap<String, FeatureCollection> featCollectionMap) {
-        style.addSource(new GeoJsonSource("teis", featCollectionMap.get("TEI"),new GeoJsonOptions().withCluster(true).withClusterMaxZoom(14).withClusterRadius(30)));
+        style.addSource(new GeoJsonSource("teis", featCollectionMap.get("TEI")/*,new GeoJsonOptions().withCluster(true).withClusterMaxZoom(14).withClusterRadius(30)*/));
         style.addSource(new GeoJsonSource("enrollments", featCollectionMap.get("ENROLLMENT")));
     }
 
@@ -740,7 +730,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     ), "POINT_LAYER"
             );
 
-        SymbolLayer countLayer = new SymbolLayer("count", "teis").withProperties(
+        /*SymbolLayer countLayer = new SymbolLayer("count", "teis").withProperties(
                 textField(Expression.toString(get("point_count"))),
                 textSize(12f),
                 textColor(Color.BLACK),
@@ -748,7 +738,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 textOffset(new Float[]{-1.5f,0f}),
                 textAllowOverlap(true)
         );
-        style.addLayer(countLayer);
+        style.addLayer(countLayer);*/
     }
 
     @Override

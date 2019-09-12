@@ -4,6 +4,8 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +24,7 @@ import org.dhis2.databinding.DialogOrgunitBinding;
 import org.dhis2.utils.OrgUnitUtils;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -123,7 +126,29 @@ public class OrgUnitDialog extends DialogFragment {
         binding.title.setText(title);
         binding.acceptButton.setOnClickListener(possitiveListener);
         binding.clearButton.setOnClickListener(negativeListener);
-        if(myOrgs != null)
+        binding.search.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                //empty
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                List<OrganisationUnit> searchOrgUnits = new ArrayList<>();
+                for (OrganisationUnit orgUnit : myOrgs)
+                    if (orgUnit.name().toLowerCase().contains(s.toString().toLowerCase()))
+                        searchOrgUnits.add(orgUnit);
+
+                renderTree(searchOrgUnits);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                //empty
+            }
+        });
+
+        if (myOrgs != null)
             renderTree(myOrgs);
         setRetainInstance(true);
         return binding.getRoot();

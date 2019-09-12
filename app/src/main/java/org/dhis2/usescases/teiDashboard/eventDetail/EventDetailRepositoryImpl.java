@@ -1,5 +1,7 @@
 package org.dhis2.usescases.teiDashboard.eventDetail;
 
+import android.database.Cursor;
+
 import androidx.annotation.NonNull;
 
 import com.squareup.sqlbrite2.BriteDatabase;
@@ -8,7 +10,6 @@ import org.dhis2.data.tuples.Pair;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
-import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
@@ -47,7 +48,7 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
     @NonNull
     @Override
     public Observable<Event> eventModelDetail(String uid) {
-        return Observable.fromCallable(() -> d2.eventModule().events.uid(uid).blockingGet()).filter(event -> !event.deleted());
+        return Observable.fromCallable(() -> d2.eventModule().events.uid(uid).blockingGet()).filter(event -> event.deleted() == null || !event.deleted());
     }
 
     @NonNull
@@ -99,18 +100,16 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
 
     @Override
     public Observable<List<OrganisationUnit>> getOrgUnits() {
-        return Observable.fromCallable(() -> d2.organisationUnitModule().organisationUnits.withPrograms().blockingGet())
-                .map(organisationUnits -> {
-                    List<OrganisationUnit> programOrganisationUnits = new ArrayList<>();
-                    String programId = d2.eventModule().events.uid(eventUid).blockingGet().program();
-                    for (OrganisationUnit organisationUnit : organisationUnits) {
-                        for (Program program : organisationUnit.programs()) {
-                            if (program.uid().equals(programId))
-                                programOrganisationUnits.add(organisationUnit);
-                        }
-                    }
-                    return programOrganisationUnits;
-                });
+        return Observable.fromCallable(() -> {
+            List<String> ouUids = new ArrayList<>();
+            try (Cursor ouCursor = d2.databaseAdapter().query("SELECT organisationUnit FROM OrganisationUnitProgramLink WHERE program = ?", getProgram(eventUid).blockingFirst().uid())) {
+                ouCursor.moveToFirst();
+                do {
+                    ouUids.add(ouCursor.getString(0));
+                } while (ouCursor.moveToNext());
+            }
+            return ouUids;
+        }).flatMap(ouUids -> d2.organisationUnitModule().organisationUnits.byUid().in(ouUids).get().toObservable());
     }
 
     @Override
