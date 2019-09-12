@@ -10,6 +10,7 @@ import org.dhis2.data.tuples.Trio;
 
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
+import org.hisp.dhis.android.core.common.Unit;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.rules.models.RuleActionErrorOnCompletion;
@@ -29,6 +30,9 @@ interface FormView {
 
     @NonNull
     Observable<String> reportDateChanged();
+
+    @NonNull
+    Observable<Unit> reportCoordinatesCleared();
 
     @NonNull
     Observable<String> incidentDateChanged();

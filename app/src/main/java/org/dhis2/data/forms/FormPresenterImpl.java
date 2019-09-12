@@ -1,7 +1,5 @@
 package org.dhis2.data.forms;
 
-import android.text.TextUtils;
-
 import androidx.annotation.NonNull;
 
 import com.squareup.sqlbrite2.BriteDatabase;
@@ -191,6 +189,11 @@ class FormPresenterImpl implements FormPresenter {
                 .subscribeOn(schedulerProvider.ui())
                 .observeOn(schedulerProvider.io())
                 .subscribe(formRepository.storeCoordinates(), Timber::e));
+
+        compositeDisposable.add(view.reportCoordinatesCleared()
+                .subscribeOn(schedulerProvider.ui())
+                .observeOn(schedulerProvider.io())
+                .subscribe(formRepository.clearCoordinates(), Timber::e));
 
         ConnectableObservable<ReportStatus> statusChangeObservable = view.eventStatusChanged()
                 .publish();
