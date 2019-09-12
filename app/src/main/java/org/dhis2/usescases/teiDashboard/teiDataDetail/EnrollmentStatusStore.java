@@ -156,7 +156,7 @@ public final class EnrollmentStatusStore implements EnrollmentStatusEntryStore {
                         d2.trackedEntityModule().trackedEntityInstances
                                 .uid(e.trackedEntityInstance()).get()
                                 .flatMap((Function<TrackedEntityInstance, SingleSource<Long>>) tei -> {
-                                    if (State.SYNCED.equals(tei.state()) || State.TO_DELETE.equals(tei.state()) ||
+                                    if (State.SYNCED.equals(tei.state()) || tei.deleted() ||
                                             State.ERROR.equals(tei.state())) {
                                         ContentValues values = new ContentValues();
                                         values.put(TrackedEntityInstance.Columns.STATE, tei.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
