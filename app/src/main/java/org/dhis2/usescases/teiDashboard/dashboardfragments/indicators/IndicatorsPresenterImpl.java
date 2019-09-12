@@ -109,7 +109,10 @@ public class IndicatorsPresenterImpl implements IndicatorsContracts.Presenter {
             if (!ruleEffect.data().contains("#{")) //Avoid display unavailable variables
                 if (ruleAction instanceof RuleActionDisplayKeyValuePair) {
                     Trio<ProgramIndicator, String, String> indicator = Trio.create(
-                            ProgramIndicator.builder().displayName(((RuleActionDisplayKeyValuePair) ruleAction).content()).build(),
+                            ProgramIndicator.builder()
+                                    .uid(((RuleActionDisplayKeyValuePair) ruleAction).content())
+                                    .displayName(((RuleActionDisplayKeyValuePair) ruleAction).content())
+                                    .build(),
                             ruleEffect.data(), "");
                     indicators.add(indicator);
                 } else if (ruleAction instanceof RuleActionDisplayText) {

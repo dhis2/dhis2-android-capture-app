@@ -98,10 +98,10 @@ public class RulesUtilsProviderImplTest {
         }
     };
 
-    private  void putFieldViewModel(){
+    private void putFieldViewModel() {
         testFieldViewModels.put(testUid, fieldFactory.create(testUid, "label",
                 ValueType.TEXT, false, "optionSet", "test", "section",
-                null, true, null, null, null,1, ObjectStyle.builder().build()));
+                null, true, null, null, null, 1, ObjectStyle.builder().build()));
     }
 
     @Test
@@ -111,8 +111,8 @@ public class RulesUtilsProviderImplTest {
         String testUid = "XXXXXX";
         testFieldViewModels.put(testUid, fieldFactory.create(testUid, "label",
                 ValueType.TEXT, false, "", "test", null,
-                null, true, null, null, null,null,null));
-      
+                null, true, null, null, null, null, null));
+
         putFieldViewModel();
 
         testRuleEffects.add(RuleEffect.create(
@@ -174,38 +174,4 @@ public class RulesUtilsProviderImplTest {
 
         assertThat(testFieldViewModels).containsKey("content");
     }
-
-    /*@Test
-    public void displayKeyValuePairRuleActionTest() {
-
-        putFieldViewModel();
-
-        testRuleEffects.add(RuleEffect.create(
-                RuleActionDisplayKeyValuePair.createForIndicators("content", "data"),
-                "data")
-        );
-        Result<RuleEffect> ruleEffect = Result.success(testRuleEffects);
-
-        ruleUtils.applyRuleEffects(testFieldViewModels, ruleEffect, actionCallbacks);
-
-    }
-
-    @Test
-    public void hideSectionRuleActionTest() {
-
-        putFieldViewModel();
-
-        testRuleEffects.add(RuleEffect.create(
-                RuleActionHideSection.create("section"),
-                "data")
-        );
-        Result<RuleEffect> ruleEffect = Result.success(testRuleEffects);
-
-        ruleUtils.applyRuleEffects(testFieldViewModels, ruleEffect, actionCallbacks);
-
-        assertThat(testFieldViewModels).doesNotContainKey(testUid);
-
-    }*/
-
-
 }

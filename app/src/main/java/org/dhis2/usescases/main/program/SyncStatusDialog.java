@@ -245,7 +245,8 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
                                     state = State.WARNING;
                                 else if (!d2.eventModule().events.byProgramUid().eq(program.uid()).byState().in(State.SENT_VIA_SMS, State.SYNCED_VIA_SMS).blockingGet().isEmpty())
                                     state = State.SENT_VIA_SMS;
-                                else if (!d2.eventModule().events.byProgramUid().eq(program.uid()).byState().in(State.TO_UPDATE, State.TO_POST, State.TO_DELETE).blockingGet().isEmpty())
+                                else if (!d2.eventModule().events.byProgramUid().eq(program.uid()).byState().in(State.TO_UPDATE, State.TO_POST).blockingGet().isEmpty() ||
+                                        !d2.eventModule().events.byProgramUid().eq(program.uid()).byDeleted().isTrue().blockingGet().isEmpty())
                                     state = State.TO_UPDATE;
                             } else {
                                 List<String> programUids = new ArrayList<>();
@@ -256,7 +257,8 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
                                     state = State.WARNING;
                                 else if (!d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().in(State.SENT_VIA_SMS, State.SYNCED_VIA_SMS).blockingGet().isEmpty())
                                     state = State.SENT_VIA_SMS;
-                                else if (!d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().in(State.TO_UPDATE, State.TO_POST, State.TO_DELETE).blockingGet().isEmpty())
+                                else if (!d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().in(State.TO_UPDATE, State.TO_POST).blockingGet().isEmpty() ||
+                                        !d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byDeleted().isTrue().blockingGet().isEmpty())
                                     state = State.TO_UPDATE;
                             }
                             return state;
@@ -296,14 +298,16 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
                                     state = State.WARNING;
                                 else if (!d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().in(State.SENT_VIA_SMS, State.SYNCED_VIA_SMS).blockingGet().isEmpty())
                                     state = State.SENT_VIA_SMS;
-                                else if (!d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().in(State.TO_UPDATE, State.TO_POST, State.TO_DELETE).blockingGet().isEmpty())
+                                else if (!d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().in(State.TO_UPDATE, State.TO_POST).blockingGet().isEmpty() ||
+                                        !d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byDeleted().isTrue().blockingGet().isEmpty())
                                     state = State.TO_UPDATE;
                             } else {
                                 if (!d2.eventModule().events.byProgramUid().eq(program.uid()).byState().in(State.ERROR, State.WARNING).blockingGet().isEmpty())
                                     state = State.WARNING;
                                 else if (!d2.eventModule().events.byProgramUid().eq(program.uid()).byState().in(State.SENT_VIA_SMS, State.SYNCED_VIA_SMS).blockingGet().isEmpty())
                                     state = State.SENT_VIA_SMS;
-                                else if (!d2.eventModule().events.byProgramUid().eq(program.uid()).byState().in(State.TO_UPDATE, State.TO_POST, State.TO_DELETE).blockingGet().isEmpty())
+                                else if (!d2.eventModule().events.byProgramUid().eq(program.uid()).byState().in(State.TO_UPDATE, State.TO_POST).blockingGet().isEmpty() ||
+                                        !d2.eventModule().events.byProgramUid().eq(program.uid()).byDeleted().isTrue().blockingGet().isEmpty())
                                     state = State.TO_UPDATE;
                             }
                             return state;
@@ -489,7 +493,6 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
             case ERROR:
                 return R.string.state_error;
             case TO_UPDATE:
-            case TO_DELETE:
                 return R.string.state_to_update;
             case TO_POST:
                 return R.string.state_to_post;
@@ -510,7 +513,6 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
             case ERROR:
                 return R.color.state_error;
             case TO_UPDATE:
-            case TO_DELETE:
             case TO_POST:
                 return R.color.state_to_post;
             default:
@@ -578,8 +580,8 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
             uid = orgUnitDataValue+"_"+periodIdDataValue+"_"+attributeComboDataValue;
         }
         OneTimeWorkRequest request = syncGranularEventBuilder.build();
-        WorkManager.getInstance().beginUniqueWork(uid, ExistingWorkPolicy.KEEP, request).enqueue();
-        WorkManager.getInstance().getWorkInfosForUniqueWorkLiveData(uid)
+        WorkManager.getInstance(getContext().getApplicationContext()).beginUniqueWork(uid, ExistingWorkPolicy.KEEP, request).enqueue();
+        WorkManager.getInstance(getContext().getApplicationContext()).getWorkInfosForUniqueWorkLiveData(uid)
                 .observe(this, workInfo -> {
                     if(workInfo != null && workInfo.size() > 0)
                         manageWorkInfo(workInfo.get(0));

@@ -14,6 +14,7 @@ import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
+import org.hisp.dhis.android.core.common.BaseDataModel;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.dataelement.DataElement;
 import org.hisp.dhis.android.core.dataelement.DataElementOperand;
@@ -22,8 +23,7 @@ import org.hisp.dhis.android.core.dataset.DataSet;
 import org.hisp.dhis.android.core.dataset.DataSetCompleteRegistration;
 import org.hisp.dhis.android.core.dataset.DataSetElement;
 import org.hisp.dhis.android.core.dataset.Section;
-import org.hisp.dhis.android.core.datavalue.DataValue;
-import org.hisp.dhis.android.core.datavalue.DataValueTableInfo;
+import org.hisp.dhis.android.core.datavalue.DataValueObjectRepository;
 import org.hisp.dhis.android.core.period.Period;
 
 import java.util.ArrayList;
@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 
 import io.reactivex.BackpressureStrategy;
+import io.reactivex.Completable;
 import io.reactivex.Flowable;
 
 public class DataValueRepositoryImpl implements DataValueRepository {
@@ -153,28 +154,20 @@ public class DataValueRepositoryImpl implements DataValueRepository {
 
     }
 
-    @Override
-    public Flowable<Long> insertDataValue(DataValue dataValue) {
-        ContentValues contentValues = dataValue.toContentValues();
-        contentValues.remove("deleted");
-        return Flowable.just(briteDatabase.insert(DataValueTableInfo.TABLE_INFO.name(), contentValues));
-    }
+    public Completable updateValue(DataSetTableModel dataValue) {
 
-    public Flowable<Integer> updateValue(DataValue dataValue) {
-        String where = "dataElement = '" + dataValue.dataElement() + "' AND period = '" + dataValue.period() +
-                "' AND organisationUnit = '" + dataValue.organisationUnit() +
-                "' AND attributeOptionCombo = '" + dataValue.attributeOptionCombo() +
-                "' AND categoryOptionCombo = '" + dataValue.categoryOptionCombo() + "'";
+        DataValueObjectRepository dataValueObject = d2.dataValueModule().dataValues.value(
+                dataValue.period(),
+                dataValue.organisationUnit(),
+                dataValue.dataElement(),
+                dataValue.categoryOptionCombo(),
+                dataValue.attributeOptionCombo()
+        );
 
-        if (dataValue.value() != null && !dataValue.value().isEmpty()) {
-            ContentValues contentValues = new ContentValues();
-            contentValues.put("value", dataValue.value());
-            contentValues.put(DataValue.Columns.STATE, dataValue.state().name());
-            contentValues.put("lastUpdated", DateUtils.databaseDateFormat().format(dataValue.lastUpdated()));
-
-            return Flowable.just(briteDatabase.update(DataValueTableInfo.TABLE_INFO.name(), contentValues, where));
-        } else
-            return Flowable.just(briteDatabase.delete(DataValueTableInfo.TABLE_INFO.name(), where));
+        if (dataValue.value() != null && !dataValue.value().isEmpty())
+            return dataValueObject.set(dataValue.value());
+        else
+            return dataValueObject.delete();
 
     }
 
@@ -459,7 +452,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
         String[] values = {periodInitialDate, dataSetUid, catCombo, orgUnitUid};
 
         ContentValues contentValues = new ContentValues();
-        contentValues.put(DataSetCompleteRegistration.Columns.STATE, State.TO_DELETE.name());
+        contentValues.put(DataSetCompleteRegistration.Columns.DELETED, true);
         String completeDate = DateUtils.databaseDateFormat().format(DateUtils.getInstance().getToday());
         contentValues.put("date", completeDate);
 
@@ -476,7 +469,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
                     .byPeriod().eq(periodInitialDate)
                     .byOrganisationUnitUid().eq(orgUnitUid)
                     .one().blockingGet();
-            return completeRegistration != null && completeRegistration.state() != State.TO_DELETE;
+            return completeRegistration != null && !completeRegistration.deleted();
         });
     }
 

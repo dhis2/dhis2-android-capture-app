@@ -30,6 +30,7 @@ import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -76,10 +77,14 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
                     while (iterator.hasNext())
                         attrUids.add(iterator.next().uid());
 
-                    return d2.trackedEntityModule().trackedEntityAttributeValues
+                    TrackedEntityAttributeValue attributeValue = d2.trackedEntityModule().trackedEntityAttributeValues
                             .byTrackedEntityInstance().eq(teiUid)
                             .byTrackedEntityAttribute().in(attrUids)
                             .one().blockingGet();
+                    if (attributeValue != null)
+                        return attributeValue;
+                    else
+                       throw new NullPointerException("No image attribute found");
                 }).map(attrValue -> teiUid + "_" + attrValue.trackedEntityAttribute() + ".png")
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
@@ -100,6 +105,23 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
                                 if (eventModel.status() == EventStatus.SCHEDULE && eventModel.dueDate() != null && eventModel.dueDate().before(DateUtils.getInstance().getToday())) { //If a schedule event dueDate is before today the event is skipped
                                     dashboardRepository.updateState(eventModel, EventStatus.SKIPPED);
                                 }
+                                /*TODO: CHECK HOW LONG IT TAKES FOR EVENTS WITH MANY RULES
+                                if (eventModel.eventDate() != null) {
+                                    RuleEffectResult effectResult = new RulesUtilsProviderImpl(new CodeGeneratorImpl()).evaluateEvent(eventModel.uid(),null);
+                                    List<String> newMandatoryFields = effectResult.getMandatoryFields();
+                                    List<ProgramStageDataElement> psDataElementList = d2.programModule().programStages.uid(eventModel.programStage())
+                                            .withAllChildren().blockingGet().programStageDataElements();
+                                    for (ProgramStageDataElement psDataElement : psDataElementList) {
+                                        if (psDataElement.compulsory())
+                                            newMandatoryFields.add(psDataElement.dataElement().uid());
+                                    }
+                                    boolean missingMandatories = !newMandatoryFields.isEmpty() && d2.trackedEntityModule().trackedEntityDataValues
+                                            .byEvent().eq(eventModel.uid())
+                                            .byDataElement().in(newMandatoryFields)
+                                            .blockingCount() < newMandatoryFields.size();
+                                    if (missingMandatories)
+                                        Timber.tag("MISSING FIELDS").d("THERE ARE MISSING MANDATORY FIELDS IN EVENT %s", eventModel.uid());
+                                }*/
                             }
                             return eventModels;
                         })

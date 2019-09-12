@@ -3,7 +3,7 @@ package org.dhis2.usescases.teiDashboard.eventDetail;
 import androidx.annotation.NonNull;
 
 import org.dhis2.usescases.general.AbstractActivityContracts;
-import org.dhis2.utils.custom_views.OrgUnitDialog_2;
+import org.dhis2.utils.custom_views.OrgUnitDialog;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
@@ -33,7 +33,7 @@ public class EventDetailContracts {
 
         void goBack(boolean changedEventStatus);
 
-        void showOrgUnitSelector(OrgUnitDialog_2 orgUnitDialog);
+        void showOrgUnitSelector(OrgUnitDialog orgUnitDialog);
 
         void setSelectedOrgUnit(OrganisationUnit selectedOrgUnit);
 

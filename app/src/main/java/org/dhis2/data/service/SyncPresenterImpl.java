@@ -134,12 +134,18 @@ final class SyncPresenterImpl implements SyncPresenter {
 
     @Override
     public boolean checkSyncEventStatus(String uid) {
-        return d2.eventModule().events.byUid().eq(uid).byState().notIn(State.SYNCED).blockingGet().isEmpty();
+        return d2.eventModule().events
+                .byUid().eq(uid)
+                .byState().notIn(State.SYNCED)
+                .blockingGet().isEmpty();
     }
 
     @Override
     public boolean checkSyncTEIStatus(String uid) {
-        return d2.trackedEntityModule().trackedEntityInstances.byUid().eq(uid).byState().notIn(State.SYNCED).blockingGet().isEmpty();
+        return d2.trackedEntityModule().trackedEntityInstances
+                .byUid().eq(uid)
+                .byState().notIn(State.SYNCED,State.RELATIONSHIP)
+                .blockingGet().isEmpty();
     }
 
     @Override
@@ -147,6 +153,7 @@ final class SyncPresenterImpl implements SyncPresenter {
         return d2.dataValueModule().dataValues.byPeriod().eq(period)
                 .byOrganisationUnitUid().eq(orgUnit)
                 .byAttributeOptionComboUid().eq(attributeOptionCombo)
+                .byState().notIn(State.SYNCED)
                 .blockingGet().isEmpty();
     }
 
@@ -155,9 +162,14 @@ final class SyncPresenterImpl implements SyncPresenter {
         Program program = d2.programModule().programs.uid(uid).blockingGet();
 
         if (program.programType() == ProgramType.WITH_REGISTRATION)
-            return d2.trackedEntityModule().trackedEntityInstances.byProgramUids(Collections.singletonList(uid)).blockingGet().isEmpty();
+            return d2.trackedEntityModule().trackedEntityInstances
+                    .byProgramUids(Collections.singletonList(uid))
+                    .byState().notIn(State.SYNCED, State.RELATIONSHIP)
+                    .blockingGet().isEmpty();
         else
-            return d2.eventModule().events.byProgramUid().eq(uid).blockingGet().isEmpty();
+            return d2.eventModule().events.byProgramUid().eq(uid)
+                    .byState().notIn(State.SYNCED)
+                    .blockingGet().isEmpty();
 
     }
 
@@ -169,6 +181,7 @@ final class SyncPresenterImpl implements SyncPresenter {
                 .byOrganisationUnitUid().eq(dataSetReport.attributeOptionComboUid())
                 .byPeriod().eq(dataSetReport.period())
                 .byAttributeOptionComboUid().eq(dataSetReport.attributeOptionComboUid())
+                .byState().notIn(State.SYNCED)
                 .blockingGet().isEmpty();
     }
 

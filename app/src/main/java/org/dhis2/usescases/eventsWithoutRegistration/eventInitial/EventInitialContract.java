@@ -5,8 +5,6 @@ import android.app.DatePickerDialog;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.unnamed.b.atv.model.TreeNode;
-
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.usescases.general.AbstractActivityContracts;
@@ -43,15 +41,11 @@ public class EventInitialContract {
 
         void showDateDialog(DatePickerDialog.OnDateSetListener listener);
 
-        void openDrawer();
-
         void renderError(String message);
-
-        void addTree(TreeNode treeNode);
 
         void setEvent(Event event);
 
-        void setLocation(Geometry geometry);
+//        void setLocation(Geometry geometry);
 
         void onEventCreated(String eventUid);
 
@@ -128,13 +122,9 @@ public class EventInitialContract {
 
         void onFieldChanged(CharSequence s, int start, int before, int count);
 
-        void filterOrgUnits(String date);
-
         void getSectionCompletion(@Nullable String sectionUid);
 
         void goToSummary();
-
-        void getOrgUnits(String programId);
 
         void getEventSections(@NonNull String eventId);
 
@@ -151,6 +141,8 @@ public class EventInitialContract {
         String getCatOptionCombo(List<CategoryOptionCombo> categoryOptionCombos, List<CategoryOption> values);
 
         Date getStageLastDate(String programStageUid, String enrollmentUid);
+
+        void getEventOrgUnit(String ouUid);
     }
 
 }

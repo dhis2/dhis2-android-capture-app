@@ -71,6 +71,15 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
 
         this.processorDismissDialog = PublishProcessor.create();
 
+        compositeDisposable.add(eventRepository.featureType()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        view.setFeatureType(),
+                        Timber.tag("EVENTLIST")::e
+                )
+        );
+
         compositeDisposable.add(Observable.just(eventRepository.getAccessDataWrite())
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -141,7 +150,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                         .subscribeOn(Schedulers.computation())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                view::setMap,
+                                view.setMap(),
                                 throwable -> view.renderError(throwable.getMessage())
                         ));
 
@@ -227,9 +236,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     }
 
     public void addEvent() {
-        Bundle bundle = new Bundle();
-        bundle.putString(PROGRAM_UID, programId);
-        view.startActivity(EventInitialActivity.class, bundle, false, false, null);
+        view.startNewEvent();
     }
 
     @Override
@@ -258,4 +265,5 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
         FilterManager.getInstance().clearAllFilters();
         view.clearFilters();
     }
+
 }

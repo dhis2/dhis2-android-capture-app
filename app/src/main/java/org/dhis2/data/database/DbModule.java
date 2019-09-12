@@ -9,7 +9,7 @@ import com.squareup.sqlbrite2.SqlBrite;
 
 import org.dhis2.data.dagger.PerServer;
 import org.dhis2.data.schedulers.SchedulerProvider;
-import org.hisp.dhis.android.core.data.database.DbOpenHelper;
+import org.hisp.dhis.android.core.arch.db.access.DbOpenHelper;
 
 import dagger.Module;
 import dagger.Provides;

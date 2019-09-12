@@ -32,6 +32,7 @@ import org.hisp.dhis.android.core.option.Option;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
 import org.hisp.dhis.android.core.program.ProgramStageDataElement;
 import org.hisp.dhis.android.core.program.ProgramStageSection;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue;
@@ -123,14 +124,15 @@ public class EventRepository implements FormRepository {
                         rulesRepository.otherEvents(eventUid),
                         rulesRepository.enrollment(eventUid),
                         rulesRepository.queryConstants(),
-                        (rules, variables, events, enrollment, constants) -> {
+                        rulesRepository.getSuplementaryData(d2),
+                        (rules, variables, events, enrollment, constants,supplementaryData) -> {
 
                             RuleEngine.Builder builder = RuleEngineContext.builder(evaluator)
                                     .rules(rules)
                                     .ruleVariables(variables)
                                     .constantsValue(constants)
                                     .calculatedValueMap(new HashMap<>())
-                                    .supplementaryData(new HashMap<>())
+                                    .supplementaryData(supplementaryData)
                                     .build().toEngineBuilder();
                             builder.triggerEnvironment(TriggerEnvironment.ANDROIDCLIENT);
                             builder.events(events);
@@ -175,14 +177,13 @@ public class EventRepository implements FormRepository {
                 .toFlowable();
     }
 
-
-
     @Override
     public Flowable<Program> getAllowDatesInFuture() {
         return d2.eventModule().events.uid(eventUid).get()
                 .flatMap(event -> d2.programModule().programs.uid(event.program()).get())
                 .toFlowable();
     }
+
 
     @NonNull
     @Override
@@ -232,8 +233,6 @@ public class EventRepository implements FormRepository {
             event.put(EventTableInfo.Columns.STATE, State.TO_UPDATE.name()); // TODO: Check if state is TO_POST
             // TODO: and if so, keep the TO_POST state
 
-            updateProgramTable(Calendar.getInstance().getTime(), programUid);
-
             briteDatabase.update("Event", event, EventTableInfo.Columns.UID + " = ?", eventUid == null ? "" : eventUid);
         };
     }
@@ -274,8 +273,6 @@ public class EventRepository implements FormRepository {
             event.put(EventTableInfo.Columns.STATUS, ReportStatus.toEventStatus(reportStatus).name());
             event.put(EventTableInfo.Columns.STATE, State.TO_UPDATE.name()); // TODO: Check if state is TO_POST
             // TODO: and if so, keep the TO_POST state
-
-            updateProgramTable(Calendar.getInstance().getTime(), programUid);
 
             briteDatabase.update("Event", event, EventTableInfo.Columns.UID + " = ?", eventUid == null ? "" : eventUid);
         };
@@ -386,10 +383,15 @@ public class EventRepository implements FormRepository {
     }
 
     @Override
-    public Observable<Boolean> captureCoodinates() {
+    public Observable<FeatureType> captureCoodinates() {
         return d2.eventModule().events.byUid().eq(eventUid).one().get().toObservable()
                 .map(event -> d2.programModule().programStages.byUid().eq(event.programStage()).one().blockingGet())
-                .map(programStage -> programStage.featureType() != FeatureType.NONE);
+                .map(programStage -> {
+                    if (programStage.featureType() == null)
+                        return FeatureType.NONE;
+                    else
+                        return programStage.featureType();
+                });
     }
 
     @Override
@@ -404,8 +406,8 @@ public class EventRepository implements FormRepository {
     }
 
     @Override
-    public Single<FeatureType> captureTeiCoordinates() {
-        return Single.just(FeatureType.NONE);
+    public Single<TrackedEntityType> captureTeiCoordinates() {
+        return Single.just(TrackedEntityType.builder().build());
     }
 
     @Override
@@ -477,10 +479,4 @@ public class EventRepository implements FormRepository {
                 .toFlowable();
     }
 
-
-    private void updateProgramTable(Date lastUpdated, String programUid) {
-        /*ContentValues program = new ContentValues();TODO: Crash if active
-        program.put(EnrollmentModel.Columns.LAST_UPDATED, BaseIdentifiableObject.DATE_FORMAT.format(lastUpdated));
-        briteDatabase.update("Program", program, ProgramModel.Columns.UID + " = ?", programUid);*/
-    }
 }

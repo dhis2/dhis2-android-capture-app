@@ -13,6 +13,7 @@ import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
 import org.hisp.dhis.rules.RuleEngine;
 
 import java.util.List;
@@ -87,13 +88,13 @@ public interface FormRepository {
 
     void saveCategoryOption(CategoryOptionCombo selectedOption);
 
-    Observable<Boolean> captureCoodinates();
+    Observable<FeatureType> captureCoodinates();
 
     Observable<OrganisationUnit> getOrgUnitDates();
 
     Flowable<ProgramStage> getProgramStage(String eventUid);
 
-    Single<FeatureType> captureTeiCoordinates();
+    Single<TrackedEntityType> captureTeiCoordinates();
 
     Consumer<Geometry> storeTeiCoordinates();
 }

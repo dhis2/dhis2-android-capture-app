@@ -18,9 +18,9 @@ import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.FeatureType;
+import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.State;
-import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository;
@@ -36,6 +36,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueTableInfo;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceTableInfo;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
 import org.hisp.dhis.rules.RuleEngine;
 import org.hisp.dhis.rules.RuleEngineContext;
 import org.hisp.dhis.rules.RuleExpressionEvaluator;
@@ -45,9 +46,11 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
@@ -123,12 +126,13 @@ public class EnrollmentFormRepository implements FormRepository {
                         rulesRepository.ruleVariables(program),
                         rulesRepository.enrollmentEvents(enrollmentUid),
                         rulesRepository.queryConstants(),
-                        (rules, variables, events, constants) -> {
+                        rulesRepository.getSuplementaryData(d2),
+                        (rules, variables, events, constants, supplementaryData) -> {
                             RuleEngine.Builder builder = RuleEngineContext.builder(expressionEvaluator)
                                     .rules(rules)
                                     .ruleVariables(variables)
                                     .calculatedValueMap(new HashMap<>())
-                                    .supplementaryData(new HashMap<>())
+                                    .supplementaryData(supplementaryData)
                                     .constantsValue(constants)
                                     .build().toEngineBuilder();
                             builder.triggerEnvironment(TriggerEnvironment.ANDROIDCLIENT);
@@ -157,8 +161,8 @@ public class EnrollmentFormRepository implements FormRepository {
     public Flowable<Pair<Program, String>> reportDate() {
         return d2.enrollmentModule().enrollments.uid(enrollmentUid).get()
                 .flatMap(enrollment -> d2.programModule().programs.uid(enrollment.program()).get()
-                    .map(program -> Pair.create(program, enrollment.enrollmentDate() != null ?
-                            DateUtils.uiDateFormat().format(enrollment.enrollmentDate()) : "")))
+                        .map(program -> Pair.create(program, enrollment.enrollmentDate() != null ?
+                                DateUtils.uiDateFormat().format(enrollment.enrollmentDate()) : "")))
                 .toFlowable();
     }
 
@@ -349,80 +353,80 @@ public class EnrollmentFormRepository implements FormRepository {
         return d2.enrollmentModule().enrollments.uid(enrollmentUid).get()
                 .flatMap(enrollment -> d2.programModule().programStages.byAutoGenerateEvent().isTrue()
                         .byProgramUid().eq(enrollment.program()).get()
-                    .flatMap(programStages -> {
-                        for (ProgramStage programStage : programStages){
+                        .flatMap(programStages -> {
+                            for (ProgramStage programStage : programStages) {
 
-                            boolean hideDueDate = programStage.hideDueDate()!=null ? programStage.hideDueDate() : false;
+                                boolean hideDueDate = programStage.hideDueDate() != null ? programStage.hideDueDate() : false;
 
-                            String program = enrollment.program();
-                            String orgUnit = enrollment.organisationUnit();
-                            int minDaysFromStart = programStage.minDaysFromStart();
-                            String reportDateToUse = programStage.reportDateToUse() != null ? programStage.reportDateToUse() : "";
-                            Date incidentDate = enrollment.incidentDate();
-                            Date enrollmentDate = enrollment.enrollmentDate();
-                            PeriodType periodType = programStage.periodType();
-                            boolean generatedByEnrollmentDate = programStage.generatedByEnrollmentDate();
+                                String program = enrollment.program();
+                                String orgUnit = enrollment.organisationUnit();
+                                int minDaysFromStart = programStage.minDaysFromStart();
+                                String reportDateToUse = programStage.reportDateToUse() != null ? programStage.reportDateToUse() : "";
+                                Date incidentDate = enrollment.incidentDate();
+                                Date enrollmentDate = enrollment.enrollmentDate();
+                                PeriodType periodType = programStage.periodType();
+                                boolean generatedByEnrollmentDate = programStage.generatedByEnrollmentDate();
 
-                            Date eventDate;
-                            Calendar cal = DateUtils.getInstance().getCalendar();
-                            switch (reportDateToUse) {
-                                case Constants.ENROLLMENT_DATE:
-                                    cal.setTime(enrollmentDate != null ? enrollmentDate : Calendar.getInstance().getTime());
-                                    break;
-                                case Constants.INCIDENT_DATE:
-                                    cal.setTime(incidentDate != null ? incidentDate : Calendar.getInstance().getTime());
-                                    break;
-                                default:
-                                    cal.setTime(Calendar.getInstance().getTime());
-                                    break;
-                            }
-
-                            if (!generatedByEnrollmentDate && incidentDate != null)
-                                cal.setTime(incidentDate);
-
-                            if (generatedByEnrollmentDate)
-                                cal.setTime(enrollmentDate);
-
-                            cal.set(Calendar.HOUR_OF_DAY, 0);
-                            cal.set(Calendar.MINUTE, 0);
-                            cal.set(Calendar.SECOND, 0);
-                            cal.set(Calendar.MILLISECOND, 0);
-                            cal.add(Calendar.DATE, minDaysFromStart);
-                            eventDate = cal.getTime();
-
-                            if (periodType != null)
-                                eventDate = DateUtils.getInstance().getNextPeriod(periodType, eventDate, 0); //Sets eventDate to current Period date
-
-                            List<Event> events = d2.eventModule().events.byEnrollmentUid().eq(enrollment.uid()).byProgramStageUid().eq(programStage.uid()).blockingGet();
-                            if (events == null || events.isEmpty()) {
-
-                                Event.Builder eventBuilder = Event.builder()
-                                        .uid(codeGenerator.generate())
-                                        .created(Calendar.getInstance().getTime())
-                                        .lastUpdated(Calendar.getInstance().getTime())
-                                        .enrollment(enrollmentUid)
-                                        .program(program)
-                                        .programStage(programStage.uid())
-                                        .organisationUnit(orgUnit)
-                                        .status(eventDate.after(now) && !hideDueDate ? EventStatus.SCHEDULE : EventStatus.ACTIVE)
-                                        .state(State.TO_POST);
-                                if (eventDate.after(now) && !hideDueDate) //scheduling
-                                    eventBuilder.dueDate(eventDate);
-                                else
-                                    eventBuilder.eventDate(eventDate);
-
-                                Event event = eventBuilder.build();
-
-
-                                if (briteDatabase.insert("Event", event.toContentValues()) < 0) {
-                                    throw new OnErrorNotImplementedException(new Throwable("Unable to store event:" + event));
+                                Date eventDate;
+                                Calendar cal = DateUtils.getInstance().getCalendar();
+                                switch (reportDateToUse) {
+                                    case Constants.ENROLLMENT_DATE:
+                                        cal.setTime(enrollmentDate != null ? enrollmentDate : Calendar.getInstance().getTime());
+                                        break;
+                                    case Constants.INCIDENT_DATE:
+                                        cal.setTime(incidentDate != null ? incidentDate : Calendar.getInstance().getTime());
+                                        break;
+                                    default:
+                                        cal.setTime(Calendar.getInstance().getTime());
+                                        break;
                                 }
+
+                                if (!generatedByEnrollmentDate && incidentDate != null)
+                                    cal.setTime(incidentDate);
+
+                                if (generatedByEnrollmentDate)
+                                    cal.setTime(enrollmentDate);
+
+                                cal.set(Calendar.HOUR_OF_DAY, 0);
+                                cal.set(Calendar.MINUTE, 0);
+                                cal.set(Calendar.SECOND, 0);
+                                cal.set(Calendar.MILLISECOND, 0);
+                                cal.add(Calendar.DATE, minDaysFromStart);
+                                eventDate = cal.getTime();
+
+                                if (periodType != null)
+                                    eventDate = DateUtils.getInstance().getNextPeriod(periodType, eventDate, 0); //Sets eventDate to current Period date
+
+                                List<Event> events = d2.eventModule().events.byEnrollmentUid().eq(enrollment.uid()).byProgramStageUid().eq(programStage.uid()).blockingGet();
+                                if (events == null || events.isEmpty()) {
+
+                                    Event.Builder eventBuilder = Event.builder()
+                                            .uid(codeGenerator.generate())
+                                            .created(Calendar.getInstance().getTime())
+                                            .lastUpdated(Calendar.getInstance().getTime())
+                                            .enrollment(enrollmentUid)
+                                            .program(program)
+                                            .programStage(programStage.uid())
+                                            .organisationUnit(orgUnit)
+                                            .status(eventDate.after(now) && !hideDueDate ? EventStatus.SCHEDULE : EventStatus.ACTIVE)
+                                            .state(State.TO_POST);
+                                    if (eventDate.after(now) && !hideDueDate) //scheduling
+                                        eventBuilder.dueDate(eventDate);
+                                    else
+                                        eventBuilder.eventDate(eventDate);
+
+                                    Event event = eventBuilder.build();
+
+
+                                    if (briteDatabase.insert("Event", event.toContentValues()) < 0) {
+                                        throw new OnErrorNotImplementedException(new Throwable("Unable to store event:" + event));
+                                    }
+                                }
+
                             }
+                            return Single.just(enrollmentUid);
 
-                        }
-                        return Single.just(enrollmentUid);
-
-                    })).toObservable();
+                        })).toObservable();
 
     }
 
@@ -432,18 +436,18 @@ public class EnrollmentFormRepository implements FormRepository {
         //TODO testing fine this
         return d2.enrollmentModule().enrollments.uid(enrollmentUid).get()
                 .flatMap(enrollment -> d2.programModule().programs.withProgramTrackedEntityAttributes().uid(enrollment.program()).get()
-                    .map(program -> {
-                        List<FieldViewModel> fieldViewModelList = new ArrayList<>();
-                        for(ProgramTrackedEntityAttribute ptea: program.programTrackedEntityAttributes()){
-                            TrackedEntityAttribute tea = d2.trackedEntityModule().trackedEntityAttributes.withObjectStyle().uid(ptea.trackedEntityAttribute().uid()).blockingGet();
-                            TrackedEntityAttributeValue value = d2.trackedEntityModule().trackedEntityAttributeValues
-                                    .byTrackedEntityAttribute().eq(tea.uid())
-                                    .byTrackedEntityInstance().eq(enrollment.trackedEntityInstance())
-                                    .one().blockingGet();
-                            fieldViewModelList.add(transform(tea, ptea, value != null ? value.value(): "", enrollment));
-                        }
-                        return fieldViewModelList;
-                    })).toObservable();
+                        .map(program -> {
+                            List<FieldViewModel> fieldViewModelList = new ArrayList<>();
+                            for (ProgramTrackedEntityAttribute ptea : program.programTrackedEntityAttributes()) {
+                                TrackedEntityAttribute tea = d2.trackedEntityModule().trackedEntityAttributes.withObjectStyle().uid(ptea.trackedEntityAttribute().uid()).blockingGet();
+                                TrackedEntityAttributeValue value = d2.trackedEntityModule().trackedEntityAttributeValues
+                                        .byTrackedEntityAttribute().eq(tea.uid())
+                                        .byTrackedEntityInstance().eq(enrollment.trackedEntityInstance())
+                                        .one().blockingGet();
+                                fieldViewModelList.add(transform(tea, ptea, value != null ? value.value() : "", enrollment));
+                            }
+                            return fieldViewModelList;
+                        })).toObservable();
     }
 
 
@@ -507,24 +511,23 @@ public class EnrollmentFormRepository implements FormRepository {
     }
 
     @Override
-    public Observable<Boolean> captureCoodinates() {
+    public Observable<FeatureType> captureCoodinates() {
         return d2.enrollmentModule().enrollments.byUid().eq(enrollmentUid).one().get().toObservable()
                 .map(enrollment -> d2.programModule().programs.byUid().eq(enrollment.program()).one().blockingGet())
-                .map(program -> program.featureType() != FeatureType.NONE);
+                .map(program -> {
+                    if (program.featureType() == null)
+                        return FeatureType.NONE;
+                    else
+                        return program.featureType();
+                });
     }
 
 
     @Override
-    public Single<FeatureType> captureTeiCoordinates() {
+    public Single<TrackedEntityType> captureTeiCoordinates() {
         return d2.enrollmentModule().enrollments.uid(enrollmentUid).get()
                 .flatMap(enrollment -> d2.programModule().programs.uid(enrollment.program()).withAllChildren().get())
-                .flatMap(program -> d2.trackedEntityModule().trackedEntityTypes.uid(program.trackedEntityType().uid()).get())
-                .map(trackedEntityType -> {
-                    if (trackedEntityType.featureType() == null)
-                        return FeatureType.NONE;
-                    else
-                        return trackedEntityType.featureType();
-                });
+                .flatMap(program -> d2.trackedEntityModule().trackedEntityTypes.uid(program.trackedEntityType().uid()).get());
     }
 
     @Override
@@ -535,12 +538,12 @@ public class EnrollmentFormRepository implements FormRepository {
 
     @NonNull
     private FieldViewModel transform(TrackedEntityAttribute tea, ProgramTrackedEntityAttribute programTrackedEntityAttribute,
-                                         String dataValue, Enrollment enrollment) {
+                                     String dataValue, Enrollment enrollment) {
         String uid = tea.uid();
         String label = tea.displayName();
         ValueType valueType = tea.valueType();
         boolean mandatory = programTrackedEntityAttribute.mandatory();
-        String optionSetUid = tea.optionSet() != null ? tea.optionSet().uid(): null;
+        String optionSetUid = tea.optionSet() != null ? tea.optionSet().uid() : null;
         Boolean allowFutureDates = programTrackedEntityAttribute.allowFutureDate();
         Boolean generated = tea.generated();
         EnrollmentStatus status = enrollment.status();
@@ -584,6 +587,21 @@ public class EnrollmentFormRepository implements FormRepository {
         //TODO testing fine this
         return d2.programModule().programs.uid(programUid).get()
                 .flatMap(program -> d2.programModule().programStages.byProgramUid().eq(programUid).get()
+                        .map(programStages -> {
+                            Collections.sort(programStages, (ps1, ps2) -> {
+                                Integer priority1 = ps1.sortOrder();
+                                Integer priority2 = ps2.sortOrder();
+                                if (priority1 != null && priority2 != null)
+                                    return priority1.compareTo(priority2);
+                                else if (priority1 != null)
+                                    return -1;
+                                else if (priority2 != null)
+                                    return 1;
+                                else
+                                    return 0;
+                            });
+                            return programStages;
+                        })
                         .map(programStages ->
                                 Trio.create(program.useFirstStageDuringRegistration(), programStages, program.trackedEntityType())))
                 .map(data -> {
@@ -633,13 +651,13 @@ public class EnrollmentFormRepository implements FormRepository {
                     } else { //open Dashboard
                         Enrollment enrollment = d2.enrollmentModule().enrollments.uid(enrollmentUid).blockingGet();
 
-                            String programUid = "";
-                            String teiUid = "";
-                            if (enrollment != null) {
-                                programUid = enrollment.program();
-                                teiUid = enrollment.trackedEntityInstance();
-                            }
-                            return Trio.create(teiUid, programUid, "");
+                        String programUid = "";
+                        String teiUid = "";
+                        if (enrollment != null) {
+                            programUid = enrollment.program();
+                            teiUid = enrollment.trackedEntityInstance();
+                        }
+                        return Trio.create(teiUid, programUid, "");
 
                     }
                 }).toObservable();
@@ -649,7 +667,7 @@ public class EnrollmentFormRepository implements FormRepository {
     private String getTeiUid() {
         String teiUid = "";
         Enrollment enrollment = d2.enrollmentModule().enrollments.uid(enrollmentUid).blockingGet();
-        if(enrollment != null)
+        if (enrollment != null)
             teiUid = enrollment.trackedEntityInstance();
 
         return teiUid;
@@ -660,7 +678,8 @@ public class EnrollmentFormRepository implements FormRepository {
         return d2.enrollmentModule().enrollments.uid(enrollmentUid).get()
                 .map(enrollment -> {
                     this.programUid = enrollment.program();
-                    return  enrollment.program();})
+                    return enrollment.program();
+                })
                 .toFlowable();
     }
 

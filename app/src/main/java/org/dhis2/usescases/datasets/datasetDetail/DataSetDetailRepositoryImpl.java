@@ -70,7 +70,7 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
                             .byPeriod().eq(dataSetReport.period()).one().blockingGet();
                     State state;
                     if(dscr != null && dscr.state() != State.SYNCED) {
-                        if (dscr.state() == State.TO_DELETE)
+                        if (dscr.deleted() != null && dscr.deleted())
                             state = State.TO_UPDATE;
                         else
                             state = dscr.state();
@@ -83,7 +83,7 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
                         }
                         for (DataValue dataValue : d2.dataValueModule().dataValues
                                 .byDataElementUid().in(dataElementsUids)
-                                .byCategoryOptionComboUid().eq(dataSetReport.attributeOptionComboUid())
+                                .byAttributeOptionComboUid().eq(dataSetReport.attributeOptionComboUid())
                                 .byOrganisationUnitUid().eq(dataSetReport.organisationUnitUid())
                                 .byPeriod().eq(dataSetReport.period()).blockingGet()) {
                             if (dataValue.state() != State.SYNCED)

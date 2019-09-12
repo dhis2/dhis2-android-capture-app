@@ -14,6 +14,7 @@ import android.transition.TransitionManager;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,28 +23,29 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ObservableInt;
-import androidx.fragment.app.Fragment;
 
 import com.andrognito.pinlockview.PinLockListener;
+import com.android.dbexporterlibrary.ExporterListener;
 
 import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.databinding.ActivityMainBinding;
 import org.dhis2.usescases.about.AboutFragment;
+import org.dhis2.usescases.development.DevelopmentActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.usescases.jira.JiraFragment;
 import org.dhis2.usescases.main.program.ProgramFragment;
 import org.dhis2.usescases.qrReader.QrReaderFragment;
-import org.dhis2.usescases.syncManager.ErrorDialog;
-import org.dhis2.usescases.syncManager.SyncManagerFragment;
+import org.dhis2.usescases.settings.ErrorDialog;
+import org.dhis2.usescases.settings.SyncManagerFragment;
 import org.dhis2.usescases.teiDashboard.nfc_data.NfcDataWriteActivity;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.FiltersAdapter;
 import org.hisp.dhis.android.core.imports.TrackerImportConflict;
-import org.hisp.dhis.android.core.period.DatePeriod;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Objects;
@@ -53,7 +55,7 @@ import javax.inject.Inject;
 import io.reactivex.functions.Consumer;
 
 
-public class MainActivity extends ActivityGlobalAbstract implements MainContracts.View {
+public class MainActivity extends ActivityGlobalAbstract implements MainContracts.View, ExporterListener {
 
     private static final int PERMISSION_REQUEST = 1987;
     public ActivityMainBinding binding;
@@ -120,6 +122,10 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
         adapter = new FiltersAdapter();
         binding.filterLayout.setAdapter(adapter);
 
+        binding.moreOptions.setOnLongClickListener(v -> {
+            startActivity(DevelopmentActivity.class, null, false, false, null);
+            return false;
+        });
     }
 
     @Override
@@ -272,7 +278,7 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
         }
         binding.drawerLayout.closeDrawers();
 
-        if(backDropActive && !(activeFragment instanceof ProgramFragment))
+        if (backDropActive && !(activeFragment instanceof ProgramFragment))
             showHideFilter();
 
     }
@@ -293,7 +299,7 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
             DateUtils.getInstance().showFromToSelector(this, FilterManager.getInstance()::addPeriod);
         } else {
             DateUtils.getInstance().showPeriodDialog(this, datePeriods -> {
-                FilterManager.getInstance().addPeriod(datePeriods);
+                        FilterManager.getInstance().addPeriod(datePeriods);
                     },
                     true);
         }
@@ -306,6 +312,7 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
     public FiltersAdapter getAdapter() {
         return adapter;
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         return super.onOptionsItemSelected(item);
@@ -315,10 +322,10 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
     public void showTutorial(boolean shaked) {
         switch (fragId) {
             case R.id.menu_home:
-                ((ProgramFragment)activeFragment).setTutorial();
+                ((ProgramFragment) activeFragment).setTutorial();
                 break;
             case R.id.sync_manager:
-                ((SyncManagerFragment)activeFragment).showTutorial();
+                ((SyncManagerFragment) activeFragment).showTutorial();
                 break;
             default:
                 showToast(getString(R.string.no_intructions));
@@ -334,5 +341,15 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
             updateFilters(FilterManager.getInstance().getTotalFilters());
         }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void fail(@NotNull String message, @NotNull String exception) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void success(@NotNull String s) {
+        Toast.makeText(this, s, Toast.LENGTH_SHORT).show();
     }
 }

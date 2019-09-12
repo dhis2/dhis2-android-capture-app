@@ -14,21 +14,20 @@ import androidx.core.app.ActivityCompat;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.unnamed.b.atv.model.TreeNode;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.tuples.Pair;
-import org.dhis2.data.tuples.Quintet;
+import org.dhis2.data.tuples.Sextet;
+import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryActivity;
 import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryRepository;
 import org.dhis2.usescases.map.MapSelectorActivity;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.EventCreationType;
-import org.dhis2.utils.OrgUnitUtils;
 import org.dhis2.utils.Result;
-import org.hisp.dhis.android.core.arch.helpers.GeometryHelper;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
@@ -53,9 +52,10 @@ import java.util.regex.Pattern;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
-import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.processors.FlowableProcessor;
+import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import rx.exceptions.OnErrorNotImplementedException;
 import timber.log.Timber;
@@ -67,7 +67,7 @@ import timber.log.Timber;
 public class EventInitialPresenter implements EventInitialContract.Presenter {
 
     public static final int ACCESS_COARSE_LOCATION_PERMISSION_REQUEST = 101;
-    static private EventInitialContract.View view;
+    private EventInitialContract.View view;
     private final EventInitialRepository eventInitialRepository;
     private final EventSummaryRepository eventSummaryRepository;
     private final SchedulerProvider schedulerProvider;
@@ -77,9 +77,11 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     private CompositeDisposable compositeDisposable;
     private Program program;
     private CategoryCombo catCombo;
-    private String programId;
     private String programStageId;
     private List<OrganisationUnit> orgUnits;
+    private FlowableProcessor<Pair<TreeNode, String>> parentOrgUnit;
+    private FlowableProcessor<String> onSearchListener;
+
 
     public EventInitialPresenter(@NonNull EventSummaryRepository eventSummaryRepository,
                                  @NonNull EventInitialRepository eventInitialRepository,
@@ -92,10 +94,11 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
 
     @Override
     public void init(EventInitialContract.View mview, String programId, String eventId, String orgInitId, String programStageId) {
-        view = mview;
+        this.view = mview;
         this.eventId = eventId;
-        this.programId = programId;
         this.programStageId = programStageId;
+        this.parentOrgUnit = PublishProcessor.create();
+        this.onSearchListener = PublishProcessor.create();
 
         compositeDisposable = new CompositeDisposable();
 
@@ -109,17 +112,19 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
                             eventInitialRepository.catCombo(programId).toFlowable(BackpressureStrategy.LATEST),
                             eventInitialRepository.programStageForEvent(eventId),
                             eventInitialRepository.getOptionsFromCatOptionCombo(eventId),
-                            Quintet::create
+                            eventInitialRepository.orgUnits(programId).toFlowable(BackpressureStrategy.LATEST),
+                            Sextet::create
                     )
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(quartetFlowable -> {
-                                this.program = quartetFlowable.val1();
-                                this.catCombo = quartetFlowable.val2();
-                                view.setEvent(quartetFlowable.val0());
-                                view.setProgram(quartetFlowable.val1());
-                                view.setCatComboOptions(catCombo, !quartetFlowable.val4().isEmpty() ? quartetFlowable.val4() : null);
-                                view.setProgramStage(quartetFlowable.val3());
+                            .subscribe(sextet -> {
+                                this.program = sextet.val1();
+                                this.catCombo = sextet.val2();
+                                this.orgUnits = sextet.val5();
+                                view.setProgram(sextet.val1());
+                                view.setProgramStage(sextet.val3());
+                                view.setEvent(sextet.val0());
+                                view.setCatComboOptions(catCombo, !sextet.val4().isEmpty() ? sextet.val4() : null);
                             }, Timber::d)
             );
 
@@ -128,21 +133,21 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
                     Flowable.zip(
                             eventInitialRepository.getProgramWithId(programId).toFlowable(BackpressureStrategy.LATEST),
                             eventInitialRepository.catCombo(programId).toFlowable(BackpressureStrategy.LATEST),
-                            Pair::create
+                            eventInitialRepository.orgUnits(programId).toFlowable(BackpressureStrategy.LATEST),
+                            Trio::create
                     )
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(trioFlowable -> {
                                 this.program = trioFlowable.val0();
                                 this.catCombo = trioFlowable.val1();
+                                this.orgUnits = trioFlowable.val2();
                                 view.setProgram(trioFlowable.val0());
                                 view.setCatComboOptions(catCombo, null);
                             }, Timber::d)
             );
             getProgramStages(programId, programStageId);
         }
-
-        getOrgUnits(programId);
 
         if (eventId != null)
             getEventSections(eventId);
@@ -168,20 +173,6 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
                         )
 
         );
-    }
-
-    @Override
-    public void getOrgUnits(String programId) {
-        compositeDisposable.add(eventInitialRepository.orgUnits(programId)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        orgUnits -> {
-                            this.orgUnits = orgUnits;
-                            view.addTree(OrgUnitUtils.renderTree_2(view.getContext(), orgUnits, false));
-                        },
-                        throwable -> view.renderError(throwable.getMessage())
-                ));
     }
 
 
@@ -333,7 +324,6 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
 
     @Override
     public void onOrgUnitButtonClick() {
-//        view.openDrawer();
         view.showOrgUnitSelector(orgUnits);
     }
 
@@ -354,8 +344,8 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
             return;
         }
         mFusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
-            if (location != null)
-                view.setLocation(GeometryHelper.createPointGeometry(location.getLatitude(), location.getLongitude()));
+            /*if (location != null)
+                view.setLocation(GeometryHelper.createPointGeometry(location.getLatitude(), location.getLongitude()));*/
         });
     }
 
@@ -406,26 +396,6 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     @Override
     public void displayMessage(String message) {
         view.displayMessage(message);
-    }
-
-    @Override
-    public void filterOrgUnits(String date) {
-
-        Observable<List<OrganisationUnit>> orgUnitObservable =
-                view.eventcreateionType() != EventCreationType.REFERAL ? eventInitialRepository.filteredOrgUnits(date, programId) :
-                        eventInitialRepository.searchOrgUnits(date, programId);
-
-        compositeDisposable.add(
-                orgUnitObservable
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                orgUnits -> {
-                                    this.orgUnits = orgUnits;
-                                    view.addTree(OrgUnitUtils.renderTree_2(view.getContext(), orgUnits, true));
-                                },
-                                throwable -> view.showNoOrgUnits()
-                        ));
     }
 
     @Override
@@ -488,7 +458,7 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
                 RuleActionShowWarning showWarning = (RuleActionShowWarning) ruleAction;
                 FieldViewModel model = fieldViewModels.get(showWarning.field());
 
-                if (model != null && model instanceof EditTextViewModel) {
+                if (model instanceof EditTextViewModel) {
                     fieldViewModels.put(showWarning.field(),
                             ((EditTextViewModel) model).withWarning(showWarning.content()));
                 }
@@ -496,7 +466,7 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
                 RuleActionShowError showError = (RuleActionShowError) ruleAction;
                 FieldViewModel model = fieldViewModels.get(showError.field());
 
-                if (model != null && model instanceof EditTextViewModel) {
+                if (model instanceof EditTextViewModel) {
                     fieldViewModels.put(showError.field(),
                             ((EditTextViewModel) model).withError(showError.content()));
                 }
@@ -522,5 +492,18 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     @Override
     public Date getStageLastDate(String programStageUid, String enrollmentUid) {
         return eventInitialRepository.getStageLastDate(programStageUid, enrollmentUid);
+    }
+
+    @Override
+    public void getEventOrgUnit(String ouUid) {
+        compositeDisposable.add(
+                eventInitialRepository.getOrganisationUnit(ouUid)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                orgUnit -> view.setOrgUnit(orgUnit.uid(), orgUnit.displayName()),
+                                Timber::e
+                        )
+        );
     }
 }

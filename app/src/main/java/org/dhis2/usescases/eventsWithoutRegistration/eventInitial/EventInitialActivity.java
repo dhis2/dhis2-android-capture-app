@@ -20,15 +20,12 @@ import android.widget.PopupMenu;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.view.GravityCompat;
 import androidx.core.view.ViewCompat;
 import androidx.databinding.DataBindingUtil;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.jakewharton.rxbinding2.view.RxView;
-import com.unnamed.b.atv.model.TreeNode;
-import com.unnamed.b.atv.view.AndroidTreeView;
 
 import org.dhis2.App;
 import org.dhis2.Bindings.Bindings;
@@ -51,8 +48,9 @@ import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.EventCreationType;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.custom_views.CategoryOptionPopUp;
+import org.dhis2.utils.custom_views.CoordinatesView;
 import org.dhis2.utils.custom_views.CustomDialog;
-import org.dhis2.utils.custom_views.OrgUnitDialog_2;
+import org.dhis2.utils.custom_views.OrgUnitDialog;
 import org.dhis2.utils.custom_views.PeriodDialog;
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper;
 import org.hisp.dhis.android.core.category.Category;
@@ -64,7 +62,6 @@ import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
-import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.Program;
@@ -142,7 +139,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     private String catOptionComboUid;
     private CategoryCombo catCombo;
     private Map<String, CategoryOption> selectedCatOption;
-    private OrgUnitDialog_2 orgUnitDialog;
+    private OrgUnitDialog orgUnitDialog;
     private Program program;
     private String savedLat;
     private String savedLon;
@@ -150,6 +147,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     private Boolean accessData;
 
     private CompositeDisposable disposable;
+    private Geometry newGeometry;
 
     public static Bundle getBundle(String programUid, String eventUid, String eventCreationType,
                                    String teiUid, PeriodType eventPeriodType, String orgUnit, String stageUid,
@@ -208,8 +206,9 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
         if (binding.actionButton != null) {
             disposable.add(RxView.clicks(binding.actionButton)
-                    .debounce(300, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
+                    .debounce(500, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
                     .subscribe(v -> {
+                                binding.actionButton.setEnabled(false);
                                 String programStageModelUid = programStage == null ? "" : programStage.uid();
                                 if (eventUid == null) { // This is a new Event
                                     if (eventCreationType == EventCreationType.REFERAL && tempCreate.equals(PERMANENT)) {
@@ -221,9 +220,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                                                 selectedOrgUnit,
                                                 null,
                                                 catOptionComboUid,
-                                                GeometryHelper.createPointGeometry(
-                                                        Double.parseDouble(isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? "0" : binding.lat.getText().toString()),
-                                                        Double.parseDouble(isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? "0" : binding.lon.getText().toString()))
+                                                newGeometry
                                         );
                                     } else if (eventCreationType == EventCreationType.SCHEDULE || eventCreationType == EventCreationType.REFERAL) {
                                         presenter.scheduleEvent(
@@ -233,9 +230,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                                                 selectedOrgUnit,
                                                 null,
                                                 catOptionComboUid,
-                                                GeometryHelper.createPointGeometry(
-                                                        Double.parseDouble(isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? "0" : binding.lat.getText().toString()),
-                                                        Double.parseDouble(isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? "0" : binding.lon.getText().toString()))
+                                                newGeometry
                                         );
                                     } else {
                                         presenter.createEvent(
@@ -245,9 +240,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                                                 selectedOrgUnit,
                                                 null,
                                                 catOptionComboUid,
-                                                GeometryHelper.createPointGeometry(
-                                                        Double.parseDouble(isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? "0" : binding.lat.getText().toString()),
-                                                        Double.parseDouble(isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? "0" : binding.lon.getText().toString())),
+                                                newGeometry,
                                                 getTrackedEntityInstance);
                                     }
                                 } else {
@@ -256,14 +249,15 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                                             eventUid,
                                             DateUtils.databaseDateFormat().format(selectedDate), selectedOrgUnit, null,
                                             catOptionComboUid,
-                                            GeometryHelper.createPointGeometry(
-                                            Double.parseDouble(isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? "0" : binding.lat.getText().toString()),
-                                            Double.parseDouble(isEmpty(binding.lat.getText()) && isEmpty(binding.lon.getText()) ? "0" : binding.lon.getText().toString()))
+                                            newGeometry
                                     );
                                 }
                             },
                             Timber::e));
         }
+
+        binding.actionButton.setEnabled(true);
+        presenter.init(this, programUid, eventUid, selectedOrgUnit, programStageUid);
     }
 
     private void setUpScrenByCreatinType(EventCreationType eventCreationType) {
@@ -297,22 +291,23 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                     presenter.onOrgUnitButtonClick();
             });
         }
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        presenter.init(this, programUid, eventUid, selectedOrgUnit, programStageUid);
+
     }
 
     @Override
     protected void onPause() {
-        presenter.onDettach();
         super.onPause();
     }
 
     @Override
     protected void onDestroy() {
+        presenter.onDettach();
         disposable.dispose();
         super.onDestroy();
     }
@@ -433,13 +428,10 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                             binding.date.clearFocus();
                             if (!fixedOrgUnit)
                                 binding.orgUnit.setText("");
-                            presenter.filterOrgUnits(DateUtils.uiDateFormat().format(selectedDate));
                         })
                         .show(getSupportFragmentManager(), PeriodDialog.class.getSimpleName());
             }
         });
-
-        presenter.filterOrgUnits(DateUtils.uiDateFormat().format(selectedDate));
 
         if (eventModel != null &&
                 (DateUtils.getInstance().isEventExpired(eventModel.eventDate(),
@@ -450,81 +442,14 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             binding.date.setEnabled(false);
             for (int i = 0; i < binding.catComboLayout.getChildCount(); i++)
                 binding.catComboLayout.getChildAt(i).findViewById(R.id.cat_combo).setEnabled(false);
-            binding.lat.setEnabled(false);
-            binding.lon.setEnabled(false);
             binding.orgUnit.setEnabled(false);
-            binding.location1.setClickable(false);
-            binding.location2.setClickable(false);
-            binding.location1.setEnabled(false);
-            binding.location2.setEnabled(false);
+            binding.geometry.setEditable(false);
             binding.temp.setEnabled(false);
             binding.actionButton.setText(getString(R.string.check_event));
             binding.executePendingBindings();
 
         }
 
-       /* if (program.captureCoordinates()) { //TODO: CHECK IF CAPTURE COORDINATES IN PROGRAM HAS ANY IMPACT IN STAGES
-            binding.coordinatesLayout.setVisibility(View.VISIBLE);
-            if (binding.location1.isClickable())
-                binding.location1.setOnClickListener(v -> presenter.onLocationClick());
-            if (binding.location2.isClickable())
-                binding.location2.setOnClickListener(v -> presenter.onLocation2Click());
-        } else
-            binding.coordinatesLayout.setVisibility(View.GONE);*/
-
-
-    }
-
-    @Override
-    public void openDrawer() {
-        if (!binding.drawerLayout.isDrawerOpen(GravityCompat.END))
-            binding.drawerLayout.openDrawer(GravityCompat.END);
-        else
-            binding.drawerLayout.closeDrawer(GravityCompat.END);
-    }
-
-    @Override
-    public void addTree(TreeNode treeNode) {
-        binding.treeViewContainer.removeAllViews();
-
-        AndroidTreeView treeView = new AndroidTreeView(getContext(), treeNode);
-
-        treeView.setDefaultContainerStyle(R.style.TreeNodeStyle, false);
-        treeView.setSelectionModeEnabled(true);
-        binding.treeViewContainer.addView(treeView.getView());
-
-        if (presenter.getOrgUnits().size() < 25)
-            treeView.expandAll();
-
-        treeView.setDefaultNodeClickListener((node, value) -> {
-            if (node.isSelectable()) {
-                treeView.selectNode(node, node.isSelected());
-                ArrayList<String> childIds = new ArrayList<>();
-                childIds.add(((OrganisationUnit) value).uid());
-                for (TreeNode childNode : node.getChildren()) {
-                    childIds.add(((OrganisationUnit) childNode.getValue()).uid());
-                    for (TreeNode childNode2 : childNode.getChildren()) {
-                        childIds.add(((OrganisationUnit) childNode2.getValue()).uid());
-                        for (TreeNode childNode3 : childNode2.getChildren()) {
-                            childIds.add(((OrganisationUnit) childNode3.getValue()).uid());
-                        }
-                    }
-                }
-                if (!fixedOrgUnit) {
-                    selectedOrgUnit = ((OrganisationUnit) value).uid();
-                    binding.orgUnit.setText(((OrganisationUnit) value).displayName());
-                }
-                binding.drawerLayout.closeDrawers();
-            }
-        });
-
-        if (treeView.getSelected() != null && !treeView.getSelected().isEmpty() && !fixedOrgUnit) {
-            binding.orgUnit.setText(((OrganisationUnit) treeView.getSelected().get(0).getValue()).displayName());
-            selectedOrgUnit = ((OrganisationUnit) treeView.getSelected().get(0).getValue()).uid();
-            selectedOrgUnitOpeningDate = ((OrganisationUnit) treeView.getSelected().get(0).getValue()).openingDate();
-            selectedOrgUnitClosedDate = ((OrganisationUnit) treeView.getSelected().get(0).getValue()).closedDate();
-        }
-        checkActionButtonVisibility();
     }
 
     @Override
@@ -537,41 +462,13 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             binding.date.setText(DateUtils.uiDateFormat().format(selectedDate));
         }
 
-        if (event.geometry() != null && event.geometry().type()!= FeatureType.NONE) {
-            runOnUiThread(() -> {
-                if (isEmpty(savedLat)) {
-                    if (GeometryHelper.containsAPoint(event.geometry())) {
-                        try {
-                            List<Double> points = GeometryHelper.getPoint(event.geometry());
-                            binding.lat.setText(String.valueOf(points.get(0))); //TODO: SUPPORT ALL FEATURE TYPES
-                            binding.lon.setText(String.valueOf(points.get(1)));
-                        } catch (D2Error d2Error) {
-                            d2Error.printStackTrace();
-                        }
-                    }
-                } else {
-                    binding.lat.setText(savedLat);
-                    binding.lon.setText(savedLon);
-                    savedLon = null;
-                    savedLat = null;
-                }
-            });
+        if (event.geometry() != null && event.geometry().type() != FeatureType.NONE) {
+            binding.geometry.updateLocation(event.geometry());
         }
 
         eventModel = event;
-    }
 
-    @Override
-    public void setLocation(Geometry geometry) {
-        try {
-            List<Double> points = GeometryHelper.getPoint(geometry);
-            binding.lat.setText(String.format(Locale.US, "%.5f", points.get(0)));
-            binding.lon.setText(String.format(Locale.US, "%.5f", points.get(1)));
-            checkActionButtonVisibility();
-        } catch (D2Error d2Error) {
-            d2Error.printStackTrace();
-        }
-
+        presenter.getEventOrgUnit(event.organisationUnit());
     }
 
     @Override
@@ -600,22 +497,19 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     @Override
     public void setProgramStage(ProgramStage programStage) {
         this.programStage = programStage;
-        if (programStage.featureType() == FeatureType.MULTI_POLYGON
-            || programStage.featureType() == FeatureType.POLYGON) {
-            binding.location1.setVisibility(View.GONE);
-        }
-        if (programStage.featureType()!=null && programStage.featureType() != FeatureType.NONE) {
-            binding.coordinatesLayout.setVisibility(View.VISIBLE); //TODO: SUPPORT FOR ALL FEATURE TYPES
-            binding.location1.setOnClickListener(v -> {
-                if (v.isClickable()) presenter.onLocationClick();
-            });
-            binding.location2.setOnClickListener(v -> {
-                if (v.isClickable()) presenter.onLocation2Click(programStage.featureType());
-            });
-        } else {
-            binding.coordinatesLayout.setVisibility(View.GONE);
-        }
         binding.setProgramStage(programStage);
+
+        binding.geometry.setIsBgTransparent(true);
+        binding.geometry.setEditable(true);
+        binding.geometry.setFeatureType(programStage.featureType());
+        binding.geometry.setCurrentLocationListener(geometry -> {
+            Timber.tag("EVENTINITIAL").d("NEW GEOMETRY");
+            this.newGeometry = geometry;
+        });
+        binding.geometry.setMapListener(
+                (CoordinatesView.OnMapPositionClick) binding.geometry.getContext()
+        );
+
         if (periodType == null)
             periodType = programStage.periodType();
 
@@ -795,7 +689,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         binding.date.clearFocus();
         if (!fixedOrgUnit)
             binding.orgUnit.setText("");
-        presenter.filterOrgUnits(DateUtils.uiDateFormat().format(selectedDate));
     }
 
     @Override
@@ -818,16 +711,19 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             String dataExtra = data.getStringExtra(MapSelectorActivity.Companion.getDATA_EXTRA());
             Geometry geometry;
             if (locationType == FeatureType.POINT) {
-                Type type = new TypeToken<List<Double>>(){}.getType();
+                Type type = new TypeToken<List<Double>>() {
+                }.getType();
                 geometry = GeometryHelper.createPointGeometry(new Gson().fromJson(dataExtra, type));
             } else if (locationType == FeatureType.POLYGON) {
-                Type type = new TypeToken<List<List<List<Double>>>>(){}.getType();
+                Type type = new TypeToken<List<List<List<Double>>>>() {
+                }.getType();
                 geometry = GeometryHelper.createPolygonGeometry(new Gson().fromJson(dataExtra, type));
-            } else  {
-                Type type = new TypeToken<List<List<List<List<Double>>>>>(){}.getType();
+            } else {
+                Type type = new TypeToken<List<List<List<List<Double>>>>>() {
+                }.getType();
                 geometry = GeometryHelper.createMultiPolygonGeometry(new Gson().fromJson(dataExtra, type));
             }
-            setLocation(geometry);
+//            setLocation(geometry);
         }
     }
 
@@ -896,7 +792,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void runSmsSubmission() {
-        if(!getResources().getBoolean(R.bool.sms_enabled)) {
+        if (!getResources().getBoolean(R.bool.sms_enabled)) {
             return;
         }
         if (eventModel == null) {
@@ -922,12 +818,12 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void latitudeWarning(boolean showWarning) {
-        binding.lat.setError(showWarning ? getString(R.string.formatting_error) : null);
+//        binding.lat.setError(showWarning ? getString(R.string.formatting_error) : null);
     }
 
     @Override
     public void longitudeWarning(boolean showWarning) {
-        binding.lon.setError(showWarning ? getString(R.string.formatting_error) : null);
+//        binding.lon.setError(showWarning ? getString(R.string.formatting_error) : null);
 
     }
 
@@ -975,12 +871,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             for (int i = 0; i < binding.catComboLayout.getChildCount(); i++)
                 binding.catComboLayout.getChildAt(i).findViewById(R.id.cat_combo).setEnabled(false);
             binding.actionButton.setText(getString(R.string.check_event));
-            binding.location1.setClickable(false);
-            binding.location2.setClickable(false);
-            binding.location1.setEnabled(false);
-            binding.location2.setEnabled(false);
-            binding.lat.setEnabled(false);
-            binding.lon.setEnabled(false);
+            binding.geometry.setEditable(false);
             binding.executePendingBindings();
         }
     }
@@ -991,20 +882,26 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
             Iterator<OrganisationUnit> iterator = orgUnits.iterator();
             while (iterator.hasNext()) {
-                OrganisationUnit orgUnit = iterator.next();
-                if (orgUnit.closedDate() != null && selectedDate.after(orgUnit.closedDate()))
+                OrganisationUnit organisationUnit = iterator.next();
+                if (organisationUnit.openingDate() != null && organisationUnit.openingDate().after(selectedDate)
+                        || organisationUnit.closedDate() != null && organisationUnit.closedDate().before(selectedDate))
                     iterator.remove();
             }
 
-            orgUnitDialog = new OrgUnitDialog_2()
-                    .setTitle(getString(R.string.org_unit))
+            orgUnitDialog = OrgUnitDialog.getInstace()
+                    .setTitle(!binding.orgUnit.getText().toString().isEmpty() ? binding.orgUnit.getText().toString() : getString(R.string.org_unit))
                     .setMultiSelection(false)
                     .setOrgUnits(orgUnits)
                     .setPossitiveListener(data -> {
                         setOrgUnit(orgUnitDialog.getSelectedOrgUnit(), orgUnitDialog.getSelectedOrgUnitName());
                         orgUnitDialog.dismiss();
                     })
-                    .setNegativeListener(data -> orgUnitDialog.dismiss());
+                    .setNegativeListener(data -> orgUnitDialog.dismiss())
+                    .setNodeClickListener((node, value) -> {
+                        if (!node.getChildren().isEmpty())
+                            node.setExpanded(node.isExpanded());
+                    });
+
             if (!orgUnitDialog.isAdded())
                 orgUnitDialog.show(getSupportFragmentManager(), "ORG_UNIT_DIALOG");
         } else {

@@ -53,6 +53,7 @@ import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.program.Program;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
 import org.hisp.dhis.rules.models.RuleActionErrorOnCompletion;
 import org.hisp.dhis.rules.models.RuleActionShowError;
 import org.hisp.dhis.rules.models.RuleActionWarningOnCompletion;
@@ -127,6 +128,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     private String programStageUid;
     private String enrollmentUid;
     private FeatureType teFeatureType;
+    private FeatureType enrollmentFeatureType;
 
     public View getDatesLayout() {
         return datesLayout;
@@ -210,12 +212,16 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
             coordinatesView.setIsBgTransparent(false);
             coordinatesView.setMapListener(this);
             coordinatesView.setCurrentLocationListener(this);
-
+            coordinatesView.setLabel(getString(R.string.enrollment_coordinates));
             teiCoordinatesView.setIsBgTransparent(false);
             teiCoordinatesView.setMapListener(this);
             teiCoordinatesView.setCurrentLocationListener(this);
         }
         setupActionBar();
+
+        formPresenter.onAttach(this);
+        if (saveButton != null)
+            formPresenter.initializeSaveObservable();
     }
 
     private void setupActionBar() {
@@ -305,15 +311,18 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     @Override
     public void onResume() {
         super.onResume();
-        formPresenter.onAttach(this);
-        if (saveButton != null)
-            formPresenter.initializeSaveObservable();
+
     }
 
     @Override
     public void onPause() {
-        formPresenter.onDetach();
         super.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        formPresenter.onDetach();
+        super.onDestroy();
     }
 
     @NonNull
@@ -370,18 +379,27 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
 
     @NonNull
     @Override
-    public Consumer<Boolean> renderCaptureCoordinates() {
-        return captureCoordinates -> coordinatesView.setVisibility(captureCoordinates ? View.VISIBLE : View.GONE);
+    public Consumer<FeatureType> renderCaptureCoordinates() {
+        return featureType -> {
+            coordinatesView.setVisibility(featureType != FeatureType.NONE ? View.VISIBLE : View.GONE);
+            enrollmentFeatureType = featureType;
+            if (featureType != FeatureType.NONE) {
+                coordinatesView.setFeatureType(featureType);
+            }
+        };
     }
 
 
     @Override
-    public Consumer<FeatureType> renderTeiCoordinates() {
-        return featureType -> {
-            teiCoordinatesView.setVisibility(featureType != FeatureType.NONE ? View.VISIBLE : View.GONE);
-            teFeatureType = featureType;
-            if (featureType != FeatureType.NONE) {
-                teiCoordinatesView.setFeatureType(featureType);
+    public Consumer<TrackedEntityType> renderTeiCoordinates() {
+        return trackedEntityType -> {
+            if(trackedEntityType.featureType() != null) {
+                teFeatureType = trackedEntityType.featureType();
+                teiCoordinatesView.setVisibility(teFeatureType != FeatureType.NONE ? View.VISIBLE : View.GONE);
+                teiCoordinatesView.setLabel(String.format("%s %s", getString(R.string.tei_coordinates), trackedEntityType.name()));
+                if (teFeatureType != FeatureType.NONE) {
+                    teiCoordinatesView.setFeatureType(teFeatureType);
+                }
             }
         };
     }
@@ -416,7 +434,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
             enrollmentTrio = trio;
             progressBar.setVisibility(View.VISIBLE);
             formPresenter.checkMandatoryFields();
-            if (trio.val2() != null)
+            if (trio.val2() != null && !trio.val2().isEmpty())
                 formPresenter.getNeedInitial(trio.val2());
         };
     }
@@ -536,14 +554,17 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     public void onMapPositionClick(CoordinatesView coordinatesView) {
         if (getActivity() != null && isAdded()) {
             this.coordinatesViewToUpdate = coordinatesView;
-            FeatureType featureType = coordinatesView.getId() == R.id.tei_coordinates_view ? teFeatureType : FeatureType.POINT;
-            startActivityForResult(MapSelectorActivity.Companion.create(getActivity(), featureType), Constants.RQ_MAP_LOCATION_VIEW);
+            FeatureType featureType = coordinatesView.getId() == R.id.tei_coordinates_view ? teFeatureType : enrollmentFeatureType;
+            startActivityForResult(MapSelectorActivity.Companion.create(getActivity(), featureType,coordinatesView.currentCoordinates()), Constants.RQ_MAP_LOCATION_VIEW);
         }
     }
 
     @Override
     public void onCurrentLocationClick(Geometry geometry) {
-        publishCoordinatesChanged(geometry);
+        if (coordinatesViewToUpdate.getId() == R.id.coordinates_view)
+            publishCoordinatesChanged(geometry);
+        else
+            publishTeiCoodinatesChanged(geometry);
     }
 
     @Override
@@ -568,10 +589,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
                         geometry = GeometryHelper.createMultiPolygonGeometry(new Gson().fromJson(dataExtra, type));
                     }
                     coordinatesViewToUpdate.updateLocation(geometry);
-                    if (coordinatesViewToUpdate.getId() == R.id.coordinates_view)
-                        publishCoordinatesChanged(geometry);
-                    else
-                        publishTeiCoodinatesChanged(geometry);
+
                     this.coordinatesViewToUpdate = null;
                 }
                 break;

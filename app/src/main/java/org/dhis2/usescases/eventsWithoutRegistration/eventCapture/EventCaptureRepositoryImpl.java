@@ -15,11 +15,16 @@ import org.dhis2.data.forms.RulesRepository;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
+import org.dhis2.data.forms.dataentry.fields.image.ImageViewModel;
+import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
+import org.dhis2.utils.CodeGeneratorImpl;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.Result;
+import org.dhis2.utils.RulesUtilsProviderImpl;
+import org.dhis2.utils.rules.RuleEffectResult;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
-import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
+import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ObjectWithUid;
 import org.hisp.dhis.android.core.common.State;
@@ -33,6 +38,7 @@ import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.event.EventTableInfo;
 import org.hisp.dhis.android.core.option.Option;
+import org.hisp.dhis.android.core.option.OptionGroup;
 import org.hisp.dhis.android.core.option.OptionSet;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
@@ -58,6 +64,7 @@ import org.hisp.dhis.rules.models.RuleEvent;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -206,7 +213,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         return rules;
     }
 
-    private boolean haveDisplayActionIndicator(ProgramRule programRule) {
+    private boolean haveDisplayActionIndicator(@NonNull ProgramRule programRule) {
         for (ProgramRuleAction programRuleAction : programRule.programRuleActions()) {
             if ((programRuleAction.programRuleActionType() == ProgramRuleActionType.DISPLAYTEXT ||
                     programRuleAction.programRuleActionType() == ProgramRuleActionType.DISPLAYKEYVALUEPAIR)
@@ -220,7 +227,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         filterRules(rules);
         List<Rule> finalRules = new ArrayList<>();
         for (ProgramRule rule : rules) {
-            if(rule != null)
+            if (rule != null)
                 finalRules.add(Rule.create(
                         rule.programStage() != null ? rule.programStage().uid() : null,
                         rule.priority(),
@@ -301,11 +308,28 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         boolean isInCaptureOrgUnit = d2.organisationUnitModule().organisationUnits
                 .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
                 .byUid().eq(event.organisationUnit()).one().blockingExists();
+        boolean hasCatComboAccess = event.attributeOptionCombo() == null || getCatComboAccess(event);
 
         boolean editable = isEnrollmentOpen() && !blockAfterComplete && !isExpired &&
-                getAccessDataWrite() && inOrgUnitRange(eventUid) && isInCaptureOrgUnit;
+                getAccessDataWrite() && inOrgUnitRange(eventUid) && isInCaptureOrgUnit && hasCatComboAccess;
 
         return !editable;
+    }
+
+    private boolean getCatComboAccess(Event event) {
+        if (event.attributeOptionCombo() != null) {
+            List<String> optionUid = UidsHelper.getUidsList(d2.categoryModule()
+                    .categoryOptionCombos.uid(event.attributeOptionCombo())
+                    .withAllChildren().blockingGet().categoryOptions());
+            List<CategoryOption> options = d2.categoryModule().categoryOptions.byUid().in(optionUid).blockingGet();
+            boolean access = true;
+            for (CategoryOption option : options)
+                if (!option.access().data().write())
+                    access = false;
+
+            return access;
+        }else
+            return true;
     }
 
     @Override
@@ -340,18 +364,17 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 .map(displayName -> displayName.equals("default") ? "" : displayName);
     }
 
-
     @Override
     public Flowable<List<FormSectionViewModel>> eventSections() {
         return d2.eventModule().events.uid(eventUid).get()
                 .map(eventSingle -> {
                     List<FormSectionViewModel> formSection = new ArrayList<>();
-                    if(eventSingle.state() != State.TO_DELETE) {
+                    if (eventSingle.deleted() == null || !eventSingle.deleted()) {
                         ProgramStage stage = d2.programModule().programStages.uid(eventSingle.programStage()).withAllChildren().blockingGet();
                         if (stage.programStageSections().size() > 0) {
                             for (ProgramStageSection section : stage.programStageSections())
                                 formSection.add(FormSectionViewModel.createForSection(eventUid, section.uid(), section.displayName(),
-                                        section.renderType().mobile() != null ? section.renderType().mobile().type().name(): null));
+                                        section.renderType().mobile() != null ? section.renderType().mobile().type().name() : null));
                         } else
                             formSection.add(FormSectionViewModel.createForProgramStageWithLabel(eventUid, stage.displayName(), stage.uid()));
                     }
@@ -380,6 +403,63 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 }).toFlowable();
     }
 
+    @NonNull
+    @Override
+    public Flowable<List<FieldViewModel>> evaluateForSection(String sectionUid) {
+        return d2.eventModule().events.withAllChildren().uid(eventUid).get()
+                .flatMap(event -> d2.programModule().programStages.uid(event.programStage()).get()
+                        .map(stage -> {
+                            Timber.tag("EVENT SECTION").d("INIT CALCULATIONS");
+                            RuleEffectResult effectResult = new RulesUtilsProviderImpl(new CodeGeneratorImpl()).evaluateEvent(eventUid, sectionUid);
+                            List<FieldViewModel> fields = new ArrayList<>();
+                            for (String deUid : effectResult.getFields()) {
+                                DataElement dataelement = d2.dataElementModule().dataElements.uid(deUid).blockingGet();
+                                ProgramStageDataElement programStageDataElement;
+                                String value = d2.trackedEntityModule().trackedEntityDataValues.byDataElement().eq(deUid).byEvent().eq(eventUid).one().blockingExists() ?
+                                        d2.trackedEntityModule().trackedEntityDataValues.byDataElement().eq(deUid).byEvent().eq(eventUid).one().blockingGet().value() : null;
+                                try (Cursor query = briteDatabase.query("SELECT * FROM ProgramStageDataElement WHERE programStage = ? AND dataElement = ?", stage.uid(), deUid)) {
+                                    query.moveToFirst();
+                                    programStageDataElement = ProgramStageDataElement.create(query);
+                                }
+
+                                FieldViewModel field = transform(
+                                        programStageDataElement,
+                                        dataelement,
+                                        value,
+                                        sectionUid);
+                                if (effectResult.getWarnings().get(deUid) != null)
+                                    field = field.withWarning(effectResult.getWarnings().get(deUid));
+                                if (effectResult.getErrors().get(deUid) != null)
+                                    field = field.withError(effectResult.getErrors().get(deUid));
+                                if (field instanceof SpinnerViewModel) {
+                                    ((SpinnerViewModel) field).setOptionsToHide(effectResult.getOptionsToHide(), effectResult.getOptionGroupsToHide());
+                                    ((SpinnerViewModel) field).setOptionGroupsToShow(effectResult.getShowOptionGroup());
+                                }
+
+                                if (effectResult.getMandatoryFields().contains(field.uid()))
+                                    field.setMandatory();
+
+                                boolean hideForOption = field instanceof ImageViewModel && effectResult.getOptionsToHide().contains(field.uid().split("\\.")[1]);
+                                boolean hideForOptionGroup = field instanceof ImageViewModel && optionIsInOptionGroup(field.uid().split("\\.")[1], effectResult.getOptionGroupsToHide());
+
+                                if (!hideForOption && !hideForOptionGroup)
+                                    fields.add(field);
+
+                            }
+
+                            List<ProgramStageSection> sections = d2.programModule().programStageSections.byProgramStageUid().eq(stage.uid()).blockingGet();
+                            Collections.sort(sections, (s1, s2) -> s1.sortOrder().compareTo(s2.sortOrder()));
+                            if (sections.get(sections.size() - 1).uid().equals(sectionUid)) {
+                                //TODO: EFFECT FOR DISPLAY KEY VALUE PAIR AND DISPLAY TEXT
+                            }
+
+                            return checkRenderType(fields, d2.programModule().programStages.uid(event.programStage()).withAllChildren().blockingGet());
+
+                        })).doOnSuccess(data -> Timber.tag("EVENT SECTION").d("END CALCULATIONS")
+                )
+                .toFlowable();
+    }
+
     private ProgramStageSectionRenderingType renderingType(String sectionUid) {
         ProgramStageSectionRenderingType renderingType = ProgramStageSectionRenderingType.LISTING;
         if (sectionUid != null) {
@@ -391,7 +471,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         return renderingType;
     }
 
-    private List<FieldViewModel> checkRenderType(List<FieldViewModel> fieldViewModels, ProgramStage stage){
+    private List<FieldViewModel> checkRenderType(List<FieldViewModel> fieldViewModels, ProgramStage stage) {
         ArrayList<FieldViewModel> renderList = new ArrayList<>();
 
         for (FieldViewModel fieldViewModel : fieldViewModels) {
@@ -399,11 +479,11 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
             ProgramStageSectionRenderingType renderingType = renderingType(fieldViewModel.programStageSection());
             if (!isEmpty(fieldViewModel.optionSet()) && renderingType != ProgramStageSectionRenderingType.LISTING) {
                 OptionSet optionSets = d2.optionModule().optionSets.withOptions().byUid().eq(fieldViewModel.optionSet() == null ? "" : fieldViewModel.optionSet()).one().blockingGet();
-                for(Option option: optionSets.options()){
+                for (Option option : optionSets.options()) {
                     ValueTypeDeviceRendering fieldRendering = null;
 
-                    for(ProgramStageDataElement programStageDataElement: stage.programStageDataElements()){
-                        if(programStageDataElement.uid().equals(option.uid()))
+                    for (ProgramStageDataElement programStageDataElement : stage.programStageDataElements()) {
+                        if (programStageDataElement.uid().equals(option.uid()))
                             fieldRendering = programStageDataElement.renderType().mobile();
                     }
 
@@ -420,68 +500,66 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                             fieldViewModel.allowFutureDate(), fieldViewModel.editable() == null ? false : fieldViewModel.editable(), renderingType, fieldViewModel.description(), fieldRendering, optionSets.options().size(), objectStyle));
 
                 }
-            }else
+            } else
                 renderList.add(fieldViewModel);
         }
         return renderList;
     }
 
-
     @NonNull
     @Override
     public Flowable<List<FieldViewModel>> list() {
-         return d2.eventModule().events.withAllChildren().uid(eventUid).get()
-            .map(event -> {
-                List<FieldViewModel> fields = new ArrayList<>();
-                ProgramStage stage = d2.programModule().programStages.withAllChildren().uid(event.programStage()).blockingGet();
-                if(stage.programStageSections().size()> 0) {
-                    for (ProgramStageSection section : stage.programStageSections()){
-                        ProgramStageSection stageSection = d2.programModule().programStageSections.withDataElements().uid(section.uid()).blockingGet();
-                        for (ProgramStageDataElement programStageDataElement : stage.programStageDataElements()) {
-                            if (UidsHelper.getUidsList(stageSection.dataElements()).contains(programStageDataElement.dataElement().uid())) {
-                                DataElement dataelement = d2.dataElementModule().dataElements.uid(programStageDataElement.dataElement().uid()).blockingGet();
-                                fields.add(transform(programStageDataElement, dataelement,
-                                        searchValueDataElement(programStageDataElement.dataElement().uid(), event.trackedEntityDataValues()), section.uid()));
+        return d2.eventModule().events.withAllChildren().uid(eventUid).get()
+                .map(event -> {
+                    List<FieldViewModel> fields = new ArrayList<>();
+                    ProgramStage stage = d2.programModule().programStages.withAllChildren().uid(event.programStage()).blockingGet();
+                    if (stage.programStageSections().size() > 0) {
+                        for (ProgramStageSection section : stage.programStageSections()) {
+                            ProgramStageSection stageSection = d2.programModule().programStageSections.withDataElements().uid(section.uid()).blockingGet();
+                            for (ProgramStageDataElement programStageDataElement : stage.programStageDataElements()) {
+                                if (UidsHelper.getUidsList(stageSection.dataElements()).contains(programStageDataElement.dataElement().uid())) {
+                                    DataElement dataelement = d2.dataElementModule().dataElements.uid(programStageDataElement.dataElement().uid()).blockingGet();
+                                    fields.add(transform(programStageDataElement, dataelement,
+                                            searchValueDataElement(programStageDataElement.dataElement().uid(), event.trackedEntityDataValues()), section.uid()));
+                                }
                             }
                         }
-                    }
-                }else
-                    for(ProgramStageDataElement programStageDataElement: stage.programStageDataElements()){
-                        DataElement dataelement = d2.dataElementModule().dataElements.uid(programStageDataElement.dataElement().uid()).blockingGet();
-                        fields.add(transform(programStageDataElement, dataelement,
-                                searchValueDataElement(programStageDataElement.dataElement().uid(), event.trackedEntityDataValues()), null));
+                    } else
+                        for (ProgramStageDataElement programStageDataElement : stage.programStageDataElements()) {
+                            DataElement dataelement = d2.dataElementModule().dataElements.uid(programStageDataElement.dataElement().uid()).blockingGet();
+                            fields.add(transform(programStageDataElement, dataelement,
+                                    searchValueDataElement(programStageDataElement.dataElement().uid(), event.trackedEntityDataValues()), null));
 
-                    }
-                return checkRenderType(fields, stage);
-            }).toFlowable();
+                        }
+                    return checkRenderType(fields, stage);
+                }).toFlowable();
     }
 
-    private String searchValueDataElement(String dataElement, List<TrackedEntityDataValue> dataValues){
-        for(TrackedEntityDataValue dataValue: dataValues)
-            if(dataValue.dataElement().equals(dataElement)) {
+    private String searchValueDataElement(String dataElement, List<TrackedEntityDataValue> dataValues) {
+        for (TrackedEntityDataValue dataValue : dataValues)
+            if (dataValue.dataElement().equals(dataElement)) {
                 return dataValue.value();
             }
 
-        return "";
+        return null;
     }
 
     @NonNull
-    private FieldViewModel transform(@NonNull ProgramStageDataElement stage, DataElement dataElement, String value, String programStageSection ) {
+    private FieldViewModel transform(@NonNull ProgramStageDataElement stage, DataElement dataElement, String value, String programStageSection) {
         String uid = dataElement.uid();
         String displayName = dataElement.displayName();
         String valueTypeName = dataElement.valueType().name();
         boolean mandatory = stage.compulsory();
         String optionSet = dataElement.optionSetUid();
         String dataValue = value;
-        List<Option> option = d2.optionModule().options.byOptionSetUid().eq(optionSet).byCode().eq(dataValue).blockingGet();
+        Option option = d2.optionModule().options.byOptionSetUid().eq(optionSet).byCode().eq(dataValue).one().blockingGet();
+        int optionCount = d2.optionModule().options.byOptionSetUid().eq(optionSet).blockingCount();
         boolean allowFurureDates = stage.allowFutureDate();
         String formName = dataElement.displayFormName();
         String description = dataElement.displayDescription();
 
-        int optionCount = 0;
-        if (!option.isEmpty()) {
-            dataValue = option.get(0).displayName();
-            option.size();
+        if (option != null) {
+            dataValue = option.displayName();
         }
 
         ValueTypeDeviceRendering fieldRendering = stage.renderType() == null ? null : stage.renderType().mobile();
@@ -524,6 +602,28 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                                 .map(Result::success)
                                 .onErrorReturn(error -> Result.failure(new Exception(error)))
 
+                );
+    }
+
+    @NonNull
+    @Override
+    public Flowable<Result<RuleEffect>> fullCalculate() {
+        return loadRules()
+                .switchMap(loadRules -> queryDataValues(eventUid))
+                .map(dataValues -> eventBuilder.dataValues(dataValues).build())
+                .switchMap(
+                        event -> formRepository.ruleEngine()
+                                .switchMap(ruleEngine -> {
+                                    if (isEmpty(lastUpdatedUid))
+                                        return Flowable.fromCallable(ruleEngine.evaluate(event, trasformToRule(rules)));
+                                    else {
+                                        List<Rule> updatedRules = dataElementRules.get(lastUpdatedUid) != null ? dataElementRules.get(lastUpdatedUid) : new ArrayList<Rule>();
+                                        List<Rule> finalRules = updatedRules.isEmpty() ? trasformToRule(rules) : updatedRules;
+                                        return Flowable.fromCallable(ruleEngine.evaluate(event, finalRules));
+                                    }
+                                })
+                                .map(Result::success)
+                                .onErrorReturn(error -> Result.failure(new Exception(error)))
                 );
     }
 
@@ -577,7 +677,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
             status = briteDatabase.delete(EventTableInfo.TABLE_INFO.name(), DELETE_WHERE, eventUid);
         } else {
             ContentValues contentValues = event.toContentValues();
-            contentValues.put(EventTableInfo.Columns.STATE, State.TO_DELETE.name());
+            contentValues.put(EventTableInfo.Columns.DELETED, true);
             status = briteDatabase.update(EventTableInfo.TABLE_INFO.name(), contentValues, EventTableInfo.Columns.UID + " = ?", eventUid);
         }
         if (status == 1 && event.enrollment() != null)
@@ -665,16 +765,16 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                     String programStage = event.programStage();
                     List<RuleDataValue> ruleDataValues = new ArrayList<>();
 
-                    for(TrackedEntityDataValue dataValue: event.trackedEntityDataValues()){
+                    for (TrackedEntityDataValue dataValue : event.trackedEntityDataValues()) {
                         List<ProgramRuleVariable> variables = d2.programModule().programRuleVariables.byDataElementUid().eq(dataValue.dataElement()).blockingGet();
                         Option option = null;
                         DataElement dataElement = d2.dataElementModule().dataElements.uid(dataValue.dataElement()).blockingGet();
-                        if(dataElement.optionSet() != null){
+                        if (dataElement.optionSet() != null) {
                             option = d2.optionModule().options.byOptionSetUid().eq(dataElement.optionSet().uid()).byCode().eq(dataValue.value()).one().blockingGet();
                         }
                         String value = dataValue.value();
-                        for(ProgramRuleVariable variable: variables){
-                            if(variable.dataElement().uid().equals(dataValue.dataElement())) {
+                        for (ProgramRuleVariable variable : variables) {
+                            if (variable.dataElement().uid().equals(dataValue.dataElement())) {
                                 if (option != null) {
                                     value = variable.useCodeForOptionSet() ? option.code() : option.name();
                                 }
@@ -708,6 +808,19 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 if (uidObject.uid().equals(optionUid))
                     isInGroup = true;
 
+        return isInGroup;
+    }
+
+    private boolean optionIsInOptionGroup(String optionUid, List<String> optionGroupsToHide) {
+        List<OptionGroup> optionGroups = d2.optionModule().optionGroups.byUid().in(optionGroupsToHide).withAllChildren().blockingGet();
+        boolean isInGroup = false;
+        for (OptionGroup optionGroup : optionGroups) {
+            List<ObjectWithUid> optionGroupOptions = optionGroup.options();
+            if (optionGroupOptions != null)
+                for (ObjectWithUid uidObject : optionGroupOptions)
+                    if (uidObject.uid().equals(optionUid))
+                        isInGroup = true;
+        }
         return isInGroup;
     }
 

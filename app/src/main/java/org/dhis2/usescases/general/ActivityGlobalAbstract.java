@@ -75,18 +75,6 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
     private CoordinatesView coordinatesView;
     private PictureView.OnPictureSelected onPictureSelected;
     private String uuid;
-    private ContentLoadingProgressBar progressBar;
-
-    private BroadcastReceiver syncReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent.getAction() != null && intent.getAction().equals("action_sync") && intent.getExtras() != null && progressBar != null)
-                if (SyncUtils.isSyncRunning() && progressBar.getVisibility() == View.GONE)
-                    progressBar.setVisibility(View.VISIBLE);
-                else if (!SyncUtils.isSyncRunning())
-                    progressBar.setVisibility(View.GONE);
-        }
-    };
 
     public enum Status {
         ON_PAUSE,
@@ -124,27 +112,22 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
         mFirebaseAnalytics.setUserId(prefs.getString(Constants.SERVER, null));
 
         super.onCreate(savedInstanceState);
-//        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        LocalBroadcastManager.getInstance(this).registerReceiver(syncReceiver, new IntentFilter("action_sync"));
         lifeCycleObservable.onNext(Status.ON_RESUME);
-        setProgressBar(findViewById(R.id.toolbarProgress));
     }
 
     @Override
     protected void onPause() {
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(syncReceiver);
         super.onPause();
         lifeCycleObservable.onNext(Status.ON_PAUSE);
     }
 
     @Override
     protected void onDestroy() {
-        progressBar = null;
         super.onDestroy();
     }
 
@@ -359,7 +342,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
     @Override
     public void onMapPositionClick(CoordinatesView coordinatesView) {
         this.coordinatesView = coordinatesView;
-        startActivityForResult(MapSelectorActivity.Companion.create(this, FeatureType.POINT), Constants.RQ_MAP_LOCATION_VIEW);
+        startActivityForResult(MapSelectorActivity.Companion.create(this,coordinatesView.getFeatureType(), coordinatesView.currentCoordinates()), Constants.RQ_MAP_LOCATION_VIEW);
     }
 
     @Override
@@ -427,16 +410,6 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
 
     protected int getAccentColor() {
         return ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.ACCENT);
-    }
-
-
-    public void setProgressBar(ContentLoadingProgressBar progressBar) {
-        if (progressBar != null) {
-            this.progressBar = progressBar;
-            if (SyncUtils.isSyncRunning())
-                progressBar.setVisibility(View.VISIBLE);
-            else progressBar.setVisibility(View.GONE);
-        }
     }
 
     @Override

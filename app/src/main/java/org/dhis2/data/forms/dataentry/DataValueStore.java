@@ -202,8 +202,7 @@ public final class DataValueStore implements DataEntryStore {
     private Flowable<Long> updateEvent(long status) {
         return d2.eventModule().events.byUid().eq(eventUid).byState().neq(State.TO_DELETE).one().get().toFlowable()
                 .switchMap(eventModel -> {
-                    if (State.SYNCED.equals(eventModel.state()) || State.TO_DELETE.equals(eventModel.state()) ||
-                            State.ERROR.equals(eventModel.state())) {
+                    if (State.SYNCED.equals(eventModel.state()) || State.ERROR.equals(eventModel.state())) {
 
                         ContentValues values = eventModel.toContentValues();
                         values.put(Event.Columns.STATE, State.TO_UPDATE.toString());

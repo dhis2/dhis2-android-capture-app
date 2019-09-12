@@ -18,7 +18,7 @@ import org.dhis2.databinding.ItemCategoryComboBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
-import org.dhis2.utils.custom_views.OrgUnitDialog_2;
+import org.dhis2.utils.custom_views.OrgUnitDialog;
 import org.dhis2.utils.custom_views.PeriodDialog;
 import org.dhis2.utils.custom_views.PeriodDialogInputPeriod;
 import org.hisp.dhis.android.core.category.Category;
@@ -100,9 +100,11 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
      */
     @Override
     public void showOrgUnitDialog(List<OrganisationUnit> data) {
-        OrgUnitDialog_2 orgUnitDialog = OrgUnitDialog_2.getInstace().setMultiSelection(false);
-        orgUnitDialog.setOrgUnits(data);
-        orgUnitDialog.setTitle(getString(R.string.org_unit))
+        OrgUnitDialog orgUnitDialog = OrgUnitDialog.getInstace();
+        orgUnitDialog
+                .setMultiSelection(false)
+                .setOrgUnits(data)
+                .setTitle(getString(R.string.org_unit))
                 .setPossitiveListener(v -> {
                     if (orgUnitDialog.getSelectedOrgUnit() != null && !orgUnitDialog.getSelectedOrgUnit().isEmpty()) {
                         selectedOrgUnit = orgUnitDialog.getSelectedOrgUnitModel();
@@ -114,8 +116,8 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
                     checkActionVisivbility();
                     orgUnitDialog.dismiss();
                 })
-                .setNegativeListener(v -> orgUnitDialog.dismiss());
-        orgUnitDialog.show(getSupportFragmentManager(), OrgUnitDialog_2.class.getSimpleName());
+                .setNegativeListener(v -> orgUnitDialog.dismiss())
+                .show(getSupportFragmentManager(), OrgUnitDialog.class.getSimpleName());
     }
 
     @Override

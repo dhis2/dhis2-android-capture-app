@@ -49,6 +49,8 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
     private OnIntentSelected onIntentSelected;
     private String primaryUid;
     private OnPictureSelected imageListener;
+    private Boolean isEditable;
+    private View clearButton;
 
     public PictureView(Context context) {
         super(context);
@@ -67,7 +69,7 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
 
     @Override
     public void onClick(View v) {
-        if (v == image || v == layout || v == formLabel) {
+        if (isEditable && (v == image || v == layout || v == formLabel)) {
             selectImage();
         }
     }
@@ -90,6 +92,20 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
         layout.setOnClickListener(this);
         formLabel = findViewById(R.id.formLabel);
         formLabel.setOnClickListener(this);
+        clearButton = findViewById(R.id.clear);
+        clearButton.setOnClickListener(view -> {
+                    if (removeFile()) {
+                        setTextSelected(null);
+                        image.setVisibility(View.GONE);
+                        Glide.with(this).clear(image);
+                        imageListener.onSelected(null, null, uid);
+                    }
+                }
+        );
+    }
+
+    private boolean removeFile() {
+        return FileResourcesUtil.getFileForAttribute(getContext(), primaryUid.concat("_").concat(uid).concat(".png")).delete();
     }
 
     public void setLabel(String label) {
@@ -143,21 +159,27 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
     }
 
     public void setInitialValue(String value) {
-        Glide.with(image).clear(image);
 
-        File file = FileResourcesUtil.getFileForAttribute(getContext(), primaryUid.concat("_").concat(uid).concat(".png"));
+        if (!isEmpty(value)) {
 
-        if (file.exists()) {
-            setTextSelected(getContext().getString(R.string.image_selected));
-            image.setVisibility(View.VISIBLE);
-            Glide.with(image)
-                    .load(file)
-                    .apply(new RequestOptions().centerCrop())
-                    .apply(RequestOptions.skipMemoryCacheOf(true))
-                    .apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.NONE))
-                    .skipMemoryCache(true)
-                    .into(image);
-        }
+            Glide.with(image).clear(image);
+            clearButton.setVisibility(View.VISIBLE);
+
+            File file = FileResourcesUtil.getFileForAttribute(getContext(), primaryUid.concat("_").concat(uid).concat(".png"));
+
+            if (file.exists()) {
+                setTextSelected(getContext().getString(R.string.image_selected));
+                image.setVisibility(View.VISIBLE);
+                Glide.with(image)
+                        .load(file)
+                        .apply(new RequestOptions().centerCrop())
+                        .apply(RequestOptions.skipMemoryCacheOf(true))
+                        .apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.NONE))
+                        .skipMemoryCache(true)
+                        .into(image);
+            }
+        } else
+            clearButton.setVisibility(View.GONE);
     }
 
 
@@ -211,6 +233,10 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
 
     public void setOnImageListener(OnPictureSelected onImageListener) {
         this.imageListener = onImageListener;
+    }
+
+    public void setEditable(Boolean editable) {
+        isEditable = editable;
     }
 
     public interface OnPictureSelected {

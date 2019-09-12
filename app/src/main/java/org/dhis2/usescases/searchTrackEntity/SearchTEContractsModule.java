@@ -1,14 +1,22 @@
 package org.dhis2.usescases.searchTrackEntity;
 
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
+
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.paging.PagedList;
+
+import com.mapbox.geojson.BoundingBox;
+import com.mapbox.geojson.FeatureCollection;
 
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.utils.filters.FilterManager;
+import org.hisp.dhis.android.core.arch.call.D2Progress;
+import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
@@ -19,6 +27,8 @@ import java.util.List;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.reactivex.functions.Consumer;
+import kotlin.Pair;
 
 /**
  * QUADRAM. Created by ppajuelo on 02/11/2017.
@@ -62,6 +72,12 @@ public class SearchTEContractsModule {
         void clearFilters();
 
         void updateFiltersSearch(int totalFilters);
+
+        Consumer<FeatureType> featureType();
+
+        Consumer<Pair<HashMap<String,FeatureCollection>, BoundingBox>> setMap();
+
+        Consumer<D2Progress> downloadProgress();
     }
 
     public interface Presenter {
@@ -115,5 +131,13 @@ public class SearchTEContractsModule {
         void clearFilterClick();
 
         void closeFilterClick();
+
+        void getMapData();
+
+        Drawable getSymbolIcon();
+
+        void getEnrollmentMapData();
+
+        Drawable getEnrollmentSymbolIcon();
     }
 }

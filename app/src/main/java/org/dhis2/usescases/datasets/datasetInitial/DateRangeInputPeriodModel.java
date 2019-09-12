@@ -1,15 +1,11 @@
 package org.dhis2.usescases.datasets.datasetInitial;
 
-import android.database.Cursor;
-
 import androidx.annotation.Nullable;
 
-import com.gabrielittner.auto.value.cursor.ColumnAdapter;
 import com.gabrielittner.auto.value.cursor.ColumnName;
 import com.google.auto.value.AutoValue;
 
 import org.hisp.dhis.android.core.common.BaseModel;
-import org.hisp.dhis.android.core.data.database.DbDateColumnAdapter;
 
 import java.util.Date;
 
@@ -23,10 +19,6 @@ public abstract class DateRangeInputPeriodModel {
         public static final String CLOSING_DATE = "closingDate";
         public static final String INITIAL_PERIOD = "initialPeriodDate";
         public static final String END_PERIOD = "endPeriodDate";
-    }
-
-    public static DateRangeInputPeriodModel fromCursor(Cursor cursor) {
-        return AutoValue_DateRangeInputPeriodModel.createFromCursor(cursor);
     }
 
     public static DateRangeInputPeriodModel create(String dataSet, String period, Date openingDate, Date closingDate, Date initialPeriodDate, Date endPeriodDate) {
@@ -43,22 +35,18 @@ public abstract class DateRangeInputPeriodModel {
 
     @Nullable
     @ColumnName(Columns.OPENING_DATE)
-    @ColumnAdapter(DbDateColumnAdapter.class)
     public abstract Date openingDate();
 
     @Nullable
     @ColumnName(Columns.CLOSING_DATE)
-    @ColumnAdapter(DbDateColumnAdapter.class)
     public abstract Date closingDate();
 
     @Nullable
     @ColumnName(Columns.INITIAL_PERIOD)
-    @ColumnAdapter(DbDateColumnAdapter.class)
     public abstract Date initialPeriodDate();
 
     @Nullable
     @ColumnName(Columns.END_PERIOD)
-    @ColumnAdapter(DbDateColumnAdapter.class)
     public abstract Date endPeriodDate();
 
 }

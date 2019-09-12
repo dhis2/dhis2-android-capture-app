@@ -77,7 +77,7 @@ final class EditTextCustomHolder extends FormViewHolder {
     }
 
     private void sendAction() {
-        if (!isEmpty(binding.customEdittext.getEditText().getText())) {
+        if (!isEmpty(binding.customEdittext.getEditText().getText()) && editTextModel.error()==null) {
             checkAutocompleteRendering();
             editTextModel.withValue(binding.customEdittext.getEditText().getText().toString());
             String value = ValidationUtils.validate(editTextModel.valueType(),binding.customEdittext.getEditText().getText().toString());
@@ -135,7 +135,7 @@ final class EditTextCustomHolder extends FormViewHolder {
     @NonNull
     private Boolean valueHasChanged() {
         return !Preconditions.equals(isEmpty(binding.customEdittext.getEditText().getText()) ? "" : binding.customEdittext.getEditText().getText().toString(),
-                editTextModel.value() == null ? "" : valueOf(editTextModel.value()));
+                editTextModel.value() == null ? "" : valueOf(editTextModel.value())) || editTextModel.error() != null;
     }
 
     private void setRenderingType(ValueTypeDeviceRendering renderingType) {

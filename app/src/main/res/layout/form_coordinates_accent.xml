@@ -55,6 +55,25 @@
             android:gravity="center_vertical">
 
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/polygonInputLayuout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="@string/polygon"
+                android:textColorHint="@drawable/edit_text_hint_accent"
+                android:theme="@style/loginInputText"
+                android:visibility="gone">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/polygonEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionNext"
+                    android:textColor="@color/text_black_333"
+                    android:textSize="15sp" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/latitudeInputLayout"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
