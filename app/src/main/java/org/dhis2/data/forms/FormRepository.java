@@ -7,6 +7,7 @@ import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
+import org.hisp.dhis.android.core.common.Unit;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -91,4 +92,6 @@ public interface FormRepository {
     Observable<OrganisationUnit> getOrgUnitDates();
 
     Flowable<ProgramStage> getProgramStage(String eventUid);
+
+    Consumer<Unit> clearCoordinates();
 }

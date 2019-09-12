@@ -20,13 +20,15 @@ import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.State;
+import org.hisp.dhis.android.core.common.Unit;
 import org.hisp.dhis.android.core.common.ValueType;
-import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
+import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
+import org.hisp.dhis.android.core.period.FeatureType;
 import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStage;
@@ -232,7 +234,7 @@ public class EnrollmentFormRepository implements FormRepository {
                         rulesRepository.enrollmentEvents(enrollmentUid),
                         rulesRepository.queryConstants(),
                         rulesRepository.getSuplementaryData(d2),
-                        (rules, variables, events, constants,supplementaryData) -> {
+                        (rules, variables, events, constants, supplementaryData) -> {
                             RuleEngine.Builder builder = RuleEngineContext.builder(expressionEvaluator)
                                     .rules(rules)
                                     .ruleVariables(variables)
@@ -256,7 +258,7 @@ public class EnrollmentFormRepository implements FormRepository {
                         rulesRepository.enrollmentEvents(enrollmentUid),
                         rulesRepository.queryConstants(),
                         rulesRepository.getSuplementaryData(d2),
-                        (rules, variables, events, constants,supplementaryData) -> {
+                        (rules, variables, events, constants, supplementaryData) -> {
                             RuleEngine.Builder builder = RuleEngineContext.builder(expressionEvaluator)
                                     .rules(rules)
                                     .ruleVariables(variables)
@@ -436,6 +438,13 @@ public class EnrollmentFormRepository implements FormRepository {
         };
     }
 
+
+    @Override
+    public Consumer<Unit> clearCoordinates() {
+        return unit -> d2.enrollmentModule().enrollments.uid(enrollmentUid)
+                .setCoordinate(null);
+    }
+
     @NonNull
     @Override
     public Consumer<String> storeIncidentDate() {
@@ -494,7 +503,7 @@ public class EnrollmentFormRepository implements FormRepository {
 
                     String programStage = cursor.getString(0);
                     ProgramStage stage = d2.programModule().programStages.uid(programStage).get();
-                    boolean hideDueDate = stage.hideDueDate()!=null ? stage.hideDueDate() : false;
+                    boolean hideDueDate = stage.hideDueDate() != null ? stage.hideDueDate() : false;
 
                     String program = cursor.getString(1);
                     String orgUnit = cursor.getString(2);
@@ -666,10 +675,18 @@ public class EnrollmentFormRepository implements FormRepository {
 
     @Override
     public Observable<Boolean> captureCoodinates() {
-        return briteDatabase.createQuery("Program", "SELECT Program.captureCoordinates FROM Program " +
+
+        return d2.enrollmentModule().enrollments.uid(enrollmentUid).getAsync()
+                .map(Enrollment::program)
+                .flatMap(uid -> d2.programModule().programs.uid(uid).getAsync())
+                .map(program -> program.featureType() != null && program.featureType() != FeatureType.NONE)
+                .toObservable();
+
+      /*  return briteDatabase.createQuery("Program", "SELECT Program.captureCoordinates FROM Program " +
                 "JOIN Enrollment ON Enrollment.program = Program.uid WHERE Enrollment.uid = ?", enrollmentUid)
-                .mapToOne(cursor -> cursor.getInt(0) == 1);
+                .mapToOne(cursor -> cursor.getInt(0) == 1);*/
     }
+
 
     @Override
     public Observable<OrganisationUnit> getOrgUnitDates() {
@@ -692,7 +709,7 @@ public class EnrollmentFormRepository implements FormRepository {
         EnrollmentStatus status = EnrollmentStatus.valueOf(cursor.getString(10));
         String description = cursor.getString(11);
 
-        if(generated && isEmpty(dataValue))
+        if (generated && isEmpty(dataValue))
             mandatory = true;
 
         int optionCount = 0;

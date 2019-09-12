@@ -19,6 +19,7 @@ import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.State;
+import org.hisp.dhis.android.core.common.Unit;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
@@ -344,6 +345,13 @@ public class EventRepository implements FormRepository {
             //coordinates are only for tracker events
         };
     }
+    @Override
+    public Consumer<Unit> clearCoordinates() {
+        return unit->{
+            //coordinates are only for tracker events
+        };
+    }
+
 
     @NonNull
     @Override
@@ -462,6 +470,8 @@ public class EventRepository implements FormRepository {
     public Flowable<ProgramStage> getProgramStage(String eventUid) {
         return null;
     }
+
+
 
     @NonNull
     private FieldViewModel transform(@NonNull Cursor cursor) {
