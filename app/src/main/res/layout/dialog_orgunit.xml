@@ -34,15 +34,32 @@
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="This is the title" />
 
+            <EditText
+                android:id="@+id/search"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/edittext_material_border"
+                android:drawableStart="@drawable/ic_search"
+                android:drawablePadding="8dp"
+                android:hint="Search"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:padding="8dp"
+                android:layout_marginTop="20dp"
+                app:layout_constraintBottom_toTopOf="@+id/tree_container"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/title" />
+
             <RelativeLayout
                 android:id="@+id/tree_container"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:layout_marginTop="47dp"
+                android:layout_marginTop="20dp"
                 app:layout_constraintBottom_toTopOf="@id/clear_button"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/title" />
+                app:layout_constraintTop_toBottomOf="@id/search" />
 
 
             <Button

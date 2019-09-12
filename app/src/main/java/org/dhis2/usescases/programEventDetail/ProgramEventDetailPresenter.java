@@ -236,9 +236,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     }
 
     public void addEvent() {
-        Bundle bundle = new Bundle();
-        bundle.putString(PROGRAM_UID, programId);
-        view.startActivity(EventInitialActivity.class, bundle, false, false, null);
+        view.startNewEvent();
     }
 
     @Override

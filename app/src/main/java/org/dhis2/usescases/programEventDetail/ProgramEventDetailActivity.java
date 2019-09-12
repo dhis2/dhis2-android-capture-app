@@ -50,6 +50,7 @@ import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ActivityProgramEventDetailBinding;
 import org.dhis2.databinding.InfoWindowEventBinding;
+import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.org_unit_selector.OUTreeActivity;
 import org.dhis2.utils.ColorUtils;
@@ -77,6 +78,7 @@ import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.fillColor;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAllowOverlap;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconOffset;
 import static org.dhis2.R.layout.activity_program_event_detail;
+import static org.dhis2.utils.Constants.PROGRAM_UID;
 
 /**
  * QUADRAM. Created by Cristian on 13/02/2018.
@@ -116,7 +118,6 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        Mapbox.getInstance(this, BuildConfig.MAPBOX_ACCESS_TOKEN);
         ((App) getApplicationContext()).userComponent().plus(new ProgramEventDetailModule(getIntent().getStringExtra("PROGRAM_UID"))).inject(this);
         super.onCreate(savedInstanceState);
 
@@ -141,7 +142,6 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         } catch (Exception e) {
             Timber.e(e);
         }
-
     }
 
     @Override
@@ -149,6 +149,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         super.onResume();
         presenter.init(this);
         binding.mapView.onResume();
+        binding.addEventButton.setEnabled(true);
         binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
         filtersAdapter.notifyDataSetChanged();
     }
@@ -252,6 +253,14 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     @Override
     public Consumer<FeatureType> setFeatureType() {
         return type -> this.featureType = type;
+    }
+
+    @Override
+    public void startNewEvent() {
+        binding.addEventButton.setEnabled(false);
+        Bundle bundle = new Bundle();
+        bundle.putString(PROGRAM_UID, programUid);
+        startActivity(EventInitialActivity.class, bundle, false, false, null);
     }
 
     @Override
@@ -451,8 +460,11 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
             }
             return false;
         });
-        popupMenu.getMenu().getItem(0).setVisible(binding.mapView.getVisibility() == View.GONE && featureType != FeatureType.NONE);
-        popupMenu.getMenu().getItem(1).setVisible(binding.recycler.getVisibility() == View.GONE && featureType != FeatureType.NONE);
+        boolean mapVisible = binding.mapView.getVisibility() != View.GONE;
+        boolean listVisible = binding.recycler.getVisibility() != View.GONE;
+        boolean emptyVisible = !mapVisible && !listVisible;
+        popupMenu.getMenu().getItem(0).setVisible(!emptyVisible && mapVisible && featureType != FeatureType.NONE);
+        popupMenu.getMenu().getItem(1).setVisible(!emptyVisible && binding.recycler.getVisibility() == View.GONE && featureType != FeatureType.NONE);
         popupMenu.show();
     }
 

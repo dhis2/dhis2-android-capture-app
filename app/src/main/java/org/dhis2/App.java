@@ -14,6 +14,7 @@ import androidx.multidex.MultiDexApplication;
 import com.crashlytics.android.Crashlytics;
 import com.facebook.stetho.Stetho;
 import com.google.android.gms.security.ProviderInstaller;
+import com.mapbox.mapboxsdk.Mapbox;
 
 import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.dagger.PerServer;
@@ -58,8 +59,6 @@ public class App extends MultiDexApplication implements Components {
 
     private static final String DATABASE_NAME = "dhis.db";
 
-    private static App instance;
-
     @NonNull
     @Singleton
     AppComponent appComponent;
@@ -89,35 +88,26 @@ public class App extends MultiDexApplication implements Components {
         super.onCreate();
         Timber.plant(BuildConfig.DEBUG ? new DebugTree() : new ReleaseTree());
         long startTime = System.currentTimeMillis();
-        Timber.d("APPLICATION INITIALIZATION");
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG)
             Stetho.initializeWithDefaults(this);
-            Timber.d("STETHO INITIALIZATION END AT %s", System.currentTimeMillis() - startTime);
-        }
+
+        Mapbox.getInstance(this, BuildConfig.MAPBOX_ACCESS_TOKEN);
 
         KujakuLibrary.setEnableMapDownloadResume(false);
         KujakuLibrary.init(this);
 
         Fabric.with(this, new Crashlytics());
-        Timber.d("FABRIC INITIALIZATION END AT %s", System.currentTimeMillis() - startTime);
-
-        this.instance = this;
 
         setUpAppComponent();
         setUpServerComponent();
 //        setUpUserComponent();
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
             upgradeSecurityProvider();
-            Timber.d("SECURITY INITIALIZATION END AT %s", System.currentTimeMillis() - startTime);
-        }
+
 
         Scheduler asyncMainThreadScheduler = AndroidSchedulers.from(Looper.getMainLooper(), true);
         RxAndroidPlugins.setInitMainThreadSchedulerHandler(schedulerCallable -> asyncMainThreadScheduler);
-        Timber.d("RXJAVAPLUGIN INITIALIZATION END AT %s", System.currentTimeMillis() - startTime);
-
-        Timber.d("APPLICATION INITIALIZATION END AT %s", System.currentTimeMillis() - startTime);
-        Timber.d("APPLICATION INITIALIZATION END AT %s", System.currentTimeMillis());
     }
 
     private void upgradeSecurityProvider() {
@@ -164,7 +154,7 @@ public class App extends MultiDexApplication implements Components {
                         })
                 ).blockingGet();
         if (D2Manager.isServerUrlSet())
-            serverComponent = appComponent.plus(new ServerModule(),new DbModule(DATABASE_NAME));
+            serverComponent = appComponent.plus(new ServerModule(), new DbModule(DATABASE_NAME));
 
         if (isLogged)
             setUpUserComponent();
@@ -229,7 +219,7 @@ public class App extends MultiDexApplication implements Components {
 
     @Override
     public ServerComponent createServerComponent() {
-        serverComponent = appComponent.plus(new ServerModule(),new DbModule(DATABASE_NAME));
+        serverComponent = appComponent.plus(new ServerModule(), new DbModule(DATABASE_NAME));
         return serverComponent;
 
     }
@@ -306,10 +296,6 @@ public class App extends MultiDexApplication implements Components {
     // AndroidInjector
     ////////////////////////////////////////////////////////////////////////
 
-
-    public static App getInstance() {
-        return instance;
-    }
 
     /**
      * Visible only for testing purposes.

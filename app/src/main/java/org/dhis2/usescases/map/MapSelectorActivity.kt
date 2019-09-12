@@ -80,7 +80,6 @@ class MapSelectorActivity : ActivityGlobalAbstract(), MapActivityLocationCallbac
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Mapbox.getInstance(this, BuildConfig.MAPBOX_ACCESS_TOKEN)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_map_selector)
         binding.back.setOnClickListener { v -> finish() }
         location_type = FeatureType.valueOf(intent.getStringExtra(LOCATION_TYPE_EXTRA))

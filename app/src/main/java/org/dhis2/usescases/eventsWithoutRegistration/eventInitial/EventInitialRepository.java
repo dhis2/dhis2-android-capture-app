@@ -20,7 +20,6 @@ import java.util.Map;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
-import io.reactivex.disposables.Disposable;
 
 /**
  * QUADRAM. Created by Cristian E. on 02/11/2017.
@@ -35,7 +34,7 @@ public interface EventInitialRepository {
     Observable<CategoryCombo> catCombo(String programUid);
 
     @NonNull
-    Observable<List<OrganisationUnit>> filteredOrgUnits(String date, String programId, String parentId);
+    Observable<List<OrganisationUnit>> orgUnits(String programId);
 
     Observable<String> createEvent(String enrollmentUid, @Nullable String trackedEntityInstanceUid,
                                    @NonNull Context context, @NonNull String program,
