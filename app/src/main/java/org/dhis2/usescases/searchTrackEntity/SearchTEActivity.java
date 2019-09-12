@@ -229,7 +229,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         presenter.initSearch(this);
         registerReceiver(networkReceiver, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
         binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
-        binding.setTotalFiltersSearch(FilterManager.getInstance().getTotalSearchTeiFilter());
         filtersAdapter.notifyDataSetChanged();
     }
 
@@ -274,7 +273,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     public void updateFiltersSearch(int totalFilters) {
-        FilterManager.getInstance().setTotalSearchTeiFilter(totalFilters);
         binding.setTotalFiltersSearch(totalFilters);
     }
 
@@ -344,6 +342,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         //Form has been set.
         FormAdapter formAdapter = (FormAdapter) binding.formRecycler.getAdapter();
         formAdapter.setList(trackedEntityAttributes, program, queryData);
+        updateFiltersSearch(0);
     }
 
     @NonNull
